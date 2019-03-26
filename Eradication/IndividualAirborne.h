@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -35,7 +35,6 @@ namespace Kernel
         IndividualHumanAirborne(suids::suid id = suids::nil_suid(), float monte_carlo_weight = 1.0f, float initial_age = 0.0f, int gender = 0);
 
         virtual IInfection* createInfection(suids::suid _suid) override;
-        virtual void ReportInfectionState() override;
 
         DECLARE_SERIALIZABLE(IndividualHumanAirborne);
     };

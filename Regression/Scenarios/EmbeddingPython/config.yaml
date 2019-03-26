@@ -8,7 +8,7 @@ parameters:
     Base_Infectious_Period: 4
     Base_Infectivity: 3.5
     Base_Mortality: 0
-    Base_Population_Scale_Factor: 1
+    x_Base_Population: 1
     Birth_Rate_Dependence: "DEMOGRAPHIC_DEP_RATE"
     Birth_Rate_Time_Dependence: "NONE"
     Campaign_Filename: "campaign.json"

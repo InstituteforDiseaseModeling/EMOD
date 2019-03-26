@@ -22,6 +22,7 @@ import os # e.g., mkdir
 import re
 import subprocess
 import sys
+import pdb
 
 import regression_runner
 import regression_utils as ru
@@ -83,18 +84,15 @@ def read_regression_files(suites):
     """
     regression_list_json = {}
     for suite in suites:
-        if os.path.isdir(suite):
+        if os.path.isdir(suite) and os.path.exists(os.path.join(suite, "param_overrides.json")):
             print("You specified a directory - " + suite)
-            if os.path.exists(os.path.join(suite, "param_overrides.json")):
-                add_regression_tests(regression_list_json, [{"path": suite}])
-            else:
-                print("Warning: directory specified, but no param_overrides.json was found. No test could be added.")
+            add_regression_tests(regression_list_json, [{"path": suite}])
         else:
             if not suite.endswith(".json"):
                 suite_file = suite + ".json"
             else:
                 suite_file = suite
-
+            print("You specified a file - " + suite_file)
             add_tests_from_file(regression_list_json, suite_file)
     return regression_list_json
 
@@ -149,11 +147,18 @@ def reglist_test_type(list):
     """
     if not list:
         return None
-    test_types = ["tests", "science", "sweep", "science_sweep"]
+    test_types = ["tests", "science", "sweep", "science_sweep", "pymod" ]
     for test_type in test_types:
         if test_type in list:
             return test_type
     return None
+
+def setup_pymod_directory( path ):
+    #print( "PyMod test type: copy up all .pyd, .json, and .py files." ) # maybe later
+    if os.path.exists( os.path.join( path, "nd_template.json" ) ) == False:
+        print( "Could not find nd_template.json file in " + path )
+        return None 
+    return ru.load_json( os.path.join( path, "nd_template.json" ) )
 
 def get_test_config(path, test_type, report):
     """
@@ -164,12 +169,18 @@ def get_test_config(path, test_type, report):
     :param report: regression report (for keeping track of errors in loading)
     :return: json regression test config
     """
-    param_overrides_filename = os.path.join(path, "param_overrides.json")
-    if os.path.exists(param_overrides_filename):
-        return flatten_test_config(param_overrides_filename, test_type, report)
+    if test_type == "pymod":
+        return setup_pymod_directory( os.path.dirname( path ) )
     else:
-        print("Warning: no param_overrides.json file available, config will not be flattened")
-        return ru.load_json(os.path.join(path, "config.json"))
+        param_overrides_filename = os.path.join(path, "param_overrides.json")
+        if os.path.exists(param_overrides_filename):
+            return flatten_test_config(param_overrides_filename, test_type, report)
+        else:
+            #print("Warning: no param_overrides.json file available, config will not be flattened")
+            try:
+                return ru.load_json(os.path.join(path, "config.json"))
+            except Exception as ex:
+                print( "Malformed config.json in: " + path ) 
 
     return None
 
@@ -224,7 +235,10 @@ def load_campjson_from_campaign(simcfg_path, enable_interventions, runner, campa
     """
     if enable_interventions == 1:
         if not campaign_filename or not os.path.exists(campaign_filename):
-            campaign_filename = glob.glob(os.path.join(simcfg_path, "campaign_*.json"))[0]
+            try:
+                campaign_filename = glob.glob(os.path.join(simcfg_path, "campaign_*.json"))[0]
+            except Exception as ex:
+                print( str( ex ) + " while processing " + simcfg_path )
         runner.campaign_filename = os.path.basename(campaign_filename)
         campjson = ru.load_json(campaign_filename, lambda x: x.replace("u'", "'").replace("'", '"').strip('"'))
         return str(campjson)
@@ -362,11 +376,16 @@ class TestRunner(object):
         :param param_overrides: map of param_names -> param_values to override in config (if present)
         :return: simulation id
         """
+
         os.chdir(self.cache_cwd)
 
         sim_id = self.sim_id_generator.get_simulation_id()
 
         configjson = get_test_config(sim_path, self.test_type, self.report)
+        if configjson is None:
+            print( "Misconfigured test: " + sim_path ) 
+        elif "parameters" not in configjson: # for pymod, but could be used elswhere I think
+            configjson = { "parameters" : configjson } # hopefully this doesn't look weird. just make the config look like it had the conventional "parameters" even top-level key if it didn't
 
         if configjson:
             if self.check_constraints(configjson):
@@ -380,14 +399,19 @@ class TestRunner(object):
                 # add campaign to config
                 if campjson is None:
                     campaign_file = None
-                    if "Campaign_Filename" in configjson["parameters"]:
-                        campaign_file = os.path.join(sim_path, configjson["parameters"]["Campaign_Filename"])
-                    configjson["campaign_json"] = load_campjson_from_campaign(sim_path, configjson["parameters"]["Enable_Interventions"], self.runner, campaign_file)
+                    if "parameters" in configjson:
+                        if "Campaign_Filename" in configjson["parameters"]:
+                            campaign_file = os.path.join(sim_path, configjson["parameters"]["Campaign_Filename"])
+                        ei = False
+                        if "parameters" in configjson and "Enable_Interventions" in configjson["parameters"]:
+                            ei = configjson["parameters"]["Enable_Interventions"]
+                        configjson["campaign_json"] = load_campjson_from_campaign(sim_path, ei, self.runner, campaign_file) 
                 else:
                     configjson["campaign_json"] = str(campjson)
 
                 # add custom reports, if they exist
-                configjson["custom_reports_json"] = str(ru.load_json(os.path.join(sim_path, "custom_reports.json")))
+                if os.path.exists( os.path.join(sim_path, "custom_reports.json") ):
+                    configjson["custom_reports_json"] = str(ru.load_json(os.path.join(sim_path, "custom_reports.json")))
 
                 thread = self.runner.commissionFromConfigJson(sim_id, configjson, sim_path, self.report, self.scenario_type)
                 ru.reg_threads.append(thread)
@@ -396,6 +420,9 @@ class TestRunner(object):
             ru.final_warnings += "Error flattening config.  Skipped " + sim_path + "\n"
 
         return sim_id
+
+    def attempt_test(self):
+        self.runner.attempt_test()
 
     @staticmethod
     def override_config_value(config_json, param_name, param_value):
@@ -602,6 +629,9 @@ def main():
     # initialize test runner for given directory, test type, constraints, etc.
     test_runner = TestRunner(ru.cache_cwd, test_type, params.constraints_dict, report, runner)
 
+    # verify that the test runner can dispatch tests to test executors
+    test_runner.attempt_test()
+
     if science:
         # prepare for generating graphs for SFTs
         homepath = get_homepath(params.sim_root, params.local_execution)
@@ -618,7 +648,13 @@ def main():
 
         # do a schema test also
         if not params.disable_schema_test:
+            start_schema = datetime.datetime.now()
             report.schema = runner.doSchemaTest()
+            schema_duration = datetime.datetime.now() - start_schema
+            if report.schema == 'passed':
+                report.addPassingTest('schema', schema_duration, 'see logs for details')
+            else:
+                report.addFailingTest('schema', 'Schema test failed.', 'see logs for details', 'schema')
 
     # wait until all threads running tests are done
     expected_num_tests = len(ru.reg_threads)
@@ -627,7 +663,14 @@ def main():
 
     component_tests_passed = True
     if( params.component_tests ):
+        ct_start = datetime.datetime.now()
         component_tests_passed = run_component_tests(params.scons, params.component_tests_show_output)
+        duration = datetime.datetime.now() - ct_start
+        if component_tests_passed:
+            report.addPassingTest('component_tests', duration, 'see logs for details')
+        else:
+            sys.stderr.write('Component tests failed!\n')
+            report.addFailingTest('component_tests', 'Component tests failed.', 'see logs for details', 'component_tests')
 
     # print results except when running a non-science sweep
     if not (sweep and not science):
@@ -638,9 +681,6 @@ def main():
         print(ru.final_warnings)
         print("----------------")
 
-    if not component_tests_passed:
-        sys.exit(1)
-
     # if doing sweep, call plotAllCharts.py with all sim_timestamps on command line.
     if sweep:
         test_runner.plot_sweep_results(reglistjson[test_type]["path"], "sweep_out.json")
@@ -650,6 +690,8 @@ def main():
     #    return 1
 
     return 0
+    """Main body of regression_test.py"""
+
 
 
 if __name__ == "__main__":

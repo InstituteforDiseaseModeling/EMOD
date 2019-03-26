@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -14,9 +14,11 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "Interventions.h"
 #include "InterventionFactory.h"
+#include "INodeContext.h"
 #include "NodeEventContext.h"
-#include "Contexts.h"
+#include "IIndividualHumanContext.h"
 #include "Exceptions.h"
+#include "EventTrigger.h"
 
 #include "RapidJsonImpl.h"
 
@@ -118,8 +120,8 @@ namespace Kernel
         initConfigTypeMap( "Dont_Allow_Duplicates", &dont_allow_duplicates, Dont_Allow_Duplicates_DESC_TEXT, false );
 
         jsonConfigurable::tDynamicStringSet tmp_disqualifying_properties;
-        initConfigTypeMap("Disqualifying_Properties", &tmp_disqualifying_properties, Disqualifying_Properties_DESC_TEXT );
-        initConfigTypeMap("New_Property_Value", &status_property, New_Property_Value_DESC_TEXT );
+        initConfigTypeMap("Disqualifying_Properties", &tmp_disqualifying_properties, IP_Disqualifying_Properties_DESC_TEXT );
+        initConfigTypeMap("New_Property_Value", &status_property, IP_New_Property_Value_DESC_TEXT );
 
         bool ret = JsonConfigurable::Configure(inputJson);
         if( ret && !JsonConfigurable::_dryrun )
@@ -222,13 +224,9 @@ namespace Kernel
             LOG_DEBUG_F( "The property \"%s\" for intervention is one of the Disqualifying_Properties.  Expiring '%s' for individual %d.\n",
                             found.ToString().c_str(), name.c_str(), pHuman->GetSuid().data );
 
-            INodeTriggeredInterventionConsumer* broadcaster = nullptr;
-            if (s_OK != pHuman->GetEventContext()->GetNodeEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster))
-            {
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "pHuman->GetEventContext()->GetNodeEventContext()", "INodeTriggeredInterventionConsumer", "INodeEventContext" );
-            }
+            IIndividualEventBroadcaster* broadcaster = pHuman->GetEventContext()->GetNodeEventContext()->GetIndividualEventBroadcaster();
 
-            broadcaster->TriggerNodeEventObservers( pHuman->GetEventContext(), EventTrigger::InterventionDisqualified );
+            broadcaster->TriggerObservers( pHuman->GetEventContext(), EventTrigger::InterventionDisqualified );
             expired = true;
 
             return true;
@@ -304,8 +302,8 @@ namespace Kernel
         initConfigTypeMap( "Intervention_Name", &name, Intervention_Name_DESC_TEXT, default_name );
 
         jsonConfigurable::tDynamicStringSet tmp_disqualifying_properties;
-        initConfigTypeMap( "Disqualifying_Properties", &tmp_disqualifying_properties, Disqualifying_Properties_DESC_TEXT );
-        initConfigTypeMap( "New_Property_Value", &status_property, New_Property_Value_DESC_TEXT );
+        initConfigTypeMap( "Disqualifying_Properties", &tmp_disqualifying_properties, NP_Disqualifying_Properties_DESC_TEXT );
+        initConfigTypeMap( "New_Property_Value", &status_property, NP_New_Property_Value_DESC_TEXT );
 
         bool ret = JsonConfigurable::Configure( inputJson );
         if( ret && !JsonConfigurable::_dryrun )
@@ -404,13 +402,8 @@ namespace Kernel
             LOG_DEBUG_F( "The property \"%s\" is one of the Disqualifying_Properties.  Expiring the '%s' for node %d.\n",
                 found.ToString().c_str(), name.c_str(), context->GetExternalId() );
 
-            INodeTriggeredInterventionConsumer* broadcaster = nullptr;
-            if( s_OK != context->QueryInterface( GET_IID( INodeTriggeredInterventionConsumer ), (void**)&broadcaster ) )
-            {
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context", "INodeTriggeredInterventionConsumer", "INodeEventContext" );
-            }
-
-            broadcaster->TriggerNodeEventObservers( nullptr, EventTrigger::InterventionDisqualified );
+            IIndividualEventBroadcaster* broadcaster = context->GetIndividualEventBroadcaster();
+            broadcaster->TriggerObservers( nullptr, EventTrigger::InterventionDisqualified );
             expired = true;
 
             return true;

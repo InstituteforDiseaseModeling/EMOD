@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -19,10 +19,13 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "FactorySupport.h"
 #include "InterventionFactory.h"
 #include "IIndividualHuman.h"
+#include "IIndividualHumanContext.h"
 #include "INodeContext.h"
+#include "SimulationEventContext.h"
 #include "NodeEventContext.h"
 #include "Log.h"
 #include "IdmString.h"
+#include "RANDOM.h"
 
 SETUP_LOGGING( "StandardEventCoordinator" )
 
@@ -243,13 +246,7 @@ namespace Kernel
     bool StandardInterventionDistributionEventCoordinator::TargetedIndividualIsCovered(IIndividualHumanEventContext *ihec)
     {
         float demographic_coverage = demographic_restrictions.GetDemographicCoverage();
-        if (demographic_coverage == 1.0 )
-        {
-            return true;
-        }
-        double randomDraw = randgen->e();
-        LOG_DEBUG_F("randomDraw = %f, demographic_coverage = %f\n", randomDraw, demographic_coverage);
-        return randomDraw <= demographic_coverage;
+        return ihec->GetInterventionsContext()->GetParent()->GetRng()->SmartDraw( demographic_coverage );
     }
 
     bool
@@ -460,10 +457,7 @@ namespace Kernel
 
     void StandardInterventionDistributionEventCoordinator::DistributeInterventionsToIndividuals( INodeEventContext* event_context )
     {
-        // For now, distribute evenly across nodes. 
-        int limitPerNode = -1;
-
-        int totalIndivGivenIntervention = event_context->VisitIndividuals( this, limitPerNode );
+        int totalIndivGivenIntervention = event_context->VisitIndividuals( this );
 
         if( LOG_LEVEL( INFO ) )
         {

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -11,6 +11,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "NChooserEventCoordinatorSTI.h"
 #include "SimulationConfig.h"
+#include "Simulation.h"
+#include "IdmDateTime.h"
 
 SETUP_LOGGING( "NChooserEventCoordinatorSTI" )
 
@@ -56,6 +58,11 @@ namespace Kernel
                 "Start_Year", m_StartYear,
                 "End_Year", m_EndYear,
                 "Start_Year must be < End_Year" );
+        }
+    
+        if( m_StartYear < Simulation::base_year )
+        {
+            LOG_WARN_F("Start_Year (%f) specified before Base_Year (%f)\n", m_StartYear, Simulation::base_year);
         }
     }
 

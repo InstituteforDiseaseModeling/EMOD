@@ -17,7 +17,7 @@
                 "Transmission_Blocking_Immunity_Duration_Before_Decay": 90
             },
             "MORTALITY": {
-                        "Enable_Natural_Mortality": 0,
+                "Enable_Natural_Mortality": 0,
                 "Mortality_Blocking_Immunity_Decay_Rate": 0.0,
                 "Mortality_Blocking_Immunity_Duration_Before_Decay": 999,
                 "Mortality_Time_Course": "MORTALITY_AFTER_INFECTIOUS"
@@ -28,10 +28,10 @@
         },
         "DISEASE": {
             "INFECTIOUSNESS": {
-                "Base_Infectious_Period": 4,
                 "Base_Infectivity": 0.375,
-                "Infectious_Period_Distribution": "FIXED_DURATION",
-                "Population_Density_Infectivity_Correction": "SATURATING_FUNCTION_OF_DENSITY"
+                "Infectious_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                "Population_Density_Infectivity_Correction": "SATURATING_FUNCTION_OF_DENSITY",
+                "Infectious_Period_Constant": 4
             }
         },
         "PRIMARY": {

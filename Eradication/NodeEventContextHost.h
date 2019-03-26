@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -11,8 +11,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include <list>
 
-#include "IdmApi.h"
 #include "NodeEventContext.h"
+#include "BroadcasterObserver.h"
+#include "BroadcasterImpl.h"
 
 namespace Kernel
 {
@@ -20,15 +21,16 @@ namespace Kernel
     class Node;
     
     struct INodeContext;
+    struct IIndividualHuman;
     class IndividualHuman;
 
     // The NodeEventContextHost implements functionality properly belonging to the Node class but it split out manually to make development easier.
     // Like, you know, what partial class declarations are for.
-    class IDMAPI NodeEventContextHost : public INodeEventContext,
-                                        public INodeInterventionConsumer,
-                                        public IOutbreakConsumer,
-                                        public ICampaignCostObserver,
-                                        public INodeTriggeredInterventionConsumer
+    class NodeEventContextHost : public INodeEventContext,
+                                 public INodeInterventionConsumer,
+                                 public IOutbreakConsumer,
+                                 public ICampaignCostObserver,
+                                 public IIndividualEventBroadcaster
     {
         IMPLEMENT_NO_REFERENCE_COUNTING()
 
@@ -40,16 +42,17 @@ namespace Kernel
         // INodeEventContext
         virtual QueryResult QueryInterface(iid_t iid, void** pinstance) override;
         virtual void VisitIndividuals(individual_visit_function_t func) override;
-        virtual int VisitIndividuals(IVisitIndividual*, int limit = -1 ) override;
+        virtual int VisitIndividuals(IVisitIndividual* ) override;
         virtual const NodeDemographics& GetDemographics() override;
-        virtual IdmDateTime GetTime() const override;
+        virtual const IdmDateTime& GetTime() const override;
         virtual bool IsInPolygon(float* vertex_coords, int numcoords) override; // might want to create a real polygon object at some point
         virtual bool IsInPolygon( const json::Array &poly ) override;
-        virtual bool IsInExternalIdSet( const tNodeIdList& nodelist ) override;
-        virtual ::RANDOMBASE* GetRng() override;
+        virtual bool IsInExternalIdSet( const std::list<ExternalNodeId_t>& nodelist ) override;
+        virtual RANDOMBASE* GetRng() override;
         virtual INodeContext* GetNodeContext() override;
         virtual int GetIndividualHumanCount() const override;
         virtual ExternalNodeId_t GetExternalId() const override;
+        virtual IIndividualEventBroadcaster* GetIndividualEventBroadcaster() override;
 
         virtual void UpdateInterventions(float = 0.0f) override;
 
@@ -67,13 +70,13 @@ namespace Kernel
         virtual bool GiveIntervention( INodeDistributableIntervention * pIV ) override;
 
         // IOutbreakConsumer
-        virtual void AddImportCases(StrainIdentity* outbreak_strainID, float import_age, NaturalNumber num_cases_per_node ) override;
+        virtual void AddImportCases( StrainIdentity* outbreak_strainID, float import_age, NaturalNumber num_cases_per_node, ProbabilityNumber prob_infect ) override;
         //virtual void IncreasePrevalence(StrainIdentity* outbreak_strainID, IEventCoordinator2* pEC) override;
 
         // IIndividualTriggeredInterventionConsumer
-        virtual void RegisterNodeEventObserver( IIndividualEventObserver *pIEO, const EventTrigger& trigger ) override;
-        virtual void UnregisterNodeEventObserver( IIndividualEventObserver *pIEO, const EventTrigger& trigger ) override;
-        virtual void TriggerNodeEventObservers( IIndividualHumanEventContext *ihec, const EventTrigger& trigger ) override;
+        virtual void RegisterObserver( IIndividualEventObserver *pIEO, const EventTrigger& trigger ) override;
+        virtual void UnregisterObserver( IIndividualEventObserver *pIEO, const EventTrigger& trigger ) override;
+        virtual void TriggerObservers( IIndividualHumanEventContext *ihec, const EventTrigger& trigger ) override;
 
         //////////////////////////////////////////////////////////////////////////
          
@@ -85,10 +88,6 @@ namespace Kernel
         virtual void notifyCampaignEventOccurred( /*const*/ ISupports * pDistributedIntervention, /*const*/ ISupports * pDistributor, /*const*/ IIndividualHumanContext * pDistributeeIndividual ) override;
 
     protected:
-        void DisposeOfUnregisteredObservers();
-
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         Node* node;
 
         typedef std::map<ITravelLinkedDistributionSource*,int> travel_distribution_source_map_t;
@@ -100,13 +99,10 @@ namespace Kernel
         typedef std::list< INodeDistributableIntervention * > interventions_list_t;
         interventions_list_t interventions;
 
-        typedef std::vector<std::vector<IIndividualEventObserver*> > ieo_list_t;
-        ieo_list_t individual_event_observers;
-        ieo_list_t disposed_observers;
-
         typedef std::list<INodeDistributableIntervention*> ndi_list_t;
         ndi_list_t node_interventions;
-#pragma warning( pop )
+
+        IndividualEventBroadcaster broadcaster_impl;
 
         virtual void PropagateContextToDependents(); // pass context to interventions if they need it
         void IncrementCampaignCost(float cost);

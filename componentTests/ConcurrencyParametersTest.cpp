@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -12,7 +12,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <fstream>
 #include <memory> // unique_ptr
 #include "UnitTest++.h"
-#include "common.h"
+#include "componentTests.h"
 #include "ConcurrencyParameters.h"
 #include "RANDOM.h"
 #include "Properties.h"
@@ -26,6 +26,7 @@ SUITE(ConcurrencyParametersTest)
     {
         bool track_missing;
         bool use_defaults;
+        RANDOMBASE* m_pRNG;
 
         ConcurrencyParametersFixture()
         {
@@ -38,7 +39,7 @@ SUITE(ConcurrencyParametersTest)
             Environment::Finalize();
             Environment::setLogger( new SimpleLogger( Logger::tLevel::WARNING ) );
 
-            const_cast<Environment*>(Environment::getInstance())->RNG = new PSEUDO_DES(0);
+            m_pRNG = new PSEUDO_DES(0);
 
             IPFactory::DeleteFactory();
             IPFactory::CreateFactory();
@@ -117,38 +118,51 @@ SUITE(ConcurrencyParametersTest)
         CHECK_EQUAL( std::string("MED" ), std::string(p_cc->GetConcurrencyPropertyValue( &individual_properties, nullptr, nullptr )) );
         CHECK_EQUAL( std::string("HIGH"), std::string(p_cc->GetConcurrencyPropertyValue( &individual_properties, "RISK" , "HIGH" )) );
 
-        CHECK_EQUAL( 15, p_cc->GetProbExtraRelationalBitMask( "RISK", "HIGH", Gender::FEMALE, true  ) ); 
-        CHECK_EQUAL(  0, p_cc->GetProbExtraRelationalBitMask( "RISK", "HIGH", Gender::FEMALE, false ) ); 
-        CHECK_EQUAL( 11, p_cc->GetProbExtraRelationalBitMask( "RISK", "HIGH", Gender::MALE,   false ) ); 
-        CHECK_EQUAL(  0, p_cc->GetProbExtraRelationalBitMask( "RISK", "MED",  Gender::FEMALE, false ) ); 
-        CHECK_EQUAL(  8, p_cc->GetProbExtraRelationalBitMask( "RISK", "MED",  Gender::MALE,   false ) ); 
-        CHECK_EQUAL(  8, p_cc->GetProbExtraRelationalBitMask( "RISK", "LOW",  Gender::FEMALE, false ) ); 
-        CHECK_EQUAL( 10, p_cc->GetProbExtraRelationalBitMask( "RISK", "LOW",  Gender::MALE,   false ) ); 
+        CHECK_EQUAL( 15, p_cc->GetProbExtraRelationalBitMask( m_pRNG, "RISK", "HIGH", Gender::FEMALE, true  ) ); 
+        CHECK_EQUAL(  0, p_cc->GetProbExtraRelationalBitMask( m_pRNG, "RISK", "HIGH", Gender::FEMALE, false ) ); 
+        CHECK_EQUAL( 11, p_cc->GetProbExtraRelationalBitMask( m_pRNG, "RISK", "HIGH", Gender::MALE,   false ) ); 
+        CHECK_EQUAL(  0, p_cc->GetProbExtraRelationalBitMask( m_pRNG, "RISK", "MED",  Gender::FEMALE, false ) ); 
+        CHECK_EQUAL(  8, p_cc->GetProbExtraRelationalBitMask( m_pRNG, "RISK", "MED",  Gender::MALE,   false ) ); 
+        CHECK_EQUAL(  8, p_cc->GetProbExtraRelationalBitMask( m_pRNG, "RISK", "LOW",  Gender::FEMALE, false ) ); 
+        CHECK_EQUAL( 10, p_cc->GetProbExtraRelationalBitMask( m_pRNG, "RISK", "LOW",  Gender::MALE,   false ) ); 
 
-        CHECK_EQUAL( 13, p_cc->GetMaxAllowableRelationships( "RISK", "HIGH", Gender::FEMALE, RelationshipType::COMMERCIAL ) );
-        CHECK_EQUAL(  3, p_cc->GetMaxAllowableRelationships( "RISK", "HIGH", Gender::MALE,   RelationshipType::MARITAL       ) );
-        CHECK_EQUAL(  6, p_cc->GetMaxAllowableRelationships( "RISK", "HIGH", Gender::FEMALE, RelationshipType::INFORMAL      ) );
-        CHECK_EQUAL(  8, p_cc->GetMaxAllowableRelationships( "RISK", "HIGH", Gender::FEMALE, RelationshipType::TRANSITORY    ) );
-        CHECK_EQUAL(  8, p_cc->GetMaxAllowableRelationships( "RISK", "MED",  Gender::FEMALE, RelationshipType::COMMERCIAL ) );
-        CHECK_EQUAL(  1, p_cc->GetMaxAllowableRelationships( "RISK", "MED",  Gender::FEMALE, RelationshipType::MARITAL       ) );
-        CHECK_EQUAL(  6, p_cc->GetMaxAllowableRelationships( "RISK", "MED",  Gender::MALE,   RelationshipType::INFORMAL      ) );
-        CHECK_EQUAL(  2, p_cc->GetMaxAllowableRelationships( "RISK", "MED",  Gender::FEMALE, RelationshipType::TRANSITORY    ) );
-        CHECK_EQUAL(  5, p_cc->GetMaxAllowableRelationships( "RISK", "LOW",  Gender::FEMALE, RelationshipType::COMMERCIAL ) );
-        CHECK_EQUAL(  0, p_cc->GetMaxAllowableRelationships( "RISK", "LOW",  Gender::FEMALE, RelationshipType::MARITAL       ) );
-        CHECK_EQUAL(  3, p_cc->GetMaxAllowableRelationships( "RISK", "LOW",  Gender::FEMALE, RelationshipType::INFORMAL      ) );
-        CHECK_EQUAL(  2, p_cc->GetMaxAllowableRelationships( "RISK", "LOW",  Gender::MALE,   RelationshipType::TRANSITORY    ) );
+        CHECK_EQUAL( 13, p_cc->GetMaxAllowableRelationships( m_pRNG, "RISK", "HIGH", Gender::FEMALE, RelationshipType::COMMERCIAL ) );
+        CHECK_EQUAL(  3, p_cc->GetMaxAllowableRelationships( m_pRNG, "RISK", "HIGH", Gender::MALE,   RelationshipType::MARITAL       ) );
+        CHECK_EQUAL(  6, p_cc->GetMaxAllowableRelationships( m_pRNG, "RISK", "HIGH", Gender::FEMALE, RelationshipType::INFORMAL      ) );
+        CHECK_EQUAL(  8, p_cc->GetMaxAllowableRelationships( m_pRNG, "RISK", "HIGH", Gender::FEMALE, RelationshipType::TRANSITORY    ) );
+        CHECK_EQUAL(  8, p_cc->GetMaxAllowableRelationships( m_pRNG, "RISK", "MED",  Gender::FEMALE, RelationshipType::COMMERCIAL ) );
+        CHECK_EQUAL(  1, p_cc->GetMaxAllowableRelationships( m_pRNG, "RISK", "MED",  Gender::FEMALE, RelationshipType::MARITAL       ) );
+        CHECK_EQUAL(  6, p_cc->GetMaxAllowableRelationships( m_pRNG, "RISK", "MED",  Gender::MALE,   RelationshipType::INFORMAL      ) );
+        CHECK_EQUAL(  2, p_cc->GetMaxAllowableRelationships( m_pRNG, "RISK", "MED",  Gender::FEMALE, RelationshipType::TRANSITORY    ) );
+        CHECK_EQUAL(  5, p_cc->GetMaxAllowableRelationships( m_pRNG, "RISK", "LOW",  Gender::FEMALE, RelationshipType::COMMERCIAL ) );
+        CHECK_EQUAL(  0, p_cc->GetMaxAllowableRelationships( m_pRNG, "RISK", "LOW",  Gender::FEMALE, RelationshipType::MARITAL       ) );
+        CHECK_EQUAL(  3, p_cc->GetMaxAllowableRelationships( m_pRNG, "RISK", "LOW",  Gender::FEMALE, RelationshipType::INFORMAL      ) );
+        CHECK_EQUAL(  2, p_cc->GetMaxAllowableRelationships( m_pRNG, "RISK", "LOW",  Gender::MALE,   RelationshipType::TRANSITORY    ) );
 
         // value is 1.5 see that half are 1 and half are 2
-        CHECK_EQUAL(  2, p_cc->GetMaxAllowableRelationships( "RISK", "LOW",  Gender::FEMALE, RelationshipType::TRANSITORY    ) );
-        CHECK_EQUAL(  2, p_cc->GetMaxAllowableRelationships( "RISK", "LOW",  Gender::FEMALE, RelationshipType::TRANSITORY    ) );
-        CHECK_EQUAL(  1, p_cc->GetMaxAllowableRelationships( "RISK", "LOW",  Gender::FEMALE, RelationshipType::TRANSITORY    ) );
-        CHECK_EQUAL(  1, p_cc->GetMaxAllowableRelationships( "RISK", "LOW",  Gender::FEMALE, RelationshipType::TRANSITORY    ) );
-        CHECK_EQUAL(  2, p_cc->GetMaxAllowableRelationships( "RISK", "LOW",  Gender::FEMALE, RelationshipType::TRANSITORY    ) );
-        CHECK_EQUAL(  1, p_cc->GetMaxAllowableRelationships( "RISK", "LOW",  Gender::FEMALE, RelationshipType::TRANSITORY    ) );
-        CHECK_EQUAL(  2, p_cc->GetMaxAllowableRelationships( "RISK", "LOW",  Gender::FEMALE, RelationshipType::TRANSITORY    ) );
-        CHECK_EQUAL(  2, p_cc->GetMaxAllowableRelationships( "RISK", "LOW",  Gender::FEMALE, RelationshipType::TRANSITORY    ) );
-        CHECK_EQUAL(  1, p_cc->GetMaxAllowableRelationships( "RISK", "LOW",  Gender::FEMALE, RelationshipType::TRANSITORY    ) );
-        CHECK_EQUAL(  1, p_cc->GetMaxAllowableRelationships( "RISK", "LOW",  Gender::FEMALE, RelationshipType::TRANSITORY    ) );
+        uint32_t count_1 = 0;
+        uint32_t count_2 = 0;
+        uint32_t count_o = 0; // o = other
+        uint32_t num_attempts = 100;
+        for( uint32_t i = 0 ; i < num_attempts; ++i )
+        {
+            int max_allowed = p_cc->GetMaxAllowableRelationships( m_pRNG, "RISK", "LOW",  Gender::FEMALE, RelationshipType::TRANSITORY );
+            if( max_allowed == 1 )
+            {
+                ++count_1;
+            }
+            else if( max_allowed == 2 )
+            {
+                ++count_2;
+            }
+            else
+            {
+                ++count_o;
+            }
+        }
+        CHECK_EQUAL( 0, count_o );
+        float percent_1 = float(count_1)/float(num_attempts);
+        CHECK_CLOSE( 0.5, percent_1, 0.03 ); // 0.03 so that there is room for round off error
     }
 
     TEST_FIXTURE(ConcurrencyParametersFixture, TestGoodParametersNone)
@@ -181,14 +195,14 @@ SUITE(ConcurrencyParametersTest)
         CHECK_EQUAL( std::string("NONE"), std::string(p_cc->GetConcurrencyPropertyValue( &individual_properties, nullptr, nullptr )) );
         CHECK_EQUAL( std::string("NONE"), std::string(p_cc->GetConcurrencyPropertyValue( &individual_properties, "ACCESSIBILITY", "YES" )) );
 
-        CHECK_EQUAL( 15, p_cc->GetProbExtraRelationalBitMask( "NONE", "NONE", Gender::FEMALE, true  ) ); 
-        CHECK_EQUAL( 10, p_cc->GetProbExtraRelationalBitMask( "NONE", "NONE", Gender::FEMALE, false ) ); 
-        CHECK_EQUAL(  8, p_cc->GetProbExtraRelationalBitMask( "NONE", "NONE", Gender::MALE,   false ) ); 
+        CHECK_EQUAL( 15, p_cc->GetProbExtraRelationalBitMask( m_pRNG, "NONE", "NONE", Gender::FEMALE, true  ) ); 
+        CHECK_EQUAL( 10, p_cc->GetProbExtraRelationalBitMask( m_pRNG, "NONE", "NONE", Gender::FEMALE, false ) ); 
+        CHECK_EQUAL(  8, p_cc->GetProbExtraRelationalBitMask( m_pRNG, "NONE", "NONE", Gender::MALE,   false ) ); 
 
-        CHECK_EQUAL(  5, p_cc->GetMaxAllowableRelationships( "NONE", "NONE", Gender::FEMALE, RelationshipType::COMMERCIAL ) );
-        CHECK_EQUAL(  1, p_cc->GetMaxAllowableRelationships( "NONE", "NONE", Gender::MALE,   RelationshipType::MARITAL       ) );
-        CHECK_EQUAL(  3, p_cc->GetMaxAllowableRelationships( "NONE", "NONE", Gender::FEMALE, RelationshipType::INFORMAL      ) );
-        CHECK_EQUAL(  2, p_cc->GetMaxAllowableRelationships( "NONE", "NONE", Gender::MALE,   RelationshipType::TRANSITORY    ) );
+        CHECK_EQUAL(  5, p_cc->GetMaxAllowableRelationships( m_pRNG, "NONE", "NONE", Gender::FEMALE, RelationshipType::COMMERCIAL ) );
+        CHECK_EQUAL(  1, p_cc->GetMaxAllowableRelationships( m_pRNG, "NONE", "NONE", Gender::MALE,   RelationshipType::MARITAL       ) );
+        CHECK_EQUAL(  3, p_cc->GetMaxAllowableRelationships( m_pRNG, "NONE", "NONE", Gender::FEMALE, RelationshipType::INFORMAL      ) );
+        CHECK_EQUAL(  2, p_cc->GetMaxAllowableRelationships( m_pRNG, "NONE", "NONE", Gender::MALE,   RelationshipType::TRANSITORY    ) );
     }
 
     void TestHelper_Exception( int lineNumber, const std::string& rFilename, const std::string& rExpMsg )

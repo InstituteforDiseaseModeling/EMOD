@@ -2,7 +2,7 @@
 
 import json
 import os.path as path
-import dtk_sft as sft
+import dtk_test.dtk_sft as sft
 import math
 
 KEY_NEW_INFECTIONS_GROUP = [ "New Infections:QualityOfCare:1_Seed_Control",
@@ -83,10 +83,13 @@ def create_report_file(report_data_obj, report_name, debug):
         # because expected_new_infection_test / ((1.0 - tb_effect)* statistical_population_test)= new_infection_baseline / statistical_population_baseline, so
         expected_new_infection_test = (1.0 - tb_effect) * new_infection_baseline * statistical_population_test / statistical_population_baseline
         tolerance = 0.0 if expected_new_infection_test == 0.0 else 2e-2 * statistical_population_test
+        result = f"At time step {timestep}, {new_infection_test} reported new infections in Group 4_Test," \
+                 f"expected {expected_new_infection_test} tolerance: {tolerance}.\n"
         if math.fabs(new_infection_test - expected_new_infection_test) > tolerance:
             success = False
-            outfile.write("BAD: At time step {0}, {1} reported new infections in Group 4_Test, expected {2}.\n".format(
-                timestep, new_infection_test, expected_new_infection_test))
+            outfile.write(f"BAD:  {result}")
+        else:
+            outfile.write(f"GOOD: {result}")
 
         sft.plot_data([pre_new_infection_baseline, new_infection_baseline],[pre_new_infection_test, new_infection_test],
                                label1= "control_group", label2 = "test_group",

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -9,9 +9,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "stdafx.h"
 
-#include "Debug.h" // for base class
-#include "ReportSTI.h" // for base class
-#include "NodeSTI.h" // for base class
+#include "Debug.h"
+#include "ReportSTI.h"
+#include "IIndividualHumanSTI.h"
 #include "IRelationship.h"
 
 SETUP_LOGGING( "ReportSTI" )
@@ -218,8 +218,6 @@ static NaturalNumber num_adults_not_related = 0;
         normalizeChannel( _sexually_active_prevalence_label, _sexually_active_universe_label );
         normalizeChannel( _ymi, _ymc );
         normalizeChannel( _yfi, _yfc );
-        channelDataMap.RemoveChannel( _new_reported_infections_label );
-        channelDataMap.RemoveChannel( _cum_reported_infections_label );
         channelDataMap.RemoveChannel( _hum_infectious_res_label      );
         channelDataMap.RemoveChannel( _log_prev_label                );
         channelDataMap.RemoveChannel( _infection_rate_label          );

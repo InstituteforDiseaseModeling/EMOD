@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import json
-import dtk_sft as sft
+import dtk_test.dtk_sft as sft
 import os.path as path
 
 """
@@ -117,7 +117,7 @@ if __name__ == "__main__":
     parser.add_argument('-j', '--jsonreport', default="InsetChart.json", help="Json report to load (InsetChart.json)")
     parser.add_argument('-c', '--config', default="config.json", help="Config name to load (config.json)")
     parser.add_argument('-C', '--campaign', default="campaign.json", help="campaign name to load (campaign.json)")
-    parser.add_argument('-r', '--reportname', default=dtk_sft.sft_output_filename, help="Report file to generate")
+    parser.add_argument('-r', '--reportname', default=sft.sft_output_filename, help="Report file to generate")
     args = parser.parse_args()
 
     application(output_folder=args.output, stdout_filename=args.stdout, insetchart_name=args.jsonreport,

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -13,7 +13,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #ifdef ENABLE_PYTHON
 #include "Debug.h"
-#include "Contexts.h"
 #include "RANDOM.h"
 #include "Environment.h"
 #include "IndividualPy.h"
@@ -25,6 +24,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "SimulationConfig.h"
 #include "PythonSupport.h"
 #include "StrainIdentity.h"
+#include "INodeContext.h"
 
 #ifndef WIN32
 #include <sys/time.h>
@@ -39,11 +39,6 @@ SETUP_LOGGING( "IndividualPy" )
 
 namespace Kernel
 {
-    inline float generateRandFromLogNormal(float m, float s) {
-        // inputs: m is mean of underlying distribution, s is std dev
-        return (exp((m)+randgen->eGauss()*s));
-    }
-
     BEGIN_QUERY_INTERFACE_DERIVED(IndividualHumanPy, IndividualHuman)
         HANDLE_INTERFACE(IIndividualHumanPy)
     END_QUERY_INTERFACE_DERIVED(IndividualHumanPy, IndividualHuman)
@@ -175,7 +170,7 @@ namespace Kernel
 #endif
     }
 
-    void IndividualHumanPy::ExposeToInfectivity(float dt, const TransmissionGroupMembership_t* transmissionGroupMembership)
+    void IndividualHumanPy::ExposeToInfectivity(float dt, TransmissionGroupMembership_t transmissionGroupMembership)
     {
         IndividualHuman::ExposeToInfectivity(dt, transmissionGroupMembership);
     }
@@ -207,7 +202,7 @@ namespace Kernel
                 if( val > 0 )
                 {
                     LOG_DEBUG_F("Depositing %f to route %s: (antigen=%d, substain=%d)\n", val, route.c_str(), tmp_strainID.GetAntigenID(), tmp_strainID.GetGeneticID());
-                    parent->DepositFromIndividual( tmp_strainID, (float) val, &transmissionGroupMembershipByRoute.at( route ) );
+                    parent->DepositFromIndividual( tmp_strainID, (float) val, transmissionGroupMembershipByRoute.at( route ) );
                 }
 #if !defined(_WIN32) || !defined(_DEBUG)
                 Py_DECREF( retVal );
@@ -335,9 +330,7 @@ namespace Kernel
         for( auto& route : routes )
         {
             LOG_DEBUG_F( "Updating for Route %s.\n", route.c_str() );
-            RouteList_t single_route;
-            single_route.push_back( route );
-            parent->GetGroupMembershipForIndividual( single_route, &properties, &transmissionGroupMembershipByRoute[ route ] );
+            parent->GetGroupMembershipForIndividual(RouteList_t{ route }, properties, transmissionGroupMembershipByRoute[route]);
         }
         IndividualHuman::UpdateGroupMembership();
     }

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -23,16 +23,7 @@ namespace Kernel
     class IPKeyValueContainer;
     struct IRelationshipParameters;
     struct IRelationship;
-
-    struct IDMAPI RelationshipSetSorter :
-        public std::binary_function<const IRelationship*,
-                             const IRelationship*,
-                             bool>
-                             {
-                                 bool operator()(const IRelationship *rel1, const IRelationship *rel2) const;
-                             };
-
-    typedef std::set<IRelationship*, RelationshipSetSorter> RelationshipSet_t;
+    struct IdmDateTime;
 
     struct IDMAPI IIndividualHumanSTI : public ISupports
     {
@@ -44,6 +35,7 @@ namespace Kernel
         virtual unsigned int GetExtrarelationalFlags() const = 0;
         virtual bool IsCircumcised() const = 0;
         virtual void UpdateHistory( const IdmDateTime& rCurrentTime, float dt ) = 0;
+        virtual void UpdatePausedRelationships( const IdmDateTime& rCurrentTime, float dt ) = 0;
 
         virtual float GetCoInfectiveTransmissionFactor() const = 0;
         virtual float GetCoInfectiveAcquisitionFactor() const = 0;

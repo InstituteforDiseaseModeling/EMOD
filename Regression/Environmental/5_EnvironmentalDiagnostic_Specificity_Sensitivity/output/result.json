@@ -1,0 +1,12 @@
+{
+    "Sensitivity": {
+        "correct": 133,
+        "false": 1075,
+        "percentage": 0.11009933774834436
+    },
+    "Specificity": {
+        "correct": 189,
+        "false": 1603,
+        "percentage": 0.10546875
+    }
+}

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -43,8 +43,10 @@ namespace Kernel
 
     bool ScaleLarvalHabitat::Configure( const Configuration * inputJson )
     {
-        initConfigComplexType( "Larval_Habitat_Multiplier", &m_LHM, SLH_Larval_Habitat_Multiplier_DESC_TEXT );
+        m_LHM.Initialize();
 
+        initConfigTypeMap("Larval_Habitat_Multiplier", &m_LHM, SLH_Larval_Habitat_Multiplier_DESC_TEXT);
+    
         // Don't call subclass SimpleVectorControlNode::Configure() because it will add cost_per_unit
         return BaseNodeIntervention::Configure( inputJson );
     }

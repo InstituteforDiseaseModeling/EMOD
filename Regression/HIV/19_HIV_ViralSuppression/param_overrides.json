@@ -1,11 +1,11 @@
 {
-    "Default_Config_Path": "defaults/hiv_default_config.json",
-    "Listed_Events": [
+    "Default_Config_Path": "../../defaults/hiv_default_config.json",
+    "Custom_Individual_Events": [
         "OnART1"
     ],
     "parameters": {
         "ART_Viral_Suppression_Multiplier": 0.3,
-        "Base_Population_Scale_Factor": 0.0001,
+        "x_Base_Population": 0.0001,
         "Config_Name": "19_HIV_ViralSuppression",
         "Simulation_Duration": 2000,
         "____________DEMOGRAPHICS___________": "",

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -15,6 +15,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Common.h"
 #include "IContagionPopulation.h"
 #include "IInfectable.h"
+#include "SimulationEnums.h"
 
 #include "Vector.h"
 #include "VectorEnums.h"
@@ -27,18 +28,17 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "ISerializable.h"
 #include "IVectorPopulation.h"
 
-// strings used to indicate for what VectorToHumanTransmission() is being called for
-#define INDOOR_STR "indoor"
-#define OUTDOOR_STR "outdoor"
-
 namespace Kernel
 {
     class IVectorCohortWithHabitat;
     class SimulationConfig ;
     class VectorSpeciesParameters;
+    struct ITransmissionGroups;
+    struct IMigrationInfo;
 
     class IndividualHumanVector;
     class VectorCohortWithHabitat;
+    class RANDOMBASE;
 
     class VectorPopulation : public IVectorPopulation, public IInfectable, public IVectorPopulationReporting
     {
@@ -53,7 +53,7 @@ namespace Kernel
         // --- IVectorPopulation
         // ----------------------
         virtual void SetContextTo(INodeContext *context) override;
-        virtual void SetupIntranodeTransmission(ITransmissionGroups *transmissionGroups) override;
+        virtual void SetupIntranodeTransmission(ITransmissionGroups *txIndoor, ITransmissionGroups* txOutdoor) override;
         virtual void SetupLarvalHabitat( INodeContext *context ) override;
         virtual void SetVectorMortality( bool mortality ) override { m_VectorMortality = mortality; }
 
@@ -159,7 +159,7 @@ namespace Kernel
         // VectorPopulation accounting helper function
         virtual void queueIncrementTotalPopulation( IVectorCohort* cohort );
 
-        static std::vector<uint32_t> GetRandomIndexes( uint32_t N );
+        static std::vector<uint32_t> GetRandomIndexes( RANDOMBASE* pRNG, uint32_t N );
 
         void Vector_Migration_Queue( const std::vector<uint32_t>& rRandomIndexes,
                                      const std::vector<suids::suid>& rReachableNodes,
@@ -212,14 +212,13 @@ namespace Kernel
 
         virtual void VectorToHumanDeposit( const IStrainIdentity& strain,
                                            uint32_t attemptFeed,
-                                           const TransmissionGroupMembership_t* pTransmissionVectorToHuman );
+                                           TransmissionRoute::Enum route );
 
-        uint32_t VectorToHumanTransmission( const char* indoor_or_outdoor_str,
-                                            const TransmissionGroupMembership_t* pTransmissionVectorToHuman,
-                                            IVectorCohort* cohort,
-                                            uint32_t attemptFeed );
+        uint32_t VectorToHumanTransmission( IVectorCohort* cohort,
+                                            uint32_t attemptFeed,
+                                            TransmissionRoute::Enum route );
 
-        uint32_t CalculateHumanToVectorInfection( const TransmissionGroupMembership_t* transmissionHumanToVector,
+        uint32_t CalculateHumanToVectorInfection( TransmissionRoute::Enum route,
                                                   IVectorCohort* cohort,
                                                   float probSuccessfulFeed,
                                                   uint32_t numHumanFeed );
@@ -281,7 +280,8 @@ namespace Kernel
         INodeContext                  *m_context;
         const VectorSpeciesParameters *m_species_params;
         VectorProbabilities           *m_probabilities;
-        ITransmissionGroups           *m_transmissionGroups;
+        ITransmissionGroups           *m_txIndoor;
+        ITransmissionGroups           *m_txOutdoor;
 
         bool m_VectorMortality;
 

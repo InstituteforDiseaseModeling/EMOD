@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -20,17 +20,10 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "InterventionValidator.h"
 #include "Properties.h"
 #include "NodeProperties.h"
-
+#include "BroadcasterObserver.h"
 
 #include "ISerializable.h"
 #include "IArchive.h"
-
-// Could make this an inline function (for folks who hate macros), or even RANDOM
-// method, but this seems like the right solution, at least for now. This really
-// is just a utility shortcut for interventions at this point.
-#define SMART_DRAW(x) \
-        ( x > 0 && ( x == 1.0 || parent->GetRng()->e() < x ) )
-
 
 namespace Kernel
 {
@@ -184,19 +177,5 @@ namespace Kernel
         bool first_time;
         NPKeyValueContainer disqualifying_properties;
         NPKeyValue status_property;
-    };
-
-    struct IDMAPI IIndividualEventObserver : ISupports
-    {
-        virtual ~IIndividualEventObserver() { }; // for cleanup via interface pointer
-        virtual bool notifyOnEvent(IIndividualHumanEventContext *context, const EventTrigger& trigger ) = 0;
-    };
-
-    // We're not liking these names anymore. TODO: Change to something more semantically useful
-    struct IDMAPI INodeTriggeredInterventionConsumer : ISupports
-    {
-        virtual void RegisterNodeEventObserver(IIndividualEventObserver* NodeEventObserver, const EventTrigger& trigger ) = 0;
-        virtual void UnregisterNodeEventObserver(IIndividualEventObserver* NodeEventObserver, const EventTrigger& trigger ) = 0;
-        virtual void TriggerNodeEventObservers(IIndividualHumanEventContext* pIndiv, const EventTrigger& trigger ) = 0;
     };
 }

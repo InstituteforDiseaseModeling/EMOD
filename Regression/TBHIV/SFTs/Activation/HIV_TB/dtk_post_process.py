@@ -2,7 +2,7 @@
 
 import json
 import os.path as path
-import dtk_sft
+import dtk_test.dtk_sft as sft
 import numpy as np
 
 TB_CD4_ACTIVATION_VECTOR = "TB_CD4_Activation_Vector"
@@ -46,10 +46,10 @@ def parse_stdout_file(curr_timestep=0, stdout_filename="test.txt", debug=False):
             if update_time in line:
                 time += 1
             elif new_infection_state in line:
-                new_line = dtk_sft.add_time_stamp(time, line)
+                new_line = sft.add_time_stamp(time, line)
                 filtered_lines.append(new_line)
             elif incubation_timer in line:
-                new_line = dtk_sft.add_time_stamp(time, line)
+                new_line = sft.add_time_stamp(time, line)
                 filtered_lines.append(new_line)
 
     if debug:
@@ -73,15 +73,15 @@ def create_report_file(data, debug=False):
             success = False
         for line in lines:
             if "InitializeLatentInfection" in line:
-                ind_id = int(dtk_sft.get_val("Individual ", line))
-                start_time_stamp = int(dtk_sft.get_val("time= ", line))
+                ind_id = int(sft.get_val("Individual ", line))
+                start_time_stamp = int(sft.get_val("time= ", line))
                 if ind_id in latency_data.keys():
                     outfile.write("Individual {} incubation timer reset at time {}. Please check. "
                                   "\n".format(ind_id, start_time_stamp))
                 latency_data[ind_id] = start_time_stamp
             elif "TBActivationPresymptomatic" in line:
-                ind_id = int(dtk_sft.get_val("Individual ", line))
-                end_time_stamp = int(dtk_sft.get_val("time= ", line))
+                ind_id = int(sft.get_val("Individual ", line))
+                end_time_stamp = int(sft.get_val("time= ", line))
                 if ind_id not in latency_data.keys():
                     outfile.write("Individual {} went presymptomatic without incubation timer update at time {}. "
                                   "Please check. \n".format(ind_id, end_time_stamp))
@@ -96,13 +96,13 @@ def create_report_file(data, debug=False):
 
         # expected_data here only used for graphing purposes
         expected_data = [int(x+1) for x in np.random.exponential(1/tb_cd4_activation_vector[0], len(duration_data))]
-        success = dtk_sft.test_exponential(durations, tb_cd4_activation_vector[0], outfile,
+        success = sft.test_exponential(durations, tb_cd4_activation_vector[0], outfile,
                                            integers=True, roundup=True, round_nearest=False)
         outfile.write("Data points checked = {}.\n".format(len(duration_data)))
         outfile.write("SUMMARY: Success={0}\n".format(success))
 
 
-        dtk_sft.plot_data(sorted(durations), sorted(expected_data), label1="Actual", label2="Expected",
+        sft.plot_data(sorted(durations), sorted(expected_data), label1="Actual", label2="Expected",
                           title="Latency Duration HIV then TB (Sorted)", xlabel="Data Points", ylabel="Days",
                           category="tb_activation_and_cd4_hiv_first", line = True, overlap=True)
 
@@ -110,7 +110,7 @@ def create_report_file(data, debug=False):
 def application(output_folder="output", stdout_filename="test.txt",
                 config_filename="config.json",
                 insetchart_name="InsetChart.json",
-                report_name=dtk_sft.sft_output_filename,
+                report_name=sft.sft_output_filename,
                 debug=False):
     if debug:
         print( "output_folder: " + output_folder )
@@ -119,7 +119,7 @@ def application(output_folder="output", stdout_filename="test.txt",
         print( "insetchart_name: " + insetchart_name + "\n" )
         print( "report_name: " + report_name + "\n" )
         print( "debug: " + str(debug) + "\n" )
-    dtk_sft.wait_for_done()
+    sft.wait_for_done()
     param_obj = load_emod_parameters(config_filename)
     parsed_data = parse_stdout_file(debug=True)
     create_report_file([report_name, parsed_data, param_obj.get(TB_CD4_ACTIVATION_VECTOR)], debug)

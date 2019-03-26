@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -38,8 +38,9 @@ namespace Kernel
         DECLARE_QUERY_INTERFACE()
 
     public:
-        virtual ~NodeTBHIV(void);
-        static NodeTBHIV *CreateNode(ISimulationContext *_parent_sim, suids::suid node_suid);
+        virtual ~NodeTBHIV(void); 
+        static NodeTBHIV *CreateNode(ISimulationContext *_parent_sim, ExternalNodeId_t externalNodeId, suids::suid node_suid); 
+        virtual void Initialize();
 
         virtual void SetNewInfectionState(InfectionStateChange::_enum inf_state_change, IndividualHuman *ih);
 
@@ -49,7 +50,7 @@ namespace Kernel
 
     protected:
         NodeTBHIV();
-        NodeTBHIV(ISimulationContext *_parent_sim, suids::suid node_suid);
+        NodeTBHIV(ISimulationContext *_parent_sim, ExternalNodeId_t externalNodeId, suids::suid node_suid);
          virtual IIndividualHuman* addNewIndividual(
             float monte_carlo_weight = 1.0,
             float initial_age = 0,
@@ -61,8 +62,11 @@ namespace Kernel
 
          // Factory methods
         virtual IIndividualHuman *createHuman(suids::suid suid, float monte_carlo_weight, float initial_age, int gender);
+        
+        //observers in the node and setup methods
         CD4TrajectoryChangeObserver* cd4observer;
-
+        void RegisterObservers();
+  
         virtual void processEmigratingIndividual(IIndividualHuman *i) override;
         virtual IIndividualHuman* processImmigratingIndividual(IIndividualHuman* immigrant) override;
 
@@ -72,6 +76,8 @@ namespace Kernel
 
         NodeDemographicsDistribution* HIVCoinfectionDistribution;
         NodeDemographicsDistribution* HIVMortalityDistribution;
+
+        DECLARE_SERIALIZABLE(NodeTBHIV);
     };
 
 

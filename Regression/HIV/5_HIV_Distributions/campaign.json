@@ -43,7 +43,8 @@
             "Event_Coordinator_Config": 
             {
                 "class": "StandardInterventionDistributionEventCoordinator",
-                "Target_Demographic": "Everyone", 
+                "Target_Demographic": "ExplicitGender",
+                "Target_Gender" : "Male",
                 "Demographic_Coverage": 0.5,
                 "Intervention_Config":
                 {
@@ -69,6 +70,8 @@
                 {
                     "class": "NodeLevelHealthTriggeredIV",
                     "Trigger_Condition_List": [ "HIVNeedsMaleCircumcision" ],
+                    "Target_Demographic": "ExplicitGender",
+                    "Target_Gender" : "Male",
                     "Actual_IndividualIntervention_Config":
                     {
                         "class": "MaleCircumcision",
@@ -96,9 +99,10 @@
 
                 "Intervention_Config":
                 {
-                    "Demographic_Coverage": 1,
                     "class": "BirthTriggeredIV",
-
+                    "Target_Demographic": "ExplicitGender",
+                    "Target_Gender" : "Male",
+                    "Demographic_Coverage": 1,
                     "Actual_IndividualIntervention_Config": 
                     {
                         "class": "HIVSigmoidByYearAndSexDiagnostic",

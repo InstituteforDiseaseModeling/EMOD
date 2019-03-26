@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -47,6 +47,8 @@ namespace Kernel
     class NPKey;
     class NPKeyValue;
     class EventTrigger;
+    class EventTriggerNode;
+    class EventTriggerCoordinator;
 
     struct IDMAPI IComplexJsonConfigurable
     {
@@ -136,13 +138,26 @@ namespace Kernel
         typedef std::map< std::string, ConstrainedString * > tConStringConfigTypeMapType;
     }
 
-    bool check_condition( const json::QuickInterpreter * pJson, const char * condition_key, const char * condition_value = nullptr );
+    bool ignoreParameter( const json::QuickInterpreter * pJson, const char * condition_key, const char * condition_value = nullptr );
 
     class IDMAPI JsonConfigurable : public IConfigurable
     {
         friend class InterventionFactory;
         friend class DemographicRestrictions;
+        friend class DistributionConstantConfigurable;
         friend class DurationDistribution;
+        friend class DistributionExponentialConfigurable;
+        friend class DistributionGaussianConfigurable;
+        friend class DistributionLogNormalConfigurable;
+        friend class DistributionPoissonConfigurable;
+        friend class DistributionWeibullConfigurable;
+        friend class DistributionDualConstantConfigurable;
+        friend class DistributionDualExponentialConfigurable;
+        friend class DistributionUniformConfigurable;
+        friend class DistributionPiecewiseConstantConfigurable;
+        friend class DistributionPiecewiseLinearConfigurable;
+
+
     public:
         typedef std::map< float, float > tFloatFloatMapConfigType;
         typedef std::map< std::string, float > tStringFloatMapConfigType;
@@ -176,6 +191,10 @@ namespace Kernel
         typedef std::map< std::string, NPKeyValue * > tNPKeyValueMapType;
         typedef std::map< std::string, EventTrigger * > tEventTriggerMapType;
         typedef std::map< std::string, std::vector<EventTrigger> * > tEventTriggerVectorMapType;
+        typedef std::map< std::string, EventTriggerNode * > tEventTriggerNodeMapType;
+        typedef std::map< std::string, std::vector<EventTriggerNode> * > tEventTriggerNodeVectorMapType;
+        typedef std::map< std::string, EventTriggerCoordinator * > tEventTriggerCoordinatorMapType;
+        typedef std::map< std::string, std::vector<EventTriggerCoordinator> * > tEventTriggerCoordinatorVectorMapType;
 
     public:
 
@@ -235,6 +254,10 @@ namespace Kernel
             tNPKeyValueMapType npKeyValueTypeMap;
             tEventTriggerMapType eventTriggerTypeMap ;
             tEventTriggerVectorMapType eventTriggerVectorTypeMap ;
+            tEventTriggerNodeMapType eventTriggerNodeTypeMap;
+            tEventTriggerNodeVectorMapType eventTriggerNodeVectorTypeMap;
+            tEventTriggerCoordinatorMapType eventTriggerCoordinatorTypeMap;
+            tEventTriggerCoordinatorVectorMapType eventTriggerCoordinatorVectorTypeMap;
 
         };
     private:
@@ -484,6 +507,42 @@ namespace Kernel
                const char* condition_value = nullptr
            );
 
+       void
+           initConfigTypeMap(
+               const char* paramName,
+               EventTriggerNode * pVariable,
+               const char* defaultDesc,
+               const char* condition_key = nullptr,
+               const char* condition_value = nullptr
+           );
+
+       void
+           initConfigTypeMap(
+               const char* paramName,
+               std::vector<EventTriggerNode> * pVariable,
+               const char* defaultDesc,
+               const char* condition_key = nullptr,
+               const char* condition_value = nullptr
+           );
+
+       void
+           initConfigTypeMap(
+               const char* paramName,
+               EventTriggerCoordinator * pVariable,
+               const char* defaultDesc,
+               const char* condition_key = nullptr,
+               const char* condition_value = nullptr
+           );
+
+       void
+           initConfigTypeMap(
+               const char* paramName,
+               std::vector<EventTriggerCoordinator> * pVariable,
+               const char* defaultDesc,
+               const char* condition_key = nullptr,
+               const char* condition_value = nullptr
+           );
+
        template< typename T >
         void EnforceParameterRange( const std::string& key, T value, json::QuickInterpreter& jsonObj )
         {
@@ -562,7 +621,7 @@ namespace Kernel
                 jsonSchemaBase[key] = enumSchema;
             }
 
-            if( check_condition( pJson, condition_key, condition_value ) )
+            if( ignoreParameter( pJson, condition_key, condition_value ) )
             {
                 return true;
             }

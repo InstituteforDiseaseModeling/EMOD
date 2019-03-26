@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -10,6 +10,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "stdafx.h"
 #include <memory> // unique_ptr
 #include "UnitTest++.h"
+#include "componentTests.h"
 #include "AssortivityFactory.h"
 #include "IndividualHumanContextFake.h"
 #include "IndividualHumanInterventionsContextFake.h"
@@ -20,7 +21,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "SimulationConfig.h"
 #include "HIVEnums.h"
 #include "Properties.h"
-#include "common.h"
+#include "Simulation.h"
+#include "FakeLogger.h"
 
 using namespace std; 
 using namespace Kernel; 
@@ -41,6 +43,7 @@ SUITE(AssortivityTest)
         vector< IndividualHumanInterventionsContextFake* > m_hic_list ;
         vector< IndividualHumanContextFake*              > m_human_list ;
         SimulationConfig* m_pSimulationConfig ;
+        float m_oldBaseYear ;
 
         AssortivityFixture()
             : m_NC()
@@ -64,6 +67,8 @@ SUITE(AssortivityTest)
             ip_values.insert( std::make_pair( "ROMULAN",  0.2f ) );
 
             IPFactory::GetInstance()->AddIP( 1, "Race", ip_values );
+
+            m_oldBaseYear = Simulation::base_year; // Need to save old base_year for restoration
         }
 
         ~AssortivityFixture()
@@ -81,6 +86,7 @@ SUITE(AssortivityTest)
             m_human_list.clear();
             IPFactory::DeleteFactory();
             Environment::Finalize();
+            Simulation::base_year = m_oldBaseYear; // Restore base_year
         }
 
         IIndividualHumanSTI* CreateHuman( int gender, 
@@ -568,6 +574,28 @@ SUITE(AssortivityTest)
         CHECK( p_f_k == p_female_match_c );
         CHECK( p_f_a == p_female_match_d );
         CHECK( p_f_r == p_female_match_e );
+    }
+
+    TEST_FIXTURE(AssortivityFixture, TestStartYearBeforeBaseYearWarning)
+    {
+        // --------------------
+        // --- Initialize test
+        // --------------------
+        unique_ptr<Configuration> p_config(Environment::LoadConfigurationFile("testdata/AssortivityTest/TestStartYearBeforeBaseYear.json"));
+        FakeLogger fakeLogger(Logger::tLevel::WARNING);
+        Environment::setLogger(&fakeLogger);
+        
+        Simulation::base_year = 2050;
+
+        RandomFake fake_ran;
+        unique_ptr<IAssortivity> p_assort(AssortivityFactory::CreateAssortivity(RelationshipType::TRANSITORY, &fake_ran));
+
+        CHECK(p_assort->Configure(p_config.get()));
+
+        CHECK(!fakeLogger.Empty());
+        LogEntry entry = fakeLogger.Back();
+        CHECK(entry.log_level == Logger::tLevel::WARNING);
+        CHECK(entry.msg.find("Start_Year (2003.000000) specified before Base_Year (2050.000000), for relationship type TRANSITORY\n") != string::npos);
     }
 
     void TestHelper_ConfigureException( int lineNumber, const std::string& rFilename, const std::string& rExpMsg )

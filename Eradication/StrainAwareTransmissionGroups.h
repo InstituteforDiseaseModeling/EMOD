@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -9,73 +9,101 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #pragma once
 
-#include "MultiRouteTransmissionGroups.h"
+#include "TransmissionGroupsBase.h"
 #include "IContagionPopulation.h"
+#include "Types.h"
 
 using namespace std;
 
 namespace Kernel
 {
-    class StrainAwareTransmissionGroups : protected MultiRouteTransmissionGroups
+    class RANDOMBASE;
+    typedef map<uint32_t, float> SubstrainMap_t;
+    typedef vector<SubstrainMap_t> GroupSubstrainMap_t;
+    typedef vector<GroupSubstrainMap_t> AntigenGroupSubstrainMap_t;
+
+    class StrainAwareTransmissionGroups : protected TransmissionGroupsBase
     {
     public:
-        StrainAwareTransmissionGroups();
+        StrainAwareTransmissionGroups( RANDOMBASE* prng );
+        virtual ~StrainAwareTransmissionGroups() {}
 
     protected:
-        // Implementation details
+
+        RANDOMBASE* pRNG;
+        PropertyToValuesMap_t propertyToValuesMap;
+        ScalingMatrix_t scalingMatrix;
+        float contagionDecayRate;
+        float populationSize;
+        vector<float> populationSizeByGroup;
+
+        // Function names are lower case to differentiate from externally visible methods.
+        void addPropertyValueListToPropertyToValueMap( const string& property, const PropertyValueList_t& values );
+        void buildScalingMatrix( void );
+        void allocateAccumulators( NaturalNumber numberOfStrains, NaturalNumber numberOfSubstrains );
+
+        inline int getGroupCount() { return scalingMatrix.size(); }
+
         int antigenCount;
         int substrainCount;
-        int routeCount;
-        vector<bool> antigenWasShed;                 // Contagion of this antigenId was shed this cycle.
+        bool normalizeByTotalPopulation;
+        vector<bool> antigenWasShed;                // Contagion of this antigenId was shed this cycle.
         vector<set<unsigned int>> substrainWasShed; // Contagion of this antigenId/substrainId was shed this cycle.
 
-        vector<vector<ContagionAccumulator_t>> newInfectivityByAntigenRouteGroup;    // All antigen (substrains summed) shed
-        vector<vector<ContagionAccumulator_t>> sumInfectivityByAntigenRouteGroup;    // All antigen (substrains summed) exposure
-        vector<vector<ContagionAccumulator_t>> forceOfInfectionByAntigenRouteGroup;  // All antigen (substrains summed) force of infection
-        typedef map<unsigned int, float> SubstrainMap_t;
-        typedef vector<vector<SubstrainMap_t>> RouteGroupSubstrainMap_t;
-        typedef vector<RouteGroupSubstrainMap_t> AntigenRouteGroupSubstrainMap_t;
-        AntigenRouteGroupSubstrainMap_t newInfectivityByAntigenRouteGroupSubstrain;
-        AntigenRouteGroupSubstrainMap_t sumInfectivityByAntigenRouteGroupSubstrain;
+        vector<ContagionAccumulator_t> newlyDepositedContagionByAntigenAndGroup;       // All antigen (substrains summed) shed this timestep
+        vector<ContagionAccumulator_t> currentContagionByAntigenAndSourceGroup;        // All antigen (substrains summed) current contagion (by contagion source)
+        vector<ContagionAccumulator_t> currentContagionByAntigenAndDestinationGroup;   // All antigen (substrains summed) current contagion (by contagion destination)
+        vector<ContagionAccumulator_t> forceOfInfectionByAntigenAndGroup;              // All antigen (substrains summed) force of infection (current contagion normalized)
+        AntigenGroupSubstrainMap_t newContagionByAntigenGroupAndSubstrain;
+        AntigenGroupSubstrainMap_t currentContagionByAntigenSourceGroupAndSubstrain;
+        AntigenGroupSubstrainMap_t currentContagionByAntigenDestinationGroupAndSubstrain;
+        AntigenGroupSubstrainMap_t forceOfInfectionByAntigenGroupAndSubstrain;
+
+        std::string tag;
 
         class SubstrainPopulationImpl : IContagionPopulation
         {
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
         DECLARE_QUERY_INTERFACE()
-        public:
-            SubstrainPopulationImpl(int _antigenId, float _quantity, const vector<const SubstrainMap_t*>& _substrainDistributions);
+        public: 
+            SubstrainPopulationImpl(RANDOMBASE* prng, int _antigenId, float _quantity, const SubstrainMap_t& _substrainDistribution);
                 
         private:
             // IContagionPopulation implementation
-            virtual AntigenId GetAntigenID( void ) const;
-            virtual AntigenId GetGeneticID( void ) const;
-            virtual void SetAntigenID(int in_antigenID) {}; // Hmm.... not sure about this
-            virtual void SetGeneticID(int in_geneticID) {}; // Hmm.... not sure about this
-            virtual float GetTotalContagion( void ) const;
-            virtual void ResolveInfectingStrain( IStrainIdentity* strainId ) const;
+            RANDOMBASE* pRNG;
+            virtual AntigenId GetAntigenID() const override;
+            virtual AntigenId GetGeneticID() const override;
+            virtual void SetAntigenID(int antigenID) override {}
+            virtual void SetGeneticID(int geneticID) override {}
+            virtual float GetTotalContagion() const override;
+            virtual void ResolveInfectingStrain( IStrainIdentity* strainId ) const override;
 
             int antigenId;
             float contagionQuantity;
-            const vector<const SubstrainMap_t*>& substrainDistributions;
+            const SubstrainMap_t substrainDistribution;
         };
 
     private:
 
-        // ITransmissionGroups implementation
-        // Same as MultiRouteTransmissionGroups
-        // virtual void AddProperty(const string& property, const PropertyValueList_t& values, const ScalingMatrix_t& scalingMatrix, const string& route);
-        virtual void Build(const RouteToContagionDecayMap_t& contagionDecayRatesByRoute, int numberOfStrains, int numberOfSubstrains);
-        // Same as MultiRouteTransmissionGroups
-        // virtual const TransmissionGroupMembership_t* GetGroupMembershipForProperties(const tProperties* properties) const;
-        // virtual void UpdatePopulationSize(const TransmissionGroupMembership_t* transmissionGroupMembership, float size_changes, float mc_weight);
-        virtual void DepositContagion(const IStrainIdentity& strain, float amount, const TransmissionGroupMembership_t* transmissionGroupMembership);
-        virtual void ExposeToContagion(IInfectable* candidate, const TransmissionGroupMembership_t* transmissionGroupMembership, float deltaTee) const;
-        virtual float GetTotalContagion(const TransmissionGroupMembership_t* transmissionGroupMembership);
-        virtual void CorrectInfectivityByGroup(float infectivityCorrection, const TransmissionGroupMembership_t* transmissionGroupMembership);
-        virtual void EndUpdate(float infectivityCorrection);
+        // ITransmissionGroups
+        virtual void AddProperty(const string& property, const PropertyValueList_t& values, const ScalingMatrix_t& scalingMatrix) override;
+        virtual void Build(float contagionDecayRate, int numberOfStrains = 1, int numberOfSubstrains = 1) override;
+        virtual void GetGroupMembershipForProperties(const tProperties& properties, TransmissionGroupMembership_t& membershipOut ) const override;
+        virtual void UpdatePopulationSize(const TransmissionGroupMembership_t& transmissionGroupMembership, float size_changes, float mc_weight) override;
+        virtual void DepositContagion(const IStrainIdentity& strain, float amount, TransmissionGroupMembership_t transmissionGroupMembership) override;
+        virtual void ExposeToContagion(IInfectable* candidate, TransmissionGroupMembership_t transmissionGroupMembership, float deltaTee, TransmissionRoute::Enum tx_route) const override;
+        virtual void CorrectInfectivityByGroup(float infectivityCorrection, TransmissionGroupMembership_t transmissionGroupMembership) override;
+        virtual void EndUpdate(float infectivityMultiplier = 1.0f, float InfectivityAddition = 0.0f ) override;
+        virtual float GetContagionByProperty( const IPKeyValue& property_value ) override;
 
-        /********************************************************************/
+        virtual void UseTotalPopulationForNormalization() override { normalizeByTotalPopulation = true; }
+        virtual void UseGroupPopulationForNormalization() override { normalizeByTotalPopulation = false; }
 
-        void AllocateAccumulators( int routeCount, int numberOfStrains, int numberOfSubstrains );
+        virtual void SetTag( const std::string& tag ) override   { this->tag = tag; }
+        virtual const std::string& GetTag( void ) const override { return tag; }
+
+        virtual float GetTotalContagion( void ) override;                                           // Return total contagion.
+        virtual float GetTotalContagionForGroup( TransmissionGroupMembership_t group ) override;    // Return total contagion for given membership.
+// NOTYET        virtual float GetTotalContagionForProperties( const IPKeyValueContainer& property_value ) override;             // Return total contagion on for given properties (maps to membership).
     };
 }

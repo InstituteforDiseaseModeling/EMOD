@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -8,12 +8,13 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 ***************************************************************************************************/
 
 #include "stdafx.h"
+#include <memory> // unique_ptr
 #include "UnitTest++.h"
+#include "componentTests.h"
+
 #include "MalariaDrugTypeParameters.h"
 #include "GenomeMarkers.h"
 #include "StrainIdentity.h"
-#include "common.h"
-#include <memory> // unique_ptr
 
 using namespace std;
 using namespace Kernel;

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -19,8 +19,8 @@ SETUP_LOGGING( "NodeAirborne" )
 
 namespace Kernel
 {
-    NodeAirborne::NodeAirborne(ISimulationContext *_parent_sim, suids::suid node_suid)
-    : Node(_parent_sim, node_suid)
+    NodeAirborne::NodeAirborne(ISimulationContext *_parent_sim, ExternalNodeId_t externalNodeId, suids::suid node_suid)
+    : Node(_parent_sim, externalNodeId, node_suid)
     {
     }
 
@@ -32,9 +32,9 @@ namespace Kernel
     {
     }
 
-    NodeAirborne *NodeAirborne::CreateNode(ISimulationContext *_parent_sim, suids::suid node_suid)
+    NodeAirborne *NodeAirborne::CreateNode(ISimulationContext *_parent_sim, ExternalNodeId_t externalNodeId, suids::suid node_suid)
     {
-        NodeAirborne *newnode = _new_ NodeAirborne(_parent_sim, node_suid);
+        NodeAirborne *newnode = _new_ NodeAirborne(_parent_sim, externalNodeId, node_suid);
         newnode->Initialize();
 
         return newnode;
@@ -56,7 +56,6 @@ namespace Kernel
         if ( localWeather == nullptr )
         {
             throw NullPointerException( __FILE__, __LINE__, __FUNCTION__, "localWeather", "Climate");
-            //throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Climate_Model", "CLIMATE_OFF", "infectivity_scaling", "FUNCTION_OF_CLIMATE");
         }
 
         float humidity = localWeather->humidity();
@@ -76,4 +75,4 @@ namespace Kernel
     }
 }
 
-#endif // ENABLE_TBHIV
+#endif // DISABLE_AIRBORNE

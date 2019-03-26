@@ -1,0 +1,29 @@
+{
+    "Campaign_Name": "Initial Seeding",
+    "Events": [
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "Antigen": 0,
+                    "Genome": 0,
+                    "Durations": [100, 100, 100, 100, 100, 100, 100],
+                    "Daily_Import_Pressures": [0.1, 5.0, 0.2, 1.0, 2.0, 0.0, 10.0],
+                    "class": "ImportPressure"
+                },
+                "Target_Demographic": "Everyone",
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "Outbreak",
+            "Nodeset_Config": {
+                "Node_List": [
+               1, 2
+            ], 
+            "class": "NodeSetNodeList"
+            },
+            "Start_Day": 1,
+            "class": "CampaignEvent"
+        }
+    ],
+    "Use_Defaults": 1
+}

@@ -1,23 +1,21 @@
 {
     "class": "DelayedIntervention",
-    "Delay_Distribution": "FIXED_DURATION",
+    "Delay_Distribution": "CONSTANT_DISTRIBUTION",
     "Delay_Period": 3,
-    "Actual_IndividualIntervention_Configs": 
-    [
+    "Actual_IndividualIntervention_Configs": [
         {
             "class": "OutbreakIndividual",
-            "Ignore_Immunity" : 1,
-            "Incubation_Period_Override" : 0
-            
+            "Ignore_Immunity": 1,
+            "Incubation_Period_Override": 0
         },
         {
             "class": "MigrateFamily",
             "NodeID_To_Migrate_To": 4,
-            "Duration_Before_Leaving_Distribution_Type" : "FIXED_DURATION",
-            "Duration_Before_Leaving_Fixed": 0, 
-            "Duration_At_Node_Distribution_Type" : "FIXED_DURATION",
-            "Duration_At_Node_Fixed": 10, 
-            "Is_Moving" : 0
+            "Duration_Before_Leaving_Distribution": "CONSTANT_DISTRIBUTION",
+            "Duration_At_Node_Distribution": "CONSTANT_DISTRIBUTION",
+            "Is_Moving": 0,
+            "Duration_Before_Leaving_Constant": 0,
+            "Duration_At_Node_Constant": 10
         }
     ]
 }

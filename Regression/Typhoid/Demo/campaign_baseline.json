@@ -1,0 +1,49 @@
+{
+    "Events": [
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 0.5,
+                "Intervention_Config": {
+                    "Delay_Period_Distribution": "UNIFORM_DISTRIBUTION",
+                    "Delay_Period_Max": 30,
+                    "Delay_Period_Min": 1,
+                    "Outbreak_Source": "PrevalenceIncrease",
+                    "class": "OutbreakIndividual"
+                },
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 1,
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "Outbreak",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 1,
+            "Target_Demographic": "Everyone",
+            "class": "CampaignEvent"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 0.0025,
+                "Intervention_Config": {
+                    "Delay_Period_Distribution": "UNIFORM_DISTRIBUTION",
+                    "Delay_Period_Max": 30,
+                    "Delay_Period_Min": 1,
+                    "Outbreak_Source": "PrevalenceIncrease",
+                    "class": "OutbreakIndividual"
+                },
+                "Number_Repetitions": 5,
+                "Timesteps_Between_Repetitions": 365,
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "Outbreak",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 730,
+            "Target_Demographic": "Everyone",
+            "class": "CampaignEvent"
+        }
+    ],
+    "Use_Defaults": 1
+}

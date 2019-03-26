@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -9,39 +9,25 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "stdafx.h"
 #include "TransmissionGroupsFactory.h"
-#include "SimpleTransmissionGroups.h"
-#include "VectorTransmissionGroups.h"    // includes StrainAwareTransmissionGroups and MultiRouteTransmissionGroups
+#include "StrainAwareTransmissionGroups.h"
 #include "RelationshipGroups.h"
 #include "Exceptions.h"
 
 namespace Kernel
 {
-    ITransmissionGroups* TransmissionGroupsFactory::CreateNodeGroups(TransmissionGroupType::Enum groupsType)
+    ITransmissionGroups* TransmissionGroupsFactory::CreateNodeGroups( TransmissionGroupType::Enum groupsType, RANDOMBASE* prng )
     {
         ITransmissionGroups* groups = nullptr;
 
         switch (groupsType)
         {
-        case TransmissionGroupType::SimpleGroups:
-            groups = (ITransmissionGroups*) _new_ SimpleTransmissionGroups;
-            break;
-
-        case TransmissionGroupType::MultiRouteGroups:
-            groups = (ITransmissionGroups*) _new_ MultiRouteTransmissionGroups;
-            break;
-
         case TransmissionGroupType::StrainAwareGroups:
-            groups = (ITransmissionGroups*) _new_ StrainAwareTransmissionGroups;
-            break;
-#ifndef DISABLE_VECTOR
-        case TransmissionGroupType::HumanVectorGroups:
-            groups = (ITransmissionGroups*) _new_ VectorTransmissionGroups;
-            break;
-#endif
+            groups = (ITransmissionGroups*) _new_ StrainAwareTransmissionGroups( prng );
+            break; 
 #ifndef DISABLE_HIV
 #ifndef _DLLS_
         case TransmissionGroupType::RelationshipGroups:
-            groups = (ITransmissionGroups*) _new_ RelationshipGroups;
+            groups = (ITransmissionGroups*) _new_ RelationshipGroups( prng );
             break;
 #endif
 #endif

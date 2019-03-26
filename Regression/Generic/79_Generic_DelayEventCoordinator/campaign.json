@@ -1,0 +1,55 @@
+{
+    "Events": [
+        {
+            "comment": "Trigger to start Delay",
+            "class": "CampaignEvent",
+            "Start_Day": 2,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "BroadcastCoordinatorEvent",
+                "Coordinator_Name": "Coordnator_1",
+                "Cost_To_Consumer": 10,
+                "Broadcast_Event": "Coordinator_Event_1"
+            }
+        },
+        {
+            "comment": "restart Delay",
+            "class": "CampaignEvent",
+            "Start_Day": 10,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "BroadcastCoordinatorEvent",
+                "Coordinator_Name": "Coordnator_1",
+                "Cost_To_Consumer": 10,
+                "Broadcast_Event": "Coordinator_Event_1"
+            }
+        },
+        {
+            "comment": "Delay",
+            "Event_Coordinator_Config": {
+                "class": "DelayEventCoordinator",
+                "Coordinator_Name": "DelayEventCoordinator_10",
+                "Start_Trigger_Condition_List": [
+                    "Coordinator_Event_1"
+                ],
+                "Stop_Trigger_Condition_List": [],
+                "Duration": 100,
+                "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                "Delay_Complete_Event": "Completion_Delayed_Coordinator_Event_1",
+                "Delay_Period_Constant": 25
+            },
+            "Event_Name": "Delay",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 1,
+            "Target_Demographic": "Everyone",
+            "class": "CampaignEvent"
+        }
+    ],
+    "Use_Defaults": 1
+}

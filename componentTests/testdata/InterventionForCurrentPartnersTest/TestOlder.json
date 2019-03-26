@@ -1,0 +1,11 @@
+{
+    "class": "InterventionForCurrentPartners",
+    "Disqualifying_Properties": [],  
+    "New_Property_Value": "", 
+    "Minimum_Duration_Years": 0.0,
+    "Prioritize_Partners_By": "OLDER_AGE",
+    "Relationship_Types": [],
+    "Maximum_Partners": 10,
+    "Event_Or_Config" : "Event",
+    "Broadcast_Event": "TBActivation"
+}

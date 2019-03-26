@@ -56,20 +56,6 @@
     <ClInclude Include="..\Dependencies\ComputeClusterPack\Include\mpio.h">
       <Filter>Header Files\External\ComputeClusterPack</Filter>
     </ClInclude>
-    <ClInclude Include="..\interventions\ActiveDiagnostics.h" />
-    <ClInclude Include="..\interventions\ActiveDiagnostics.h" />
-    <ClInclude Include="TransmissionGroupMembership.h" />
-    <ClInclude Include="..\interventions\ActiveDiagnostics.h" />
-    <ClInclude Include="..\interventions\NodeLevelHealthTriggeredIV.h" />
-    <ClInclude Include="..\utils\Serializer.h" />
-    <ClInclude Include="BinnedReportTB.h" />
-    <ClInclude Include="FerrandAgeDependentDistribution.h" />
-    <ClInclude Include="IntranodeTransmissionTypes.h" />
-    <ClInclude Include="IController.h" />
-    <ClInclude Include="InfectionHIV.h" />
-    <ClInclude Include="ITransmissionGroups.h" />
-    <ClInclude Include="MalariaDrugTypeParameters.h" />
-    <ClInclude Include="TransmissionGroupMembership.h" />
     <ClInclude Include="stdafx.h">
       <Filter>Source Files</Filter>
     </ClInclude>

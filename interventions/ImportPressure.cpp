@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -14,6 +14,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "InterventionFactory.h"
 #include "NodeEventContext.h"  // for ISporozoiteChallengeConsumer methods
 #include "SimulationConfig.h"
+#include "RANDOM.h"
 
 SETUP_LOGGING( "ImportPressure" );
 
@@ -122,7 +123,7 @@ namespace Kernel
         }
  
         // Convert the Poisson rate into a number of events
-        num_imports = randgen->Poisson(daily_import_pressure*dt);
+        num_imports = parent->GetRng()->Poisson(daily_import_pressure*dt);
         if (num_imports == 0)
         {
             LOG_DEBUG_F( "Poisson draw returned 0\n" );
@@ -136,7 +137,7 @@ namespace Kernel
             IOutbreakConsumer *ioc;
             if (s_OK == parent->QueryInterface(GET_IID(IOutbreakConsumer), (void**)&ioc))
             {
-                ioc->AddImportCases(strain_identity, import_age, num_imports);
+                ioc->AddImportCases(strain_identity, import_age, num_imports, 1.0 );
             }
             delete strain_identity;
         }

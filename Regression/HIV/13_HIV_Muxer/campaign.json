@@ -1,164 +1,124 @@
 {
-    "Use_Defaults": 1,
-    "Campaign_Name": "PiecewiseByYearAndSex validation", 
+    "Campaign_Name": "PiecewiseByYearAndSex validation",
     "Events": [
         {
-            "class": "CampaignEvent",
-            "Event_Name": "EveryUpdate-triggered delay event", 
-            "Start_Day": 10,
-
-            "Nodeset_Config":
-            {
-                "class": "NodeSetAll"
-            }, 
-
-            "Event_Coordinator_Config": 
-            {
-                "class": "StandardInterventionDistributionEventCoordinator",
-                "Event_Name": "triggered by EveryUpdate, delays 0 days, broadcasts OnART0",
+            "Event_Coordinator_Config": {
                 "Demographic_Coverage": 1,
-                "Intervention_Config":
-                {
-                    "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition_List": [ "EveryUpdate" ],
-
-                    "Duration": 5,
-
-                    "Actual_IndividualIntervention_Config":
-                    {
-                        "class": "HIVDelayedIntervention",
-
+                "Event_Name": "triggered by EveryUpdate, delays 0 days, broadcasts OnART0",
+                "Intervention_Config": {
+                    "Actual_IndividualIntervention_Config": {
+                        "Broadcast_Event": "OnART0",
+                        "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
                         "Disqualifying_Properties": [],
                         "New_Property_Value": "InterventionStatus:None",
-
                         "Single_Use": 1,
-                        "Delay_Distribution": "FIXED_DURATION",
-                        "Delay_Period": 0,
-
-                        "Broadcast_Event": "OnART0"
-                    }
-                }
-            }
-        },
-
-        {
-            "class": "CampaignEvent",
-            "Event_Name": "EveryUpdate-triggered delay event", 
-            "Start_Day": 10,
-
-            "Nodeset_Config":
-            {
-                "class": "NodeSetAll"
-            }, 
-
-            "Event_Coordinator_Config": 
-            {
-                "class": "StandardInterventionDistributionEventCoordinator",
-                "Event_Name": "triggered by EveryUpdate, delays 0 days, broadcasts OnART0",
-                "Demographic_Coverage": 1,
-                "Intervention_Config":
-                {
-                    "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition_List": [ "EveryUpdate" ],
-
-                    "Duration": 5,
-
-                    "Actual_IndividualIntervention_Config":
-                    {
                         "class": "HIVDelayedIntervention",
-
+                        "Delay_Period_Constant": 0
+                    },
+                    "Duration": 5,
+                    "Trigger_Condition_List": [
+                        "EveryUpdate"
+                    ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "EveryUpdate-triggered delay event",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 10,
+            "class": "CampaignEvent"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 1,
+                "Event_Name": "triggered by EveryUpdate, delays 0 days, broadcasts OnART0",
+                "Intervention_Config": {
+                    "Actual_IndividualIntervention_Config": {
+                        "Broadcast_Event": "OnART0",
+                        "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
                         "Disqualifying_Properties": [],
                         "New_Property_Value": "InterventionStatus:None",
-
                         "Single_Use": 1,
-                        "Delay_Distribution": "FIXED_DURATION",
-                        "Delay_Period": 0,
-
-                        "Broadcast_Event": "OnART0"
-                    }
-                }
-            }
-        },
-
-        {
-            "class": "CampaignEvent",
-            "Event_Name": "EveryUpdate-triggered delay event", 
-            "Start_Day": 10,
-
-            "Nodeset_Config":
-            {
-                "class": "NodeSetAll"
-            }, 
-
-            "Event_Coordinator_Config": 
-            {
-                "class": "StandardInterventionDistributionEventCoordinator",
-                "Event_Name": "triggered by EveryUpdate, delays 0 days, broadcasts OnART0",
-                "Demographic_Coverage": 1,
-                "Intervention_Config":
-                {
-                    "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition_List": [ "EveryUpdate" ],
-
-                    "Duration": 5,
-
-                    "Actual_IndividualIntervention_Config":
-                    {
                         "class": "HIVDelayedIntervention",
-
+                        "Delay_Period_Constant": 0
+                    },
+                    "Duration": 5,
+                    "Trigger_Condition_List": [
+                        "EveryUpdate"
+                    ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "EveryUpdate-triggered delay event",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 10,
+            "class": "CampaignEvent"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 1,
+                "Event_Name": "triggered by EveryUpdate, delays 0 days, broadcasts OnART0",
+                "Intervention_Config": {
+                    "Actual_IndividualIntervention_Config": {
+                        "Broadcast_Event": "OnART0",
+                        "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
                         "Disqualifying_Properties": [],
                         "New_Property_Value": "InterventionStatus:None",
-
                         "Single_Use": 1,
-                        "Delay_Distribution": "FIXED_DURATION",
-                        "Delay_Period": 0,
-
-                        "Broadcast_Event": "OnART0"
-                    }
-                }
-            }
-        },
-
-        {
-            "class": "CampaignEvent",
-            "Event_Name": "EveryUpdate-triggered delay event", 
-            "Start_Day": 10,
-
-            "Nodeset_Config":
-            {
+                        "class": "HIVDelayedIntervention",
+                        "Delay_Period_Constant": 0
+                    },
+                    "Duration": 5,
+                    "Trigger_Condition_List": [
+                        "EveryUpdate"
+                    ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "EveryUpdate-triggered delay event",
+            "Nodeset_Config": {
                 "class": "NodeSetAll"
-            }, 
-
-            "Event_Coordinator_Config": 
-            {
-                "class": "StandardInterventionDistributionEventCoordinator",
-                "Event_Name": "triggered by EveryUpdate, delays 0 days, broadcasts OnART0",
+            },
+            "Start_Day": 10,
+            "class": "CampaignEvent"
+        },
+        {
+            "Event_Coordinator_Config": {
                 "Demographic_Coverage": 1,
-                "Intervention_Config":
-                {
-                    "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition_List": [ "OnART0" ],
-
-                    "Duration": 10,
-
-                    "Actual_IndividualIntervention_Config":
-                    {
-                        "class": "HIVMuxer",
-
-                        "Muxer_Name": "SecondDelay",
+                "Event_Name": "triggered by EveryUpdate, delays 0 days, broadcasts OnART0",
+                "Intervention_Config": {
+                    "Actual_IndividualIntervention_Config": {
+                        "Broadcast_Event": "OnART1",
+                        "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                        "Disqualifying_Properties": [],
                         "Max_Entries": 5,
-
-                        "Disqualifying_Properties": [],
+                        "Muxer_Name": "SecondDelay",
                         "New_Property_Value": "InterventionStatus:None",
-
                         "Single_Use": 1,
-                        "Delay_Distribution": "FIXED_DURATION",
-                        "Delay_Period": 2,
-
-                        "Broadcast_Event": "OnART1"
-                    }
-                }
-            }
+                        "class": "HIVMuxer",
+                        "Delay_Period_Constant": 2
+                    },
+                    "Duration": 10,
+                    "Trigger_Condition_List": [
+                        "OnART0"
+                    ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "EveryUpdate-triggered delay event",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 10,
+            "class": "CampaignEvent"
         }
-    ]
+    ],
+    "Use_Defaults": 1
 }

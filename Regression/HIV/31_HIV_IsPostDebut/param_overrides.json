@@ -1,11 +1,11 @@
 {
-    "Default_Config_Path": "defaults/hiv_default_config.json",
+    "Default_Config_Path": "../../defaults/hiv_default_config.json",
     "parameters": {
-        "Base_Population_Scale_Factor": 0.0001,
+        "x_Base_Population": 0.0001,
         "Base_Year": 1990,
         "Config_Name": "31_HIV_IsPostDebut",
         "Enable_Birth": 0,
-        "Listed_Events": [
+        "Custom_Individual_Events": [
             "Yikes_Toddler_Is_Post_Debut",
             "Phew_Toddler_Is_Not_Post_Debut",
             "Teen_Is_Post_Debut",

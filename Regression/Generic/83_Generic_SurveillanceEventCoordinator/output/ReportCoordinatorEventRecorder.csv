@@ -1,0 +1,9 @@
+Time,Coordinator_Name,Event_Name
+1,Start_Coordnator_1n2,Start_Vaccinating_1n2
+101,ACF_Counter_1_1n2,Ind_Start_SIA_2_1n2
+201,ACF_Counter_2_1n2,Ind_End_SIA_2_1n2
+205,Start_Coordnator_3n4,Start_Vaccinating_3n4
+301,ACF_Counter_2_1n2,Ind_End_SIA_2_1n2
+305,ACF_Counter_2_3n4,Ind_Start_SIA_2_3n4
+401,ACF_Counter_2_1n2,Ind_End_SIA_2_1n2
+405,ACF_Counter_1_3n4,Ind_End_SIA_2_3n4

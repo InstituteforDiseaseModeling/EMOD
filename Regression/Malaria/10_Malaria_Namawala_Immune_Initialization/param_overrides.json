@@ -15,12 +15,12 @@
             "Namawala_single_node_demographics.immunity.json"
         ],
         "Enable_Birth": 1,
-        "Enable_Immunity_Distribution": 1,
         "Enable_Initial_Prevalence": 1,
+        "Enable_Initial_Susceptibility_Distribution": 1,
         "Enable_Natural_Mortality": 1,
-        "Immunity_Initialization_Distribution_Type": "DISTRIBUTION_COMPLEX"
+        "Susceptibility_Initialization_Distribution_Type": "DISTRIBUTION_COMPLEX"
     },
-    "Default_Config_Path": "defaults/malaria_default_config.json",
+    "Default_Config_Path": "../../defaults/malaria_default_config.json",
     "MALARIA": {
         "Antibody_Memory_Level": 0.3,
         "Antigen_Switch_Rate": 5e-09,

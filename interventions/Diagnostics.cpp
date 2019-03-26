@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -13,6 +13,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "InterventionEnums.h"
 #include "InterventionFactory.h"
 #include "NodeEventContext.h"  // for INodeEventContext (ICampaignCostObserver)
+#include "IIndividualHumanContext.h"
+#include "ISimulationContext.h"
+#include "RANDOM.h"
 
 SETUP_LOGGING( "SimpleDiagnostic" )
 
@@ -69,19 +72,36 @@ namespace Kernel
         LOG_DEBUG_F( "Base_Sensitivity = %f, Base_Specificity = %f\n", (float) base_sensitivity, (float) base_specificity );
         LOG_DEBUG_F( "Days_To_Diagnosis = %f\n", (float) days_to_diagnosis );
         use_event_or_config = getEventOrConfig( inputJson );
-        if( ret )
+        
+        if( ret && !JsonConfigurable::_dryrun )
         {
-            if( use_event_or_config == EventOrConfig::Config || JsonConfigurable::_dryrun )
+            if( use_event_or_config == EventOrConfig::Config )
             {
                 InterventionValidator::ValidateIntervention( GetTypeName(),
                                                              InterventionTypeValidation::INDIVIDUAL,
                                                              positive_diagnosis_config._json,
                                                              inputJson->GetDataLocation() );
             }
-
-            CheckPostiveEventConfig();
+            else if( use_event_or_config == EventOrConfig::Event )
+            {
+                CheckConfigTriggers( inputJson );
+            }
+            else
+            {
+                CheckPostiveEventConfig();
+            }
         }
         return ret;
+    }
+
+    void SimpleDiagnostic::CheckConfigTriggers( const Configuration * inputJson )
+    {
+        if( positive_diagnosis_event.IsUninitialized() )
+        {
+            std::stringstream ss;
+            ss << "Positive_Diagnosis_Event is not defined." << std::endl;
+            throw InitializationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+        }
     }
 
     void SimpleDiagnostic::CheckPostiveEventConfig()
@@ -103,6 +123,7 @@ namespace Kernel
     , base_sensitivity(0)
     , treatment_fraction(1.0f)
     , days_to_diagnosis(0)
+    , enable_isSymptomatic(false)
     , use_event_or_config( EventOrConfig::Event )
     , positive_diagnosis_config()
     , positive_diagnosis_event()
@@ -112,6 +133,7 @@ namespace Kernel
         initConfigTypeMap("Treatment_Fraction", &treatment_fraction, SD_Treatment_Fraction_DESC_TEXT, 1.0f );
         initConfigTypeMap("Days_To_Diagnosis",  &days_to_diagnosis, SD_Days_To_Diagnosis_DESC_TEXT,   FLT_MAX, 0  );
         initConfigTypeMap("Cost_To_Consumer",   &cost_per_unit, SD_Cost_To_Consumer_DESC_TEXT,        0);
+        initConfigTypeMap("Enable_IsSymptomatic", &enable_isSymptomatic, SD_Enable_IsSymptomatic_DESC_TEXT, 0 );
 
         days_to_diagnosis.handle = std::bind( &SimpleDiagnostic::Callback, this, std::placeholders::_1 );
     }
@@ -125,6 +147,7 @@ namespace Kernel
         , days_to_diagnosis(master.days_to_diagnosis)
         , use_event_or_config(master.use_event_or_config)
         , positive_diagnosis_config(master.positive_diagnosis_config)
+        , enable_isSymptomatic(master.enable_isSymptomatic )
         , positive_diagnosis_event(master.positive_diagnosis_event)
     {
         days_to_diagnosis.handle = std::bind( &SimpleDiagnostic::Callback, this, std::placeholders::_1 );
@@ -151,7 +174,7 @@ namespace Kernel
         {
             LOG_DEBUG_F( "Individual %d tested positive: treatment fraction = %f.\n", parent->GetSuid().data, (float) treatment_fraction );
 
-            if( SMART_DRAW(treatment_fraction) )
+            if( parent->GetRng()->SmartDraw(treatment_fraction) )
             {
                 // Don't act at distribute; wait until update so everything is consistent
                 if ( days_to_diagnosis == 0 ) // use exactly 0. If configured to negative value, assume that's an ignore
@@ -192,14 +215,10 @@ namespace Kernel
         days_to_diagnosis.Decrement( dt );
     }
 
-    bool
-    SimpleDiagnostic::applySensitivityAndSpecificity(
-        bool infected
-    )
-    const
+    bool SimpleDiagnostic::applySensitivityAndSpecificity(bool infected) const
     {
-        bool positiveTestReported = ( ( infected  && ( SMART_DRAW( base_sensitivity ) ) ) ||
-                                      ( !infected && ( SMART_DRAW( 1-base_specificity ) ) )
+        bool positiveTestReported = ( ( infected  && parent->GetRng()->SmartDraw( base_sensitivity   ) ) ||
+                                      ( !infected && parent->GetRng()->SmartDraw( 1-base_specificity ) )
                                     ) ;
         LOG_DEBUG_F( "%s is returning %d\n", __FUNCTION__, positiveTestReported );
         return positiveTestReported;
@@ -208,11 +227,18 @@ namespace Kernel
     bool SimpleDiagnostic::positiveTestResult()
     {
         // Apply diagnostic test with given specificity/sensitivity
-        bool  infected = parent->GetEventContext()->IsInfected();
+        bool test_result;
+        if( enable_isSymptomatic )
+        {
+            test_result = parent->GetEventContext()->IsInfected() && parent->GetEventContext()->IsSymptomatic();
+        }
+        else
+        {
+            test_result = parent->GetEventContext()->IsInfected();
+        }
 
         // True positive (sensitivity), or False positive (1-specificity)
-
-        return applySensitivityAndSpecificity( infected );
+        return applySensitivityAndSpecificity( test_result );
     }
 
     void
@@ -232,13 +258,9 @@ namespace Kernel
     {
         if( !event.IsUninitialized() )
         {
-            INodeTriggeredInterventionConsumer* broadcaster = nullptr;
-            if (s_OK != parent->GetEventContext()->GetNodeEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster))
-            {
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()->GetNodeEventContext()", "INodeTriggeredInterventionConsumer", "INodeEventContext" );
-            }
+            IIndividualEventBroadcaster* broadcaster = parent->GetEventContext()->GetNodeEventContext()->GetIndividualEventBroadcaster();
             LOG_DEBUG_F( "SimpleDiagnostic broadcasting event = %s.\n", event.c_str() );
-            broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), event );
+            broadcaster->TriggerObservers( parent->GetEventContext(), event );
         }
     }
 
@@ -313,5 +335,6 @@ namespace Kernel
         ar.labelElement("use_event_or_config") & (uint32_t&)diagnostic.use_event_or_config;
         ar.labelElement("positive_diagnosis_config") & diagnostic.positive_diagnosis_config;
         ar.labelElement("positive_diagnosis_event") & diagnostic.positive_diagnosis_event;
+        ar.labelElement("enable_isSymptomatic") & diagnostic.enable_isSymptomatic;
     }
 }

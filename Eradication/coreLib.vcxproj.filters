@@ -202,14 +202,17 @@
     <Filter Include="Source Files\Campaign\WaningEffects">
       <UniqueIdentifier>{aee1ee48-535a-4eae-9557-5a647dd66cf9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Campaign\NodeTargeted\Typhoid">
-      <UniqueIdentifier>{092aee36-01ad-4e00-94b5-5c279e707bcf}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Campaign\EventCoordinator\Typhoid">
       <UniqueIdentifier>{2ccaf698-8498-4914-8c0f-a865eaad225d}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\Campaign\IndividualTargeted\Vector\Dengue">
       <UniqueIdentifier>{ef210769-0807-4634-80f3-56efb4c85ae2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Campaign\NodeTargeted\Environmental">
+      <UniqueIdentifier>{b59f6303-271c-4e36-8f96-aa05ef5ffb0f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Campaign\NodeTargeted\Environmental\Typhoid">
+      <UniqueIdentifier>{092aee36-01ad-4e00-94b5-5c279e707bcf}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -270,6 +273,36 @@
     <ClInclude Include="IController.h">
       <Filter>Source Files\Controllers</Filter>
     </ClInclude>
+    <ClInclude Include="IndividualEnvironmental.h">
+      <Filter>Source Files\Environmental</Filter>
+    </ClInclude>
+    <ClInclude Include="InfectionEnvironmental.h">
+      <Filter>Source Files\Environmental</Filter>
+    </ClInclude>
+    <ClInclude Include="NodeEnvironmental.h">
+      <Filter>Source Files\Environmental</Filter>
+    </ClInclude>
+    <ClInclude Include="SimulationEnvironmental.h">
+      <Filter>Source Files\Environmental</Filter>
+    </ClInclude>
+    <ClInclude Include="SusceptibilityEnvironmental.h">
+      <Filter>Source Files\Environmental</Filter>
+    </ClInclude>
+    <ClInclude Include="IndividualTyphoid.h">
+      <Filter>Source Files\Environmental\Typoid</Filter>
+    </ClInclude>
+    <ClInclude Include="InfectionTyphoid.h">
+      <Filter>Source Files\Environmental\Typoid</Filter>
+    </ClInclude>
+    <ClInclude Include="NodeTyphoid.h">
+      <Filter>Source Files\Environmental\Typoid</Filter>
+    </ClInclude>
+    <ClInclude Include="SimulationTyphoid.h">
+      <Filter>Source Files\Environmental\Typoid</Filter>
+    </ClInclude>
+    <ClInclude Include="SusceptibilityTyphoid.h">
+      <Filter>Source Files\Environmental\Typoid</Filter>
+    </ClInclude>
     <ClInclude Include="IntranodeTransmissionTypes.h">
       <Filter>Source Files\HINT</Filter>
     </ClInclude>
@@ -277,12 +310,6 @@
       <Filter>Source Files\HINT</Filter>
     </ClInclude>
     <ClInclude Include="ITransmissionGroups.h">
-      <Filter>Source Files\HINT</Filter>
-    </ClInclude>
-    <ClInclude Include="MultiRouteTransmissionGroups.h">
-      <Filter>Source Files\HINT</Filter>
-    </ClInclude>
-    <ClInclude Include="SimpleTransmissionGroups.h">
       <Filter>Source Files\HINT</Filter>
     </ClInclude>
     <ClInclude Include="IInfectable.h">
@@ -298,9 +325,6 @@
       <Filter>Source Files\HINT</Filter>
     </ClInclude>
     <ClInclude Include="TransmissionGroupsFactory.h">
-      <Filter>Source Files\HINT</Filter>
-    </ClInclude>
-    <ClInclude Include="VectorTransmissionGroups.h">
       <Filter>Source Files\HINT</Filter>
     </ClInclude>
     <ClInclude Include="IndividualPy.h">
@@ -389,6 +413,24 @@
     </ClInclude>
     <ClInclude Include="SpatialReportMalaria.h">
       <Filter>Source Files\Reporting\Vector\Malaria</Filter>
+    </ClInclude>
+    <ClInclude Include="ReportEnvironmental.h">
+      <Filter>Source Files\Reporting\Environmental</Filter>
+    </ClInclude>
+    <ClInclude Include="BinnedReportTyphoid.h">
+      <Filter>Source Files\Reporting\Environmental\Typoid</Filter>
+    </ClInclude>
+    <ClInclude Include="ReportTyphoid.h">
+      <Filter>Source Files\Reporting\Environmental\Typoid</Filter>
+    </ClInclude>
+    <ClInclude Include="ReportTyphoidByAgeAndGender.h">
+      <Filter>Source Files\Reporting\Environmental\Typoid</Filter>
+    </ClInclude>
+    <ClInclude Include="SpatialReportTyphoid.h">
+      <Filter>Source Files\Reporting\Environmental\Typoid</Filter>
+    </ClInclude>
+    <ClInclude Include="TyphoidReportEventRecorder.h">
+      <Filter>Source Files\Reporting\Environmental\Typoid</Filter>
     </ClInclude>
     <ClInclude Include="ReportTBHIV.h">
       <Filter>Source Files\Reporting\TBHIV</Filter>
@@ -726,9 +768,6 @@
     <ClInclude Include="Instrumentation.h">
       <Filter>Source Files\Common</Filter>
     </ClInclude>
-    <ClInclude Include="Contexts.h">
-      <Filter>Source Files\Kernel</Filter>
-    </ClInclude>
     <ClInclude Include="DllDefs.h">
       <Filter>Source Files\Kernel</Filter>
     </ClInclude>
@@ -799,9 +838,6 @@
       <Filter>Source Files\Kernel</Filter>
     </ClInclude>
     <ClInclude Include="StrainIdentity.h">
-      <Filter>Source Files\Kernel</Filter>
-    </ClInclude>
-    <ClInclude Include="Susceptibility.h">
       <Filter>Source Files\Kernel</Filter>
     </ClInclude>
     <ClInclude Include="..\utils\Types.h">
@@ -1194,11 +1230,92 @@
     <ClInclude Include="..\interventions\WaningEffectMapCount.h">
       <Filter>Source Files\Campaign\WaningEffects</Filter>
     </ClInclude>
+    <ClInclude Include="..\interventions\TyphoidWASH.h">
+      <Filter>Source Files\Campaign\NodeTargeted\Environmental\Typhoid</Filter>
+    </ClInclude>
+    <ClInclude Include="NodeTyphoidEventContext.h">
+      <Filter>Source Files\Campaign\EventCoordinator\Typhoid</Filter>
+    </ClInclude>
     <ClInclude Include="..\interventions\MultiNodeInterventionDistributor.h">
       <Filter>Source Files\Campaign\NodeTargeted</Filter>
     </ClInclude>
+    <ClInclude Include="..\interventions\ImmunityBloodTest.h">
+      <Filter>Source Files\Campaign\IndividualTargeted</Filter>
+    </ClInclude>
+    <ClInclude Include="BroadcasterImpl.h">
+      <Filter>Source Files\Campaign\EventCoordinator</Filter>
+    </ClInclude>
+    <ClInclude Include="BroadcasterImplTemplate.h">
+      <Filter>Source Files\Campaign\EventCoordinator</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseReportEventRecorder.h">
+      <Filter>Source Files\Reporting</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseReportEventRecorderTemplate.h">
+      <Filter>Source Files\Reporting</Filter>
+    </ClInclude>
+    <ClInclude Include="ReportEventRecorderCoordinator.h">
+      <Filter>Source Files\Reporting</Filter>
+    </ClInclude>
+    <ClInclude Include="ReportEventRecorderNode.h">
+      <Filter>Source Files\Reporting</Filter>
+    </ClInclude>
+    <ClInclude Include="BroadcastCoordinatorEvent.h">
+      <Filter>Source Files\Campaign\EventCoordinator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\interventions\BroadcastNodeEvent.h">
+      <Filter>Source Files\Campaign\NodeTargeted</Filter>
+    </ClInclude>
+    <ClInclude Include="TriggeredEventCoordinator.h">
+      <Filter>Source Files\Campaign\EventCoordinator</Filter>
+    </ClInclude>
+    <ClInclude Include="SurveillanceEventCoordinator.h">
+      <Filter>Source Files\Campaign\EventCoordinator</Filter>
+    </ClInclude>
+    <ClInclude Include="IncidenceCounterSurveillance.h">
+      <Filter>Source Files\Campaign\EventCoordinator</Filter>
+    </ClInclude>
+    <ClInclude Include="ReportSurveillanceEventRecorder.h">
+      <Filter>Source Files\Reporting</Filter>
+    </ClInclude>
+    <ClInclude Include="ISurveillanceReporting.h">
+      <Filter>Source Files\Campaign\EventCoordinator</Filter>
+    </ClInclude>
+    <ClInclude Include="ReportStatsByIP.h">
+      <Filter>Source Files\Reporting</Filter>
+    </ClInclude>
+    <ClInclude Include="DelayEventCoordinator.h">
+      <Filter>Source Files\Campaign\EventCoordinator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\interventions\EnvironmentalDiagnostic.h">
+      <Filter>Source Files\Campaign\NodeTargeted\Environmental</Filter>
+    </ClInclude>
+    <ClInclude Include="PropertyReportTyphoid.h">
+      <Filter>Source Files\Reporting\Environmental\Typoid</Filter>
+    </ClInclude>
+    <ClInclude Include="PropertyReportTyphoid.h">
+      <Filter>Source Files\Reporting\Environmental\Typoid</Filter>
+    </ClInclude>
     <ClInclude Include="IndividualCoInfection.h">
-      <Filter>Source Files\Reporting\TBHIV</Filter>
+      <Filter>Source Files\TBHIV</Filter>
+    </ClInclude>
+    <ClInclude Include="IIndividualHumanContext.h">
+      <Filter>Source Files\Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="ISimulationContext.h">
+      <Filter>Source Files\Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="Susceptibility.h">
+      <Filter>Source Files\Kernel</Filter>
+    </ClInclude>
+    <ClInclude Include="ISusceptibilityHIV.h">
+      <Filter>Source Files\STI\HIV</Filter>
+    </ClInclude>
+    <ClInclude Include="RelationshipType.h">
+      <Filter>Source Files\STI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\interventions\InterventionForCurrentPartners.h">
+      <Filter>Source Files\Campaign\IndividualTargeted\STI</Filter>
     </ClInclude>
     <ClInclude Include="IInfection.h">
       <Filter>Header Files</Filter>
@@ -1214,6 +1331,9 @@
     </ClInclude>
     <ClInclude Include="TBHIVContexts.h">
       <Filter>Source Files\TBHIV</Filter>
+    </ClInclude>
+    <ClInclude Include="SerializationTimeCalc.h">
+      <Filter>Source Files\Controllers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1265,11 +1385,35 @@
     <ClCompile Include="ControllerFactory.cpp">
       <Filter>Source Files\Controllers</Filter>
     </ClCompile>
-    <ClCompile Include="MultiRouteTransmissionGroups.cpp">
-      <Filter>Source Files\HINT</Filter>
+    <ClCompile Include="IndividualEnvironmental.cpp">
+      <Filter>Source Files\Environmental</Filter>
     </ClCompile>
-    <ClCompile Include="SimpleTransmissionGroups.cpp">
-      <Filter>Source Files\HINT</Filter>
+    <ClCompile Include="InfectionEnvironmental.cpp">
+      <Filter>Source Files\Environmental</Filter>
+    </ClCompile>
+    <ClCompile Include="NodeEnvironmental.cpp">
+      <Filter>Source Files\Environmental</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulationEnvironmental.cpp">
+      <Filter>Source Files\Environmental</Filter>
+    </ClCompile>
+    <ClCompile Include="SusceptibilityEnvironmental.cpp">
+      <Filter>Source Files\Environmental</Filter>
+    </ClCompile>
+    <ClCompile Include="IndividualTyphoid.cpp">
+      <Filter>Source Files\Environmental\Typoid</Filter>
+    </ClCompile>
+    <ClCompile Include="InfectionTyphoid.cpp">
+      <Filter>Source Files\Environmental\Typoid</Filter>
+    </ClCompile>
+    <ClCompile Include="NodeTyphoid.cpp">
+      <Filter>Source Files\Environmental\Typoid</Filter>
+    </ClCompile>
+    <ClCompile Include="SimulationTyphoid.cpp">
+      <Filter>Source Files\Environmental\Typoid</Filter>
+    </ClCompile>
+    <ClCompile Include="SusceptibilityTyphoid.cpp">
+      <Filter>Source Files\Environmental\Typoid</Filter>
     </ClCompile>
     <ClCompile Include="StrainAwareTransmissionGroups.cpp">
       <Filter>Source Files\HINT</Filter>
@@ -1278,9 +1422,6 @@
       <Filter>Source Files\HINT</Filter>
     </ClCompile>
     <ClCompile Include="TransmissionGroupsFactory.cpp">
-      <Filter>Source Files\HINT</Filter>
-    </ClCompile>
-    <ClCompile Include="VectorTransmissionGroups.cpp">
       <Filter>Source Files\HINT</Filter>
     </ClCompile>
     <ClCompile Include="IndividualPy.cpp">
@@ -1345,6 +1486,24 @@
     </ClCompile>
     <ClCompile Include="SpatialReportMalaria.cpp">
       <Filter>Source Files\Reporting\Vector\Malaria</Filter>
+    </ClCompile>
+    <ClCompile Include="ReportEnvironmental.cpp">
+      <Filter>Source Files\Reporting\Environmental</Filter>
+    </ClCompile>
+    <ClCompile Include="BinnedReportTyphoid.cpp">
+      <Filter>Source Files\Reporting\Environmental\Typoid</Filter>
+    </ClCompile>
+    <ClCompile Include="ReportTyphoid.cpp">
+      <Filter>Source Files\Reporting\Environmental\Typoid</Filter>
+    </ClCompile>
+    <ClCompile Include="ReportTyphoidByAgeAndGender.cpp">
+      <Filter>Source Files\Reporting\Environmental\Typoid</Filter>
+    </ClCompile>
+    <ClCompile Include="SpatialReportTyphoid.cpp">
+      <Filter>Source Files\Reporting\Environmental\Typoid</Filter>
+    </ClCompile>
+    <ClCompile Include="TyphoidReportEventRecorder.cpp">
+      <Filter>Source Files\Reporting\Environmental\Typoid</Filter>
     </ClCompile>
     <ClCompile Include="ReportTBHIV.cpp">
       <Filter>Source Files\Reporting\TBHIV</Filter>
@@ -1718,6 +1877,9 @@
     <ClCompile Include="PyInterventionsContainer.cpp">
       <Filter>Source Files\Campaign\InterventionContainers\Py</Filter>
     </ClCompile>
+    <ClCompile Include="TyphoidInterventionsContainer.cpp">
+      <Filter>Source Files\Campaign\InterventionContainers\Typhoid</Filter>
+    </ClCompile>
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files\Common</Filter>
     </ClCompile>
@@ -1892,6 +2054,9 @@
     <ClCompile Include="..\interventions\PMTCT.cpp">
       <Filter>Source Files\Campaign\IndividualTargeted\STI\HIV</Filter>
     </ClCompile>
+    <ClCompile Include="..\interventions\TyphoidVaccine.cpp">
+      <Filter>Source Files\Campaign\IndividualTargeted\Typhoid</Filter>
+    </ClCompile>
     <ClCompile Include="..\interventions\BirthTriggeredIV.cpp">
       <Filter>Source Files\Campaign\NodeTargeted</Filter>
     </ClCompile>
@@ -2000,11 +2165,83 @@
     <ClCompile Include="..\interventions\WaningEffectMapCount.cpp">
       <Filter>Source Files\Campaign\WaningEffects</Filter>
     </ClCompile>
+    <ClCompile Include="NodeTyphoidEventContext.cpp">
+      <Filter>Source Files\Campaign\EventCoordinator\Typhoid</Filter>
+    </ClCompile>
+    <ClCompile Include="..\interventions\TyphoidWASH.cpp">
+      <Filter>Source Files\Campaign\NodeTargeted\Environmental\Typhoid</Filter>
+    </ClCompile>
     <ClCompile Include="..\interventions\MultiNodeInterventionDistributor.cpp">
       <Filter>Source Files\Campaign\NodeTargeted</Filter>
     </ClCompile>
+    <ClCompile Include="..\interventions\ImmunityBloodTest.cpp">
+      <Filter>Source Files\Campaign\IndividualTargeted</Filter>
+    </ClCompile>
+    <ClCompile Include="BroadcasterImpl.cpp">
+      <Filter>Source Files\Campaign\EventCoordinator</Filter>
+    </ClCompile>
+    <ClCompile Include="ReportEventRecorderCoordinator.cpp">
+      <Filter>Source Files\Reporting</Filter>
+    </ClCompile>
+    <ClCompile Include="ReportEventRecorderNode.cpp">
+      <Filter>Source Files\Reporting</Filter>
+    </ClCompile>
+    <ClCompile Include="BroadcastCoordinatorEvent.cpp">
+      <Filter>Source Files\Campaign\EventCoordinator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\interventions\BroadcastNodeEvent.cpp">
+      <Filter>Source Files\Campaign\NodeTargeted</Filter>
+    </ClCompile>
+    <ClCompile Include="IncidenceCounterSurveillance.cpp">
+      <Filter>Source Files\Campaign\EventCoordinator</Filter>
+    </ClCompile>
+    <ClCompile Include="SurveillanceEventCoordinator.cpp">
+      <Filter>Source Files\Campaign\EventCoordinator</Filter>
+    </ClCompile>
+    <ClCompile Include="TriggeredEventCoordinator.cpp">
+      <Filter>Source Files\Campaign\EventCoordinator</Filter>
+    </ClCompile>
+    <ClCompile Include="PropertyReportTyphoid.cpp">
+      <Filter>Source Files\Reporting\Environmental\Typoid</Filter>
+    </ClCompile>
+    <ClCompile Include="..\interventions\TyphoidCarrierDiagnostic.cpp">
+      <Filter>Source Files\Campaign\IndividualTargeted\Typhoid</Filter>
+    </ClCompile>
+    <ClCompile Include="..\interventions\TyphoidCarrierClear.cpp">
+      <Filter>Source Files\Campaign\IndividualTargeted\Typhoid</Filter>
+    </ClCompile>
+    <ClCompile Include="ReportSurveillanceEventRecorder.cpp">
+      <Filter>Source Files\Reporting</Filter>
+    </ClCompile>
+    <ClCompile Include="ReportStatsByIP.cpp">
+      <Filter>Source Files\Reporting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\interventions\TyphoidCarrierDiagnostic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\interventions\TyphoidCarrierClear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PropertyReportTyphoid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DelayEventCoordinator.cpp">
+      <Filter>Source Files\Campaign\EventCoordinator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\interventions\EnvironmentalDiagnostic.cpp">
+      <Filter>Source Files\Campaign\NodeTargeted\Environmental</Filter>
+    </ClCompile>
     <ClCompile Include="IndividualCoInfection.cpp">
-      <Filter>Source Files\Reporting\TBHIV</Filter>
+      <Filter>Source Files\TBHIV</Filter>
+    </ClCompile>
+    <ClCompile Include="RelationshipType.cpp">
+      <Filter>Source Files\STI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\interventions\InterventionForCurrentPartners.cpp">
+      <Filter>Source Files\Campaign\IndividualTargeted\STI</Filter>
+    </ClCompile>
+    <ClCompile Include="SerializationTimeCalc.cpp">
+      <Filter>Source Files\Controllers</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

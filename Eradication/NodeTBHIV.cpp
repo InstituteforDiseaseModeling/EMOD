@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -8,12 +8,13 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 ***************************************************************************************************/
 
 #include "stdafx.h"
-#ifdef ENABLE_TBHIV
+
 #include "NodeTBHIV.h"
 #include "NodeEventContextHost.h" //for node level trigger
 #include "IndividualCoInfection.h"
 #include "SimulationConfig.h"
 #include "TBHIVParameters.h"
+#include "EventTrigger.h"
 
 SETUP_LOGGING( "NodeTBHIV" )
 
@@ -31,26 +32,35 @@ namespace Kernel
 
     NodeTBHIV::NodeTBHIV() : NodeTB() { }
 
-    NodeTBHIV::NodeTBHIV(ISimulationContext *_parent_sim, suids::suid node_suid) 
-    : NodeTB(_parent_sim, node_suid)
+    NodeTBHIV::NodeTBHIV(ISimulationContext *_parent_sim, ExternalNodeId_t externalNodeId, suids::suid node_suid)
+    : NodeTB(_parent_sim, externalNodeId, node_suid)
     , HIVCoinfectionDistribution( nullptr )
     , HIVMortalityDistribution( nullptr )
     {
     }
 
-    NodeTBHIV *NodeTBHIV::CreateNode(ISimulationContext *_parent_sim, suids::suid node_suid)
+    NodeTBHIV *NodeTBHIV::CreateNode(ISimulationContext *_parent_sim, ExternalNodeId_t externalNodeId, suids::suid node_suid)
     {
-        NodeTBHIV *newnode = _new_ NodeTBHIV(_parent_sim, node_suid);
+        NodeTBHIV *newnode = _new_ NodeTBHIV(_parent_sim, externalNodeId, node_suid);
         newnode->Initialize();
         return newnode;
     }
 
+    void NodeTBHIV::Initialize()
+    {
+        NodeTB::Initialize();
+    }
+
     bool NodeTBHIV::Configure( const Configuration* config )
     {   
-        cd4observer = _new_ CD4TrajectoryChangeObserver();
-        event_context_host->RegisterNodeEventObserver(cd4observer, EventTrigger::StartedART);
-        event_context_host->RegisterNodeEventObserver(cd4observer, EventTrigger::StoppedART);
         return NodeTB::Configure( config );
+    }
+
+    void NodeTBHIV::RegisterObservers()
+    {
+        cd4observer = _new_ CD4TrajectoryChangeObserver();
+        event_context_host->RegisterObserver( cd4observer, EventTrigger::StartedART );
+        event_context_host->RegisterObserver( cd4observer, EventTrigger::StoppedART );
     }
 
     void NodeTBHIV::SetNewInfectionState(InfectionStateChange::_enum inf_state_change, IndividualHuman *ih)
@@ -60,7 +70,7 @@ namespace Kernel
         //  Latent infection that became active-presymptomatic
         if ( inf_state_change == InfectionStateChange::TBActivationPresymptomatic )   
         {
-            event_context_host->TriggerNodeEventObservers(ih->GetEventContext(), EventTrigger::TBActivationPresymptomatic);
+            event_context_host->TriggerObservers(ih->GetEventContext(), EventTrigger::TBActivationPresymptomatic);
         }
         //  Active presymptomatic infection to active symptomatic
         else if( inf_state_change == InfectionStateChange::TBActivation ||
@@ -69,12 +79,12 @@ namespace Kernel
                  inf_state_change == InfectionStateChange::TBActivationExtrapulm
                )  
         {            
-            event_context_host->TriggerNodeEventObservers( ih->GetEventContext(), EventTrigger::TBActivation );
+            event_context_host->TriggerObservers( ih->GetEventContext(), EventTrigger::TBActivation );
         } 
         //  Infection got treatment and is now pending relapse - trigger goes off if you are ON OR OFF DRUGS.
         else if ( inf_state_change == InfectionStateChange::ClearedPendingRelapse )   
         {
-            event_context_host->TriggerNodeEventObservers(ih->GetEventContext(), EventTrigger::TBPendingRelapse);
+            event_context_host->TriggerObservers(ih->GetEventContext(), EventTrigger::TBPendingRelapse);
         }
     }
 
@@ -124,13 +134,19 @@ namespace Kernel
     }
 
     void NodeTBHIV::LoadOtherDiseaseSpecificDistributions()
-    {
+    {   
+        if (IndividualHumanCoInfectionConfig::enable_coinfection)
+        {
+            RegisterObservers();
+        }
+
         if( enable_demographics_risk && IndividualHumanCoInfectionConfig::enable_coinfection )
         {
             HIVCoinfectionDistribution = NodeDemographicsDistribution::CreateDistribution( demographics["IndividualAttributes"]["HIVCoinfectionDistribution"], "gender", "time", "age" );
             HIVMortalityDistribution   = NodeDemographicsDistribution::CreateDistribution( demographics["IndividualAttributes"]["HIVTBCoinfMortalityDistribution"], "age", "year" );
         }
     }
+
 
     void NodeTBHIV::processEmigratingIndividual(IIndividualHuman* individual)
     {
@@ -151,5 +167,12 @@ namespace Kernel
         }
         NodeTB::resetNodeStateCounters();
     }
+
+    REGISTER_SERIALIZABLE(NodeTBHIV);
+
+    void NodeTBHIV::serialize(IArchive& ar, NodeTBHIV* obj)
+    {
+        NodeTB::serialize(ar, obj);
+    }
 }
-#endif // ENABLE_TBHIV
+

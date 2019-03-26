@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -16,12 +16,12 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "BoostLibWrapper.h"
 
-#include "RANDOM.h"
-#include "Contexts.h"
 #include "Climate.h"
 
 namespace Kernel
 {
+    class RANDOMBASE;
+
     class ClimateConstant : public Climate
     {
     public:
@@ -29,9 +29,12 @@ namespace Kernel
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
         DECLARE_QUERY_INTERFACE()
         bool Configure( const Configuration* config );
-        static ClimateConstant * CreateClimate(ClimateUpdateResolution::Enum update_resolution, INodeContext * _parent, float start_time);
+        static ClimateConstant * CreateClimate( ClimateUpdateResolution::Enum update_resolution,
+                                                INodeContext * _parent,
+                                                float start_time,
+                                                RANDOMBASE* pRNG );
 
-        virtual void UpdateWeather(float, float);
+        virtual void UpdateWeather( float, float, RANDOMBASE* pRNG ) override;
 
     protected:
         ClimateConstant();

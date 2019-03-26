@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -13,9 +13,10 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "InterventionEnums.h"
 #include "InterventionFactory.h"
 #include "NodeEventContext.h"  // for INodeEventContext (ICampaignCostObserver)
-#include "SusceptibilityHIV.h" // for time-date util function
 #include "IHIVInterventionsContainer.h" // for time-date util function
 #include "IIndividualHumanHIV.h"
+#include "IIndividualHumanContext.h"
+#include "ISusceptibilityHIV.h"
 
 SETUP_LOGGING( "HIVDrawBlood" )
 

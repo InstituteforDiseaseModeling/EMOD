@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -17,7 +17,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Configure.h"
 #include "Climate.h"
 #include "Common.h"
-#include "Contexts.h"
 #include "Environment.h"
 
 #include "NodeDemographics.h"
@@ -27,8 +26,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "MathFunctions.h"
 #include "Serialization.h"
 #include "NodeProperties.h"
-
-class RANDOMBASE;
+#include "INodeContext.h"
 
 class Report;
 class ReportVector;
@@ -37,10 +35,12 @@ class BaseChannelReport;
 
 namespace Kernel
 {
+    class SimulationConfig;
+    class RANDOMBASE;
     struct INodeEventContext;
     //typedef 
     class  NodeEventContextHost;
-    class  Simulation;
+    struct ISimulation;
     struct IMigrationInfoFactory;
 
     class IDMAPI Node : public INodeContext, public JsonConfigurable
@@ -56,9 +56,9 @@ namespace Kernel
         friend class ::DemographicsReport;
 
     public:
-        static Node *CreateNode(ISimulationContext *_parent_sim, suids::suid node_suid); 
+        static Node *CreateNode(ISimulationContext *_parent_sim, ExternalNodeId_t externalNodeId, suids::suid node_suid);
 
-        Node(ISimulationContext *_parent_sim, suids::suid _suid);
+        Node(ISimulationContext *_parent_sim, ExternalNodeId_t externalNodeId, suids::suid _suid);
         Node(); // constructor for serialization use
         virtual ~Node();
 
@@ -69,7 +69,8 @@ namespace Kernel
         virtual ISimulationContext* GetParent() override;
         virtual suids::suid   GetSuid() const override;
         virtual suids::suid   GetNextInfectionSuid() override;
-        virtual ::RANDOMBASE* GetRng() override;
+        virtual RANDOMBASE* GetRng() override;
+        virtual void SetRng( RANDOMBASE* prng ) override;
         virtual void AddEventsFromOtherNodes( const std::vector<EventTrigger>& rTriggerList ) override;
 
 
@@ -85,6 +86,7 @@ namespace Kernel
                                      MigrationStructure::Enum ms,
                                      const boost::bimap<ExternalNodeId_t, suids::suid>& rNodeIdSuidMap ) override;
         virtual IIndividualHuman* processImmigratingIndividual( IIndividualHuman* ) override;
+        virtual void SortHumans() override;
 
         // Initialization
         virtual void SetContextTo(ISimulationContext* context) override;
@@ -95,12 +97,14 @@ namespace Kernel
         // Campaign event-related
         bool IsInPolygon(float* vertex_coords, int numcoords); // might want to create a real polygon object at some point
         bool IsInPolygon( const json::Array &poly );
-        bool IsInExternalIdSet( const tNodeIdList& nodelist );
+        bool IsInExternalIdSet( const std::list<ExternalNodeId_t>& nodelist );
 
         // Reporting to higher levels (intermediate form)
         // Possible TODO: refactor into common interfaces if there is demand
-        virtual IdmDateTime GetTime()            const override;
+        virtual const IdmDateTime& GetTime()     const override;
         virtual float GetInfected()              const override;
+        virtual float GetSymptomatic()           const override;
+        virtual float GetNewlySymptomatic()      const override;
         virtual float GetStatPop()               const override;
         virtual float GetBirths()                const override;
         virtual float GetCampaignCost()          const override;
@@ -118,24 +122,27 @@ namespace Kernel
         virtual ExternalNodeId_t GetExternalID() const;
 
         // Heterogeneous intra-node transmission
-        virtual void ExposeIndividual(IInfectable* candidate, const TransmissionGroupMembership_t* individual, float dt) override;
-        virtual void DepositFromIndividual( const IStrainIdentity& strain_IDs, float contagion_quantity, const TransmissionGroupMembership_t* individual) override;
-        virtual void GetGroupMembershipForIndividual(const RouteList_t& route, tProperties* properties, TransmissionGroupMembership_t* membershipOut) override;
-        virtual void UpdateTransmissionGroupPopulation(const TransmissionGroupMembership_t* membership, float size_changes,float mc_weight) override;
+        virtual void ExposeIndividual(IInfectable* candidate, TransmissionGroupMembership_t individual, float dt) override;
+        virtual void DepositFromIndividual( const IStrainIdentity& strain_IDs, float contagion_quantity, TransmissionGroupMembership_t individual, TransmissionRoute::Enum route = TransmissionRoute::TRANSMISSIONROUTE_CONTACT) override;
+        virtual void GetGroupMembershipForIndividual(const RouteList_t& route, const tProperties& properties, TransmissionGroupMembership_t& membershipOut) override;
+        virtual void UpdateTransmissionGroupPopulation(const tProperties& properties, float size_changes,float mc_weight) override;
         virtual void SetupIntranodeTransmission();
         virtual ITransmissionGroups* CreateTransmissionGroups();
-        virtual void AddDefaultRoute( RouteToContagionDecayMap_t& rDecayMap );
-        virtual void AddRoute( RouteToContagionDecayMap_t& rDecayMap, const std::string& rRouteName );
-        virtual void BuildTransmissionRoutes( RouteToContagionDecayMap_t& rDecayMap );
+        virtual ITransmissionGroups* GetTransmissionGroups() const override;
+        virtual void AddDefaultRoute( void );
+        virtual void AddRoute( const std::string& rRouteName );
+        virtual void BuildTransmissionRoutes( float contagionDecayRate );
         virtual bool IsValidTransmissionRoute( string& transmissionRoute );
 
-        virtual act_prob_vec_t DiscreteGetTotalContagion(const TransmissionGroupMembership_t* membership) override;
+        virtual act_prob_vec_t DiscreteGetTotalContagion( void ) override;
 
         virtual void ValidateIntranodeTransmissionConfiguration();
 
-        virtual float GetTotalContagion(const TransmissionGroupMembership_t* membership) override;
+        virtual float GetTotalContagion( void ) override;
         virtual std::map< std::string, float > GetContagionByRoute() const;
         virtual const RouteList_t& GetTransmissionRoutes() const override;
+        virtual float GetContagionByRouteAndProperty( const std::string& route, const IPKeyValue& property_value ) override;
+
         //Methods for implementing time dependence in various quantities; infectivity, birth rate, migration rate
         virtual float getSinusoidalCorrection(float sinusoidal_amplitude, float sinusoidal_phase) const override;
         virtual float getBoxcarCorrection(float boxcar_amplitude, float boxcar_start_time, float boxcar_end_time) const override;
@@ -248,6 +255,8 @@ namespace Kernel
         float Cumulative_Reported_Infections;
         float Campaign_Cost;
         long int Possible_Mothers;
+        float symptomatic;
+        float newly_symptomatic;
 
         float mean_age_infection;      // (years)
         float newInfectedPeopleAgeProduct;
@@ -259,9 +268,9 @@ namespace Kernel
         float mInfectivity;
 
         ISimulationContext *parent;     // Access back to simulation methods
+        ISimulation* parent_sim; //reduce access to RNG
 
         bool demographics_birth;
-        bool demographics_gender;
         bool enable_demographics_risk;
 
         float base_sample_rate;        // Fraction of individuals in each node to sample;
@@ -282,12 +291,12 @@ namespace Kernel
         bool enable_natural_mortality;
         bool enable_maternal_infection_transmission;
         bool enable_initial_prevalence;
+        bool enable_infectivity_reservoir;
         bool vital_birth;
         VitalBirthDependence::Enum                           vital_birth_dependence;                           // Vital_Birth_Dependence
         VitalBirthTimeDependence::Enum                       vital_birth_time_dependence;                      //Time dependence in Birth Rate
         float x_birth;
         float x_othermortality;
-        bool enable_demographics_immunity_dist;
 
         // Cached values to be used when initializing new individuals
         DistributionFunction::Enum susceptibility_dist_type ;
@@ -300,9 +309,7 @@ namespace Kernel
         float migration_dist1 ;
         float migration_dist2 ;
 
-        AnimalReservoir::Enum      animal_reservoir_type;
         InfectivityScaling::Enum                             infectivity_scaling;                              // Infectivity_Scale_Type
-        float                      zoonosis_rate;
 
         RouteList_t routes;
 
@@ -325,7 +332,7 @@ namespace Kernel
         virtual void considerPregnancyForIndividual( bool bPossibleMother, bool bIsPregnant, float age, int individual_id, float dt, IIndividualHuman* pIndividual = nullptr ); 
         virtual float initiatePregnancyForIndividual( int individual_id, float dt ) override;
         virtual bool updatePregnancyForIndividual( int individual_id, float duration ) override;
-        virtual void accumulateIndividualPopStatsByValue( float mcw, float infectiousness, bool poss_mom, bool is_infected );
+        virtual void accumulateIndividualPopStatsByValue(float mcw, float infectiousness, bool poss_mom, bool is_infected, bool is_symptomatic, bool is_newly_symptomatic);
         virtual void resetNodeStateCounters(void);
     protected:
 
@@ -383,6 +390,9 @@ namespace Kernel
         float infectivity_exponential_baseline;         // Only for Infectivity_Scale_Type = EXPONENTIAL_FUNCTION_OF_TIME
         float infectivity_exponential_rate;             // Only for Infectivity_Scale_Type = EXPONENTIAL_FUNCTION_OF_TIME
         float infectivity_exponential_delay;            // Only for Infectivity_Scale_Type = EXPONENTIAL_FUNCTION_OF_TIME
+        float infectivity_reservoir_size;
+        float infectivity_reservoir_start_time;
+        float infectivity_reservoir_end_time;
 
         float birth_rate_sinusoidal_forcing_amplitude;  // Only for Birth_Rate_Time_Dependence = SINUSOIDAL_FUNCTION_OF_TIME
         float birth_rate_sinusoidal_forcing_phase;      // Only for Birth_Rate_Time_Dependence = SINUSOIDAL_FUNCTION_OF_TIME
@@ -404,8 +414,13 @@ namespace Kernel
         }
         VitalDeathDependence::Enum                           vital_death_dependence;                           // Vital_Death_Dependence
 
+        RANDOMBASE* m_pRng;
+        suids::distributed_generator m_IndividualHumanSuidGenerator;
+
         DECLARE_SERIALIZABLE(Node);
 
 #pragma warning( pop )
     };
 }
+
+#define CONTACT "contact"

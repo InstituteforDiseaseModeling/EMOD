@@ -1,5 +1,5 @@
 {
-    "Default_Config_Path": "defaults/vector_default_config.json",
+    "Default_Config_Path": "../../defaults/vector_default_config.json",
     "parameters": {
         "CLIMATE": {
             "Climate_Model": "CLIMATE_CONSTANT",
@@ -13,7 +13,7 @@
         },
         "PRIMARY": {
             "Config_Name": "38_Vector_OvipositionTrap",
-            "Egg_Hatch_Delay_Distribution": "EXPONENTIAL_DURATION",
+            "Egg_Hatch_Delay_Distribution": "EXPONENTIAL_DISTRIBUTION",
             "Geography": "Namawala",
             "Mean_Egg_Hatch_Delay": 2,
             "Run_Number": 1,

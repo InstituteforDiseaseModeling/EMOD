@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -36,7 +36,8 @@ namespace Kernel
         virtual bool Configure( const Configuration* inputJson ) override;
         virtual void UpdateEventRegistration( float currentTime,
                                               float dt, 
-                                              std::vector<INodeEventContext*>& rNodeEventContextList ) override;
+                                              std::vector<INodeEventContext*>& rNodeEventContextList,
+                                              ISimulationEventContext* pSimEventContext ) override;
         virtual void Initialize( unsigned int nrmSize ) override;
         virtual std::string GetHeader() const override;
         virtual bool notifyOnEvent( IIndividualHumanEventContext *context, const EventTrigger& trigger ) override;
@@ -94,6 +95,8 @@ namespace Kernel
                 , has_concurrent_partners()
                 , num_partners_current_sum(0.0)
                 , num_partners_lifetime_sum(0.0)
+                , num_relationships_by_type( RelationshipType::COUNT, 0.0f )
+                , num_concordant_relationships_by_type( RelationshipType::COUNT, 0.0f )
             {
             }
 
@@ -121,11 +124,13 @@ namespace Kernel
 
             std::map<std::string,float> event_counter_map; // count the ocurrences of events
 
-            std::vector<float> currently_in_relationship_by_type; // mc weight sum of the number of individuals with a current relationship, by type
-            std::vector<float> ever_in_relationship_by_type;      // mc weight sum of the number of individuals ever having a relationship, by type
-            float has_concurrent_partners;                        // mc weight sum of individuals with 2+ partners.
-            float num_partners_current_sum;                       // mc weight sum of the number of current partners.
-            float num_partners_lifetime_sum;                      // mc weight sum of the number of lifetime partners.
+            std::vector<float> currently_in_relationship_by_type;    // mc weight sum of the number of individuals with a current relationship, by type
+            std::vector<float> ever_in_relationship_by_type;         // mc weight sum of the number of individuals ever having a relationship, by type
+            float has_concurrent_partners;                           // mc weight sum of individuals with 2+ partners.
+            float num_partners_current_sum;                          // mc weight sum of the number of current partners.
+            float num_partners_lifetime_sum;                         // mc weight sum of the number of lifetime partners.
+            std::vector<float> num_relationships_by_type;            // mc weight sum of the number of individuals in relationship of some disease state, by type
+            std::vector<float> num_concordant_relationships_by_type; // mc weight sum of the number of individuals in relationship of some disease state, by type
         };
 
         struct Dimension
@@ -169,6 +174,7 @@ namespace Kernel
         std::string               data_name_of_intervention_to_count;
         std::vector<EventTrigger> data_event_list;
         bool                      data_has_relationships;
+        bool                      data_has_concordant_relationships;
 
         // other
         const ISimulation * _parent;

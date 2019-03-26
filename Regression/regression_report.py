@@ -49,7 +49,8 @@ class Report:
     def addPassingTest(self, name, time, insetchart_path):
         testcase_el = self.doc.createElement("testcase")
         testcase_el.setAttribute("name", name)
-        testcase_el.setAttribute("time", str(time.total_seconds()))
+        if time:
+            testcase_el.setAttribute("time", str(time.total_seconds()))
         testcase_el.setAttribute("message", name + " PASSED, result data found at " + insetchart_path)
         
         self.suite_el.appendChild(testcase_el)

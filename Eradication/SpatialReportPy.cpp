@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -19,7 +19,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "BoostLibWrapper.h"
 
 #include "SpatialReportPy.h"
-#include "NodePy.h"
+//#include "NodePy.h"
 #include "Sugar.h"
 #include "Environment.h"
 #include "Exceptions.h"
@@ -71,13 +71,13 @@ SpatialReportPy::LogNodeData(
 {
     SpatialReport::LogNodeData(pNC);
 
-    int nodeid = pNC->GetExternalID();
+    //int nodeid = pNC->GetExternalID();
 
-    const Kernel::INodePy * pPyNode = NULL;
-    if( pNC->QueryInterface( GET_IID( Kernel::INodePy), (void**) &pPyNode ) != Kernel::s_OK )
-    {
-        throw Kernel::QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "pNC", "INodePy", "INodeContext" );
-    }
+    //const Kernel::INodePy * pPyNode = NULL;
+    //if( pNC->QueryInterface( GET_IID( Kernel::INodePy), (void**) &pPyNode ) != Kernel::s_OK )
+    //{
+    //    throw Kernel::QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "pNC", "INodePy", "INodeContext" );
+    //}
 }
 
 void

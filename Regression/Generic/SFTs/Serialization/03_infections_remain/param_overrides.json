@@ -1,0 +1,46 @@
+{
+    "parameters": {
+        "DEMOGRAPHICS": {
+            "Birth_Rate_Dependence": "POPULATION_DEP_RATE",
+            "Demographics_Filenames": [
+                "../../demographics.json",
+                "../../demographics_1000_overlay.json"
+            ],
+            "Enable_Birth": 0,
+            "Enable_Demographics_Reporting": 1,
+            "Enable_Initial_Prevalence": 1,
+            "Enable_Vital_Dynamics": 0,
+            "IMMUNITY": {
+                "Enable_Immune_Decay": 0,
+                "Post_Infection_Acquisition_Multiplier": 1,
+                "Post_Infection_Transmission_Multiplier": 1
+            },
+            "MORTALITY": {
+                "Post_Infection_Mortality_Multiplier": 1
+            }
+        },
+        "DISEASE": {
+            "INCUBATION": {
+                "Base_Incubation_Period": 0
+            },
+            "INFECTIOUSNESS": {
+                "Base_Infectivity": 0.7
+            }
+        },
+        "PRIMARY": {
+            "Config_Name": "Generic serialization 03 persists infections",
+            "Geography": "SamplesInput",
+            "Python_Script_Path": "SHARED",
+            "Run_Number": 1,
+            "Serialization_Time_Steps": [
+                5
+            ],
+            "Serialized_Population_Filenames": [
+                "state-00050.dtk"
+            ],
+            "Simulation_Duration": 5,
+            "Start_Time": 50
+        }
+    },
+    "Default_Config_Path": "../../../../defaults/generic_serialization_default_config.json"
+}

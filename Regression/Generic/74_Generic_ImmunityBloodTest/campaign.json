@@ -1,0 +1,143 @@
+{
+    "Events": [
+        {
+            "README": "Start ImmunityBloodTest Diagnostic, no individual has immunity",
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "Base_Sensitivity": 1.0,
+                    "Base_Specificity": 1.0,
+                    "Cost_To_Consumer": 0,
+                    "Days_To_Diagnosis": 0.0,
+                    "Event_Or_Config": "Event",
+                    "Positive_Diagnosis_Event": "TestedPositive_IamImmune",
+                    "Negative_Diagnosis_Event": "TestedNegative_IamSusceptible",
+                    "Treatment_Fraction": 1.0,
+                    "Positive_Threshold_AcquisitionImmunity": 0.99,
+                    "class": "ImmunityBloodTest"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 1,
+            "class": "CampaignEvent"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 1.0, 
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 1.0, 
+                    "Reduced_Transmit": 0, 
+                    "Vaccine_Take": 1, 
+                    "Vaccine_Type": "AcquisitionBlocking", 
+                    "Waning_Config": {
+                        "Box_Duration": 10, 
+                        "Initial_Effect": 1, 
+                        "class": "WaningEffectBox"
+                    }, 
+                    "class": "SimpleVaccine"
+                }, 
+                "Target_Demographic": "Everyone", 
+                "class": "StandardInterventionDistributionEventCoordinator"
+            }, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Start_Day": 12, 
+            "class": "CampaignEvent"
+        },
+         {
+            "README": "all individuals are immune",
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "Base_Sensitivity": 1.0,
+                    "Base_Specificity": 1.0,
+                    "Cost_To_Consumer": 0,
+                    "Days_To_Diagnosis": 0.0,
+                    "Event_Or_Config": "Event",
+                    "Positive_Diagnosis_Event": "TestedPositive_IamImmune",
+                    "Negative_Diagnosis_Event": "TestedNegative_IamSusceptible",
+                    "Treatment_Fraction": 1.0,
+                    "Positive_Threshold_AcquisitionImmunity": 0.99,
+                    "class": "ImmunityBloodTest"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 14,
+            "class": "CampaignEvent"
+        },
+                 {
+            "README": "Immunity has waned, no individual has immunity",
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "Base_Sensitivity": 1.0,
+                    "Base_Specificity": 1.0,
+                    "Cost_To_Consumer": 0,
+                    "Days_To_Diagnosis": 0.0,
+                    "Event_Or_Config": "Event",
+                    "Positive_Diagnosis_Event": "TestedPositive_IamImmune",
+                    "Negative_Diagnosis_Event": "TestedNegative_IamSusceptible",
+                    "Treatment_Fraction": 1.0,
+                    "Positive_Threshold_AcquisitionImmunity": 0.99,
+                    "class": "ImmunityBloodTest"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 30,
+            "class": "CampaignEvent"
+        },
+        {
+             "Event_Coordinator_Config": {
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "Antigen": 0,
+                    "Genome": 0,
+                    "class": "OutbreakIndividual"
+                },
+                "Target_Demographic": "Everyone",
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "Outbreak",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 32,
+            "class": "CampaignEvent"
+        },
+        {
+            "README": "After the outbreak all individuals have immunity",
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "Base_Sensitivity": 1.0,
+                    "Base_Specificity": 1.0,
+                    "Cost_To_Consumer": 0,
+                    "Days_To_Diagnosis": 0.0,
+                    "Event_Or_Config": "Event",
+                    "Positive_Diagnosis_Event": "TestedPositive_IamImmune",
+                    "Negative_Diagnosis_Event": "TestedNegative_IamSusceptible",
+                    "Treatment_Fraction": 1.0,
+                    "Positive_Threshold_AcquisitionImmunity": 0.99,
+                    "class": "ImmunityBloodTest"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 70,
+            "class": "CampaignEvent"
+        }
+ ],
+    "Use_Defaults": 1
+}

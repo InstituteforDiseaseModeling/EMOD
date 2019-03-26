@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -10,7 +10,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "stdafx.h"
 #include <memory> // unique_ptr
 #include "UnitTest++.h"
-#include "common.h"
+#include "componentTests.h"
 #include "NChooserEventCoordinatorHIV.h"
 #include "Node.h"
 #include "SimulationConfig.h"
@@ -21,6 +21,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IndividualHumanInterventionsContextFake.h"
 #include "IdmMpi.h"
 #include "EventTrigger.h"
+#include "Simulation.h"
+#include "FakeLogger.h"
 
 using namespace std; 
 using namespace Kernel; 
@@ -33,6 +35,8 @@ SUITE(NChooserEventCoordinatorTest)
     {
         IdmMpi::MessageInterface* m_pMpi;
         SimulationConfig* m_pSimulationConfig ;
+        float m_oldBaseYear;
+        RANDOMBASE* m_pRNG;
 
         NChooserEventCoordinatorFixture()
             : m_pSimulationConfig( new SimulationConfig() )
@@ -54,7 +58,7 @@ SUITE(NChooserEventCoordinatorTest)
 
             Environment::Initialize( m_pMpi, configFilename, inputPath, outputPath, /*statePath, */dllPath, false);
 
-            const_cast<Environment*>(Environment::getInstance())->RNG = new PSEUDO_DES(0);
+            m_pRNG = new PSEUDO_DES(0);
 
             m_pSimulationConfig->sim_type = SimType::HIV_SIM;
 
@@ -76,6 +80,8 @@ SUITE(NChooserEventCoordinatorTest)
 
             EventTriggerFactory::DeleteInstance();
             EventTriggerFactory::GetInstance()->Configure( EnvPtr->Config );
+
+            m_oldBaseYear = Simulation::base_year; // Need to save old base_year for restoration
         }
 
         ~NChooserEventCoordinatorFixture()
@@ -83,6 +89,8 @@ SUITE(NChooserEventCoordinatorTest)
             EventTriggerFactory::DeleteInstance();
             IPFactory::DeleteFactory();
             Environment::Finalize();
+            Simulation::base_year = m_oldBaseYear; // Restore base_year
+            delete m_pRNG;
         }
     };
 
@@ -195,7 +203,7 @@ SUITE(NChooserEventCoordinatorTest)
 
         ag1.FindQualifyingIndividuals( &nec, disease_qual, pr );
 
-        std::vector<IIndividualHumanEventContext*> selected_list_1 = ag1.SelectIndividuals();
+        std::vector<IIndividualHumanEventContext*> selected_list_1 = ag1.SelectIndividuals( m_pRNG );
         CHECK_EQUAL(  4, selected_list_1.size() );
         CHECK_EQUAL(  1, selected_list_1[0]->GetSuid().data );
         CHECK_EQUAL(  7, selected_list_1[1]->GetSuid().data );
@@ -206,7 +214,7 @@ SUITE(NChooserEventCoordinatorTest)
 
         ag1.FindQualifyingIndividuals( &nec, disease_qual, pr );
 
-        std::vector<IIndividualHumanEventContext*> selected_list_2 = ag1.SelectIndividuals();
+        std::vector<IIndividualHumanEventContext*> selected_list_2 = ag1.SelectIndividuals( m_pRNG );
         CHECK_EQUAL(  3, selected_list_2.size() );
         CHECK_EQUAL( 13, selected_list_2[0]->GetSuid().data );
         CHECK_EQUAL( 15, selected_list_2[1]->GetSuid().data );
@@ -216,7 +224,7 @@ SUITE(NChooserEventCoordinatorTest)
 
         ag1.FindQualifyingIndividuals( &nec, disease_qual, pr );
 
-        std::vector<IIndividualHumanEventContext*> selected_list_3 = ag1.SelectIndividuals();
+        std::vector<IIndividualHumanEventContext*> selected_list_3 = ag1.SelectIndividuals( m_pRNG );
         CHECK_EQUAL(  3, selected_list_3.size() );
         CHECK_EQUAL( 10, selected_list_3[0]->GetSuid().data );
         CHECK_EQUAL( 13, selected_list_3[1]->GetSuid().data );
@@ -534,5 +542,34 @@ SUITE(NChooserEventCoordinatorTest)
     {
         TestHelper_ConfigureException( __LINE__, "testdata/NChooserEventCoordinatorTest/Test_GH830.json",
                                        "The number of elements in 'Num_Targeted_Males' is 0.\nThe number of elements in 'Num_Targeted_Females' is 1.\nThe number of elements in 'Age_Range_Years' is 1.\n'Num_Targeted_Males', 'Num_Targeted_Females', and 'Age_Range_Years' must have the same number of elements, but not zero.  There must be one age range for each number targeted." );
+    }
+
+    TEST_FIXTURE(NChooserEventCoordinatorFixture, TestWarningBaseYearStartYear)
+    {
+        // --------------------
+        // --- Initialize test
+        // --------------------
+        unique_ptr<Configuration> p_config(Environment::LoadConfigurationFile("testdata/NChooserEventCoordinatorTest/TestSample.json"));
+        FakeLogger fakeLogger(Logger::tLevel::WARNING);
+        Environment::setLogger(&fakeLogger);
+        
+        Simulation::base_year = 2050;
+
+        try
+        {
+            NChooserEventCoordinatorHIV hiv_nchooser;
+            bool ret = hiv_nchooser.Configure(p_config.get());
+            CHECK(ret);
+        }
+        catch (DetailedException& de)
+        {
+            PrintDebug(de.GetMsg());
+            CHECK(false);
+        }
+
+        CHECK(!fakeLogger.Empty());
+        LogEntry entry = fakeLogger.Back();
+        CHECK(entry.log_level == Logger::tLevel::WARNING);
+        CHECK(entry.msg.find("Start_Year (2003.000000) specified before Base_Year (2050.000000)\n") != string::npos);
     }
 }

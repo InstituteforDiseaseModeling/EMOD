@@ -43,7 +43,7 @@ class Monitor(threading.Thread):
         if self.scenario_type != 'tests':
             stdoutfile = "test.txt"
         with open(os.path.join(sim_dir, stdoutfile), "w") as stdout, open(os.path.join(sim_dir, "stderr.txt"), "w") as stderr:
-            actual_input_dir = os.path.join( self.params.input_path, self.config_json["parameters"]["Geography"] )
+            actual_input_dir = ".;" + os.path.join( self.params.input_path, self.config_json["parameters"]["Geography"] )
             cmd = None
             # python-script-path is optional parameter.
             if "PSP" in self.config_json:
@@ -72,6 +72,8 @@ class Monitor(threading.Thread):
                         self.verify( sim_dir, file, "Channels" )
         elif self.scenario_type == 'science':
             self.science_verify( sim_dir )
+        elif self.scenario_type == 'pymod':
+            self.pymod_verify( sim_dir )
 
         self.__class__.sems.release()
 
@@ -365,3 +367,22 @@ class Monitor(threading.Thread):
             self.report.addFailingTest( self.scenario_path, "No " + report_name, os.path.join( sim_dir, report_name ), self.scenario_type )
         
 
+    def pymod_verify( self, sim_dir ):
+        # pymod verification, which consists entirely of looking for an 'OK' at the end of the stdout which happens to be StdErr.txt
+        report_name = "StdErr.txt" # This isn't my 'design'; it's just what is. XXXJHHB
+        pmr = os.path.join( sim_dir, report_name )
+        if os.path.exists( pmr ):
+            with open( pmr ) as pmr_file:
+                for line in pmr_file:
+                    pass
+                pmr_data = line
+                if pmr_data.strip() == "OK":
+                    print( self.scenario_path + " passed (" + str(self.duration) + ") - " + report_name )
+                    self.report.addPassingTest(self.scenario_path, self.duration, os.path.join(sim_dir, report_name))
+                else:
+                    fail_text = self.scenario_path + " PyMod failed."
+                    print( self.scenario_path + " failed (" + str(self.duration) + ") - " + report_name )
+                    print( pmr_data )
+                    self.report.addFailingTest( self.scenario_path, fail_text, os.path.join( sim_dir, report_name ), self.scenario_type )
+        else:
+            print( "Failed to find 'report' file for pymod test: " + report_name )

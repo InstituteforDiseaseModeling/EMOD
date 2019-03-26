@@ -1,5 +1,5 @@
 {
-    "Default_Config_Path": "defaults/generic_default_config.json",
+    "Default_Config_Path": "../../defaults/generic_default_config.json",
     "parameters": {
         "DEMOGRAPHICS": {
             "Birth_Rate_Dependence": "POPULATION_DEP_RATE",
@@ -25,7 +25,8 @@
         },
         "DISEASE": {
             "INFECTIOUSNESS": {
-                "Infectious_Period_Distribution": "FIXED_DURATION"
+                "Infectious_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                "Infectious_Period_Constant": 7
             },
             "Max_Individual_Infections": 5
         },

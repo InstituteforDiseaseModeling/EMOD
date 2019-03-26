@@ -1,5 +1,5 @@
 {
-     "Default_Config_Path": "defaults/malaria_default_config.json", 
+     "Default_Config_Path": "../../defaults/malaria_default_config.json", 
      "parameters": {
           "CLIMATE": {
                "AIR_TEMPERATURE": {
@@ -42,7 +42,7 @@
                "Node_Grid_Size": 0.009, 
                "Run_Number": 33, 
                "Simulation_Duration": 730,
-               "Random_Number_Engine": "USE_AES_COUNTER"
+               "Random_Number_Generator_Type": "USE_AES_COUNTER"
           }, 
           "SAMPLING": {
                "Individual_Sampling_Type": "ADAPTED_SAMPLING_BY_POPULATION_SIZE", 

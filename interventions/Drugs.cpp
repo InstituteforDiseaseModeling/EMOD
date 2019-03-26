@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -10,10 +10,10 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "stdafx.h"
 #include "Drugs.h"
 #include "RANDOM.h"
-#include "MathFunctions.h"
 #include "Sigmoid.h"
 #include "SimulationEnums.h"        // Just for PKPDModel parameter (!)
-#include "Contexts.h"
+#include "IIndividualHumanContext.h"
+#include "DistributionFactory.h"
 
 SETUP_LOGGING( "GenericDrug" )
 
@@ -112,10 +112,40 @@ namespace Kernel
         , Vd(0)
         , drug_c50(0)
         , fraction_defaulters(0)
+        , p_uniform_distribution( DistributionFactory::CreateDistribution( DistributionFunction::UNIFORM_DISTRIBUTION ) )
     {
     }
 
-    GenericDrug::~GenericDrug() { }
+    GenericDrug::GenericDrug( const GenericDrug& rMaster )
+        : BaseIntervention( rMaster )
+        , drug_name( rMaster.drug_name )
+        , durability_time_profile(rMaster.durability_time_profile)
+        , fast_decay_time_constant(rMaster.fast_decay_time_constant)
+        , slow_decay_time_constant(rMaster.slow_decay_time_constant)
+        , dosing_timer(rMaster.dosing_timer)
+        , remaining_doses(rMaster.remaining_doses)
+        , time_between_doses(rMaster.time_between_doses)
+        , fast_component(rMaster.fast_component)
+        , slow_component(rMaster.slow_component)
+        , start_concentration(rMaster.start_concentration)
+        , end_concentration(rMaster.end_concentration)
+        , current_concentration( rMaster.current_concentration )
+        , current_efficacy(rMaster.current_efficacy)
+        , current_reducedacquire(rMaster.current_reducedacquire)  // NOTE: malaria drug has specific killing effects, TB drugs have inactivation + cure rates
+        , current_reducedtransmit(rMaster.current_reducedtransmit) //   "    "
+        , pk_rate_mod(rMaster.pk_rate_mod)           // homogeneous by default
+        , Cmax(rMaster.Cmax)
+        , Vd(rMaster.Vd)
+        , drug_c50(rMaster.drug_c50)
+        , fraction_defaulters(rMaster.fraction_defaulters)
+        , p_uniform_distribution( DistributionFactory::CreateDistribution( DistributionFunction::UNIFORM_DISTRIBUTION ) )
+    {
+    }
+
+    GenericDrug::~GenericDrug()
+    {
+        delete p_uniform_distribution;
+    }
 
     int
     GenericDrug::AddRef()
@@ -229,10 +259,12 @@ namespace Kernel
             if ( (dosing_timer <= 0) && IsTakingDose( dt ) )
             {
                 // DJK: Remove or fix fraction_defaulters.  It only makes sense with remaining_doses=1 <ERAD-1854>
-                if( SMART_DRAW( fraction_defaulters ) )
+                if( parent->GetRng()->SmartDraw( fraction_defaulters ) )
                 {
                     // Assume uniformly distributed dropout times, cf. Fig 3 from Kruk 2008 Trop Med Int Health 13:703
-                    fast_component = Probability::getInstance()->fromDistribution( DistributionFunction::UNIFORM_DURATION, 1, fast_decay_time_constant );
+                    p_uniform_distribution->SetParameters( 1, fast_decay_time_constant, 0.0 );
+                    fast_component = p_uniform_distribution->Calculate( parent->GetRng() );
+
                     LOG_DEBUG_F("Individual dropout time = %0.2f\n", fast_component);
                 }
                 else

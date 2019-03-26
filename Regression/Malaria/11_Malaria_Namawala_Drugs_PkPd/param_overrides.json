@@ -18,7 +18,7 @@
         "Enable_Natural_Mortality": 1,
         "Population_Scale_Type": "FIXED_SCALING"
     },
-    "Default_Config_Path": "defaults/malaria_default_config.json",
+    "Default_Config_Path": "../../defaults/malaria_default_config.json",
     "GENERAL_DISEASE": {
         "Infection_Updates_Per_Timestep": 24,
         "PKPD_Model": "CONCENTRATION_VERSUS_TIME"

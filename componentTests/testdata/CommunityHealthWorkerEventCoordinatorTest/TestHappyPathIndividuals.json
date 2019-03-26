@@ -1,24 +1,27 @@
 {
     "class": "CommunityHealthWorkerEventCoordinator",
-    "Duration" : 100,
-    "Max_Distributed_Per_Day" : 5,
-    "Waiting_Period" : 4,
-    "Days_Between_Shipments" : 20,
-    "Amount_In_Shipment" : 100,
-    "Max_Stock" : 150,
-    "Initial_Amount_Distribution_Type" : "UNIFORM_DURATION",
-    "Initial_Amount_Min" :  5,
-    "Initial_Amount_Max" : 10,
-    "Target_Demographic": "ExplicitAgeRangesAndGender", 
-    "Target_Age_Max": 30, 
-    "Target_Age_Min": 20, 
-    "Target_Gender" : "Male",
+    "Duration": 100,
+    "Max_Distributed_Per_Day": 5,
+    "Waiting_Period": 4,
+    "Days_Between_Shipments": 20,
+    "Amount_In_Shipment": 100,
+    "Max_Stock": 150,
+    "Initial_Amount_Distribution": "UNIFORM_DISTRIBUTION",
+    "Initial_Amount_Min": 5,
+    "Initial_Amount_Max": 10,
+    "Target_Demographic": "ExplicitAgeRangesAndGender",
+    "Target_Age_Max": 30,
+    "Target_Age_Min": 20,
+    "Target_Gender": "Male",
     "Demographic_Coverage": 1.0,
-    "Property_Restrictions_Within_Node" : 
-    [
-        { "Location": "URBAN" }
+    "Property_Restrictions_Within_Node": [
+        {
+            "Location": "URBAN"
+        }
     ],
-    "Trigger_Condition_List" : [ "ListenForEvent" ],
+    "Trigger_Condition_List": [
+        "ListenForEvent"
+    ],
     "Intervention_Config": {
         "class": "BroadcastEvent",
         "Broadcast_Event": "EventFromIntervention"

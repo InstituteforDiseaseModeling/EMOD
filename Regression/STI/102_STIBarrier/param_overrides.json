@@ -1,8 +1,7 @@
 {
-    "Default_Config_Path": "defaults/sti_default_config.json",
+    "Default_Config_Path": "../../defaults/sti_default_config.json",
     "parameters": {
         "Base_Infectivity": 10,
-        "Base_Population_Scale_Factor": 0.0001,
         "Base_Year": 1980,
         "Birth_Rate_Dependence": "POPULATION_DEP_RATE",
         "Condom_Transmission_Blocking_Probability": 1.0,
@@ -15,7 +14,7 @@
         "Enable_Maternal_Infection_Transmission": 1,
         "Enable_Natural_Mortality": 0,
         "Geography": "SouthAfrica",
-        "Infectious_Period_Mean": 120,
+        "Infectious_Period_Gaussian_Mean": 120,
         "Num_Cores": 1,
         "PFA_Burnin_Duration_In_Days": 5475,
         "Run_Number": 1,
@@ -30,6 +29,7 @@
         "____________REPORTING___________": "",
         "____________SIMULATION___________": "",
         "____________TRANSMISSION___________": "",
-        "logLevel_default": "WARNING"
+        "logLevel_default": "WARNING",
+        "x_Base_Population": 0.0001
     }
 }

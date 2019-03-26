@@ -1,0 +1,60 @@
+{
+    "Default_Config_Path": "../../defaults/polio_default_config.json",
+    "parameters": {
+        "DEMOGRAPHICS": {
+            "Demographics_Filenames": [
+                "Madagascar_Nosibe_2.5arcmin_demographics.json",
+                "Madagascar_Nosibe_2.5arcmin_demographics_overlay.json"
+            ],
+            "SAMPLING": {
+                "Max_Node_Population_Samples": 100000,
+                "Sample_Rate_0_18mo": 1,
+                "Sample_Rate_10_14": 1,
+                "Sample_Rate_15_19": 1,
+                "Sample_Rate_18mo_4yr": 1,
+                "Sample_Rate_20_Plus": 1,
+                "Sample_Rate_5_9": 1,
+                "Sample_Rate_Birth": 1
+            }
+        },
+        "EXECUTION": {
+            "CLUSTER": {
+                "Load_Balance_Filename": "Madagascar_Nosibe_2.5arcmin_load_balancing_8procs.bin",
+                "Num_Cores": 8
+            }
+        },
+        "FUDGE_FACTORS": {},
+        "MIGRATION": {
+            "Migration_Model": "FIXED_RATE_MIGRATION",
+            "Migration_Pattern": "WAYPOINTS_HOME",
+            "Enable_Migration_Heterogeneity": 0,
+            "Enable_Family_Migration": 0,
+            "Family_Migration_Filename": "",
+            "x_Family_Migration": 1,
+            "Roundtrip_Waypoints": 5,
+            "AIR": {
+                "Enable_Air_Migration": 0,
+                "Air_Migration_Filename": ""
+            },
+            "LOCAL": {
+                "Enable_Local_Migration": 1,
+                "Local_Migration_Filename": "Madagascar_Nosibe_2.5arcmin_local_migration.bin"
+            },
+            "REGIONAL": {
+                "Enable_Regional_Migration": 0,
+                "Regional_Migration_Filename": ""
+            },
+            "SEA": {
+                "Enable_Sea_Migration": 0,
+                "Sea_Migration_Filename": ""
+            }
+        },
+        "POLIO": {
+            "Polio_Host_Factor": 0.8
+        },
+        "PRIMARY": {
+            "Config_Name": "48_Polio_Bihar_Larger -- multicore -- Madagascar_Nosibe",
+            "Geography": "Madagascar_Nosibe"
+        }
+    }
+}

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -15,6 +15,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "HealthSeekingBehavior.h"
 #include "NodeEventContext.h"    // for INodeEventContext (ICampaignCostObserver)
 #include "SimulationConfig.h"
+#include "IIndividualHumanContext.h"
+#include "ISimulationContext.h"
+#include "RANDOM.h"
 
 SETUP_LOGGING( "SimpleHealthSeekingBehavior" )
 
@@ -91,7 +94,7 @@ namespace Kernel
 
         LOG_DEBUG_F("Individual %d is seeking with tendency %f \n", parent->GetSuid().data, probability_of_seeking*dt);
 
-        if( SMART_DRAW( 1- pow( 1-probability_of_seeking, dt ) ) )
+        if( parent->GetRng()->SmartDraw( 1- pow( 1-probability_of_seeking, dt ) ) )
         //if( parent->GetRng()->e() < EXPCDF( probability_of_seeking * dt ) )
         {
             LOG_DEBUG_F("SimpleHealthSeekingBehavior is going to give the actual intervention to individual %d\n", parent->GetSuid().data );
@@ -110,13 +113,9 @@ namespace Kernel
 
             if( use_event_or_config == EventOrConfig::Event )
             {
-                INodeTriggeredInterventionConsumer* broadcaster = nullptr;
-                if (s_OK != parent->GetEventContext()->GetNodeEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster))
-                {
-                    throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()->GetNodeEventContext()", "INodeTriggeredInterventionConsumer", "INodeEventContext" );
-                }
+                IIndividualEventBroadcaster* broadcaster = parent->GetEventContext()->GetNodeEventContext()->GetIndividualEventBroadcaster();
                 LOG_DEBUG_F("SimpleHealthSeekingBehavior is broadcasting the actual intervention event to individual %d.\n", parent->GetSuid().data );
-                broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), actual_intervention_event );
+                broadcaster->TriggerObservers( parent->GetEventContext(), actual_intervention_event );
             }
             else if( actual_intervention_config._json.Type() != ElementType::NULL_ELEMENT )
             {

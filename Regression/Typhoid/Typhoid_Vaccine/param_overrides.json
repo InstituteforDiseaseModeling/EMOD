@@ -1,0 +1,7 @@
+{
+    "parameters": {
+        "Config_Name": "Typhoid_1",
+        "Simulation_Duration": 7300
+    },
+    "Default_Config_Path": "../../defaults/typhoid_default_config.json"
+}

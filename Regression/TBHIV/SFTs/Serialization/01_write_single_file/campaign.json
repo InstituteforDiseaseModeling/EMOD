@@ -1,0 +1,116 @@
+{
+   "Campaign_Name": "TBHIV Campaign",
+   "Events": [
+      {
+         "Event_Coordinator_Config": {
+            "Demographic_Coverage": 0.2,
+            "Intervention_Config": {
+               "Antigen": 0,
+               "Genome": 0,
+               "Infection_Type": "TB",
+               "Outbreak_Source": "PrevalenceIncrease",
+               "class": "OutbreakIndividualTBorHIV"
+            },
+            "Number_Distributions": -1,
+            "Number_Repetitions": 1,
+            "Target_Demographic": "Everyone",
+            "class": "StandardInterventionDistributionEventCoordinator"
+         },
+         "Event_Name": "OutbreakIndividualTBorHIV",
+         "Nodeset_Config": {
+            "class": "NodeSetAll"
+         },
+         "Start_Day": 50,
+         "class": "CampaignEvent"
+      },
+      {
+         "Event_Coordinator_Config": {
+            "Demographic_Coverage": 0.5,
+            "Intervention_Config": {
+               "Antigen": 0,
+               "Genome": 0,
+               "Infection_Type": "HIV",
+               "Outbreak_Source": "PrevalenceIncrease",
+               "class": "OutbreakIndividualTBorHIV"
+            },
+            "Number_Distributions": -1,
+            "Number_Repetitions": 1,
+            "Target_Demographic": "Everyone",
+            "class": "StandardInterventionDistributionEventCoordinator"
+         },
+         "Event_Name": "OutbreakIndividualTBorHIV",
+         "Nodeset_Config": {
+            "class": "NodeSetAll"
+         },
+         "Start_Day": 1,
+         "class": "CampaignEvent"
+      },
+      {
+         "Event_Coordinator_Config": {
+            "Intervention_Config": {
+               "Actual_IndividualIntervention_Config": {
+                  "Actual_IndividualIntervention_Event": "TBTestPositive",
+                  "Event_Or_Config": "Event",
+                  "Single_Use": 1,
+                  "Tendency": 0.005,
+                  "class": "SimpleHealthSeekingBehavior"
+               },
+               "Blackout_Event_Trigger": "Blackout",
+               "Blackout_On_First_Occurrence": 0,
+               "Blackout_Period": 0,
+               "Distribute_On_Return_Home": 0,
+               "Duration": -1,
+               "Property_Restrictions": [],
+               "Trigger_Condition_List": [
+                  "TBActivation"
+               ],
+               "class": "NodeLevelHealthTriggeredIV"
+            },
+            "Number_Distributions": -1,
+            "Number_Repetitions": 1,
+            "class": "StandardInterventionDistributionEventCoordinator"
+         },
+         "Event_Name": "Simple Health Seeking",
+         "Nodeset_Config": {
+            "class": "NodeSetAll"
+         },
+         "Start_Day": 0,
+         "class": "CampaignEvent"
+      },
+      {
+         "Event_Coordinator_Config": {
+            "Intervention_Config": {
+               "Actual_IndividualIntervention_Config": {
+                  "Active_Multiplier": 1.0,
+                  "Dont_Allow_Duplicates": 1,
+                  "Durability_Profile": "FIXED_DURATION_CONSTANT_EFFECT",
+                  "Latency_Multiplier": 1.0,
+                  "Remaining_Doses": 1,
+                  "TB_Drug_Name": "DOTSHQC",
+                  "class": "TBHIVConfigurableTBdrug"
+               },
+               "Blackout_Event_Trigger": "Blackout",
+               "Blackout_On_First_Occurrence": 0,
+               "Blackout_Period": 0,
+               "Distribute_On_Return_Home": 0,
+               "Duration": -1,
+               "Property_Restrictions": [],
+               "Trigger_Condition_List": [
+                  "TBTestPositive"
+               ],
+               "class": "NodeLevelHealthTriggeredIV"
+            },
+            "Number_Distributions": -1,
+            "Number_Repetitions": 1,
+            "class": "StandardInterventionDistributionEventCoordinator"
+         },
+         "Event_Name": "TB Treatment",
+         "Nodeset_Config": {
+            "class": "NodeSetAll"
+         },
+         "Start_Day": 0,
+         "class": "CampaignEvent"
+      }
+   ],
+   "Use_Defaults": 1
+}

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -15,31 +15,13 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 namespace Kernel
 {
-    class Event2ProbabilityType : public JsonConfigurable, 
-                                  public IComplexJsonConfigurable
-    {
-        IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
-        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) { return e_NOINTERFACE; }
-        public:
-            Event2ProbabilityType() {}
-            virtual void ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key ) override;
-            virtual json::QuickBuilder GetSchema() override;
-            virtual bool  HasValidDefault() const override { return false; }
-
-            std::vector<std::pair<EventTrigger,float>> event_list;
-
-            static void serialize(IArchive& ar, Event2ProbabilityType& obj);
-    };
-
     class HIVRandomChoice : public HIVSimpleDiagnostic
     {
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
         DECLARE_FACTORY_REGISTERED(InterventionFactory, HIVRandomChoice, IDistributableIntervention)
 
     public: 
-        HIVRandomChoice();
-        HIVRandomChoice( const HIVRandomChoice& );
-
+	HIVRandomChoice();
         virtual bool Configure( const Configuration * inputJson ) override;
 
         // IDistributingDistributableIntervention
@@ -48,9 +30,12 @@ namespace Kernel
         // HIVSimpleDiagnostic
         virtual bool positiveTestResult() override;
         virtual void positiveTestDistribute() override;
-
+        
     protected:
-        Event2ProbabilityType event2Probability;
+        virtual void ProcessChoices(std::vector<std::string> &names, std::vector<float> &values);
+
+        std::vector<EventTrigger> event_names;
+        std::vector<float> event_probabilities;
 
         DECLARE_SERIALIZABLE(HIVRandomChoice);
     };

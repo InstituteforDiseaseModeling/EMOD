@@ -1,6 +1,6 @@
 {
     "parameters": {
-        "Default_Config_Path": "defaults/minimum_default_config.json",
+        "Default_Config_Path": "../../defaults/minimum_default_config.json",
         "Config_Name": "7_Generic_MinimalConfig_EnableInterventions",
 
         "Enable_Interventions": 1, 

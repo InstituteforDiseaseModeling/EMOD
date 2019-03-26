@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -15,11 +15,10 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "EnumSupport.h"
 #include "Properties.h"
 
-class RANDOMBASE ;
-
-
 namespace Kernel 
 {
+    class RANDOMBASE;
+
     // The AssortivityGroup is used to specify the group of people that a person
     // might have an affinity for or against.
     ENUM_DEFINE(AssortivityGroup,
@@ -97,6 +96,7 @@ namespace Kernel
         void CheckAxesForProperty();
         void CheckMatrix();
         void SortMatrixFalseTrue();
+        bool UsesStartYear() const ;
 
         static std::string Assortivity::ValuesToString( const std::vector<std::string>& rList ) ;
 

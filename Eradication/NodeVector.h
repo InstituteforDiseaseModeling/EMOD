@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -36,7 +36,7 @@ namespace Kernel
         friend class SpatialReportVector;
 
     public:
-        static NodeVector *CreateNode(ISimulationContext *context, suids::suid suid);
+        static NodeVector *CreateNode(ISimulationContext *context, ExternalNodeId_t externalNodeId, suids::suid suid);
         virtual ~NodeVector();
         virtual bool Configure( const Configuration* config ) override;
 
@@ -52,6 +52,8 @@ namespace Kernel
 
         virtual void PopulateFromDemographics() override;
         virtual void SetupIntranodeTransmission() override;
+        virtual ITransmissionGroups* CreateTransmissionGroups() override;
+        virtual void BuildTransmissionRoutes( float ) override;
         virtual void SetParameters( NodeDemographicsFactory *demographics_factory, ClimateFactory *climate_factory, bool white_list_enabled ) override;
         virtual void updateInfectivity(float dt = 0.0f) override;
         virtual void updatePopulationStatistics(float dt = 1.0f) override;
@@ -68,17 +70,10 @@ namespace Kernel
 
         virtual const VectorPopulationReportingList_t& GetVectorPopulationReporting() const override;
 
-        static TransmissionGroupMembership_t human_to_vector_all;
-        static TransmissionGroupMembership_t human_to_vector_indoor;
-        static TransmissionGroupMembership_t human_to_vector_outdoor;
-        static TransmissionGroupMembership_t vector_to_human_all;
-        static TransmissionGroupMembership_t vector_to_human_indoor;
-        static TransmissionGroupMembership_t vector_to_human_outdoor;
-        /*static tProperties vectorProperties;
-        static tProperties humanProperties;
-        static RouteList_t route_all;
-        static RouteList_t route_indoor;
-        static RouteList_t route_outdoor;*/
+        static TransmissionGroupMembership_t human_indoor;
+        static TransmissionGroupMembership_t human_outdoor;
+        static TransmissionGroupMembership_t vector_indoor;
+        static TransmissionGroupMembership_t vector_outdoor;
 
     protected:
 
@@ -88,15 +83,16 @@ namespace Kernel
 
         VectorProbabilities* m_vector_lifecycle_probabilities;
 
-
         LarvalHabitatMultiplier larval_habitat_multiplier;
 
         bool vector_mortality;
         int32_t mosquito_weight;
         IMigrationInfoVector* vector_migration_info;
 
+        ITransmissionGroups* txOutdoor;
+
         NodeVector();
-        NodeVector(ISimulationContext *context, suids::suid node_suid);
+        NodeVector(ISimulationContext *context, ExternalNodeId_t externalNodeId, suids::suid node_suid);
         virtual void Initialize() override;
 
         virtual void setupEventContextHost() override;
@@ -107,6 +103,12 @@ namespace Kernel
 
         /* clorton virtual */ const SimulationConfig *params() /* clorton override */;
         IVectorSimulationContext *context() const; // N.B. this is returning a non-const context because of the PostMigratingVector function
+
+        virtual void UpdateTransmissionGroupPopulation(const tProperties& properties, float size_changes,float mc_weight) override;
+        virtual void DepositFromIndividual( const IStrainIdentity& strain_IDs, float contagion_quantity, TransmissionGroupMembership_t individual, TransmissionRoute::Enum route) override;
+        virtual void ExposeIndividual(IInfectable* candidate, TransmissionGroupMembership_t individual, float dt) override;
+
+        virtual float GetTotalContagion( void ) override;
 
         DECLARE_SERIALIZABLE(NodeVector);
 

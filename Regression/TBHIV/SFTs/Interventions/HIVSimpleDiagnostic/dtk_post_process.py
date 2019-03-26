@@ -1,6 +1,6 @@
 import json
 import os.path as path
-import dtk_sft
+import dtk_test.dtk_sft as sft
 
 """
 This is HIVSimpleDiagnostic test. 
@@ -16,7 +16,7 @@ tests only the demographic coverage percentage
 I'm keeping this simple by not reading in or analyzing the campaign file
 
 Sweep suggestions:
-Run_Number, Base_Population_Scale_Factor
+Run_Number, x_Base_Population
 
 Improvement suggestions for a more detailed test:
 Read data out of the campaign file: day of intervention, cost_to_consumer
@@ -113,7 +113,7 @@ def parse_inset_chart(output_folder="output", inset_chart_name="InsetChart.json"
 
 
 def create_report_file(param_obj, property_report_obj, event_counter_obj, inset_chart_obj,
-                       report_name=dtk_sft.sft_output_filename):
+                       report_name=sft.sft_output_filename):
     with open(report_name, "w") as outfile:
         success = True
         sft_name = param_obj[config_name]
@@ -238,7 +238,7 @@ def application(output_folder="output",
                 event_report_name="ReportEventCounter.json",
                 config_filename="config.json",
                 inset_chart_name="InsetChart.json",
-                report_name=dtk_sft.sft_output_filename,
+                report_name=sft.sft_output_filename,
                 debug=False):
     if debug:
         print("output_folder: " + output_folder)
@@ -264,7 +264,7 @@ if __name__ == "__main__":
     parser.add_argument('-o', '--output', default="output", help="Folder to load outputs from (output)")
     parser.add_argument('-i', '--inset', default="InsetChart.json", help="Json report to load (InsetChart.json)")
     parser.add_argument('-c', '--config', default="config.json", help="Config name to load (config.json)")
-    parser.add_argument('-r', '--report', default=dtk_sft.sft_output_filename, help="Report file to generate")
+    parser.add_argument('-r', '--report', default=sft.sft_output_filename, help="Report file to generate")
     parser.add_argument('-p', '--property', default="PropertyReportTB.json",
                         help="Json report to load (PropertyReportTB.json)")
     parser.add_argument('-e', '--event', default="ReportEventCounter.json",

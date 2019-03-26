@@ -47,6 +47,8 @@
         { "path" : "HIV/52_HIV_GH690_RTEC" },
         { "path" : "HIV/53_HIV_GH459" },
         { "path" : "HIV/54_HIV_RTEC_DistributeToWithout" },
+        { "path" : "HIV/55_HIV_CascadeOfCare_MultiNode_MultiCore_RngPerNode" },
+        { "path" : "HIV/56_HIV_Concordant_Relationships" },
         { "path": "Scenarios/STIAndHIV/02_HIV_Specific_Biology/A_Baseline_Disease_Progression" },
         { "path": "Scenarios/STIAndHIV/02_HIV_Specific_Biology/B_Survival_Time_for_Children" },
         { "path": "Scenarios/STIAndHIV/02_HIV_Specific_Biology/C_Survival_Time_for_Adults" },
@@ -91,8 +93,6 @@
         { "path": "Scenarios/STIAndHIV/05_Intervention_Examples/4d_ImprovedRetention_PreART_and_ART" },
         { "path": "Scenarios/STIAndHIV/05_Intervention_Examples/5a_ImprovedRetention_OnART" },
         { "path": "Scenarios/STIAndHIV/05_Intervention_Examples/5b_ImprovedReinitiation_FindPreviouslyLost" },
-        { "path": "Scenarios/STIAndHIV/05_Intervention_Examples/6a_ReduceDelays_Lossy" },
-        { "path": "Scenarios/STIAndHIV/05_Intervention_Examples/6b_ReduceDelays_Lossless" },
         { "path": "Scenarios/STIAndHIV/05_Intervention_Examples/7a_HIVProphylaxis_Uniform_Lifelong_Protection_F_15to49" },
         { "path": "Scenarios/STIAndHIV/05_Intervention_Examples/7b_HIVProphylaxis_Heterogeneous_Adherence_or_Efficacy_F_15to49" },
         { "path": "Scenarios/STIAndHIV/05_Intervention_Examples/7c_HIVProphylaxis_LongActingInjectable_F_15to49" }

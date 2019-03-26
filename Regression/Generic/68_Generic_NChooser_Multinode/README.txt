@@ -5,7 +5,7 @@ NChooser incorrectly re-scales for each node instead of just once
 -----
 
 DanK ran into an issue where he had a scenario with multiple nodes
- and a Base_Population_Scale_Factor < 1.0. The scale factor was being 
+ and a x_Base_Population < 1.0. The scale factor was being 
 applied for each node instead of just once.
 
 -----

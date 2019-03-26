@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -16,7 +16,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "BoostLibWrapper.h"
 #include "Common.h"
 #include "Configure.h"
-#include "Contexts.h"
+#include "IIndividualHumanContext.h"
 #include "IInfectable.h"
 #include "IMigrate.h"
 #include "IndividualEventContext.h"
@@ -27,13 +27,14 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IContagionPopulation.h"
 #include "IIndividualHuman.h"
 #include "Types.h" // for ProbabilityNumber
-#include "INodeContext.h"
 
 class Configuration;
-class RANDOMBASE;
 
 namespace Kernel
 {
+    class RANDOMBASE;
+    struct INodeContext;
+    struct IMigrationInfoFactory;
     struct IIndividualHumanInterventionsContext;
     class  Infection;
     class  InterventionsContainer;
@@ -122,10 +123,10 @@ namespace Kernel
         // IIndividualHumanContext
         virtual suids::suid GetSuid() const override;
         virtual suids::suid GetNextInfectionSuid() override;
-        virtual ::RANDOMBASE* GetRng() override;
+        virtual RANDOMBASE* GetRng() override;
 
         virtual IIndividualHumanInterventionsContext* GetInterventionsContext() const override;
-        virtual IIndividualHumanInterventionsContext* GetInterventionsContextbyInfection(Infection* infection) override;
+        virtual IIndividualHumanInterventionsContext* GetInterventionsContextbyInfection(IInfection* infection) override;
         virtual IIndividualHumanEventContext*         GetEventContext() override;
         virtual ISusceptibilityContext*               GetSusceptibilityContext() const override;
 
@@ -181,11 +182,13 @@ namespace Kernel
         virtual void SetMigrationModifier( float modifier ) override { migration_mod = modifier; }
 
         // Infections
-        virtual void ExposeToInfectivity(float dt, const TransmissionGroupMembership_t* transmissionGroupMembership);
+        virtual void ExposeToInfectivity(float dt, TransmissionGroupMembership_t transmissionGroupMembership);
         virtual void Expose( const IContagionPopulation* cp, float dt, TransmissionRoute::Enum transmission_route = TransmissionRoute::TRANSMISSIONROUTE_CONTACT ) override;
         virtual void AcquireNewInfection( const IStrainIdentity *infstrain = nullptr, int incubation_period_override = -1) override;
 
         virtual const infection_list_t &GetInfections() const override;
+        virtual bool IsSymptomatic() const override;
+        virtual bool IsNewlySymptomatic() const override;
         virtual void UpdateInfectiousness(float dt) override;
         virtual bool InfectionExistsForThisStrain(IStrainIdentity* check_strain_id);
         virtual void ClearNewInfectionState() override;
@@ -205,7 +208,7 @@ namespace Kernel
         // Assorted getters and setters
         virtual void SetContextTo(INodeContext* context) override;
         virtual INodeContext* GetParent() const override;
-        virtual inline Kernel::suids::suid GetParentSuid() const override { return parent->GetSuid(); }
+        virtual inline Kernel::suids::suid GetParentSuid() const override;
         virtual ProbabilityNumber getProbMaternalTransmission() const override;
 
         virtual void SetGoingOnFamilyTrip( suids::suid migrationDestination, 
@@ -288,9 +291,10 @@ namespace Kernel
         virtual void ReportInfectionState();
 
         virtual void PropagateContextToDependents();
-        INodeTriggeredInterventionConsumer* broadcaster;
+        IIndividualEventBroadcaster* broadcaster;
 
     private:
+        bool m_newly_symptomatic;
         
         virtual IIndividualHumanContext* GetContextPointer();
 

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -61,10 +61,6 @@ namespace Kernel
 
         virtual void AdjustForFeedingRate( float dt, float p_local_mortality, FeedingProbabilities& rFeedProbs );
         virtual void AdjustForCumulativeProbability( FeedingProbabilities& rFeedProbs );
-
-        virtual void VectorToHumanDeposit( const IStrainIdentity& strain,
-                                           uint32_t attemptFeed,
-                                           const TransmissionGroupMembership_t* pTransmissionVectorToHuman );
 
         bool DidDie(  IVectorCohort* cohort, float probDies, float outcome, uint32_t& rCounter );
         bool DidFeed( IVectorCohort* cohort, float probFeed, float outcome, uint32_t& rCounter );

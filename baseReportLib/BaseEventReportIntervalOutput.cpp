@@ -1,7 +1,7 @@
 
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -115,7 +115,7 @@ namespace Kernel
                 m_report_count++; // have before WriteOutput() so it can use the value
 
                 Reduce();
-                if( EnvPtr->MPI.Rank == 0 )
+                if( (EnvPtr->MPI.Rank == 0) && (m_max_number_reports > 0) )
                 {
                     AccumulateOutput();
                     if( m_one_file_per_report )
@@ -130,7 +130,7 @@ namespace Kernel
                 LOG_DEBUG_F("m_report_count=%d, m_max_number_reports=%d\n",m_report_count,m_max_number_reports);
                 if ( m_report_count >= m_max_number_reports )
                 {
-                    if( (EnvPtr->MPI.Rank == 0) && !m_one_file_per_report )
+                    if( (EnvPtr->MPI.Rank == 0) && !m_one_file_per_report && (m_max_number_reports > 0) )
                     {
                         WriteOutput( currentTime );
                     }

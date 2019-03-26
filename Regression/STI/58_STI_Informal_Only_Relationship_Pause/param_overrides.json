@@ -1,5 +1,5 @@
 {
-    "Default_Config_Path": "defaults/sti_default_config.json", 
+    "Default_Config_Path": "../../defaults/sti_default_config.json", 
     "parameters": {
 
         "____________SIMULATION___________": "",
@@ -19,7 +19,7 @@
         "____________TRANSMISSION___________": "",
 
         "____________DEMOGRAPHICS___________": "",
-        "Base_Population_Scale_Factor": 1e-5,
+        "x_Base_Population": 1e-5,
         "Demographics_Filenames": [ "../../HIV/input/SA_UN_demographics_extrapolated_WithProperties_Smoothed_4_Nodes.json", "../../HIV/input/PFA_overlay.json", "PFA_overlay_rates.json" ],
         "Enable_Birth": 1,
 

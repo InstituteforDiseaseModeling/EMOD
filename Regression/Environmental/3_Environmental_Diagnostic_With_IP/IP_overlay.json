@@ -1,0 +1,65 @@
+
+{ 
+    "Metadata": 
+    { 
+        "DateCreated": "Tues March 6, 2018",
+        "IdReference": "Gridded world grump2.5arcmin",
+        "NodeCount": 1
+    },
+    "Defaults": 
+    { 
+        "IndividualAttributes": {
+            "PrevalenceDistributionFlag": 0, 
+            "PrevalenceDistribution1": 0.0,
+            "PrevalenceDistribution2": 0.0
+        },
+        ".IndividualProperties": [ 
+            { 
+                "Property": "Geographic",
+                "Values": [ "A", "B", "C", "D" ],
+                "Initial_Distribution": [ 0.25, 0.25, 0.25, 0.25 ],
+                "TransmissionMatrix": {
+                    "contact":  {
+                        "Matrix": [
+                            [1.0, 0.0, 0.0, 0.0 ],
+                            [0.0, 1.0, 0.0, 0.0 ],
+                            [0.0, 0.0, 1.0, 0.0 ],
+                            [0.0, 0.0, 0.0, 0.0 ]
+                        ]
+                    },
+                    "environmental" : {
+                        "Matrix": [
+                            [0.0, 2.0, 0.0, 0.0 ],
+                            [0.0, 0.0, 2.0, 0.0 ],
+                            [0.0, 0.0, 0.0, 2.0 ],
+                            [0.0, 0.0, 0.0, 0.0 ]
+                        ]
+                    }
+                },
+                "Transitions": []
+            }
+        ],
+        "IndividualProperties": [ 
+            { 
+                "Property": "Geographic",
+                "Values": [ "A", "B", "C", "D" ],
+                "Initial_Distribution": [ 0.25, 0.25, 0.25, 0.25 ],
+                "TransmissionMatrix": {
+                    "Route" : "environmental",
+                    "Matrix": [
+                        [0.0, 2.0, 0.0, 0.0 ],
+                        [0.0, 0.0, 2.0, 0.0 ],
+                        [0.0, 0.0, 0.0, 2.0 ],
+                        [0.0, 0.0, 0.0, 0.0 ]
+                    ]
+                },
+                "Transitions": []
+            }
+        ]
+    },
+    "Nodes": [
+        {
+            "NodeID": 340461476
+        }
+    ]
+}

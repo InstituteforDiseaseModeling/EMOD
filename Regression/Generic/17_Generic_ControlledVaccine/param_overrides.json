@@ -1,16 +1,16 @@
 {
-    "Default_Config_Path": "defaults/generic_default_config.json", 
+    "Default_Config_Path": "../../defaults/generic_default_config.json", 
     "parameters": {
         "Config_Name": "17_Generic_ControlledVaccine", 
         "Geography": "SamplesInput", 
         "Simulation_Duration": 120, 
         "Run_Number": 1,
-        "Base_Population_Scale_Factor": 0.1, 
+        "x_Base_Population": 0.1, 
         "Population_Scale_Type": "FIXED_SCALING",
         "Enable_Birth": 0, 
         "Enable_Vital_Dynamics": 0, 
         "Demographics_Filenames": [ "generic_scenarios_demographics.json" ],
-        "Listed_Events": [
+        "Custom_Individual_Events": [
             "VaccinatedA",
             "VaccinatedB",
             "VaccineExpiredA",

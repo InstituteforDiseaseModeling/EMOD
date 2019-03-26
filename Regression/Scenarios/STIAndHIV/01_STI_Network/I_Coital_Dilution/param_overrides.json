@@ -6,7 +6,7 @@
         "Run_Number" : 210,
         "Simulation_Duration": 730,
         "Demographics_Filenames": ["uniform_demographics.json","pfa_simple.json","PFA_overlay_rates.json","PFA_Concurrency.json"],
-        "Base_Population_Scale_Factor": 0.002, 
+        "x_Base_Population": 0.002, 
         "Enable_Vital_Dynamics": 0,
 
         "Enable_Coital_Dilution": 1, 

@@ -1,0 +1,56 @@
+{    
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 0.5,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Incubation_Period_Override": 0,
+                    "Antigen": 0,
+                    "Genome": 0
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 5,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "BroadcastCoordinatorEvent",
+                "Coordinator_Name" : "Coordnator_1",
+                "Cost_To_Consumer" : 10,
+                "Broadcast_Event" : "Coordinator_Event_1"
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 15,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "BroadcastCoordinatorEvent",
+                "Coordinator_Name" : "Coordnator_2",
+                "Cost_To_Consumer" : 20,
+                "Broadcast_Event" : "Coordinator_Event_2"
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 25,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "BroadcastCoordinatorEvent",
+                "Coordinator_Name" : "Coordnator_3",
+                "Cost_To_Consumer" : 30,
+                "Broadcast_Event" : "Coordinator_Event_3"
+            }
+        }
+    ],
+    "Use_Defaults": 1
+}

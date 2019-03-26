@@ -86,9 +86,9 @@
                                 }
                             ],
                             "Coverage": 1,
-                            "Delay_Distribution": "FIXED_DURATION",
-                            "Delay_Period": 10,
-                            "class": "DelayedIntervention"
+                            "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                            "class": "DelayedIntervention",
+                            "Delay_Period_Constant": 10
                         }
                     ],
                     "Primary_Time_Constant": 150,

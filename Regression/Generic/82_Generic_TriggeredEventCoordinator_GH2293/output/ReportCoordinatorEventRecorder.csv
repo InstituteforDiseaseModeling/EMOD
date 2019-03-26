@@ -1,0 +1,7 @@
+Time,Coordinator_Name,Event_Name
+5,Start_Coordnator_1n2,Start_Vaccinating_1n2
+6,1n2_Vaccinator,Done_Vaccinating_1n2
+7,1n2_Party,Done_Celebrating_1n2
+20,Start_Coordnator_3n4,Start_Vaccinating_3n4
+21,3n4_Vaccinator,Done_Vaccinating_3n4
+22,3n4_Party,Done_Celebrating_3n4

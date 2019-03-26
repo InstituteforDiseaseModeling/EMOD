@@ -1,0 +1,48 @@
+{
+    "Default_Config_Path": "../../defaults/polio_default_config.json",
+    "parameters": {
+        "DEMOGRAPHICS": {
+            "Age_Initialization_Distribution_Type": "DISTRIBUTION_SIMPLE",
+            "Demographics_Filenames": [
+                "Madagascar_Nosibe_2.5arcmin_demographics.json"
+            ],
+            "Enable_Natural_Mortality": 0
+        },
+        "EXECUTION": {
+            "CLUSTER": {
+                "Load_Balance_Filename": "Madagascar_Nosibe_2.5arcmin_load_balancing_8procs.bin",
+                "Num_Cores": 8
+            }
+        },
+        "MIGRATION": {
+            "AIR": {
+                "Air_Migration_Filename": "",
+                "Enable_Air_Migration": 0
+            },
+            "Enable_Family_Migration": 0,
+            "Enable_Migration_Heterogeneity": 0,
+            "Family_Migration_Filename": "",
+            "LOCAL": {
+                "Enable_Local_Migration": 1,
+                "Local_Migration_Filename": "Madagascar_Nosibe_2.5arcmin_local_migration.bin"
+            },
+            "Migration_Model": "FIXED_RATE_MIGRATION",
+            "Migration_Pattern": "WAYPOINTS_HOME",
+            "REGIONAL": {
+                "Enable_Regional_Migration": 0,
+                "Regional_Migration_Filename": ""
+            },
+            "Roundtrip_Waypoints": 5,
+            "SEA": {
+                "Enable_Sea_Migration": 0,
+                "Sea_Migration_Filename": ""
+            },
+            "x_Family_Migration": 1
+        },
+        "PRIMARY": {
+            "Config_Name": "51_Polio_Default_Geography -- multicore -- Madagascar_Nosibe",
+            "Geography": "Madagascar_Nosibe"
+        },
+        "Paralytic_Immunity_Titer": 8
+    }
+}

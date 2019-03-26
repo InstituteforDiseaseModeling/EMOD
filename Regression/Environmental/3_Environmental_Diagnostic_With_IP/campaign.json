@@ -1,0 +1,220 @@
+{
+    "Events": [
+        {
+            "comment" : "No infections, Negative_Event_Node",
+            "class": "CampaignEvent",
+            "Start_Day": 10,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Number_Repetitions" : 4,
+                "Timesteps_Between_Repetitions" : 5,
+                "Intervention_Config": {
+                    "class": "EnvironmentalDiagnostic",
+                    "Sample_Threshold": 1.0,
+                    "Environment_IP_Key_Value" : "Geographic:C",
+                    "Negative_Diagnostic_Event": "Negative_Event_Node", 
+                    "Positive_Diagnostic_Event" : "Positive_Event_Node"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day" : 100,
+            "Target_Demographic": "Everyone",
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 0,
+                "Target_Demographic": "Everyone",
+                "Property_Restrictions": [
+                    "Geographic:A"
+                ],
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "Incubation_Period_Override": 0,
+                    "class": "OutbreakIndividual"
+                }
+            },
+            "Event_Name": "Outbreak",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }
+        },
+        {
+            "comment" : "Max infections, Positive_Event_Node",
+            "class": "CampaignEvent",
+            "Start_Day": 101,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Number_Repetitions" : 6,
+                "Timesteps_Between_Repetitions" : 5,
+                "Intervention_Config": {
+                    "class": "EnvironmentalDiagnostic",
+                    "Sample_Threshold": 1.0,
+                    "Environment_IP_Key_Value" : "Geographic:C",
+                    "Negative_Diagnostic_Event": "Negative_Event_Node", 
+                    "Positive_Diagnostic_Event" : "Positive_Event_Node"
+                }
+            }
+        },
+        {
+            "comment" : "Very little infections, Negative_Event_Node",
+            "class": "CampaignEvent",
+            "Start_Day": 350,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Number_Repetitions" : 4,
+                "Timesteps_Between_Repetitions" : 5,
+                "Intervention_Config": {
+                    "class": "EnvironmentalDiagnostic",
+                    "Sample_Threshold": 1.0,
+                    "Environment_IP_Key_Value" : "Geographic:C",
+                    "Negative_Diagnostic_Event": "Negative_Event_Node", 
+                    "Positive_Diagnostic_Event" : "Positive_Event_Node"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 400,
+            "Target_Demographic": "Everyone",            
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 0,
+                "Target_Demographic": "Everyone",
+                "Property_Restrictions": [
+                    "Geographic:A"
+                ],
+                "Demographic_Coverage": 0.5,
+                "Intervention_Config": {
+                    "Incubation_Period_Override": 0,
+                    "class": "OutbreakIndividual"
+                }
+            },
+            "Event_Name": "Outbreak",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            } 
+        },
+        {
+            "comment" : "Smaller outbreak, Positive_Event_Node",
+            "class": "CampaignEvent",
+            "Start_Day": 401,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Number_Repetitions" : 6,
+                "Timesteps_Between_Repetitions" : 5,
+                "Intervention_Config": {
+                    "class": "EnvironmentalDiagnostic",
+                    "Sample_Threshold": 1.5,
+                    "Environment_IP_Key_Value" : "Geographic:C",
+                    "Negative_Diagnostic_Event": "Negative_Event_Node", 
+                    "Positive_Diagnostic_Event" : "Positive_Event_Node"
+                }
+            }
+        },
+        {
+            "comment" : "Back to no infections, Negative_Event_Node",
+            "class": "CampaignEvent",
+            "Start_Day": 700,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Number_Repetitions" : 4,
+                "Timesteps_Between_Repetitions" : 5,
+                "Intervention_Config": {
+                    "class": "EnvironmentalDiagnostic",
+                    "Sample_Threshold": 1.0,
+                    "Environment_IP_Key_Value" : "Geographic:C",
+                    "Negative_Diagnostic_Event": "Negative_Event_Node", 
+                    "Positive_Diagnostic_Event" : "Positive_Event_Node"
+                }
+            }
+        },
+        {
+            "comment": "Broadcast Event to start Surveillance",
+            "class": "CampaignEvent",
+            "Start_Day": 7,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "BroadcastCoordinatorEvent",
+                "Coordinator_Name" : "Coordnator_1",
+                "Cost_To_Consumer" : 10,
+                "Broadcast_Event" : "Start_ACF"
+            }
+        },
+        {
+            "comment": "Count events and respond so we can see impact to ReportSurveillanceEventRecorder.",
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "SurveillanceEventCoordinator",
+                "Coordinator_Name" : "ACF_Counter",
+                "Start_Trigger_Condition_List" : [ "Start_ACF" ],
+                "Stop_Trigger_Condition_List" : [ 
+                ],
+                "Duration" : -1,
+                "Incidence_Counter" : {
+                    "Counter_Type" : "PERIODIC",
+                    "Counter_Period" : 30,
+                    "Counter_Event_Type" : "NODE",
+                    "Trigger_Condition_List" : ["Positive_Event_Node"],
+                    "Node_Property_Restrictions" : [],
+                    "Property_Restrictions_Within_Node" : [],
+                    "Target_Demographic": "Everyone",
+                    "Demographic_Coverage" : 1.0
+                },
+                "Responder" : {
+                    "Responded_Event" : "Respond_To_Surveillance",
+                    "Threshold_Type" : "COUNT",
+                    "Action_List" :
+                    [
+                        {
+                            "Threshold" : 2,
+                            "Event_Type" : "COORDINATOR",
+                            "Event_To_Broadcast" : "Ind_Start_SIA_2"
+                        }
+                    ]
+                }
+            }            
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "TriggeredEventCoordinator",
+                "Coordinator_Name": "3n4_Vaccinator",
+                "Start_Trigger_Condition_List": [ "Ind_Start_SIA_2" ],
+                "Stop_Trigger_Condition_List": [],
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 0,
+                "Duration": -1,
+                "Target_Demographic": "Everyone",
+                "Node_Property_Restrictions": [],
+                "Property_Restrictions_Within_Node": [],
+                "Demographic_Coverage": 0.5,
+                "Intervention_Config": {
+                   "class": "SimpleVaccine",
+                   "Cost_To_Consumer": 2,
+                   "Vaccine_Take": 1,
+                   "Vaccine_Type": "AcquisitionBlocking",
+                   "Waning_Config": {
+                      "class": "WaningEffectBox",
+                      "Initial_Effect": 1.0,
+                      "Box_Duration": 100
+                   }
+                },
+                "Completion_Event": "SIA_Done"
+            }
+        }
+    ],
+    "Use_Defaults": 1
+}
+

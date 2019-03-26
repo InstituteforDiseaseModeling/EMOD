@@ -1,12 +1,12 @@
 {
-    "Dont_Allow_Duplicates"    : 0,
-    "Cost_To_Consumer"         : 0,
-    "NodeID_To_Migrate_To"     : 2,
-    "Is_Family_Trip"           : 0,
-    "Is_Moving"                : 0,
-    "Duration_Before_Leaving_Distribution_Type" : "FIXED_DURATION",
-    "Duration_Before_Leaving_Fixed"             : 77.0,
-    "Duration_At_Node_Distribution_Type"        : "GAUSSIAN_DURATION",
-    "Duration_At_Node_Gausian_Mean"             : 9.0,
-    "Duration_At_Node_Gausian_StdDev"           : 2.0
+    "Dont_Allow_Duplicates": 0,
+    "Cost_To_Consumer": 0,
+    "NodeID_To_Migrate_To": 2,
+    "Is_Family_Trip": 0,
+    "Is_Moving": 0,
+    "Duration_At_Node_Mean": 9.0,
+    "Duration_At_Node_Std_Dev": 2.0,
+    "Duration_Before_Leaving_Constant": 77.0,
+    "Duration_Before_Leaving_Distribution": "CONSTANT_DISTRIBUTION",
+    "Duration_At_Node_Distribution": "GAUSSIAN_DISTRIBUTION"
 }

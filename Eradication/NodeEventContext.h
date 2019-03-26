@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -19,20 +19,21 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Types.h"
 #include "Configuration.h"
 #include "suids.hpp"
-#include "RANDOM.h"
-#include "IdmDateTime.h"
-#include "Contexts.h"
 #include "IndividualEventContext.h"
 #include "Interventions.h" // for IIndividualHumanEventObserver
+#include "ExternalNodeId.h"
 
 namespace Kernel
 {
+    struct INodeContext;
+    struct IIndividualEventBroadcaster;
     struct NodeDemographics;
     class Node;
     class StrainIdentity;
     
-    struct INodeContext;
     class IndividualHuman;
+    class RANDOMBASE;
+    struct IdmDateTime;
 
     /* possible TODO: could differentiate these in the future to provide extra information related to the travel
     struct IIndividualHumanTravelLinkedDistributionContext : public IIndividualHumanEventContext
@@ -42,7 +43,7 @@ namespace Kernel
 
     struct IDMAPI IOutbreakConsumer : public ISupports
     {
-        virtual void AddImportCases(StrainIdentity* outbreak_strainID, float import_age, NaturalNumber num_cases_per_node ) = 0;
+        virtual void AddImportCases( StrainIdentity* outbreak_strainID, float import_age, NaturalNumber num_cases_per_node, ProbabilityNumber prob_infect ) = 0;
         //virtual void IncreasePrevalence(StrainIdentity* outbreak_strainID, IEventCoordinator2* pEC) = 0;
     };
 
@@ -63,10 +64,10 @@ namespace Kernel
         // If you prefer lambda functions/functors, you can use this.
         typedef std::function<void (/*suids::suid, */IIndividualHumanEventContext*)> individual_visit_function_t;
         virtual void VisitIndividuals(individual_visit_function_t func) = 0;
-        virtual int VisitIndividuals(IVisitIndividual* pIndividualVisitImpl, int limit = -1) = 0;
+        virtual int VisitIndividuals(IVisitIndividual* pIndividualVisitImpl) = 0;
 
         virtual const NodeDemographics& GetDemographics() = 0;
-        virtual IdmDateTime GetTime() const = 0;
+        virtual const IdmDateTime& GetTime() const = 0;
         //virtual float GetYear() const = 0;
 
         // to update any node-owned interventions
@@ -84,12 +85,14 @@ namespace Kernel
        
         virtual bool IsInPolygon(float* vertex_coords, int numcoords) = 0;
         virtual bool IsInPolygon( const json::Array &poly ) = 0;
-        virtual bool IsInExternalIdSet( const tNodeIdList& nodelist ) = 0;
-        virtual ::RANDOMBASE* GetRng() = 0;
+        virtual bool IsInExternalIdSet( const std::list<ExternalNodeId_t>& nodelist ) = 0;
+        virtual RANDOMBASE* GetRng() = 0;
         virtual INodeContext* GetNodeContext() = 0;
 
         virtual int GetIndividualHumanCount() const = 0;
         virtual ExternalNodeId_t GetExternalId() const = 0;
+
+        virtual IIndividualEventBroadcaster* GetIndividualEventBroadcaster() = 0;
     };
 
     class Simulation;

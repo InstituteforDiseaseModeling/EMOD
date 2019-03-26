@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -16,9 +16,11 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IIndividualHumanHIV.h"
 #include "InfectionHIV.h"
 #include "IndividualEventContext.h"
+#include "IIndividualHumanContext.h"
 #include "NodeEventContext.h"
 #include "SimulationConfig.h"
 #include "EventTrigger.h"
+#include "IdmDateTime.h"
 
 // In this solution, the HIVInterventionsContainer, which owns all ART-specific business knowledge,
 // notifies the immune system of the "ART event". Not sure I like that.
@@ -225,16 +227,8 @@ namespace Kernel
 
         if( test_result && !ever_tested_HIV_positive)
         {
-            INodeTriggeredInterventionConsumer* broadcaster = nullptr;
-            if (s_OK != parent->GetEventContext()->GetNodeEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster))
-            {
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, 
-                                               "parent->GetEventContext()->GetNodeEventContext()", 
-                                               "INodeTriggeredInterventionConsumer", 
-                                               "INodeEventContext" );
-            }
-
-            broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), EventTrigger::HIVNewlyDiagnosed );
+            IIndividualEventBroadcaster* broadcaster = parent->GetEventContext()->GetNodeEventContext()->GetIndividualEventBroadcaster();
+            broadcaster->TriggerObservers( parent->GetEventContext(), EventTrigger::HIVNewlyDiagnosed );
         }
 
         ever_tested = true;
@@ -488,16 +482,8 @@ namespace Kernel
         // Make sure ART dropouts do no return to ON_BUT_FAILING
         m_suppression_failure_timer = INACTIVE_DURATION;
 
-        INodeTriggeredInterventionConsumer* broadcaster = nullptr;
-        if (s_OK != parent->GetEventContext()->GetNodeEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster))
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, 
-                                           "parent->GetEventContext()->GetNodeEventContext()", 
-                                           "INodeTriggeredInterventionConsumer",
-                                           "INodeEventContext" );
-        }
-
-        broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), EventTrigger::StoppedART );
+        IIndividualEventBroadcaster* broadcaster = parent->GetEventContext()->GetNodeEventContext()->GetIndividualEventBroadcaster();
+        broadcaster->TriggerObservers( parent->GetEventContext(), EventTrigger::StoppedART );
     }
 
     void HIVInterventionsContainer::ApplyDrugConcentrationAction( std::string , float current_concentration )
@@ -507,15 +493,6 @@ namespace Kernel
 
     void HIVInterventionsContainer::GoOnART( bool viral_suppression, float daysToAchieveSuppression )
     {
-        INodeTriggeredInterventionConsumer* broadcaster = nullptr;
-        if (s_OK != parent->GetEventContext()->GetNodeEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster))
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__,
-                                           "parent->GetEventContext()->GetNodeEventContext()",
-                                           "INodeTriggeredInterventionConsumer", 
-                                           "INodeEventContext" );
-        }
-
         release_assert( hiv_parent );
         release_assert( hiv_parent->GetHIVSusceptibility() );
         if( hiv_parent->GetHIVInfection() == nullptr )
@@ -549,7 +526,8 @@ namespace Kernel
 
         days_since_most_recent_ART_start = 0.0f;
 
-        broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), EventTrigger::StartedART );
+        IIndividualEventBroadcaster* broadcaster = parent->GetEventContext()->GetNodeEventContext()->GetIndividualEventBroadcaster();
+        broadcaster->TriggerObservers( parent->GetEventContext(), EventTrigger::StartedART );
         LOG_DEBUG_F( "Individual %d is now on ART.\n", parent->GetSuid().data );
 
         // If not going to achieve viral suppression, stop here so as to 1) avoid computing failure and 2) skip maternal transmission mod
@@ -708,18 +686,8 @@ namespace Kernel
         //first get the pointer to the person, parent is the generic individual
         release_assert(parent);
 
-        IIndividualHumanEventContext * HIVEventContext = NULL;
-        if (s_OK != parent->QueryInterface(GET_IID(IIndividualHumanEventContext), (void**)&HIVEventContext))
-        {
-            throw QueryInterfaceException(__FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()->GetNodeEventContext()", "INodeTriggeredInterventionConsumer", "INodeEventContext");
-        }
-
-        INodeTriggeredInterventionConsumer* broadcaster = nullptr;
-        if (s_OK != HIVEventContext->GetNodeEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster))
-        {
-            throw QueryInterfaceException(__FILE__, __LINE__, __FUNCTION__, "HIVEventContext-->GetNodeEventContext()", "INodeTriggeredInterventionConsumer", "INodeEventContext");
-        }
-        broadcaster->TriggerNodeEventObservers(parent->GetEventContext(), EventTrigger::NewExternalHIVInfection);
+        IIndividualEventBroadcaster* broadcaster = parent->GetEventContext()->GetNodeEventContext()->GetIndividualEventBroadcaster();
+        broadcaster->TriggerObservers(parent->GetEventContext(), EventTrigger::NewExternalHIVInfection);
     }
 
 }

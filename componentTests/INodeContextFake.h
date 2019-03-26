@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -9,8 +9,11 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #pragma once
 
-#include "Contexts.h"
+#include "ISimulationContext.h"
 #include "NodeEventContext.h"
+#include "IdmDateTime.h"
+#include "INodeContext.h"
+#include "TransmissionGroupMembership.h"
 
 using namespace Kernel;
 
@@ -20,12 +23,14 @@ private:
     suids::suid m_suid ;
     INodeEventContext* m_pNEC;
     NPKeyValueContainer m_NodeProperties;
+    IdmDateTime m_Time;
 
 public:
     INodeContextFake( int id = 1 )
     : m_suid()
     , m_pNEC(nullptr)
     , m_NodeProperties()
+    , m_Time()
     {
         m_suid.data = id ;
     }
@@ -33,6 +38,8 @@ public:
     INodeContextFake( const suids::suid& rSuid, INodeEventContext* pNEC = nullptr )
     : m_suid(rSuid)
     , m_pNEC(pNEC)
+    , m_NodeProperties()
+    , m_Time()
     {
         if( m_pNEC != nullptr )
         {
@@ -65,27 +72,32 @@ public:
         throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented.");
     }
 
-    virtual ::RANDOMBASE* GetRng() override
+    virtual RANDOMBASE* GetRng() override
     {
         throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented.");
     }
 
-    virtual void ExposeIndividual( IInfectable* candidate, const TransmissionGroupMembership_t* individual, float dt ) override
+    virtual void SetRng( RANDOMBASE* prng ) override
+    {
+        throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." );
+    }
+
+    virtual void ExposeIndividual( IInfectable* candidate, TransmissionGroupMembership_t individual, float dt ) override
     {
         throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented.");
     }
 
-    virtual void DepositFromIndividual( const IStrainIdentity& strain_IDs, float contagion_quantity, const TransmissionGroupMembership_t* individual ) override
+    virtual void DepositFromIndividual( const IStrainIdentity& strain_IDs, float contagion_quantity, TransmissionGroupMembership_t individual, TransmissionRoute::Enum route ) override
     {
         throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented.");
     }
 
-    virtual void GetGroupMembershipForIndividual( const RouteList_t& route, tProperties* properties, TransmissionGroupMembership_t* membershipOut ) override
+    virtual void GetGroupMembershipForIndividual( const RouteList_t& route, const tProperties& properties, TransmissionGroupMembership_t& membershipOut ) override
     {
         throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented.");
     }
 
-    virtual void UpdateTransmissionGroupPopulation( const TransmissionGroupMembership_t* membership, float size_changes,float mc_weight ) override
+    virtual void UpdateTransmissionGroupPopulation( const tProperties& properties, float size_changes,float mc_weight ) override
     {
         throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented.");
     }
@@ -95,7 +107,7 @@ public:
         throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented.");
     }
 
-    virtual float GetTotalContagion( const TransmissionGroupMembership_t* membership ) override
+    virtual float GetTotalContagion( void ) override
     {
         throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented.");
     }
@@ -103,6 +115,11 @@ public:
     virtual RouteList_t& GetTransmissionRoutes() const override
     {
         throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented.");
+    }
+
+    virtual float GetContagionByRouteAndProperty( const std::string& route, const IPKeyValue& property_value )
+    {
+        throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." );
     }
 
     virtual float getSinusoidalCorrection(float sinusoidal_amplitude, float sinusoidal_phase) const override
@@ -130,15 +147,32 @@ public:
         return m_NodeProperties;
     }
 
-    virtual IdmDateTime GetTime() const override
+    virtual const IdmDateTime& GetTime() const override
     {
-        IdmDateTime time;
-        return time ;
+        if( m_pNEC != nullptr )
+        {
+            return m_pNEC->GetTime();
+        }
+        else
+        {
+            static IdmDateTime time(0);
+            return time;
+        }
     }
 
     virtual float GetInfected() const override
     {
         throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented.");
+    }
+
+    virtual float GetSymptomatic() const override
+    {
+        throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." );
+    }
+
+    virtual float GetNewlySymptomatic() const override
+    {
+        throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." );
     }
 
     virtual float GetStatPop() const override
@@ -202,7 +236,7 @@ public:
         throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented.");
     }
 
-    act_prob_vec_t DiscreteGetTotalContagion(const TransmissionGroupMembership_t* membership) override
+    act_prob_vec_t DiscreteGetTotalContagion( void ) override
     {
         throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented.");
     }
@@ -276,8 +310,10 @@ public:
     virtual void SetContextTo(ISimulationContext*)                                                             override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method is not implemented."); }
     virtual void PopulateFromDemographics()                                                                    override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method is not implemented."); }
     virtual void InitializeTransmissionGroupPopulations()                                                      override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method is not implemented."); }
+    virtual ITransmissionGroups* GetTransmissionGroups() const                                                 override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method is not implemented."); }
     virtual void Update(float)                                                                                 override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method is not implemented."); }
     virtual IIndividualHuman* processImmigratingIndividual(IIndividualHuman*)                                  override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method is not implemented."); }
+    virtual void SortHumans()                                                                                  override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method is not implemented."); }
 
     virtual float GetBasePopulationScaleFactor() const
     {

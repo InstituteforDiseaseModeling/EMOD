@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -693,19 +693,19 @@ std::wstring DllLoader::GetFullDllPath(std::wstring& pluginDir, const char* dllP
     std::string sDllRootPath = "";
     if (dllPath)
     {
-        LOG_INFO( "dllPath passed in\n" );
+        LOG_DEBUG( "dllPath passed in\n" );
         sDllRootPath = dllPath;
     }
     else if (EnvPtr)
     {
-        LOG_INFO( "dllPath not passed in, getting from EnvPtr\n" );
+        LOG_DEBUG( "dllPath not passed in, getting from EnvPtr\n" );
         release_assert( EnvPtr );
         sDllRootPath = EnvPtr->DllPath;
     }
-    LOG_INFO( "Trying to copy from string to wstring.\n" );
+    LOG_DEBUG( "Trying to copy from string to wstring.\n" );
     std::wstring wsDllRootPath;
     wsDllRootPath.assign(sDllRootPath.begin(), sDllRootPath.end());
-    LOG_INFO_F("DLL ws root path: %S\n", wsDllRootPath.c_str());
+    LOG_DEBUG_F("DLL ws root path: %S\n", wsDllRootPath.c_str());
     return FileSystem::Concat( wsDllRootPath, pluginDir );
 }
 
@@ -752,12 +752,12 @@ bool DllLoader::GetDllsVersion(const char* dllPath, std::wstring& wsPluginDir,li
             if( dllPath.find( L".dll" ) == std::string::npos ||
                 dllPath.find( L".dll" ) != dllPath.length()-4 )
             {
-                LOG_INFO_F("Not a dll ( %S) \n", ffd.cFileName);
+                LOG_DEBUG_F("Not a dll ( %S) \n", ffd.cFileName);
                 continue;
             }
                 
 
-            LOG_INFO_F("Calling LoadLibrary for %S\n", dllPath.c_str());
+            LOG_DEBUG_F("Calling LoadLibrary for %S\n", dllPath.c_str());
             HMODULE ecDll = LoadLibrary( dllPath.c_str() );
             if( ecDll == nullptr )
             {
@@ -766,7 +766,7 @@ bool DllLoader::GetDllsVersion(const char* dllPath, std::wstring& wsPluginDir,li
             else
             {
 
-                LOG_INFO("Calling GetProcAddress for GetEModuleVersion\n");
+                LOG_DEBUG("Calling GetProcAddress for GetEModuleVersion\n");
                 char emodVersion[64];
                 if (!CheckEModuleVersion(ecDll, emodVersion))
                 {

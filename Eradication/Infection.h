@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -12,22 +12,21 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <map>
 
 #include "suids.hpp"
-#include "Contexts.h"
 
 class Configuration;
 
 #include "Sugar.h"
 #include "SimulationEnums.h"
-#include "DurationDistribution.h"
-
-
+#include "IDistribution.h"
 #include "IInfection.h"
-
 #include "Configure.h"
 
 namespace Kernel
 {
+    class StrainIdentity;
     class Susceptibility;
+    class SimulationConfig;
+    struct IIndividualHumanContext;
 
     class InfectionConfig : public JsonConfigurable
     {
@@ -36,15 +35,19 @@ namespace Kernel
         virtual bool Configure( const Configuration* config ) override;
 
         static bool enable_disease_mortality;
+        static float symptomatic_infectious_offset;
+        static unsigned int number_basestrains;
+        static unsigned int number_substrains; // genetic variants
 
     protected:
         friend class Infection;
         
-        static DurationDistribution incubation_distribution;
-        static DurationDistribution infectious_distribution;
+        static IDistribution* infectious_distribution;
+        static IDistribution* incubation_distribution;
         static float base_infectivity;
         static float base_mortality;
         static MortalityTimeCourse::Enum                          mortality_time_course;                            // MORTALITY_TIME_COURSE
+
 
 
         GET_SCHEMA_STATIC_WRAPPER(InfectionConfig)
@@ -80,6 +83,8 @@ namespace Kernel
         virtual bool IsActive() const override;
         virtual NonNegativeFloat GetDuration() const override;
         virtual bool StrainMatches( IStrainIdentity * pStrain );
+        
+        virtual bool IsSymptomatic() const override;
 
     protected:
         IIndividualHumanContext *parent;
@@ -106,6 +111,14 @@ namespace Kernel
 
         virtual void CreateInfectionStrain(IStrainIdentity* infstrain);
         virtual void EvolveStrain(ISusceptibilityContext* immunity, float dt);
+
+        virtual bool  IsNewlySymptomatic() const override;
+        virtual void  UpdateSymptomatic( float const duration, float const incubation_timer );
+        virtual bool  DetermineSymptomatology( float const duration, float const incubation_timer );
+
+    private:
+        bool m_is_newly_symptomatic;
+        bool m_is_symptomatic;
 
         DECLARE_SERIALIZABLE(Infection);
     };

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -15,8 +15,11 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Common.h"
 #include "Malaria.h"
 #include "NodeMalariaEventContext.h"
+#include "MalariaParameters.h"
 #include "SimulationConfig.h"
+#include "IGenomeMarkers.h"
 #include "MathFunctions.h"
+#include "DistributionFactory.h"
 
 SETUP_LOGGING( "NodeMalaria" )
 
@@ -44,8 +47,8 @@ namespace Kernel
         NodeMalaria::setupEventContextHost();    // This is marked as a virtual function, but isn't virtualized here because we're still in the ctor.
     }
 
-    NodeMalaria::NodeMalaria(ISimulationContext *simulation, suids::suid suid) 
-    : NodeVector(simulation, suid)
+    NodeMalaria::NodeMalaria(ISimulationContext *simulation, ExternalNodeId_t externalNodeId, suids::suid suid)
+    : NodeVector(simulation, externalNodeId, suid)
     , m_Parasite_positive(0)
     , m_Log_parasites(0)
     , m_Fever_positive(0)
@@ -69,7 +72,7 @@ namespace Kernel
     }
 
     bool NodeMalaria::Configure( const Configuration * config )
-    {
+    { 
         return NodeVector::Configure( config );
     }
 
@@ -78,9 +81,9 @@ namespace Kernel
         NodeVector::Initialize();
     }
 
-    NodeMalaria *NodeMalaria::CreateNode(ISimulationContext *simulation, suids::suid suid)
+    NodeMalaria *NodeMalaria::CreateNode(ISimulationContext *simulation, ExternalNodeId_t externalNodeId, suids::suid suid)
     {
-        NodeMalaria *newnode = _new_ NodeMalaria(simulation, suid);
+        NodeMalaria *newnode = _new_ NodeMalaria(simulation, externalNodeId, suid);
         newnode->Initialize();
 
         return newnode;
@@ -133,20 +136,23 @@ namespace Kernel
         switch( SusceptibilityConfig::susceptibility_initialization_distribution_type )
         {
         case DistributionType::DISTRIBUTION_COMPLEX:
-            temp_susceptibility = float(Probability::getInstance()->fromDistribution(susceptibility_dist_type, susceptibility_dist1, susceptibility_dist2, 0.0, 1.0));
-            LOG_VALID_F( "creating individual with age = %f and susceptibility = %f\n",  ind_init_age, temp_susceptibility);
+        {
+            std::unique_ptr<IDistribution> distribution( DistributionFactory::CreateDistribution( susceptibility_dist_type ) );
+            distribution->SetParameters( susceptibility_dist1, susceptibility_dist2, 0.0 );
+            temp_susceptibility = distribution->Calculate( GetRng() );
+            LOG_VALID_F( "creating individual with age = %f and susceptibility = %f\n", ind_init_age, temp_susceptibility );
             break;
-            
+        }
         case DistributionType::DISTRIBUTION_SIMPLE:
-            throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Immunity_Initialization_Distribution_Type", "DISTRIBUTION_SIMPLE", "Simulation_Type", "MALARIA_SIM");
+            throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Susceptibility_Initialization_Distribution_Type", "DISTRIBUTION_SIMPLE", "Simulation_Type", "MALARIA_SIM");
 
         case DistributionType::DISTRIBUTION_OFF:
-            throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Immunity_Initialization_Distribution_Type", "DISTRIBUTION_OFF", "Simulation_Type", "MALARIA_SIM");
+            throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Susceptibility_Initialization_Distribution_Type", "DISTRIBUTION_OFF", "Simulation_Type", "MALARIA_SIM");
 
         default:
             if( !JsonConfigurable::_dryrun )
             {
-                throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "Immunity_Initialization_Distribution_Type", SusceptibilityConfig::susceptibility_initialization_distribution_type, DistributionType::pairs::lookup_key( SusceptibilityConfig::susceptibility_initialization_distribution_type ) );
+                throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "Susceptibility_Initialization_Distribution_Type", SusceptibilityConfig::susceptibility_initialization_distribution_type, DistributionType::pairs::lookup_key( SusceptibilityConfig::susceptibility_initialization_distribution_type ) );
             }
         }
 

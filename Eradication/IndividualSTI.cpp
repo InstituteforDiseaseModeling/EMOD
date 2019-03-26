@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -29,6 +29,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IConcurrency.h"
 #include "StrainIdentity.h"
 #include "EventTrigger.h"
+#include "RANDOM.h"
 
 SETUP_LOGGING( "IndividualSTI" )
 
@@ -163,13 +164,13 @@ namespace Kernel
 
         IConcurrency* p_concurrency = p_sti_node->GetSociety()->GetConcurrency();
 
-        promiscuity_flags |= p_concurrency->GetProbExtraRelationalBitMask( prop, prop_value, Gender::Enum(GetGender()), IS_SUPER_SPREADER() );
+        promiscuity_flags |= p_concurrency->GetProbExtraRelationalBitMask( GetRng(), prop, prop_value, Gender::Enum(GetGender()), IS_SUPER_SPREADER() );
 
         // Max allowable relationships
         NaturalNumber totalMax = 0;
         for( int rel = 0; rel < RelationshipType::COUNT; rel++)
         {
-            max_relationships[rel] = p_concurrency->GetMaxAllowableRelationships( prop, prop_value, Gender::Enum(GetGender()), RelationshipType::Enum(rel) );
+            max_relationships[rel] = p_concurrency->GetMaxAllowableRelationships( GetRng(), prop, prop_value, Gender::Enum(GetGender()), RelationshipType::Enum(rel) );
             totalMax += max_relationships[rel];
         }
         if( totalMax > MAX_RELATIONSHIPS_PER_INDIVIDUAL_ALL_TYPES )
@@ -227,15 +228,14 @@ namespace Kernel
             debut_inv_kappa = IndividualHumanSTIConfig::debutAgeYrsFemale_inv_kappa;
             debut_lambda    = IndividualHumanSTIConfig::debutAgeYrsFemale_lambda;
         }
-        float debut_draw = float(DAYSPERYEAR * Environment::getInstance()->RNG->Weibull2( debut_lambda, debut_inv_kappa ));
+        float debut_draw = float(DAYSPERYEAR * GetRng()->Weibull2( debut_lambda, debut_inv_kappa ));
         LOG_DEBUG_F( "debut_draw = %f with lamba %f and kappa %f\n", debut_draw, debut_lambda, debut_inv_kappa );
         sexual_debut_age = (std::max)(min_age_sexual_debut_in_days, debut_draw );
 
         LOG_DEBUG_F( "Individual ? will debut at age %f (yrs)f.\n", sexual_debut_age/DAYSPERYEAR );
 
         // Promiscuity flags, including behavioral super-spreader
-        auto draw = randgen->e();
-        if( draw < p_sti_node->GetSociety()->GetConcurrency()->GetProbSuperSpreader() )
+        if( GetRng()->SmartDraw( p_sti_node->GetSociety()->GetConcurrency()->GetProbSuperSpreader() ) )
         {
             promiscuity_flags |= SUPER_SPREADER;
         }
@@ -258,16 +258,20 @@ namespace Kernel
         potential_exposure_flag = true;
     }
 
-    void IndividualHumanSTI::ExposeToInfectivity(float dt, const TransmissionGroupMembership_t* transmissionGroupMembership)
+    void IndividualHumanSTI::ExposeToInfectivity(float dt, TransmissionGroupMembership_t transmissionGroupMembership)
     {
-        // call UPM if any relationships have been deposited to
         if( potential_exposure_flag )
         {
             UpdateGroupMembership(); // we "JIT" this function (just in time)
             LOG_DEBUG_F( "Exposing individual %d\n", GetSuid().data );
             release_assert( IsInfected() == false );
-            parent->ExposeIndividual(this, transmissionGroupMembership, dt);
-            potential_exposure_flag = false;
+            // Iterate over all our relationships
+            for( auto rel: transmissionGroupMembershipByRelationship )
+            {
+                // rel.second is group id
+                parent->ExposeIndividual(this, rel.second, dt);
+                potential_exposure_flag = false;
+            }
         }
     }
 
@@ -277,7 +281,6 @@ namespace Kernel
         {
             return;
         }
-
         // First thing is to cast cp to IContagionProbabilities.
         IContagionProbabilities * pCP_as_Probs = nullptr;
         if ((const_cast<IContagionPopulation*>(cp))->QueryInterface(GET_IID(IContagionProbabilities), (void**)&pCP_as_Probs) != s_OK)
@@ -350,7 +353,7 @@ namespace Kernel
         }
         float prob_infection = 1.0f - prob_non_infection;
         LOG_INFO_F( "prob_infection = %f\n", prob_infection );
-        if( randgen->e() < prob_infection )
+        if( GetRng()->SmartDraw( prob_infection ) )
         {
             StrainIdentity strainId;
             // The ContagionProbability object can give us the ID of the Infector (Depositor)
@@ -359,12 +362,6 @@ namespace Kernel
             strainId.SetAntigenID(pCP_as_Probs->GetInfectorID());
             AcquireNewInfection( &strainId );
         }
-    }
-
-    void IndividualHumanSTI::ReportInfectionState()
-    {
-        //LOG_DEBUG_F( "Setting m_new_infection_state to NewInfection.\n" );
-        m_new_infection_state = NewInfectionState::NewInfection;
     }
 
     IndividualHumanSTI::IndividualHumanSTI(suids::suid _suid, float monte_carlo_weight, float initial_age, int gender)
@@ -432,7 +429,10 @@ namespace Kernel
         )
     {
         IndividualHuman::Update( currenttime, dt );
+    }
 
+    void IndividualHumanSTI::UpdatePausedRelationships( const IdmDateTime& rCurrentTime, float dt )
+    {
         // ---------------------------------------------------------------
         // --- Update the individual pointers in the paused relationships.
         // --- This is to help against using invalid pointers.
@@ -454,7 +454,7 @@ namespace Kernel
         if( was_pre_debut && is_post_debut )
         {
             // Broadcast STIDebut
-            broadcaster->TriggerNodeEventObservers( GetEventContext(), EventTrigger::STIDebut );
+            broadcaster->TriggerObservers( GetEventContext(), EventTrigger::STIDebut );
         }
     }
 
@@ -540,22 +540,14 @@ namespace Kernel
 
     void IndividualHumanSTI::UpdateGroupMembership()
     {
-        const RouteList_t& routes = parent->GetTransmissionRoutes();
-
-        static_cast<NodeSTI*>(p_sti_node)->GetGroupMembershipForIndividual_STI( routes, &relationship_properties, &transmissionGroupMembership );
+        static_cast<NodeSTI*>(p_sti_node)->GetGroupMembershipForIndividual_STI( relationship_properties, transmissionGroupMembershipByRelationship );
     }
 
     void IndividualHumanSTI::UpdateInfectiousnessSTI(act_prob_vec_t &act_prob_vec, unsigned int rel_id)
     {
         UpdateGroupMembership();
         LOG_DEBUG_F( "Doing %s for individual %d and relationship %d/pool_index %d.\n",
-                    __FUNCTION__, GetSuid().data, rel_id, transmissionGroupMembership[ rel_id ] );
-
-        // DJK: The following code seems overly complicated for the task at hand
-        // TBD: This switcharoo thing could probably be replaced by a membership map in RelationshipGroups
-        auto transmissionGroupMembershipSave = transmissionGroupMembership;
-        transmissionGroupMembership.clear();
-        transmissionGroupMembership[ rel_id ] = transmissionGroupMembershipSave[ rel_id ];
+                    __FUNCTION__, GetSuid().data, rel_id, transmissionGroupMembershipByRelationship[ rel_id ] );
 
         //IndividualHuman::UpdateInfectiousness(dt);
         infectiousness = 0;
@@ -565,6 +557,7 @@ namespace Kernel
         else if( infections.size() > 1 )
             throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "STI/HIV does not support superinfection yet." );
 
+        auto transmissionGroupMembership = transmissionGroupMembershipByRelationship[ rel_id ];
         for (auto infection : infections)
         {
             // For STI/HIV, infectiousness should be the per-act probability of transmission
@@ -585,16 +578,13 @@ namespace Kernel
                     for( unsigned int act_idx = 0; act_idx < act_prob_i.num_acts; ++act_idx )
                     {
                         LOG_DEBUG_F( "Individual %d depositing contagion PROBABILITY %f into (relationship) transmission group.\n", GetSuid().data, prob_per_act );
-                        parent->DepositFromIndividual( tmp_strainIDs, prob_per_act * act_prob_i.prob_per_act, &transmissionGroupMembership);
+                        parent->DepositFromIndividual( tmp_strainIDs, prob_per_act * act_prob_i.prob_per_act, transmissionGroupMembership);
                     }
                 }
             }
         }
 
-        infectiousness *= susceptibility->getModTransmit() * interventions->GetInterventionReducedTransmit();
-
-        // Restore network
-        transmissionGroupMembership = transmissionGroupMembershipSave;
+        infectiousness *= susceptibility->getModTransmit() * interventions->GetInterventionReducedTransmit(); 
     }
 
     void IndividualHumanSTI::UpdateInfectiousness(float dt)
@@ -609,8 +599,9 @@ namespace Kernel
         {
             for (auto relationship : relationships)
             {
-                release_assert( relationship );
-                relationship->Consummate( dt );
+                release_assert( relationship ); 
+                relationship->Consummate( GetRng(), dt ); // JHHB: ugh. Passing rng pointers around does not seem right
+                LOG_VALID_F( "Individual %d is consummating relationship %d.\n", GetSuid().data, relationship->GetSuid().data );
             }
         }
     }
@@ -653,7 +644,7 @@ namespace Kernel
 
         IndividualHuman::AcquireNewInfection( infstrain, incubation_period_override );
 
-        broadcaster->TriggerNodeEventObservers( GetEventContext(), EventTrigger::STINewInfection );
+        broadcaster->TriggerObservers( GetEventContext(), EventTrigger::STINewInfection );
     }
 
     void
@@ -725,10 +716,10 @@ namespace Kernel
 
             // At least one relationship could be formed
             // Advance total ellapsed time by time to next relationship
-            ellapsed_time += randgen->expdist(cumulative_rate);
+            ellapsed_time += GetRng()->expdist(cumulative_rate);
             if (ellapsed_time <= dt)
             {
-                float random_draw = randgen->e() * cumulative_rate;
+                float random_draw = GetRng()->e() * cumulative_rate;
                 float running_sum = 0.0f;
                 int type=0;
                 for (type = 0; type < RelationshipType::COUNT; type++)
@@ -817,7 +808,7 @@ namespace Kernel
             r_partner_map[ partner_id ] = FLT_MAX;
         }
 
-        broadcaster->TriggerNodeEventObservers(GetEventContext(), EventTrigger::EnteredRelationship);
+        broadcaster->TriggerObservers(GetEventContext(), EventTrigger::EnteredRelationship);
     }
 
     void
@@ -854,7 +845,7 @@ namespace Kernel
             r_partner_map[ partner_id ] = float( parent->GetTime().time );
         }
 
-        broadcaster->TriggerNodeEventObservers( GetEventContext(), EventTrigger::ExitedRelationship );
+        broadcaster->TriggerObservers( GetEventContext(), EventTrigger::ExitedRelationship );
     }
 
     bool
@@ -1155,7 +1146,7 @@ namespace Kernel
                 for( auto iterator = relationships.begin(); iterator != relationships.end(); /**/)
                 {
                     auto rel = *iterator++;
-                    RelationshipMigrationAction::Enum migration_action = rel->GetMigrationAction( GetNodeEventContext()->GetRng() );
+                    RelationshipMigrationAction::Enum migration_action = rel->GetMigrationAction( GetRng() );
                     if( migration_action == RelationshipMigrationAction::MIGRATE )
                     {
                         // -------------------------------
@@ -1267,7 +1258,7 @@ namespace Kernel
 
         if( (prev_total_coital_acts == 0) && (m_TotalCoitalActs > 0) )
         {
-            broadcaster->TriggerNodeEventObservers( GetEventContext(), EventTrigger::FirstCoitalAct );
+            broadcaster->TriggerObservers( GetEventContext(), EventTrigger::FirstCoitalAct );
         }
     }
 

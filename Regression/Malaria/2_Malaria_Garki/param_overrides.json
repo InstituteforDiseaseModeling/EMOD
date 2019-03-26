@@ -14,7 +14,7 @@
         ],
         "Enable_Initial_Prevalence": 1
     },
-    "Default_Config_Path": "defaults/malaria_default_config.json",
+    "Default_Config_Path": "../../defaults/malaria_default_config.json",
     "EXECUTION": {
         "CLUSTER": {
             "LOAD_BALANCING": {

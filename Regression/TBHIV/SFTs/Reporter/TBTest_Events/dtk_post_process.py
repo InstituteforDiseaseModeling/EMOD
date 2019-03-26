@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import json
-import dtk_sft
+import dtk_test.dtk_sft as sft
 import math
 import numpy as np
 import pandas as pd
@@ -95,7 +95,7 @@ def parse_output_file(output_filename="test.txt", simulation_timestep=1, debug=F
     filtered_lines = []
     with open(output_filename) as logfile:
         for line in logfile:
-            if dtk_sft.has_match(line,matches):
+            if sft.has_match(line,matches):
                 filtered_lines.append(line)
     if debug:
         with open("DEBUG_filtered_lines.txt", "w") as outfile:
@@ -117,7 +117,7 @@ def parse_output_file(output_filename="test.txt", simulation_timestep=1, debug=F
             negative = 0
             default = 0
         if matches[1] in line:
-            result = int(dtk_sft.get_val(matches[1], line))
+            result = int(sft.get_val(matches[1], line))
             if result:
                 positive += 1
             else:
@@ -153,7 +153,7 @@ def create_report_file(param_obj, campaign_obj, output_df, reporter, report_name
         timestep = param_obj[Config.simulation_timestep]
         if not len(output_df):
             success = False
-            outfile.write(dtk_sft.sft_no_test_data)
+            outfile.write(sft.sft_no_test_data)
         # reporter[1] is a boolean.
         # True means parse_custom_reporter succeed and reporter[0] is a dataframe collected from the csv report.
         # False measn parse_custom_reporter failed and reporter[0] is an error message
@@ -203,7 +203,7 @@ def create_report_file(param_obj, campaign_obj, output_df, reporter, report_name
                 for t in output_df.index.values.tolist():
                     if i < len(years):
                         year = years[i]
-                        if t <= round(year * dtk_sft.DAYS_IN_YEAR):
+                        if t <= round(year * sft.DAYS_IN_YEAR):
                             default_count += output_df.loc[t][ReportColumn.default]
                             negative_count += output_df.loc[t][ReportColumn.negative]
                         else:
@@ -230,11 +230,11 @@ def create_report_file(param_obj, campaign_obj, output_df, reporter, report_name
                         break
 
                 if not test_treatment_only:
-                    dtk_sft.plot_data(negative_counts, dist2=np.array(groupby_df[ReportColumn.negative]), label1="reporter",
+                    sft.plot_data(negative_counts, dist2=np.array(groupby_df[ReportColumn.negative]), label1="reporter",
                                     label2="log_valid", title=ReportColumn.negative,
                                     xlabel="every half year", ylabel=ReportColumn.negative, category=ReportColumn.negative,
                                     show=True, line=True, alpha=0.8, overlap=True)
-                dtk_sft.plot_data(default_counts, dist2=np.array(groupby_df[ReportColumn.default]), label1="reporter",
+                sft.plot_data(default_counts, dist2=np.array(groupby_df[ReportColumn.default]), label1="reporter",
                                            label2="log_valid", title=ReportColumn.default,
                                            xlabel="every half year", ylabel=ReportColumn.default, category=ReportColumn.default,
                                            show=True, line=True, alpha=0.8, overlap=True)
@@ -252,12 +252,12 @@ def create_report_file(param_obj, campaign_obj, output_df, reporter, report_name
                     outfile.write("BAD: the reporter has data up to year {0} but the simulation duration is {1}, we are expecting "
                                   "not more than year {2} from reporter.".format(max(years), simulation_duration,
                                                                            math.floor(simulation_duration/180)))
-                if simulation_duration > round(max(years) * dtk_sft.DAYS_IN_YEAR) + 180:
+                if simulation_duration > round(max(years) * sft.DAYS_IN_YEAR) + 180:
                     success = False
                     outfile.write("BAD: the reporter has data up to year {0} but the simulation duration is {1}, we are expecting "
                                   "data after year {0} from reporter.".format(max(years), simulation_duration))
 
-        outfile.write(dtk_sft.format_success_msg(success))
+        outfile.write(sft.format_success_msg(success))
 
         if debug:
             print( "SUMMARY: Success={0}\n".format(success) )
@@ -265,7 +265,7 @@ def create_report_file(param_obj, campaign_obj, output_df, reporter, report_name
 
 def application( output_folder="output", stdout_filename="test.txt", reporter_filename="Report_TBHIV_ByAge.csv",
                  config_filename="config.json", campaign_filename="campaign.json",
-                 report_name=dtk_sft.sft_output_filename,
+                 report_name=sft.sft_output_filename,
                  debug=False):
     if debug:
         print( "output_folder: " + output_folder )
@@ -276,7 +276,7 @@ def application( output_folder="output", stdout_filename="test.txt", reporter_fi
         print( "report_name: " + report_name + "\n" )
         print( "debug: " + str(debug) + "\n" )
 
-    dtk_sft.wait_for_done()
+    sft.wait_for_done()
     param_obj = load_emod_parameters(config_filename, debug)
     campaign_obj = load_campaign_file(campaign_filename, debug)
     output_df = parse_output_file(stdout_filename, param_obj[Config.simulation_timestep], debug)
@@ -293,7 +293,7 @@ if __name__ == "__main__":
     parser.add_argument('-j', '--reportername', default="Report_TBHIV_ByAge.csv", help="reporter to test(Report_TBHIV_ByAge.csv)")
     parser.add_argument('-c', '--config', default="config.json", help="Config name to load (config.json)")
     parser.add_argument('-C', '--campaign', default="campaign.json", help="campaign name to load (campaign.json)")
-    parser.add_argument('-r', '--reportname', default=dtk_sft.sft_output_filename, help="Report file to generate")
+    parser.add_argument('-r', '--reportname', default=sft.sft_output_filename, help="Report file to generate")
     parser.add_argument('-d', '--debug', default=False, help="Debug = True or False")
     args = parser.parse_args()
 

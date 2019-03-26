@@ -1,0 +1,155 @@
+{
+    "Events": [
+        {
+            "comment": "Start Outbreak",
+            "class": "CampaignEvent",
+            "Start_Day" : 1,
+            "Target_Demographic": "Everyone",
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 0.1,
+                "Intervention_Config": {
+                    "Outbreak_Source": "PrevalenceIncrease",
+                    "class": "OutbreakIndividual"
+                },
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 0,
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "Outbreak",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }
+        },
+        {
+            "comment": "Start two TECs, the first is stopped, the second expires",
+            "class": "CampaignEvent",
+            "Start_Day": 2,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "BroadcastCoordinatorEvent",
+                "Coordinator_Name" : "Coordnator_1",
+                "Cost_To_Consumer" : 10,
+                "Broadcast_Event" : "Coordinator_Event_1"
+            }
+        },
+        {
+            "comment":"Runs till Stop trigger",
+            "Event_Coordinator_Config": {
+                "class": "TriggeredEventCoordinator",
+                "Coordinator_Name" : "ACF_Tester",
+                "Start_Trigger_Condition_List": ["Coordinator_Event_1", "ACF_Start"],
+                "Stop_Trigger_Condition_List": [ "Start_SIA_2", "Start_SIA_4" ],
+                "Duration" : 290,
+                "Number_Repetitions" : 20,
+                "Timesteps_Between_Repetitions" : 25,
+                "Node_Property_Restrictions" : [],
+                "Property_Restrictions_Within_Node" : [],
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config":
+                {
+                    "class": "SimpleDiagnostic",
+                    "Cost_To_Consumer": 1.0,
+                    "Base_Sensitivity": 1.0,
+                    "Base_Specificity": 1.0,
+                    "Days_To_Diagnosis": 1.0,
+                    "Treatment_Fraction": 1.0,
+                    "Event_Or_Config": "Event",
+                    "Positive_Diagnosis_Event": "ACF_Tested_Positive"
+                },
+                "Completion_Event" : "Not_Triggered_Testing_Finished"
+            },
+            "Event_Name": "TEC",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+             "Start_Day": 1,
+            "Target_Demographic": "Everyone",
+            "class": "CampaignEvent"
+        },
+        {
+            "comment": "Expires and emits Completion_Event",
+            "Event_Coordinator_Config": {
+                "class": "TriggeredEventCoordinator",
+                "Coordinator_Name" : "ACF_Tester_Completion_Event",
+                "Start_Trigger_Condition_List": ["Coordinator_Event_1", "ACF_Start"],
+                "Stop_Trigger_Condition_List": [ "Start_SIA_6", "Start_SIA_8" ],
+                "Duration" : 100,
+                "Number_Repetitions" : 2,
+                "Timesteps_Between_Repetitions" : 30,
+                "Node_Property_Restrictions" : [],
+                "Property_Restrictions_Within_Node" : [],
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config":
+                {
+                    "class": "SimpleDiagnostic",
+                    "Cost_To_Consumer": 1.0,
+                    "Base_Sensitivity": 1.0,
+                    "Base_Specificity": 1.0,
+                    "Days_To_Diagnosis": 1.0,
+                   "Treatment_Fraction": 1.0,
+                    "Event_Or_Config": "Event",
+                    "Positive_Diagnosis_Event": "ACF_Completion_Event_Tested_Positive"
+                },
+                "Completion_Event" : "Testing_Finished"
+            },
+            "Event_Name": "TEC",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 1,
+            "Target_Demographic": "Everyone",
+            "class": "CampaignEvent"
+        },
+        {
+            "comment": "Expires and emits Completion_Event",
+            "Event_Coordinator_Config": {
+                "class": "TriggeredEventCoordinator",
+                "Coordinator_Name" : "ACF_Tester_Completion_Event",
+                "Start_Trigger_Condition_List": ["Coordinator_Event_1", "ACF_Start"],
+                "Stop_Trigger_Condition_List": [],
+                "Duration" : 10,
+                "Number_Repetitions" : 2,
+                "Timesteps_Between_Repetitions" : 30,
+                "Node_Property_Restrictions" : [],
+                "Property_Restrictions_Within_Node" : [],
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config":
+                {
+                    "class": "SimpleDiagnostic",
+                    "Cost_To_Consumer": 1.0,
+                    "Base_Sensitivity": 1.0,
+                    "Base_Specificity": 1.0,
+                    "Days_To_Diagnosis": 1.0,
+                   "Treatment_Fraction": 1.0,
+                    "Event_Or_Config": "Event",
+                    "Positive_Diagnosis_Event": "ACF_Completion_Event_Expires"
+                },
+                "Completion_Event" : "Not_Triggered_Testing_Finished"
+            },
+            "Event_Name": "TEC",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 1,
+            "Target_Demographic": "Everyone",
+            "class": "CampaignEvent"
+        },
+        {
+            "comment": "Event to stop first TEC",
+            "class": "CampaignEvent",
+            "Start_Day": 200,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "BroadcastCoordinatorEvent",
+                "Coordinator_Name" : "Coordnator_2",
+                "Cost_To_Consumer" : 10,
+                "Broadcast_Event" : "Start_SIA_2"
+            }
+        }
+    ],
+    "Use_Defaults": 1
+}
+

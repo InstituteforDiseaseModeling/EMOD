@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -15,6 +15,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "NodeEventContext.h"  // for INodeEventContext (ICampaignCostObserver)
 #include "IHIVInterventionsContainer.h" // for time-date util function
 #include "IIndividualHumanHIV.h"  // for IndividualHIV access
+#include "IIndividualHumanContext.h"
+#include "RANDOM.h"
 
 SETUP_LOGGING( "HIVSimpleDiagnostic" )
 
@@ -96,7 +98,7 @@ namespace Kernel
         if( result_of_positive_test )
         {
             LOG_DEBUG_F( "Individual %d tested positive.\n", parent->GetSuid().data );
-            if( SMART_DRAW( treatment_fraction ) )
+            if( parent->GetRng()->SmartDraw( treatment_fraction ) )
             {
                 positiveTestDistribute();
             }
@@ -128,7 +130,7 @@ namespace Kernel
         }
         else
         {
-            LOG_DEBUG_F( "Negative diagnosis event is NoTrigger for individual %d.\n", iid );
+            LOG_DEBUG_F( "Negative diagnosis event is empty for individual %d.\n", iid );
         }
         expired = true;
     }
@@ -168,7 +170,7 @@ namespace Kernel
     bool HIVSimpleDiagnostic::positiveTestResult()
     {
 
-#ifdef ENABLE_TBHIV    
+#ifndef DISABLE_TBHIV    
         IIndividualHumanHIV* HIVpersonptr = nullptr;
 
         if (parent->QueryInterface(GET_IID(IIndividualHumanHIV), (void**)&HIVpersonptr) != s_OK)

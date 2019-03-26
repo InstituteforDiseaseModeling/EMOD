@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -23,17 +23,6 @@ SETUP_LOGGING( "ConcurrencyParameters" )
 
 namespace Kernel
 {
-    std::set<std::string> GetAllowableRelationshipTypes()
-    {
-        std::set<std::string> allowable;
-
-        for( int i = 0 ; i < RelationshipType::COUNT ; ++i )
-        {
-            allowable.insert( RelationshipType::pairs::get_keys()[i] );
-        }
-        return allowable;
-    }
-
     // ------------------------------------------------------------------------
     // --- ConcurrencyByProperty
     // ------------------------------------------------------------------------
@@ -198,34 +187,13 @@ namespace Kernel
                     throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
                 }
 
-                for( auto& rel_type_str : rel_type_strings )
-                {
-                    int rel_type_val = RelationshipType::pairs::lookup_value( rel_type_str.c_str() );
-
-                    // I don't think I need this but just in case.
-                    if( rel_type_val == -1 )
-                    {
-                        std::stringstream ss;
-                        ss << "Unknown relationship type = " << rel_type_str;
-                        throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
-                    }
-                    if( std::find( m_RelTypeOrder.begin(), m_RelTypeOrder.end(), RelationshipType::Enum(rel_type_val) ) != m_RelTypeOrder.end() )
-                    {
-                        std::stringstream ss;
-                        ss << "Duplicate(='" << rel_type_str << "') found in 'Correlated_Relationship_Type_Order'.  There must be one and only one of each RelationshipType.";
-                        throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
-                    }
-
-                    m_RelTypeOrder.push_back( RelationshipType::Enum(rel_type_val) );
-                }
+                m_RelTypeOrder = ConvertStringsToRelationshipTypes( "Correlated_Relationship_Type_Order",
+                                                                    rel_type_strings );
             }
         }
         else
         {
-            for( int i = 0 ; i < RelationshipType::pairs::count() ; ++i )
-            {
-                m_RelTypeOrder.push_back( RelationshipType::Enum(RelationshipType::pairs::get_values()[i]) );
-            }
+            m_RelTypeOrder = GetRelationshipTypes();
         }
         return ret;
     }
@@ -361,7 +329,8 @@ namespace Kernel
         }
     }
 
-    unsigned char ConcurrencyConfiguration::GetProbExtraRelationalBitMask( const char* prop, 
+    unsigned char ConcurrencyConfiguration::GetProbExtraRelationalBitMask( RANDOMBASE* pRNG,
+                                                                           const char* prop,
                                                                            const char* prop_value, 
                                                                            Gender::Enum gender,
                                                                            bool isSuperSpreader ) const
@@ -388,7 +357,7 @@ namespace Kernel
                 RelationshipType::Enum rel_type = p_ccbp->GetRelationshipTypeOrder()[rel];
                 float prob = m_RelTypeToParametersMap.at( rel_type )->GetProbExtra( prop_value, gender );
 
-                if( (prob > 0.0) && ((prob == 1.0) || (prob > Environment::getInstance()->RNG->e()) ) )
+                if( pRNG->SmartDraw( prob ) )
                 {
                     ret |= EXTRA_RELATIONAL_ALLOWED(rel_type);
                 }
@@ -401,7 +370,8 @@ namespace Kernel
         return ret;
     }
 
-    int ConcurrencyConfiguration::GetMaxAllowableRelationships( const char* prop, 
+    int ConcurrencyConfiguration::GetMaxAllowableRelationships( RANDOMBASE* pRNG,
+                                                                const char* prop, 
                                                                 const char* prop_value, 
                                                                 Gender::Enum gender,
                                                                 RelationshipType::Enum rel_type ) const
@@ -409,15 +379,12 @@ namespace Kernel
         release_assert( m_PropertyKey == prop );
 
         float max_num = m_RelTypeToParametersMap.at( rel_type )->GetMaxRels( prop_value, gender );
-        float intpart = 0.0;
 
-        float fractpart = modff(max_num , &intpart);
-        unsigned int fp = 0;
-        if( fractpart > 0.0 )
-        {
-            fp = ((Environment::getInstance()->RNG->e() < fractpart) ? 1 : 0);
-        }
-        int max_rel = int(intpart) + fp;
+        // -----------------------------------------------------------------------
+        // --- randomly round to the nearest integer such that if max_num is 2.3, 
+        // --- it returns two 70% of the time and three 30%.
+        // -----------------------------------------------------------------------
+        int max_rel = pRNG->randomRound( max_num );
 
         return max_rel;
     }

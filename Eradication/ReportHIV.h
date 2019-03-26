@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -29,7 +29,8 @@ namespace Kernel
         virtual bool Configure( const Configuration* inputJson ) override;
         virtual void UpdateEventRegistration( float currentTime, 
                                               float dt, 
-                                              std::vector<INodeEventContext*>& rNodeEventContextList ) override;
+                                              std::vector<INodeEventContext*>& rNodeEventContextList,
+                                              ISimulationEventContext* pSimEventContext ) override;
 
         virtual void LogIndividualData( IIndividualHuman* individual ) override;
         virtual void EndTimestep( float currentTime, float dt ) override;
@@ -59,6 +60,6 @@ namespace Kernel
         bool counting_all_events;
         std::vector<uint32_t> event_counter_vector; // indexed by EventTrigger index
         std::vector< EventTrigger > eventTriggerList ;
-        std::vector<INodeTriggeredInterventionConsumer*> ntic_list ;
+        std::vector<IIndividualEventBroadcaster*> broadcaster_list ;
     };
 }

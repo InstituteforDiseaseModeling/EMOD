@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -11,9 +11,13 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "HIVDelayedIntervention.h"
 #include "MathFunctions.h"
 #include "IndividualEventContext.h"
+#include "IIndividualHumanContext.h"
 #include "NodeEventContext.h"
 #include "RANDOM.h"
 #include "IHIVInterventionsContainer.h" // for time-date util function
+#include "IdmDateTime.h"
+#include "DistributionFactory.h"
+#include "InterpolatedValueMap.h"
 
 SETUP_LOGGING( "HIVDelayedIntervention" )
 
@@ -32,8 +36,6 @@ namespace Kernel
     , broadcast_on_expiration_event()
     {
         initSimTypes(1, "HIV_SIM");
-        delay_distribution.AddSupportedType( DistributionFunction::PIECEWISE_CONSTANT, "", "", "", "" );
-        delay_distribution.AddSupportedType( DistributionFunction::PIECEWISE_LINEAR,   "", "", "", "" );
     }
 
     HIVDelayedIntervention::HIVDelayedIntervention( const HIVDelayedIntervention& master )
@@ -52,28 +54,18 @@ namespace Kernel
 
         // DelayedIntervention::Configure split into PreConfigure and MainConfigure to separate initConfig's from initConfigTypeMap-depends-on, and postpone JsonConfigurable::Configure
         DelayedIntervention::PreConfigure(inputJson);
-        DelayedIntervention::DistributionConfigure(inputJson);
 
-        // HIVDelayedIntervention specific
-        if( delay_distribution.GetType() == DistributionFunction::PIECEWISE_CONSTANT 
-            || delay_distribution.GetType() == DistributionFunction::PIECEWISE_LINEAR
-            || JsonConfigurable::_dryrun )
-        {
-            initConfigComplexType( "Time_Varying_Constants",
-                                   &year2DelayMap,
-                                   HIV_Delayed_Intervention_TVC_DESC_TEXT,
-                                   "Delay_Distribution",
-                                   "PIECEWISE_CONSTANT || PIECEWISE_LINEAR" );
-        }
+        DistributionFunction::Enum delay_function( DistributionFunction::CONSTANT_DISTRIBUTION );
+        initConfig( "Delay_Period_Distribution", delay_function, inputJson, MetadataDescriptor::Enum( "Delay_Distribution", DI_Delay_Distribution_DESC_TEXT, MDD_ENUM_ARGS( DistributionFunction ) ) );
+        delay_distribution = DistributionFactory::CreateDistribution( this, delay_function, "Delay_Period", inputJson );
 
-        //DelayedIntervention::InterventionConfigure(inputJson);
         initConfigTypeMap( "Broadcast_Event", &broadcast_event, HIV_Delayed_Intervention_Broadcast_Event_DESC_TEXT );
-
         initConfigTypeMap( "Broadcast_On_Expiration_Event", &broadcast_on_expiration_event, HIV_Delayed_Intervention_Broadcast_On_Expiration_Event_DESC_TEXT );
 
         // skip DelayedIntervention::Configure() because we don't want those variables.
+
         bool ret = BaseIntervention::Configure(inputJson);
-        if( ret )
+        if ( ret && !JsonConfigurable::_dryrun )
         {
             // don't validate the intervention configuration since not supported
             DelayValidate();
@@ -86,31 +78,19 @@ namespace Kernel
     void
     HIVDelayedIntervention::CalculateDelay()
     {
-        switch( delay_distribution.GetType() )
+        if ( delay_distribution->GetIPiecewiseDistribution() )
         {
-            case DistributionFunction::PIECEWISE_CONSTANT:
-            {
-                auto year = parent->GetEventContext()->GetNodeEventContext()->GetTime().Year();
-                remaining_delay_days = year2DelayMap.getValuePiecewiseConstant( year );
-                //LOG_DEBUG_F( "Selecting (for now) %f as delay days because map year %d is not > current year %d\n", remaining_delay_days, map_year, (int) current_year );
-                LOG_DEBUG_F( "Selecting (for now) %f as delay days.\n", float(remaining_delay_days) );
-            }
-            break;
-
-            case DistributionFunction::PIECEWISE_LINEAR:
-            {
-                auto year = parent->GetEventContext()->GetNodeEventContext()->GetTime().Year();
-                remaining_delay_days = year2DelayMap.getValueLinearInterpolation( year );
-                //LOG_DEBUG_F( "Selecting (for now) %f as delay days because map year %d is not > current year %d\n", remaining_delay_days, map_year, (int) current_year );
-                LOG_DEBUG_F( "Selecting (for now) %f as delay days.\n", float(remaining_delay_days) );
-            }
-            break;
-
-            default:
-                DelayedIntervention::CalculateDelay();
-            break;
+            auto year = parent->GetEventContext()->GetNodeEventContext()->GetTime().Year();
+            delay_distribution->GetIPiecewiseDistribution()->SetX( year );
+            remaining_delay_days = delay_distribution->Calculate( parent->GetRng() );
+            //LOG_DEBUG_F( "Selecting (for now) %f as delay days because map year %d is not > current year %d\n", remaining_delay_days, map_year, (int) current_year );
+            LOG_DEBUG_F( "Selecting (for now) %f as delay days.\n", float( remaining_delay_days ) );
         }
-        LOG_DEBUG_F("Drew %0.2f remaining delay days in %s.\n", float(remaining_delay_days), DistributionFunction::pairs::lookup_key(delay_distribution.GetType()));
+        else
+        {
+            DelayedIntervention::CalculateDelay();
+        }
+        LOG_DEBUG_F("Drew %0.2f remaining delay days in %s.\n", float(remaining_delay_days), DistributionFunction::pairs::lookup_key(delay_distribution->GetType()));
     }
 
     void HIVDelayedIntervention::Update(float dt)
@@ -125,14 +105,10 @@ namespace Kernel
         {
             expired = true;
 
-            INodeTriggeredInterventionConsumer* broadcaster = nullptr;
-            if (s_OK != parent->GetEventContext()->GetNodeEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster))
-            {
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()->GetNodeEventContext()", "INodeTriggeredInterventionConsumer", "INodeEventContext" );
-            }
             if( !broadcast_on_expiration_event.IsUninitialized() )
             {
-                broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), broadcast_on_expiration_event );
+                IIndividualEventBroadcaster* broadcaster = parent->GetEventContext()->GetNodeEventContext()->GetIndividualEventBroadcaster();
+                broadcaster->TriggerObservers( parent->GetEventContext(), broadcast_on_expiration_event );
             }
             LOG_DEBUG_F("broadcast on expiration event\n");
 
@@ -142,7 +118,7 @@ namespace Kernel
 
         remaining_delay_days.Decrement( dt );
     }
-
+    
     void HIVDelayedIntervention::Callback( float dt )
     {
         if( expired || broadcast_event.IsUninitialized() )
@@ -152,15 +128,8 @@ namespace Kernel
         else
         {
             // Duplicated from SimpleDiagnostic::positiveTestDistribute
-            INodeTriggeredInterventionConsumer* broadcaster = nullptr;
-            if (s_OK != parent->GetEventContext()->GetNodeEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster))
-            {
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__,
-                                               "parent->GetEventContext()->GetNodeEventContext()",
-                                               "INodeTriggeredInterventionConsumer",
-                                               "INodeEventContext" );
-            }
-            broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), broadcast_event );
+            IIndividualEventBroadcaster* broadcaster = parent->GetEventContext()->GetNodeEventContext()->GetIndividualEventBroadcaster();
+            broadcaster->TriggerObservers( parent->GetEventContext(), broadcast_event );
             LOG_DEBUG_F("broadcast actual event\n");
         }
         expired = true;

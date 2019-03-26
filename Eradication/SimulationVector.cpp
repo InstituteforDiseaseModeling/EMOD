@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -129,12 +129,13 @@ namespace Kernel
     }
 
     // called by demographic file Populate()
-    void SimulationVector::addNewNodeFromDemographics( suids::suid node_suid,
+    void SimulationVector::addNewNodeFromDemographics( ExternalNodeId_t externalNodeId,
+                                                       suids::suid node_suid,
                                                        NodeDemographicsFactory *nodedemographics_factory,
                                                        ClimateFactory *climate_factory,
                                                        bool white_list_enabled )
     {
-        NodeVector *node = NodeVector::CreateNode(this, node_suid);
+        NodeVector *node = NodeVector::CreateNode(this, externalNodeId, node_suid);
         addNode_internal( node, nodedemographics_factory, climate_factory, white_list_enabled );
         node_populations_map.insert( std::make_pair( node_suid, node->GetStatPop() ) );
     }

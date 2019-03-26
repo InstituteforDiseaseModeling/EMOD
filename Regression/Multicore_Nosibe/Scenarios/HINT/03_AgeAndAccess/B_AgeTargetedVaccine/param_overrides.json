@@ -19,8 +19,8 @@
             },
             "MORTALITY": {
                 "Enable_Natural_Mortality": 0,
-                "Post_Infection_Mortality_Multiplier": 1,
-                "Mortality_Blocking_Immunity_Duration_Before_Decay": 90
+                "Mortality_Blocking_Immunity_Duration_Before_Decay": 90,
+                "Post_Infection_Mortality_Multiplier": 1
             },
             "SAMPLING": {
                 "Sample_Rate_Birth": 1
@@ -28,11 +28,11 @@
         },
         "DISEASE": {
             "INCUBATION": {
-                "Base_Incubation_Period": 5
+                "Incubation_Period_Constant": 5
             },
             "INFECTIOUSNESS": {
-                "Base_Infectious_Period": 5,
-                "Base_Infectivity": 4
+                "Base_Infectivity": 4,
+                "Infectious_Period_Exponential": 5
             },
             "Max_Individual_Infections": 5
         },

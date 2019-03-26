@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -13,11 +13,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Susceptibility.h"
 #include "SimulationConfig.h"
 #include "RapidJsonImpl.h"
-
-#ifdef randgen
-#undef randgen
-#endif
-#define randgen (parent->GetRng())
+#include "Common.h"
+#include "IIndividualHumanContext.h"
+#include "RANDOM.h"
 
 SETUP_LOGGING( "Susceptibility" )
 
@@ -38,27 +36,23 @@ namespace Kernel
     float SusceptibilityConfig::basemortupdate = 1.0f;
 
     // Decay of post-infection immunity
-    bool SusceptibilityConfig::enable_immune_decay = true;
-    float SusceptibilityConfig::acqdecayrate  = 1.0f;
-    float SusceptibilityConfig::trandecayrate = 1.0f;
-    float SusceptibilityConfig::mortdecayrate = 1.0f;
-    float SusceptibilityConfig::baseacqoffset  = 1.0f;
-    float SusceptibilityConfig::basetranoffset = 1.0f;
-    float SusceptibilityConfig::basemortoffset = 1.0f;
+    bool SusceptibilityConfig::enable_immune_decay = false;
+    float SusceptibilityConfig::acqdecayrate  = 0.0f;
+    float SusceptibilityConfig::trandecayrate = 0.0f;
+    float SusceptibilityConfig::mortdecayrate = 0.0f;
+    float SusceptibilityConfig::baseacqoffset  = 0.0f;
+    float SusceptibilityConfig::basetranoffset = 0.0f;
+    float SusceptibilityConfig::basemortoffset = 0.0f;
 
     SusceptibilityType::Enum SusceptibilityConfig::susceptibility_type = SusceptibilityType::FRACTIONAL;
 
+    // Initialization of susceptibility at simulation start
+    bool                   SusceptibilityConfig::enable_initial_susceptibility_distribution      = false;
     DistributionType::Enum SusceptibilityConfig::susceptibility_initialization_distribution_type = DistributionType::DISTRIBUTION_OFF;
 
     GET_SCHEMA_STATIC_WRAPPER_IMPL(Susceptibility,SusceptibilityConfig)
     BEGIN_QUERY_INTERFACE_BODY(SusceptibilityConfig)
     END_QUERY_INTERFACE_BODY(SusceptibilityConfig)
-
-    Susceptibility::Susceptibility()
-        : parent(nullptr)
-        , immune_failage(0.0f)
-    {
-    }
 
     // QI stuff in case we want to use it more extensively
     BEGIN_QUERY_INTERFACE_BODY(Susceptibility)
@@ -66,9 +60,30 @@ namespace Kernel
         HANDLE_ISUPPORTS_VIA(ISusceptibilityContext)
     END_QUERY_INTERFACE_BODY(Susceptibility)
 
+
+    Susceptibility::Susceptibility()
+        :  age ( 0.0f )
+        , mod_acquire( 0.0f )
+        , mod_transmit( 0.0f )
+        , mod_mortality( 0.0f )
+        , acqdecayoffset( 0.0f )
+        , trandecayoffset( 0.0f )
+        , mortdecayoffset( 0.0f )
+        , immune_failage( 0.0f )
+        , parent( nullptr )
+    {
+    }
+
     Susceptibility::Susceptibility(IIndividualHumanContext *context)
-        : parent(context)
-        , immune_failage(0.0f)
+        : age( 0.0f )
+        , mod_acquire( 0.0f )
+        , mod_transmit( 0.0f )
+        , mod_mortality( 0.0f )
+        , acqdecayoffset( 0.0f )
+        , trandecayoffset( 0.0f )
+        , mortdecayoffset( 0.0f )
+        , immune_failage( 0.0f )
+        , parent(context)
     {
         //SetFlags(parent != nullptr ? parent->GetSusceptibilityFlags() : nullptr);
     }
@@ -97,6 +112,7 @@ namespace Kernel
 
         LOG_DEBUG_F( "susceptibility_type = %d\n", susceptibility_type );
 
+        LOG_DEBUG_F( "enable_initial_susceptibility_distribution = %d\n",      enable_initial_susceptibility_distribution );
         LOG_DEBUG_F( "susceptibility_initialization_distribution_type = %d\n", susceptibility_initialization_distribution_type );
     }
 
@@ -134,7 +150,8 @@ namespace Kernel
         // Currently (May2018) implemented for maternal protection only, but other functionality is expected to follow.
         initConfig( "Susceptibility_Type", susceptibility_type, config, MetadataDescriptor::Enum("Susceptibility_Type", Susceptibility_Type_DESC_TEXT, MDD_ENUM_ARGS(SusceptibilityType)), "Enable_Maternal_Protection");
 
-        initConfig( "Immunity_Initialization_Distribution_Type", susceptibility_initialization_distribution_type, config, MetadataDescriptor::Enum("Immunity_Initialization_Distribution_Type", Immunity_Initialization_Distribution_Type_DESC_TEXT, MDD_ENUM_ARGS(DistributionType)), "Enable_Immunity_Distribution");
+        initConfigTypeMap( "Enable_Initial_Susceptibility_Distribution",   &enable_initial_susceptibility_distribution,     Enable_Initial_Susceptibility_Distribution_DESC_TEXT, false, "Enable_Immunity" );
+        initConfig( "Susceptibility_Initialization_Distribution_Type",     susceptibility_initialization_distribution_type, config, MetadataDescriptor::Enum("Susceptibility_Initialization_Distribution_Type", Susceptibility_Initialization_Distribution_Type_DESC_TEXT, MDD_ENUM_ARGS(DistributionType)), "Enable_Initial_Susceptibility_Distribution");
 
         bool bRet = JsonConfigurable::Configure( config );
 
@@ -159,7 +176,7 @@ namespace Kernel
 
         if(SusceptibilityConfig::maternal_protection && SusceptibilityConfig::susceptibility_type == SusceptibilityType::BINARY)
         {
-            float rDraw = randgen->e();
+            float rDraw = parent->GetRng()->e();
 
             if(SusceptibilityConfig::maternal_protection_type == MaternalProtectionType::LINEAR)
             {
@@ -249,7 +266,7 @@ namespace Kernel
         // Reduces mod_acquire to zero if age is less than calculated immunity failure day.
         if(age < immune_failage)
         {
-            susceptibility_correction *= 0.0f;
+            susceptibility_correction = 0.0f;
         }
 
         BOUND_RANGE(susceptibility_correction, 0.0f, 1.0f);
@@ -284,8 +301,6 @@ namespace Kernel
         // for mod_XX > 1.0. (As of Feb2018, no simulations are able to specify mod_XX > 1.0)
         if(SusceptibilityConfig::enable_immune_decay)
         {
-            float net_change;
-
             // Acquisition immunity decay
             if (acqdecayoffset > 0.0f)
             {
@@ -293,7 +308,7 @@ namespace Kernel
             }
             else
             {
-                net_change = SusceptibilityConfig::acqdecayrate * dt;
+                float net_change = SusceptibilityConfig::acqdecayrate * dt;
                 mod_acquire += (1.0f - mod_acquire) * (net_change < 1.0f ? net_change : 1.0f);
             }
 
@@ -304,7 +319,7 @@ namespace Kernel
             }
             else
             {
-                net_change = SusceptibilityConfig::trandecayrate * dt;
+                float net_change = SusceptibilityConfig::trandecayrate * dt;
                 mod_transmit += (1.0f - mod_transmit) * (net_change < 1.0f ? net_change : 1.0f);
             }
 
@@ -315,7 +330,7 @@ namespace Kernel
             }
             else
             {
-                net_change = SusceptibilityConfig::mortdecayrate * dt;
+                float net_change = SusceptibilityConfig::mortdecayrate * dt;
                 mod_mortality += (1.0f - mod_mortality) * (net_change < 1.0f ? net_change : 1.0f);
             }
         }
@@ -369,13 +384,17 @@ namespace Kernel
     void Susceptibility::serialize(IArchive& ar, Susceptibility* obj)
     {
         Susceptibility& susceptibility = *obj;
-        ar.labelElement("age") & susceptibility.age;
-        ar.labelElement("mod_acquire") & susceptibility.mod_acquire;
-        ar.labelElement("mod_transmit") & susceptibility.mod_transmit;
-        ar.labelElement("mod_mortality") & susceptibility.mod_mortality;
-        ar.labelElement("acqdecayoffset") & susceptibility.acqdecayoffset;
-        ar.labelElement("trandecayoffset") & susceptibility.trandecayoffset;
-        ar.labelElement("mortdecayoffset") & susceptibility.mortdecayoffset;
-        ar.labelElement("immune_failage") & susceptibility.immune_failage;
+
+        ar.labelElement("age")               & susceptibility.age;
+        
+        ar.labelElement("mod_acquire")       & susceptibility.mod_acquire;
+        ar.labelElement("mod_transmit")      & susceptibility.mod_transmit;
+        ar.labelElement("mod_mortality")     & susceptibility.mod_mortality;
+        
+        ar.labelElement("acqdecayoffset")    & susceptibility.acqdecayoffset;
+        ar.labelElement("trandecayoffset")   & susceptibility.trandecayoffset;
+        ar.labelElement("mortdecayoffset")   & susceptibility.mortdecayoffset;
+        
+        ar.labelElement("immune_failage")    & susceptibility.immune_failage;
     }
 } // namespace Kernel

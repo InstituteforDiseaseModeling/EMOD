@@ -2,2095 +2,27 @@
     "ntsteps": 73,
     "patient_array": [
         {
-            "id": 12,
+            "id": 23,
             "node_id": 340461476,
-            "initial_age": 918.5604248047,
-            "local_birthday": -865.5604248047,
+            "initial_age": 9006.171875,
+            "local_birthday": -8973.171875,
             "strain_ids": [
                 [
                     0,
-                    958860
-                ]
-            ],
-            "ip_data": [
-                "",
-                ""
-            ],
-            "true_asexual_parasites": [
-                2915.121826172,
-                1385.6015625
-            ],
-            "true_gametocytes": [
-                0,
-                715.4802856445
-            ],
-            "smeared_true_asexual_parasites": [
-                4596.436035156,
-                1567.508789063
-            ],
-            "smeared_true_gametocytes": [
-                0,
-                954.787109375
-            ],
-            "asexual_parasites": [
-                250,
-                130
-            ],
-            "gametocytes": [
-                0,
-                980
-            ],
-            "smeared_asexual_parasites": [
-                3.402823466385e+38,
-                1240.437133789
-            ],
-            "smeared_gametocytes": [
-                0,
-                685.9193725586
-            ],
-            "infectiousness": [
-                0,
-                0.9868545532227
-            ],
-            "infectiousness_smeared": [
-                0,
-                0.9750000238419
-            ],
-            "infectiousness_age_scaled": [
-                0,
-                0.2504044175148
-            ],
-            "pos_asexual_fields": [
-                200,
-                191
-            ],
-            "pos_gametocyte_fields": [
-                0,
-                164
-            ],
-            "temps": [
-                38.87314224243,
-                38.17917251587
-            ],
-            "rdt": [
-                1,
-                1
-            ]
-        },
-        {
-            "id": 26,
-            "node_id": 340461476,
-            "initial_age": 579.9815673828,
-            "local_birthday": -554.9815673828,
-            "strain_ids": [
-                [
-                    0,
-                    4220416
+                    4327560
                 ]
             ],
             "ip_data": [
                 ""
             ],
             "true_asexual_parasites": [
-                894.1058959961
+                1291.173828125
             ],
             "true_gametocytes": [
                 0
             ],
             "smeared_true_asexual_parasites": [
-                439.422088623
-            ],
-            "smeared_true_gametocytes": [
-                0
-            ],
-            "asexual_parasites": [
-                990
-            ],
-            "gametocytes": [
-                0
-            ],
-            "smeared_asexual_parasites": [
-                882.9099731445
-            ],
-            "smeared_gametocytes": [
-                0
-            ],
-            "infectiousness": [
-                0
-            ],
-            "infectiousness_smeared": [
-                0
-            ],
-            "infectiousness_age_scaled": [
-                0
-            ],
-            "pos_asexual_fields": [
-                178
-            ],
-            "pos_gametocyte_fields": [
-                0
-            ],
-            "temps": [
-                38.14528274536
-            ],
-            "rdt": [
-                1
-            ]
-        },
-        {
-            "id": 40,
-            "node_id": 340461476,
-            "initial_age": 1490.293212891,
-            "local_birthday": -1487.293212891,
-            "strain_ids": [
-                [
-                    0,
-                    14095131
-                ]
-            ],
-            "ip_data": [
-                "",
-                ""
-            ],
-            "true_asexual_parasites": [
-                918.9177856445,
-                569.9403076172
-            ],
-            "true_gametocytes": [
-                2708.757568359,
-                318.4019470215
-            ],
-            "smeared_true_asexual_parasites": [
-                149.5612182617,
-                144.2222747803
-            ],
-            "smeared_true_gametocytes": [
-                1999.502319336,
-                203.700302124
-            ],
-            "asexual_parasites": [
-                830,
-                810
-            ],
-            "gametocytes": [
-                2860,
-                400
-            ],
-            "smeared_asexual_parasites": [
-                1010.291503906,
-                570.8465576172
-            ],
-            "smeared_gametocytes": [
-                3.402823466385e+38,
-                289.442565918
-            ],
-            "infectiousness": [
-                0.9993563294411,
-                0.6559754610062
-            ],
-            "infectiousness_smeared": [
-                1,
-                0.8000000119209
-            ],
-            "infectiousness_age_scaled": [
-                0.3189005255699,
-                0.2110170125961
-            ],
-            "pos_asexual_fields": [
-                184,
-                152
-            ],
-            "pos_gametocyte_fields": [
-                200,
-                103
-            ],
-            "temps": [
-                38.20993423462,
-                38.01586532593
-            ],
-            "rdt": [
-                1,
-                1
-            ]
-        },
-        {
-            "id": 49,
-            "node_id": 340461476,
-            "initial_age": 869.9331665039,
-            "local_birthday": -868.9331665039,
-            "strain_ids": [
-                [
-                    0,
-                    4220416
-                ]
-            ],
-            "ip_data": [
-                ""
-            ],
-            "true_asexual_parasites": [
-                925.8397216797
-            ],
-            "true_gametocytes": [
-                0
-            ],
-            "smeared_true_asexual_parasites": [
-                1806.572875977
-            ],
-            "smeared_true_gametocytes": [
-                0
-            ],
-            "asexual_parasites": [
-                880
-            ],
-            "gametocytes": [
-                0
-            ],
-            "smeared_asexual_parasites": [
-                882.9099731445
-            ],
-            "smeared_gametocytes": [
-                0
-            ],
-            "infectiousness": [
-                0
-            ],
-            "infectiousness_smeared": [
-                0
-            ],
-            "infectiousness_age_scaled": [
-                0
-            ],
-            "pos_asexual_fields": [
-                178
-            ],
-            "pos_gametocyte_fields": [
-                0
-            ],
-            "temps": [
-                38.17749404907
-            ],
-            "rdt": [
-                1
-            ]
-        },
-        {
-            "id": 63,
-            "node_id": 340461476,
-            "initial_age": 4484.569335938,
-            "local_birthday": -4460.569335938,
-            "strain_ids": [
-                [
-                    0,
-                    13436355
-                ]
-            ],
-            "ip_data": [
-                "",
-                ""
-            ],
-            "true_asexual_parasites": [
-                2418.1796875,
-                369.8496398926
-            ],
-            "true_gametocytes": [
-                0,
-                858.6332397461
-            ],
-            "smeared_true_asexual_parasites": [
-                2119.869873047,
-                525.5721435547
-            ],
-            "smeared_true_gametocytes": [
-                0,
-                1604.829223633
-            ],
-            "asexual_parasites": [
-                260,
-                370
-            ],
-            "gametocytes": [
-                0,
-                820
-            ],
-            "smeared_asexual_parasites": [
-                3.402823466385e+38,
-                381.8047790527
-            ],
-            "smeared_gametocytes": [
-                0,
-                708.7827758789
-            ],
-            "infectiousness": [
-                0,
-                0.9795456528664
-            ],
-            "infectiousness_smeared": [
-                0,
-                0.9750000238419
-            ],
-            "infectiousness_age_scaled": [
-                0,
-                0.6582797765732
-            ],
-            "pos_asexual_fields": [
-                200,
-                123
-            ],
-            "pos_gametocyte_fields": [
-                0,
-                166
-            ],
-            "temps": [
-                38.73296737671,
-                38.00537490845
-            ],
-            "rdt": [
-                1,
-                1
-            ]
-        },
-        {
-            "id": 81,
-            "node_id": 340461476,
-            "initial_age": 1407.488769531,
-            "local_birthday": -1338.488769531,
-            "strain_ids": [
-                [
-                    0,
-                    13436355
-                ]
-            ],
-            "ip_data": [
-                ""
-            ],
-            "true_asexual_parasites": [
-                834.692199707
-            ],
-            "true_gametocytes": [
-                0.01686303503811
-            ],
-            "smeared_true_asexual_parasites": [
-                1366.490234375
-            ],
-            "smeared_true_gametocytes": [
-                0.04130913317204
-            ],
-            "asexual_parasites": [
-                760
-            ],
-            "gametocytes": [
-                0
-            ],
-            "smeared_asexual_parasites": [
-                831.7766113281
-            ],
-            "smeared_gametocytes": [
-                0
-            ],
-            "infectiousness": [
-                5.010676250095e-05
-            ],
-            "infectiousness_smeared": [
-                0
-            ],
-            "infectiousness_age_scaled": [
-                1.55030957103e-05
-            ],
-            "pos_asexual_fields": [
-                175
-            ],
-            "pos_gametocyte_fields": [
-                0
-            ],
-            "temps": [
-                38.03411865234
-            ],
-            "rdt": [
-                1
-            ]
-        },
-        {
-            "id": 164,
-            "node_id": 340461476,
-            "initial_age": 3054.334716797,
-            "local_birthday": -2983.334716797,
-            "strain_ids": [
-                [
-                    0,
-                    958860
-                ]
-            ],
-            "ip_data": [
-                ""
-            ],
-            "true_asexual_parasites": [
-                1432.711669922
-            ],
-            "true_gametocytes": [
-                87.0671005249
-            ],
-            "smeared_true_asexual_parasites": [
-                696.6225585938
-            ],
-            "smeared_true_gametocytes": [
-                51.74178695679
-            ],
-            "asexual_parasites": [
-                160
-            ],
-            "gametocytes": [
-                40
-            ],
-            "smeared_asexual_parasites": [
-                1240.437133789
-            ],
-            "smeared_gametocytes": [
-                79.38037872314
-            ],
-            "infectiousness": [
-                0.3507275879383
-            ],
-            "infectiousness_smeared": [
-                0.4499999880791
-            ],
-            "infectiousness_age_scaled": [
-                0.176209256053
-            ],
-            "pos_asexual_fields": [
-                191
-            ],
-            "pos_gametocyte_fields": [
-                36
-            ],
-            "temps": [
-                38.25172805786
-            ],
-            "rdt": [
-                0
-            ]
-        },
-        {
-            "id": 169,
-            "node_id": 340461476,
-            "initial_age": 2183.786865234,
-            "local_birthday": -2114.786865234,
-            "strain_ids": [
-                [
-                    0,
-                    829734
-                ]
-            ],
-            "ip_data": [
-                ""
-            ],
-            "true_asexual_parasites": [
-                1392.873901367
-            ],
-            "true_gametocytes": [
-                0
-            ],
-            "smeared_true_asexual_parasites": [
-                2852.417236328
-            ],
-            "smeared_true_gametocytes": [
-                0
-            ],
-            "asexual_parasites": [
-                220
-            ],
-            "gametocytes": [
-                0
-            ],
-            "smeared_asexual_parasites": [
-                1564.809204102
-            ],
-            "smeared_gametocytes": [
-                0
-            ],
-            "infectiousness": [
-                0
-            ],
-            "infectiousness_smeared": [
-                0
-            ],
-            "infectiousness_age_scaled": [
-                0
-            ],
-            "pos_asexual_fields": [
-                196
-            ],
-            "pos_gametocyte_fields": [
-                0
-            ],
-            "temps": [
-                38.14113616943
-            ],
-            "rdt": [
-                1
-            ]
-        },
-        {
-            "id": 176,
-            "node_id": 340461476,
-            "initial_age": 1089.040283203,
-            "local_birthday": -1037.040283203,
-            "strain_ids": [
-                [
-                    0,
-                    958860
-                ]
-            ],
-            "ip_data": [
-                "",
-                ""
-            ],
-            "true_asexual_parasites": [
-                3660.840332031,
-                822.2829589844
-            ],
-            "true_gametocytes": [
-                0,
-                3567.405517578
-            ],
-            "smeared_true_asexual_parasites": [
-                6088.4609375,
-                1968.829223633
-            ],
-            "smeared_true_gametocytes": [
-                0,
-                3717.267333984
-            ],
-            "asexual_parasites": [
-                280,
-                1040
-            ],
-            "gametocytes": [
-                0,
-                3620
-            ],
-            "smeared_asexual_parasites": [
-                3.402823466385e+38,
-                800.9922485352
-            ],
-            "smeared_gametocytes": [
-                0,
-                3.402823466385e+38
-            ],
-            "infectiousness": [
-                0,
-                0.9999896883965
-            ],
-            "infectiousness_smeared": [
-                0,
-                1
-            ],
-            "infectiousness_age_scaled": [
-                0,
-                0.2738344669342
-            ],
-            "pos_asexual_fields": [
-                200,
-                173
-            ],
-            "pos_gametocyte_fields": [
-                0,
-                200
-            ],
-            "temps": [
-                39.25363540649,
-                38.14605712891
-            ],
-            "rdt": [
-                1,
-                1
-            ]
-        },
-        {
-            "id": 180,
-            "node_id": 340461476,
-            "initial_age": 2125.806640625,
-            "local_birthday": -2105.806640625,
-            "strain_ids": [
-                [
-                    0,
-                    13197963
-                ]
-            ],
-            "ip_data": [
-                "",
-                ""
-            ],
-            "true_asexual_parasites": [
-                1625.806152344,
-                868.8209838867
-            ],
-            "true_gametocytes": [
-                0,
-                1982.873413086
-            ],
-            "smeared_true_asexual_parasites": [
-                1439.204589844,
-                840.2037353516
-            ],
-            "smeared_true_gametocytes": [
-                0,
-                835.3056640625
-            ],
-            "asexual_parasites": [
-                140,
-                880
-            ],
-            "gametocytes": [
-                0,
-                2010
-            ],
-            "smeared_asexual_parasites": [
-                1564.809204102,
-                865.1292724609
-            ],
-            "smeared_gametocytes": [
-                0,
-                2119.326904297
-            ],
-            "infectiousness": [
-                0,
-                0.9971954226494
-            ],
-            "infectiousness_smeared": [
-                0,
-                1
-            ],
-            "infectiousness_age_scaled": [
-                0,
-                0.3944706618786
-            ],
-            "pos_asexual_fields": [
-                196,
-                177
-            ],
-            "pos_gametocyte_fields": [
-                0,
-                199
-            ],
-            "temps": [
-                38.35497665405,
-                38.11502838135
-            ],
-            "rdt": [
-                1,
-                1
-            ]
-        },
-        {
-            "id": 182,
-            "node_id": 340461476,
-            "initial_age": 1112.433105469,
-            "local_birthday": -1060.433105469,
-            "strain_ids": [
-                [
-                    0,
-                    6316161
-                ]
-            ],
-            "ip_data": [
-                ""
-            ],
-            "true_asexual_parasites": [
-                2614.268554688
-            ],
-            "true_gametocytes": [
-                0
-            ],
-            "smeared_true_asexual_parasites": [
-                504.0270690918
-            ],
-            "smeared_true_gametocytes": [
-                0
-            ],
-            "asexual_parasites": [
-                250
-            ],
-            "gametocytes": [
-                0
-            ],
-            "smeared_asexual_parasites": [
-                3.402823466385e+38
-            ],
-            "smeared_gametocytes": [
-                0
-            ],
-            "infectiousness": [
-                0
-            ],
-            "infectiousness_smeared": [
-                0
-            ],
-            "infectiousness_age_scaled": [
-                0
-            ],
-            "pos_asexual_fields": [
-                200
-            ],
-            "pos_gametocyte_fields": [
-                0
-            ],
-            "temps": [
-                38.83054733276
-            ],
-            "rdt": [
-                1
-            ]
-        },
-        {
-            "id": 197,
-            "node_id": 340461476,
-            "initial_age": 668.2133789063,
-            "local_birthday": -655.2133789063,
-            "strain_ids": [
-                [
-                    0,
-                    6238853
-                ]
-            ],
-            "ip_data": [
-                ""
-            ],
-            "true_asexual_parasites": [
-                3038.316894531
-            ],
-            "true_gametocytes": [
-                0
-            ],
-            "smeared_true_asexual_parasites": [
-                2921.444335938
-            ],
-            "smeared_true_gametocytes": [
-                0
-            ],
-            "asexual_parasites": [
-                310
-            ],
-            "gametocytes": [
-                0
-            ],
-            "smeared_asexual_parasites": [
-                3.402823466385e+38
-            ],
-            "smeared_gametocytes": [
-                0
-            ],
-            "infectiousness": [
-                0
-            ],
-            "infectiousness_smeared": [
-                0
-            ],
-            "infectiousness_age_scaled": [
-                0
-            ],
-            "pos_asexual_fields": [
-                200
-            ],
-            "pos_gametocyte_fields": [
-                0
-            ],
-            "temps": [
-                39.01118850708
-            ],
-            "rdt": [
-                1
-            ]
-        },
-        {
-            "id": 200,
-            "node_id": 340461476,
-            "initial_age": 1817.228881836,
-            "local_birthday": -1749.228881836,
-            "strain_ids": [
-                [
-                    0,
-                    6316161
-                ]
-            ],
-            "ip_data": [
-                ""
-            ],
-            "true_asexual_parasites": [
-                811.994140625
-            ],
-            "true_gametocytes": [
-                0
-            ],
-            "smeared_true_asexual_parasites": [
-                960.9632568359
-            ],
-            "smeared_true_gametocytes": [
-                0
-            ],
-            "asexual_parasites": [
-                1070
-            ],
-            "gametocytes": [
-                0
-            ],
-            "smeared_asexual_parasites": [
-                758.8480224609
-            ],
-            "smeared_gametocytes": [
-                0
-            ],
-            "infectiousness": [
-                0
-            ],
-            "infectiousness_smeared": [
-                0
-            ],
-            "infectiousness_age_scaled": [
-                0
-            ],
-            "pos_asexual_fields": [
-                170
-            ],
-            "pos_gametocyte_fields": [
-                0
-            ],
-            "temps": [
-                38.11756134033
-            ],
-            "rdt": [
-                1
-            ]
-        },
-        {
-            "id": 240,
-            "node_id": 340461476,
-            "initial_age": 10031.25097656,
-            "local_birthday": -10023.25097656,
-            "strain_ids": [
-                [
-                    0,
-                    13197963
-                ]
-            ],
-            "ip_data": [
-                ""
-            ],
-            "true_asexual_parasites": [
-                1522.214477539
-            ],
-            "true_gametocytes": [
-                0
-            ],
-            "smeared_true_asexual_parasites": [
-                660.5961303711
-            ],
-            "smeared_true_gametocytes": [
-                0
-            ],
-            "asexual_parasites": [
-                230
-            ],
-            "gametocytes": [
-                0
-            ],
-            "smeared_asexual_parasites": [
-                1564.809204102
-            ],
-            "smeared_gametocytes": [
-                0
-            ],
-            "infectiousness": [
-                0
-            ],
-            "infectiousness_smeared": [
-                0
-            ],
-            "infectiousness_age_scaled": [
-                0
-            ],
-            "pos_asexual_fields": [
-                196
-            ],
-            "pos_gametocyte_fields": [
-                0
-            ],
-            "temps": [
-                38.21755981445
-            ],
-            "rdt": [
-                1
-            ]
-        },
-        {
-            "id": 262,
-            "node_id": 340461476,
-            "initial_age": 835.6254882813,
-            "local_birthday": -833.6254882813,
-            "strain_ids": [
-                [
-                    0,
-                    13197963
-                ]
-            ],
-            "ip_data": [
-                ""
-            ],
-            "true_asexual_parasites": [
-                781.9733276367
-            ],
-            "true_gametocytes": [
-                22.36075973511
-            ],
-            "smeared_true_asexual_parasites": [
-                539.0927124023
-            ],
-            "smeared_true_gametocytes": [
-                61.37688827515
-            ],
-            "asexual_parasites": [
-                910
-            ],
-            "gametocytes": [
-                30
-            ],
-            "smeared_asexual_parasites": [
-                901.5180053711
-            ],
-            "smeared_gametocytes": [
-                24.75016212463
-            ],
-            "infectiousness": [
-                0.06636527180672
-            ],
-            "infectiousness_smeared": [
-                0.07500000298023
-            ],
-            "infectiousness_age_scaled": [
-                0.01608556509018
-            ],
-            "pos_asexual_fields": [
-                179
-            ],
-            "pos_gametocyte_fields": [
-                12
-            ],
-            "temps": [
-                38.08291244507
-            ],
-            "rdt": [
-                1
-            ]
-        },
-        {
-            "id": 269,
-            "node_id": 340461476,
-            "initial_age": 2086.357910156,
-            "local_birthday": -2059.357910156,
-            "strain_ids": [
-                [
-                    0,
-                    13197963
-                ]
-            ],
-            "ip_data": [
-                ""
-            ],
-            "true_asexual_parasites": [
-                1616.815429688
-            ],
-            "true_gametocytes": [
-                0
-            ],
-            "smeared_true_asexual_parasites": [
-                995.1161499023
-            ],
-            "smeared_true_gametocytes": [
-                0
-            ],
-            "asexual_parasites": [
-                280
-            ],
-            "gametocytes": [
-                0
-            ],
-            "smeared_asexual_parasites": [
-                1842.068115234
-            ],
-            "smeared_gametocytes": [
-                0
-            ],
-            "infectiousness": [
-                0
-            ],
-            "infectiousness_smeared": [
-                0
-            ],
-            "infectiousness_age_scaled": [
-                0
-            ],
-            "pos_asexual_fields": [
-                198
-            ],
-            "pos_gametocyte_fields": [
-                0
-            ],
-            "temps": [
-                38.25798034668
-            ],
-            "rdt": [
-                1
-            ]
-        },
-        {
-            "id": 310,
-            "node_id": 340461476,
-            "initial_age": 10460.40820313,
-            "local_birthday": -10449.40820313,
-            "strain_ids": [
-                [
-                    0,
-                    829734
-                ]
-            ],
-            "ip_data": [
-                ""
-            ],
-            "true_asexual_parasites": [
-                1570.341796875
-            ],
-            "true_gametocytes": [
-                0
-            ],
-            "smeared_true_asexual_parasites": [
-                2163.146240234
-            ],
-            "smeared_true_gametocytes": [
-                0
-            ],
-            "asexual_parasites": [
-                170
-            ],
-            "gametocytes": [
-                0
-            ],
-            "smeared_asexual_parasites": [
-                1679.882080078
-            ],
-            "smeared_gametocytes": [
-                0
-            ],
-            "infectiousness": [
-                0
-            ],
-            "infectiousness_smeared": [
-                0
-            ],
-            "infectiousness_age_scaled": [
-                0
-            ],
-            "pos_asexual_fields": [
-                197
-            ],
-            "pos_gametocyte_fields": [
-                0
-            ],
-            "temps": [
-                38.21258163452
-            ],
-            "rdt": [
-                1
-            ]
-        },
-        {
-            "id": 316,
-            "node_id": 340461476,
-            "initial_age": 2493.893066406,
-            "local_birthday": -2425.893066406,
-            "strain_ids": [
-                [
-                    0,
-                    6316161
-                ]
-            ],
-            "ip_data": [
-                ""
-            ],
-            "true_asexual_parasites": [
-                584.5664672852
-            ],
-            "true_gametocytes": [
-                0
-            ],
-            "smeared_true_asexual_parasites": [
-                133.8140716553
-            ],
-            "smeared_true_gametocytes": [
-                0
-            ],
-            "asexual_parasites": [
-                570
-            ],
-            "gametocytes": [
-                0
-            ],
-            "smeared_asexual_parasites": [
-                570.8465576172
-            ],
-            "smeared_gametocytes": [
-                0
-            ],
-            "infectiousness": [
-                0
-            ],
-            "infectiousness_smeared": [
-                0
-            ],
-            "infectiousness_age_scaled": [
-                0
-            ],
-            "pos_asexual_fields": [
-                152
-            ],
-            "pos_gametocyte_fields": [
-                0
-            ],
-            "temps": [
-                38.04098510742
-            ],
-            "rdt": [
-                1
-            ]
-        },
-        {
-            "id": 395,
-            "node_id": 340461476,
-            "initial_age": 2586.342529297,
-            "local_birthday": -2514.342529297,
-            "strain_ids": [
-                [
-                    0,
-                    13197963
-                ],
-                [
-                    0,
-                    13197963
-                ]
-            ],
-            "ip_data": [
-                ""
-            ],
-            "true_asexual_parasites": [
-                529.8342285156
-            ],
-            "true_gametocytes": [
-                0
-            ],
-            "smeared_true_asexual_parasites": [
-                108.5169754028
-            ],
-            "smeared_true_gametocytes": [
-                0
-            ],
-            "asexual_parasites": [
-                700
-            ],
-            "gametocytes": [
-                0
-            ],
-            "smeared_asexual_parasites": [
-                546.5966796875
-            ],
-            "smeared_gametocytes": [
-                0
-            ],
-            "infectiousness": [
-                0
-            ],
-            "infectiousness_smeared": [
-                0
-            ],
-            "infectiousness_age_scaled": [
-                0
-            ],
-            "pos_asexual_fields": [
-                149
-            ],
-            "pos_gametocyte_fields": [
-                0
-            ],
-            "temps": [
-                38.09008407593
-            ],
-            "rdt": [
-                1
-            ]
-        },
-        {
-            "id": 408,
-            "node_id": 340461476,
-            "initial_age": 515.4669799805,
-            "local_birthday": -450.4669799805,
-            "strain_ids": [
-                [
-                    0,
-                    2288645
-                ]
-            ],
-            "ip_data": [
-                ""
-            ],
-            "true_asexual_parasites": [
-                2957.946533203
-            ],
-            "true_gametocytes": [
-                0
-            ],
-            "smeared_true_asexual_parasites": [
-                4913.381835938
-            ],
-            "smeared_true_gametocytes": [
-                0
-            ],
-            "asexual_parasites": [
-                140
-            ],
-            "gametocytes": [
-                0
-            ],
-            "smeared_asexual_parasites": [
-                3.402823466385e+38
-            ],
-            "smeared_gametocytes": [
-                0
-            ],
-            "infectiousness": [
-                0
-            ],
-            "infectiousness_smeared": [
-                0
-            ],
-            "infectiousness_age_scaled": [
-                0
-            ],
-            "pos_asexual_fields": [
-                200
-            ],
-            "pos_gametocyte_fields": [
-                0
-            ],
-            "temps": [
-                38.95659637451
-            ],
-            "rdt": [
-                1
-            ]
-        },
-        {
-            "id": 415,
-            "node_id": 340461476,
-            "initial_age": 8344.54296875,
-            "local_birthday": -8278.54296875,
-            "strain_ids": [
-                [
-                    0,
-                    8937975
-                ]
-            ],
-            "ip_data": [
-                ""
-            ],
-            "true_asexual_parasites": [
-                879.1862792969
-            ],
-            "true_gametocytes": [
-                0
-            ],
-            "smeared_true_asexual_parasites": [
-                1536.655029297
-            ],
-            "smeared_true_gametocytes": [
-                0
-            ],
-            "asexual_parasites": [
-                920
-            ],
-            "gametocytes": [
-                0
-            ],
-            "smeared_asexual_parasites": [
-                986.0416259766
-            ],
-            "smeared_gametocytes": [
-                0
-            ],
-            "infectiousness": [
-                0
-            ],
-            "infectiousness_smeared": [
-                0
-            ],
-            "infectiousness_age_scaled": [
-                0
-            ],
-            "pos_asexual_fields": [
-                183
-            ],
-            "pos_gametocyte_fields": [
-                0
-            ],
-            "temps": [
-                38.14125442505
-            ],
-            "rdt": [
-                1
-            ]
-        },
-        {
-            "id": 448,
-            "node_id": 340461476,
-            "initial_age": 31864.56835938,
-            "local_birthday": -31856.56835938,
-            "strain_ids": [
-                [
-                    0,
-                    13127020
-                ]
-            ],
-            "ip_data": [
-                ""
-            ],
-            "true_asexual_parasites": [
-                1045.97253418
-            ],
-            "true_gametocytes": [
-                0.04627520218492
-            ],
-            "smeared_true_asexual_parasites": [
-                283.3442382813
-            ],
-            "smeared_true_gametocytes": [
-                0.1390209048986
-            ],
-            "asexual_parasites": [
-                1010
-            ],
-            "gametocytes": [
-                0
-            ],
-            "smeared_asexual_parasites": [
-                1160.168823242
-            ],
-            "smeared_gametocytes": [
-                0
-            ],
-            "infectiousness": [
-                0.0001260387361981
-            ],
-            "infectiousness_smeared": [
-                0
-            ],
-            "infectiousness_age_scaled": [
-                0.0001260387361981
-            ],
-            "pos_asexual_fields": [
-                189
-            ],
-            "pos_gametocyte_fields": [
-                0
-            ],
-            "temps": [
-                38.11972808838
-            ],
-            "rdt": [
-                1
-            ]
-        },
-        {
-            "id": 458,
-            "node_id": 340461476,
-            "initial_age": 4314.606933594,
-            "local_birthday": -4288.606933594,
-            "strain_ids": [
-                [
-                    0,
-                    13197963
-                ]
-            ],
-            "ip_data": [
-                ""
-            ],
-            "true_asexual_parasites": [
-                1306.155395508
-            ],
-            "true_gametocytes": [
-                0
-            ],
-            "smeared_true_asexual_parasites": [
-                816.4675292969
-            ],
-            "smeared_true_gametocytes": [
-                0
-            ],
-            "asexual_parasites": [
-                110
-            ],
-            "gametocytes": [
-                0
-            ],
-            "smeared_asexual_parasites": [
-                1240.437133789
-            ],
-            "smeared_gametocytes": [
-                0
-            ],
-            "infectiousness": [
-                0
-            ],
-            "infectiousness_smeared": [
-                0
-            ],
-            "infectiousness_age_scaled": [
-                0
-            ],
-            "pos_asexual_fields": [
-                191
-            ],
-            "pos_gametocyte_fields": [
-                0
-            ],
-            "temps": [
-                38.1210975647
-            ],
-            "rdt": [
-                1
-            ]
-        },
-        {
-            "id": 479,
-            "node_id": 340461476,
-            "initial_age": 3058.376953125,
-            "local_birthday": -3006.376953125,
-            "strain_ids": [
-                [
-                    0,
-                    8937975
-                ]
-            ],
-            "ip_data": [
-                ""
-            ],
-            "true_asexual_parasites": [
-                944.6945800781
-            ],
-            "true_gametocytes": [
-                8.914329528809
-            ],
-            "smeared_true_asexual_parasites": [
-                454.0924682617
-            ],
-            "smeared_true_gametocytes": [
-                33.81133270264
-            ],
-            "asexual_parasites": [
-                1090
-            ],
-            "gametocytes": [
-                0
-            ],
-            "smeared_asexual_parasites": [
-                901.5180053711
-            ],
-            "smeared_gametocytes": [
-                4.020134449005
-            ],
-            "infectiousness": [
-                0.0245880484581
-            ],
-            "infectiousness_smeared": [
-                0.02500000037253
-            ],
-            "infectiousness_age_scaled": [
-                0.01236494537443
-            ],
-            "pos_asexual_fields": [
-                179
-            ],
-            "pos_gametocyte_fields": [
-                2
-            ],
-            "temps": [
-                38.09968185425
-            ],
-            "rdt": [
-                1
-            ]
-        },
-        {
-            "id": 480,
-            "node_id": 340461476,
-            "initial_age": 509.7984619141,
-            "local_birthday": -471.7984619141,
-            "strain_ids": [
-                [
-                    0,
-                    13436355
-                ]
-            ],
-            "ip_data": [
-                ""
-            ],
-            "true_asexual_parasites": [
-                2232.359863281
-            ],
-            "true_gametocytes": [
-                0
-            ],
-            "smeared_true_asexual_parasites": [
-                27736.96679688
-            ],
-            "smeared_true_gametocytes": [
-                0
-            ],
-            "asexual_parasites": [
-                180
-            ],
-            "gametocytes": [
-                0
-            ],
-            "smeared_asexual_parasites": [
-                2119.326904297
-            ],
-            "smeared_gametocytes": [
-                0
-            ],
-            "infectiousness": [
-                0
-            ],
-            "infectiousness_smeared": [
-                0
-            ],
-            "infectiousness_age_scaled": [
-                0
-            ],
-            "pos_asexual_fields": [
-                199
-            ],
-            "pos_gametocyte_fields": [
-                0
-            ],
-            "temps": [
-                38.64887619019
-            ],
-            "rdt": [
-                1
-            ]
-        },
-        {
-            "id": 490,
-            "node_id": 340461476,
-            "initial_age": 1862.615844727,
-            "local_birthday": -1849.615844727,
-            "strain_ids": [
-                [
-                    0,
-                    4220416
-                ]
-            ],
-            "ip_data": [
-                "",
-                ""
-            ],
-            "true_asexual_parasites": [
-                1832.78125,
-                1798.348632813
-            ],
-            "true_gametocytes": [
-                0,
-                58.00896453857
-            ],
-            "smeared_true_asexual_parasites": [
-                2575.322998047,
-                2769.053222656
-            ],
-            "smeared_true_gametocytes": [
-                0,
-                87.0701751709
-            ],
-            "asexual_parasites": [
-                230,
-                290
-            ],
-            "gametocytes": [
-                0,
-                20
-            ],
-            "smeared_asexual_parasites": [
-                1679.882080078,
-                2119.326904297
-            ],
-            "smeared_gametocytes": [
-                0,
-                62.66152572632
-            ],
-            "infectiousness": [
-                0,
-                0.1557768434286
-            ],
-            "infectiousness_smeared": [
-                0,
-                0.1000000014901
-            ],
-            "infectiousness_age_scaled": [
-                0,
-                0.05694495514035
-            ],
-            "pos_asexual_fields": [
-                197,
-                199
-            ],
-            "pos_gametocyte_fields": [
-                0,
-                29
-            ],
-            "temps": [
-                38.42259979248,
-                38.35535430908
-            ],
-            "rdt": [
-                1,
-                1
-            ]
-        },
-        {
-            "id": 506,
-            "node_id": 340461476,
-            "initial_age": 4742.187988281,
-            "local_birthday": -4722.187988281,
-            "strain_ids": [
-                [
-                    0,
-                    13197963
-                ],
-                [
-                    0,
-                    958860
-                ]
-            ],
-            "ip_data": [
-                ""
-            ],
-            "true_asexual_parasites": [
-                1633.786254883
-            ],
-            "true_gametocytes": [
-                158.8947143555
-            ],
-            "smeared_true_asexual_parasites": [
-                1649.647827148
-            ],
-            "smeared_true_gametocytes": [
-                118.4348220825
-            ],
-            "asexual_parasites": [
-                310
-            ],
-            "gametocytes": [
-                110
-            ],
-            "smeared_asexual_parasites": [
-                1842.068115234
-            ],
-            "smeared_gametocytes": [
-                154.2649993896
-            ],
-            "infectiousness": [
-                0.4990320801735
-            ],
-            "infectiousness_smeared": [
-                0.5249999761581
-            ],
-            "infectiousness_age_scaled": [
-                0.3494352400303
-            ],
-            "pos_asexual_fields": [
-                198
-            ],
-            "pos_gametocyte_fields": [
-                64
-            ],
-            "temps": [
-                38.22497558594
-            ],
-            "rdt": [
-                1
-            ]
-        },
-        {
-            "id": 596,
-            "node_id": 340461476,
-            "initial_age": 640.2533569336,
-            "local_birthday": -630.2533569336,
-            "strain_ids": [
-                [
-                    0,
-                    829734
-                ]
-            ],
-            "ip_data": [
-                "",
-                ""
-            ],
-            "true_asexual_parasites": [
-                3952.923095703,
-                2127.2265625
-            ],
-            "true_gametocytes": [
-                0,
-                3839.934326172
-            ],
-            "smeared_true_asexual_parasites": [
-                2252.176757813,
-                4868.442871094
-            ],
-            "smeared_true_gametocytes": [
-                0,
-                5650.270507813
-            ],
-            "asexual_parasites": [
-                310,
-                280
-            ],
-            "gametocytes": [
-                0,
-                4010
-            ],
-            "smeared_asexual_parasites": [
-                3.402823466385e+38,
-                3.402823466385e+38
-            ],
-            "smeared_gametocytes": [
-                0,
-                3.402823466385e+38
-            ],
-            "infectiousness": [
-                0,
-                0.9999891519547
-            ],
-            "infectiousness_smeared": [
-                0,
-                1
-            ],
-            "infectiousness_age_scaled": [
-                0,
-                0.2173408269882
-            ],
-            "pos_asexual_fields": [
-                200,
-                200
-            ],
-            "pos_gametocyte_fields": [
-                0,
-                200
-            ],
-            "temps": [
-                39.35082244873,
-                38.57442092896
-            ],
-            "rdt": [
-                1,
-                1
-            ]
-        },
-        {
-            "id": 625,
-            "node_id": 340461476,
-            "initial_age": 758.7716674805,
-            "local_birthday": -695.7716674805,
-            "strain_ids": [
-                [
-                    0,
-                    4220416
-                ],
-                [
-                    0,
-                    4220416
-                ],
-                [
-                    0,
-                    0
-                ]
-            ],
-            "ip_data": [
-                ""
-            ],
-            "true_asexual_parasites": [
-                1425.026855469
-            ],
-            "true_gametocytes": [
-                0.7115584015846
-            ],
-            "smeared_true_asexual_parasites": [
-                8429.461914063
-            ],
-            "smeared_true_gametocytes": [
-                0.584480881691
-            ],
-            "asexual_parasites": [
-                250
-            ],
-            "gametocytes": [
-                0
-            ],
-            "smeared_asexual_parasites": [
-                1340.962890625
-            ],
-            "smeared_gametocytes": [
-                2.005016803741
-            ],
-            "infectiousness": [
-                0.003747572889552
-            ],
-            "infectiousness_smeared": [
-                0
-            ],
-            "infectiousness_age_scaled": [
-                0.0008745787199587
-            ],
-            "pos_asexual_fields": [
-                193
-            ],
-            "pos_gametocyte_fields": [
-                1
-            ],
-            "temps": [
-                38.22066116333
-            ],
-            "rdt": [
-                1
-            ]
-        },
-        {
-            "id": 627,
-            "node_id": 340461476,
-            "initial_age": 1108.005493164,
-            "local_birthday": -1104.005493164,
-            "strain_ids": [
-                [
-                    0,
-                    13197963
-                ]
-            ],
-            "ip_data": [
-                ""
-            ],
-            "true_asexual_parasites": [
-                974.8240966797
-            ],
-            "true_gametocytes": [
-                1292.9296875
-            ],
-            "smeared_true_asexual_parasites": [
-                531.368347168
-            ],
-            "smeared_true_gametocytes": [
-                89.07427978516
-            ],
-            "asexual_parasites": [
-                1090
-            ],
-            "gametocytes": [
-                1220
-            ],
-            "smeared_asexual_parasites": [
-                1010.291503906
-            ],
-            "smeared_gametocytes": [
-                1160.168823242
-            ],
-            "infectiousness": [
-                0.972264945507
-            ],
-            "infectiousness_smeared": [
-                0.9250000119209
-            ],
-            "infectiousness_age_scaled": [
-                0.2666942179203
-            ],
-            "pos_asexual_fields": [
-                184
-            ],
-            "pos_gametocyte_fields": [
-                189
-            ],
-            "temps": [
-                38.19229507446
-            ],
-            "rdt": [
-                1
-            ]
-        },
-        {
-            "id": 631,
-            "node_id": 340461476,
-            "initial_age": 4722.56640625,
-            "local_birthday": -4716.56640625,
-            "strain_ids": [
-                [
-                    0,
-                    4220416
-                ]
-            ],
-            "ip_data": [
-                ""
-            ],
-            "true_asexual_parasites": [
-                1434.436767578
-            ],
-            "true_gametocytes": [
-                0.005390325561166
-            ],
-            "smeared_true_asexual_parasites": [
-                580.6820678711
-            ],
-            "smeared_true_gametocytes": [
-                0
-            ],
-            "asexual_parasites": [
-                240
-            ],
-            "gametocytes": [
-                0
-            ],
-            "smeared_asexual_parasites": [
-                1402.623168945
-            ],
-            "smeared_gametocytes": [
-                0
-            ],
-            "infectiousness": [
-                1.714817335596e-05
-            ],
-            "infectiousness_smeared": [
-                0
-            ],
-            "infectiousness_age_scaled": [
-                1.196816174343e-05
-            ],
-            "pos_asexual_fields": [
-                194
-            ],
-            "pos_gametocyte_fields": [
-                0
-            ],
-            "temps": [
-                38.14545440674
-            ],
-            "rdt": [
-                1
-            ]
-        },
-        {
-            "id": 658,
-            "node_id": 340461476,
-            "initial_age": 655.8256225586,
-            "local_birthday": -642.8256225586,
-            "strain_ids": [
-                [
-                    0,
-                    13436355
-                ]
-            ],
-            "ip_data": [
-                "",
-                ""
-            ],
-            "true_asexual_parasites": [
-                555.4918823242,
-                606.1477050781
-            ],
-            "true_gametocytes": [
-                0,
-                10.67618751526
-            ],
-            "smeared_true_asexual_parasites": [
-                278.2087402344,
-                2594.152587891
-            ],
-            "smeared_true_gametocytes": [
-                0,
-                19.83178710938
-            ],
-            "asexual_parasites": [
-                570,
-                770
-            ],
-            "gametocytes": [
-                0,
-                20
-            ],
-            "smeared_asexual_parasites": [
-                596.6619873047,
-                643.7752075195
-            ],
-            "smeared_gametocytes": [
-                0,
-                12.18368339539
-            ],
-            "infectiousness": [
-                0,
-                0.03411715105176
-            ],
-            "infectiousness_smeared": [
-                0,
-                0.02500000037253
-            ],
-            "infectiousness_age_scaled": [
-                0,
-                0.007711041718721
-            ],
-            "pos_asexual_fields": [
-                155,
-                160
-            ],
-            "pos_gametocyte_fields": [
-                0,
-                6
-            ],
-            "temps": [
-                38.10382461548,
-                38.03535461426
-            ],
-            "rdt": [
-                1,
-                1
-            ]
-        },
-        {
-            "id": 682,
-            "node_id": 340461476,
-            "initial_age": 3169.828613281,
-            "local_birthday": -3098.828613281,
-            "strain_ids": [
-                [
-                    0,
-                    13436355
-                ],
-                [
-                    0,
-                    2288645
-                ]
-            ],
-            "ip_data": [
-                ""
-            ],
-            "true_asexual_parasites": [
-                1288.535888672
-            ],
-            "true_gametocytes": [
-                0
-            ],
-            "smeared_true_asexual_parasites": [
-                1987.192504883
+                227.0535125732
             ],
             "smeared_true_gametocytes": [
                 0
@@ -2102,7 +34,7 @@
                 0
             ],
             "smeared_asexual_parasites": [
-                1679.882080078
+                1340.962890625
             ],
             "smeared_gametocytes": [
                 0
@@ -2117,1342 +49,46 @@
                 0
             ],
             "pos_asexual_fields": [
-                197
+                193
             ],
             "pos_gametocyte_fields": [
                 0
             ],
             "temps": [
-                38.04010009766
+                38.05908584595
             ],
             "rdt": [
                 1
             ]
         },
         {
-            "id": 694,
+            "id": 24,
             "node_id": 340461476,
-            "initial_age": 3069.333740234,
-            "local_birthday": -3018.333740234,
+            "initial_age": 5465.51171875,
+            "local_birthday": -5393.51171875,
             "strain_ids": [
                 [
                     0,
-                    958860
+                    4327560
                 ]
             ],
             "ip_data": [
                 ""
             ],
             "true_asexual_parasites": [
-                760.7397460938
+                494.4715881348
             ],
             "true_gametocytes": [
                 0
             ],
             "smeared_true_asexual_parasites": [
-                478.9921264648
+                1077.723632813
             ],
             "smeared_true_gametocytes": [
                 0
             ],
             "asexual_parasites": [
-                810
-            ],
-            "gametocytes": [
-                0
-            ],
-            "smeared_asexual_parasites": [
-                758.8480224609
-            ],
-            "smeared_gametocytes": [
-                0
-            ],
-            "infectiousness": [
-                0
-            ],
-            "infectiousness_smeared": [
-                0
-            ],
-            "infectiousness_age_scaled": [
-                0
-            ],
-            "pos_asexual_fields": [
-                170
-            ],
-            "pos_gametocyte_fields": [
-                0
-            ],
-            "temps": [
-                38.04253768921
-            ],
-            "rdt": [
-                1
-            ]
-        },
-        {
-            "id": 703,
-            "node_id": 340461476,
-            "initial_age": 4842.425292969,
-            "local_birthday": -4810.425292969,
-            "strain_ids": [
-                [
-                    0,
-                    13436355
-                ]
-            ],
-            "ip_data": [
-                ""
-            ],
-            "true_asexual_parasites": [
-                981.124206543
-            ],
-            "true_gametocytes": [
-                17.42412567139
-            ],
-            "smeared_true_asexual_parasites": [
-                309.8692626953
-            ],
-            "smeared_true_gametocytes": [
-                19.79469680786
-            ],
-            "asexual_parasites": [
-                1190
-            ],
-            "gametocytes": [
-                10
-            ],
-            "smeared_asexual_parasites": [
-                1125.364257813
-            ],
-            "smeared_gametocytes": [
-                20.51731872559
-            ],
-            "infectiousness": [
-                0.04646047204733
-            ],
-            "infectiousness_smeared": [
-                0.02500000037253
-            ],
-            "infectiousness_age_scaled": [
-                0.0330786369741
-            ],
-            "pos_asexual_fields": [
-                188
-            ],
-            "pos_gametocyte_fields": [
-                10
-            ],
-            "temps": [
-                38.18264389038
-            ],
-            "rdt": [
-                1
-            ]
-        },
-        {
-            "id": 717,
-            "node_id": 340461476,
-            "initial_age": 554.5111083984,
-            "local_birthday": -493.5111083984,
-            "strain_ids": [
-                [
-                    0,
-                    13197963
-                ]
-            ],
-            "ip_data": [
-                ""
-            ],
-            "true_asexual_parasites": [
-                1314.477905273
-            ],
-            "true_gametocytes": [
-                0
-            ],
-            "smeared_true_asexual_parasites": [
-                3025.524169922
-            ],
-            "smeared_true_gametocytes": [
-                0
-            ],
-            "asexual_parasites": [
-                130
-            ],
-            "gametocytes": [
-                0
-            ],
-            "smeared_asexual_parasites": [
-                1475.551757813
-            ],
-            "smeared_gametocytes": [
-                0
-            ],
-            "infectiousness": [
-                0
-            ],
-            "infectiousness_smeared": [
-                0
-            ],
-            "infectiousness_age_scaled": [
-                0
-            ],
-            "pos_asexual_fields": [
-                195
-            ],
-            "pos_gametocyte_fields": [
-                0
-            ],
-            "temps": [
-                38.1753616333
-            ],
-            "rdt": [
-                0
-            ]
-        },
-        {
-            "id": 724,
-            "node_id": 340461476,
-            "initial_age": 2153.273193359,
-            "local_birthday": -2153.273193359,
-            "strain_ids": [
-                [
-                    0,
-                    13197963
-                ],
-                [
-                    0,
-                    16311455
-                ]
-            ],
-            "ip_data": [
-                "",
-                ""
-            ],
-            "true_asexual_parasites": [
-                817.8364868164,
-                909.8814697266
-            ],
-            "true_gametocytes": [
-                3.116121053696,
-                1251.582397461
-            ],
-            "smeared_true_asexual_parasites": [
-                2695.073486328,
-                723.2233886719
-            ],
-            "smeared_true_gametocytes": [
-                20.13329124451,
-                276.7021484375
-            ],
-            "asexual_parasites": [
-                860,
-                940
-            ],
-            "gametocytes": [
-                0,
-                1290
-            ],
-            "smeared_asexual_parasites": [
-                865.1292724609,
-                921.0340576172
-            ],
-            "smeared_gametocytes": [
-                8.081083297729,
-                1240.437133789
-            ],
-            "infectiousness": [
-                0.009432264603674,
-                0.970928132534
-            ],
-            "infectiousness_smeared": [
-                0.02500000037253,
-                0.9499999880791
-            ],
-            "infectiousness_age_scaled": [
-                0.003742786124349,
-                0.3870915174484
-            ],
-            "pos_asexual_fields": [
-                177,
-                180
-            ],
-            "pos_gametocyte_fields": [
-                4,
-                191
-            ],
-            "temps": [
-                38.08570098877,
-                38.16917800903
-            ],
-            "rdt": [
-                1,
-                1
-            ]
-        },
-        {
-            "id": 754,
-            "node_id": 340461476,
-            "initial_age": 1859.594604492,
-            "local_birthday": -1843.594604492,
-            "strain_ids": [
-                [
-                    0,
-                    13436355
-                ]
-            ],
-            "ip_data": [
-                "",
-                "",
-                ""
-            ],
-            "true_asexual_parasites": [
-                900.7866210938,
-                2772.512451172,
-                1130.570800781
-            ],
-            "true_gametocytes": [
-                0,
-                875.5487670898,
-                816.5933227539
-            ],
-            "smeared_true_asexual_parasites": [
-                572.9154052734,
-                6849.115234375,
-                688.5166625977
-            ],
-            "smeared_true_gametocytes": [
-                0,
-                6540.786132813,
-                278.3948059082
-            ],
-            "asexual_parasites": [
-                900,
-                220,
-                120
-            ],
-            "gametocytes": [
-                0,
-                920,
-                860
-            ],
-            "smeared_asexual_parasites": [
-                786.4451904297,
-                3.402823466385e+38,
-                1240.437133789
-            ],
-            "smeared_gametocytes": [
-                0,
-                772.4086303711,
-                986.0416259766
-            ],
-            "infectiousness": [
-                0,
-                0.9261994361877,
-                0.9662330150604
-            ],
-            "infectiousness_smeared": [
-                0,
-                0.9499999880791,
-                0.9750000238419
-            ],
-            "infectiousness_age_scaled": [
-                0,
-                0.337271630764,
-                0.3541145026684
-            ],
-            "pos_asexual_fields": [
-                172,
-                200,
-                191
-            ],
-            "pos_gametocyte_fields": [
-                0,
-                171,
-                183
-            ],
-            "temps": [
-                38.15634536743,
-                38.81785202026,
-                38.00702667236
-            ],
-            "rdt": [
-                1,
-                1,
-                0
-            ]
-        },
-        {
-            "id": 755,
-            "node_id": 340461476,
-            "initial_age": 525.9039306641,
-            "local_birthday": -461.9039306641,
-            "strain_ids": [
-                [
-                    0,
-                    958860
-                ]
-            ],
-            "ip_data": [
-                ""
-            ],
-            "true_asexual_parasites": [
-                591.7800292969
-            ],
-            "true_gametocytes": [
-                0
-            ],
-            "smeared_true_asexual_parasites": [
-                583.266418457
-            ],
-            "smeared_true_gametocytes": [
-                0
-            ],
-            "asexual_parasites": [
-                810
-            ],
-            "gametocytes": [
-                0
-            ],
-            "smeared_asexual_parasites": [
-                587.8704223633
-            ],
-            "smeared_gametocytes": [
-                0
-            ],
-            "infectiousness": [
-                0
-            ],
-            "infectiousness_smeared": [
-                0
-            ],
-            "infectiousness_age_scaled": [
-                0
-            ],
-            "pos_asexual_fields": [
-                154
-            ],
-            "pos_gametocyte_fields": [
-                0
-            ],
-            "temps": [
-                38.03275299072
-            ],
-            "rdt": [
-                1
-            ]
-        },
-        {
-            "id": 764,
-            "node_id": 340461476,
-            "initial_age": 3400.528564453,
-            "local_birthday": -3385.528564453,
-            "strain_ids": [
-                [
-                    0,
-                    2288645
-                ]
-            ],
-            "ip_data": [
-                "",
-                ""
-            ],
-            "true_asexual_parasites": [
-                833.0788574219,
-                733.507019043
-            ],
-            "true_gametocytes": [
-                0.4354145824909,
-                60.04426956177
-            ],
-            "smeared_true_asexual_parasites": [
-                2176.654785156,
-                1319.000610352
-            ],
-            "smeared_true_gametocytes": [
-                0.2658326625824,
-                102.9331741333
-            ],
-            "asexual_parasites": [
-                700,
-                740
-            ],
-            "gametocytes": [
-                0,
-                90
-            ],
-            "smeared_asexual_parasites": [
-                865.1292724609,
-                831.7766113281
-            ],
-            "smeared_gametocytes": [
-                0,
-                55.70482635498
-            ],
-            "infectiousness": [
-                0.001237946329638,
-                0.1734708249569
-            ],
-            "infectiousness_smeared": [
-                0,
-                0.25
-            ],
-            "infectiousness_age_scaled": [
-                0.0006721854442731,
-                0.09504582732916
-            ],
-            "pos_asexual_fields": [
-                177,
-                175
-            ],
-            "pos_gametocyte_fields": [
-                0,
-                26
-            ],
-            "temps": [
-                38.04911422729,
-                38.01957702637
-            ],
-            "rdt": [
-                1,
-                1
-            ]
-        },
-        {
-            "id": 768,
-            "node_id": 340461476,
-            "initial_age": 1807.672363281,
-            "local_birthday": -1735.672363281,
-            "strain_ids": [
-                [
-                    0,
-                    6238853
-                ]
-            ],
-            "ip_data": [
-                ""
-            ],
-            "true_asexual_parasites": [
-                804.1701660156
-            ],
-            "true_gametocytes": [
-                0
-            ],
-            "smeared_true_asexual_parasites": [
-                607.0481567383
-            ],
-            "smeared_true_gametocytes": [
-                0
-            ],
-            "asexual_parasites": [
-                800
-            ],
-            "gametocytes": [
-                0
-            ],
-            "smeared_asexual_parasites": [
-                758.8480224609
-            ],
-            "smeared_gametocytes": [
-                0
-            ],
-            "infectiousness": [
-                0
-            ],
-            "infectiousness_smeared": [
-                0
-            ],
-            "infectiousness_age_scaled": [
-                0
-            ],
-            "pos_asexual_fields": [
-                170
-            ],
-            "pos_gametocyte_fields": [
-                0
-            ],
-            "temps": [
-                38.10750198364
-            ],
-            "rdt": [
-                1
-            ]
-        },
-        {
-            "id": 771,
-            "node_id": 340461476,
-            "initial_age": 5436.662597656,
-            "local_birthday": -5370.662597656,
-            "strain_ids": [
-                [
-                    0,
-                    6238853
-                ],
-                [
-                    0,
-                    13436355
-                ]
-            ],
-            "ip_data": [
-                ""
-            ],
-            "true_asexual_parasites": [
-                1561.745849609
-            ],
-            "true_gametocytes": [
-                0
-            ],
-            "smeared_true_asexual_parasites": [
-                3353.535644531
-            ],
-            "smeared_true_gametocytes": [
-                0
-            ],
-            "asexual_parasites": [
-                240
-            ],
-            "gametocytes": [
-                0
-            ],
-            "smeared_asexual_parasites": [
-                1475.551757813
-            ],
-            "smeared_gametocytes": [
-                0
-            ],
-            "infectiousness": [
-                0
-            ],
-            "infectiousness_smeared": [
-                0
-            ],
-            "infectiousness_age_scaled": [
-                0
-            ],
-            "pos_asexual_fields": [
-                195
-            ],
-            "pos_gametocyte_fields": [
-                0
-            ],
-            "temps": [
-                38.23377609253
-            ],
-            "rdt": [
-                1
-            ]
-        },
-        {
-            "id": 828,
-            "node_id": 340461476,
-            "initial_age": 1067.829345703,
-            "local_birthday": -1062.829345703,
-            "strain_ids": [
-                [
-                    0,
-                    6316161
-                ]
-            ],
-            "ip_data": [
-                ""
-            ],
-            "true_asexual_parasites": [
-                1507.849609375
-            ],
-            "true_gametocytes": [
-                3.126816749573
-            ],
-            "smeared_true_asexual_parasites": [
-                718.9110107422
-            ],
-            "smeared_true_gametocytes": [
-                40.38719940186
-            ],
-            "asexual_parasites": [
-                220
-            ],
-            "gametocytes": [
-                0
-            ],
-            "smeared_asexual_parasites": [
-                1842.068115234
-            ],
-            "smeared_gametocytes": [
-                8.081083297729
-            ],
-            "infectiousness": [
-                0.01080252882093
-            ],
-            "infectiousness_smeared": [
-                0
-            ],
-            "infectiousness_age_scaled": [
-                0.002912290394306
-            ],
-            "pos_asexual_fields": [
-                198
-            ],
-            "pos_gametocyte_fields": [
-                4
-            ],
-            "temps": [
-                38.17007064819
-            ],
-            "rdt": [
-                0
-            ]
-        },
-        {
-            "id": 833,
-            "node_id": 340461476,
-            "initial_age": 2488.276367188,
-            "local_birthday": -2472.276367188,
-            "strain_ids": [
-                [
-                    0,
-                    13436355
-                ]
-            ],
-            "ip_data": [
-                ""
-            ],
-            "true_asexual_parasites": [
-                911.0927734375
-            ],
-            "true_gametocytes": [
-                0.2445160895586
-            ],
-            "smeared_true_asexual_parasites": [
-                555.4434814453
-            ],
-            "smeared_true_gametocytes": [
-                35.49761199951
-            ],
-            "asexual_parasites": [
-                880
-            ],
-            "gametocytes": [
-                0
-            ],
-            "smeared_asexual_parasites": [
-                1160.168823242
-            ],
-            "smeared_gametocytes": [
-                0
-            ],
-            "infectiousness": [
-                0.0006671650917269
-            ],
-            "infectiousness_smeared": [
-                0
-            ],
-            "infectiousness_age_scaled": [
-                0.0002909299510065
-            ],
-            "pos_asexual_fields": [
-                189
-            ],
-            "pos_gametocyte_fields": [
-                0
-            ],
-            "temps": [
-                38.11923599243
-            ],
-            "rdt": [
-                1
-            ]
-        },
-        {
-            "id": 905,
-            "node_id": 340461476,
-            "initial_age": 2811.038330078,
-            "local_birthday": -2776.038330078,
-            "strain_ids": [
-                [
-                    0,
-                    829734
-                ]
-            ],
-            "ip_data": [
-                ""
-            ],
-            "true_asexual_parasites": [
-                673.8040771484
-            ],
-            "true_gametocytes": [
-                9.944367408752
-            ],
-            "smeared_true_asexual_parasites": [
-                717.0328979492
-            ],
-            "smeared_true_gametocytes": [
-                8.610293388367
-            ],
-            "asexual_parasites": [
-                590
-            ],
-            "gametocytes": [
-                30
-            ],
-            "smeared_asexual_parasites": [
-                816.0883789063
-            ],
-            "smeared_gametocytes": [
-                10.1271238327
-            ],
-            "infectiousness": [
-                0.03079546242952
-            ],
-            "infectiousness_smeared": [
-                0.02500000037253
-            ],
-            "infectiousness_age_scaled": [
-                0.01459385920316
-            ],
-            "pos_asexual_fields": [
-                174
-            ],
-            "pos_gametocyte_fields": [
-                5
-            ],
-            "temps": [
-                38.06000518799
-            ],
-            "rdt": [
-                1
-            ]
-        },
-        {
-            "id": 906,
-            "node_id": 340461476,
-            "initial_age": 2200.494873047,
-            "local_birthday": -2136.494873047,
-            "strain_ids": [
-                [
-                    0,
-                    6316161
-                ]
-            ],
-            "ip_data": [
-                ""
-            ],
-            "true_asexual_parasites": [
-                621.7614746094
-            ],
-            "true_gametocytes": [
-                0.06513500958681
-            ],
-            "smeared_true_asexual_parasites": [
-                320.7290649414
-            ],
-            "smeared_true_gametocytes": [
-                0.08105541020632
-            ],
-            "asexual_parasites": [
-                610
-            ],
-            "gametocytes": [
-                0
-            ],
-            "smeared_asexual_parasites": [
-                664.2924804688
-            ],
-            "smeared_gametocytes": [
-                0
-            ],
-            "infectiousness": [
-                0.0002083016588585
-            ],
-            "infectiousness_smeared": [
-                0
-            ],
-            "infectiousness_age_scaled": [
-                8.380832150578e-05
-            ],
-            "pos_asexual_fields": [
-                162
-            ],
-            "pos_gametocyte_fields": [
-                0
-            ],
-            "temps": [
-                38.04795455933
-            ],
-            "rdt": [
-                1
-            ]
-        },
-        {
-            "id": 969,
-            "node_id": 340461476,
-            "initial_age": 4850.099121094,
-            "local_birthday": -4826.099121094,
-            "strain_ids": [
-                [
-                    0,
-                    13197963
-                ],
-                [
-                    0,
-                    829734
-                ]
-            ],
-            "ip_data": [
-                "",
-                ""
-            ],
-            "true_asexual_parasites": [
-                596.0123291016,
-                794.8500976563
-            ],
-            "true_gametocytes": [
-                1.109635829926,
-                550.1621704102
-            ],
-            "smeared_true_asexual_parasites": [
-                810.4784545898,
-                861.8931274414
-            ],
-            "smeared_true_gametocytes": [
-                0.2712943851948,
-                885.6352539063
-            ],
-            "asexual_parasites": [
-                740,
-                770
-            ],
-            "gametocytes": [
-                0,
-                610
-            ],
-            "smeared_asexual_parasites": [
-                708.7827758789,
-                745.7320556641
-            ],
-            "smeared_gametocytes": [
-                2.005016803741,
-                531.2102050781
-            ],
-            "infectiousness": [
-                0.004089783411473,
-                0.8125725388527
-            ],
-            "infectiousness_smeared": [
-                0,
-                0.8249999880791
-            ],
-            "infectiousness_age_scaled": [
-                0.002915496472269,
-                0.5807847976685
-            ],
-            "pos_asexual_fields": [
-                166,
-                169
-            ],
-            "pos_gametocyte_fields": [
-                1,
-                147
-            ],
-            "temps": [
-                38.01594924927,
-                38.07999801636
-            ],
-            "rdt": [
-                1,
-                1
-            ]
-        },
-        {
-            "id": 970,
-            "node_id": 340461476,
-            "initial_age": 5101.411621094,
-            "local_birthday": -5060.411621094,
-            "strain_ids": [
-                [
-                    0,
-                    13436355
-                ]
-            ],
-            "ip_data": [
-                ""
-            ],
-            "true_asexual_parasites": [
-                1492.49609375
-            ],
-            "true_gametocytes": [
-                0
-            ],
-            "smeared_true_asexual_parasites": [
-                1181.718505859
-            ],
-            "smeared_true_gametocytes": [
-                0
-            ],
-            "asexual_parasites": [
-                200
-            ],
-            "gametocytes": [
-                0
-            ],
-            "smeared_asexual_parasites": [
-                1679.882080078
-            ],
-            "smeared_gametocytes": [
-                0
-            ],
-            "infectiousness": [
-                0
-            ],
-            "infectiousness_smeared": [
-                0
-            ],
-            "infectiousness_age_scaled": [
-                0
-            ],
-            "pos_asexual_fields": [
-                197
-            ],
-            "pos_gametocyte_fields": [
-                0
-            ],
-            "temps": [
-                38.20656585693
-            ],
-            "rdt": [
-                1
-            ]
-        },
-        {
-            "id": 990,
-            "node_id": 340461476,
-            "initial_age": 2821.508056641,
-            "local_birthday": -2796.508056641,
-            "strain_ids": [
-                [
-                    0,
-                    13197963
-                ]
-            ],
-            "ip_data": [
-                ""
-            ],
-            "true_asexual_parasites": [
-                666.9692993164
-            ],
-            "true_gametocytes": [
-                0.06795152276754
-            ],
-            "smeared_true_asexual_parasites": [
-                862.4075927734
-            ],
-            "smeared_true_gametocytes": [
-                0.002096599899232
-            ],
-            "asexual_parasites": [
-                810
-            ],
-            "gametocytes": [
-                0
-            ],
-            "smeared_asexual_parasites": [
-                865.1292724609
-            ],
-            "smeared_gametocytes": [
-                0
-            ],
-            "infectiousness": [
-                0.0002172855747631
-            ],
-            "infectiousness_smeared": [
-                0
-            ],
-            "infectiousness_age_scaled": [
-                0.00010323747847
-            ],
-            "pos_asexual_fields": [
-                177
-            ],
-            "pos_gametocyte_fields": [
-                0
-            ],
-            "temps": [
-                38.0002784729
-            ],
-            "rdt": [
-                1
-            ]
-        },
-        {
-            "id": 998,
-            "node_id": 340461476,
-            "initial_age": 2005.26184082,
-            "local_birthday": -1939.26184082,
-            "strain_ids": [
-                [
-                    0,
-                    13197963
-                ]
-            ],
-            "ip_data": [
-                ""
-            ],
-            "true_asexual_parasites": [
-                1395.838867188
-            ],
-            "true_gametocytes": [
-                0
-            ],
-            "smeared_true_asexual_parasites": [
-                343.6030273438
-            ],
-            "smeared_true_gametocytes": [
-                0
-            ],
-            "asexual_parasites": [
-                80
-            ],
-            "gametocytes": [
-                0
-            ],
-            "smeared_asexual_parasites": [
-                1564.809204102
-            ],
-            "smeared_gametocytes": [
-                0
-            ],
-            "infectiousness": [
-                0
-            ],
-            "infectiousness_smeared": [
-                0
-            ],
-            "infectiousness_age_scaled": [
-                0
-            ],
-            "pos_asexual_fields": [
-                196
-            ],
-            "pos_gametocyte_fields": [
-                0
-            ],
-            "temps": [
-                38.23596191406
-            ],
-            "rdt": [
-                1
-            ]
-        },
-        {
-            "id": 1008,
-            "node_id": 340461476,
-            "initial_age": 383,
-            "local_birthday": -383,
-            "strain_ids": [
-                [
-                    0,
-                    958860
-                ]
-            ],
-            "ip_data": [
-                "",
-                "",
-                ""
-            ],
-            "true_asexual_parasites": [
-                3333.684082031,
-                1604.757324219,
-                1005.124389648
-            ],
-            "true_gametocytes": [
-                0,
-                1690.26184082,
-                1335.804321289
-            ],
-            "smeared_true_asexual_parasites": [
-                8072.84765625,
-                2647.840820313,
-                4309.63671875
-            ],
-            "smeared_true_gametocytes": [
-                0,
-                2120.674072266,
-                306.4649658203
-            ],
-            "asexual_parasites": [
-                410,
-                130,
-                1210
-            ],
-            "gametocytes": [
-                0,
-                1720,
-                1240
-            ],
-            "smeared_asexual_parasites": [
-                3.402823466385e+38,
-                1842.068115234,
-                941.5513916016
-            ],
-            "smeared_gametocytes": [
-                0,
-                1679.882080078,
-                1402.623168945
-            ],
-            "infectiousness": [
-                0,
-                0.9988256692886,
-                0.9727723002434
-            ],
-            "infectiousness_smeared": [
-                0,
-                1,
-                1
-            ],
-            "infectiousness_age_scaled": [
-                0,
-                0.1572671532631,
-                0.1576424092054
-            ],
-            "pos_asexual_fields": [
-                200,
-                198,
-                181
-            ],
-            "pos_gametocyte_fields": [
-                0,
-                197,
-                194
-            ],
-            "temps": [
-                39.17612075806,
-                38.28839492798,
-                38.14833450317
-            ],
-            "rdt": [
-                1,
-                1,
-                1
-            ]
-        },
-        {
-            "id": 1013,
-            "node_id": 340461476,
-            "initial_age": 393,
-            "local_birthday": -351,
-            "strain_ids": [
-                [
-                    0,
-                    14095131
-                ]
-            ],
-            "ip_data": [
-                "",
-                "",
-                ""
-            ],
-            "true_asexual_parasites": [
-                795.8708496094,
-                1249.008056641,
-                3421.999511719
-            ],
-            "true_gametocytes": [
-                0,
-                4.193477630615,
-                440.8367919922
-            ],
-            "smeared_true_asexual_parasites": [
-                676.4195556641,
-                4206.869628906,
-                3289.987792969
-            ],
-            "smeared_true_gametocytes": [
-                0,
-                1.329230427742,
-                741.2054443359
-            ],
-            "asexual_parasites": [
-                940,
-                120,
-                290
-            ],
-            "gametocytes": [
-                0,
-                0,
-                510
-            ],
-            "smeared_asexual_parasites": [
-                745.7320556641,
-                1402.623168945,
-                3.402823466385e+38
-            ],
-            "smeared_gametocytes": [
-                0,
-                4.020134449005,
-                397.7009277344
-            ],
-            "infectiousness": [
-                0,
-                0.01820476166904,
-                0.719009578228
-            ],
-            "infectiousness_smeared": [
-                0,
-                0,
-                0.6499999761581
-            ],
-            "infectiousness_age_scaled": [
-                0,
-                0.002886327449232,
-                0.1168341264129
-            ],
-            "pos_asexual_fields": [
-                169,
-                194,
-                200
-            ],
-            "pos_gametocyte_fields": [
-                0,
-                2,
-                126
-            ],
-            "temps": [
-                38.05474090576,
-                38.01329803467,
-                39.07769012451
-            ],
-            "rdt": [
-                1,
-                1,
-                1
-            ]
-        },
-        {
-            "id": 1020,
-            "node_id": 340461476,
-            "initial_age": 299,
-            "local_birthday": -299,
-            "strain_ids": [
-                [
-                    0,
-                    6238853
-                ]
-            ],
-            "ip_data": [
-                ""
-            ],
-            "true_asexual_parasites": [
-                433.2299804688
-            ],
-            "true_gametocytes": [
-                0.0004899819614366
-            ],
-            "smeared_true_asexual_parasites": [
-                2371.35546875
-            ],
-            "smeared_true_gametocytes": [
-                1066.342285156
-            ],
-            "asexual_parasites": [
-                500
+                520
             ],
             "gametocytes": [
                 0
@@ -3464,13 +100,13 @@
                 0
             ],
             "infectiousness": [
-                2.123454578395e-06
+                0
             ],
             "infectiousness_smeared": [
                 0
             ],
             "infectiousness_age_scaled": [
-                2.878008444895e-07
+                0
             ],
             "pos_asexual_fields": [
                 135
@@ -3479,21 +115,321 @@
                 0
             ],
             "temps": [
-                38.01181030273
+                38.02586746216
             ],
             "rdt": [
                 1
             ]
         },
         {
-            "id": 1022,
+            "id": 36,
             "node_id": 340461476,
-            "initial_age": 302,
-            "local_birthday": -289,
+            "initial_age": 2275.078125,
+            "local_birthday": -2206.078125,
             "strain_ids": [
                 [
                     0,
-                    13436355
+                    0
+                ]
+            ],
+            "ip_data": [
+                ""
+            ],
+            "true_asexual_parasites": [
+                895.4248046875
+            ],
+            "true_gametocytes": [
+                0.2226519882679
+            ],
+            "smeared_true_asexual_parasites": [
+                11236.25292969
+            ],
+            "smeared_true_gametocytes": [
+                0.3472226858139
+            ],
+            "asexual_parasites": [
+                1090
+            ],
+            "gametocytes": [
+                0
+            ],
+            "smeared_asexual_parasites": [
+                865.1292724609
+            ],
+            "smeared_gametocytes": [
+                0
+            ],
+            "infectiousness": [
+                0.00061539321905
+            ],
+            "infectiousness_smeared": [
+                0
+            ],
+            "infectiousness_age_scaled": [
+                0.0002529772173148
+            ],
+            "pos_asexual_fields": [
+                177
+            ],
+            "pos_gametocyte_fields": [
+                0
+            ],
+            "temps": [
+                38.09130096436
+            ],
+            "rdt": [
+                1
+            ]
+        },
+        {
+            "id": 127,
+            "node_id": 340461476,
+            "initial_age": 910.598449707,
+            "local_birthday": -852.598449707,
+            "strain_ids": [
+                [
+                    0,
+                    0
+                ]
+            ],
+            "ip_data": [
+                ""
+            ],
+            "true_asexual_parasites": [
+                689.9138793945
+            ],
+            "true_gametocytes": [
+                0
+            ],
+            "smeared_true_asexual_parasites": [
+                677.1213989258
+            ],
+            "smeared_true_gametocytes": [
+                0
+            ],
+            "asexual_parasites": [
+                730
+            ],
+            "gametocytes": [
+                0
+            ],
+            "smeared_asexual_parasites": [
+                745.7320556641
+            ],
+            "smeared_gametocytes": [
+                0
+            ],
+            "infectiousness": [
+                0
+            ],
+            "infectiousness_smeared": [
+                0
+            ],
+            "infectiousness_age_scaled": [
+                0
+            ],
+            "pos_asexual_fields": [
+                169
+            ],
+            "pos_gametocyte_fields": [
+                0
+            ],
+            "temps": [
+                38.00205993652
+            ],
+            "rdt": [
+                1
+            ]
+        },
+        {
+            "id": 132,
+            "node_id": 340461476,
+            "initial_age": 847.0445556641,
+            "local_birthday": -785.0445556641,
+            "strain_ids": [
+                [
+                    0,
+                    0
+                ]
+            ],
+            "ip_data": [
+                ""
+            ],
+            "true_asexual_parasites": [
+                1765.956176758
+            ],
+            "true_gametocytes": [
+                0
+            ],
+            "smeared_true_asexual_parasites": [
+                1581.106933594
+            ],
+            "smeared_true_gametocytes": [
+                0
+            ],
+            "asexual_parasites": [
+                190
+            ],
+            "gametocytes": [
+                0
+            ],
+            "smeared_asexual_parasites": [
+                2119.326904297
+            ],
+            "smeared_gametocytes": [
+                0
+            ],
+            "infectiousness": [
+                0
+            ],
+            "infectiousness_smeared": [
+                0
+            ],
+            "infectiousness_age_scaled": [
+                0
+            ],
+            "pos_asexual_fields": [
+                199
+            ],
+            "pos_gametocyte_fields": [
+                0
+            ],
+            "temps": [
+                38.45261001587
+            ],
+            "rdt": [
+                1
+            ]
+        },
+        {
+            "id": 145,
+            "node_id": 340461476,
+            "initial_age": 1754.891845703,
+            "local_birthday": -1689.891845703,
+            "strain_ids": [
+                [
+                    0,
+                    0
+                ]
+            ],
+            "ip_data": [
+                ""
+            ],
+            "true_asexual_parasites": [
+                705.1270141602
+            ],
+            "true_gametocytes": [
+                0.02619585581124
+            ],
+            "smeared_true_asexual_parasites": [
+                464.6645507813
+            ],
+            "smeared_true_gametocytes": [
+                259.033996582
+            ],
+            "asexual_parasites": [
+                930
+            ],
+            "gametocytes": [
+                0
+            ],
+            "smeared_asexual_parasites": [
+                733.0325927734
+            ],
+            "smeared_gametocytes": [
+                0
+            ],
+            "infectiousness": [
+                8.083081775112e-05
+            ],
+            "infectiousness_smeared": [
+                0
+            ],
+            "infectiousness_age_scaled": [
+                2.830021912814e-05
+            ],
+            "pos_asexual_fields": [
+                168
+            ],
+            "pos_gametocyte_fields": [
+                0
+            ],
+            "temps": [
+                38.05602645874
+            ],
+            "rdt": [
+                1
+            ]
+        },
+        {
+            "id": 152,
+            "node_id": 340461476,
+            "initial_age": 1581.012451172,
+            "local_birthday": -1514.012451172,
+            "strain_ids": [
+                [
+                    0,
+                    0
+                ]
+            ],
+            "ip_data": [
+                ""
+            ],
+            "true_asexual_parasites": [
+                858.3275756836
+            ],
+            "true_gametocytes": [
+                0
+            ],
+            "smeared_true_asexual_parasites": [
+                291.1671142578
+            ],
+            "smeared_true_gametocytes": [
+                0
+            ],
+            "asexual_parasites": [
+                950
+            ],
+            "gametocytes": [
+                0
+            ],
+            "smeared_asexual_parasites": [
+                745.7320556641
+            ],
+            "smeared_gametocytes": [
+                0
+            ],
+            "infectiousness": [
+                0
+            ],
+            "infectiousness_smeared": [
+                0
+            ],
+            "infectiousness_age_scaled": [
+                0
+            ],
+            "pos_asexual_fields": [
+                169
+            ],
+            "pos_gametocyte_fields": [
+                0
+            ],
+            "temps": [
+                38.13277435303
+            ],
+            "rdt": [
+                1
+            ]
+        },
+        {
+            "id": 278,
+            "node_id": 340461476,
+            "initial_age": 1800.249023438,
+            "local_birthday": -1795.249023438,
+            "strain_ids": [
+                [
+                    0,
+                    0
                 ]
             ],
             "ip_data": [
@@ -3501,60 +437,60 @@
                 ""
             ],
             "true_asexual_parasites": [
-                1506.608398438,
-                583.727722168
+                357.561706543,
+                519.20703125
             ],
             "true_gametocytes": [
                 0,
-                36.37005996704
+                1002.462219238
             ],
             "smeared_true_asexual_parasites": [
-                487.2001647949,
-                179.3741455078
+                221.8945159912,
+                1450.711425781
             ],
             "smeared_true_gametocytes": [
                 0,
-                12.76036167145
+                2833.954101563
             ],
             "asexual_parasites": [
-                150,
-                830
+                390,
+                580
             ],
             "gametocytes": [
                 0,
-                40
+                910
             ],
             "smeared_asexual_parasites": [
-                1475.551757813,
-                570.8465576172
+                361.5473022461,
+                516.3936767578
             ],
             "smeared_gametocytes": [
                 0,
-                24.75016212463
+                941.5513916016
             ],
             "infectiousness": [
                 0,
-                0.1135781034827
+                0.9751366376877
             ],
             "infectiousness_smeared": [
                 0,
-                0.2000000029802
+                0.9499999880791
             ],
             "infectiousness_age_scaled": [
                 0,
-                0.01678777858615
+                0.3484238684177
             ],
             "pos_asexual_fields": [
-                195,
-                152
+                119,
+                145
             ],
             "pos_gametocyte_fields": [
                 0,
-                12
+                181
             ],
             "temps": [
-                38.27407073975,
-                38.01560211182
+                38.00177383423,
+                38.08241653442
             ],
             "rdt": [
                 1,
@@ -3562,153 +498,213 @@
             ]
         },
         {
-            "id": 1032,
+            "id": 285,
             "node_id": 340461476,
-            "initial_age": 229,
-            "local_birthday": -165,
+            "initial_age": 3086.488525391,
+            "local_birthday": -3058.488525391,
             "strain_ids": [
                 [
                     0,
-                    13197963
+                    0
                 ]
             ],
             "ip_data": [
                 ""
             ],
             "true_asexual_parasites": [
-                630.8082885742
+                567.9569091797
             ],
             "true_gametocytes": [
-                0
+                0.1139822974801
             ],
             "smeared_true_asexual_parasites": [
-                2022.888061523
+                444.44921875
             ],
             "smeared_true_gametocytes": [
-                0
+                0.02862903103232
             ],
             "asexual_parasites": [
-                650
+                1030
             ],
             "gametocytes": [
                 0
             ],
             "smeared_asexual_parasites": [
-                664.2924804688
+                605.6511230469
             ],
             "smeared_gametocytes": [
                 0
             ],
             "infectiousness": [
-                0
+                0.0003609268169384
             ],
             "infectiousness_smeared": [
                 0
             ],
             "infectiousness_age_scaled": [
-                0
+                0.0001826935913414
             ],
             "pos_asexual_fields": [
-                162
+                156
             ],
             "pos_gametocyte_fields": [
                 0
             ],
             "temps": [
-                38.07903289795
+                38.0138092041
             ],
             "rdt": [
                 1
             ]
         },
         {
-            "id": 1037,
+            "id": 295,
             "node_id": 340461476,
-            "initial_age": 99,
-            "local_birthday": -91,
+            "initial_age": 4923.643066406,
+            "local_birthday": -4861.643066406,
             "strain_ids": [
                 [
                     0,
-                    4220416
+                    13094743
                 ]
             ],
             "ip_data": [
                 ""
             ],
             "true_asexual_parasites": [
-                946.8389892578
+                1157.637573242
             ],
             "true_gametocytes": [
-                0
+                0.009598795324564
             ],
             "smeared_true_asexual_parasites": [
-                1882.244750977
+                6521.50390625
             ],
             "smeared_true_gametocytes": [
                 0
             ],
             "asexual_parasites": [
-                960
+                60
             ],
             "gametocytes": [
                 0
             ],
             "smeared_asexual_parasites": [
-                831.7766113281
+                1287.550415039
             ],
             "smeared_gametocytes": [
                 0
             ],
             "infectiousness": [
-                0
+                3.350878250785e-05
             ],
             "infectiousness_smeared": [
                 0
             ],
             "infectiousness_age_scaled": [
-                0
+                2.417633186269e-05
             ],
             "pos_asexual_fields": [
-                175
+                192
             ],
             "pos_gametocyte_fields": [
                 0
             ],
             "temps": [
-                38.18098449707
+                38.00380325317
             ],
             "rdt": [
                 1
             ]
         },
         {
-            "id": 1043,
+            "id": 315,
             "node_id": 340461476,
-            "initial_age": 92,
-            "local_birthday": -38,
+            "initial_age": 3600.138916016,
+            "local_birthday": -3580.138916016,
             "strain_ids": [
                 [
                     0,
-                    13197963
+                    0
                 ]
             ],
             "ip_data": [
                 ""
             ],
             "true_asexual_parasites": [
-                3699.829589844
+                580.5302734375
+            ],
+            "true_gametocytes": [
+                3.873356342316
+            ],
+            "smeared_true_asexual_parasites": [
+                794.0349731445
+            ],
+            "smeared_true_gametocytes": [
+                2.994367361069
+            ],
+            "asexual_parasites": [
+                700
+            ],
+            "gametocytes": [
+                0
+            ],
+            "smeared_asexual_parasites": [
+                614.8469238281
+            ],
+            "smeared_gametocytes": [
+                0
+            ],
+            "infectiousness": [
+                0.01280466280878
+            ],
+            "infectiousness_smeared": [
+                0
+            ],
+            "infectiousness_age_scaled": [
+                0.007252286188304
+            ],
+            "pos_asexual_fields": [
+                157
+            ],
+            "pos_gametocyte_fields": [
+                0
+            ],
+            "temps": [
+                38.02346801758
+            ],
+            "rdt": [
+                1
+            ]
+        },
+        {
+            "id": 343,
+            "node_id": 340461476,
+            "initial_age": 3633.701904297,
+            "local_birthday": -3597.701904297,
+            "strain_ids": [
+                [
+                    0,
+                    13094743
+                ]
+            ],
+            "ip_data": [
+                ""
+            ],
+            "true_asexual_parasites": [
+                2901.241699219
             ],
             "true_gametocytes": [
                 0
             ],
             "smeared_true_asexual_parasites": [
-                6509.571289063
+                278.7381286621
             ],
             "smeared_true_gametocytes": [
                 0
             ],
             "asexual_parasites": [
-                210
+                400
             ],
             "gametocytes": [
                 0
@@ -3735,7 +731,2591 @@
                 0
             ],
             "temps": [
-                39.22576522827
+                38.97302246094
+            ],
+            "rdt": [
+                1
+            ]
+        },
+        {
+            "id": 371,
+            "node_id": 340461476,
+            "initial_age": 1906.102172852,
+            "local_birthday": -1885.102172852,
+            "strain_ids": [
+                [
+                    0,
+                    4327560
+                ]
+            ],
+            "ip_data": [
+                "",
+                ""
+            ],
+            "true_asexual_parasites": [
+                1365.104980469,
+                1276.233398438
+            ],
+            "true_gametocytes": [
+                0,
+                347.3804321289
+            ],
+            "smeared_true_asexual_parasites": [
+                2487.963378906,
+                7044.33984375
+            ],
+            "smeared_true_gametocytes": [
+                0,
+                48.63503646851
+            ],
+            "asexual_parasites": [
+                130,
+                170
+            ],
+            "gametocytes": [
+                0,
+                310
+            ],
+            "smeared_asexual_parasites": [
+                1402.623168945,
+                1564.809204102
+            ],
+            "smeared_gametocytes": [
+                0,
+                351.7907104492
+            ],
+            "infectiousness": [
+                0,
+                0.8038205504417
+            ],
+            "infectiousness_smeared": [
+                0,
+                0.6750000119209
+            ],
+            "infectiousness_age_scaled": [
+                0,
+                0.297560274601
+            ],
+            "pos_asexual_fields": [
+                194,
+                196
+            ],
+            "pos_gametocyte_fields": [
+                0,
+                117
+            ],
+            "temps": [
+                38.23823928833,
+                38.08983230591
+            ],
+            "rdt": [
+                1,
+                1
+            ]
+        },
+        {
+            "id": 403,
+            "node_id": 340461476,
+            "initial_age": 989.4498901367,
+            "local_birthday": -918.4498901367,
+            "strain_ids": [
+                [
+                    0,
+                    0
+                ]
+            ],
+            "ip_data": [
+                ""
+            ],
+            "true_asexual_parasites": [
+                693.8539428711
+            ],
+            "true_gametocytes": [
+                0.03610144555569
+            ],
+            "smeared_true_asexual_parasites": [
+                713.8973999023
+            ],
+            "smeared_true_gametocytes": [
+                0.009302048012614
+            ],
+            "asexual_parasites": [
+                880
+            ],
+            "gametocytes": [
+                0
+            ],
+            "smeared_asexual_parasites": [
+                685.9193725586
+            ],
+            "smeared_gametocytes": [
+                0
+            ],
+            "infectiousness": [
+                0.0001122740504798
+            ],
+            "infectiousness_smeared": [
+                0
+            ],
+            "infectiousness_age_scaled": [
+                2.923699139501e-05
+            ],
+            "pos_asexual_fields": [
+                164
+            ],
+            "pos_gametocyte_fields": [
+                0
+            ],
+            "temps": [
+                38.03884506226
+            ],
+            "rdt": [
+                1
+            ]
+        },
+        {
+            "id": 405,
+            "node_id": 340461476,
+            "initial_age": 2733.640625,
+            "local_birthday": -2675.640625,
+            "strain_ids": [
+                [
+                    0,
+                    0
+                ]
+            ],
+            "ip_data": [
+                ""
+            ],
+            "true_asexual_parasites": [
+                894.7975463867
+            ],
+            "true_gametocytes": [
+                0
+            ],
+            "smeared_true_asexual_parasites": [
+                758.6364746094
+            ],
+            "smeared_true_gametocytes": [
+                0
+            ],
+            "asexual_parasites": [
+                840
+            ],
+            "gametocytes": [
+                0
+            ],
+            "smeared_asexual_parasites": [
+                848.1054077148
+            ],
+            "smeared_gametocytes": [
+                0
+            ],
+            "infectiousness": [
+                0
+            ],
+            "infectiousness_smeared": [
+                0
+            ],
+            "infectiousness_age_scaled": [
+                0
+            ],
+            "pos_asexual_fields": [
+                176
+            ],
+            "pos_gametocyte_fields": [
+                0
+            ],
+            "temps": [
+                38.14779281616
+            ],
+            "rdt": [
+                1
+            ]
+        },
+        {
+            "id": 442,
+            "node_id": 340461476,
+            "initial_age": 2002.86730957,
+            "local_birthday": -1939.86730957,
+            "strain_ids": [
+                [
+                    0,
+                    0
+                ]
+            ],
+            "ip_data": [
+                ""
+            ],
+            "true_asexual_parasites": [
+                1311.217651367
+            ],
+            "true_gametocytes": [
+                0.008986014872789
+            ],
+            "smeared_true_asexual_parasites": [
+                453.7329101563
+            ],
+            "smeared_true_gametocytes": [
+                0.01505394093692
+            ],
+            "asexual_parasites": [
+                210
+            ],
+            "gametocytes": [
+                0
+            ],
+            "smeared_asexual_parasites": [
+                1287.550415039
+            ],
+            "smeared_gametocytes": [
+                0
+            ],
+            "infectiousness": [
+                3.704357004608e-05
+            ],
+            "infectiousness_smeared": [
+                0
+            ],
+            "infectiousness_age_scaled": [
+                1.404615341016e-05
+            ],
+            "pos_asexual_fields": [
+                192
+            ],
+            "pos_gametocyte_fields": [
+                0
+            ],
+            "temps": [
+                38.20909881592
+            ],
+            "rdt": [
+                1
+            ]
+        },
+        {
+            "id": 465,
+            "node_id": 340461476,
+            "initial_age": 552.4156494141,
+            "local_birthday": -546.4156494141,
+            "strain_ids": [
+                [
+                    0,
+                    16551759
+                ]
+            ],
+            "ip_data": [
+                "",
+                "",
+                ""
+            ],
+            "true_asexual_parasites": [
+                1763.408569336,
+                626.7041625977,
+                1628.190429688
+            ],
+            "true_gametocytes": [
+                0,
+                854.2757568359,
+                642.5122070313
+            ],
+            "smeared_true_asexual_parasites": [
+                1224.942504883,
+                495.6936035156,
+                8045.973632813
+            ],
+            "smeared_true_gametocytes": [
+                0,
+                202.136505127,
+                354.3584289551
+            ],
+            "asexual_parasites": [
+                170,
+                770,
+                170
+            ],
+            "gametocytes": [
+                0,
+                770,
+                730
+            ],
+            "smeared_asexual_parasites": [
+                1842.068115234,
+                605.6511230469,
+                1842.068115234
+            ],
+            "smeared_gametocytes": [
+                0,
+                986.0416259766,
+                579.2679443359
+            ],
+            "infectiousness": [
+                0,
+                0.9395530223846,
+                0.9419776797295
+            ],
+            "infectiousness_smeared": [
+                0,
+                0.9250000119209,
+                0.9499999880791
+            ],
+            "infectiousness_age_scaled": [
+                0,
+                0.1834399998188,
+                0.1874232441187
+            ],
+            "pos_asexual_fields": [
+                198,
+                156,
+                198
+            ],
+            "pos_gametocyte_fields": [
+                0,
+                183,
+                153
+            ],
+            "temps": [
+                38.46796035767,
+                38.01850128174,
+                38.31293869019
+            ],
+            "rdt": [
+                1,
+                1,
+                1
+            ]
+        },
+        {
+            "id": 480,
+            "node_id": 340461476,
+            "initial_age": 974.2252197266,
+            "local_birthday": -908.2252197266,
+            "strain_ids": [
+                [
+                    0,
+                    37121
+                ]
+            ],
+            "ip_data": [
+                ""
+            ],
+            "true_asexual_parasites": [
+                3033.342529297
+            ],
+            "true_gametocytes": [
+                0
+            ],
+            "smeared_true_asexual_parasites": [
+                11645.99023438
+            ],
+            "smeared_true_gametocytes": [
+                0
+            ],
+            "asexual_parasites": [
+                350
+            ],
+            "gametocytes": [
+                0
+            ],
+            "smeared_asexual_parasites": [
+                3.402823466385e+38
+            ],
+            "smeared_gametocytes": [
+                0
+            ],
+            "infectiousness": [
+                0
+            ],
+            "infectiousness_smeared": [
+                0
+            ],
+            "infectiousness_age_scaled": [
+                0
+            ],
+            "pos_asexual_fields": [
+                200
+            ],
+            "pos_gametocyte_fields": [
+                0
+            ],
+            "temps": [
+                38.95810699463
+            ],
+            "rdt": [
+                1
+            ]
+        },
+        {
+            "id": 485,
+            "node_id": 340461476,
+            "initial_age": 3962.855224609,
+            "local_birthday": -3891.855224609,
+            "strain_ids": [
+                [
+                    0,
+                    0
+                ]
+            ],
+            "ip_data": [
+                ""
+            ],
+            "true_asexual_parasites": [
+                1410.217773438
+            ],
+            "true_gametocytes": [
+                0
+            ],
+            "smeared_true_asexual_parasites": [
+                1776.289916992
+            ],
+            "smeared_true_gametocytes": [
+                0
+            ],
+            "asexual_parasites": [
+                180
+            ],
+            "gametocytes": [
+                0
+            ],
+            "smeared_asexual_parasites": [
+                1842.068115234
+            ],
+            "smeared_gametocytes": [
+                0
+            ],
+            "infectiousness": [
+                0
+            ],
+            "infectiousness_smeared": [
+                0
+            ],
+            "infectiousness_age_scaled": [
+                0
+            ],
+            "pos_asexual_fields": [
+                198
+            ],
+            "pos_gametocyte_fields": [
+                0
+            ],
+            "temps": [
+                38.18310546875
+            ],
+            "rdt": [
+                1
+            ]
+        },
+        {
+            "id": 505,
+            "node_id": 340461476,
+            "initial_age": 2405.975097656,
+            "local_birthday": -2375.975097656,
+            "strain_ids": [
+                [
+                    0,
+                    9779314
+                ]
+            ],
+            "ip_data": [
+                ""
+            ],
+            "true_asexual_parasites": [
+                385.4683227539
+            ],
+            "true_gametocytes": [
+                0
+            ],
+            "smeared_true_asexual_parasites": [
+                450.3863220215
+            ],
+            "smeared_true_gametocytes": [
+                0
+            ],
+            "asexual_parasites": [
+                480
+            ],
+            "gametocytes": [
+                0
+            ],
+            "smeared_asexual_parasites": [
+                356.639251709
+            ],
+            "smeared_gametocytes": [
+                0
+            ],
+            "infectiousness": [
+                0
+            ],
+            "infectiousness_smeared": [
+                0
+            ],
+            "infectiousness_age_scaled": [
+                0
+            ],
+            "pos_asexual_fields": [
+                118
+            ],
+            "pos_gametocyte_fields": [
+                0
+            ],
+            "temps": [
+                38.00347518921
+            ],
+            "rdt": [
+                1
+            ]
+        },
+        {
+            "id": 519,
+            "node_id": 340461476,
+            "initial_age": 1083.714355469,
+            "local_birthday": -1019.714355469,
+            "strain_ids": [
+                [
+                    0,
+                    16551759
+                ]
+            ],
+            "ip_data": [
+                ""
+            ],
+            "true_asexual_parasites": [
+                2314.879638672
+            ],
+            "true_gametocytes": [
+                0
+            ],
+            "smeared_true_asexual_parasites": [
+                292.5032653809
+            ],
+            "smeared_true_gametocytes": [
+                0
+            ],
+            "asexual_parasites": [
+                240
+            ],
+            "gametocytes": [
+                0
+            ],
+            "smeared_asexual_parasites": [
+                3.402823466385e+38
+            ],
+            "smeared_gametocytes": [
+                0
+            ],
+            "infectiousness": [
+                0
+            ],
+            "infectiousness_smeared": [
+                0
+            ],
+            "infectiousness_age_scaled": [
+                0
+            ],
+            "pos_asexual_fields": [
+                200
+            ],
+            "pos_gametocyte_fields": [
+                0
+            ],
+            "temps": [
+                38.67792129517
+            ],
+            "rdt": [
+                1
+            ]
+        },
+        {
+            "id": 544,
+            "node_id": 340461476,
+            "initial_age": 457.3936157227,
+            "local_birthday": -441.3936157227,
+            "strain_ids": [
+                [
+                    0,
+                    0
+                ]
+            ],
+            "ip_data": [
+                "",
+                ""
+            ],
+            "true_asexual_parasites": [
+                2708.298583984,
+                677.3635864258
+            ],
+            "true_gametocytes": [
+                0,
+                6455.298339844
+            ],
+            "smeared_true_asexual_parasites": [
+                4001.874267578,
+                224.5544586182
+            ],
+            "smeared_true_gametocytes": [
+                0,
+                8585.609375
+            ],
+            "asexual_parasites": [
+                130,
+                880
+            ],
+            "gametocytes": [
+                0,
+                6350
+            ],
+            "smeared_asexual_parasites": [
+                3.402823466385e+38,
+                708.7827758789
+            ],
+            "smeared_gametocytes": [
+                0,
+                3.402823466385e+38
+            ],
+            "infectiousness": [
+                0,
+                1
+            ],
+            "infectiousness_smeared": [
+                0,
+                1
+            ],
+            "infectiousness_age_scaled": [
+                0,
+                0.1770451664925
+            ],
+            "pos_asexual_fields": [
+                200,
+                166
+            ],
+            "pos_gametocyte_fields": [
+                0,
+                200
+            ],
+            "temps": [
+                38.85193634033,
+                38.02505493164
+            ],
+            "rdt": [
+                0,
+                1
+            ]
+        },
+        {
+            "id": 564,
+            "node_id": 340461476,
+            "initial_age": 2026.393554688,
+            "local_birthday": -2007.393554688,
+            "strain_ids": [
+                [
+                    0,
+                    0
+                ]
+            ],
+            "ip_data": [
+                ""
+            ],
+            "true_asexual_parasites": [
+                606.3526000977
+            ],
+            "true_gametocytes": [
+                0
+            ],
+            "smeared_true_asexual_parasites": [
+                289.1885986328
+            ],
+            "smeared_true_gametocytes": [
+                0
+            ],
+            "asexual_parasites": [
+                700
+            ],
+            "gametocytes": [
+                0
+            ],
+            "smeared_asexual_parasites": [
+                800.9922485352
+            ],
+            "smeared_gametocytes": [
+                0
+            ],
+            "infectiousness": [
+                0
+            ],
+            "infectiousness_smeared": [
+                0
+            ],
+            "infectiousness_age_scaled": [
+                0
+            ],
+            "pos_asexual_fields": [
+                173
+            ],
+            "pos_gametocyte_fields": [
+                0
+            ],
+            "temps": [
+                38.07344055176
+            ],
+            "rdt": [
+                1
+            ]
+        },
+        {
+            "id": 617,
+            "node_id": 340461476,
+            "initial_age": 542.4235839844,
+            "local_birthday": -485.4235839844,
+            "strain_ids": [
+                [
+                    0,
+                    0
+                ]
+            ],
+            "ip_data": [
+                ""
+            ],
+            "true_asexual_parasites": [
+                353.1900024414
+            ],
+            "true_gametocytes": [
+                0.007438642904162
+            ],
+            "smeared_true_asexual_parasites": [
+                135.4408416748
+            ],
+            "smeared_true_gametocytes": [
+                0
+            ],
+            "asexual_parasites": [
+                550
+            ],
+            "gametocytes": [
+                0
+            ],
+            "smeared_asexual_parasites": [
+                361.5473022461
+            ],
+            "smeared_gametocytes": [
+                0
+            ],
+            "infectiousness": [
+                3.393405859242e-05
+            ],
+            "infectiousness_smeared": [
+                0
+            ],
+            "infectiousness_age_scaled": [
+                6.409714842448e-06
+            ],
+            "pos_asexual_fields": [
+                119
+            ],
+            "pos_gametocyte_fields": [
+                0
+            ],
+            "temps": [
+                38.00269699097
+            ],
+            "rdt": [
+                1
+            ]
+        },
+        {
+            "id": 626,
+            "node_id": 340461476,
+            "initial_age": 6103.961914063,
+            "local_birthday": -6034.961914063,
+            "strain_ids": [
+                [
+                    0,
+                    0
+                ]
+            ],
+            "ip_data": [
+                ""
+            ],
+            "true_asexual_parasites": [
+                1255.770263672
+            ],
+            "true_gametocytes": [
+                0
+            ],
+            "smeared_true_asexual_parasites": [
+                2296.846191406
+            ],
+            "smeared_true_gametocytes": [
+                0
+            ],
+            "asexual_parasites": [
+                280
+            ],
+            "gametocytes": [
+                0
+            ],
+            "smeared_asexual_parasites": [
+                1198.29296875
+            ],
+            "smeared_gametocytes": [
+                0
+            ],
+            "infectiousness": [
+                0
+            ],
+            "infectiousness_smeared": [
+                0
+            ],
+            "infectiousness_age_scaled": [
+                0
+            ],
+            "pos_asexual_fields": [
+                190
+            ],
+            "pos_gametocyte_fields": [
+                0
+            ],
+            "temps": [
+                38.05674743652
+            ],
+            "rdt": [
+                1
+            ]
+        },
+        {
+            "id": 634,
+            "node_id": 340461476,
+            "initial_age": 1694.623657227,
+            "local_birthday": -1647.623657227,
+            "strain_ids": [
+                [
+                    0,
+                    0
+                ]
+            ],
+            "ip_data": [
+                "",
+                ""
+            ],
+            "true_asexual_parasites": [
+                3101.779785156,
+                1483.501464844
+            ],
+            "true_gametocytes": [
+                0,
+                822.2498168945
+            ],
+            "smeared_true_asexual_parasites": [
+                4300.559082031,
+                1539.074584961
+            ],
+            "smeared_true_gametocytes": [
+                0,
+                313.5469665527
+            ],
+            "asexual_parasites": [
+                370,
+                90
+            ],
+            "gametocytes": [
+                0,
+                890
+            ],
+            "smeared_asexual_parasites": [
+                3.402823466385e+38,
+                1679.882080078
+            ],
+            "smeared_gametocytes": [
+                0,
+                733.0325927734
+            ],
+            "infectiousness": [
+                0,
+                0.9803766012192
+            ],
+            "infectiousness_smeared": [
+                0,
+                0.9750000238419
+            ],
+            "infectiousness_age_scaled": [
+                0,
+                0.3381598293781
+            ],
+            "pos_asexual_fields": [
+                200,
+                197
+            ],
+            "pos_gametocyte_fields": [
+                0,
+                168
+            ],
+            "temps": [
+                39.01127624512,
+                38.28593826294
+            ],
+            "rdt": [
+                1,
+                1
+            ]
+        },
+        {
+            "id": 640,
+            "node_id": 340461476,
+            "initial_age": 1961.136230469,
+            "local_birthday": -1905.136230469,
+            "strain_ids": [
+                [
+                    0,
+                    0
+                ],
+                [
+                    0,
+                    1843200
+                ]
+            ],
+            "ip_data": [
+                ""
+            ],
+            "true_asexual_parasites": [
+                858.0531005859
+            ],
+            "true_gametocytes": [
+                0.3890181779861
+            ],
+            "smeared_true_asexual_parasites": [
+                220.1719512939
+            ],
+            "smeared_true_gametocytes": [
+                32.4486656189
+            ],
+            "asexual_parasites": [
+                880
+            ],
+            "gametocytes": [
+                0
+            ],
+            "smeared_asexual_parasites": [
+                901.5180053711
+            ],
+            "smeared_gametocytes": [
+                0
+            ],
+            "infectiousness": [
+                0.001132561592385
+            ],
+            "infectiousness_smeared": [
+                0
+            ],
+            "infectiousness_age_scaled": [
+                0.0004239046829753
+            ],
+            "pos_asexual_fields": [
+                179
+            ],
+            "pos_gametocyte_fields": [
+                0
+            ],
+            "temps": [
+                38.09286880493
+            ],
+            "rdt": [
+                1
+            ]
+        },
+        {
+            "id": 642,
+            "node_id": 340461476,
+            "initial_age": 4424.319824219,
+            "local_birthday": -4398.319824219,
+            "strain_ids": [
+                [
+                    0,
+                    0
+                ]
+            ],
+            "ip_data": [
+                ""
+            ],
+            "true_asexual_parasites": [
+                1624.529296875
+            ],
+            "true_gametocytes": [
+                0
+            ],
+            "smeared_true_asexual_parasites": [
+                1350.96862793
+            ],
+            "smeared_true_gametocytes": [
+                0
+            ],
+            "asexual_parasites": [
+                160
+            ],
+            "gametocytes": [
+                0
+            ],
+            "smeared_asexual_parasites": [
+                3.402823466385e+38
+            ],
+            "smeared_gametocytes": [
+                0
+            ],
+            "infectiousness": [
+                0
+            ],
+            "infectiousness_smeared": [
+                0
+            ],
+            "infectiousness_age_scaled": [
+                0
+            ],
+            "pos_asexual_fields": [
+                200
+            ],
+            "pos_gametocyte_fields": [
+                0
+            ],
+            "temps": [
+                38.27535247803
+            ],
+            "rdt": [
+                1
+            ]
+        },
+        {
+            "id": 651,
+            "node_id": 340461476,
+            "initial_age": 714.3984375,
+            "local_birthday": -651.3984375,
+            "strain_ids": [
+                [
+                    0,
+                    0
+                ],
+                [
+                    0,
+                    37121
+                ]
+            ],
+            "ip_data": [
+                ""
+            ],
+            "true_asexual_parasites": [
+                1695.647460938
+            ],
+            "true_gametocytes": [
+                0
+            ],
+            "smeared_true_asexual_parasites": [
+                1763.020263672
+            ],
+            "smeared_true_gametocytes": [
+                0
+            ],
+            "asexual_parasites": [
+                250
+            ],
+            "gametocytes": [
+                0
+            ],
+            "smeared_asexual_parasites": [
+                1679.882080078
+            ],
+            "smeared_gametocytes": [
+                0
+            ],
+            "infectiousness": [
+                0
+            ],
+            "infectiousness_smeared": [
+                0
+            ],
+            "infectiousness_age_scaled": [
+                0
+            ],
+            "pos_asexual_fields": [
+                197
+            ],
+            "pos_gametocyte_fields": [
+                0
+            ],
+            "temps": [
+                38.41855239868
+            ],
+            "rdt": [
+                1
+            ]
+        },
+        {
+            "id": 699,
+            "node_id": 340461476,
+            "initial_age": 499.5155639648,
+            "local_birthday": -445.5155639648,
+            "strain_ids": [
+                [
+                    0,
+                    0
+                ]
+            ],
+            "ip_data": [
+                ""
+            ],
+            "true_asexual_parasites": [
+                808.9364013672
+            ],
+            "true_gametocytes": [
+                0
+            ],
+            "smeared_true_asexual_parasites": [
+                740.3892822266
+            ],
+            "smeared_true_gametocytes": [
+                0
+            ],
+            "asexual_parasites": [
+                770
+            ],
+            "gametocytes": [
+                0
+            ],
+            "smeared_asexual_parasites": [
+                800.9922485352
+            ],
+            "smeared_gametocytes": [
+                0
+            ],
+            "infectiousness": [
+                0
+            ],
+            "infectiousness_smeared": [
+                0
+            ],
+            "infectiousness_age_scaled": [
+                0
+            ],
+            "pos_asexual_fields": [
+                173
+            ],
+            "pos_gametocyte_fields": [
+                0
+            ],
+            "temps": [
+                38.01977539063
+            ],
+            "rdt": [
+                1
+            ]
+        },
+        {
+            "id": 723,
+            "node_id": 340461476,
+            "initial_age": 5278.608886719,
+            "local_birthday": -5214.608886719,
+            "strain_ids": [
+                [
+                    0,
+                    0
+                ]
+            ],
+            "ip_data": [
+                ""
+            ],
+            "true_asexual_parasites": [
+                744.0038452148
+            ],
+            "true_gametocytes": [
+                28.91918182373
+            ],
+            "smeared_true_asexual_parasites": [
+                783.4434814453
+            ],
+            "smeared_true_gametocytes": [
+                13.40830993652
+            ],
+            "asexual_parasites": [
+                670
+            ],
+            "gametocytes": [
+                20
+            ],
+            "smeared_asexual_parasites": [
+                653.9022827148
+            ],
+            "smeared_gametocytes": [
+                22.6281414032
+            ],
+            "infectiousness": [
+                0.08500926196575
+            ],
+            "infectiousness_smeared": [
+                0.125
+            ],
+            "infectiousness_age_scaled": [
+                0.06487007439137
+            ],
+            "pos_asexual_fields": [
+                161
+            ],
+            "pos_gametocyte_fields": [
+                11
+            ],
+            "temps": [
+                38.0230140686
+            ],
+            "rdt": [
+                1
+            ]
+        },
+        {
+            "id": 725,
+            "node_id": 340461476,
+            "initial_age": 996.6993408203,
+            "local_birthday": -931.6993408203,
+            "strain_ids": [
+                [
+                    0,
+                    0
+                ]
+            ],
+            "ip_data": [
+                ""
+            ],
+            "true_asexual_parasites": [
+                807.841003418
+            ],
+            "true_gametocytes": [
+                0.06508873403072
+            ],
+            "smeared_true_asexual_parasites": [
+                656.5303344727
+            ],
+            "smeared_true_gametocytes": [
+                0.003781624836847
+            ],
+            "asexual_parasites": [
+                950
+            ],
+            "gametocytes": [
+                0
+            ],
+            "smeared_asexual_parasites": [
+                831.7766113281
+            ],
+            "smeared_gametocytes": [
+                0
+            ],
+            "infectiousness": [
+                0.0001878296461655
+            ],
+            "infectiousness_smeared": [
+                0
+            ],
+            "infectiousness_age_scaled": [
+                4.907180846203e-05
+            ],
+            "pos_asexual_fields": [
+                175
+            ],
+            "pos_gametocyte_fields": [
+                0
+            ],
+            "temps": [
+                38.08059310913
+            ],
+            "rdt": [
+                1
+            ]
+        },
+        {
+            "id": 726,
+            "node_id": 340461476,
+            "initial_age": 1255.042236328,
+            "local_birthday": -1235.042236328,
+            "strain_ids": [
+                [
+                    0,
+                    0
+                ]
+            ],
+            "ip_data": [
+                "",
+                ""
+            ],
+            "true_asexual_parasites": [
+                1471.103881836,
+                676.8658447266
+            ],
+            "true_gametocytes": [
+                0,
+                63.92370223999
+            ],
+            "smeared_true_asexual_parasites": [
+                1944.767578125,
+                3483.371582031
+            ],
+            "smeared_true_gametocytes": [
+                0,
+                14.60235786438
+            ],
+            "asexual_parasites": [
+                240,
+                750
+            ],
+            "gametocytes": [
+                0,
+                30
+            ],
+            "smeared_asexual_parasites": [
+                1240.437133789,
+                697.1877441406
+            ],
+            "smeared_gametocytes": [
+                0,
+                65.00757598877
+            ],
+            "infectiousness": [
+                0,
+                0.1898465007544
+            ],
+            "infectiousness_smeared": [
+                0,
+                0.2750000059605
+            ],
+            "infectiousness_age_scaled": [
+                0,
+                0.05581407994032
+            ],
+            "pos_asexual_fields": [
+                191,
+                165
+            ],
+            "pos_gametocyte_fields": [
+                0,
+                30
+            ],
+            "temps": [
+                38.18692016602,
+                38.000415802
+            ],
+            "rdt": [
+                1,
+                1
+            ]
+        },
+        {
+            "id": 733,
+            "node_id": 340461476,
+            "initial_age": 1068.031494141,
+            "local_birthday": -1056.031494141,
+            "strain_ids": [
+                [
+                    0,
+                    0
+                ]
+            ],
+            "ip_data": [
+                "",
+                ""
+            ],
+            "true_asexual_parasites": [
+                1464.328613281,
+                1825.141479492
+            ],
+            "true_gametocytes": [
+                0,
+                740.2026977539
+            ],
+            "smeared_true_asexual_parasites": [
+                1380.357299805,
+                10821.95117188
+            ],
+            "smeared_true_gametocytes": [
+                0,
+                2104.154785156
+            ],
+            "asexual_parasites": [
+                120,
+                250
+            ],
+            "gametocytes": [
+                0,
+                710
+            ],
+            "smeared_asexual_parasites": [
+                1340.962890625,
+                2119.326904297
+            ],
+            "smeared_gametocytes": [
+                0,
+                697.1877441406
+            ],
+            "infectiousness": [
+                0,
+                0.9768033623695
+            ],
+            "infectiousness_smeared": [
+                0,
+                1
+            ],
+            "infectiousness_age_scaled": [
+                0,
+                0.2649655938148
+            ],
+            "pos_asexual_fields": [
+                193,
+                199
+            ],
+            "pos_gametocyte_fields": [
+                0,
+                165
+            ],
+            "temps": [
+                38.2709274292,
+                38.40360641479
+            ],
+            "rdt": [
+                1,
+                1
+            ]
+        },
+        {
+            "id": 736,
+            "node_id": 340461476,
+            "initial_age": 2214.579589844,
+            "local_birthday": -2142.579589844,
+            "strain_ids": [
+                [
+                    0,
+                    0
+                ]
+            ],
+            "ip_data": [
+                ""
+            ],
+            "true_asexual_parasites": [
+                1976.31640625
+            ],
+            "true_gametocytes": [
+                0
+            ],
+            "smeared_true_asexual_parasites": [
+                742.8364868164
+            ],
+            "smeared_true_gametocytes": [
+                0
+            ],
+            "asexual_parasites": [
+                160
+            ],
+            "gametocytes": [
+                0
+            ],
+            "smeared_asexual_parasites": [
+                2119.326904297
+            ],
+            "smeared_gametocytes": [
+                0
+            ],
+            "infectiousness": [
+                0
+            ],
+            "infectiousness_smeared": [
+                0
+            ],
+            "infectiousness_age_scaled": [
+                0
+            ],
+            "pos_asexual_fields": [
+                199
+            ],
+            "pos_gametocyte_fields": [
+                0
+            ],
+            "temps": [
+                38.55014419556
+            ],
+            "rdt": [
+                1
+            ]
+        },
+        {
+            "id": 742,
+            "node_id": 340461476,
+            "initial_age": 3109.219726563,
+            "local_birthday": -3102.219726563,
+            "strain_ids": [
+                [
+                    0,
+                    0
+                ]
+            ],
+            "ip_data": [
+                ""
+            ],
+            "true_asexual_parasites": [
+                579.7249755859
+            ],
+            "true_gametocytes": [
+                0.1182764619589
+            ],
+            "smeared_true_asexual_parasites": [
+                121.6462554932
+            ],
+            "smeared_true_gametocytes": [
+                2.657356023788
+            ],
+            "asexual_parasites": [
+                690
+            ],
+            "gametocytes": [
+                0
+            ],
+            "smeared_asexual_parasites": [
+                538.8294677734
+            ],
+            "smeared_gametocytes": [
+                0
+            ],
+            "infectiousness": [
+                0.0003887348866556
+            ],
+            "infectiousness_smeared": [
+                0
+            ],
+            "infectiousness_age_scaled": [
+                0.000197805071366
+            ],
+            "pos_asexual_fields": [
+                148
+            ],
+            "pos_gametocyte_fields": [
+                0
+            ],
+            "temps": [
+                38.09136581421
+            ],
+            "rdt": [
+                1
+            ]
+        },
+        {
+            "id": 841,
+            "node_id": 340461476,
+            "initial_age": 2551.5703125,
+            "local_birthday": -2488.5703125,
+            "strain_ids": [
+                [
+                    0,
+                    16551759
+                ]
+            ],
+            "ip_data": [
+                ""
+            ],
+            "true_asexual_parasites": [
+                474.9430236816
+            ],
+            "true_gametocytes": [
+                0
+            ],
+            "smeared_true_asexual_parasites": [
+                2513.361572266
+            ],
+            "smeared_true_gametocytes": [
+                0
+            ],
+            "asexual_parasites": [
+                550
+            ],
+            "gametocytes": [
+                0
+            ],
+            "smeared_asexual_parasites": [
+                516.3936767578
+            ],
+            "smeared_gametocytes": [
+                0
+            ],
+            "infectiousness": [
+                0
+            ],
+            "infectiousness_smeared": [
+                0
+            ],
+            "infectiousness_age_scaled": [
+                0
+            ],
+            "pos_asexual_fields": [
+                145
+            ],
+            "pos_gametocyte_fields": [
+                0
+            ],
+            "temps": [
+                38.02308654785
+            ],
+            "rdt": [
+                1
+            ]
+        },
+        {
+            "id": 857,
+            "node_id": 340461476,
+            "initial_age": 868.3680419922,
+            "local_birthday": -851.3680419922,
+            "strain_ids": [
+                [
+                    0,
+                    0
+                ]
+            ],
+            "ip_data": [
+                ""
+            ],
+            "true_asexual_parasites": [
+                963.6434936523
+            ],
+            "true_gametocytes": [
+                474.8929748535
+            ],
+            "smeared_true_asexual_parasites": [
+                1899.116333008
+            ],
+            "smeared_true_gametocytes": [
+                1558.337524414
+            ],
+            "asexual_parasites": [
+                980
+            ],
+            "gametocytes": [
+                550
+            ],
+            "smeared_asexual_parasites": [
+                1093.347167969
+            ],
+            "smeared_gametocytes": [
+                462.073059082
+            ],
+            "infectiousness": [
+                0.7391277551651
+            ],
+            "infectiousness_smeared": [
+                0.6750000119209
+            ],
+            "infectiousness_age_scaled": [
+                0.1819855570793
+            ],
+            "pos_asexual_fields": [
+                187
+            ],
+            "pos_gametocyte_fields": [
+                137
+            ],
+            "temps": [
+                38.07926559448
+            ],
+            "rdt": [
+                1
+            ]
+        },
+        {
+            "id": 880,
+            "node_id": 340461476,
+            "initial_age": 2001.185546875,
+            "local_birthday": -1937.185546875,
+            "strain_ids": [
+                [
+                    0,
+                    37121
+                ]
+            ],
+            "ip_data": [
+                ""
+            ],
+            "true_asexual_parasites": [
+                1738.850708008
+            ],
+            "true_gametocytes": [
+                0.01114373840392
+            ],
+            "smeared_true_asexual_parasites": [
+                7025.374023438
+            ],
+            "smeared_true_gametocytes": [
+                0
+            ],
+            "asexual_parasites": [
+                110
+            ],
+            "gametocytes": [
+                0
+            ],
+            "smeared_asexual_parasites": [
+                1402.623168945
+            ],
+            "smeared_gametocytes": [
+                0
+            ],
+            "infectiousness": [
+                3.637288682512e-05
+            ],
+            "infectiousness_smeared": [
+                0
+            ],
+            "infectiousness_age_scaled": [
+                1.378467641189e-05
+            ],
+            "pos_asexual_fields": [
+                194
+            ],
+            "pos_gametocyte_fields": [
+                0
+            ],
+            "temps": [
+                38.41441726685
+            ],
+            "rdt": [
+                1
+            ]
+        },
+        {
+            "id": 882,
+            "node_id": 340461476,
+            "initial_age": 2029.35949707,
+            "local_birthday": -1980.35949707,
+            "strain_ids": [
+                [
+                    0,
+                    0
+                ]
+            ],
+            "ip_data": [
+                "",
+                ""
+            ],
+            "true_asexual_parasites": [
+                933.1384277344,
+                714.3416748047
+            ],
+            "true_gametocytes": [
+                0.03214141353965,
+                86.43405151367
+            ],
+            "smeared_true_asexual_parasites": [
+                465.9148864746,
+                559.4207763672
+            ],
+            "smeared_true_gametocytes": [
+                0.01633007265627,
+                7.408763408661
+            ],
+            "asexual_parasites": [
+                990,
+                960
+            ],
+            "gametocytes": [
+                0,
+                50
+            ],
+            "smeared_asexual_parasites": [
+                901.5180053711,
+                720.7239379883
+            ],
+            "smeared_gametocytes": [
+                0,
+                76.94876098633
+            ],
+            "infectiousness": [
+                9.287120337831e-05,
+                0.239771053195
+            ],
+            "infectiousness_smeared": [
+                0,
+                0.25
+            ],
+            "infectiousness_age_scaled": [
+                3.550318797352e-05,
+                0.09216649085283
+            ],
+            "pos_asexual_fields": [
+                179,
+                167
+            ],
+            "pos_gametocyte_fields": [
+                0,
+                35
+            ],
+            "temps": [
+                38.05199050903,
+                38.0499458313
+            ],
+            "rdt": [
+                1,
+                1
+            ]
+        },
+        {
+            "id": 904,
+            "node_id": 340461476,
+            "initial_age": 1630.267578125,
+            "local_birthday": -1629.267578125,
+            "strain_ids": [
+                [
+                    0,
+                    7956844
+                ]
+            ],
+            "ip_data": [
+                "",
+                "",
+                ""
+            ],
+            "true_asexual_parasites": [
+                531.0670776367,
+                1387.796020508,
+                936.2747802734
+            ],
+            "true_gametocytes": [
+                0,
+                1374.810058594,
+                96.73727416992
+            ],
+            "smeared_true_asexual_parasites": [
+                1950.161254883,
+                773.7694091797,
+                1966.575927734
+            ],
+            "smeared_true_gametocytes": [
+                0,
+                847.4808959961,
+                276.4261474609
+            ],
+            "asexual_parasites": [
+                550,
+                190,
+                920
+            ],
+            "gametocytes": [
+                0,
+                1390,
+                110
+            ],
+            "smeared_asexual_parasites": [
+                546.5966796875,
+                1402.623168945,
+                1036.106933594
+            ],
+            "smeared_gametocytes": [
+                0,
+                1564.809204102,
+                99.38454437256
+            ],
+            "infectiousness": [
+                0,
+                0.9983770251274,
+                0.2497953474522
+            ],
+            "infectiousness_smeared": [
+                0,
+                1,
+                0.2750000059605
+            ],
+            "infectiousness_age_scaled": [
+                0,
+                0.3371894359589,
+                0.0850971788168
+            ],
+            "pos_asexual_fields": [
+                149,
+                194,
+                185
+            ],
+            "pos_gametocyte_fields": [
+                0,
+                196,
+                44
+            ],
+            "temps": [
+                38.0792427063,
+                38.09890365601,
+                38.01091766357
+            ],
+            "rdt": [
+                1,
+                1,
+                1
+            ]
+        },
+        {
+            "id": 926,
+            "node_id": 340461476,
+            "initial_age": 604.5257568359,
+            "local_birthday": -568.5257568359,
+            "strain_ids": [
+                [
+                    0,
+                    0
+                ],
+                [
+                    0,
+                    13094743
+                ]
+            ],
+            "ip_data": [
+                ""
+            ],
+            "true_asexual_parasites": [
+                991.9571533203
+            ],
+            "true_gametocytes": [
+                0
+            ],
+            "smeared_true_asexual_parasites": [
+                7664.604980469
+            ],
+            "smeared_true_gametocytes": [
+                0
+            ],
+            "asexual_parasites": [
+                1060
+            ],
+            "gametocytes": [
+                0
+            ],
+            "smeared_asexual_parasites": [
+                1198.29296875
+            ],
+            "smeared_gametocytes": [
+                0
+            ],
+            "infectiousness": [
+                0
+            ],
+            "infectiousness_smeared": [
+                0
+            ],
+            "infectiousness_age_scaled": [
+                0
+            ],
+            "pos_asexual_fields": [
+                190
+            ],
+            "pos_gametocyte_fields": [
+                0
+            ],
+            "temps": [
+                38.21443557739
+            ],
+            "rdt": [
+                1
+            ]
+        },
+        {
+            "id": 945,
+            "node_id": 340461476,
+            "initial_age": 5152.56640625,
+            "local_birthday": -5150.56640625,
+            "strain_ids": [
+                [
+                    0,
+                    0
+                ]
+            ],
+            "ip_data": [
+                "",
+                ""
+            ],
+            "true_asexual_parasites": [
+                876.5303955078,
+                1530.34375
+            ],
+            "true_gametocytes": [
+                0.02456889674067,
+                21.09373092651
+            ],
+            "smeared_true_asexual_parasites": [
+                403.4643554688,
+                1837.857299805
+            ],
+            "smeared_true_gametocytes": [
+                0,
+                5.987864017487
+            ],
+            "asexual_parasites": [
+                840,
+                170
+            ],
+            "gametocytes": [
+                0,
+                30
+            ],
+            "smeared_asexual_parasites": [
+                800.9922485352,
+                1475.551757813
+            ],
+            "smeared_gametocytes": [
+                0,
+                22.6281414032
+            ],
+            "infectiousness": [
+                7.189776079031e-05,
+                0.07214515656233
+            ],
+            "infectiousness_smeared": [
+                0,
+                0.02500000037253
+            ],
+            "infectiousness_age_scaled": [
+                5.380267975852e-05,
+                0.05419919639826
+            ],
+            "pos_asexual_fields": [
+                173,
+                195
+            ],
+            "pos_gametocyte_fields": [
+                0,
+                11
+            ],
+            "temps": [
+                38.04107666016,
+                38.21138381958
+            ],
+            "rdt": [
+                1,
+                1
+            ]
+        },
+        {
+            "id": 998,
+            "node_id": 340461476,
+            "initial_age": 605.9768676758,
+            "local_birthday": -587.9768676758,
+            "strain_ids": [
+                [
+                    0,
+                    0
+                ]
+            ],
+            "ip_data": [
+                ""
+            ],
+            "true_asexual_parasites": [
+                1120.833251953
+            ],
+            "true_gametocytes": [
+                903.4024658203
+            ],
+            "smeared_true_asexual_parasites": [
+                1907.723510742
+            ],
+            "smeared_true_gametocytes": [
+                822.8178710938
+            ],
+            "asexual_parasites": [
+                250
+            ],
+            "gametocytes": [
+                1020
+            ],
+            "smeared_asexual_parasites": [
+                963.1782836914
+            ],
+            "smeared_gametocytes": [
+                882.9099731445
+            ],
+            "infectiousness": [
+                0.9660323262215
+            ],
+            "infectiousness_smeared": [
+                1
+            ],
+            "infectiousness_age_scaled": [
+                0.1959276348352
+            ],
+            "pos_asexual_fields": [
+                182
+            ],
+            "pos_gametocyte_fields": [
+                178
+            ],
+            "temps": [
+                38.03205108643
+            ],
+            "rdt": [
+                1
+            ]
+        },
+        {
+            "id": 1004,
+            "node_id": 340461476,
+            "initial_age": 471,
+            "local_birthday": -416,
+            "strain_ids": [
+                [
+                    0,
+                    0
+                ]
+            ],
+            "ip_data": [
+                ""
+            ],
+            "true_asexual_parasites": [
+                2300.743408203
+            ],
+            "true_gametocytes": [
+                0
+            ],
+            "smeared_true_asexual_parasites": [
+                1747.529418945
+            ],
+            "smeared_true_gametocytes": [
+                0
+            ],
+            "asexual_parasites": [
+                190
+            ],
+            "gametocytes": [
+                0
+            ],
+            "smeared_asexual_parasites": [
+                2119.326904297
+            ],
+            "smeared_gametocytes": [
+                0
+            ],
+            "infectiousness": [
+                0
+            ],
+            "infectiousness_smeared": [
+                0
+            ],
+            "infectiousness_age_scaled": [
+                0
+            ],
+            "pos_asexual_fields": [
+                199
+            ],
+            "pos_gametocyte_fields": [
+                0
+            ],
+            "temps": [
+                38.70719528198
+            ],
+            "rdt": [
+                1
+            ]
+        },
+        {
+            "id": 1012,
+            "node_id": 340461476,
+            "initial_age": 380,
+            "local_birthday": -358,
+            "strain_ids": [
+                [
+                    0,
+                    0
+                ],
+                [
+                    0,
+                    13535683
+                ],
+                [
+                    0,
+                    13094743
+                ]
+            ],
+            "ip_data": [
+                "",
+                "",
+                ""
+            ],
+            "true_asexual_parasites": [
+                822.8224487305,
+                801.1248779297,
+                1994.15637207
+            ],
+            "true_gametocytes": [
+                2.12069940567,
+                1066.674438477,
+                852.8169555664
+            ],
+            "smeared_true_asexual_parasites": [
+                2902.188720703,
+                1377.145019531,
+                1804.970947266
+            ],
+            "smeared_true_gametocytes": [
+                50.73918533325,
+                787.4924926758,
+                1379.164306641
+            ],
+            "asexual_parasites": [
+                800,
+                830,
+                480
+            ],
+            "gametocytes": [
+                0,
+                970,
+                840
+            ],
+            "smeared_asexual_parasites": [
+                848.1054077148,
+                800.9922485352,
+                2119.326904297
+            ],
+            "smeared_gametocytes": [
+                2.005016803741,
+                1287.550415039,
+                921.0340576172
+            ],
+            "infectiousness": [
+                0.006346739828587,
+                0.958388864994,
+                0.9750176072121
+            ],
+            "infectiousness_smeared": [
+                0,
+                0.9750000238419,
+                0.9750000238419
+            ],
+            "infectiousness_age_scaled": [
+                0.0009728770237416,
+                0.1506902426481,
+                0.1577925682068
+            ],
+            "pos_asexual_fields": [
+                176,
+                173,
+                199
+            ],
+            "pos_gametocyte_fields": [
+                1,
+                192,
+                180
+            ],
+            "temps": [
+                38.08344268799,
+                38.09752655029,
+                38.09707260132
+            ],
+            "rdt": [
+                1,
+                1,
+                1
+            ]
+        },
+        {
+            "id": 1020,
+            "node_id": 340461476,
+            "initial_age": 252,
+            "local_birthday": -251,
+            "strain_ids": [
+                [
+                    0,
+                    16551759
+                ]
+            ],
+            "ip_data": [
+                ""
+            ],
+            "true_asexual_parasites": [
+                1200.244628906
+            ],
+            "true_gametocytes": [
+                0
+            ],
+            "smeared_true_asexual_parasites": [
+                1214.278076172
+            ],
+            "smeared_true_gametocytes": [
+                0
+            ],
+            "asexual_parasites": [
+                100
+            ],
+            "gametocytes": [
+                0
+            ],
+            "smeared_asexual_parasites": [
+                1198.29296875
+            ],
+            "smeared_gametocytes": [
+                0
+            ],
+            "infectiousness": [
+                0
+            ],
+            "infectiousness_smeared": [
+                0
+            ],
+            "infectiousness_age_scaled": [
+                0
+            ],
+            "pos_asexual_fields": [
+                190
+            ],
+            "pos_gametocyte_fields": [
+                0
+            ],
+            "temps": [
+                38.10396194458
+            ],
+            "rdt": [
+                0
+            ]
+        },
+        {
+            "id": 1028,
+            "node_id": 340461476,
+            "initial_age": 215,
+            "local_birthday": -210,
+            "strain_ids": [
+                [
+                    0,
+                    37121
+                ]
+            ],
+            "ip_data": [
+                ""
+            ],
+            "true_asexual_parasites": [
+                1014.819946289
+            ],
+            "true_gametocytes": [
+                0
+            ],
+            "smeared_true_asexual_parasites": [
+                591.6081542969
+            ],
+            "smeared_true_gametocytes": [
+                0
+            ],
+            "asexual_parasites": [
+                1040
+            ],
+            "gametocytes": [
+                0
+            ],
+            "smeared_asexual_parasites": [
+                1063.703979492
+            ],
+            "smeared_gametocytes": [
+                0
+            ],
+            "infectiousness": [
+                0
+            ],
+            "infectiousness_smeared": [
+                0
+            ],
+            "infectiousness_age_scaled": [
+                0
+            ],
+            "pos_asexual_fields": [
+                186
+            ],
+            "pos_gametocyte_fields": [
+                0
+            ],
+            "temps": [
+                38.25234222412
+            ],
+            "rdt": [
+                1
+            ]
+        },
+        {
+            "id": 1031,
+            "node_id": 340461476,
+            "initial_age": 216,
+            "local_birthday": -186,
+            "strain_ids": [
+                [
+                    0,
+                    0
+                ]
+            ],
+            "ip_data": [
+                "",
+                ""
+            ],
+            "true_asexual_parasites": [
+                451.4100952148,
+                2267.872802734
+            ],
+            "true_gametocytes": [
+                0,
+                595.6156616211
+            ],
+            "smeared_true_asexual_parasites": [
+                69.0076675415,
+                1409.821777344
+            ],
+            "smeared_true_gametocytes": [
+                0,
+                668.4790039063
+            ],
+            "asexual_parasites": [
+                520,
+                180
+            ],
+            "gametocytes": [
+                0,
+                550
+            ],
+            "smeared_asexual_parasites": [
+                414.2550048828,
+                3.402823466385e+38
+            ],
+            "smeared_gametocytes": [
+                0,
+                653.9022827148
+            ],
+            "infectiousness": [
+                0,
+                0.8802598714828
+            ],
+            "infectiousness_smeared": [
+                0,
+                0.8249999880791
+            ],
+            "infectiousness_age_scaled": [
+                0,
+                0.1085010766983
+            ],
+            "pos_asexual_fields": [
+                129,
+                200
+            ],
+            "pos_gametocyte_fields": [
+                0,
+                161
+            ],
+            "temps": [
+                38.03237915039,
+                38.62329864502
+            ],
+            "rdt": [
+                1,
+                1
+            ]
+        },
+        {
+            "id": 1036,
+            "node_id": 340461476,
+            "initial_age": 177,
+            "local_birthday": -136,
+            "strain_ids": [
+                [
+                    0,
+                    0
+                ]
+            ],
+            "ip_data": [
+                ""
+            ],
+            "true_asexual_parasites": [
+                3007.170410156
+            ],
+            "true_gametocytes": [
+                0
+            ],
+            "smeared_true_asexual_parasites": [
+                5167.998535156
+            ],
+            "smeared_true_gametocytes": [
+                0
+            ],
+            "asexual_parasites": [
+                230
+            ],
+            "gametocytes": [
+                0
+            ],
+            "smeared_asexual_parasites": [
+                3.402823466385e+38
+            ],
+            "smeared_gametocytes": [
+                0
+            ],
+            "infectiousness": [
+                0
+            ],
+            "infectiousness_smeared": [
+                0
+            ],
+            "infectiousness_age_scaled": [
+                0
+            ],
+            "pos_asexual_fields": [
+                200
+            ],
+            "pos_gametocyte_fields": [
+                0
+            ],
+            "temps": [
+                38.97075271606
+            ],
+            "rdt": [
+                1
+            ]
+        },
+        {
+            "id": 1041,
+            "node_id": 340461476,
+            "initial_age": 128,
+            "local_birthday": -72,
+            "strain_ids": [
+                [
+                    0,
+                    16551759
+                ]
+            ],
+            "ip_data": [
+                ""
+            ],
+            "true_asexual_parasites": [
+                837.6397094727
+            ],
+            "true_gametocytes": [
+                0
+            ],
+            "smeared_true_asexual_parasites": [
+                1322.594848633
+            ],
+            "smeared_true_gametocytes": [
+                0
+            ],
+            "asexual_parasites": [
+                980
+            ],
+            "gametocytes": [
+                0
+            ],
+            "smeared_asexual_parasites": [
+                786.4451904297
+            ],
+            "smeared_gametocytes": [
+                0
+            ],
+            "infectiousness": [
+                0
+            ],
+            "infectiousness_smeared": [
+                0
+            ],
+            "infectiousness_age_scaled": [
+                0
+            ],
+            "pos_asexual_fields": [
+                172
+            ],
+            "pos_gametocyte_fields": [
+                0
+            ],
+            "temps": [
+                38.0930480957
             ],
             "rdt": [
                 1

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -13,8 +13,11 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "DllInterfaceHelper.h"
 #include "FactorySupport.h"
 
+#include "ISimulationContext.h"
 #include "NodeEventContext.h"
 #include "Individual.h"
+#include "IdmDateTime.h"
+#include "INodeContext.h"
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!! CREATING NEW REPORTS
@@ -112,11 +115,12 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
         return ret;
     }
 
-    void ReportHumanMigrationTracking::UpdateEventRegistration(  float currentTime, 
-                                                       float dt, 
-                                                       std::vector<INodeEventContext*>& rNodeEventContextList )
+    void ReportHumanMigrationTracking::UpdateEventRegistration( float currentTime, 
+                                                                float dt, 
+                                                                std::vector<INodeEventContext*>& rNodeEventContextList,
+                                                                ISimulationEventContext* pSimEventContext )
     {
-        BaseTextReportEvents::UpdateEventRegistration( currentTime, dt, rNodeEventContextList );
+        BaseTextReportEvents::UpdateEventRegistration( currentTime, dt, rNodeEventContextList, pSimEventContext );
     }
 
 

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -14,8 +14,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <vector>
 #include "ISupports.h"
 #include "Configuration.h"
-#include "RANDOM.h"
 #include "SimulationEventContext.h"
+#include "RANDOM.h"
 #include "InterventionEnums.h"
 #include "FactorySupport.h"
 
@@ -23,7 +23,9 @@ namespace Kernel
 {
     struct INodeEventContext;
     struct ISimulationEventContext;
-    struct ISimulationEventContext;
+    struct IEventCoordinator;
+    struct IEventCoordinatorEventContext;
+    struct IdmDateTime;
 
     namespace suids 
     {
@@ -38,6 +40,14 @@ namespace Kernel
         virtual void Update(float dt) = 0;
         virtual void UpdateNodes(float dt) = 0;
         virtual bool IsFinished() = 0; // returns false when the EC requires no further updates and can be disposed of
+        virtual IEventCoordinatorEventContext* GetEventContext() = 0;
+    };
+
+    struct IDMAPI IEventCoordinatorEventContext : public ISupports
+    {
+        virtual const std::string& GetName() const = 0;
+        virtual const IdmDateTime& GetTime() const = 0;
+        virtual IEventCoordinator* GetEventCoordinator() = 0;
     };
 
     struct IEventCoordinator2 : public ISupports

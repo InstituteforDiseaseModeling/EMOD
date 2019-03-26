@@ -1,0 +1,25 @@
+{
+    "Default_Config_Path": "../../defaults/generic_default_config.json",
+    "parameters": {
+        "DEMOGRAPHICS": {
+            "Enable_Vital_Dynamics": 0
+        },
+        "DISEASE": {
+            "Base_Infectivity": 3.5,
+            "Enable_Immune_Decay": 0,
+            "Infectious_Period_Exponential": 4,
+            "Incubation_Period_Constant": 0
+        },
+        "PRIMARY": {
+            "Config_Name": "73_Generic_SimAbort_ZeroInfectivity",
+            "Demographics_Filenames": [
+                "demographics.json"
+            ],
+            "Enable_Termination_On_Zero_Total_Infectivity": 1,
+            "Minimum_End_Time": 66,
+            "Run_Number": 1,
+            "Simulation_Duration": 1000000,
+            "Start_Time": 0
+        }
+    }
+}

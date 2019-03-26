@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -57,35 +57,36 @@ namespace Kernel {
     class RelationshipGroups: public ITransmissionGroups
     {
         public:
-            RelationshipGroups();
+            RelationshipGroups( RANDOMBASE * prng );
 
             // ITransmissionGroups - invalid methods
-            virtual void AddProperty( const string& property, const PropertyValueList_t& values, const ScalingMatrix_t& scalingMatrix, const string& route );
-            virtual void GetGroupMembershipForProperties( const RouteList_t& route, const tProperties* properties, TransmissionGroupMembership_t* membershipOut ) const;
-            virtual void IncrementWeightedPopulation(const TransmissionGroupMembership_t* transmissionGroupMembership, float weight);
+            virtual void AddProperty( const string& property, const PropertyValueList_t& values, const ScalingMatrix_t& scalingMatrix );
+            virtual void GetGroupMembershipForProperties( const std::map<std::string, uint32_t>& properties, std::map< int, TransmissionGroupMembership_t> & membershipOut ) const;
+            virtual void GetGroupMembershipForProperties( const tProperties& properties, TransmissionGroupMembership_t& membershipOut ) const override;
 
             // ITransmissionGroups - implemented methods
-            virtual void Build(const RouteToContagionDecayMap_t& contagionDecayRatesByRoute, int numberOfStrains, int numberOfSubstrains = 1);
-            virtual void UpdatePopulationSize(const TransmissionGroupMembership_t* transmissionGroupMembership, float size_changes, float mc_weight);
-            virtual void DepositContagion(const IStrainIdentity& strain, float amount, const TransmissionGroupMembership_t* poolMembership);
-            virtual void ExposeToContagion(IInfectable* candidate, const TransmissionGroupMembership_t* poolMembership, float deltaTee) const;
-            virtual void EndUpdate(float infectivityCorrection);
-            virtual void CorrectInfectivityByGroup(float infectivityCorrection, const TransmissionGroupMembership_t* transmissionGroupMembership);
-            virtual float GetTotalContagion(const TransmissionGroupMembership_t* transmissionGroupMembership);
-            virtual act_prob_vec_t DiscreteGetTotalContagion(const TransmissionGroupMembership_t* transmissionGroupMembership) { return infectionRate[0]; }
+            virtual void Build(float contagionDecayRate, int numberOfStrains, int numberOfSubstrains = 1);
+            virtual void UpdatePopulationSize(const TransmissionGroupMembership_t& transmissionGroupMembership, float size_changes, float mc_weight);
+            virtual void DepositContagion(const IStrainIdentity& strain, float amount, TransmissionGroupMembership_t poolMembership);
+            virtual void ExposeToContagion(IInfectable* candidate, TransmissionGroupMembership_t poolMembership, float deltaTee, TransmissionRoute::Enum tx_route = TransmissionRoute::TRANSMISSIONROUTE_CONTACT) const;
+            virtual void EndUpdate(float infectivityMultiplier = 1.0f, float infectivityAddition = 0.0f );
+
+            virtual void CorrectInfectivityByGroup(float infectivityCorrection, TransmissionGroupMembership_t transmissionGroupMembership);
+            virtual float GetTotalContagion( void ) override { return nanf("NAN"); }
+            virtual act_prob_vec_t DiscreteGetTotalContagion( void ) { return infectionRate[0]; }
+            virtual float GetContagionByProperty( const IPKeyValue& property_value ) override;
 
             // Special RelationGroups methods so we can use RelationshipID instead of strings with the ID in them
             virtual void SetParent( INodeSTI* parent );
-            virtual void AddProperty( const string& property, const std::list<uint32_t>& values, const ScalingMatrix_t& scalingMatrix, const string& route );
-            virtual void AddPropertyValuesToValueToIndexMap( const string& propertyName, const std::list<uint32_t>& valueSet, int currentMatrixSize );
-            virtual void GetGroupMembershipForProperties( const RouteList_t& route, const std::map<std::string, uint32_t>* properties, TransmissionGroupMembership_t* membershipOut ) const;
+            virtual void AddProperty( const string& property, const std::list<uint32_t>& values, const ScalingMatrix_t& scalingMatrix );
+            virtual void addPropertyValuesToValueToIndexMap( const string& propertyName, const std::list<uint32_t>& valueSet, int currentMatrixSize );
+
 
         protected:
         
             typedef vector<act_prob_vec_t> DiscreteContagionAccumulator_t;
 
             void BuildRouteScalingMatrices( void );
-            void StoreRouteDecayValues( const RouteToContagionDecayMap_t& contagionDecayRatesByRoute );
 
             // index to RelationshipID
             map< int, uint32_t > poolIndexToRelationshipReverseMap;
@@ -109,8 +110,19 @@ namespace Kernel {
             std::map< GroupIndex, int > infectors;
             float populationSize;
 
+            static std::string tag;
+
         private:
             INodeSTI * m_parent;
+
+            virtual void UseTotalPopulationForNormalization( void ) { return; } // N/A
+            virtual void UseGroupPopulationForNormalization( void ) { return; } // N/A
+
+            virtual void SetTag( const std::string& tag )   { return; };
+            virtual const std::string& GetTag( void ) const { return tag; };
+
+            virtual float GetTotalContagionForGroup( TransmissionGroupMembership_t group ) override { return nanf("NAN"); }
+// NOTYET        virtual float GetTotalContagionForProperties( const IPKeyValueContainer& property_value ) override { return nanf("NAN"); }
 
             static void LogActivity( unsigned int _action, unsigned int _actor, unsigned int _index, float _amount );
             struct LogEntry {

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -39,6 +39,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "NodeDemographics.h"
 #include "StrainIdentity.h"
+#include "IdmDateTime.h"
+#include "RANDOM.h"
 
 
 SETUP_LOGGING( "IndividualCoInfection" )
@@ -432,16 +434,16 @@ namespace Kernel
         // Trigger "every-update" event observers 
         if (broadcaster)
         {
-            broadcaster->TriggerNodeEventObservers(GetEventContext(), EventTrigger::EveryUpdate);
+            broadcaster->TriggerObservers(GetEventContext(), EventTrigger::EveryUpdate);
         }
 
         //  Get new infections
-        ExposeToInfectivity(dt, &transmissionGroupMembership); // Need to do it even if infectivity==0, because of diseases in which immunity of acquisition depends on challenge (eg malaria)
+        ExposeToInfectivity(dt, transmissionGroupMembership); // Need to do it even if infectivity==0, because of diseases in which immunity of acquisition depends on challenge (eg malaria)
         
         // Exogenous re-infection of Latently infected here dt = 0 is flag for this
         if (IndividualHumanCoInfectionConfig::enable_exogenous)
         {
-            ExposeToInfectivity(0, &transmissionGroupMembership);
+            ExposeToInfectivity(0, transmissionGroupMembership);
         }
 
         //  Is there an active infection for statistical purposes?
@@ -479,7 +481,7 @@ namespace Kernel
                 {
                     t_m_HIV_mortality_rate = IndividualHumanCoInfectionConfig::coinfection_mortality_off_ART;
                 }
-                if(randgen->e() < (t_m_HIV_mortality_rate* dt) )
+                if( GetRng()->SmartDraw( t_m_HIV_mortality_rate* dt ) )
                 {
                     LOG_DEBUG_F("Individual %lu died of CoInfection at age %f with m_HIV_mortality_rate = %f.\n", GetSuid().data, GetAge() / DAYSPERYEAR, t_m_HIV_mortality_rate );
                     LOG_VALID_F("Individual %lu moved from Active to Death . \n", GetSuid().data);
@@ -516,10 +518,13 @@ namespace Kernel
         if (dt == 0)
         {
             // figure out if primary progression will happen
-            if ( (randgen->e() < (pISTB->GetFastProgressorFraction()) ) && (HasLatentInfection()) && !(GetTBInfection()->IsFastProgressor() || GetTBInfection()->IsPendingRelapse() ) )
+            if( GetRng()->SmartDraw( pISTB->GetFastProgressorFraction() ) &&
+                HasLatentInfection() &&
+                !(GetTBInfection()->IsFastProgressor() || GetTBInfection()->IsPendingRelapse()) )
             {
                 float dt_true =   GET_CONFIGURABLE(SimulationConfig)->Sim_Tstep; //Needed to get the timestep due to dt = 0 flag
-                if (randgen->e() < EXPCDF(-cp->GetTotalContagion()*dt_true*suscept_mod*interventions->GetInterventionReducedAcquire())) // infection results from this strain?
+                float prob = EXPCDF( -cp->GetTotalContagion()*dt_true*suscept_mod*interventions->GetInterventionReducedAcquire() );
+                if ( GetRng()->SmartDraw( prob ) ) // infection results from this strain?
                 {
                     GetTBInfection()->ExogenousLatentSlowToFast();
                     cp->ResolveInfectingStrain(&strainIDs);
@@ -534,8 +539,8 @@ namespace Kernel
             {
                 //GHH temp changed to susceptibility_tb since this is for pools, which is specific for infectiousness, 
                 //deal with HIV later (it has no strain tracking now anyways)
-
-                if (randgen->e() < EXPCDF(-cp->GetTotalContagion()*dt*suscept_mod*interventions->GetInterventionReducedAcquire())) // infection results from this strain?
+                float prob = EXPCDF( -cp->GetTotalContagion()*dt*suscept_mod*interventions->GetInterventionReducedAcquire() );
+                if ( GetRng()->SmartDraw( prob ) ) // infection results from this strain?
                 {
                     cp->ResolveInfectingStrain(&strainIDs); // get the substrain ID
                     AcquireNewInfection(&strainIDs);
@@ -544,7 +549,8 @@ namespace Kernel
             else
             {
                 // multiple infections of the same type happen here
-                if (randgen->e() < EXPCDF(-cp->GetTotalContagion()*dt * suscept_mod*interventions->GetInterventionReducedAcquire())) // infection results from this strain?
+                float prob = EXPCDF( -cp->GetTotalContagion()*dt * suscept_mod*interventions->GetInterventionReducedAcquire() );
+                if ( GetRng()->SmartDraw( prob ) ) // infection results from this strain?
                 {
                     cp->ResolveInfectingStrain(&strainIDs);
                     AcquireNewInfection(&strainIDs); // superinfection of this antigenic type
@@ -588,7 +594,7 @@ namespace Kernel
             infection->GetInfectiousStrainID(&tmp_strainIDs);
             if( tmp_infectiousness )
             {
-                parent->DepositFromIndividual( tmp_strainIDs, tmp_infectiousness, &transmissionGroupMembership);
+                parent->DepositFromIndividual( tmp_strainIDs, tmp_infectiousness, transmissionGroupMembership);
             }
 
             // TODO: in IndividualTB we only count FIRST active infection in container, here we comment that out? reconsider only counting FIRST active infection in container
@@ -1114,7 +1120,7 @@ namespace Kernel
         return true;
     }
 
-    IIndividualHumanInterventionsContext* IndividualHumanCoInfection::GetInterventionsContextbyInfection(Infection* infection) 
+    IIndividualHumanInterventionsContext* IndividualHumanCoInfection::GetInterventionsContextbyInfection(IInfection* infection) 
     {
         return (IIndividualHumanInterventionsContext*)interventions;
     }
@@ -1414,20 +1420,20 @@ namespace Kernel
             case HumanStateChange::DiedFromNaturalCauses:
                 {
                     LOG_DEBUG_F("%s: individual %d (%s) died of natural causes at age %f with daily_mortality_rate = %f\n", __FUNCTION__, suid.data, (GetGender() == Gender::FEMALE ? "Female" : "Male"), GetAge() / DAYSPERYEAR, m_daily_mortality_rate);
-                    broadcaster->TriggerNodeEventObservers(GetEventContext(), EventTrigger::NonDiseaseDeaths);
+                    broadcaster->TriggerObservers(GetEventContext(), EventTrigger::NonDiseaseDeaths);
                 }
             break;
 
             case HumanStateChange::KilledByInfection:
                 {
                     LOG_DEBUG_F("%s: individual %d died from infection\n", __FUNCTION__, suid.data);
-                    broadcaster->TriggerNodeEventObservers(GetEventContext(), EventTrigger::DiseaseDeaths);
+                    broadcaster->TriggerObservers(GetEventContext(), EventTrigger::DiseaseDeaths);
                 }
             break;
             case HumanStateChange::KilledByOpportunisticInfection:
                 {
                     LOG_DEBUG_F("%s: individual %d died from non-TB opportunistic infection\n", __FUNCTION__, suid.data);
-                    broadcaster->TriggerNodeEventObservers(GetEventContext(), EventTrigger::OpportunisticInfectionDeath);
+                    broadcaster->TriggerObservers(GetEventContext(), EventTrigger::OpportunisticInfectionDeath);
 
                 }
             break;
@@ -1517,6 +1523,11 @@ namespace Kernel
     float IndividualHumanCoInfection::GetImmunityReducedAcquire()
     {
         return susceptibility_tb->getModAcquire();
+    }
+
+    float IndividualHumanCoInfection::GetImmuneFailage() const
+    {
+        return susceptibility_tb->getImmuneFailage();
     }
 }
 

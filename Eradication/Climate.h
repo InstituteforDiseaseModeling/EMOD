@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -16,12 +16,11 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "BoostLibWrapper.h"
 
-#include "RANDOM.h"
-#include "Contexts.h"
 #include "Sugar.h"
 #include "CajunIncludes.h"
 #include "SimulationEnums.h"
 #include "Configure.h"
+#include "ExternalNodeId.h"
 
 #ifdef __GNUC__
 namespace std
@@ -36,6 +35,9 @@ class Configuration;
 
 namespace Kernel
 {
+    class RANDOMBASE;
+    struct INodeContext;
+
     class Climate : public JsonConfigurable
     {
     public:
@@ -89,14 +91,18 @@ namespace Kernel
 
         //  Updates weather based on the time step.  If the time step is long, then it adjusts.
         //  For instance, is rainfall over an hour or over a week?
-        virtual void UpdateWeather(float time, float dt);
+        virtual void UpdateWeather( float time, float dt, RANDOMBASE* pRNG );
 
     protected:
         friend class ClimateFactory;
 
         Climate(ClimateUpdateResolution::Enum update_resolution = ClimateUpdateResolution::CLIMATE_UPDATE_DAY, INodeContext * _parent = nullptr);
 
-        virtual void AddStochasticity(float airtemp_variance, float landtemp_variance, bool rainfall_variance_enabled, float humidity_variance);
+        virtual void AddStochasticity( RANDOMBASE* pRNG,
+                                       float airtemp_variance,
+                                       float landtemp_variance,
+                                       bool rainfall_variance_enabled,
+                                       float humidity_variance );
 
         virtual bool IsPlausible() = 0;
     };
@@ -113,7 +119,7 @@ namespace Kernel
         static ClimateFactory* CreateClimateFactory(boost::bimap<ExternalNodeId_t, suids::suid> * nodeid_suid_map, const ::Configuration *config, const std::string idreference);
         ~ClimateFactory();
 
-        Climate* CreateClimate(INodeContext *parent_node, float altitude, float latitude);
+        Climate* CreateClimate( INodeContext *parent_node, float altitude, float latitude, RANDOMBASE* pRNG );
 
         static ClimateStructure::Enum climate_structure;
 

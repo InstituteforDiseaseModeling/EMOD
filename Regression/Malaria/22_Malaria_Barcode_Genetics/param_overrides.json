@@ -15,13 +15,13 @@
             "Namawala_single_node_demographics.immunity.json"
         ],
         "Enable_Birth": 1,
-        "Enable_Immunity_Distribution": 1,
+        "Enable_Initial_Susceptibility_Distribution": 1,
         "Enable_Initial_Prevalence": 1,
         "Enable_Natural_Mortality": 1,
         "Enable_Nondisease_Mortality": 1,
-        "Immunity_Initialization_Distribution_Type": "DISTRIBUTION_COMPLEX"
+        "Susceptibility_Initialization_Distribution_Type": "DISTRIBUTION_COMPLEX"
     },
-    "Default_Config_Path": "defaults/malaria_default_config.json",
+    "Default_Config_Path": "../../defaults/malaria_default_config.json",
     "GENERAL_DISEASE": {
         "Infection_Updates_Per_Timestep": 8,
         "PKPD_Model": "CONCENTRATION_VERSUS_TIME"
@@ -33,7 +33,7 @@
         "Falciparum_MSP_Variants": 100,
         "Falciparum_Nonspecific_Types": 20,
         "Falciparum_PfEMP1_Variants": 1000,
-        "Listed_Events": [ "Received_Treatment", "Received_RCD_Drugs"]
+        "Custom_Individual_Events": [ "Received_Treatment", "Received_RCD_Drugs"]
     },
     "Malaria_Drug_Params": {
         "DHA": {
@@ -100,7 +100,7 @@
         "Custom_Reports_Filename": "custom_reports.json",
         "Enable_Interventions": 1,
         "Geography": "Namawala",
-        "Run_Number": 1,
+        "Run_Number": 2,
         "Simulation_Duration": 1095
     },
     "STRAIN_TRACKING": {

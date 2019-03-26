@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -33,7 +33,7 @@ namespace Kernel
         friend class Kernel::SpatialReportPy;
 
     public:
-        static NodePy *CreateNode(ISimulationContext *_parent_sim, suids::suid node_suid);
+        static NodePy *CreateNode(ISimulationContext *_parent_sim, ExternalNodeId_t externalNodeId, suids::suid node_suid);
         virtual ~NodePy(void);
         bool Configure( const Configuration* config );
 
@@ -41,11 +41,10 @@ namespace Kernel
         virtual void resetNodeStateCounters(void);
         virtual void updateNodeStateCounters(IndividualHuman *ih);
         virtual void finalizeNodeStateCounters(void);
-        virtual std::map< std::string, float > GetTotalContagion() const;
 
     protected:
         NodePy();
-        NodePy(ISimulationContext *_parent_sim, suids::suid node_suid);
+        NodePy(ISimulationContext *_parent_sim, ExternalNodeId_t externalNodeId, suids::suid node_suid);
         virtual void Initialize() override;
 
         const SimulationConfig* params();
@@ -60,9 +59,9 @@ namespace Kernel
     class NodePyTest : public NodePy
     {
         public:
-            static NodePyTest *CreateNode(ISimulationContext *_parent_sim, suids::suid node_suid);
+            static NodePyTest *CreateNode(ISimulationContext *_parent_sim, ExternalNodeId_t externalNodeId, suids::suid node_suid);
         protected:
-            NodePyTest(ISimulationContext *_parent_sim, suids::suid node_suid);
+            NodePyTest(ISimulationContext *_parent_sim, ExternalNodeId_t externalNodeId, suids::suid node_suid);
         private:
     };
 }

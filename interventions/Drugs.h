@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -18,7 +18,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 namespace Kernel
 {
     struct ICampaignCostObserver;
-    struct IMalariaDrugEffectsApply;
+    struct IDistribution;
 
     class GenericDrug : public IDrug, public BaseIntervention
     {
@@ -50,6 +50,7 @@ namespace Kernel
 
     protected:
         GenericDrug( const std::string& rDefaultName = JsonConfigurable::default_string );
+        GenericDrug( const GenericDrug& rMaster );
 
         virtual bool IsTakingDose( float dt ) { return true; }
 
@@ -91,6 +92,7 @@ namespace Kernel
         float Vd;
         float drug_c50;
         float fraction_defaulters;
+        IDistribution* p_uniform_distribution;
 
         DECLARE_SERIALIZABLE(GenericDrug);
     };

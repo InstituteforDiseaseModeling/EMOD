@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -14,6 +14,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "InterventionFactory.h"
 #include "NodeEventContext.h"  // for INodeEventContext (ICampaignCostObserver)
 #include "IHIVInterventionsContainer.h" // for time-date util function
+#include "IIndividualHumanContext.h"
+#include "RANDOM.h"
 
 SETUP_LOGGING( "HIVRapidHIVDiagnostic" )
 
@@ -76,24 +78,20 @@ namespace Kernel
 
     void HIVRapidHIVDiagnostic::onReceivedResult( IHIVMedicalHistory* pMedHistory, bool resultIsHivPositive )
     {
-        if( SMART_DRAW( m_ProbReceivedResults ) )
+        if( parent->GetRng()->SmartDraw( m_ProbReceivedResults ) )
         {
             pMedHistory->OnReceivedTestResultForHIV( resultIsHivPositive );
         }
 
-        INodeTriggeredInterventionConsumer* broadcaster = nullptr;
-        if (s_OK != parent->GetEventContext()->GetNodeEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster))
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()->GetNodeEventContext()", "INodeTriggeredInterventionConsumer", "INodeEventContext" );
-        }
+        IIndividualEventBroadcaster* broadcaster = parent->GetEventContext()->GetNodeEventContext()->GetIndividualEventBroadcaster();
 
         if( resultIsHivPositive )
         {
-            broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), EventTrigger::HIVTestedPositive );
+            broadcaster->TriggerObservers( parent->GetEventContext(), EventTrigger::HIVTestedPositive );
         }
         else
         {
-            broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), EventTrigger::HIVTestedNegative );
+            broadcaster->TriggerObservers( parent->GetEventContext(), EventTrigger::HIVTestedNegative );
         }
     }
 

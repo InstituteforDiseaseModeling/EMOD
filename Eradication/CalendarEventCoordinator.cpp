@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -10,6 +10,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "stdafx.h"
 #include "CalendarEventCoordinator.h"
 #include "InterventionFactory.h"
+#include "SimulationEventContext.h"
+#include "IdmDateTime.h"
+#include "IIndividualHumanContext.h"
 
 SETUP_LOGGING( "CalendarEventCoordinator" )
 
@@ -115,19 +118,6 @@ namespace Kernel
     )
     {
         auto coverage = times_and_coverages.begin()->second;
-        if( coverage == 1.0 )
-        {
-            return true;
-        }
-        else if( coverage == 0.0 )
-        {
-            return false;
-        }
-        else
-        {
-            auto draw = randgen->e();
-            LOG_DEBUG_F("randomDraw = %f, demographic_coverage = %f\n", draw, (float) coverage );
-            return ( draw < coverage );
-        }
+        return ihec->GetInterventionsContext()->GetParent()->GetRng()->SmartDraw( coverage );
     }
 }

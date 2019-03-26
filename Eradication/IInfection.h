@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -34,6 +34,8 @@ namespace Kernel
         virtual void SetParameters(IStrainIdentity* infstrain=nullptr, int incubation_period_override = -1 ) = 0;
         virtual void InitInfectionImmunology(ISusceptibilityContext* _immunity) = 0;
         virtual bool StrainMatches( IStrainIdentity * pStrain ) = 0;
+        virtual bool IsSymptomatic() const = 0;
+        virtual bool IsNewlySymptomatic() const = 0;
 
         virtual ~IInfection() {}
     };

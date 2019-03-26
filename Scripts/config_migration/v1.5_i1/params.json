@@ -7,7 +7,6 @@
      "ConfigName": "Config_Name", 
      "DEMOGRAPHICS_AGE": "Age_Initialization_Distribution_Type", 
      "DEMOGRAPHICS_BIRTH": "Enable_Demographics_Birth", 
-     "DEMOGRAPHICS_GENDER": "Enable_Demographics_Gender", 
      "DEMOGRAPHICS_INITIAL": "Enable_Demographics_Initial", 
      "DEMOGRAPHICS_OTHER": "Enable_Demographics_Other", 
      "DEMOGRAPHIC_TRACKING": "Enable_Demographics_Reporting", 

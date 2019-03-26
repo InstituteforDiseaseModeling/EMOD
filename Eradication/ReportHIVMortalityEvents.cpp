@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -11,11 +11,11 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "Debug.h"
 #include "ReportHIVMortalityEvents.h"
-#include "NodeHIV.h"
 #include "SusceptibilityHIV.h"
 #include "InfectionHIV.h"
 #include "IHIVInterventionsContainer.h"
 #include "ISimulation.h"
+#include "IIndividualHumanSTI.h"
 #include "IIndividualHumanHIV.h"
 #include "INodeContext.h"
 #include "NodeEventContext.h"
@@ -87,8 +87,8 @@ namespace Kernel {
         , _parent( parent )
         , m_InterventionStatusKey()
     {
-        eventTriggerList.push_back( "DiseaseDeaths" );
-        eventTriggerList.push_back( "NonDiseaseDeaths" );
+        eventTriggerList.push_back( EventTrigger::DiseaseDeaths );
+        eventTriggerList.push_back( EventTrigger::NonDiseaseDeaths );
     }
 
     void ReportHIVMortalityEvents::Initialize( unsigned int nrmSize )

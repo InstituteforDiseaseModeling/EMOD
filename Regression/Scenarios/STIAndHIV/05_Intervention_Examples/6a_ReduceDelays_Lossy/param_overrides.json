@@ -3,7 +3,8 @@
     "parameters":
     {
         "RARELY_CHANGED": {
-            "Config_Name": "05_6A_ReduceDelays_Lossy"
+            "Config_Name": "05_6A_ReduceDelays_Lossy",
+            "logLevel_HIVMuxer" : "ERROR"
         }
     }
 }

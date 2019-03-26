@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -185,10 +185,9 @@ namespace Kernel
         return all_combos;
     }
 
-    uint32_t GenomeMarkers::FromOutcrossing( uint32_t id1, uint32_t id2 )
+    uint32_t GenomeMarkers::FromOutcrossing( RANDOMBASE* pRNG, uint32_t id1, uint32_t id2 )
     {
-        auto rng = Environment::getInstance()->RNG;
-        uint32_t mask = rng->ul();
+        uint32_t mask = pRNG->ul();
         
         //TODO: we could consider using the number of markers defined in GenomeMarkers
         // to mask out bits we don't care about.

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -11,11 +11,11 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "RANDOM.h"
 
-class RandomFake : public RANDOMBASE
+class RandomFake : public Kernel::RANDOMBASE
 {
 public:
     RandomFake()
-        : RANDOMBASE(0, 8)
+        : RANDOMBASE(8)
         , m_SelectBits()
     {
     }
@@ -31,6 +31,10 @@ public:
         bits_to_float();
         index = 0;
     }
+
+    virtual Kernel::QueryResult QueryInterface( Kernel::iid_t iid, void** pinstance) { return Kernel::QueryResult::e_NOINTERFACE ; };
+    virtual int32_t AddRef()  { return -1 ; };
+    virtual int32_t Release() { return -1 ; };
 
     void SetUL( const std::vector<uint32_t>& rBits )
     {

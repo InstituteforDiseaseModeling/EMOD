@@ -15,6 +15,7 @@ lib_report_dllLocalInc = [ "$REPORT_DIR/stdafx.h" ]
 stdafx_obj = report_env.Object( "rvsm_stdafx", "$REPORT_DIR/stdafx.cpp" )
 base_class_obj = report_env.Object( "rvsm_ReportVectorStats", "$REPORT_DIR/ReportVectorStats.cpp" )
 strain_identity_obj = report_env.Object( "rvsm_StrainIdentity", "../Eradication/StrainIdentity.cpp" )
+infection_obj = report_env.Object( "rvsm_Infection", "../Eradication/Infection.cpp" )
 
 report_env.Append(LIBS=['baseReportLib'])
 report_env.Append(LIBS=['utils'])
@@ -23,7 +24,7 @@ report_env.Append(LIBPATH=['$BUILD_DIR/utils'])
 
 report_dir = report_env[ "BUILD_DIR" ] + 'reporter_plugins/' + report_env[ "REPORT_DIR" ]
 
-lib_report_Dll = report_env.SharedLibrary( report_dir+"malaria", lib_report_dllSrcFiles + strain_identity_obj + base_class_obj + stdafx_obj )
+lib_report_Dll = report_env.SharedLibrary( report_dir+"malaria", lib_report_dllSrcFiles + strain_identity_obj + base_class_obj + stdafx_obj + infection_obj )
 #print "building lib_report_dll: " + str(lib_report_Dll)
 
 # take lib_report.dll (exclude .lib, .exp) out to be the building target

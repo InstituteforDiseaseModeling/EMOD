@@ -1,5 +1,5 @@
 {
-    "Default_Config_Path": "defaults/hiv_default_config.json", 
+    "Default_Config_Path": "../../defaults/hiv_default_config.json", 
     "parameters": {
         "Transmission_Blocking_Immunity_Duration_Before_Decay": 60, 
         "Report_Event_Recorder_Events": [
@@ -42,7 +42,7 @@
         "x_Other_Mortality": 1, 
         "STI_Coinfection_Acquisition_Multiplier": 0, 
         "Coital_Dilution_Factor_4_Plus_Partners": 0.1, 
-        "Base_Population_Scale_Factor": 1.0, 
+        "x_Base_Population": 1.0, 
         "Acquisition_Blocking_Immunity_Duration_Before_Decay": 60, 
         "Config_Name": "51_HIV_GH620_NChooser", 
         "AIDS_Stage_Infectivity_Multiplier": 2, 
@@ -50,7 +50,7 @@
         "Birth_Rate_Dependence": "DEMOGRAPHIC_DEP_RATE", 
         "Post_Infection_Mortality_Multiplier": 0, 
         "Male_To_Female_Relative_Infectivity_Ages": [], 
-        "Listed_Events": [
+        "Custom_Individual_Events": [
             "Vaccinated", 
             "VaccineExpired"
         ], 

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -13,6 +13,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Exceptions.h"
 #include "Debug.h"
 #include "Environment.h"
+#include "IIndividualHumanContext.h"
 #include "IndividualEventContext.h" // for Die() interface
 #include "InterventionsContainer.h"
 #include "MalariaAntibody.h" // for CreateAntibody etc.
@@ -23,12 +24,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "NodeEventContext.h"
 #include "MalariaParameters.h"
 #include "Infection.h" // for InfectionConfig::vital_disease_mortality 
-
-#ifdef randgen
-#undef randgen
-#endif
 #include "RANDOM.h"
-#define randgen (parent->GetRng())
+#include "INodeContext.h"
 
 #include "Common.h"
 #include "Malaria.h"
@@ -261,7 +258,7 @@ namespace Kernel
                 throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()->GetNodeEventContext()->GetNodeContext()", "INodeMalaria", "INodeContext" );
             }
 
-            float rand = randgen->eGauss();
+            float rand = parent->GetRng()->eGauss();
             // -- MSP --
             float msp_mean_antibody_fraction     = p_node_malaria->GetMSP_mean_antibody_distribution()->DrawResultValue(age);
             float msp_variance_antibody_fraction = p_node_malaria->GetMSP_variance_antibody_distribution()->DrawResultValue(age);
@@ -586,7 +583,7 @@ namespace Kernel
         // sanity check on inconsistently specified sigmoids
         if ( prob_fatal > prob_severe )
         {
-            LOG_WARN_F( "Probability of mortality (%f) exceeds probability of severe disease (%f)!\n", prob_fatal, prob_fatal );
+            LOG_WARN_F( "Probability of mortality (%f) exceeds probability of severe disease (%f)!\n", prob_fatal, prob_severe);
         }
 
         if ( current_fever > SusceptibilityMalariaConfig::clinicalFeverThreshold_low ) 
@@ -611,7 +608,7 @@ namespace Kernel
 
             // In order to avoid the potential event of a fatal (but not severe) disease case,
             // use a single random number draw for how unlucky this individual is this time step.
-            float rand = randgen->e();
+            float rand = parent->GetRng()->e();
 
             // check for new severe case and accumulate days in this state
             if ( rand < prob_severe )
@@ -723,14 +720,16 @@ namespace Kernel
             // take parasiteSmearSensitivity microliters of blood and see if any parasites
             // number of parasites will be Poisson distributed with mean=parasite_density*parasiteSmearSensitivity (default 0.1)
             // probability of more than one parasite is (1-exp(-mean))
-            if (randgen->e() < EXPCDF(-(m_parasite_density)*params()->malaria_params->parasiteSmearSensitivity))
+            float prob = EXPCDF( -(m_parasite_density)*params()->malaria_params->parasiteSmearSensitivity );
+            if( parent->GetRng()->SmartDraw( prob ) )
                 return true; 
             else 
                 return false; 
         }
         else if (test_type == MALARIA_TEST_NEW_DIAGNOSTIC)
         {
-            if (randgen->e() < EXPCDF(-(m_parasite_density)*params()->malaria_params->newDiagnosticSensitivity))
+            float prob = EXPCDF( -(m_parasite_density)*params()->malaria_params->newDiagnosticSensitivity );
+            if( parent->GetRng()->SmartDraw( prob ) )
                 return true; 
             else 
                 return false; 
@@ -750,7 +749,7 @@ namespace Kernel
             // 10xPoisson distributed with mean .1xparasite_density
             if (params()->malaria_params->parasiteSmearSensitivity > 0)
             {
-                measured_count = float(1.0 / params()->malaria_params->parasiteSmearSensitivity * randgen->Poisson(params()->malaria_params->parasiteSmearSensitivity * m_parasite_density));
+                measured_count = float(1.0 / params()->malaria_params->parasiteSmearSensitivity * parent->GetRng()->Poisson(params()->malaria_params->parasiteSmearSensitivity * m_parasite_density));
             }
 
             return measured_count;
@@ -805,7 +804,7 @@ namespace Kernel
             int remain_total  = n_total  - itotal;
             int remain_chosen = n_choose - ichosen;
 
-            if ( (randgen->e() * remain_total) < remain_chosen )
+            if ( (parent->GetRng()->e() * remain_total) < remain_chosen )
             {
                 variants.push_back(itotal);
                 ichosen++;

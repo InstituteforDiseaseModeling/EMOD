@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -16,9 +16,11 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "InterventionFactory.h"
 #include "NodeEventContext.h"  // for INodeEventContext (ICampaignCostObserver)
 #include "IIndividualHumanHIV.h"
-#include "SusceptibilityHIV.h"
+#include "IIndividualHumanContext.h"
 #include "IHIVInterventionsContainer.h"
 #include "SimulationEnums.h"
+#include "IdmDateTime.h"
+#include "RANDOM.h"
 
 SETUP_LOGGING( "HIVPiecewiseByYearAndSexDiagnostic" )
 
@@ -92,7 +94,7 @@ namespace Kernel
         }
 
         value = (gender == Gender::FEMALE) ? value * female_multiplier : value;
-        testResult = (randgen->e() < value);
+        testResult = parent->GetRng()->SmartDraw( value );
 
         LOG_DEBUG_F("Individual %d: sex=%d, year=%f, returned %d.\n", parent->GetSuid().data, gender, year, testResult);
 

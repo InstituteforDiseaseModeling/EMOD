@@ -1,0 +1,9 @@
+{
+    "parameters": {
+        "Simulation_Type": "HIV_SIM",
+        "Custom_Individual_Events" : [
+            "Vaccinated",
+            "VaccineExpired"
+        ]
+    }
+}

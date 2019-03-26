@@ -1,6 +1,5 @@
 #!/usr/bin/python
 
-from __future__ import print_function
 import dtkFileTools as dft
 import dtkFileSupport as support
 import os
@@ -12,6 +11,7 @@ class TestReadVersionOne(unittest.TestCase):
 
     def test_reading_uncompressed_file(self):
 
+        jason_data = b'{"simulation":{"__class__":"SimulationPython","serializationMask":0,"nodes":[]}}'
         jason_text = '{"simulation":{"__class__":"SimulationPython","serializationMask":0,"nodes":[]}}'
 
         dtk = dft.read('test-data/simple.dtk')
@@ -23,7 +23,7 @@ class TestReadVersionOne(unittest.TestCase):
         self.assertEqual(80, dtk.byte_count)
         self.assertEqual(1, dtk.chunk_count)
         self.assertEqual(80, dtk.chunk_sizes[0])
-        self.assertEqual(jason_text, dtk.chunks[0])
+        self.assertEqual(jason_data, dtk.chunks[0])
         self.assertEqual(jason_text, dtk.contents[0])
         self.assertEqual('SimulationPython', dtk.simulation['__class__'])
         self.assertEqual(0, dtk.simulation.serializationMask)
@@ -456,3 +456,7 @@ class TestRegressions(unittest.TestCase):
         self.assertTrue('nodes' not in simulation)
 
         return
+
+
+if __name__ == '__main__':
+    unittest.main()

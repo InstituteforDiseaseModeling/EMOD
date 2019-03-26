@@ -2,8 +2,8 @@
 
 import json
 import os.path as path
-import dtk_sft
-import dtk_TBHIV_Support as dts
+import dtk_test.dtk_sft as sft
+import dtk_test.dtk_TBHIV_Support as dts
 
 matches = [ "truly cleared", "Time:" ]
 
@@ -124,8 +124,8 @@ def create_report_file( clearance_times, param_obj, report_name, stdout_days, in
     with open(report_name, "w") as outfile:
         outfile.write("Cleared infections: {0} \n".format(len(clearance_times)))
 
-        # success = dtk_sft.test_exponential( numpy.array( clearance_times ).astype(float), param_obj["TB_Drug_Cure_Rate_HIV"] )
-        success = dtk_sft.test_exponential(clearance_times,
+        # success = sft.test_exponential( numpy.array( clearance_times ).astype(float), param_obj["TB_Drug_Cure_Rate_HIV"] )
+        success = sft.test_exponential(clearance_times,
                                            param_obj["TB_Drug_Cure_Rate_HIV"],
                                            outfile, integers=True, roundup=True, round_nearest=False)
 
@@ -141,7 +141,7 @@ def create_report_file( clearance_times, param_obj, report_name, stdout_days, in
 def application( output_folder="output", stdout_filename="test.txt",
                  config_filename="config.json",
                  chart_name="InsetChart.json",
-                 report_name=dtk_sft.sft_output_filename,
+                 report_name=sft.sft_output_filename,
                  debug=False):
     if debug:
         print( "output_folder: " + output_folder )
@@ -150,7 +150,7 @@ def application( output_folder="output", stdout_filename="test.txt",
         print( "chart_name: " + chart_name + "\n" )
         print( "report_name: " + report_name + "\n" )
         print( "debug: " + str(debug) + "\n" )
-    dtk_sft.wait_for_done()
+    sft.wait_for_done()
     param_obj = load_emod_parameters(config_filename)
     drug_start_timestep = param_obj[dts.ParamKeys.KEY_DrugStartTime]
     sim_start_timestep = param_obj[dts.ConfigKeys.KEY_StartTime]
@@ -162,11 +162,11 @@ def application( output_folder="output", stdout_filename="test.txt",
 
     if debug:
         print( "trying to plot data\n" )
-        dtk_sft.plot_data_sorted(cum_clears, label1="Cumulative Clearances",
+        sft.plot_data_sorted(cum_clears, label1="Cumulative Clearances",
                           title="Cumulative Clearances over Time from Drugs (HIV+/No ART)", xlabel="Timestep",
                           ylabel="Clearances", show=True)
     else:
-        dtk_sft.plot_data( cum_clears, label1="Cumulative Clearances", title="Cumulative Clearances over Time from Drugs (HIV+/No ART)", xlabel="Timestep", ylabel="Clearances" )
+        sft.plot_data( cum_clears, label1="Cumulative Clearances", title="Cumulative Clearances over Time from Drugs (HIV+/No ART)", xlabel="Timestep", ylabel="Clearances" )
     #inset_days = parse_json_report(start_timestep, output_folder, chart_name, debug)
 
     # Now we've ingested all relevant inputs, let's do analysis

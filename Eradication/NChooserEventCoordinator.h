@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -107,7 +107,7 @@ namespace Kernel
                                                 const DiseaseQualifications& rDisease,
                                                 PropertyRestrictions<IPKey, IPKeyValue, IPKeyValueContainer>& rPropertyRestrictions );
 
-        virtual std::vector<IIndividualHumanEventContext*> SelectIndividuals();
+        virtual std::vector<IIndividualHumanEventContext*> SelectIndividuals( RANDOMBASE* pRNG );
 
         virtual bool IsFinished() const;
 
@@ -147,7 +147,7 @@ namespace Kernel
         virtual bool IsPastEnd( const IdmDateTime& rDateTime ) const;
 
         virtual void UpdateTargeting( const IdmDateTime& rDateTime, float dt );
-        virtual std::vector< IIndividualHumanEventContext* > DetermineWhoGetsIntervention( const std::vector<INodeEventContext*> nodeList );
+        virtual std::vector< IIndividualHumanEventContext* > DetermineWhoGetsIntervention( RANDOMBASE* pRNG, const std::vector<INodeEventContext*> nodeList );
 
         virtual void CreateAgeAndGenderList( const IdmDateTime& rDateTime, float dt );
 
@@ -257,6 +257,7 @@ namespace Kernel
         virtual void Update(float dt) override;
         virtual void UpdateNodes(float dt) override;
         virtual bool IsFinished() override;
+        virtual IEventCoordinatorEventContext* GetEventContext() override { return nullptr; }
 
     protected:
 

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -18,20 +18,11 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 SETUP_LOGGING( "LarvalHabitatMultiplier" )
 
-// Because this guy seems to be configured fundamentally differently from how we 
-// normally configure input parameters, I'm putting these right here instead of in the RC files. 
-// These will not be retrieved from the DB because these aren't the descriptions of named parameters
-// that will be seen as keys. There is still very much an open question about whether the design 
-// of this should be revisited.
-#define LHM_Single_Value_DESC_TEXT "TBD-A single value can be specified so that it is applied to ALL_HABITATS."
-#define LHM_Habitat_Type_To_Value_Name_DESC_TEXT "TBD-The habitat type/name for a specific multiplier - the 'key' of the key:value pair."
-#define LHM_Habitat_Type_To_Value_Value_DESC_TEXT "TBD-A specific multiplier for the given habitat - the 'value' of the key:value pair."
-#define LHM_Habitat_Type_To_Species_To_Value_Habitat_Type_DESC_TEXT "TBD - The habitat type/name for the specified species."
-#define LHM_Habitat_Type_To_Species_To_Value_Species_Name_DESC_TEXT "TBD - The name of the species from Vector_Species_Names to have specific multipliers for this habitat type."
-#define LHM_Habitat_Type_To_Species_To_Value_Value_DESC_TEXT "TBD - The multiplier for this specific habitat of this species." 
-
 namespace Kernel
 {
+    BEGIN_QUERY_INTERFACE_BODY(LarvalHabitatMultiplierSpec)
+    END_QUERY_INTERFACE_BODY(LarvalHabitatMultiplierSpec)
+
     LarvalHabitatMultiplier::LarvalHabitatMultiplier( bool usedByIntervention, float minValue, float maxValue, float defaultValue )
     : JsonConfigurable()
     , m_UsedByIntervention( usedByIntervention )
@@ -40,6 +31,7 @@ namespace Kernel
     , m_DefaultValue( defaultValue )
     , m_Initialized(false)
     , m_Multiplier()
+    , m_externalNodeId(0)
     {
     }
 
@@ -47,8 +39,14 @@ namespace Kernel
     {
     }
 
+    void LarvalHabitatMultiplier::SetExternalNodeId(ExternalNodeId_t externalNodeId)
+    {
+        m_externalNodeId = externalNodeId;
+    }
+
     void LarvalHabitatMultiplier::Initialize()
     {
+        // if generating schema, SimulationConfig does not exist so just return
         if( JsonConfigurable::_dryrun ) return;
 
         m_Multiplier.clear();
@@ -60,11 +58,13 @@ namespace Kernel
 
             for( auto& species : GET_CONFIGURABLE(SimulationConfig)->vector_params->vector_species_names )
             {
-                species_map.insert( std::make_pair( species, m_DefaultValue ) );
+                // Set the value to -1 first, which we will overwrite with a specified or default value later
+                species_map.insert( std::make_pair( species, m_DefaultValue) );
             }
 
             m_Multiplier.insert( std::make_pair( vht, species_map ) );
         }
+        
         m_Initialized = true;
     }
 
@@ -105,212 +105,157 @@ namespace Kernel
         }
     }
 
-    void LarvalHabitatMultiplier::Read( const JsonObjectDemog& rJsonData, uint32_t externalNodeId )
+    bool LarvalHabitatMultiplier::EntryAffectsHabitatAndSpecies(LarvalHabitatMultiplierSpec* entry, VectorHabitatType::Enum habitat_type, const std::string& species_name)
     {
-        Initialize();
+        VectorHabitatType::Enum spec_habitat = entry->GetHabitat();
+        std::string spec_species = entry->GetSpecies();
 
-        if( rJsonData.IsObject() )
+        return ((spec_species.compare(species_name) == 0) || (spec_species.compare("ALL_SPECIES") == 0)) &&
+            (spec_habitat == habitat_type);
+    }
+
+    void LarvalHabitatMultiplier::UnsetAllFactors(LHMSpecList &spec_list)
+    {
+        // For each habitat type...
+        for (auto& vht_entry : m_Multiplier)
         {
-            for( auto& vht_entry : m_Multiplier )
+            const std::string habitat_name = VectorHabitatType::pairs::lookup_key(vht_entry.first);
+            std::map<std::string, float>& species_map = vht_entry.second;
+
+            // For each species...
+            for (auto& species_entry : species_map)
             {
-                std::string habitat_name = VectorHabitatType::pairs::lookup_key( vht_entry.first );
-                std::map<std::string,float>& species_map = vht_entry.second;
-
-                if( rJsonData.Contains( habitat_name.c_str() ) )
-                {
-                    VectorHabitatType::Enum habitat = vht_entry.first;
-                    if( rJsonData[ habitat_name.c_str() ].IsObject() )
-                    {
-                        for( auto& species_entry : species_map )
-                        {
-                            const std::string& species_name = species_entry.first;
-                            float multiplier = m_DefaultValue;
-                            if( rJsonData[ habitat_name.c_str() ].Contains( species_name.c_str() ) )
-                            {
-                                multiplier = float(rJsonData[ habitat_name.c_str() ][ species_name.c_str() ].AsDouble());
-                                CheckRange( multiplier, externalNodeId, habitat_name, species_name );
-                                CheckIfConfigured( habitat, species_name );
-                            }
-                            species_entry.second = multiplier;
-                            LOG_INFO_F("Node ID=%u with LarvalHabitatMultiplier(%s)(%s)=%0.2f\n", externalNodeId, habitat_name.c_str(), species_name.c_str(), multiplier);
-                        }
-                    }
-                    else
-                    {
-                        float multiplier = float(rJsonData[ habitat_name.c_str() ].AsDouble());
-                        CheckRange( multiplier, externalNodeId, habitat_name, "" );
-                        for( auto& species_entry : species_map )
-                        {
-                            species_entry.second = multiplier;
-                            LOG_INFO_F("Node ID=%u with LarvalHabitatMultiplier(%s)(%s)=%0.2f\n", externalNodeId, habitat_name.c_str(), species_entry.first.c_str(), multiplier);
-                        }
-                        CheckIfConfigured( habitat );
-                    }
-                }
-                else
-                {
-                    LOG_DEBUG_F("No LarvalHabitatMultiplier specified for %s habitat at Node ID=%u\n",habitat_name.c_str(),externalNodeId);
-                }
+                // Un-set the factor, to be overwritten later
+                species_entry.second = -1.0f;
             }
-        }
-        else
-        {
-            float multiplier = float(rJsonData.AsDouble());
-            CheckRange( multiplier, externalNodeId, "", "" );
-
-            std::map<std::string,float>& species_map = m_Multiplier[ VectorHabitatType::ALL_HABITATS ];
-
-            for( auto& species_entry : species_map )
-            {
-                species_entry.second = multiplier;
-            }
-            LOG_INFO_F("Node ID=%d with LarvalHabitatMultiplier(ALL_HABITATS)=%0.2f\n", externalNodeId, multiplier);
-            LOG_WARN("DeprecationWarning: Specification of \"LarvalHabitatMultiplier\" as a floating-point value in the \"NodeAttributes\" block will soon be deprecated. Specify as an object with habitat-type keys, e.g. \"LarvalHabitatMultiplier\" : {\"TEMPORARY_RAINFALL\" : 0.3}\n");
         }
     }
 
-    void LarvalHabitatMultiplier::CheckRange( float multiplier, 
-                                              uint32_t externalNodeId, 
-                                              const std::string& rHabitatName, 
-                                              const std::string& rSpeciesName )
+    void LarvalHabitatMultiplier::ProcessMultipliers(LHMSpecList &spec_list)
     {
-        if( (multiplier < m_MinValue) || (m_MaxValue < multiplier) )
+        // Un-set all factors (set to -1) so that we can determine whether they've been set or not
+        UnsetAllFactors(spec_list);
+
+        // For each habitat type...
+        for (auto& vht_entry : m_Multiplier)
         {
-            std::stringstream ss;
-            ss << "Invalid Larval Habitat Multipler = " << multiplier << " - minimum=" << m_MinValue << ", maximum=" << m_MaxValue << "\n";
-            ss << "Found while reading data for: ";
-            if( externalNodeId > 0 )
+            const std::string habitat_name = VectorHabitatType::pairs::lookup_key(vht_entry.first);
+            std::map<std::string, float>& species_map = vht_entry.second;
+
+            // For each species...
+            for (auto& species_entry : species_map)
             {
-                ss << "NodeID=" << externalNodeId << ", ";
+                const std::string& species_name = species_entry.first;
+
+                // For each configured LarvalHabitatMultiplier entry...
+                for (int i = 0; i < spec_list.Size(); i++)
+                {
+                    // If the entry affects this habitat and species...
+                    if (EntryAffectsHabitatAndSpecies(spec_list[i], vht_entry.first, species_name))
+                    {
+                        // Throw an error if it's already been set by an earlier entry
+                        if (species_entry.second != -1.0f)
+                        {
+                            std::stringstream ss;
+                            ss << "LarvalHabitatMultiplier over-specified for habitat and species: " << habitat_name << ", " << species_name << ". ";
+                            ss << "Previously set value was " << species_entry.second << ", new value would be " << spec_list[i]->GetFactor() << "." << endl;
+                            if (m_externalNodeId != 0) ss << "Affected node is " << m_externalNodeId << endl;
+
+                            throw InvalidInputDataException(__FILE__, __LINE__, __FUNCTION__, ss.str().c_str());
+                        }
+
+                        // Otherwise, set the value
+                        species_entry.second = spec_list[i]->GetFactor();
+                        if (m_externalNodeId != 0) LOG_INFO_F("Node ID=%u with LarvalHabitatMultiplier(%s)(%s)=%0.2f\n", m_externalNodeId, habitat_name.c_str(), species_name.c_str(), species_entry.second);
+                    }
+                }
+
+                // If the habitat/species remains unset, set it to the default
+                if (species_entry.second == -1.0f)
+                {
+                    species_entry.second = m_DefaultValue;
+                }
             }
-            if( !rHabitatName.empty() )
-            {
-                ss << "Habitat_Type=" << rHabitatName << ", ";
-            }
-            if( !rSpeciesName.empty() )
-            {
-                ss << "Species_Name=" << rSpeciesName;
-            }
-            throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
         }
+
+        return;
     }
 
-
-    void LarvalHabitatMultiplier::ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key )
+    bool LarvalHabitatMultiplier::Configure(const Configuration * config)
     {
-        if( !inputJson->Exist( key ) )
+        if ( !m_Initialized && !JsonConfigurable::_dryrun )
         {
-            LOG_DEBUG_F("Could not find json element '%s'.  Did not initialize.\n",key.c_str());
-            return;
+            throw InitializationException(__FILE__, __LINE__, __FUNCTION__, "Configuring un-initialized LarvalHabitatMultiplier");
         }
 
-        std::stringstream json_data_in_string;
-        json::Writer::Write( (*inputJson)[key], json_data_in_string );
-        //printf("%s\n",json_data_in_string.str().c_str());
+        LHMSpecList habitat_species_specs;
+        initConfigComplexType("LarvalHabitatMultiplier", &habitat_species_specs, LarvalHabitatMultiplier_DESC_TEXT);
 
-        JsonObjectDemog json_data;
+        bool result = false;
+
         try
         {
-            json_data.Parse( json_data_in_string.str().c_str() );
+            result = JsonConfigurable::Configure(config);
+
+            if (!JsonConfigurable::_dryrun && result)
+            {
+                ProcessMultipliers(habitat_species_specs);
+            }
         }
-        catch( DetailedException& )
+        catch (DetailedException& e)
         {
             std::stringstream ss;
-            ss << "Error reading/parsing '" << key << "' from campaign file.";
-            throw SerializationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+            ss << e.GetMsg();
+            if (m_externalNodeId != 0) ss << endl << "LarvalHabitatMultiplier specified for node " << m_externalNodeId;
+            throw InvalidInputDataException(__FILE__, __LINE__, __FUNCTION__, ss.str().c_str());
         }
-        Read( json_data, 0 );
+
+        return result;
     }
 
-    json::QuickBuilder LarvalHabitatMultiplier::GetSchema()
+    LarvalHabitatMultiplierSpec::LarvalHabitatMultiplierSpec()
+        : JsonConfigurable()
+        , m_factor(1.0f)
+        , m_habitat_name(VectorHabitatType::Enum::ALL_HABITATS)
+        , m_species("ALL_SPECIES")
     {
-        json::QuickBuilder schema( GetSchemaBase() );
-        auto tn = JsonConfigurable::_typename_label();
-        auto ts = JsonConfigurable::_typeschema_label();
-        schema[ tn ] = json::String( "idmType:LarvalHabitatMultiplier" );
-        schema[ts] = json::Array();
-        schema[ts][0] = json::Object();
-        schema[ts][0][ "type" ] = json::String( "float" );
-        schema[ts][0][ "min" ] = json::Number( 0 );
-        schema[ts][0][ "max" ] = json::Number( FLT_MAX );
-        schema[ts][0][ "description" ] = json::String( LHM_Single_Value_DESC_TEXT );
-        schema[ts][1] = json::Object();
-        schema[ts][1]["VectorHabitatType"][ "type" ] = json::String( "string" );
-        schema[ts][1]["VectorHabitatType"][ "description" ] = json::String( LHM_Habitat_Type_To_Value_Name_DESC_TEXT );
-        schema[ts][1]["Multiplier"][ "type" ] = json::String( "float" );
-        schema[ts][1]["Multiplier"][ "min" ] = json::Number( 0 );
-        schema[ts][1]["Multiplier"][ "max" ] = json::Number( FLT_MAX );
-        schema[ts][1]["Multiplier"][ "description" ] = json::String( LHM_Habitat_Type_To_Value_Value_DESC_TEXT );
-        schema[ts][2] = json::Object();
-        schema[ts][2]["VectorHabitatType"][ "type" ] = json::String( "string" );
-        schema[ts][2]["VectorHabitatType"][ "description" ] = json::String( LHM_Habitat_Type_To_Species_To_Value_Habitat_Type_DESC_TEXT );
-        schema[ts][2]["VectorHabitatType"]["SpeciesName"][ "type" ] = json::String( "string" );
-        schema[ts][2]["VectorHabitatType"]["SpeciesName"][ "description" ] = json::String( LHM_Habitat_Type_To_Species_To_Value_Species_Name_DESC_TEXT );
-        schema[ts][2]["VectorHabitatType"]["SpeciesName"][ "depends-on" ] = json::String( "Vector_Species_Names" );
-        schema[ts][2]["VectorHabitatType"]["Multiplier"][ "type" ] = json::String( "float" );
-        schema[ts][2]["VectorHabitatType"]["Multiplier"][ "min" ] = json::Number( 0 );
-        schema[ts][2]["VectorHabitatType"]["Multiplier"][ "max" ] = json::Number( FLT_MAX );
-        schema[ts][2]["VectorHabitatType"]["Multiplier"][ "description" ] = json::String( LHM_Habitat_Type_To_Species_To_Value_Value_DESC_TEXT );
-
-        return schema;
     }
 
-    void LarvalHabitatMultiplier::CheckIfConfigured( VectorHabitatType::Enum habitatType )
+    bool LarvalHabitatMultiplierSpec::Configure(const Configuration* config)
     {
-        if( habitatType == VectorHabitatType::ALL_HABITATS )
-        {
-            return;
-        }
+        initConfig("Habitat", m_habitat_name, config, MetadataDescriptor::Enum("Habitat", LHMSpec_Habitat_DESC_TEXT, MDD_ENUM_ARGS(VectorHabitatType)));
+        initConfigTypeMap("Factor", &m_factor, LHMSpec_Factor_DESC_TEXT, 0, FLT_MAX, 1.0f);
+        initConfigTypeMap("Species", &m_species, LHMSpec_Species_DESC_TEXT);
 
-        bool found = false;
-        VectorParameters* p_vp = GET_CONFIGURABLE( SimulationConfig )->vector_params;
-        for( auto& species : GET_CONFIGURABLE( SimulationConfig )->vector_params->vector_species_names )
-        {
-            if( p_vp->vspMap.at( species )->habitat_params.habitat_map.count( habitatType ) > 0 )
-            {
-                found = true;
-            }
-        }
-        if( !found )
-        {
-            const char* habitat_name = VectorHabitatType::pairs::lookup_key( habitatType );
-            std::stringstream ss;
-            ss << "None of the species defined in the configuration file use the '" << habitat_name << "' habitat type defined in " ;
-            if( m_UsedByIntervention )
-            {
-                ss << "the campaign file.";
-            }
-            else
-            {
-                ss << "the demographics file.";
-            }
-            throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
-        }
+        return JsonConfigurable::Configure(config);
     }
 
-    void LarvalHabitatMultiplier::CheckIfConfigured( VectorHabitatType::Enum habitatType, const std::string& species )
+    float LarvalHabitatMultiplierSpec::GetFactor() const 
+    { 
+        return m_factor; 
+    }
+
+    VectorHabitatType::Enum LarvalHabitatMultiplierSpec::GetHabitat() const 
+    { 
+        return m_habitat_name;
+    }
+
+    std::string LarvalHabitatMultiplierSpec::GetSpecies() const 
+    { 
+        return m_species; 
+    }
+    
+    LarvalHabitatMultiplierSpec* LHMSpecList::CreateObject()
     {
-        if( habitatType == VectorHabitatType::ALL_HABITATS )
-        {
-            return;
-        }
+        return new LarvalHabitatMultiplierSpec();
+    }
 
-        VectorParameters* p_vp = GET_CONFIGURABLE( SimulationConfig )->vector_params;
+    LHMSpecList::LHMSpecList()
+        : JsonConfigurableCollection("LHMSpecList")
+    {
+    }
 
-        if( p_vp->vspMap.at( species )->habitat_params.habitat_map.count( habitatType ) == 0 )
-        {
-            const char* habitat_name = VectorHabitatType::pairs::lookup_key( habitatType );
-            std::stringstream ss;
-            ss << "This species, '" << species << "', defined in the configuration file does not use the '" << habitat_name << "' habitat type defined in " ;
-            if( m_UsedByIntervention )
-            {
-                ss << "the campaign file.";
-            }
-            else
-            {
-                ss << "the demographics file.";
-            }
-            throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
-        }
+    LHMSpecList::~LHMSpecList()
+    {
     }
 }

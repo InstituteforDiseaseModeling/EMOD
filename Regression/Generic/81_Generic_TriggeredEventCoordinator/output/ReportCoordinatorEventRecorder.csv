@@ -1,0 +1,13 @@
+Time,Coordinator_Name,Event_Name
+5,Start_Coordnator_1n2_A,Start_Vaccinating_1n2
+6,1n2_Vaccinator,Done_Vaccinating_1n2
+10,Start_Coordnator_1n2_B,Start_Vaccinating_1n2
+11,1n2_Vaccinator,Done_Vaccinating_1n2
+15,Start_Coordnator_1n2_C,Start_Vaccinating_1n2
+16,1n2_Vaccinator,Done_Vaccinating_1n2
+30,Start_Coordnator_3n4_A,Start_Vaccinating_3n4
+51,3n4_Vaccinator,Done_Vaccinating_3n4
+70,Start_Coordnator_3n4_B,Start_Vaccinating_3n4
+80,Start_Coordnator_3n4_STOP_B,Stop_Vaccinating_3n4
+100,Start_Coordnator_3n4_C,Start_Vaccinating_3n4
+121,3n4_Vaccinator,Done_Vaccinating_3n4

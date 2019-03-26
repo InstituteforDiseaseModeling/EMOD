@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -101,7 +101,8 @@ namespace Kernel {
     {
     }
 
-    Relationship::Relationship( const suids::suid& rRelId,
+    Relationship::Relationship( RANDOMBASE* pRNG,
+                                const suids::suid& rRelId,
                                 IRelationshipManager* pRelMan,
                                 IRelationshipParameters* pParams,
                                 IIndividualHumanSTI * male_partnerIn, 
@@ -136,8 +137,8 @@ namespace Kernel {
         LOG_DEBUG_F( "%s: Creating relationship %d between %d and %d\n", __FUNCTION__, _suid.data, MALE_PARTNER_ID().data, FEMALE_PARTNER_ID().data );
         //LogRelationship( _id, MALE_PARTNER_ID(), FEMALE_PARTNER_ID(), p_rel_params->GetType() );
 
-        rel_timer = DAYSPERYEAR * Environment::getInstance()->RNG->Weibull2( pParams->GetDurationWeibullScale(),
-                                                                             pParams->GetDurationWeibullHeterogeneity() );
+        rel_timer = DAYSPERYEAR * pRNG->Weibull2( pParams->GetDurationWeibullScale(),
+                                                  pParams->GetDurationWeibullHeterogeneity() );
 
         IIndividualHuman* individual = nullptr;
         if( male_partnerIn->QueryInterface(GET_IID(IIndividualHuman), (void**)&individual) != s_OK )
@@ -273,7 +274,7 @@ namespace Kernel {
         return true;
     }
 
-    void Relationship::Consummate( float dt )
+    void Relationship::Consummate( RANDOMBASE* pRNG, float dt )
     {
         if( state != RelationshipState::NORMAL )
         {
@@ -311,7 +312,7 @@ namespace Kernel {
                   );*/
 
         double ratetime = dt * coital_rate_attenuation_factor * GetCoitalRate();
-        unsigned int acts_this_dt = Environment::getInstance()->RNG->Poisson( ratetime );
+        unsigned int acts_this_dt = pRNG->Poisson( ratetime );
 
         if( total_coital_acts == 0 && acts_this_dt == 0 && ratetime > 0)
         {
@@ -326,7 +327,7 @@ namespace Kernel {
             female_partner->UpdateNumCoitalActs( acts_this_dt );
 
             ProbabilityNumber p_condom = (float) getProbabilityUsingCondomThisAct();
-            NaturalNumber acts_using_condom_this_dt = Environment::getInstance()->RNG->binomial_approx( acts_this_dt, (float) p_condom );
+            NaturalNumber acts_using_condom_this_dt = pRNG->binomial_approx( acts_this_dt, (float) p_condom );
             NaturalNumber acts_not_using_condom_this_dt = acts_this_dt - acts_using_condom_this_dt;
             LOG_DEBUG_F( "p_condom = %f, acts_using_condom_this_dt = %d\n", (float) p_condom, (int) acts_using_condom_this_dt );
 
@@ -882,7 +883,8 @@ namespace Kernel {
     // SPECIFIC TYPES OF RELATIONSHIPS HERE //
     ///////////////////////////////////////////////////////////////////////////
 
-    IRelationship* RelationshipFactory::CreateRelationship( const suids::suid& rRelId,
+    IRelationship* RelationshipFactory::CreateRelationship( RANDOMBASE* pRNG,
+                                                            const suids::suid& rRelId,
                                                             IRelationshipManager* pRelMan,
                                                             IRelationshipParameters* pParams, 
                                                             IIndividualHumanSTI* male_partner, 
@@ -892,19 +894,19 @@ namespace Kernel {
         switch( pParams->GetType() )
         {
             case RelationshipType::TRANSITORY:
-                p_rel = new TransitoryRelationship( rRelId, pRelMan, pParams, male_partner, female_partner );
+                p_rel = new TransitoryRelationship( pRNG, rRelId, pRelMan, pParams, male_partner, female_partner );
                 break;
 
             case RelationshipType::INFORMAL:
-                p_rel = new InformalRelationship( rRelId, pRelMan, pParams, male_partner, female_partner );
+                p_rel = new InformalRelationship( pRNG, rRelId, pRelMan, pParams, male_partner, female_partner );
                 break;
 
             case RelationshipType::MARITAL:
-                p_rel = new MarriageRelationship( rRelId, pRelMan, pParams, male_partner, female_partner );
+                p_rel = new MarriageRelationship( pRNG, rRelId, pRelMan, pParams, male_partner, female_partner );
                 break;
 
             case RelationshipType::COMMERCIAL:
-                p_rel = new CommercialRelationship( rRelId, pRelMan, pParams, male_partner, female_partner );
+                p_rel = new CommercialRelationship( pRNG, rRelId, pRelMan, pParams, male_partner, female_partner );
                 break;
 
             default:
@@ -928,12 +930,13 @@ namespace Kernel {
     {
     }
 
-    TransitoryRelationship::TransitoryRelationship( const suids::suid& rRelId,
+    TransitoryRelationship::TransitoryRelationship( RANDOMBASE* pRNG,
+                                                    const suids::suid& rRelId,
                                                     IRelationshipManager* pRelMan,
                                                     IRelationshipParameters* pParams,
                                                     IIndividualHumanSTI * male_partnerIn, 
                                                     IIndividualHumanSTI * female_partnerIn )
-        : Relationship( rRelId, pRelMan, pParams, male_partnerIn, female_partnerIn )
+        : Relationship( pRNG, rRelId, pRelMan, pParams, male_partnerIn, female_partnerIn )
     {
         LOG_INFO_F( "(EEL) Creating TransitoryRelationship %d between %s and %s of length %f.\n",
                     GetSuid().data,
@@ -967,12 +970,13 @@ namespace Kernel {
     {
     }
 
-    InformalRelationship::InformalRelationship( const suids::suid& rRelId,
+    InformalRelationship::InformalRelationship( RANDOMBASE* pRNG,
+                                                const suids::suid& rRelId,
                                                 IRelationshipManager* pRelMan,
                                                 IRelationshipParameters* pParams,
                                                 IIndividualHumanSTI * male_partnerIn, 
                                                 IIndividualHumanSTI * female_partnerIn )
-        : Relationship( rRelId, pRelMan, pParams, male_partnerIn, female_partnerIn )
+        : Relationship( pRNG, rRelId, pRelMan, pParams, male_partnerIn, female_partnerIn )
     {
         LOG_INFO_F( "(EEL) Creating InformalRelationship %d between %s and %s of length %f.\n",
                     GetSuid().data,
@@ -1006,12 +1010,13 @@ namespace Kernel {
     {
     }
 
-    MarriageRelationship::MarriageRelationship( const suids::suid& rRelId,
+    MarriageRelationship::MarriageRelationship( RANDOMBASE* pRNG,
+                                                const suids::suid& rRelId,
                                                 IRelationshipManager* pRelMan,
                                                 IRelationshipParameters* pParams,
                                                 IIndividualHumanSTI * male_partnerIn, 
                                                 IIndividualHumanSTI * female_partnerIn )
-        : Relationship( rRelId, pRelMan, pParams, male_partnerIn, female_partnerIn )
+        : Relationship( pRNG, rRelId, pRelMan, pParams, male_partnerIn, female_partnerIn )
     {
         LOG_INFO_F( "(EEL) Creating MaritalRelationship %d between %s and %s of length %f.\n",
                     GetSuid().data,
@@ -1045,12 +1050,13 @@ namespace Kernel {
     {
     }
 
-    CommercialRelationship::CommercialRelationship( const suids::suid& rRelId,
-                                                          IRelationshipManager* pRelMan,
-                                                          IRelationshipParameters* pParams,
-                                                          IIndividualHumanSTI * male_partnerIn, 
-                                                          IIndividualHumanSTI * female_partnerIn )
-        : Relationship( rRelId, pRelMan, pParams, male_partnerIn, female_partnerIn )
+    CommercialRelationship::CommercialRelationship( RANDOMBASE* pRNG,
+                                                    const suids::suid& rRelId,
+                                                    IRelationshipManager* pRelMan,
+                                                    IRelationshipParameters* pParams,
+                                                    IIndividualHumanSTI * male_partnerIn, 
+                                                    IIndividualHumanSTI * female_partnerIn )
+        : Relationship( pRNG, rRelId, pRelMan, pParams, male_partnerIn, female_partnerIn )
     {
         LOG_INFO_F( "(EEL) Creating CommercialRelationship %d between %s and %s of length %f.\n",
                     GetSuid().data,

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -24,9 +24,8 @@ SETUP_LOGGING( "SimulationHIV" )
 namespace Kernel
 {
     GET_SCHEMA_STATIC_WRAPPER_IMPL(SimulationHIV,SimulationHIV)
-    BEGIN_QUERY_INTERFACE_BODY(SimulationHIV)
-        HANDLE_INTERFACE(IGlobalContext)
-    END_QUERY_INTERFACE_BODY(SimulationHIV)
+    BEGIN_QUERY_INTERFACE_DERIVED(SimulationHIV,SimulationSTI)
+    END_QUERY_INTERFACE_DERIVED(SimulationHIV,SimulationSTI)
 
     SimulationHIV::SimulationHIV()
     : report_hiv_by_age_and_gender(false)
@@ -160,12 +159,13 @@ namespace Kernel
         return true;
     }
 
-    void SimulationHIV::addNewNodeFromDemographics( suids::suid node_suid,
+    void SimulationHIV::addNewNodeFromDemographics( ExternalNodeId_t externalNodeId,
+                                                    suids::suid node_suid,
                                                     NodeDemographicsFactory *nodedemographics_factory,
                                                     ClimateFactory *climate_factory,
                                                     bool white_list_enabled )
     {
-        NodeHIV *node = NodeHIV::CreateNode(this, node_suid);
+        NodeHIV *node = NodeHIV::CreateNode(this, externalNodeId, node_suid);
         addNode_internal( node, nodedemographics_factory, climate_factory, white_list_enabled );
     }
 

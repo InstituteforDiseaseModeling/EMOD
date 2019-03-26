@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -15,11 +15,11 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "suids.hpp"
 
 #include "BoostLibWrapper.h"
-#include "Contexts.h"
 #include "IdmDateTime.h"
 #include "IIndividualHuman.h"
 #include "ISimulation.h"
-#include "INodeContext.h"
+#include "ISimulationContext.h"
+#include "ExternalNodeId.h"
 #include "NodeRankMap.h"
 #include "INodeInfo.h"
 #include "IReport.h"
@@ -30,17 +30,20 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "SerializedPopulation.h"
 
-class RANDOMBASE;
-
 #define ENABLE_DEBUG_MPI_TIMING 0  // TODO: could make this an environment setting so we don't have to recompile
 
 namespace Kernel
 {
+    class RandomNumberGeneratorFactory;
+    class RANDOMBASE;
     class  CampaignEvent;
+    struct INodeContext;
     struct IEventCoordinator;
     struct SimulationEventContext;
     class  SimulationEventContextHost;
     struct IMigrationInfoFactory;
+    class NodeDemographicsFactory;
+    class ClimateFactory;
     class Node;
     class Infection;
     class IndividualHuman;
@@ -60,6 +63,7 @@ namespace Kernel
         static float base_year;
 
         virtual bool Configure( const ::Configuration *json ) override;
+        virtual bool TimeToStop() override;
 
         // IGlobalContext interfaces
         virtual const SimulationConfig* GetSimulationConfigObj() const override;
@@ -69,7 +73,7 @@ namespace Kernel
         virtual bool  Populate() override;
         virtual void  Update(float dt) override;
         virtual int   GetSimulationTimestep() const override;
-        virtual IdmDateTime GetSimulationTime() const override;
+        virtual const IdmDateTime& GetSimulationTime() const override;
         virtual void  RegisterNewNodeObserver(void* id, Kernel::ISimulation::callback_t observer) override;
         virtual void  UnregisterNewNodeObserver(void* id) override;
         virtual void  WriteReportsData() override;
@@ -82,18 +86,15 @@ namespace Kernel
 
         virtual void DistributeEventToOtherNodes( const EventTrigger& rEventTrigger, INodeQualifier* pQualifier ) override;
         virtual void UpdateNodeEvents() override;
+        virtual ISimulationEventContext* GetSimulationEventContext() override;
 
         // Unique ID services
-        virtual suids::suid GetNextNodeSuid() override;
-        virtual suids::suid GetNextIndividualHumanSuid() override;
         virtual suids::suid GetNextInfectionSuid() override;
         virtual suids::suid GetNodeSuid( ExternalNodeId_t external_node_id ) override;
         virtual ExternalNodeId_t GetNodeExternalID( const suids::suid& rNodeSuid ) override;
         virtual uint32_t    GetNodeRank( const suids::suid& rNodeSuid ) override;
 
-        // Random number handling
-        virtual RANDOMBASE* GetRng() override;
-        void ResetRng(); // resets random seed to a new value. necessary when branching from a common state
+        virtual RANDOMBASE* GetRng() override; //should only be accessed by Node
 
         // Reporting
         virtual std::vector<IReport*>& GetReports() override;
@@ -132,7 +133,8 @@ namespace Kernel
         // Node initialization
         virtual void LoadInterventions(const char * campaignfilename, const std::vector<ExternalNodeId_t>& demographic_node_ids);
         virtual int  populateFromDemographics(const char* campaign_filename, const char* loadbalance_filename); // creates nodes from demographics input file data
-        virtual void addNewNodeFromDemographics( suids::suid node_suid,
+        virtual void addNewNodeFromDemographics( ExternalNodeId_t externalNodeId,
+                                                 suids::suid node_suid,
                                                  NodeDemographicsFactory *nodedemographics_factory, 
                                                  ClimateFactory *climate_factory, 
                                                  bool white_list_enabled); // For derived Simulation classes to add correct node type
@@ -186,7 +188,6 @@ namespace Kernel
 
         // Simulation-unique ID generators for each type of child object that might exist in our system
         suids::distributed_generator infectionSuidGenerator;
-        suids::distributed_generator individualHumanSuidGenerator;
         suids::distributed_generator nodeSuidGenerator;
 
         // Input files
@@ -207,6 +208,9 @@ namespace Kernel
         tReportClassCreator propertiesReportClassCreator;
         tReportClassCreator demographicsReportClassCreator;
         tReportClassCreator eventReportClassCreator;
+        tReportClassCreator nodeEventReportClassCreator;
+        tReportClassCreator coordinatorEventReportClassCreator;
+        tReportClassCreator surveillanceEventReportClassCreator;
 
         // Coordination of events for campaign intervention events
         std::list<IEventCoordinator*> event_coordinators;
@@ -220,21 +224,27 @@ namespace Kernel
         IdmDateTime currentTime;
 
         // JsonConfigurable variables
-        RandomType::Enum                                    random_type;                                // RANDOM_TYPE
-        SimType::Enum                                        sim_type;                                    // Sim_Type
+        SimType::Enum sim_type;
+
         bool demographic_tracking;
         bool enable_spatial_output;
         bool enable_property_output;
         bool enable_default_report;
         bool enable_event_report;
+        bool enable_node_event_report;
+        bool enable_coordinator_event_report;
+        bool enable_surveillance_event_report;
+        bool enable_termination_on_zero_total_infectivity;
         std::string campaign_filename;
         std::string custom_reports_filename;
         std::string loadbalance_filename;
-        int Run_Number;
         bool can_support_family_trips;
 
         bool m_IPWhiteListEnabled;
         NodeDemographicsFactory* demographics_factory;
+        RandomNumberGeneratorFactory* m_pRngFactory;
+
+        float min_sim_endtime;
 #pragma warning( pop )
     protected:
 

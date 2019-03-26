@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -18,9 +18,13 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IIndividualHumanHIV.h"
 #include "HIVInterventionsContainer.h"
 #include "IIndividualHuman.h"
+#include "IIndividualHumanContext.h"
+#include "IdmDateTime.h"
+#include "INodeContext.h"
 
 #include "Types.h" // for ProbabilityNumber and NaturalNumber
 #include "Debug.h" // for release_assert
+#include "DistributionFactory.h"
 
 SETUP_LOGGING( "InfectionHIV" )
 
@@ -35,9 +39,9 @@ namespace Kernel
     float InfectionHIVConfig::AIDS_stage_infectivity_multiplier = 0.0f;
     float InfectionHIVConfig::ART_viral_suppression_multiplier = 0.0f;
     float InfectionHIVConfig::personal_infectivity_scale = 0.0f;
-    float InfectionHIVConfig::personal_infectivity_median = 0.0f;
     float InfectionHIVConfig::max_CD4_cox = 0.0f;
     FerrandAgeDependentDistribution InfectionHIVConfig::mortality_distribution_by_age;
+    IDistribution* InfectionHIVConfig::p_hetero_infectivity_distribution = nullptr;
 
     GET_SCHEMA_STATIC_WRAPPER_IMPL(HIV.Infection,InfectionHIVConfig)
     BEGIN_QUERY_INTERFACE_BODY(InfectionHIVConfig)
@@ -65,10 +69,15 @@ namespace Kernel
         if( ret || JsonConfigurable::_dryrun )
         {
             ret = mortality_distribution_by_age.Configure( config );
+            
+            p_hetero_infectivity_distribution = DistributionFactory::CreateDistribution( DistributionFunction::LOG_NORMAL_DISTRIBUTION );
+            
+            // mu = -sigma^2/2
+            const float personal_infectivity_mu = (-InfectionHIVConfig::personal_infectivity_scale * InfectionHIVConfig::personal_infectivity_scale / 2.0);
+        
+            // First argument is the median = exp(mu), where mu=-sigma^2/2, second arg is scale
+            p_hetero_infectivity_distribution->SetParameters( personal_infectivity_mu, personal_infectivity_scale, 0.0 );
         }
-
-        // median = exp(mu), where mu=-sigma^2/2
-        personal_infectivity_median = exp(-InfectionHIVConfig::personal_infectivity_scale * InfectionHIVConfig::personal_infectivity_scale / 2.0);
 
         return ret ;
     }
@@ -97,11 +106,11 @@ namespace Kernel
 
         // calculate individual infectivity multiplier based on Log-Normal draw.
         m_hetero_infectivity_multiplier = 1;
-        if (InfectionHIVConfig::personal_infectivity_scale > 0) {
-            m_hetero_infectivity_multiplier = Probability::getInstance()->fromDistribution(DistributionFunction::LOG_NORMAL_DURATION, 
-                // First argument is the median = exp(mu), where mu=-sigma^2/2, second arg is scale
-                InfectionHIVConfig::personal_infectivity_median, InfectionHIVConfig::personal_infectivity_scale  );
+        if (InfectionHIVConfig::personal_infectivity_scale > 0)
+        {
+            m_hetero_infectivity_multiplier = InfectionHIVConfig::p_hetero_infectivity_distribution->Calculate( parent->GetRng() );
         }
+
         //m_hetero_infectivity_multiplier = Environment::getInstance()->RNG->Weibull2(InfectionHIVConfig::personal_infectivity_scale, InfectionHIVConfig::personal_infectivity_heterogeneity);
 
         LOG_DEBUG_F( "Individual %d just entered (started) HIV Acute stage, heterogeneity multiplier = %f.\n", parent->GetSuid().data, m_hetero_infectivity_multiplier );
@@ -138,7 +147,7 @@ namespace Kernel
             // |------------|----------------|--------------*
             //   (acute)         (latent)        (aids)     (death)
             // Note that these two 'timers' are apparently identical at this point. Maybe HIV-xxx is redundant?
-            HIV_duration_until_mortality_without_TB = InfectionHIVConfig::mortality_distribution_by_age.invcdf(randgen->e(), age_at_HIV_infection);
+            HIV_duration_until_mortality_without_TB = InfectionHIVConfig::mortality_distribution_by_age.invcdf( parent->GetRng()->e(), age_at_HIV_infection );
             //HIV_duration_until_mortality_without_TB /= 2; // test hack
             infectious_timer = HIV_duration_until_mortality_without_TB;
             NO_LESS_THAN( HIV_duration_until_mortality_without_TB, (float)DAYSPERWEEK ); // no less than 7 days prognosis
@@ -160,7 +169,7 @@ namespace Kernel
             {
                 // Note that these "fractions" do not add to 1.  In particular, any one value could be greater than 1, indicating that 
                 // the individual never leaves this WHO stage.
-                m_fraction_of_prognosis_spent_in_stage[ stage ] = Environment::getInstance()->RNG->Weibull(lambdas[stage], kappas[stage]); //  lambdas[stage]*pow(-log(1-randgen->e()), 1/kappas[stage]);
+                m_fraction_of_prognosis_spent_in_stage[ stage ] = parent->GetRng()->Weibull(lambdas[stage], kappas[stage]); //  lambdas[stage]*pow(-log(1-parent->GetRng()->e()), 1/kappas[stage]);
                 remaining_fraction -= m_fraction_of_prognosis_spent_in_stage[ stage ];
 
                 release_assert( m_fraction_of_prognosis_spent_in_stage[ stage ] != 0.0 ); // used as a divisor later so can't allow to be zero
@@ -224,7 +233,7 @@ namespace Kernel
         if( incubation_period_override == 0 )
         {
             // This means we're part of an outbreak. Fastforward infection. 
-            float fast_forward = HIV_duration_until_mortality_without_TB * randgen->e(); // keep this as member?
+            float fast_forward = HIV_duration_until_mortality_without_TB * parent->GetRng()->e(); // keep this as member?
             duration += fast_forward;
             m_time_infected -= fast_forward;    // Move infection time backwards
             hiv_parent->GetHIVSusceptibility()->FastForward( this, fast_forward );
@@ -424,7 +433,7 @@ namespace Kernel
         // float HIV_drug_inactivation_rate = ihivde->GetDrugInactivationRate(); //no action for Drug Inactivation for now
         float HIV_drug_clearance_rate    = ihivde->GetDrugClearanceRate();
 
-        if ( HIV_drug_clearance_rate > 0 && randgen->e() < dt * HIV_drug_clearance_rate)
+        if( parent->GetRng()->SmartDraw( dt * HIV_drug_clearance_rate ) )
         {
             // Infection cleared. InfectionStateChange reporting (in SetNewInfectionState) is TB specific, but this allows us to delete the HIV infections if we get drugs and are cleared
             StateChange = InfectionStateChange::Cleared;
@@ -626,7 +635,7 @@ namespace Kernel
         float lambda_divisor = pow(multiplier, 1.0f/IEDEA_KAPPA);
 
         float lambda_corrected = IEDEA_LAMBDA_BASE_IN_YRS / lambda_divisor;
-        float ret = DAYSPERYEAR * lambda_corrected * pow(-log(1.0f-Environment::getInstance()->RNG->e() ), 1.0f/IEDEA_KAPPA);
+        float ret = DAYSPERYEAR * lambda_corrected * pow(-log(1.0f- parent->GetRng()->e() ), 1.0f/IEDEA_KAPPA);
         // This might be a little too verbose for production.
         LOG_DEBUG_F( "%s returning %f from WHO stage of %f, age of %f, weight of %f, and gender %s: multiplier was %f, lambda divisor = %f, lambda (actual) %f.\n",
                      __FUNCTION__,

@@ -32,16 +32,23 @@ else:
                             "SimulationFactory.cpp",
                             "StrainIdentity.cpp",
                             "SerializedPopulation.cpp",
+                            "SerializationTimeCalc.cpp",
                             
                             # Campaign
+                            "BroadcasterImpl.cpp",
+                            "BroadcastCoordinatorEvent.cpp",
                             "CalendarEventCoordinator.cpp",
                             "CampaignEvent.cpp",
+                            "DelayEventCoordinator.cpp",
                             "IncidenceEventCoordinator.cpp",
                             "InterventionsContainer.cpp",
                             "NChooserEventCoordinator.cpp",
                             "NodeEventContext.cpp",
                             "SimulationEventContext.cpp",
                             "StandardEventCoordinator.cpp",
+                            "IncidenceCounterSurveillance.cpp",
+                            "SurveillanceEventCoordinator.cpp",
+                            "TriggeredEventCoordinator.cpp",
                             "CoverageByNodeEventCoordinator.cpp",
                             "CommunityHealthWorkerEventCoordinator.cpp",
                             "DemographicRestrictions.cpp",
@@ -51,11 +58,13 @@ else:
                             "DemographicsReport.cpp",
                             "PropertyReport.cpp",
                             "Report.cpp",
+                            "ReportStatsByIP.cpp",
                             "ReportEventRecorder.cpp",
+                            "ReportEventRecorderNode.cpp",
+                            "ReportEventRecorderCoordinator.cpp",
+                            "ReportSurveillanceEventRecorder.cpp",
                             
                             # HINT
-                            "MultiRouteTransmissionGroups.cpp",
-                            "SimpleTransmissionGroups.cpp",
                             "StrainAwareTransmissionGroups.cpp",
                             "TransmissionGroupsBase.cpp",
                             "TransmissionGroupsFactory.cpp",
@@ -81,9 +90,12 @@ else:
                             "../interventions/DelayedIntervention.cpp",
                             "../interventions/Diagnostics.cpp",
                             "../interventions/BroadcastEvent.cpp",
+                            "../interventions/BroadcastNodeEvent.cpp",
                             "../interventions/BroadcastEventToOtherNodes.cpp",
                             "../interventions/Drugs.cpp",
+                            "../interventions/EnvironmentalDiagnostic.cpp",
                             "../interventions/HealthSeekingBehavior.cpp",
+                            "../interventions/ImmunityBloodTest.cpp",
                             "../interventions/ImportPressure.cpp",
                             "../interventions/IndividualImmunityChanger.cpp",
                             "../interventions/MigrateIndividuals.cpp",
@@ -91,6 +103,7 @@ else:
                             "../interventions/MultiInterventionDistributor.cpp",
                             "../interventions/MultiNodeInterventionDistributor.cpp",
                             "../interventions/NodeLevelHealthTriggeredIV.cpp",
+                            "../interventions/NLHTIVNode.cpp",
                             "../interventions/NodePropertyValueChanger.cpp",
                             "../interventions/PropertyValueChanger.cpp",
                             "../interventions/Outbreak.cpp",
@@ -137,7 +150,6 @@ else:
                             "VectorProbabilities.cpp",
                             "VectorSpeciesParameters.cpp",
                             "VectorSpeciesReport.cpp",
-                            "VectorTransmissionGroups.cpp",
                             "../interventions/Bednet.cpp",
                             "../interventions/BitingRisk.cpp",
                             "../interventions/HousingModification.cpp", 
@@ -196,6 +208,7 @@ else:
                             "IndividualEnvironmental.cpp",
                             "InfectionEnvironmental.cpp",
                             "NodeEnvironmental.cpp",
+                            "PropertyReportEnvironmental.cpp",
                             "ReportEnvironmental.cpp",
                             "SimulationEnvironmental.cpp",
                             "SusceptibilityEnvironmental.cpp",
@@ -227,6 +240,7 @@ else:
                             "NodeTyphoidEventContext.cpp",
                             "TyphoidInterventionsContainer.cpp",
                             "ReportTyphoid.cpp",
+                            "PropertyReportTyphoid.cpp",
                             "ReportTyphoidByAgeAndGender.cpp",
                             "SimulationTyphoid.cpp",
                             "SpatialReportTyphoid.cpp",
@@ -234,6 +248,8 @@ else:
                             "TyphoidReportEventRecorder.cpp",
                             "../interventions/TyphoidVaccine.cpp",
                             "../interventions/TyphoidWASH.cpp",
+                            "../interventions/TyphoidCarrierDiagnostic.cpp",
+                            "../interventions/TyphoidCarrierClear.cpp",
                         ]
 
     airborneSrcFiles = [
@@ -313,6 +329,7 @@ else:
                             "RelationshipManagerFactory.cpp",
                             "RelationshipParameters.cpp",
                             "RelationshipReporting.cpp",
+                            "RelationshipType.cpp",
                             "SocietyFactory.cpp",
                             "SocietyImpl.cpp",
                             "StiObjectFactory.cpp",
@@ -323,6 +340,7 @@ else:
                             "STIReportEventRecorder.cpp",
                             "FlowControllerFactory.cpp",
                             "FlowControllerImpl.cpp",
+                            "../interventions/InterventionForCurrentPartners.cpp",
                             "../interventions/MaleCircumcision.cpp",
                             "../interventions/ModifyStiCoInfectionStatus.cpp",
                             "../interventions/StiCoInfectionDiagnostic.cpp",
@@ -406,9 +424,6 @@ else:
         if env["Disease"] == "Typhoid":
             coreSrcFiles.extend( typhoidSrcFiles )
 
-        if env["Disease"] == "TB":
-            coreSrcFiles.extend( tbSrcFiles )
-
         if env["Disease"] == "TBHIV":
             coreSrcFiles.extend( tbhivSrcFiles )
             coreSrcFiles.extend( tbSrcFiles )
@@ -423,7 +438,7 @@ else:
         coreSrcFiles.extend( tbSrcFiles )
         coreSrcFiles.extend( tbhivSrcFiles )
         # coreSrcFiles.extend( polioSrcFiles )
-        # coreSrcFiles.extend( typhoidSrcFiles )
+        coreSrcFiles.extend( typhoidSrcFiles )
         coreSrcFiles.extend( pyDemoSrcFiles )
         # coreSrcFiles.extend( dengueSrcFiles )
         # remove dupes: e.g., Polio and Typhoid pull in Environmental

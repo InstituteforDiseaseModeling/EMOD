@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -11,8 +11,11 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "DelayedIntervention.h"
 #include "MathFunctions.h"
 #include "IndividualEventContext.h"
+#include "IIndividualHumanContext.h"
+#include "ISimulationContext.h"
 #include "NodeEventContext.h"
 #include "RANDOM.h"
+#include "DistributionFactory.h"
 
 
 SETUP_LOGGING( "DelayedIntervention" )
@@ -35,7 +38,6 @@ namespace Kernel
 
     void DelayedIntervention::DistributionConfigure( const Configuration * inputJson )
     {
-        delay_distribution.Configure( this, inputJson );
     }
 
     void DelayedIntervention::InterventionConfigure( const Configuration * inputJson )
@@ -53,8 +55,8 @@ namespace Kernel
 
     void DelayedIntervention::DelayValidate()
     {
-        delay_distribution.CheckConfiguration();
     }
+
 
     bool DelayedIntervention::Configure( const Configuration * inputJson )
     {
@@ -62,13 +64,17 @@ namespace Kernel
         DistributionConfigure(inputJson);
         InterventionConfigure(inputJson);
 
+        DistributionFunction::Enum delay_function( DistributionFunction::CONSTANT_DISTRIBUTION );
+        initConfig( "Delay_Period_Distribution", delay_function, inputJson, MetadataDescriptor::Enum( "Delay_Distribution", DI_Delay_Distribution_DESC_TEXT, MDD_ENUM_ARGS( DistributionFunction ) ) );
+        delay_distribution = DistributionFactory::CreateDistribution( this, delay_function, "Delay_Period", inputJson );
+
         bool retValue = BaseIntervention::Configure( inputJson );
         if( retValue )
-        {
+        { 
             InterventionValidate( inputJson->GetDataLocation() );
             DelayValidate();
         }
-        return retValue ;
+        return retValue;
     }
 
     bool DelayedIntervention::Distribute(
@@ -81,7 +87,7 @@ namespace Kernel
             return false;
 
         // If individual isn't covered, immediately set DelayedIntervention to expired without distributing "actual" IVs
-        if( !SMART_DRAW( coverage ) )
+        if( !parent->GetRng()->SmartDraw( coverage ) )
         {
             LOG_DEBUG_F("Random draw outside of %0.2f covered fraction in DelayedIntervention.\n", coverage);
             expired = true;
@@ -90,31 +96,24 @@ namespace Kernel
 
         CalculateDelay();
 
-        LOG_DEBUG_F("Drew %0.2f remaining delay days in %s.\n", float(remaining_delay_days), DistributionFunction::pairs::lookup_key(delay_distribution.GetType()));
+        LOG_DEBUG_F("Drew %0.2f remaining delay days in %s.\n", float(remaining_delay_days), DistributionFunction::pairs::lookup_key(delay_distribution->GetType()));
         return true;
     }
 
     void
     DelayedIntervention::CalculateDelay()
     {
-        remaining_delay_days = delay_distribution.CalculateDuration();
-        LOG_DEBUG_F("Drew %0.2f remaining delay days in %s.\n", float(remaining_delay_days), DistributionFunction::pairs::lookup_key(delay_distribution.GetType()));
+        remaining_delay_days = delay_distribution->Calculate( parent->GetRng() );
+        LOG_DEBUG_F("Drew %0.2f remaining delay days in %s.\n", float(remaining_delay_days), DistributionFunction::pairs::lookup_key(delay_distribution->GetType()));
     }
 
     DelayedIntervention::DelayedIntervention()
     : BaseIntervention()
     , remaining_delay_days(0.0)
     , coverage(1.0)
-    , delay_distribution(DistributionFunction::EXPONENTIAL_DURATION)
+    , delay_distribution( nullptr )
     , actual_intervention_config()
     {
-        delay_distribution.SetTypeNameDesc( "Delay_Distribution", DI_Delay_Distribution_DESC_TEXT );
-        delay_distribution.AddSupportedType( DistributionFunction::FIXED_DURATION,       "Delay_Period",       DI_Delay_Period_DESC_TEXT,       "", "" );
-        delay_distribution.AddSupportedType( DistributionFunction::UNIFORM_DURATION,     "Delay_Period_Min",   DI_Delay_Period_Min_DESC_TEXT,   "Delay_Period_Max",     DI_Delay_Period_Max_DESC_TEXT );
-        delay_distribution.AddSupportedType( DistributionFunction::GAUSSIAN_DURATION,    "Delay_Period_Mean",  DI_Delay_Period_Mean_DESC_TEXT,  "Delay_Period_Std_Dev", DI_Delay_Period_Std_Dev_DESC_TEXT );
-        delay_distribution.AddSupportedType( DistributionFunction::EXPONENTIAL_DURATION, "Delay_Period",       DI_Delay_Period_DESC_TEXT,       "", "" );
-        delay_distribution.AddSupportedType( DistributionFunction::WEIBULL_DURATION,     "Delay_Period_Scale", DI_Delay_Period_Scale_DESC_TEXT, "Delay_Period_Shape",   DI_Delay_Period_Shape_DESC_TEXT );
-
         remaining_delay_days.handle = std::bind( &DelayedIntervention::Callback, this, std::placeholders::_1 );
     }
 
@@ -122,7 +121,7 @@ namespace Kernel
         : BaseIntervention( master )
         , remaining_delay_days( master.remaining_delay_days )
         , coverage( master.coverage )
-        , delay_distribution( master.delay_distribution )
+        , delay_distribution( master.delay_distribution->Clone() )
         //, actual_intervention_config( master.actual_intervention_config )
     { 
         actual_intervention_config = master.actual_intervention_config;
@@ -190,7 +189,9 @@ namespace Kernel
     }
 
     DelayedIntervention::~DelayedIntervention()
-    { LOG_DEBUG("Destructing DelayedIntervention\n");
+    { 
+        LOG_DEBUG("Destructing DelayedIntervention\n");
+        delete delay_distribution;
     }
 
     REGISTER_SERIALIZABLE(DelayedIntervention);

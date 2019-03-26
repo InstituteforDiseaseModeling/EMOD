@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -11,22 +11,12 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "SusceptibilitySTI.h" 
 #include "HIVEnums.h"
 #include "Types.h"
+#include "ISusceptibilityHIV.h"
 
 namespace Kernel
 {
     struct IIndividualHumanHIV;
     class IInfectionHIV;
-    class ISusceptibilityHIV : public ISupports
-    {
-    public:
-        // disease specific functions go here
-        virtual float        GetCD4count() const = 0;
-        virtual vector <float>         Generate_forward_CD4(bool ARTOnoff) = 0;
-        virtual void         FastForward( const IInfectionHIV * const, float dt ) = 0;
-        virtual void         ApplyARTOnset() = 0;
-        virtual ProbabilityNumber GetPrognosisCompletedFraction() const = 0;
-        virtual void         TerminateSuppression(float days_till_death) = 0;
-    };
 
     class SusceptibilityHIVConfig : public SusceptibilitySTIConfig
     {
@@ -92,7 +82,7 @@ namespace Kernel
         void UpdateSymptomaticPresentationTime();
 
         // additional members of SusceptibilityHIV (params)
-        float days_between_symptomatic_and_death;   // Days before death to broadcast HIVSymptomatic
+        float days_between_symptomatic_and_death;   // Days before death to broadcast NewlySymptomatic
 
         float sqrtCD4_Current;          // Current sqrt( CD4count )
         float sqrtCD4_Rate;             // Rate of change of sqrt_CD4count = (sqrt_FinalCD4 - sqrt_InitialCD4)/ Prognosis

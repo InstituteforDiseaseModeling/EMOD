@@ -3,7 +3,7 @@
     "parameters": {
         "____________DEMOGRAPHICS___________": {
             "Age_Initialization_Distribution_Type": "DISTRIBUTION_SIMPLE",
-            "Base_Population_Scale_Factor": 5,
+            "x_Base_Population": 5,
             "Birth_Rate_Dependence": "FIXED_BIRTH_RATE",
                 "Demographics_Filenames": [
                 "newborn_cohort_demographics.json",

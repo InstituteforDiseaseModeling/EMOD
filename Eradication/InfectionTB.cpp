@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -10,7 +10,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "stdafx.h"
 #include <math.h>
 #include "MathFunctions.h"
-#ifdef ENABLE_TBHIV
+#include "IdmDateTime.h"
 
 //for age dependent reactivation disease as non-homogeneous Poisson process ONLY (Latent-slow to active presymptomatic)
 #define AGE_DEP_REACTIVATION_ALPHA (2.4e-7) //(15.4e-7)
@@ -29,6 +29,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IndividualCoInfection.h"
 #include "TBHIVParameters.h"
 #include "StrainIdentity.h"
+#include "INodeContext.h"
+#include "DistributionFactory.h"
 
 SETUP_LOGGING( "InfectionTB" )
 
@@ -52,11 +54,12 @@ namespace Kernel
     float InfectionTBConfig::TB_Drug_Efficacy_Multiplier_Relapsed = 0.0f;
     float InfectionTBConfig::TB_MDR_Fitness_Multiplier = 0.0f;
     float InfectionTBConfig::TB_relapsed_to_active_rate = 0.0f;
-    DistributionFunction::Enum InfectionTBConfig::TB_active_period_distribution = DistributionFunction::EXPONENTIAL_DURATION;
+    DistributionFunction::Enum InfectionTBConfig::TB_active_period_distribution = DistributionFunction::EXPONENTIAL_DISTRIBUTION;
     float InfectionTBConfig::TB_active_period_std_dev = 0.0f;
     map <float,float> InfectionTBConfig::CD4_map;
     vector <float> InfectionTBConfig::CD4_strata_act_vec;
     vector <float> InfectionTBConfig::TB_cd4_activation_vec;
+    IDistribution* InfectionTBConfig::p_infectious_timer_distribution = nullptr;
 
     GET_SCHEMA_STATIC_WRAPPER_IMPL(TB.Infection,InfectionTBConfig)
     BEGIN_QUERY_INTERFACE_BODY(InfectionTBConfig)
@@ -92,31 +95,28 @@ namespace Kernel
 
         initConfig("TB_Active_Period_Distribution", TB_active_period_distribution, config, MetadataDescriptor::Enum("TB_active_distribution", TB_Active_Period_Distribution_DESC_TEXT, MDD_ENUM_ARGS(DistributionFunction)));
         //note for both exponential and gaussian duration, the mean is defined by the total_rate of active_cure_rate and active_mortality_rate, corrected for smear status
-        if (TB_active_period_distribution == DistributionFunction::GAUSSIAN_DURATION || JsonConfigurable::_dryrun)
+        if (TB_active_period_distribution == DistributionFunction::GAUSSIAN_DISTRIBUTION || JsonConfigurable::_dryrun)
         {
-            initConfigTypeMap("TB_Active_Period_Std_Dev", &TB_active_period_std_dev, TB_Active_Period_Std_Dev_DESC_TEXT, 0.0f, FLT_MAX, 1.0f);
+            initConfigTypeMap("TB_Active_Period_Gaussian_Std_Dev", &TB_active_period_std_dev, TB_Active_Period_Std_Dev_DESC_TEXT, 0.0f, FLT_MAX, 1.0f);
         }
         if (JsonConfigurable::_dryrun == false)
         {
-            if (TB_active_period_distribution == DistributionFunction::FIXED_DURATION ||
-                TB_active_period_distribution == DistributionFunction::UNIFORM_DURATION ||
-                TB_active_period_distribution == DistributionFunction::POISSON_DURATION ||
-                TB_active_period_distribution == DistributionFunction::LOG_NORMAL_DURATION ||
-                TB_active_period_distribution == DistributionFunction::BIMODAL_DURATION
+            if (TB_active_period_distribution == DistributionFunction::CONSTANT_DISTRIBUTION ||
+                TB_active_period_distribution == DistributionFunction::UNIFORM_DISTRIBUTION ||
+                TB_active_period_distribution == DistributionFunction::POISSON_DISTRIBUTION ||
+                TB_active_period_distribution == DistributionFunction::LOG_NORMAL_DISTRIBUTION ||
+                TB_active_period_distribution == DistributionFunction::DUAL_CONSTANT_DISTRIBUTION
                 )
             {
-                throw NotYetImplementedException(__FILE__, __LINE__, __FUNCTION__, "Only EXPONENTIAL_DURATION and GAUSSIAN_DURATION are supported for TB_active_period_distribution.");
+                throw NotYetImplementedException(__FILE__, __LINE__, __FUNCTION__, "Only EXPONENTIAL_DISTRIBUTION and GAUSSIAN_DISTRIBUTION are supported for TB_active_period_distribution.");
             }
         }
 
-#ifdef ENABLE_TBHIV
         initConfigTypeMap( "TB_CD4_Activation_Vector", &TB_cd4_activation_vec, TB_CD4_Activation_Vector_DESC_TEXT, 0.0f, FLT_MAX, 1.0f, 0, "Enable_Coinfection" );
         initConfigTypeMap( "CD4_Strata_Activation", &CD4_strata_act_vec, CD4_Strata_Activation_DESC_TEXT, -1.0f, 2000.0f, 1.0f, 0, "Enable_Coinfection" );
-#endif
 
         bool cRet = JsonConfigurable::Configure(config);
 
-#ifdef ENABLE_TBHIV
         auto it_activation_factor = TB_cd4_activation_vec.cbegin();
         auto it_cd4_strata = CD4_strata_act_vec.cbegin();
 
@@ -134,7 +134,9 @@ namespace Kernel
         {
             CD4_map[*it_cd4_strata++] = *it_activation_factor++;
         }
-#endif
+
+        p_infectious_timer_distribution = DistributionFactory::CreateDistribution( DistributionFunction::GAUSSIAN_DISTRIBUTION );
+        
         return cRet;
     }
 
@@ -206,9 +208,8 @@ namespace Kernel
             if (!m_is_active && duration > incubation_timer) 
             {
                 // Latent-to-Cured
-                float rand = randgen->e();
-                if (rand < m_recover_fraction)
-                {   
+                if( parent->GetRng()->SmartDraw( m_recover_fraction ) )
+                {
                     LOG_VALID_F("Individual %lu moved from Latent to Cleared . \n", parent->GetSuid().data);
                     StateChange = InfectionStateChange::Cleared; 
                     // immune loss counter is handled later in the same timestep, i.e. susc->Update(1) in Individual::Update
@@ -228,9 +229,8 @@ namespace Kernel
             //ACTIVE PRESYMPTOMATIC
             else if (m_is_active && !m_shows_symptoms && duration > infectious_timer ) 
             {
-                float rand = randgen->e();
                 //Active presymptomatic-to-Cured
-                if (rand < m_recover_fraction)
+                if( parent->GetRng()->SmartDraw( m_recover_fraction ) )
                 {
                     LOG_VALID_F("Individual %lu moved from Active Presymptomatic to Cleared with timer %f . \n", parent->GetSuid().data, infectious_timer);
                     StateChange = InfectionStateChange::Cleared; 
@@ -264,7 +264,7 @@ namespace Kernel
             else if (m_is_active && m_shows_symptoms && duration > infectious_timer) //USE CAUTION IF YOUR DURATION IS ZERO! YOU WILL GET LOTS OF PEOPLE ROLLING ZERO AND GOING TO LATENT!
             {
                 // Active-to-Cured
-                float rand = randgen->e();
+                float rand = parent->GetRng()->e();
                 if (rand < m_recover_fraction)
                 {
                     LOG_VALID_F("Individual %lu moved from Active Symptomatic to Cleared with timer %f . \n", parent->GetSuid().data, infectious_timer);
@@ -309,11 +309,11 @@ namespace Kernel
 
         _immunity->InitNewInfection();
 
-        if (InfectionConfig::incubation_distribution.GetType() != DistributionFunction::EXPONENTIAL_DURATION )
+        if (InfectionConfig::incubation_distribution->GetType() != DistributionFunction::EXPONENTIAL_DISTRIBUTION )
         {
             LOG_DEBUG("TB incubation timers will use exponential distributions in spite of 'incubation_distribution' settings\n");
         }
-        if (InfectionConfig::infectious_distribution.GetType() != InfectionTBConfig::TB_active_period_distribution)
+        if (InfectionConfig::infectious_distribution->GetType() != InfectionTBConfig::TB_active_period_distribution)
         {
             LOG_DEBUG("TB active period timers will use the TB_active_period_distribution, NOT the infectious_distribution \n");
         }
@@ -323,13 +323,12 @@ namespace Kernel
 
     void InfectionTB::InitializeLatentInfection(ISusceptibilityContext* immunity)
     {
-#ifdef ENABLE_TBHIV
         LOG_VALID_F( "%s: Individual %lu now has latent infection.\n", __FUNCTION__, parent->GetSuid().data );
         if (human_coinf != nullptr && human_coinf->HasHIV())
         {
             human_coinf->ModActivate();
         }
-#endif
+
         LOG_DEBUG( "Initializing a latent infection.\n" ); 
         StateChange = InfectionStateChange::TBLatent; 
 
@@ -357,13 +356,12 @@ namespace Kernel
 
         // Set the timer for state changes from latent TB i.e. activation, recovery, death
         //Latent fast
-
-        if(randgen->e() < fast_fraction)
+        if( parent->GetRng()->SmartDraw( fast_fraction ) )
         {
             m_is_fast_progressor = true;
 
             float total_rate = InfectionTBConfig::TB_fast_progressor_rate + InfectionTBConfig::TB_latent_cure_rate;
-            incubation_timer = float(randgen->expdist(total_rate)); 
+            incubation_timer = float( parent->GetRng()->expdist(total_rate) );
 
             m_recover_fraction = (total_rate > 0 ? InfectionTBConfig::TB_latent_cure_rate/total_rate : 0);
         }
@@ -373,23 +371,20 @@ namespace Kernel
         {
             m_is_fast_progressor = false;
 
-#ifdef ENABLE_TBHIV 
             if (human_coinf != nullptr && human_coinf->HasHIV())
             {
-                incubation_timer = randgen->time_varying_rate_dist(human_coinf->GetTBActivationVector(), SusceptibilityHIVConfig::cd4_time_step , InfectionTBConfig::TB_latent_cure_rate);
-                IndividualHumanCoInfection* out1 = dynamic_cast <IndividualHumanCoInfection*> (human_coinf);
+                incubation_timer = parent->GetRng()->time_varying_rate_dist(human_coinf->GetTBActivationVector(), SusceptibilityHIVConfig::cd4_time_step , InfectionTBConfig::TB_latent_cure_rate);
+                IndividualHumanCoInfection* out1 = static_cast <IndividualHumanCoInfection*> (human_coinf);
                 bool flag_reconst = out1->GetHIVInterventionsContainer()->ShouldReconstituteCD4();
                 // Leave trailing space before period for SFT get_val function. For now.
                 LOG_VALID_F( "Individual %lu Incubation_timer calculated as %f, based on TB activation vector & timestep, reconstitute=%d .\n", parent->GetSuid().data, incubation_timer, flag_reconst );
                 float total_rate = human_coinf->GetNextLatentActivation(incubation_timer) + InfectionTBConfig::TB_latent_cure_rate;
                 m_recover_fraction = (total_rate > 0 ? InfectionTBConfig::TB_latent_cure_rate / total_rate : 0);
             }
-            else
-#endif
-            if (InfectionTBConfig::TB_slow_progressor_rate >= 0)
+            else if (InfectionTBConfig::TB_slow_progressor_rate >= 0)
             {
                 float total_rate = InfectionTBConfig::TB_slow_progressor_rate + InfectionTBConfig::TB_latent_cure_rate;
-                incubation_timer = float(randgen->expdist(total_rate));
+                incubation_timer = float( parent->GetRng()->expdist(total_rate) );
                 LOG_DEBUG_F( "Incubation_timer calculated as %f, based on TB slow progressor & cure rates.\n", incubation_timer );
 
                 m_recover_fraction = (total_rate > 0 ? InfectionTBConfig::TB_latent_cure_rate/total_rate : 0);
@@ -437,7 +432,7 @@ namespace Kernel
         // Set the timer for pending relapse
         float relapse_rate = InfectionTBConfig::TB_relapsed_to_active_rate; 
 
-        incubation_timer = float(randgen->expdist(relapse_rate));
+        incubation_timer = float( parent->GetRng()->expdist(relapse_rate) );
         m_is_active = false;
         m_is_smear_positive = false;
         m_is_extrapulmonary = false;
@@ -496,7 +491,7 @@ namespace Kernel
         {
             float total_rate = InfectionTBConfig::TB_presymptomatic_cure_rate + InfectionTBConfig::TB_presymptomatic_rate;
             m_recover_fraction = InfectionTBConfig::TB_presymptomatic_cure_rate / total_rate;
-            infectious_timer = float(randgen->expdist(total_rate));
+            infectious_timer = float( parent->GetRng()->expdist(total_rate) );
         }
 
         m_is_active = true;
@@ -542,7 +537,7 @@ namespace Kernel
         duration = 0.0f;
 
         // Set infectiousness and mortality rates dependent on disease progression
-        float rand = randgen->e();
+        float rand = parent->GetRng()->e();
 
         // To query for mortality-reducing effects of drugs or vaccines
         // TODO: depending on the decay profile of a mortality-reducing vaccine,
@@ -588,18 +583,27 @@ namespace Kernel
         
         switch(InfectionTBConfig::TB_active_period_distribution ) 
         {
-            case DistributionFunction::EXPONENTIAL_DURATION:
-                infectious_timer = float(randgen->expdist(total_rate));
+            case DistributionFunction::EXPONENTIAL_DISTRIBUTION:
+                infectious_timer = float( parent->GetRng()->expdist(total_rate) );
                 break;
 
-            case DistributionFunction::GAUSSIAN_DURATION:
-                infectious_timer = float(Probability::getInstance()->fromDistribution(  DistributionFunction::GAUSSIAN_DURATION, (log(2.0f)/total_rate), InfectionTBConfig::TB_active_period_std_dev ));
+            case DistributionFunction::GAUSSIAN_DISTRIBUTION:
+            {
+                if( total_rate != 0)
+                {
+                    InfectionTBConfig::p_infectious_timer_distribution->SetParameters(( log(2.0f) / total_rate ), InfectionTBConfig::TB_active_period_std_dev, 0.0);
+                    infectious_timer = InfectionTBConfig::p_infectious_timer_distribution->Calculate(parent->GetRng());
+                }
+                else
+                {
+                    infectious_timer = FLT_MAX;
+                }
                 break;
-
+            }
             default:
                 throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "TB infectious period distribution can only be exponential or Gaussian distribution right now" );
         }
-        // FOR CHINA ONLY infectious_timer = (float) Probability::getInstance()->fromDistribution(  DistributionFunction::GAUSSIAN_DURATION, (log(2.0f)/total_rate), 200 );
+        // FOR CHINA ONLY infectious_timer = (float) Probability::getInstance()->fromDistribution( parent->GetRng(), DistributionFunction::GAUSSIAN_DISTRIBUTION, (log(2.0f)/total_rate), 200 );
         m_is_active = true;
         m_is_pending_relapse = false;
         m_shows_symptoms = true;
@@ -714,7 +718,7 @@ namespace Kernel
             //If active and on drugs with non-zero resistance rate, fixed higher probability of evolving resistance from drug pressure
             if (total_drug_effects.resistance_rate != 0  && IsActive() == true) 
             {
-                if (randgen->e() < NTimeStepProbability(total_drug_effects.resistance_rate, dt) )
+                if( parent->GetRng()->SmartDraw( NTimeStepProbability(total_drug_effects.resistance_rate, dt) ) )
                 {
                     infection_strain->SetGeneticID(TBInfectionDrugResistance::FirstLineResistant);
                     m_evolved_resistance = true;
@@ -779,9 +783,9 @@ namespace Kernel
         if (m_is_active == true ) 
         {
             //draw to see if the event occurs now
-            if (randgen->e() < NTimeStepProbability(total_event_rate, dt) )
+            if( parent->GetRng()->SmartDraw( NTimeStepProbability(total_event_rate, dt) ) )
             {
-                ProbabilityNumber rand2 = randgen->e();
+                ProbabilityNumber rand2 = parent->GetRng()->e();
 
                 // Infection cleared
                 if ( rand2 < (total_drug_effects.clearance_rate / total_event_rate) )
@@ -833,10 +837,9 @@ namespace Kernel
             else
             { 
                 duration += (1.0 - NTimeStepProbability(total_drug_effects.inactivation_rate, dt))* dt; //dilate time
-                ProbabilityNumber rand = randgen->e();
-                
+
                 // Latent -to- cleared
-                if (rand < (dt * total_drug_effects.clearance_rate))
+                if( parent->GetRng()->SmartDraw( dt * total_drug_effects.clearance_rate ) )
                 {
                     LOG_DEBUG_F( "TB drug truly cleared my (%d) infection from latent state.\n", parent->GetSuid().data );
                     LOG_VALID_F("Individual %lu on TB drug moved from Latent to Cleared. \n", parent->GetSuid().data);
@@ -846,8 +849,7 @@ namespace Kernel
                 else if (duration > incubation_timer)
                 {
                     //for latency clearance rate of drugs is ADDITIONAL Clearance rate (note no diference when no natural clearance of latency)
-                    float rand1 = randgen->e();
-                    if (rand1 < m_recover_fraction)
+                    if( parent->GetRng()->SmartDraw( m_recover_fraction ) )
                     {
                         StateChange = InfectionStateChange::Cleared;
                         LOG_VALID_F("Individual %lu on TB drug moved from Latent to Cleared. \n", parent->GetSuid().data);
@@ -881,7 +883,7 @@ namespace Kernel
         m_is_fast_progressor = true;
 
         float total_rate = InfectionTBConfig::TB_fast_progressor_rate + InfectionTBConfig::TB_latent_cure_rate;
-        incubation_timer = float(randgen->expdist(total_rate));
+        incubation_timer = float( parent->GetRng()->expdist(total_rate) );
 
         m_recover_fraction = (total_rate > 0 ? InfectionTBConfig::TB_latent_cure_rate / total_rate : 0);
 
@@ -915,7 +917,7 @@ namespace Kernel
     
         float bigB = 1- AGE_DEP_REACTIVATION_BETA;
         float bigA = AGE_DEP_REACTIVATION_ALPHA / bigB;
-        float rand = randgen->e();
+        float rand = parent->GetRng()->e();
         float current_age_years = immunity->getAge() / DAYSPERYEAR;
         float reactivation_age_years = pow( pow(current_age_years, bigB) - (1 / bigA) * log(rand), (1/bigB));
         float calculated_incubation_timer = DAYSPERYEAR * (reactivation_age_years - current_age_years);
@@ -981,7 +983,7 @@ namespace Kernel
         float temp_latent_cure_rate = GetLatentCureRate();
 
         // Is there alternative to casting?
-        incubation_timer = std::ceil(randgen->time_varying_rate_dist( human_coinf->GetTBActivationVector(), SusceptibilityHIVConfig::cd4_time_step, temp_latent_cure_rate ));
+        incubation_timer = std::ceil(parent->GetRng()->time_varying_rate_dist( human_coinf->GetTBActivationVector(), SusceptibilityHIVConfig::cd4_time_step, temp_latent_cure_rate ));
         LOG_VALID_F( "%s: Individual %lu has incubation timer %f and CD4 count %f.\n", __FUNCTION__, parent->GetSuid().data, incubation_timer, human_coinf->GetCD4() );
 
 #ifdef TEST_RNG
@@ -991,7 +993,7 @@ namespace Kernel
 
         for(int ii = 1; ii< 1000; ii++)
         {
-            float incubation_timer = randgen->time_varying_rate_dist( GetTBActivationVector(), GetCD4TimeStep(), 0.0f);
+            float incubation_timer = parent->GetRng()->time_varying_rate_dist( GetTBActivationVector(), GetCD4TimeStep(), 0.0f);
             ofile << incubation_timer;
             ofile << "\n";
         }  
@@ -1019,6 +1021,17 @@ namespace Kernel
     }
     //const SimulationConfig* InfectionTB::params() { return GET_CONFIGURABLE(SimulationConfig); }
 
+    void InfectionTB::SetContextTo(IIndividualHumanContext* context)
+    {
+        Infection::SetContextTo(context);
+
+        if (s_OK != parent->QueryInterface(GET_IID(IIndividualHumanCoInfection), (void**)&human_coinf))
+        {
+            LOG_DEBUG_F("parent is just tb person, not co-inf.\n");
+            human_coinf = nullptr;
+        }
+    }
+
     REGISTER_SERIALIZABLE(InfectionTB);
 
     void InfectionTB::serialize(IArchive& ar, InfectionTB* obj)
@@ -1038,4 +1051,3 @@ namespace Kernel
     }
 }
 
-#endif // ENABLE_TBHIV

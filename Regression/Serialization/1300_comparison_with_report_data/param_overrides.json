@@ -13,7 +13,7 @@
         ],
         "Enable_Initial_Prevalence": 1
     },
-    "Default_Config_Path": "defaults/malaria_default_config.json",
+    "Default_Config_Path": "../../defaults/malaria_default_config.json",
     "PRIMARY": {
         "Config_Name": "Serialization_1300_Comparison_With_Report_Data",
         "Geography": "Namawala",
@@ -24,6 +24,7 @@
         "Enable_Default_Reporting": 1,
         "Enable_Demographics_Reporting": 0,
         "Python_Script_Path": "SHARED",
+        "Serialization_Type": "TIMESTEP",
         "Serialization_Time_Steps": [
             23,
             24,

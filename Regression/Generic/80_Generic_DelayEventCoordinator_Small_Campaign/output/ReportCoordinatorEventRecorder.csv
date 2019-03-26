@@ -1,0 +1,5 @@
+Time,Coordinator_Name,Event_Name
+1,Coordnator_1,Start_Surveillance
+30,ACF_Counter,Start_SIA_4
+55,DelayEventCoordinator_10,Start_Delayed_SIA
+56,SIA-Distribute Vaccines,SIA_Finished

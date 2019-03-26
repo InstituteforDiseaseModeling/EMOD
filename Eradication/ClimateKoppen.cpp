@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -10,7 +10,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "stdafx.h"
 #include <cstdlib>
 #include "ClimateKoppen.h"
-#include "Contexts.h"
 #include "Environment.h"
 #include "Common.h"
 #include "Exceptions.h"
@@ -77,13 +76,19 @@ namespace Kernel {
     const float ClimateKoppen::temperature_variance = 4.0;
     const float ClimateKoppen::lapse_rate = 5.0 / 1000; // decreases by 5'C/km of altitude
 
-    ClimateKoppen * ClimateKoppen::CreateClimate(ClimateUpdateResolution::Enum update_resolution, INodeContext * _parent, int climate_type, float altitude, float latitude, float start_time)
+    ClimateKoppen * ClimateKoppen::CreateClimate( ClimateUpdateResolution::Enum update_resolution,
+                                                  INodeContext * _parent,
+                                                  int climate_type,
+                                                  float altitude,
+                                                  float latitude,
+                                                  float start_time,
+                                                  RANDOMBASE* pRNG )
     {
         ClimateKoppen * new_climate = _new_ ClimateKoppen(update_resolution, _parent, climate_type, altitude, latitude);
         new_climate->Configure( EnvPtr->Config );
 
         // initialize climate values
-        new_climate->UpdateWeather(start_time, 1.0f);
+        new_climate->UpdateWeather( start_time, 1.0f, pRNG );
 
         return new_climate;
     }
@@ -195,7 +200,7 @@ namespace Kernel {
         return true;
     }
 
-    void ClimateKoppen::UpdateWeather(float time, float dt)
+    void ClimateKoppen::UpdateWeather( float time, float dt, RANDOMBASE* pRNG )
     {
         // NOTE: this assumes we always start on Jan1... if that ever changes, we'll need to fix this
         int doy = (int(time) % DAYSPERYEAR) + 1; // day-of-year, one-indexed
@@ -228,12 +233,12 @@ namespace Kernel {
                 humidity_index = (humidity_index + (num_humidity_ranges / 2)) % num_humidity_ranges;
         m_humidity = humidity_base[koppen_type][humidity_index];
 
-        Climate::UpdateWeather(time, dt); // call base-class UpdateWeather() to add stochasticity and check values are within valid bounds
+        Climate::UpdateWeather( time, dt, pRNG ); // call base-class UpdateWeather() to add stochasticity and check values are within valid bounds
     }
 
-    void ClimateKoppen::AddStochasticity(float, float, bool, float)
+    void ClimateKoppen::AddStochasticity( RANDOMBASE* pRNG, float, float, bool, float)
     {
-        Climate::AddStochasticity(temperature_variance, temperature_variance, true, humidity_variance[koppen_type][humidity_index]);
+        Climate::AddStochasticity( pRNG, temperature_variance, temperature_variance, true, humidity_variance[koppen_type][humidity_index] );
     }
 
     void ClimateKoppen::RoomUpDown(const float Ta, const float Tr, float &RoomUp, float &RoomDown)

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -12,7 +12,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Debug.h"
 #include "FileSystem.h"
 #include "ReportHIVByAgeAndGender.h"
-#include "NodeHIV.h"
+#include "IIndividualHumanSTI.h"
 #include "IHIVInterventionsContainer.h"
 #include "ISimulation.h"
 #include "Simulation.h" // for base_year
@@ -23,6 +23,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "ReportUtilities.h"
 #include "ReportUtilitiesSTI.h"
 #include "Properties.h"
+#include "INodeContext.h"
 
 SETUP_LOGGING( "ReportHIVByAgeAndGender" )
 
@@ -58,7 +59,8 @@ namespace Kernel
         , data_stratify_infected_by_CD4(false)
         , data_name_of_intervention_to_count()
         , data_event_list()
-        , data_has_relationships(false)
+        , data_has_relationships( false )
+        , data_has_concordant_relationships( false )
         , _parent( parent )
         , next_report_time(report_hiv_half_period)
         , do_report( false )
@@ -153,6 +155,10 @@ namespace Kernel
                            &data_has_relationships,
                            Report_HIV_ByAgeAndGender_Add_Relationships_DESC_TEXT );
 
+        initConfigTypeMap( "Report_HIV_ByAgeAndGender_Add_Concordant_Relationships",
+                           &data_has_concordant_relationships,
+                           Report_HIV_ByAgeAndGender_Add_Concordant_Relationships_DESC_TEXT );
+
         bool ret = JsonConfigurable::Configure( inputJson );
 
         if( ret )
@@ -210,7 +216,8 @@ namespace Kernel
 
     void ReportHIVByAgeAndGender::UpdateEventRegistration( float currentTime,
                                                            float dt,
-                                                           std::vector<INodeEventContext*>& rNodeEventContextList )
+                                                           std::vector<INodeEventContext*>& rNodeEventContextList,
+                                                           ISimulationEventContext* pSimEventContext )
     {
         // not enforcing simulation to be not null in constructor so one can create schema with it null
         release_assert( _parent );
@@ -218,7 +225,7 @@ namespace Kernel
         float current_year = _parent->GetSimulationTime().Year();
         if( !is_collecting_data && (start_year <= current_year) && (current_year < stop_year) )
         {
-            BaseTextReportEvents::UpdateEventRegistration( currentTime, dt, rNodeEventContextList );
+            BaseTextReportEvents::UpdateEventRegistration( currentTime, dt, rNodeEventContextList, pSimEventContext );
             is_collecting_data = true;
 
             // ------------------------------------------------------------------------
@@ -237,7 +244,7 @@ namespace Kernel
         }
         else if( is_collecting_data && (_parent->GetSimulationTime().Year() >= stop_year) )
         {
-            UnregisterAllNodes();
+            UnregisterAllBroadcasters();
             is_collecting_data = false;
         }
 
@@ -457,6 +464,17 @@ namespace Kernel
             header << "," << "Lifetime Partners";
         }
 
+        if( data_has_concordant_relationships )
+        {
+            for( int i = 0; i < RelationshipType::COUNT; ++i )
+            {
+                header << "," << "Num_" << RelationshipType::pairs::get_keys()[ i ];
+            }
+            for( int i = 0; i < RelationshipType::COUNT; ++i )
+            {
+                header << "," << "Num_Concordant_" << RelationshipType::pairs::get_keys()[ i ];
+            }
+        }
         return header.str();
     }
 
@@ -570,6 +588,18 @@ namespace Kernel
                 GetOutputStream() << "," << data.has_concurrent_partners;
                 GetOutputStream() << "," << data.num_partners_current_sum;
                 GetOutputStream() << "," << data.num_partners_lifetime_sum;
+            }
+
+            if( data_has_concordant_relationships )
+            {
+                for( int i = 0; i < RelationshipType::COUNT; ++i )
+                {
+                    GetOutputStream() << "," << data.num_relationships_by_type[ i ];
+                }
+                for( int i = 0; i < RelationshipType::COUNT; ++i )
+                {
+                    GetOutputStream() << "," << data.num_concordant_relationships_by_type[ i ];
+                }
             }
 
             GetOutputStream() << endl;
@@ -713,7 +743,25 @@ namespace Kernel
 
         for (auto relationship : relationships)
         {
-            rel_count[int(relationship->GetType())] += mc_weight;
+            int rel_type = int( relationship->GetType() );
+            rel_count[ rel_type ] += mc_weight;
+
+            if( relationship->GetState() == RelationshipState::NORMAL )
+            {
+                IIndividualHumanSTI* sti_partner = relationship->GetPartner( sti_individual );
+
+                IIndividualHumanHIV* hiv_partner = nullptr;
+                if( sti_partner->QueryInterface( GET_IID( IIndividualHumanHIV ), (void**)&hiv_partner ) != s_OK )
+                {
+                    throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "sti_partner", "IIndividualHIV", "IndividualHuman" );
+                }
+
+                data.num_relationships_by_type[ rel_type ] += mc_weight;
+                if( hiv_individual->HasHIV() == hiv_partner->HasHIV() )
+                {
+                    data.num_concordant_relationships_by_type[ rel_type ] += mc_weight;
+                }
+            }
         }
 
         // Current num rels SUM

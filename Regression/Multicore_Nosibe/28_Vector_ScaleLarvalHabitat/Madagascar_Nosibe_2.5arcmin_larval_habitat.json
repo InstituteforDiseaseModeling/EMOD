@@ -4,9 +4,6 @@
             "AgeDistribution1": 0.00015,
             "AgeDistribution2": 0,
             "AgeDistributionFlag": 3,
-            "SusceptibilityDistribution1": 1,
-            "SusceptibilityDistribution2": 0,
-            "SusceptibilityDistributionFlag": 0,
             "MigrationHeterogeneityDistribution1": 1,
             "MigrationHeterogeneityDistribution2": 0,
             "MigrationHeterogeneityDistributionFlag": 0,
@@ -59,13 +56,22 @@
             "PrevalenceDistributionFlag": 1,
             "RiskDistribution1": 1,
             "RiskDistribution2": 0,
-            "RiskDistributionFlag": 0
+            "RiskDistributionFlag": 0,
+            "SusceptibilityDistribution1": 1,
+            "SusceptibilityDistribution2": 0,
+            "SusceptibilityDistributionFlag": 0
         },
         "NodeAttributes": {
             "Airport": 0,
             "Altitude": 0,
             "BirthRate": 0.000102,
-            "LarvalHabitatMultiplier": 10.0,
+            "LarvalHabitatMultiplier": [
+                {
+                    "Factor": 10.0,
+                    "Habitat": "ALL_HABITATS",
+                    "Species": "ALL_SPECIES"
+                }
+            ],
             "Region": 1,
             "Seaport": 0
         }

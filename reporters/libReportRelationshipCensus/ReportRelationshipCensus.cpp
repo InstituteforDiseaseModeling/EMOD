@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -16,6 +16,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "NodeEventContext.h"
 #include "IIndividualHuman.h"
 #include "IIndividualHumanSTI.h"
+#include "IdmDateTime.h"
+#include "INodeContext.h"
 
 
 // -------------------------------------------------------------------
@@ -146,9 +148,10 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
         return ret;
     }
 
-    void ReportRelationshipCensus::UpdateEventRegistration(  float currentTime, 
-                                                             float dt, 
-                                                             std::vector<INodeEventContext*>& rNodeEventContextList )
+    void ReportRelationshipCensus::UpdateEventRegistration( float currentTime, 
+                                                            float dt, 
+                                                            std::vector<INodeEventContext*>& rNodeEventContextList,
+                                                            ISimulationEventContext* pSimEventContext )
     {
         release_assert( rNodeEventContextList.size() > 0 );
         float year = rNodeEventContextList[ 0 ]->GetTime().Year();
@@ -169,7 +172,7 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
             m_IsCollectingData = true;
         }
 
-        BaseTextReportEvents::UpdateEventRegistration( currentTime, dt, rNodeEventContextList );
+        BaseTextReportEvents::UpdateEventRegistration( currentTime, dt, rNodeEventContextList, pSimEventContext );
     }
 
     std::string ReportRelationshipCensus::GetReportName() const

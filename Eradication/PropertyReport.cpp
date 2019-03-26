@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -11,7 +11,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "IdmString.h"
 #include "IIndividualHuman.h"
-#include "Node.h"
 #include "PropertyReport.h"
 #include "Properties.h"
 
@@ -50,56 +49,6 @@ PropertyReport::PropertyReport( const std::string& rReportName )
 {
 }
 
-// OK, so here's what we've got to do. Node has an unknown collection of key-value pairs.
-// E.g., QoC:Terrible->Great, Accessibility:Urban->Rural, LifeStage:Home->Retired. We need:
-// QoC:Terrible,Access:Urban,LifeStage:Home,
-// QoC:Terrible,Access:Urban,LifeStage:School,
-// QoC:Terrible,Access:Urban,LifeStage:Work,
-// etc.
-// This is a set of maps?
-void
-PropertyReport::GenerateAllPermutationsOnce(
-    Kernel::IIndividualHuman* indiv,
-    std::set< std::string > keys,
-    tKeyValuePair perm
-)
-{
-    /*std::cout << "Generate called with perm as follows: " << std::endl;
-    for (auto& entry : perm)
-    {
-    std::cout << "Perm key:value = " << entry.first << ":" << entry.second << std::endl;
-    }*/
- 
-    if( keys.size() )
-    {
-        const std::string key = *keys.begin();
-        keys.erase( key );
-        //std::cout << "key = " << key << std::endl;
-        //std::cout << "Iterating over " << Kernel::Node::distribs[ key ].size() << " values for key " << key << std::endl;
-        const IndividualProperty* p_ip = IPFactory::GetInstance()->GetIP( key );
-        for( auto kv : p_ip->GetValues<IPKeyValueContainer>() )
-        {
-            std::string value = kv.GetValueAsString();
-            //std::cout << "inserting key-value pair into perm: " << key << ":" << value << std::endl;
-            auto kvp = perm;
-            kvp.insert( make_pair( key, value ) );
-            //std::cout << "actual perm size now = " << perm.size() << ", recurse again." << std::endl;
-            GenerateAllPermutationsOnce( indiv, keys, kvp );
-        }
-        //std::cout << "*** Done iterating over all values for that key." << std::endl;
-    }
-    else
-    { 
-        /*std::cout << "End of recursion, inserting a complete permutation into set." << std::endl;
-        for (auto& entry : perm)
-        {
-        std::cout << "Perm key:value = " << entry.first << ":" << entry.second << std::endl;
-        }*/
-        permutationsSet.insert( perm );
-        //std::cout << "permutationsSet.size() = " << permutationsSet.size() << std::endl;
-    }
-}
-
 /////////////////////////
 // steady-state methods
 /////////////////////////
@@ -117,19 +66,47 @@ static std::set< std::string > getKeys( const T &propMap )
 }
 
 void
+PropertyReport::GenerateAllPermutationsOnce(
+    std::set< std::string > keyskeys,
+    tKeyValuePairs perm,
+    tPermutations& permsSet
+)
+{
+    if( keyskeys.size() )
+    {
+        const std::string key = *keyskeys.begin();
+        keyskeys.erase( key );
+        const IndividualProperty* p_ip = IPFactory::GetInstance()->GetIP( key );
+        for( auto kv : p_ip->GetValues<IPKeyValueContainer>() )
+        {
+            std::string value = kv.GetValueAsString();
+            auto kvp = perm;
+            kvp.insert( make_pair( key, value ) );
+            GenerateAllPermutationsOnce( keyskeys, kvp, permsSet );
+        }
+    }
+    else
+    {
+        permsSet.insert( perm );
+    }
+}
+
+void
 PropertyReport::LogIndividualData(
     Kernel::IIndividualHuman* individual
 )
 {
     std::string reportingBucket = individual->GetPropertyReportString();
-    if( reportingBucket.empty() )
+    if( reportingBucket.empty() ) // call this just first time.
     {
         auto permKeys = IPFactory::GetInstance()->GetKeysAsStringSet();
         if( permutationsSet.size() == 0 )
         {
             // put all keys in set
-            tKeyValuePair actualPerm;
-            GenerateAllPermutationsOnce( individual, permKeys, actualPerm ); // call this just first time.
+            tKeyValuePairs actualPerm;
+            // Commented out is what we WANT to do but it behaves oddly. With more time I'm sure we can fix it.
+            //IPFactory::GetInstance()->GenerateAllPermutationsOnce( permKeys, actualPerm, permutationsSet ); 
+            GenerateAllPermutationsOnce( permKeys, actualPerm, permutationsSet );
         }
 
         tProperties prop_map = individual->GetProperties()->GetOldVersion();
@@ -197,7 +174,7 @@ PropertyReport::LogNodeData(
 
         Accumulate(_new_infections_label + reportingBucket, new_infections[reportingBucket]);
         new_infections[reportingBucket] = 0.0f;
-        Accumulate(_disease_deaths_label + reportingBucket, disease_deaths[reportingBucket]);
+        //Accumulate(_disease_deaths_label + reportingBucket, disease_deaths[reportingBucket]);
         Accumulate(_pop_label + reportingBucket, statPop[ reportingBucket ] );
         statPop[reportingBucket] = 0.0f;
         Accumulate(_infected_label + reportingBucket, infected[ reportingBucket ]);

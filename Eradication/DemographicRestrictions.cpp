@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -11,7 +11,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "DemographicRestrictions.h"
 #include "IndividualEventContext.h"
-#include "Node.h"
 #include "IIndividualHuman.h"
 
 SETUP_LOGGING( "DemographicRestrictions" )
@@ -29,7 +28,7 @@ namespace Kernel
     , default_target_demographic(defaultTargetDemographic)
     , target_demographic(default_target_demographic)
     , target_age_min_years(0)
-    , target_age_max_years(FLT_MAX)
+    , target_age_max_years(FLT_MAX/ DAYSPERYEAR)
     , target_age_min_days(0)
     , target_age_max_days(FLT_MAX)
     , target_gender(TargetGender::All)
@@ -81,7 +80,7 @@ namespace Kernel
             }
 
             pParent->initConfigTypeMap( "Target_Age_Min", &target_age_min_years, Target_Age_Min_DESC_TEXT, 0.0f, FLT_MAX,    0.0f, "Target_Demographic", "ExplicitAgeRanges,ExplicitAgeRangesAndGender" );
-            pParent->initConfigTypeMap( "Target_Age_Max", &target_age_max_years, Target_Age_Max_DESC_TEXT, 0.0f, FLT_MAX, FLT_MAX, "Target_Demographic", "ExplicitAgeRanges,ExplicitAgeRangesAndGender" );
+            pParent->initConfigTypeMap( "Target_Age_Max", &target_age_max_years, Target_Age_Max_DESC_TEXT, 0.0f, FLT_MAX/DAYSPERYEAR, FLT_MAX/DAYSPERYEAR, "Target_Demographic", "ExplicitAgeRanges,ExplicitAgeRangesAndGender" );
 
             if( (target_demographic == TargetDemographicType::ExplicitAgeRangesAndGender) || JsonConfigurable::_dryrun)
             {

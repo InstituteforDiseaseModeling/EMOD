@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -50,7 +50,7 @@ namespace Kernel
     {
         bool ret = initConfig("Infection_Type", infection_type, inputJson, MetadataDescriptor::Enum("Infection_Type", "TB =1 or HIV = 0", MDD_ENUM_ARGS(TBHIVInfectionType)) );
 
-        if (infection_type == TBHIVInfectionType::HIV && !IndividualHumanCoInfectionConfig::enable_coinfection )
+        if (!_dryrun && infection_type == TBHIVInfectionType::HIV && !IndividualHumanCoInfectionConfig::enable_coinfection )
         {
             throw IncoherentConfigurationException(__FILE__, __LINE__, __FUNCTION__, "Intervention in campaign", "OutbreakIndividualTBorHIV", "Enable_Coinfection = 0", "Infection_Type = HIV");
         }
@@ -85,7 +85,7 @@ namespace Kernel
                 LOG_DEBUG_F("Individual was selected for TB infection via OutbreakIndividualTBorHIV, but already infected with TB. Quitting here.\n");
                 return false; 
             }
-            const IStrainIdentity * pStrain = GetNewStrainIdentity(pContext);
+            const IStrainIdentity * pStrain = GetNewStrainIdentity( pContext, context->GetParent() );
             Ind_coinf->AcquireNewInfection( pStrain, incubation_period_override );
             return success;
         }
@@ -99,7 +99,7 @@ namespace Kernel
                 return false;
             }
 
-            const IStrainIdentity * pStrain = GetNewStrainIdentity(pContext);
+            const IStrainIdentity * pStrain = GetNewStrainIdentity( pContext, context->GetParent() );
             Ind_coinf->AcquireNewInfectionHIV( pStrain, incubation_period_override );
             return success;
         }

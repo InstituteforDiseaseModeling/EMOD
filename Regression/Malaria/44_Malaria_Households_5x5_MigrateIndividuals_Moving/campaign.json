@@ -2,85 +2,102 @@
     "Use_Defaults": 1,
     "Events": [
         {
-            "COMMENT": "Outbreak in Node 26 where there are no people.  Should not see any infections.", 
+            "COMMENT": "Outbreak in Node 26 where there are no people.  Should not see any infections.",
             "class": "CampaignEvent",
-            "Start_Day": 50, 
+            "Start_Day": 50,
             "Nodeset_Config": {
-                "class": "NodeSetNodeList", 
-                "Node_List": [ 26 ]
-            }, 
+                "class": "NodeSetNodeList",
+                "Node_List": [
+                    26
+                ]
+            },
             "Event_Coordinator_Config": {
                 "class": "StandardInterventionDistributionEventCoordinator",
-                "Target_Demographic": "Everyone", 
+                "Target_Demographic": "Everyone",
                 "Demographic_Coverage": 1.0,
                 "Intervention_Config": {
                     "class": "OutbreakIndividual",
                     "Outbreak_Source": "ImportCases",
-                    "Antigen": 0, 
+                    "Antigen": 0,
                     "Genome": 0
                 }
             }
         },
         {
-            "COMMENT" : "Move pepole to node 26.  Still no infections",
+            "COMMENT": "Move pepole to node 26.  Still no infections",
             "class": "CampaignEvent",
-            "Start_Day": 200, 
+            "Start_Day": 200,
             "Nodeset_Config": {
                 "class": "NodeSetNodeList",
-                "Node_List": [ 1, 2, 3, 4, 6, 7, 8, 9, 10 ]
-            }, 
+                "Node_List": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    6,
+                    7,
+                    8,
+                    9,
+                    10
+                ]
+            },
             "Event_Coordinator_Config": {
                 "class": "StandardInterventionDistributionEventCoordinator",
-                "Target_Residents_Only" : 1,
-                "Target_Demographic": "Everyone", 
+                "Target_Residents_Only": 1,
+                "Target_Demographic": "Everyone",
                 "Demographic_Coverage": 1.0,
                 "Intervention_Config": {
                     "class": "MigrateIndividuals",
                     "NodeID_To_Migrate_To": 26,
-                    "Duration_Before_Leaving_Distribution_Type" : "FIXED_DURATION",
-                    "Duration_Before_Leaving_Fixed": 0, 
-                    "Duration_At_Node_Distribution_Type" : "FIXED_DURATION",
-                    "Duration_At_Node_Fixed": 0, 
-                    "Is_Moving" : 1
+                    "Duration_Before_Leaving_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Duration_At_Node_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Is_Moving": 1,
+                    "Duration_Before_Leaving_Constant": 0,
+                    "Duration_At_Node_Constant": 0
                 }
             }
         },
         {
-            "COMMENT": "Outbreak in nodes 1 and 2 where there are no people.  Should still be no infections.", 
+            "COMMENT": "Outbreak in nodes 1 and 2 where there are no people.  Should still be no infections.",
             "class": "CampaignEvent",
-            "Start_Day": 300, 
+            "Start_Day": 300,
             "Nodeset_Config": {
-                "class": "NodeSetNodeList", 
-                "Node_List": [ 1, 2 ]
-            }, 
+                "class": "NodeSetNodeList",
+                "Node_List": [
+                    1,
+                    2
+                ]
+            },
             "Event_Coordinator_Config": {
                 "class": "StandardInterventionDistributionEventCoordinator",
-                "Target_Demographic": "Everyone", 
+                "Target_Demographic": "Everyone",
                 "Demographic_Coverage": 1.0,
                 "Intervention_Config": {
                     "class": "OutbreakIndividual",
                     "Outbreak_Source": "ImportCases",
-                    "Antigen": 0, 
+                    "Antigen": 0,
                     "Genome": 0
                 }
             }
         },
         {
-            "COMMENT": "Outbreak in Node 26 where there are now people.  Should see infections in node 26 only.", 
+            "COMMENT": "Outbreak in Node 26 where there are now people.  Should see infections in node 26 only.",
             "class": "CampaignEvent",
-            "Start_Day": 400, 
+            "Start_Day": 400,
             "Nodeset_Config": {
-                "class": "NodeSetNodeList", 
-                "Node_List": [ 26 ]
-            }, 
+                "class": "NodeSetNodeList",
+                "Node_List": [
+                    26
+                ]
+            },
             "Event_Coordinator_Config": {
                 "class": "StandardInterventionDistributionEventCoordinator",
-                "Target_Demographic": "Everyone", 
+                "Target_Demographic": "Everyone",
                 "Demographic_Coverage": 1.0,
                 "Intervention_Config": {
                     "class": "OutbreakIndividual",
                     "Outbreak_Source": "ImportCases",
-                    "Antigen": 0, 
+                    "Antigen": 0,
                     "Genome": 0
                 }
             }

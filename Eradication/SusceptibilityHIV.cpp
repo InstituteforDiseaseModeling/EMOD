@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -10,10 +10,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "stdafx.h"
 #include <limits>
 #include "SusceptibilityHIV.h"
-#ifdef ENABLE_TBHIV
-#include "TBHIVParameters.h"
-#include "IndividualCoInfection.h"
-#endif
+#include "IIndividualHumanContext.h"
 #include "IIndividualHumanHIV.h"
 #include "InfectionHIV.h"
 #include "IHIVInterventionsContainer.h"
@@ -24,6 +21,12 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "NodeEventContext.h"   // Needed for parent->GetEventContext()->GetNodeEventContext()
 #include "SimulationConfig.h"
 #include "EventTrigger.h"
+
+#ifndef DISABLE_TBHIV
+#include "TBHIVParameters.h"
+#include "IndividualCoInfection.h"
+#endif
+
 
 SETUP_LOGGING( "SusceptibilityHIV" )
 
@@ -63,7 +66,7 @@ namespace Kernel
         initConfigTypeMap( "CD4_At_Death_LogLogistic_Heterogeneity", &disease_death_CD4_inverse_beta, CD4_At_Death_LogLogistic_Heterogeneity_DESC_TEXT, 0.0f, 100.0f, 0.0f );
         initConfigTypeMap( "Days_Between_Symptomatic_And_Death_Weibull_Scale",         &days_between_symptomatic_and_death_lambda,    Days_Between_Symptomatic_And_Death_Weibull_Scale_DESC_TEXT,         1, 3650.0f, 183.0f );
         initConfigTypeMap( "Days_Between_Symptomatic_And_Death_Weibull_Heterogeneity", &days_between_symptomatic_and_death_inv_kappa, Days_Between_Symptomatic_And_Death_Weibull_Heterogeneity_DESC_TEXT, 0.1f, 10.0f, 1.0f );
-        initConfigTypeMap( "CD4_Num_Steps", &num_cd4_time_steps, Num_CD4_Time_Steps_DESC_TEXT, 1, INT_MAX, 10, "Enable_Coinfection" );
+        initConfigTypeMap( "CD4_Num_Steps", &num_cd4_time_steps, CD4_Num_Steps_DESC_TEXT, 1, INT_MAX, 10, "Enable_Coinfection" );
         initConfigTypeMap( "CD4_Time_Step", &cd4_time_step, CD4_Time_Step_DESC_TEXT, 1.0, FLT_MAX, 365.0, "Enable_Coinfection" );
 
         bool ret = JsonConfigurable::Configure( config );
@@ -243,16 +246,10 @@ namespace Kernel
 
             float days_till_death = hiv_infection->GetDaysTillDeath();
 
-            if( days_till_death <= days_between_symptomatic_and_death ) {
-                INodeTriggeredInterventionConsumer* broadcaster = nullptr;
-                if (s_OK != parent->GetEventContext()->GetNodeEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster))
-                {
-                    throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, 
-                                                   "parent->GetEventContext()->GetNodeEventContext()", 
-                                                   "INodeTriggeredInterventionConsumer", 
-                                                   "INodeEventContext" );
-                }
-                broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), EventTrigger::HIVSymptomatic );
+            if( days_till_death <= days_between_symptomatic_and_death ) 
+            {
+                IIndividualEventBroadcaster* broadcaster = parent->GetEventContext()->GetNodeEventContext()->GetIndividualEventBroadcaster();
+                broadcaster->TriggerObservers( parent->GetEventContext(), EventTrigger::NewlySymptomatic );
                 days_between_symptomatic_and_death = -FLT_MAX;
             }
         }
@@ -282,14 +279,14 @@ namespace Kernel
         }
 
         // Calculate CD4 post-infection and at HIV-cause death
-        float CD4_PostInfection = Environment::getInstance()->RNG->Weibull2(SusceptibilityHIVConfig::post_infection_CD4_lambda, SusceptibilityHIVConfig::post_infection_CD4_inverse_kappa );
+        float CD4_PostInfection = parent->GetRng()->Weibull2(SusceptibilityHIVConfig::post_infection_CD4_lambda, SusceptibilityHIVConfig::post_infection_CD4_inverse_kappa );
         CD4_PostInfection = (std::min)(CD4_PostInfection, MAX_CD4);
         sqrtCD4_PostInfection = sqrt(CD4_PostInfection);
 
         float CD4_AtDiseaseDeath = SusceptibilityHIVConfig::disease_death_CD4_alpha;
         if( SusceptibilityHIVConfig::disease_death_CD4_inverse_beta != 0.0f )
         {
-            CD4_AtDiseaseDeath = Environment::getInstance()->RNG->LogLogistic( SusceptibilityHIVConfig::disease_death_CD4_alpha, 1.0f/SusceptibilityHIVConfig::disease_death_CD4_inverse_beta );
+            CD4_AtDiseaseDeath = parent->GetRng()->LogLogistic( SusceptibilityHIVConfig::disease_death_CD4_alpha, 1.0f/SusceptibilityHIVConfig::disease_death_CD4_inverse_beta );
         }
         CD4_AtDiseaseDeath = (std::min)(CD4_AtDiseaseDeath, MAX_CD4);
         sqrtCD4_AtDiseaseDeath = sqrt( CD4_AtDiseaseDeath );
@@ -320,15 +317,15 @@ namespace Kernel
     void SusceptibilityHIV::UpdateSymptomaticPresentationTime()
     {
         // Calculate symptomatic presentation time 
-        days_between_symptomatic_and_death = Environment::getInstance()->RNG->Weibull2( SusceptibilityHIVConfig::days_between_symptomatic_and_death_lambda, 
-                                                                                        SusceptibilityHIVConfig::days_between_symptomatic_and_death_inv_kappa );
+        days_between_symptomatic_and_death = parent->GetRng()->Weibull2( SusceptibilityHIVConfig::days_between_symptomatic_and_death_lambda,
+                                                                         SusceptibilityHIVConfig::days_between_symptomatic_and_death_inv_kappa );
 
         LOG_DEBUG_F( "Individual %d will be symptomatic %f days before death\n", parent->GetSuid().data, days_between_symptomatic_and_death );
     }
 
     std::vector <float> SusceptibilityHIV::Generate_forward_CD4( bool ARTYesNo )
     {
-#ifdef ENABLE_TBHIV
+#ifndef DISABLE_TBHIV
         float CD4_time_step = SusceptibilityHIVConfig::cd4_time_step;
         int CD4_time_length = SusceptibilityHIVConfig::num_cd4_time_steps;
 
@@ -421,7 +418,7 @@ namespace Kernel
             sqrtCD4_Rate = 0.0;
         }
 
-        // Prepare to be HIVSymptomatic again
+        // Prepare to be NewlySymptomatic again
         UpdateSymptomaticPresentationTime();
         LOG_DEBUG_F( "After terminating suppression, individual %d will be symptomatic %f days before death\n", parent->GetSuid().data, days_between_symptomatic_and_death );
     }

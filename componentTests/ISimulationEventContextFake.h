@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -9,8 +9,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #pragma once
 
-#include "Contexts.h"
+#include "ISimulationContext.h"
 #include "SimulationEventContext.h"
+#include "RANDOM.h"
 
 using namespace Kernel;
 
@@ -56,15 +57,18 @@ public:
         return m_Map.at( node_id );
     }
 
-    void VisitNodes(node_visit_function_t func)                 { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
-    void RegisterEventCoordinator(IEventCoordinator* iec)       { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
-    int GetSimulationTimestep() const                           { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
-    RANDOMBASE* GetRng()                                        { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+    void VisitNodes(node_visit_function_t func)                            { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+    void RegisterEventCoordinator(IEventCoordinator* iec)                  { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+    virtual ICoordinatorEventBroadcaster* GetCoordinatorEventBroadcaster() { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+    virtual INodeEventBroadcaster* GetNodeEventBroadcaster()               { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+    int GetSimulationTimestep() const                                      { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+    RANDOMBASE* GetRng()                                                   { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
 
-    IdmDateTime GetSimulationTime() const
+    const IdmDateTime& GetSimulationTime() const
     {
         return m_IdmDateTime;
     }
+
 
     // -----------------
     // --- Other Methods

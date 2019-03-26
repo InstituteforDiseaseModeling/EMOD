@@ -1,5 +1,5 @@
 {
-     "Default_Config_Path": "defaults/vector_default_config.json", 
+     "Default_Config_Path": "../../defaults/vector_default_config.json", 
      "parameters": {
           "CLIMATE": {
                "AIR": {
@@ -20,6 +20,7 @@
           }, 
           "PRIMARY": {
                "Config_Name": "Serialization_12_Vector_Version_2_Save", 
+               "Enable_Initial_Prevalence": 1, 
                "Geography": "Namawala", 
                "Run_Number": 27
           }, 

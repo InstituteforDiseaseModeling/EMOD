@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -11,15 +11,18 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "BoostLibWrapper.h"
 
-#include "Contexts.h"
 #include "Sugar.h"
 #include "Configure.h"
-#include "SimulationEnums.h" // for DistributionType::Enum
+#include "SimulationEnums.h"
+#include "ISusceptibilityContext.h"
 
 class Configuration;
 
 namespace Kernel
 {
+    struct IIndividualHumanContext;
+    class SimulationConfig;
+
     class SusceptibilityConfig : public JsonConfigurable 
     {
         friend class Individual;
@@ -27,7 +30,8 @@ namespace Kernel
     public:
         virtual bool Configure( const Configuration* config ) override;
 
-        static DistributionType::Enum susceptibility_initialization_distribution_type;
+        static bool                     enable_initial_susceptibility_distribution;
+        static DistributionType::Enum   susceptibility_initialization_distribution_type;
 
     protected:
         friend class Susceptibility;
@@ -64,7 +68,6 @@ namespace Kernel
     {
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
         DECLARE_QUERY_INTERFACE()
-
     public:
         static Susceptibility *Susceptibility::CreateSusceptibility(IIndividualHumanContext *context, float _age, float immmod, float riskmod);
         virtual ~Susceptibility();

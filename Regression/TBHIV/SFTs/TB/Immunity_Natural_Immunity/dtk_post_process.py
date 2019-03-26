@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import json
-import dtk_sft
+import dtk_test.dtk_sft as sft
 import os
 from scipy import stats
 
@@ -99,32 +99,32 @@ def create_report_file(param_obj, campaign_obj, report_data_obj, report_name, de
         immunity_acquisition_factor = param_obj[KEY_IMMUNITY_ACQUISITION_FACTOR]
         # calculate expected number of infections for a time period of 3 months:
         number_of_month = 3
-        expected_new_infection = base_infectivity * dtk_sft.DAYS_IN_MONTH * number_of_month * immunity_acquisition_factor
-        expected = [expected_new_infection] * (dtk_sft.MONTHS_IN_YEAR // number_of_month)
+        expected_new_infection = base_infectivity * sft.DAYS_IN_MONTH * number_of_month * immunity_acquisition_factor
+        expected = [expected_new_infection] * (sft.MONTHS_IN_YEAR // number_of_month)
         # group new infections for every 3 months:
         value_to_test = []
-        if len(new_infection) < start_day + dtk_sft.DAYS_IN_YEAR:
+        if len(new_infection) < start_day + sft.DAYS_IN_YEAR:
             success = False
             outfile.write("BAD: the simulation duration is too short, please make sure it's at least {} days.\n".format(
-                start_day + dtk_sft.DAYS_IN_YEAR
+                start_day + sft.DAYS_IN_YEAR
             ))
         outfile.write("running chi-squared test for expected new infections for {0} {1}-months time bins: \n"
-                      "base_infectivity = {2}, immunity_acquisition_factor = {3}.\n".format(dtk_sft.MONTHS_IN_YEAR // number_of_month, number_of_month, base_infectivity,
+                      "base_infectivity = {2}, immunity_acquisition_factor = {3}.\n".format(sft.MONTHS_IN_YEAR // number_of_month, number_of_month, base_infectivity,
                                                                                immunity_acquisition_factor))
         actual_new_infection = 0
         i = 0
         for t in range(start_day, len(new_infection)):
             actual_new_infection += new_infection[t]
             i += 1
-            if not i % (number_of_month * dtk_sft.DAYS_IN_MONTH):
+            if not i % (number_of_month * sft.DAYS_IN_MONTH):
                 value_to_test.append(actual_new_infection)
                 actual_new_infection = 0
-        dtk_sft.plot_data(value_to_test, dist2=expected, label1="actual_new_infections",
+        sft.plot_data(value_to_test, dist2=expected, label1="actual_new_infections",
                                    label2="expected_new_infection",
                                    title="actual vs. expected new infection for every {} months".format(number_of_month),
                                    xlabel="every {} months".format(number_of_month), ylabel="# of new infections", category='actual_vs_expected_new_infections',
                                    show=True, line=True)
-        result = dtk_sft.test_multinomial(dist=value_to_test, proportions=expected, report_file=outfile, prob_flag=False)
+        result = sft.test_multinomial(dist=value_to_test, proportions=expected, report_file=outfile, prob_flag=False)
 
         if not result:
             success = False
@@ -134,7 +134,7 @@ def create_report_file(param_obj, campaign_obj, report_data_obj, report_name, de
             outfile.write(
                 "GOOD: The Chi-squared test for number of new infections in every {} months passed.\n".format(
                     number_of_month))
-        outfile.write(dtk_sft.format_success_msg(success))
+        outfile.write(sft.format_success_msg(success))
 
     if debug:
         print( "SUMMARY: Success={0}\n".format(success) )
@@ -142,7 +142,7 @@ def create_report_file(param_obj, campaign_obj, report_data_obj, report_name, de
 
 def application( output_folder="output", stdout_filename="test.txt", insetchart_name="InsetChart.json",
                  config_filename="config.json", campaign_filename="campaign.json",
-                 report_name=dtk_sft.sft_output_filename,
+                 report_name=sft.sft_output_filename,
                  debug=False):
     if debug:
         print( "output_folder: " + output_folder )
@@ -153,7 +153,7 @@ def application( output_folder="output", stdout_filename="test.txt", insetchart_
         print( "report_name: " + report_name + "\n" )
         print( "debug: " + str(debug) + "\n" )
 
-    dtk_sft.wait_for_done()
+    sft.wait_for_done()
     param_obj = load_emod_parameters(config_filename, debug)
     campaign_obj = load_campaign_file(campaign_filename, debug)
     report_data_obj = parse_json_report(insetchart_name, output_folder, debug)
@@ -169,7 +169,7 @@ if __name__ == "__main__":
     parser.add_argument('-j', '--jsonreport', default="InsetChart.json", help="Json report to load (InsetChart.json)")
     parser.add_argument('-c', '--config', default="config.json", help="Config name to load (config.json)")
     parser.add_argument('-C', '--campaign', default="campaign.json", help="campaign name to load (campaign.json)")
-    parser.add_argument('-r', '--reportname', default=dtk_sft.sft_output_filename, help="Report file to generate")
+    parser.add_argument('-r', '--reportname', default=sft.sft_output_filename, help="Report file to generate")
     args = parser.parse_args()
 
     application(output_folder=args.output, stdout_filename=args.stdout, insetchart_name=args.jsonreport,

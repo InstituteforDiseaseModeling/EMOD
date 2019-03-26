@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2016 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -26,7 +26,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IHIVInterventionsContainer.h"
 #include "SusceptibilityHIV.h"
 #include "SusceptibilityTB.h"
+#include "INodeContext.h"
 #include "FactorySupport.h"
+#include "IdmDatetime.h"
 
 // TODO: 
 // --> Start_Year
@@ -225,9 +227,10 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
        // }
     }
 
-    void Report_TBHIV_ByAge::UpdateEventRegistration(  float currentTime,
-                                                        float dt, 
-                                                        std::vector<INodeEventContext*>& rNodeEventContextList )
+    void Report_TBHIV_ByAge::UpdateEventRegistration( float currentTime,
+                                                      float dt, 
+                                                      std::vector<INodeEventContext*>& rNodeEventContextList,
+                                                      ISimulationEventContext* pSimEventContext )
     {
         // not enforcing simulation to be not null in constructor so one can create schema with it null
 
@@ -238,7 +241,7 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
 
         if( !is_collecting_data && (startYear <= current_year) && (current_year < stopYear) )
         {
-            BaseTextReportEvents::UpdateEventRegistration( currentTime, dt, rNodeEventContextList );
+            BaseTextReportEvents::UpdateEventRegistration( currentTime, dt, rNodeEventContextList, pSimEventContext );
             is_collecting_data = true ;
 
             // ------------------------------------------------------------------------
@@ -256,7 +259,7 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
         }
         else if( is_collecting_data && (current_year >= stopYear) )
         {
-            UnregisterAllNodes();
+            UnregisterAllBroadcasters();
             is_collecting_data = false ;
         }
 
@@ -407,24 +410,19 @@ GetReportInstantiator( Kernel::report_instantiator_function_t* pif )
         {
             return Report_Age::GREAT_95;
         }
-        
-
-
-
     }
 
-
     void Report_TBHIV_ByAge::LogNodeData(Kernel::INodeContext* pNC)
-	{
-		if ((is_collecting_data == false) || (doReport == false))
-		{
-			return;
-		}
-		LOG_DEBUG_F("%s: doReport = %d\n", __FUNCTION__, doReport);
+    {
+        if ((is_collecting_data == false) || (doReport == false))
+        {
+            return;
+        }
+        LOG_DEBUG_F("%s: doReport = %d\n", __FUNCTION__, doReport);
 
-		// BASE_YEAR is TEMPORARY HERE!
-		float year = BASE_YEAR + pNC->GetTime().Year();
-		int nodeId = pNC->GetExternalID();
+        // BASE_YEAR is TEMPORARY HERE!
+        float year = BASE_YEAR + pNC->GetTime().Year();
+        int nodeId = pNC->GetExternalID();
 
         for (int age_idx = 0; age_idx < Report_Age::Enum::COUNT; age_idx++)
         {

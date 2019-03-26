@@ -1,0 +1,11 @@
+{
+    "class": "InterventionForCurrentPartners",
+    "Disqualifying_Properties": [],  
+    "New_Property_Value": "", 
+    "Minimum_Duration_Years": 0.0,
+    "Prioritize_Partners_By": "RELATIONSHIP_TYPE",
+    "Relationship_Types": [ "MARITAL", "INFORMAL", "COMMERCIAL" ],
+    "Maximum_Partners": 10,
+    "Event_Or_Config" : "Event",
+    "Broadcast_Event": "TBActivation"
+}

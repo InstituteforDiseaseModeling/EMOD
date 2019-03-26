@@ -3,7 +3,7 @@
 import os
 
 def plot_one( data, x_data=None, ylim=None, xlim=None, title=None, xlabel=None, ylabel=None ):
-    print( "DEBUG: dtk_plot_wrapper." )
+    print( "DEBUG: plot_wrapper." )
     homepath = None
     if os.environ.get( "HOME" ):
         homepath = os.getenv( "HOME" )

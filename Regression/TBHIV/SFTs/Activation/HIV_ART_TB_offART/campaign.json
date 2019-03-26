@@ -1,132 +1,154 @@
 {
-  "Campaign_Name": "Outbreak",
-  "Events": [
-    {
-      "Event_Name": "Seeding the HIV epidemic at time 1",
-      "Start_Day": 1,
-      "Event_Coordinator_Config": {
-        "Target_Group": "Everyone",
-        "Timesteps_Between_Repetitions": 1,
-        "Target_Age_Max": 100,
-        "Number_Distributions": -1,
-        "Target_Age_Min": 10,
-        "Intervention_Config": {
-          "Antigen": 0,
-          "class": "OutbreakIndividualTBorHIV",
-          "Infection_Type": "HIV",
-          "Genome": 0,
-          "Outbreak_Source": "PrevalenceIncrease"
+    "Campaign_Name": "Outbreak",
+    "Events": [
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "Antigen": 0,
+                    "Genome": 0,
+                    "Infection_Type": "HIV",
+                    "Outbreak_Source": "PrevalenceIncrease",
+                    "class": "OutbreakIndividualTBorHIV"
+                },
+                "Number_Distributions": -1,
+                "Number_Repetitions": 1,
+                "Target_Age_Max": 100,
+                "Target_Age_Min": 10,
+                "Target_Group": "Everyone",
+                "Time_Offset": 0,
+                "Timesteps_Between_Repetitions": 1,
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "Seeding the HIV epidemic at time 1",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 1,
+            "class": "CampaignEvent"
         },
-        "Number_Repetitions": 1,
-        "Demographic_Coverage": 1,
-        "Time_Offset": 0,
-        "class": "StandardInterventionDistributionEventCoordinator"
-      },
-      "class": "CampaignEvent",
-      "Nodeset_Config": { "class": "NodeSetAll" }
-    },
-    {
-      "Event_Name": "ART to everyone",
-      "Start_Day": 1,
-      "Event_Coordinator_Config": {
-        "Timesteps_Between_Repetitions": 1,
-        "Number_Distributions": -1,
-        "Target_Group": "Everyone",
-        "Number_Repetitions": 1,
-        "Intervention_Config": {
-          "Duration": -1,
-          "Trigger_Condition_List": [ "HIVTestedPositive" ],
-          "Actual_IndividualIntervention_Config": { "class": "ARTBasic" },
-          "class": "NodeLevelHealthTriggeredIV"
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "ARTBasic"
+                    },
+                    "Duration": -1,
+                    "Trigger_Condition_List": [
+                        "HIVTestedPositive"
+                    ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "Number_Distributions": -1,
+                "Number_Repetitions": 1,
+                "Property_Restrictions": [],
+                "Target_Group": "Everyone",
+                "Timesteps_Between_Repetitions": 1,
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "ART to everyone",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 1,
+            "class": "CampaignEvent"
         },
-        "Property_Restrictions": [ ],
-        "Demographic_Coverage": 1.0,
-        "class": "StandardInterventionDistributionEventCoordinator"
-      },
-      "class": "CampaignEvent",
-      "Nodeset_Config": { "class": "NodeSetAll" }
-    },
-    {
-      "Start_Day":1,
-      "Event_Coordinator_Config": {
-        "Demographic_Coverage": 1,
-        "Number_Repetitions": 400,
-        "class": "StandardInterventionDistributionEventCoordinator",
-        "Timesteps_Between_Repetitions": 1,
-        "Intervention_Config": {
-          "CD4_Thresholds": [
-            {
-              "High": 400,
-              "Event": "HIVTestedPositive",
-              "Low": 0
-            }
-          ],
-          "class": "CD4Diagnostic"
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "CD4_Thresholds": [
+                        {
+                            "Event": "HIVTestedPositive",
+                            "High": 400,
+                            "Low": 0
+                        }
+                    ],
+                    "class": "CD4Diagnostic"
+                },
+                "Number_Repetitions": 400,
+                "Timesteps_Between_Repetitions": 1,
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 1,
+            "class": "CampaignEvent"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "Actual_IndividualIntervention_Config": {
+                        "Actual_IndividualIntervention_Configs": [
+                            {
+                                "Antigen": 0,
+                                "Genome": 0,
+                                "Infection_Type": "TB",
+                                "Outbreak_Source": "PrevalenceIncrease",
+                                "class": "OutbreakIndividualTBorHIV"
+                            }
+                        ],
+                        "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                        "class": "DelayedIntervention",
+                        "Delay_Period_Constant": 3
+                    },
+                    "Duration": -1,
+                    "Trigger_Condition_List": [
+                        "HIVTestedPositive"
+                    ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "Number_Distributions": -1,
+                "Number_Repetitions": 1,
+                "Property_Restrictions": [],
+                "Target_Group": "Everyone",
+                "Timesteps_Between_Repetitions": 1,
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "Gets TB 3 days after starting ART",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 1,
+            "class": "CampaignEvent"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "Actual_IndividualIntervention_Config": {
+                        "Actual_IndividualIntervention_Configs": [
+                            {
+                                "class": "ARTDropout"
+                            }
+                        ],
+                        "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                        "class": "DelayedIntervention",
+                        "Delay_Period_Constant": 5
+                    },
+                    "Duration": -1,
+                    "Trigger_Condition_List": [
+                        "HIVTestedPositive"
+                    ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "Number_Distributions": -1,
+                "Number_Repetitions": 1,
+                "Property_Restrictions": [],
+                "Target_Group": "Everyone",
+                "Timesteps_Between_Repetitions": 1,
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "Drop out of ART 5 days after starting, 2 days after getting TB",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 1,
+            "class": "CampaignEvent"
         }
-      },
-      "class": "CampaignEvent",
-      "Nodeset_Config": { "class": "NodeSetAll" }
-    },
-    {
-      "Event_Name": "Gets TB 3 days after starting ART",
-      "Start_Day": 1,
-      "Event_Coordinator_Config": {
-        "Timesteps_Between_Repetitions": 1,
-        "Number_Distributions": -1,
-        "Target_Group": "Everyone",
-        "Number_Repetitions": 1,
-        "Intervention_Config": {
-          "Duration": -1,
-          "Trigger_Condition_List": [ "HIVTestedPositive" ],
-          "Actual_IndividualIntervention_Config": {
-            "Delay_Distribution": "FIXED_DURATION",
-            "class": "DelayedIntervention",
-            "Actual_IndividualIntervention_Configs": [
-              {
-                "Antigen": 0,
-                "class": "OutbreakIndividualTBorHIV",
-                "Infection_Type": "TB",
-                "Genome": 0,
-                "Outbreak_Source": "PrevalenceIncrease"
-              }
-            ],
-            "Delay_Period": 3
-          },
-          "class": "NodeLevelHealthTriggeredIV"
-        },
-        "Property_Restrictions": [ ],
-        "Demographic_Coverage": 1.0,
-        "class": "StandardInterventionDistributionEventCoordinator"
-      },
-      "class": "CampaignEvent",
-      "Nodeset_Config": { "class": "NodeSetAll" }
-    },
-    {
-      "Event_Name": "Drop out of ART 5 days after starting, 2 days after getting TB",
-      "Start_Day": 1,
-      "Event_Coordinator_Config": {
-        "Timesteps_Between_Repetitions": 1,
-        "Number_Distributions": -1,
-        "Target_Group": "Everyone",
-        "Number_Repetitions": 1,
-        "Intervention_Config": {
-          "Duration": -1,
-          "Trigger_Condition_List": [ "HIVTestedPositive" ],
-          "Actual_IndividualIntervention_Config": {
-            "Delay_Distribution": "FIXED_DURATION",
-            "class": "DelayedIntervention",
-            "Actual_IndividualIntervention_Configs": [ { "class": "ARTDropout" } ],
-            "Delay_Period": 5
-          },
-          "class": "NodeLevelHealthTriggeredIV"
-        },
-        "Property_Restrictions": [ ],
-        "Demographic_Coverage": 1.0,
-        "class": "StandardInterventionDistributionEventCoordinator"
-      },
-      "class": "CampaignEvent",
-      "Nodeset_Config": { "class": "NodeSetAll" }
-    }
-  ],
-  "Use_Defaults": 1
+    ],
+    "Use_Defaults": 1
 }

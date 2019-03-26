@@ -1,5 +1,5 @@
 {
-     "Default_Config_Path": "defaults/malaria_default_config.json", 
+     "Default_Config_Path": "../../defaults/malaria_default_config.json", 
      "CLIMATE": {
           "FILENAMES": {
                "Air_Temperature_Filename": "Namawala_single_node_air_temperature_daily.bin", 
@@ -14,6 +14,7 @@
      }, 
      "PRIMARY": {
           "Config_Name": "Serialization_14_Malaria_Version_2_Save", 
+          "Enable_Initial_Prevalence": 1, 
           "Geography": "Namawala", 
           "Run_Number": 28
      },

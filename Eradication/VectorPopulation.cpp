@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -15,18 +15,14 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Log.h"
 #include "NodeVector.h"
 #include "SimulationConfig.h"
+#include "TransmissionGroupMembership.h"
 #include "Vector.h"
 #include "VectorParameters.h"
 #include "VectorSpeciesParameters.h"
 #include "VectorCohortWithHabitat.h"
 #include "StrainIdentity.h"
 #include "IMigrationInfoVector.h"
-
-#ifdef randgen
-#undef randgen
-#endif
 #include "RANDOM.h"
-#define randgen (m_context->GetRng())
 
 SETUP_LOGGING( "VectorPopulation" )
 
@@ -132,7 +128,7 @@ namespace Kernel
             // This should be similar to how VectorPopulationIndividual has individual vectors starting off with eggs.
             if( species()->eggbatchsize > 0 )
             {
-                float days_between_feeds = randgen->randomRound( GetFeedingCycleDuration() );
+                float days_between_feeds = m_context->GetRng()->randomRound( GetFeedingCycleDuration() );
                 float percent_feed_per_day = 1.0f / days_between_feeds ;
                 uint32_t num_eggs = uint32_t( percent_feed_per_day * pvc->GetPopulation() * species()->eggbatchsize );
 
@@ -169,9 +165,10 @@ namespace Kernel
         return newpopulation;
     }
 
-    void VectorPopulation::SetupIntranodeTransmission(ITransmissionGroups *transmissionGroups)
+    void VectorPopulation::SetupIntranodeTransmission(ITransmissionGroups *txIndoor, ITransmissionGroups *txOutdoor)
     {
-        m_transmissionGroups = transmissionGroups;
+        m_txIndoor  = txIndoor;
+        m_txOutdoor = txOutdoor;
     }
 
     void VectorPopulation::SetupLarvalHabitat( INodeContext *context )
@@ -627,7 +624,7 @@ namespace Kernel
         }
         else
         {
-            uint32_t num_in_prob = uint32_t( randgen->binomial_approx( rRemainingPop, prob ) );
+            uint32_t num_in_prob = uint32_t( m_context->GetRng()->binomial_approx( rRemainingPop, prob ) );
             rRemainingPop -= num_in_prob;
 
             return num_in_prob;
@@ -636,16 +633,18 @@ namespace Kernel
 
     void VectorPopulation::VectorToHumanDeposit( const IStrainIdentity& strain,
                                                  uint32_t attemptFeed,
-                                                 const TransmissionGroupMembership_t* pTransmissionVectorToHuman )
+                                                 TransmissionRoute::Enum route )
     {
-        m_context->DepositFromIndividual( strain, float( attemptFeed ) * species()->transmissionmod, pTransmissionVectorToHuman );
+        release_assert( (route == TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_INDOOR) || (route == TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_OUTDOOR) );
+        auto vector = ((route == TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_INDOOR) ? NodeVector::vector_indoor : NodeVector::vector_outdoor );
+        m_context->DepositFromIndividual( strain, float( attemptFeed ) * species()->transmissionmod, vector, route );
     }
 
-    uint32_t VectorPopulation::VectorToHumanTransmission( const char* indoor_or_outdoor_str,
-                                                          const TransmissionGroupMembership_t* pTransmissionVectorToHuman,
-                                                          IVectorCohort* cohort,
-                                                          uint32_t attemptFeed )
+    uint32_t VectorPopulation::VectorToHumanTransmission( IVectorCohort* cohort,
+                                                          uint32_t attemptFeed,
+                                                          TransmissionRoute::Enum route )
     {
+        release_assert( (route == TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_INDOOR) || (route == TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_OUTDOOR) );
         uint32_t infected_bites = 0;
         if( cohort->GetState() == VectorStateEnum::STATE_INFECTIOUS )
         {
@@ -655,25 +654,45 @@ namespace Kernel
             const IStrainIdentity& strain = cohort->GetStrainIdentity();
 
             LOG_DEBUG_F( "Vector->Human [%s] infectiousness (aka bite) of strain %d, 'population' %d, xmod %f.\n",
-                         indoor_or_outdoor_str,
+                         (route == TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_INDOOR) ? "indoor" : "outdoor",
                          strain.GetAntigenID(),
                          attemptFeed,
                          species()->transmissionmod );
 
-            VectorToHumanDeposit( strain, attemptFeed, pTransmissionVectorToHuman );
+            VectorToHumanDeposit( strain, attemptFeed, route );
         }
         return infected_bites;
     }
 
-    uint32_t VectorPopulation::CalculateHumanToVectorInfection( const TransmissionGroupMembership_t* transmissionHumanToVector,
+    uint32_t VectorPopulation::CalculateHumanToVectorInfection( TransmissionRoute::Enum route,
                                                                 IVectorCohort* cohort,
                                                                 float probSuccessfulFeed,
                                                                 uint32_t numHumanFeed )
     {
         uint32_t num_infected = 0;
+
         if( (cohort->GetState() == VectorStateEnum::STATE_ADULT) && (numHumanFeed > 0) )
         {
-            float host_infectivity = m_transmissionGroups->GetTotalContagion( transmissionHumanToVector );
+            ITransmissionGroups* txGroups = nullptr;
+            TransmissionGroupMembership_t group;
+
+            switch (route)
+            {
+                case TransmissionRoute::TRANSMISSIONROUTE_HUMAN_TO_VECTOR_INDOOR:
+                    txGroups = m_txIndoor;
+                    group = NodeVector::vector_indoor;
+                    break;
+
+                case TransmissionRoute::TRANSMISSIONROUTE_HUMAN_TO_VECTOR_OUTDOOR:
+                    txGroups = m_txOutdoor;
+                    group = NodeVector::vector_outdoor;
+                    break;
+
+                default:
+                    throw new BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "route", int32_t(route), "transmission route" );
+            }
+
+            float host_infectivity = txGroups->GetTotalContagion();
 
             //Wolbachia related impacts on infection susceptibility
             float x_infectionWolbachia = 1.0;
@@ -683,8 +702,9 @@ namespace Kernel
             }
             float prob_infected = species()->acquiremod * x_infectionWolbachia * host_infectivity / probSuccessfulFeed;
 
-            num_infected = uint32_t( randgen->binomial_approx( numHumanFeed, prob_infected ) );
+            num_infected = uint32_t( m_context->GetRng()->binomial_approx( numHumanFeed, prob_infected ) );
         }
+
         return num_infected;
     }
 
@@ -723,7 +743,7 @@ namespace Kernel
 
         float feeding_day2_percent = feeding_duration - uint32_t( feeding_duration );
 
-        uint32_t num_feed_day2 = randgen->binomial_approx( num_feed, feeding_day2_percent );
+        uint32_t num_feed_day2 = m_context->GetRng()->binomial_approx( num_feed, feeding_day2_percent );
         uint32_t num_feed_day1 = num_feed - num_feed_day2;
 
         uint32_t num_eggs_day1 = uint32_t( egg_batch_size * float( num_feed_day1 ) );
@@ -774,8 +794,8 @@ namespace Kernel
         outdoorbites += attempt_feed_outdoor;
 
         // for the infectious cohort, need to update infectious bites
-        indoorinfectiousbites  += VectorToHumanTransmission( INDOOR_STR,  &NodeVector::vector_to_human_indoor,  cohort, attempt_feed_indoor  );
-        outdoorinfectiousbites += VectorToHumanTransmission( OUTDOOR_STR, &NodeVector::vector_to_human_outdoor, cohort, attempt_feed_outdoor );
+        indoorinfectiousbites  += VectorToHumanTransmission( cohort, attempt_feed_indoor,  TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_INDOOR );
+        outdoorinfectiousbites += VectorToHumanTransmission( cohort, attempt_feed_outdoor, TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_OUTDOOR );
 
         // indoor feeds
         uint32_t died_indoor = 0;
@@ -793,7 +813,7 @@ namespace Kernel
             // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             float prob_feed = probs()->indoor_successfulfeed_human;
 
-            infected_indoor = CalculateHumanToVectorInfection( &NodeVector::human_to_vector_indoor,
+            infected_indoor = CalculateHumanToVectorInfection( TransmissionRoute::TRANSMISSIONROUTE_HUMAN_TO_VECTOR_INDOOR,
                                                                cohort,
                                                                prob_feed,
                                                                feed_indoor );
@@ -816,7 +836,7 @@ namespace Kernel
 
             float prob_feed = (1.0f - probs()->outdoor_returningmortality) * probs()->outdoor_successfulfeed_human * x_infectiouscorrection;
 
-            infected_outdoor = CalculateHumanToVectorInfection( &NodeVector::human_to_vector_outdoor,
+            infected_outdoor = CalculateHumanToVectorInfection( TransmissionRoute::TRANSMISSIONROUTE_HUMAN_TO_VECTOR_OUTDOOR,
                                                                 cohort,
                                                                 prob_feed,
                                                                 feed_outdoor );
@@ -896,7 +916,7 @@ namespace Kernel
 
             if( m_VectorMortality )
             {
-                uint32_t die = uint32_t( randgen->binomial_approx( cohort->GetPopulation(), p_local_mortality ) );
+                uint32_t die = uint32_t( m_context->GetRng()->binomial_approx( cohort->GetPopulation(), p_local_mortality ) );
                 cohort->SetPopulation( cohort->GetPopulation() - die );
             }
 
@@ -1099,7 +1119,7 @@ namespace Kernel
             // Apply larval mortality, the probability of which may depend on over-crowding and Notre Dame instar-specific dynamics
             float p_larval_mortality = GetLarvalMortalityProbability(dt, larvaentry);
             uint32_t nowPop = cohort->GetPopulation();
-            uint32_t newPop = nowPop - uint32_t( randgen->binomial_approx( nowPop, p_larval_mortality ) );
+            uint32_t newPop = nowPop - uint32_t( m_context->GetRng()->binomial_approx( nowPop, p_larval_mortality ) );
             LOG_VALID_F( "Adjusting larval population from %d to %d based on overcrowding considerations.\n", nowPop, newPop );
             cohort->SetPopulation( newPop );
 
@@ -1205,7 +1225,13 @@ namespace Kernel
         // Loop over larval habitats
         for (auto habitat : (*m_larval_habitats))
         {
-            float fractional_allocation = habitat->GetCurrentLarvalCapacity() / total_capacity;
+            float fractional_allocation = 0;
+
+            if( total_capacity != 0 )
+            {
+                fractional_allocation = habitat->GetCurrentLarvalCapacity() / total_capacity;
+            }
+            
             habitat->AddEggs(neweggs * fractional_allocation);
 
             // Now lay each type of egg, laying male and female eggs, except for sterile ones
@@ -1588,7 +1614,7 @@ namespace Kernel
             uint32_t new_pop = cohort->GetPopulation();
             if( (new_pop > 0) && m_VectorMortality )
             {
-                uint32_t dead_mosquitos = uint32_t(randgen->binomial_approx( new_pop, p_local_male_mortality ) );
+                uint32_t dead_mosquitos = uint32_t(m_context->GetRng()->binomial_approx( new_pop, p_local_male_mortality ) );
                 new_pop -= dead_mosquitos;
             }
             cohort->SetPopulation( new_pop );
@@ -1683,14 +1709,8 @@ namespace Kernel
         new_adults += tempentry->GetPopulation();
     }
 
-    uint32_t PrngForShuffle( uint32_t N )
-    {
-        uint32_t r = EnvPtr->RNG->uniformZeroToN( N );
-        return r;
-    }
-
     // Return a vector that contains a randomly order set of indexes that are from 0 to (N-1)
-    std::vector<uint32_t> VectorPopulation::GetRandomIndexes( uint32_t N )
+    std::vector<uint32_t> VectorPopulation::GetRandomIndexes( RANDOMBASE* pRNG, uint32_t N )
     {
         // Fill vector with indexes
         std::vector<uint32_t> selected_indexes;
@@ -1700,7 +1720,8 @@ namespace Kernel
         }
 
         // Randomly shuffle the entries of the vector
-        std::random_shuffle( selected_indexes.begin(), selected_indexes.end(), PrngForShuffle );
+        auto myran = [ pRNG ] ( int i ) { return pRNG->uniformZeroToN32( i ); };
+        std::random_shuffle( selected_indexes.begin(), selected_indexes.end(), myran );
 
         return selected_indexes;
     }
@@ -1737,7 +1758,7 @@ namespace Kernel
         }
         release_assert( fraction_traveling.size() == r_reachable_nodes.size() );
 
-        std::vector<uint32_t> random_indexes = GetRandomIndexes( r_reachable_nodes.size() );
+        std::vector<uint32_t> random_indexes = GetRandomIndexes( m_context->GetRng(), r_reachable_nodes.size() );
 
         Vector_Migration_Queue( random_indexes, r_reachable_nodes, r_migration_types, fraction_traveling, pMigratingQueue, AdultQueues      );
         Vector_Migration_Queue( random_indexes, r_reachable_nodes, r_migration_types, fraction_traveling, pMigratingQueue, InfectedQueues   );
@@ -1755,7 +1776,7 @@ namespace Kernel
         {
             IVectorCohort* p_vc = rQueue[ iCohort ];
 
-            std::vector<uint64_t> travelers = EnvPtr->RNG->multinomial_approx( p_vc->GetPopulation(), rFractionTraveling );
+            std::vector<uint64_t> travelers = m_context->GetRng()->multinomial_approx( p_vc->GetPopulation(), rFractionTraveling );
 
             for( uint32_t index : rRandomIndexes )
             {

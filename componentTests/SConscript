@@ -31,6 +31,7 @@ else:
         "HIVARTStagingCD4AgnosticDiagnosticTest.cpp",
         "HIVDrawBloodTest.cpp",
         "HIVSimpleDiagnosticTest.cpp",
+        "InterventionForCurrentPartnersTest.cpp",
         "IncidenceEventCoordinatorTest.cpp",
         "InterpolatedValueMapTest.cpp",
         "JsonObjectDemogTest.cpp",
@@ -52,10 +53,12 @@ else:
         "RelationshipParametersTest.cpp",
         "ReportUtilitiesMalariaTest.cpp",
         "ReportUtilitiesTest.cpp",
+        "SerializationTimeCalculatorTest.cpp",
         "SigmoidTest.cpp",
         "STIIsPostDebutTest.cpp",
         "WaningEffectComboTest.cpp",
-        "WaningEffectMapTest.cpp"
+        "WaningEffectMapTest.cpp",
+        "FakeLogger.cpp"
     ]
 
     #DMB 3/16/2017 - Serialization is only supported on windows at this time.

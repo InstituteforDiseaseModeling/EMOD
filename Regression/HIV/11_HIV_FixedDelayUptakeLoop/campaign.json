@@ -1,89 +1,74 @@
 {
-    "Use_Defaults": 1,
-    "Campaign_Name": "PiecewiseByYearAndSex validation", 
+    "Campaign_Name": "PiecewiseByYearAndSex validation",
     "Events": [
         {
-            "class": "CampaignEvent",
-            "Event_Name": "starting on day 30, give everyone a repeated 2-day delayed intervention", 
-            "Start_Day": 30,
-
-            "Nodeset_Config":
-            {
-                "class": "NodeSetAll"
-            }, 
-
-            "Event_Coordinator_Config": 
-            {
-                "class": "StandardInterventionDistributionEventCoordinator",
+            "Event_Coordinator_Config": {
                 "Demographic_Coverage": 1,
-                "Intervention_Config":
-                {
-                    "class": "HIVDelayedIntervention",
-
+                "Intervention_Config": {
+                    "Broadcast_Event": "OnART1",
+                    "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
                     "Disqualifying_Properties": [],
                     "New_Property_Value": "InterventionStatus:None",
                     "Single_Use": 0,
-
-                    "Delay_Distribution": "FIXED_DURATION",
-                    "Delay_Period": 2,
-
-                    "Broadcast_Event": "OnART1"
-                }
-            }
-        },
-
-
-        {
-            "class": "CampaignEvent",
-            "Event_Name": "OnART1-triggered piecewise event", 
-            "Start_Day": 1,
-
-            "Nodeset_Config":
-            {
+                    "class": "HIVDelayedIntervention",
+                    "Delay_Period_Constant": 2
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "starting on day 30, give everyone a repeated 2-day delayed intervention",
+            "Nodeset_Config": {
                 "class": "NodeSetAll"
-            }, 
-
-            "Event_Coordinator_Config": 
-            {
-                "class": "StandardInterventionDistributionEventCoordinator",
-                "Event_Name": "Piecewise constant test, broadcasts OnART0",
+            },
+            "Start_Day": 30,
+            "class": "CampaignEvent"
+        },
+        {
+            "Event_Coordinator_Config": {
                 "Demographic_Coverage": 1,
-                "Intervention_Config":
-                {
-                    "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition_List": [ "OnART1" ],
-
-                    "Demographic_Coverage": 1,
-                    "Duration": 14600,
-
-                    "Actual_IndividualIntervention_Config":
-                    {
-                        "class": "HIVPiecewiseByYearAndSexDiagnostic",
-
+                "Event_Name": "Piecewise constant test, broadcasts OnART0",
+                "Intervention_Config": {
+                    "Actual_IndividualIntervention_Config": {
                         "Days_To_Diagnosis": 0,
-
-                        "Disqualifying_Properties": [],
-                        "New_Property_Value": "InterventionStatus:None",
-
-                        "Interpolation_Order": 0,
-                        "Female_Multiplier": 1.3,
-
                         "Defualt_Value": 0,
+                        "Disqualifying_Properties": [],
+                        "Female_Multiplier": 1.3,
+                        "Interpolation_Order": 0,
+                        "New_Property_Value": "InterventionStatus:None",
+                        "Positive_Diagnosis_Event": "OnART0",
                         "Time_Value_Map": {
-                            "Times": [ 1992, 1994, 1996, 1998, 2000 ],
+                            "Times": [
+                                1992,
+                                1994,
+                                1996,
+                                1998,
+                                2000
+                            ],
                             "Values": [
                                 1,
-                                0.30000,
-                                0.10000,
-                                0.40000,
-                                0.20000
+                                0.3,
+                                0.1,
+                                0.4,
+                                0.2
                             ]
-                         },
-
-                        "Positive_Diagnosis_Event": "OnART0"
-                    }
-                }
-            }
+                        },
+                        "class": "HIVPiecewiseByYearAndSexDiagnostic"
+                    },
+                    "Demographic_Coverage": 1,
+                    "Duration": 14600,
+                    "Trigger_Condition_List": [
+                        "OnART1"
+                    ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "OnART1-triggered piecewise event",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 1,
+            "class": "CampaignEvent"
         }
-    ]
+    ],
+    "Use_Defaults": 1
 }

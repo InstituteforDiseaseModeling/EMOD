@@ -1,5 +1,5 @@
 {
-     "Default_Config_Path": "defaults/malaria_default_config.json", 
+     "Default_Config_Path": "../../defaults/malaria_default_config.json", 
      "parameters": {
           "CLIMATE": {
                "AIR_TEMPERATURE": {
@@ -50,7 +50,7 @@
           "PRIMARY": {
                "Config_Name": "47_Malaria_Household_5x5_Migrate_Residents_Only", 
                "Geography": "Household_5x5", 
-               "Listed_Events": [], 
+               "Custom_Individual_Events": [], 
                "Node_Grid_Size": 0.005, 
                "Custom_Reports_Filename" : "custom_reports.json",
                "Report_Event_Recorder": 0, 

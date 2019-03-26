@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -21,19 +21,32 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <tmmintrin.h> // _mm_shuffle_epi8
 #endif
 
+#include "IArchive.h"
+
+#define PRNG_COUNT  (1<<20) // Let's start with ~1 million
+
+namespace Kernel
+{
+// ----------------------------------------------------------------------------
+// --- RANDOMBASE
+// ----------------------------------------------------------------------------
 
 double RANDOMBASE::cdf_random_num_precision = 0.01; // precision of random number obtained from a cumulative probability function
-double RANDOMBASE::tan_pi_4 = 1.0;
-double RANDOMBASE::pi = atan(tan_pi_4) * 4.0;
 
-RANDOMBASE::RANDOMBASE(uint32_t iSequence, size_t nCache)
-    : iSeq(iSequence)
-    , random_bits(reinterpret_cast<uint32_t*>(malloc(nCache*sizeof(uint32_t))))
-    , random_floats(reinterpret_cast<float*>(malloc(nCache*sizeof(float))))
-    , index(UINT_MAX)   // Make sure fill_bits() is called...
-    , bGauss(false)
-    , cache_count(nCache)
+RANDOMBASE::RANDOMBASE( size_t nCache )
+    : cache_count( nCache )
+    , index( UINT_MAX )   // Make sure fill_bits() is called...
+    , random_bits( nullptr )
+    , random_floats( nullptr )
+    , bGauss( false )
+    , eGauss_( 0.0f )
 {
+    if( cache_count == 0 )
+    {
+        cache_count = PRNG_COUNT;
+    }
+    random_bits = reinterpret_cast<uint32_t*>(malloc( cache_count * sizeof( uint32_t ) ));
+    random_floats = reinterpret_cast<float*>(malloc( cache_count * sizeof( float ) ));
 }
 
 RANDOMBASE::~RANDOMBASE()
@@ -43,6 +56,23 @@ RANDOMBASE::~RANDOMBASE()
     free(random_floats);
 #endif
 }
+
+bool RANDOMBASE::SmartDraw( float prob )
+{
+    if( prob == 0.0 )
+    {
+        return false;
+    }
+    else if( prob == 1.0 )
+    {
+        return true;
+    }
+    else
+    {
+        return prob > e();
+    }
+}
+
 
 uint32_t RANDOMBASE::ul()
 {
@@ -68,6 +98,28 @@ float RANDOMBASE::e()
     return random_floats[index++];
 }
 
+// Finds an uniformally distributed number between 0 (inclusive) and N (exclusive)
+uint16_t RANDOMBASE::uniformZeroToN16( uint16_t N )
+{
+    uint32_t ulA = ul();
+    uint32_t ll = (ulA & 0xFFFFL) * N;
+    ll >>= 16;
+    ll += (ulA >> 16) * N;
+    return (uint16_t)(ll >> 16);
+}
+
+// Finds an uniformally distributed number between 0 (inclusive) and N (exclusive)
+uint32_t RANDOMBASE::uniformZeroToN32( uint32_t N )
+{
+    uint64_t ulA = uint64_t( ul() );
+    uint64_t ulB = uint64_t( ul() );
+    ulB <<= 32;
+    ulA += ulB;
+    uint64_t ll = (ulA & 0xFFFFFFFFL) * N;
+    ll >>= 32;
+    return uint32_t( ll );
+}
+
 // randomRound() - rounds the 'val' to the nearest integer but randomly rounds it up or down.
 // If the input value is 5.3, then 70% of the time it should return 5 and 30% of the time 6.
 uint32_t RANDOMBASE::randomRound( float val )
@@ -88,12 +140,37 @@ uint32_t RANDOMBASE::randomRound( float val )
     return i_val;
 }
 
+std::set<uint32_t> RANDOMBASE::chooseMofN( uint32_t M, uint32_t N )
+{
+    // ----------------------------------------------------------------------------------
+    // --- Robert Floyd's Algorithm for Sampling without Replacement
+    // --- http://www.nowherenearithaca.com/2013/05/robert-floyds-tiny-and-beautiful.html
+    // ----------------------------------------------------------------------------------
+    release_assert( M <= N );
+
+    std::set<uint32_t> selected_indexes;
+    for( uint32_t j = (N - M); j < N; j++ )
+    {
+        uint32_t index = uniformZeroToN32( j + 1 ); // +1 so that the method includes j
+        if( selected_indexes.find( index ) == selected_indexes.end() )
+        {
+            selected_indexes.insert( index );
+        }
+        else
+        {
+            selected_indexes.insert( j );
+        }
+    }
+    return selected_indexes;
+}
+
 void RANDOMBASE::fill_bits()
 {
     assert(false);
 }
 
 #define FLOAT_EXP   8
+#define DOUBLE_EXP 11
 
 void RANDOMBASE::bits_to_float()
 {
@@ -278,7 +355,7 @@ double RANDOMBASE::LogLogistic(double alpha, double beta)
     return alpha * pow(uniform_rand/(1-uniform_rand), 1/beta);
 }
 
-double RANDOMBASE::time_varying_rate_dist( std::vector <float> v_rate, float timestep, float rate)
+double RANDOMBASE::time_varying_rate_dist( const std::vector <float>& v_rate, float timestep, float rate)
 { 
     double e_log = -log(e());
     double tempsum = 0.0f;
@@ -455,7 +532,6 @@ uint64_t RANDOMBASE::binomial_approx2(uint64_t n, double p)
     return uint64_t(tempval);
 }
 
-
 std::vector<uint64_t> RANDOMBASE::multinomial_approx( uint64_t N, const std::vector<float>& rProbabilities )
 {
     std::vector<uint64_t> subsets;
@@ -477,24 +553,138 @@ std::vector<uint64_t> RANDOMBASE::multinomial_approx( uint64_t N, const std::vec
     return subsets;
 }
 
-void RANDOM::fill_bits()
+// M Behrend
+// gamma-distributed random number
+// shape constant k=2
+
+double RANDOMBASE::rand_gamma( double mean )
 {
-    for (size_t i = 0; i < cache_count; ++i)
+
+    if( mean <= 0 )
     {
-        random_bits[i] = iSeq = 69069 * iSeq + 1;
+        return 0;
+    }
+    double q = e(); // get a uniform random number
+
+    double p1 = 0; // guess random variable interval
+    double p2 = mean;
+    double p_left; // temp variable
+    double slope;
+    double delta_p;
+    double delta_cdf;
+
+    do
+    {
+        delta_cdf = q - gamma_cdf( p2, mean );
+        slope = (gamma_cdf( p2, mean ) - gamma_cdf( p1, mean )) / (p2 - p1);
+        delta_p = delta_cdf / slope;
+
+        if( delta_p > 0 )
+        {
+            p1 = p2;
+            p2 = p2 + delta_p;
+        }
+        else
+        {
+            p2 = p2 + delta_p;
+            if( p2 < p1 )
+            {
+                p_left = p2;
+                p2 = p1;
+                p1 = p_left;
+            }
+        }
+    } while( fabs( delta_cdf ) > cdf_random_num_precision );
+
+    return p2;
+}
+
+double RANDOMBASE::gamma_cdf( double x, double mean )
+{
+    double theta = mean / 2;
+    double cdf = 1 - (x / theta + 1) * exp( -x / theta );
+
+    if( x < 0 )
+    {
+        cdf = 0;
+    }
+    return cdf;
+}
+
+double RANDOMBASE::get_cdf_random_num_precision()
+{
+    return cdf_random_num_precision;
+}
+
+void RANDOMBASE::serialize( IArchive& ar, RANDOMBASE* obj )
+{
+    RANDOMBASE& rb = *obj;
+    ar.labelElement( "cache_count"   ) & rb.cache_count;
+
+    if( ar.IsReader() )
+    {
+        free( rb.random_bits );
+        free( rb.random_floats );
+
+        rb.random_bits   = reinterpret_cast<uint32_t*>(malloc( rb.cache_count * sizeof( uint32_t ) ));
+        rb.random_floats = reinterpret_cast<float*   >(malloc( rb.cache_count * sizeof( float    ) ));
+    }
+
+    ar.labelElement( "index"         ) & rb.index;
+    ar.labelElement( "random_bits"   ); ar.serialize( rb.random_bits, rb.cache_count );
+    ar.labelElement( "random_floats" ); ar.serialize( rb.random_floats, rb.cache_count );
+    ar.labelElement( "bGauss"        ) & rb.bGauss;
+    ar.labelElement( "eGauss_"       ) & rb.eGauss_;
+}
+
+// ----------------------------------------------------------------------------
+// --- LINEAR_CONGRUENTIAL
+// ----------------------------------------------------------------------------
+BEGIN_QUERY_INTERFACE_BODY( LINEAR_CONGRUENTIAL )
+END_QUERY_INTERFACE_BODY( LINEAR_CONGRUENTIAL )
+
+LINEAR_CONGRUENTIAL::LINEAR_CONGRUENTIAL( uint32_t iSequence, size_t nCache )
+    : RANDOMBASE( nCache )
+    , iSeq( iSequence )
+{
+}
+
+LINEAR_CONGRUENTIAL::~LINEAR_CONGRUENTIAL()
+{
+}
+
+void LINEAR_CONGRUENTIAL::fill_bits()
+{
+    for( size_t i = 0; i < cache_count; ++i )
+    {
+        random_bits[ i ] = iSeq = 69069 * iSeq + 1;
     }
 }
 
-// Finds an uniformally distributed number between 0 and N
-uint32_t RANDOMBASE::uniformZeroToN( uint32_t N )
+REGISTER_SERIALIZABLE( LINEAR_CONGRUENTIAL );
+
+void LINEAR_CONGRUENTIAL::serialize( Kernel::IArchive& ar, LINEAR_CONGRUENTIAL* obj )
 {
-    uint64_t ulA = uint64_t(ul());
-    uint64_t ulB = uint64_t(ul());
-    ulB <<= 32;
-    ulA += ulB;
-    uint64_t ll = (ulA & 0xFFFFFFFFL) * N;
-    ll >>= 32;
-    return uint32_t(ll);
+    RANDOMBASE::serialize( ar, obj );
+    LINEAR_CONGRUENTIAL& lc = *obj;
+    ar.labelElement( "iSeq" ) & lc.iSeq;
+}
+
+// ----------------------------------------------------------------------------
+// --- PSEUDO_DES
+// ----------------------------------------------------------------------------
+BEGIN_QUERY_INTERFACE_BODY( PSEUDO_DES )
+END_QUERY_INTERFACE_BODY( PSEUDO_DES )
+
+PSEUDO_DES::PSEUDO_DES( uint64_t iSequence, size_t nCache )
+    : RANDOMBASE( nCache )
+    , iSeq( uint32_t( iSequence & 0xFFFFFFFF ) ) // lower 32-bits
+    , iNum( uint32_t( iSequence >> 32        ) ) // upper 32-bits
+{
+}
+
+PSEUDO_DES::~PSEUDO_DES()
+{
 }
 
 const uint32_t c1[4] = {0xBAA96887L, 0x1E17D32CL, 0x03BCDC3CL, 0x0F33D1B2L};
@@ -542,76 +732,21 @@ void PSEUDO_DES::fill_bits()
     }
 }
 
-// M Behrend
-// gamma-distributed random number
-// shape constant k=2
+REGISTER_SERIALIZABLE( PSEUDO_DES );
 
-double RANDOMBASE::rand_gamma(double mean)
+void PSEUDO_DES::serialize( Kernel::IArchive& ar, PSEUDO_DES* obj )
 {
-
-    if (mean <= 0)
-    {
-        return 0;
-    }
-    double q = e(); // get a uniform random number
-
-    double p1 = 0; // guess random variable interval
-    double p2 = mean;
-    double p_left; // temp variable
-    double slope;
-    double delta_p;
-    double delta_cdf;
-
-    do
-    {
-        delta_cdf = q - gamma_cdf(p2, mean);
-        slope = (gamma_cdf(p2, mean) - gamma_cdf(p1, mean)) / (p2 - p1);
-        delta_p = delta_cdf / slope;
-
-        if (delta_p > 0)
-        {
-            p1 = p2;
-            p2 = p2 + delta_p;
-        }
-        else
-        {
-            p2 = p2 + delta_p;
-            if (p2 < p1)
-            {
-                p_left = p2;
-                p2 = p1;
-                p1 = p_left;
-            }
-        }
-    }
-    while (fabs(delta_cdf) > cdf_random_num_precision);
-
-    return p2;
+    RANDOMBASE::serialize( ar, obj );
+    PSEUDO_DES& des = *obj;
+    ar.labelElement( "iSeq" ) & des.iSeq;
+    ar.labelElement( "iNum" ) & des.iNum;
 }
 
-double RANDOMBASE::gamma_cdf(double x, double mean)
-{
-    double theta = mean / 2;
-    double cdf = 1 - (x / theta + 1) * exp(-x / theta);
-
-    if (x < 0)
-    {
-        cdf = 0;
-    }
-    return cdf;
-}
-
-double RANDOMBASE::get_cdf_random_num_precision()
-{
-    return cdf_random_num_precision;
-}
-
-double RANDOMBASE::get_pi()
-{
-    return pi;
-}
-
-/* AES Counter PRNG ***********************************************************/
+// ----------------------------------------------------------------------------
+// --- AES_COUNTER
+// ----------------------------------------------------------------------------
+BEGIN_QUERY_INTERFACE_BODY( AES_COUNTER )
+END_QUERY_INTERFACE_BODY( AES_COUNTER )
 
 inline __m128i AES_128_ASSIST(__m128i temp1, __m128i temp2)
 {
@@ -684,9 +819,10 @@ void AES_Init_Ex(AES_KEY *pExpanded)
     AES_set_encrypt_key((const unsigned char *)&key, 128, pExpanded);
 }
 
-AES_COUNTER::AES_COUNTER(uint32_t iSequence, uint32_t rank, size_t nCache)
-    : RANDOMBASE(iSequence, nCache)
-    , m_nonce(uint64_t(rank) << 32 | uint64_t(iSequence))
+AES_COUNTER::AES_COUNTER( uint64_t iSequence, size_t nCache )
+    : RANDOMBASE( nCache )
+    , m_keySchedule()
+    , m_nonce(iSequence)
     , m_iteration(0)
 {
     AES_Init_Ex(&m_keySchedule);
@@ -694,7 +830,6 @@ AES_COUNTER::AES_COUNTER(uint32_t iSequence, uint32_t rank, size_t nCache)
 
 AES_COUNTER::~AES_COUNTER()
 {
-
 }
 
 void AES_Get_Bits_Ex(void *buffer, size_t bytes, uint64_t nonce, uint32_t count, AES_KEY *pKey)
@@ -759,4 +894,34 @@ void AES_COUNTER::fill_bits()
 {
     memset(random_bits, 0, sizeof(__m128i));
     AES_Get_Bits_Ex(random_bits, cache_count * sizeof(uint32_t), m_nonce, m_iteration++, &m_keySchedule);
+}
+
+REGISTER_SERIALIZABLE( AES_COUNTER );
+
+void serialize_AES_KEY( Kernel::IArchive& ar, AES_KEY& key )
+{
+    size_t num_keys = 2 * NUM_KEYS_IN_SCHEDULE;
+
+    ar.startObject();
+    ar.labelElement("KEY");
+    ar.startArray( num_keys );
+    uint64_t* vals = (uint64_t*)(key.KEY);
+    for( size_t i = 0; i < num_keys; ++i )
+    {
+        ar & vals[i];
+    }
+    ar.endArray();
+    ar.labelElement("nr") & key.nr;
+    ar.endObject();
+}
+
+void AES_COUNTER::serialize( Kernel::IArchive& ar, AES_COUNTER* obj )
+{
+    RANDOMBASE::serialize( ar, obj );
+    AES_COUNTER& aes = *obj;
+    ar.labelElement( "m_keySchedule" ); serialize_AES_KEY( ar, aes.m_keySchedule );
+    ar.labelElement( "m_nonce"     ) & aes.m_nonce;
+    ar.labelElement( "m_iteration" ) & aes.m_iteration;
+}
+
 }

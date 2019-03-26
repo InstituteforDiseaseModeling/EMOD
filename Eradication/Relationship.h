@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -10,7 +10,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #pragma once
 
 #include "Types.h"
-#include "INodeContext.h"
+#include "ExternalNodeId.h"
 #include "IRelationship.h"
 #include "IRelationshipParameters.h"
 #include "IRelationshipManager.h"
@@ -37,7 +37,7 @@ namespace Kernel
             virtual void Resume( IRelationshipManager* pRelMan, ISociety* pSociety, IIndividualHumanSTI* returnee ) override;
             virtual void UpdatePaused() override;
             virtual bool Update( float dt ) override;
-            virtual void Consummate( float dt ) override;
+            virtual void Consummate( RANDOMBASE* pRNG, float dt ) override;
 
             // public const
             virtual RelationshipState::Enum GetState() const override;
@@ -73,7 +73,8 @@ namespace Kernel
 
         protected:
             Relationship();
-            Relationship( const suids::suid& rRelId,
+            Relationship( RANDOMBASE* pRNG,
+                          const suids::suid& rRelId,
                           IRelationshipManager* pRelMan,
                           IRelationshipParameters* pParams, 
                           IIndividualHumanSTI* male_partner, 
@@ -128,7 +129,8 @@ namespace Kernel
     class IDMAPI RelationshipFactory
     {
     public:
-        static IRelationship* CreateRelationship( const suids::suid& rRelId,
+        static IRelationship* CreateRelationship( RANDOMBASE* pRNG,
+                                                  const suids::suid& rRelId,
                                                   IRelationshipManager* pRelMan,
                                                   IRelationshipParameters* pParams, 
                                                   IIndividualHumanSTI* male_partner, 
@@ -143,7 +145,8 @@ namespace Kernel
 
         protected:
             TransitoryRelationship();
-            TransitoryRelationship( const suids::suid& rRelId,
+            TransitoryRelationship( RANDOMBASE* pRNG,
+                                    const suids::suid& rRelId,
                                     IRelationshipManager* pRelMan,
                                     IRelationshipParameters* pParams,
                                     IIndividualHumanSTI* male_partner, 
@@ -165,7 +168,8 @@ namespace Kernel
 
         protected:
             InformalRelationship();
-            InformalRelationship( const suids::suid& rRelId,
+            InformalRelationship( RANDOMBASE* pRNG,
+                                  const suids::suid& rRelId,
                                   IRelationshipManager* pRelMan,
                                   IRelationshipParameters* pParams, 
                                   IIndividualHumanSTI* male_partner, 
@@ -187,7 +191,8 @@ namespace Kernel
 
         protected:
             MarriageRelationship();
-            MarriageRelationship( const suids::suid& rRelId,
+            MarriageRelationship( RANDOMBASE* pRNG,
+                                  const suids::suid& rRelId,
                                   IRelationshipManager* pRelMan,
                                   IRelationshipParameters* pParams, 
                                   IIndividualHumanSTI* male_partner, 
@@ -209,11 +214,12 @@ namespace Kernel
 
         protected:
             CommercialRelationship();
-            CommercialRelationship( const suids::suid& rRelId,
-                                       IRelationshipManager* pRelMan,
-                                       IRelationshipParameters* pParams, 
-                                       IIndividualHumanSTI* male_partner, 
-                                       IIndividualHumanSTI* female_partner );
+            CommercialRelationship( RANDOMBASE* pRNG,
+                                    const suids::suid& rRelId,
+                                    IRelationshipManager* pRelMan,
+                                    IRelationshipParameters* pParams, 
+                                    IIndividualHumanSTI* male_partner, 
+                                    IIndividualHumanSTI* female_partner );
 
             virtual Relationship* Clone() override;
 

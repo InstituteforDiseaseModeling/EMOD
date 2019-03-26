@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -12,7 +12,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include <typeinfo>
 
-#include "Contexts.h"                      // for IIndividualHumanContext, IIndividualHumanInterventionsContext
+#include "IIndividualHumanContext.h"
 #include "InterventionFactory.h"
 #include "VectorInterventionsContainerContexts.h"  // for IBednetConsumer methods
 #include "Log.h"
@@ -185,15 +185,8 @@ namespace Kernel
     {
         if( !trigger.IsUninitialized() )
         {
-            INodeTriggeredInterventionConsumer* broadcaster = nullptr;
-            if( s_OK != parent->GetEventContext()->GetNodeEventContext()->QueryInterface( GET_IID( INodeTriggeredInterventionConsumer ), (void**)&broadcaster ) )
-            {
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__,
-                    "parent->GetEventContext()->GetNodeEventContext()",
-                    "INodeTriggeredInterventionConsumer",
-                    "INodeEventContext" );
-            }
-            broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), trigger );
+            IIndividualEventBroadcaster* broadcaster = parent->GetEventContext()->GetNodeEventContext()->GetIndividualEventBroadcaster();
+            broadcaster->TriggerObservers( parent->GetEventContext(), trigger );
         }
     }
 

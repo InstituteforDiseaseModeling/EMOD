@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
-import dtk_sft as sft
-import dtk_Immunity_Initialization_Support as dtk_iis
+import dtk_test.dtk_sft as sft
+import dtk_test.dtk_Immunity_Initialization_Support as dtk_iis
 
 
 """
@@ -42,7 +42,7 @@ def application(output_folder="output", config_filename="config.json",
 
     demographics_object = dtk_iis.load_demographics_file(
         demographics_filename=demographics_overlay_name,
-        immunity_initialization_type=config_object[dtk_iis.ConfigKeys.IMM_DIST_TYPE],
+        susceptibility_initialization_type=config_object[dtk_iis.ConfigKeys.SUS_INIT_DIST_TYPE],
         debug=debug)
     average_immunity = demographics_object[dtk_iis.DemographicFileKeys.KEY_AVERAGE_IMMUNITY]
 

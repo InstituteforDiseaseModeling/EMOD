@@ -1,14 +1,14 @@
 {
-    "Default_Config_Path": "defaults/hiv_default_config.json",
+    "Default_Config_Path": "../../defaults/hiv_default_config.json",
     "parameters": {
-        "Base_Population_Scale_Factor": 1e-07,
+        "x_Base_Population": 1e-07,
         "Config_Name": "41_HIV_HIVSimpleDiagnostic",
         "Demographics_Filenames": [
             "../input/SA_UN_demographics_extrapolated_WithProperties_Smoothed.json",
             "../input/PFA_overlay.json",
             "TestState_overlay.json"
         ],
-        "Listed_Events": [
+        "Custom_Individual_Events": [
             "Tested_Negative_Because_No_Oubreak_Yet",
             "So_Far_So_Good",
             "There_It_Is"

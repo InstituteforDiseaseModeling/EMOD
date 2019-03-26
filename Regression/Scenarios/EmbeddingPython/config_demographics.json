@@ -2,7 +2,7 @@
     "parameters": {
         "Age_Initialization_Distribution_Type": "DISTRIBUTION_SIMPLE",
         "Base_Mortality": 0,
-        "Base_Population_Scale_Factor": 1,
+        "x_Base_Population": 1,
         "Birth_Rate_Dependence": "DEMOGRAPHIC_DEP_RATE",
         "Birth_Rate_Time_Dependence": "NONE",
         "Death_Rate_Dependence": "NONDISEASE_MORTALITY_BY_AGE_AND_GENDER",
@@ -15,7 +15,6 @@
         "Enable_Birth": 1,
         "Enable_Demographics_Birth": 0,
         "Enable_Demographics_Builtin": 0,
-        "Enable_Demographics_Gender": 1,
         "Enable_Demographics_Risk": 0,
         "Enable_Natural_Mortality": 1,
         "Enable_Vital_Dynamics": 1,

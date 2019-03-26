@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -16,21 +16,24 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "suids.hpp"
 #include "SimulationEnums.h"
 #include "Configure.h"
-#include "INodeContext.h"
+#include "ExternalNodeId.h"
 
 class Configuration;
 
 
 namespace Kernel
 {
+    class RANDOMBASE;
     struct IIndividualHumanContext;
+    struct INodeContext;
 
     // IMigrationInfo is used to determine when and where an individual will migrate.
     struct IDMAPI IMigrationInfo
     {
         virtual ~IMigrationInfo() {};
 
-        virtual void PickMigrationStep( IIndividualHumanContext * traveler, 
+        virtual void PickMigrationStep( RANDOMBASE* pRNG,
+                                        IIndividualHumanContext * traveler, 
                                         float migration_rate_modifier, 
                                         suids::suid &destination, 
                                         MigrationType::Enum &migration_type,

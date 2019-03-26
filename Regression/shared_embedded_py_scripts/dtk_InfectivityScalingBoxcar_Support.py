@@ -2,7 +2,7 @@ import json
 import numpy as np
 import json
 import os.path as path
-import dtk_sft
+import dtk_test.dtk_sft as sft
 import re
 import pandas as pd
 import os
@@ -159,7 +159,7 @@ def parse_output_file(output_filename="test.txt", simulation_timestep = 1, debug
     filtered_lines = []
     with open(output_filename) as logfile:
         for line in logfile:
-            if dtk_sft.has_match(line,matches):
+            if sft.has_match(line,matches):
                 filtered_lines.append(line)
     if debug:
         with open("filtered_lines.txt", "w") as outfile:
@@ -175,15 +175,15 @@ def parse_output_file(output_filename="test.txt", simulation_timestep = 1, debug
     index = 0
     for line in filtered_lines:
         if matches[0] in line:
-            infected = dtk_sft.get_val(matches[1], line)
-            statpop = dtk_sft.get_val(matches[3], line)
+            infected = sft.get_val(matches[1], line)
+            statpop = sft.get_val(matches[3], line)
             output_df.loc[index] = [time_step, infected, infectiousness, statpop]
             index += 1
             time_step += simulation_timestep
             infectiousness = 0
             continue
         if matches[2] in line:
-            infectiousness = dtk_sft.get_val(matches[2], line)
+            infectiousness = sft.get_val(matches[2], line)
             continue
     res_path = r'./infected_vs_infectiousness.csv'
     if not os.path.exists(os.path.dirname(res_path)):
@@ -202,7 +202,7 @@ def parse_json_report(output_folder="output", insetchart_name="InsetChart.json",
         icj = json.load(infile)["Channels"]
 
     new_infections = icj[KEY_NEW_INFECTIONS]["Data"]
-    cumulative_infections = icj[KEY_CUMULATIVE_INFECTIONS]["Data"]
+    cumulative_infections = np.cumsum(new_infections)
 
     report_dict = {KEY_NEW_INFECTIONS: new_infections, KEY_CUMULATIVE_INFECTIONS: cumulative_infections}
     report_df = pd.DataFrame(report_dict)
@@ -255,7 +255,7 @@ def create_report_file(param_obj, output_df, report_df, report_name, debug):
     statpop = output_df[KEY_STAT_POP]
     new_infections = report_df[KEY_NEW_INFECTIONS]
     if debug:
-        dtk_sft.plot_data(new_infections, label1="new infections", label2="NA",
+        sft.plot_data(new_infections, label1="new infections", label2="NA",
                                    title="Start_time: {0} day, End_time: {1} day".format(start_time, end_time),
                                    xlabel="Time_Step_{0}_Days".format(simulation_timestep), ylabel=None,
                                    category='New_infections',
@@ -280,8 +280,8 @@ def create_report_file(param_obj, output_df, report_df, report_name, debug):
             if  math.fabs(actual_infectiousness - calc_infectiousness) > tolerance:
                 success = False
                 outfile.write("BAD: actual infectiousness at time step {0} is {1}, expected {2}.\n".format(timestep, actual_infectiousness, calc_infectiousness))
-        outfile.write(dtk_sft.format_success_msg(success))
-    dtk_sft.plot_data(actual_infectiousness_all, calc_infectiousness_all,
+        outfile.write(sft.format_success_msg(success))
+    sft.plot_data(actual_infectiousness_all, calc_infectiousness_all,
                                label1="actual infectiousness", label2="calc infectiousness",
                                title="Start_time: {0} day, End_time: {1} day".format(start_time, end_time),
                                xlabel="Time_Step_{0}_Days".format(simulation_timestep), ylabel="Infectiousness",

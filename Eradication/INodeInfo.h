@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -12,10 +12,12 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <stdafx.h>
 
 #include "suids.hpp"
-#include "INodeContext.h"
+#include "ExternalNodeId.h"
 
 namespace Kernel
 {
+    struct INodeContext;
+
     // INodeInfo is an interface to an obect that contains a subset of information
     // about a node that other nodes might need.  For example, an intervention might
     // want to make a decision based on how many people are in a node.

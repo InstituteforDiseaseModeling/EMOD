@@ -240,6 +240,7 @@ if os.sys.platform == 'win32':
         OptionalScript('reporters/SConscript_Polio_VirusPopulation')
 
     if( (disease == "ALL") or (disease == "TBHIV") ):
+        OptionalScript('reporters/SConscript_TBHIV_Basic')
         OptionalScript('reporters/SConscript_TBHIV_ByAge')
 
     if( (disease == "ALL") or (disease == "STI") or (disease == "HIV") ):

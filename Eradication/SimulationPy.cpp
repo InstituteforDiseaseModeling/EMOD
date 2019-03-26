@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -161,12 +161,13 @@ namespace Kernel
     }
 
     // called by demographic file Populate()
-    void SimulationPy::addNewNodeFromDemographics( suids::suid node_suid,
+    void SimulationPy::addNewNodeFromDemographics( ExternalNodeId_t externalNodeId,
+                                                   suids::suid node_suid,
                                                    NodeDemographicsFactory *nodedemographics_factory,
                                                    ClimateFactory *climate_factory,
                                                    bool white_list_enabled )
     {
-        NodePy *node = NodePy::CreateNode(this, node_suid);
+        NodePy *node = NodePy::CreateNode(this, externalNodeId, node_suid);
 
         addNode_internal( node, nodedemographics_factory, climate_factory, white_list_enabled );
     }

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -69,7 +69,7 @@ namespace Kernel
         virtual void ClearNewInfectionState() override;
         virtual void setupMaternalAntibodies(IIndividualHumanContext* mother, INodeContext* node) override;
 
-        virtual void ExposeToInfectivity(float = 1.0f, const TransmissionGroupMembership_t* transmissionGroupMembership = nullptr) override;
+        virtual void ExposeToInfectivity(float dt, TransmissionGroupMembership_t transmissionGroupMembership) override;
         virtual void UpdateInfectiousness(float dt) override;
 
         virtual void SetContextTo(INodeContext* context);

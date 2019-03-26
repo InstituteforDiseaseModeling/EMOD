@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -13,8 +13,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <map>
 
 #include "Report.h"
-#include "Sugar.h"
-#include "Environment.h"
 #include "INodeContext.h"
 #include "IIndividualHuman.h"
 #include "Climate.h"
@@ -35,8 +33,6 @@ const string Report::_immunized_pop_label  ( "Immunized Population" );
 static const std::string _report_name        ( "InsetChart.json" );
 const string Report::_new_infections_label   ( "New Infections" );
 const string Report::_infected_fraction_label( "Infected Fraction" );
-const string Report::_new_reported_infections_label( "New Reported Infections" );
-const string Report::_cum_reported_infections_label( "Cumulative Reported Infections" );
 const string Report::_hum_infectious_res_label( "Human Infectious Reservoir" );
 const string Report::_log_prev_label( "Log Prevalence" );
 const string Report::_infection_rate_label( "Daily (Human) Infection Rate" );
@@ -59,6 +55,8 @@ Report::Report()
 Report::Report( const std::string& rReportName )
 : BaseChannelReport( rReportName )
 , last_time( 0 )
+, new_infections(0.0f)
+, new_reported_infections(0.0f)
 , disease_deaths(0.0f)
 {
 }
@@ -114,13 +112,14 @@ Report::LogNodeData(
     Kernel::INodeContext * pNC
 )
 {
-
     LOG_DEBUG( "LogNodeData\n" );
 
     Accumulate(_stat_pop_label, pNC->GetStatPop());
     Accumulate("Births", pNC->GetBirths());
     Accumulate("Infected", pNC->GetInfected());
-    //Accumulate(_aoi_label: pNC->GetMeanAgeInfection() ); // * pNC->GetInfected());
+    Accumulate("Symptomatic Population", pNC->GetSymptomatic());
+    Accumulate("Newly Symptomatic", pNC->GetNewlySymptomatic() + new_reported_infections ); //either GetNewlySymptomatic() or new_reported_infections is used (other channel is 0)
+    new_reported_infections = 0.0f;
 
     if (pNC->GetLocalWeather())
     {
@@ -132,8 +131,6 @@ Report::LogNodeData(
 
     Accumulate(_new_infections_label,                 new_infections);
     new_infections = 0.0f;
-    Accumulate(_new_reported_infections_label,        new_reported_infections);
-    new_reported_infections = 0.0f;
 
     Accumulate("Campaign Cost",                  pNC->GetCampaignCost());
     Accumulate("Human Infectious Reservoir",     pNC->GetInfectivity());
@@ -154,9 +151,7 @@ Report::populateSummaryDataUnitsMap(
     units_map["Rainfall"]                       = "mm/day";
     units_map["Temperature"]                    = "degrees C";
     units_map[_new_infections_label]            = "";
-    units_map["Cumulative Infections"]          = "";
     units_map["Reported New Infections"]        = "";
-    units_map[_cum_reported_infections_label]   = "";
     units_map["Disease Deaths"]                 = "";
     units_map["Campaign Cost"]                  = "USD";
     units_map[_hum_infectious_res_label]        = "Total Infectivity";
@@ -185,8 +180,6 @@ Report::postProcessAccumulatedData()
 
     // add derived channels
     addDerivedLogScaleSummaryChannel("Infected", _log_prev_label);
-    addDerivedCumulativeSummaryChannel(_new_infections_label, "Cumulative Infections");
-    addDerivedCumulativeSummaryChannel(_new_reported_infections_label, _cum_reported_infections_label);
 
     NormalizeSEIRWChannels();
 }
@@ -224,11 +217,11 @@ void Report::UpdateSEIRW( const Kernel::IIndividualHuman* individual, float mont
 
 void Report::AccumulateSEIRW()
 {
-    Accumulate(_susceptible_pop_label, countOfSusceptibles);
-    Accumulate(_exposed_pop_label,     countOfExposed);
-    Accumulate(_infectious_pop_label,  countOfInfectious);
-    Accumulate(_recovered_pop_label,   countOfRecovered);
-    Accumulate(_waning_pop_label,      countOfWaning);
+    Accumulate( _susceptible_pop_label, countOfSusceptibles );
+    Accumulate( _exposed_pop_label,     countOfExposed );
+    Accumulate( _infectious_pop_label,  countOfInfectious );
+    Accumulate( _recovered_pop_label,   countOfRecovered );
+    Accumulate( _waning_pop_label,      countOfWaning );
 
     countOfSusceptibles = 0.0f;
     countOfExposed      = 0.0f;

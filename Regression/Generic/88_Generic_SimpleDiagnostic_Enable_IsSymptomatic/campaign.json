@@ -1,0 +1,79 @@
+{
+    "Events": [
+        {
+            "comment:": "Infect all individuals",
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual"
+                }
+            }
+        },
+        {
+            "comment:": "Incubation_Period_Fixed: 10, Infectious_Period_Fixed: 8, Symptomatic_Infectious_Offset: 4, Infected individuals become symptomatic 14days after outbreak",
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 0.0,
+                    "Event_Or_Config": "Event",
+                    "Positive_Diagnosis_Event": "TestedPositive_CureMeNow",
+                    "Enable_IsSymptomatic": 0,
+                    "class": "SimpleDiagnostic"
+                },
+                "Number_Repetitions": 30,
+                "Timesteps_Between_Repetitions": 1,
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "Diagnostic event",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 1,
+            "class": "CampaignEvent"
+        },
+
+        {
+            "comment:": "Second outbreak, to test Enable_IsSymptomatic",
+            "class": "CampaignEvent",
+            "Start_Day": 30,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual"
+                }
+            }
+        },
+        {
+            "comment:": "Incubation_Period_Fixed: 10, Infectious_Period_Fixed: 8, Symptomatic_Infectious_Offset: 4, Infected individuals become symptomatic 14days after outbreak",
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 0.0,
+                    "Event_Or_Config": "Event",
+                    "Positive_Diagnosis_Event": "TestedPositive_CureMeNow",
+                    "Enable_IsSymptomatic": 1,
+                    "class": "SimpleDiagnostic"
+                },
+                "Target_Demographic": "Everyone",
+                "Number_Repetitions": 30,
+                "Timesteps_Between_Repetitions": 1,
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "Diagnostic event",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 30,
+            "class": "CampaignEvent"
+        }
+    ],
+    "Use_Defaults": 1
+}

@@ -23,8 +23,8 @@ INCS=-I $(UNIT_TEST_INCLUDES) -I$(ROOT) -I$(ROOT)/Eradication -I$(ROOT)/utils/ -
 
 CFLAGS = $(INCS) -w -O3 -fpermissive -ffloat-store  -std=c++0x -Wno-unknown-pragmas -save-temps -DNULL=0 -std=c++0x -DDONT_USE_BOOST_MPI
 CFLAGS_DBG = $(INCS) -w -g -fpermissive -ffloat-store  -std=c++0x -Wno-unknown-pragmas -DNULL=0 -DDONT_USE_BOOST_MPI -save-temps
-COMPILE = $(CC) $(CFLAGS) -c -D_new_=new -DENABLE_TB -DENABLE_POLIO
-DBG_COMPILE = $(CC) $(CFLAGS_DBG) -c -D_new_=new -DENABLE_TB -DENABLE_POLIO
+COMPILE = $(CC) $(CFLAGS) -c -D_new_=new -DENABLE_POLIO
+DBG_COMPILE = $(CC) $(CFLAGS_DBG) -c -D_new_=new -DENABLE_POLIO
 LDFLAGS=-L/usr/local/lib -L/usr/local/lib -L/usr/lib/mpich2/lib/ -L /usr/lib/mpich2/lib/ -lmpichcxx -L$(BOOST_LIBS) -Wl,-R$(BOOST_LIBS) -L libs/ -lboost_program_options -lboost_filesystem -lboost_system -ldl
 SOURCES=$(wildcard *.cpp) $(wildcard cajun/src/*.cpp) $(wildcard UnitTest++/src/*.cpp) $(wildcard UnitTest++/src/Posix/*.cpp) $(wildcard json_spirit/*.cpp) $(wildcard utils/*.cpp) $(wildcard campaign/*.cpp)
 #SOURCES=$(wildcard *.cpp) $(wildcard cajun/src/*.cpp) $(wildcard UnitTest++/src/*.cpp) $(wildcard UnitTest++/src/Posix/*.cpp)

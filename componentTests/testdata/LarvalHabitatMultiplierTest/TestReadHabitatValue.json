@@ -1,7 +1,15 @@
 {
-    "LarvalHabitatMultiplier" :
-    {
-        "BRACKISH_SWAMP" : 2.0,
-        "HUMAN_POPULATION" : 3.0
-    }
+	"LarvalHabitatMultiplier" : 
+	[
+		{
+			"Habitat" : "BRACKISH_SWAMP",
+			"Species" : "ALL_SPECIES",
+			"Factor" : 2.0
+		},
+		{
+			"Habitat" : "HUMAN_POPULATION",
+			"Species" : "ALL_SPECIES",
+			"Factor" : 3.0
+		}
+	]
 }

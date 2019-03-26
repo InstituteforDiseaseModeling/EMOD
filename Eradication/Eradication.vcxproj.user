@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LocalDebuggerCommandArguments>-C config.json -I . -O testing --dll-path $(SolutionDir)$(Platform)\$(Configuration)</LocalDebuggerCommandArguments>
-    <LocalDebuggerWorkingDirectory>..\Regression\Generic\00_Generic_Default</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerCommandArguments>-C config.json -I C:\Users\tfischle\Github\DtkInput\SamplesInput_InterventionStatus -O testing --dll-path $(SolutionDir)$(Platform)\$(Configuration)</LocalDebuggerCommandArguments>
+    <LocalDebuggerWorkingDirectory>..\Regression\generic\81_Generic_TriggeredEventCoordinator\</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='QuickStart|x64'">

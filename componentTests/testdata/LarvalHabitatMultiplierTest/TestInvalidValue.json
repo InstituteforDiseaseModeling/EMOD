@@ -1,11 +1,20 @@
 {
-    "LarvalHabitatMultiplier" :
-    {
-        "TEMPORARY_RAINFALL" : 5.0,
-        "WATER_VEGETATION" :
+    "LarvalHabitatMultiplier" : 
+    [
         {
-            "arabiensis" : -6.0,
-            "gambiae"    : 7.0
+            "Habitat" : "TEMPORARY_RAINFALL",
+            "Species" : "ALL_SPECIES",
+            "Factor" : 5.0
+        },
+        {
+            "Habitat" : "WATER_VEGETATION",
+            "Species" : "arabiensis",
+            "Factor" : -6.0
+        },
+        {
+            "Habitat" : "TEMPORARY_RAINFALL",
+            "Species" : "gambiae",
+            "Factor" : 7.0
         }
-    }
+    ]
 }

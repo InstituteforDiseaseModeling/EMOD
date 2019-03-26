@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -11,6 +11,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "IArchive.h"
 #include "IStrainIdentity.h"
+#include "RANDOM.h"
 
 namespace Kernel
 {
@@ -18,7 +19,7 @@ namespace Kernel
     {
     public:
         StrainIdentity(void);
-        StrainIdentity(int initial_antigen, int initial_genome);
+        StrainIdentity(int initial_antigen, int initial_genome, RANDOMBASE * prng = nullptr );
         StrainIdentity( const IStrainIdentity *copy );
         virtual ~StrainIdentity(void);
 

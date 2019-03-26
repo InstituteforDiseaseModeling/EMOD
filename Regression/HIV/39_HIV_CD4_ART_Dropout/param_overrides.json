@@ -1,14 +1,14 @@
 {
-    "Default_Config_Path": "defaults/hiv_default_config.json",
+    "Default_Config_Path": "../../defaults/hiv_default_config.json",
     "parameters": {
-        "Base_Population_Scale_Factor": 5e-06,
+        "x_Base_Population": 5e-06,
         "Config_Name": "39_HIV_CD4_ART_Dropout",
         "Enable_Birth": 0,
         "Enable_Natural_Mortality": 0,
         "Enable_Timestep_Channel_In_Report": 0,
         "Report_Event_Recorder": 1,
         "Report_Event_Recorder_Events": [
-            "HIVSymptomatic",
+            "NewlySymptomatic",
             "NewInfectionEvent",
             "StartedART",
             "StoppedART",
@@ -18,6 +18,7 @@
         "Report_Event_Recorder_Individual_Properties": [],
         "Report_HIV_ByAgeAndGender": 1,
         "Report_HIV_ByAgeAndGender_Add_Relationships": 0,
+        "Report_HIV_ByAgeAndGender_Add_Concordant_Relationships" : 0,
         "Report_HIV_ByAgeAndGender_Add_Transmitters": 0,
         "Report_HIV_ByAgeAndGender_Collect_Age_Bins_Data": [
             0,

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -18,6 +18,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Properties.h"
 #include "NodeProperties.h"
 #include "EventTrigger.h"
+#include "EventTriggerNode.h"
+#include "EventTriggerCoordinator.h"
 
 #ifndef WIN32
 #include <cxxabi.h>
@@ -28,7 +30,7 @@ SETUP_LOGGING( "JsonConfigurable" )
 namespace Kernel
 {
     // two functions. second is wrapper around this. Can consolidate into single.
-    bool check_condition( const json::QuickInterpreter * pJson, const char * condition_key, const char * condition_value )
+    bool ignoreParameter( const json::QuickInterpreter * pJson, const char * condition_key, const char * condition_value )
     {
         if( condition_key != nullptr ) 
         {
@@ -93,7 +95,7 @@ namespace Kernel
         return false;
     }
 
-    bool check_condition( const json::QuickInterpreter& schema, const json::QuickInterpreter * pJson )
+    bool ignoreParameter( const json::QuickInterpreter& schema, const json::QuickInterpreter * pJson )
     {
         if( schema.Exist( "depends-on" ) )
         {
@@ -112,9 +114,9 @@ namespace Kernel
                 LOG_DEBUG_F( "schema condition value appears to be bool, not string.\n" );
             }
 
-            if( check_condition( pJson, condition_key.c_str(), condition_value ) )
+            if( ignoreParameter( pJson, condition_key.c_str(), condition_value ) )
             { 
-                if( check_condition( EnvPtr->Config, condition_key.c_str(), condition_value ) )
+                if( ignoreParameter( EnvPtr->Config, condition_key.c_str(), condition_value ) )
                 {
                     return true;
                 }
@@ -1007,31 +1009,26 @@ namespace Kernel
         const char* condition_value
     )
     {
-        if( JsonConfigurable::_dryrun )
-        {
-            json::QuickBuilder custom_schema = pVariable->GetSchema();
+        json::QuickBuilder custom_schema = pVariable->GetSchema();
 
-            // going to get something back like : {
-            //  "type_name" : "idmType:VectorAlleleEnumPair",
-            //  "type_schema" : {
-            //      "first" : ...,
-            //      "second" : ...
-            //      }
-            //  }
-            std::string custom_type_label = (std::string) custom_schema[ _typename_label() ].As<json::String>();
-            json::String custom_type_label_as_json_string = json::String( custom_type_label );
-            jsonSchemaBase[ custom_type_label ] = custom_schema[ _typeschema_label() ];
-            json::Object newComplexTypeSchemaEntry;
-            newComplexTypeSchemaEntry["description"] = json::String( description );
-            newComplexTypeSchemaEntry["type"] = json::String( custom_type_label_as_json_string );
-            if( condition_key && condition_value )
-            {
-                json::Object condition;
-                condition[ condition_key ] = json::String( condition_value );
-                newComplexTypeSchemaEntry["depends-on"] = condition;
-            }
-            jsonSchemaBase[ paramName ] = newComplexTypeSchemaEntry;
+        // going to get something back like : {
+        //  "type_name" : "idmType:VectorAlleleEnumPair",
+        //  "type_schema" : {
+        //      "first" : ...,
+        //      "second" : ...
+        //      }
+        //  }
+        std::string custom_type_label = (std::string) custom_schema[ _typename_label() ].As<json::String>();
+        json::String custom_type_label_as_json_string = json::String( custom_type_label );
+        jsonSchemaBase[ custom_type_label ] = custom_schema[ _typeschema_label() ];
+        json::Object newComplexTypeSchemaEntry;
+        newComplexTypeSchemaEntry["description"] = json::String( description );
+        newComplexTypeSchemaEntry["type"] = json::String( custom_type_label_as_json_string );
+        if( condition_key )
+        {
+            updateSchemaWithCondition( newComplexTypeSchemaEntry, condition_key, condition_value );
         }
+        jsonSchemaBase[ paramName ] = newComplexTypeSchemaEntry;
         GetConfigData()->complexTypeMap[ paramName ] = pVariable;
     }
 
@@ -1162,7 +1159,7 @@ namespace Kernel
         if( _dryrun )
         {
             qb[ "type" ] = json::String( "Constrained String" );
-            qb[ "default" ] = json::String( EventTrigger::NoTrigger.ToString() );
+            qb[ "default" ] = json::String( "" );
             qb[ "description" ] = json::String( description );
             qb[ "value_source" ] = json::String( EventTriggerFactory::CONSTRAINT_SCHEMA_STRING );
             const std::vector<std::string>& built_in_names = EventTriggerFactory::GetInstance()->GetBuiltInNames();
@@ -1191,7 +1188,7 @@ namespace Kernel
         if( _dryrun )
         {
             qb[ "type" ] = json::String( "Vector String" );
-            qb[ "default" ] = json::String( EventTrigger::NoTrigger.ToString() );
+            qb[ "default" ] = json::String( "" );
             qb[ "description" ] = json::String( description );
             qb[ "value_source" ] = json::String( EventTriggerFactory::CONSTRAINT_SCHEMA_STRING );
             const std::vector<std::string>& built_in_names = EventTriggerFactory::GetInstance()->GetBuiltInNames();
@@ -1202,6 +1199,123 @@ namespace Kernel
             updateSchemaWithCondition( newTriggerSchema, condition_key, condition_value );
         }
         GetConfigData()->eventTriggerVectorTypeMap[ paramName ] = pVariable;
+        jsonSchemaBase[ paramName ] = newTriggerSchema;
+    }
+
+    void
+        JsonConfigurable::initConfigTypeMap(
+            const char* paramName,
+            EventTriggerNode * pVariable,
+            const char * description,
+            const char* condition_key,
+            const char* condition_value
+        )
+    {
+        LOG_DEBUG_F( "initConfigTypeMap<EventTriggerNode>: %s\n", paramName );
+        json::Object newTriggerSchema;
+        json::QuickBuilder qb( newTriggerSchema );
+        if( _dryrun )
+        {
+            qb[ "type" ] = json::String( "Constrained String" );
+            qb[ "default" ] = json::String( "" );
+            qb[ "description" ] = json::String( description );
+            qb[ "value_source" ] = json::String( EventTriggerNodeFactory::CONSTRAINT_SCHEMA_STRING );
+            const std::vector<std::string>& built_in_names = EventTriggerNodeFactory::GetInstance()->GetBuiltInNames();
+            for( int i = 0; i < built_in_names.size(); ++i )
+            {
+                qb[ "Built-in" ][ i ] = json::String( built_in_names[ i ] );
+            }
+            updateSchemaWithCondition( newTriggerSchema, condition_key, condition_value );
+        }
+        GetConfigData()->eventTriggerNodeTypeMap[ paramName ] = pVariable;
+        jsonSchemaBase[ paramName ] = newTriggerSchema;
+    }
+
+    void
+        JsonConfigurable::initConfigTypeMap(
+            const char* paramName,
+            std::vector<EventTriggerNode> * pVariable,
+            const char * description,
+            const char* condition_key,
+            const char* condition_value
+        )
+    {
+        LOG_DEBUG_F( "initConfigTypeMap<std::vector<EventTrigger>>: %s\n", paramName );
+        json::Object newTriggerSchema;
+        json::QuickBuilder qb( newTriggerSchema );
+        if( _dryrun )
+        {
+            qb[ "type" ] = json::String( "Vector String" );
+            qb[ "default" ] = json::String( "" );
+            qb[ "description" ] = json::String( description );
+            qb[ "value_source" ] = json::String( EventTriggerNodeFactory::CONSTRAINT_SCHEMA_STRING );
+            const std::vector<std::string>& built_in_names = EventTriggerNodeFactory::GetInstance()->GetBuiltInNames();
+            for( int i = 0; i < built_in_names.size(); ++i )
+            {
+                qb[ "Built-in" ][ i ] = json::String( built_in_names[ i ] );
+            }
+            updateSchemaWithCondition( newTriggerSchema, condition_key, condition_value );
+        }
+        GetConfigData()->eventTriggerNodeVectorTypeMap[ paramName ] = pVariable;
+        jsonSchemaBase[ paramName ] = newTriggerSchema;
+    }
+
+    void
+        JsonConfigurable::initConfigTypeMap(
+            const char* paramName,
+            EventTriggerCoordinator * pVariable,
+            const char * description,
+            const char* condition_key,
+            const char* condition_value
+        )
+    {
+        LOG_DEBUG_F( "initConfigTypeMap<EventTriggerCoordinator>: %s\n", paramName );
+
+        json::Object newTriggerSchema;
+        json::QuickBuilder qb( newTriggerSchema );
+        if( _dryrun )
+        {
+            qb[ "type" ] = json::String( "Constrained String" );
+            qb[ "default" ] = json::String( "" );
+            qb[ "description" ] = json::String( description );
+            qb[ "value_source" ] = json::String( EventTriggerCoordinatorFactory::CONSTRAINT_SCHEMA_STRING );
+            const std::vector<std::string>& built_in_names = EventTriggerCoordinatorFactory::GetInstance()->GetBuiltInNames();
+            for( int i = 0; i < built_in_names.size(); ++i )
+            {
+                qb[ "Built-in" ][ i ] = json::String( built_in_names[ i ] );
+            }
+            updateSchemaWithCondition( newTriggerSchema, condition_key, condition_value );
+        }
+        GetConfigData()->eventTriggerCoordinatorTypeMap[ paramName ] = pVariable;
+        jsonSchemaBase[ paramName ] = newTriggerSchema;
+    }
+
+    void
+        JsonConfigurable::initConfigTypeMap(
+            const char* paramName,
+            std::vector<EventTriggerCoordinator> * pVariable,
+            const char * description,
+            const char* condition_key,
+            const char* condition_value
+        )
+    {
+        LOG_DEBUG_F( "initConfigTypeMap<std::vector<EventTriggerCoordinator>>: %s\n", paramName );
+        json::Object newTriggerSchema;
+        json::QuickBuilder qb( newTriggerSchema );
+        if( _dryrun )
+        {
+            qb[ "type" ] = json::String( "Vector String" );
+            qb[ "default" ] = json::String( "" );
+            qb[ "description" ] = json::String( description );
+            qb[ "value_source" ] = json::String( EventTriggerCoordinatorFactory::CONSTRAINT_SCHEMA_STRING );
+            const std::vector<std::string>& built_in_names = EventTriggerCoordinatorFactory::GetInstance()->GetBuiltInNames();
+            for( int i = 0; i < built_in_names.size(); ++i )
+            {
+                qb[ "Built-in" ][ i ] = json::String( built_in_names[ i ] );
+            }
+            updateSchemaWithCondition( newTriggerSchema, condition_key, condition_value );
+        }
+        GetConfigData()->eventTriggerCoordinatorVectorTypeMap[ paramName ] = pVariable;
         jsonSchemaBase[ paramName ] = newTriggerSchema;
     }
 
@@ -1239,7 +1353,7 @@ namespace Kernel
             const std::string& key = entry.first;
             json::QuickInterpreter schema = jsonSchemaBase[key];
 
-            if( check_condition( schema, inputJson ) )
+            if( ignoreParameter( schema, inputJson ) )
             {
                 // param is missing and that's ok." << std::endl;
                 continue;
@@ -1275,7 +1389,7 @@ namespace Kernel
             json::QuickInterpreter schema = jsonSchemaBase[key];
             int val = -1;
 
-            if( check_condition( schema, inputJson ) )
+            if( ignoreParameter( schema, inputJson ) )
             {
                 continue; // param is missing and that's ok." << std::endl;
             }
@@ -1323,7 +1437,7 @@ namespace Kernel
             json::QuickInterpreter schema = jsonSchemaBase[ key ];
             uint32_t val = 0;
 
-            if( check_condition( schema, inputJson ) )
+            if( ignoreParameter( schema, inputJson ) )
             {
                 continue; // param is missing and that's ok." << std::endl;
             }
@@ -1371,7 +1485,7 @@ namespace Kernel
             json::QuickInterpreter schema = jsonSchemaBase[key];
             float val = -1.0f;
 
-            if( check_condition( schema, inputJson ) )
+            if( ignoreParameter( schema, inputJson ) )
             {
                 LOG_DEBUG_F( "(float) param %s failed condition check. Ignoring.\n", key.c_str() );
                 continue; // param is missing and that's ok.
@@ -1410,7 +1524,7 @@ namespace Kernel
             json::QuickInterpreter schema = jsonSchemaBase[key];
             double val = -1.0;
 
-            if( check_condition( schema, inputJson ) )
+            if( ignoreParameter( schema, inputJson ) )
             {
                 continue; // param is missing and that's ok.
             }
@@ -1447,7 +1561,7 @@ namespace Kernel
             json::QuickInterpreter schema = jsonSchemaBase[key];
             float val = -1.0f;
 
-            if( check_condition( schema, inputJson ) )
+            if( ignoreParameter( schema, inputJson ) )
             {
                 continue; // param is missing and that's ok.
             }
@@ -1487,7 +1601,7 @@ namespace Kernel
             json::QuickInterpreter schema = jsonSchemaBase[key];
             int val = 0;
 
-            if( check_condition( schema, inputJson ) )
+            if( ignoreParameter( schema, inputJson ) )
             {
                 continue; // param is missing and that's ok.
             }
@@ -1525,7 +1639,7 @@ namespace Kernel
             const std::string& key = entry.first;
             json::QuickInterpreter schema = jsonSchemaBase[key];
 
-            if( check_condition( schema, inputJson ) )
+            if( ignoreParameter( schema, inputJson ) )
             {
                 continue; // param is missing and that's ok.
             }
@@ -1555,7 +1669,7 @@ namespace Kernel
             const std::string& key = entry.first;
             entry.second->parameter_name = key ;
             json::QuickInterpreter schema = jsonSchemaBase[key];
-            if( check_condition( schema, inputJson ) )
+            if( ignoreParameter( schema, inputJson ) )
             {
                 continue; // param is missing and that's ok.
             }
@@ -1585,7 +1699,7 @@ namespace Kernel
         {
             const std::string& key = entry.first;
             json::QuickInterpreter schema = jsonSchemaBase[key];
-            if( check_condition( schema, inputJson ) )
+            if( ignoreParameter( schema, inputJson ) )
             {
                 continue; // param is missing and that's ok.
             }
@@ -1614,7 +1728,7 @@ namespace Kernel
         {
             const std::string& key = entry.first;
             json::QuickInterpreter schema = jsonSchemaBase[key];
-            if( check_condition( schema, inputJson ) )
+            if( ignoreParameter( schema, inputJson ) )
             {
                 continue; // param is missing and that's ok.
             }
@@ -1657,7 +1771,7 @@ namespace Kernel
         {
             const std::string& key = entry.first;
             json::QuickInterpreter schema = jsonSchemaBase[key];
-            if( check_condition( schema, inputJson ) )
+            if( ignoreParameter( schema, inputJson ) )
             {
                 continue; // param is missing and that's ok.
             }
@@ -1702,7 +1816,7 @@ namespace Kernel
         {
             const std::string& key = entry.first;
             json::QuickInterpreter schema = jsonSchemaBase[key];
-            if( check_condition( schema, inputJson ) )
+            if( ignoreParameter( schema, inputJson ) )
             {
                 continue; // param is missing and that's ok.
             }
@@ -1725,7 +1839,7 @@ namespace Kernel
         {
             const std::string& key = entry.first;
             json::QuickInterpreter schema = jsonSchemaBase[key];
-            if( check_condition( schema, inputJson ) )
+            if( ignoreParameter( schema, inputJson ) )
             {
                 continue; // param is missing and that's ok.
             }
@@ -1748,7 +1862,7 @@ namespace Kernel
         {
             const std::string& key = entry.first;
             json::QuickInterpreter schema = jsonSchemaBase[key];
-            if( check_condition( schema, inputJson ) )
+            if( ignoreParameter( schema, inputJson ) )
             {
                 continue; // param is missing and that's ok.
             }
@@ -1774,7 +1888,7 @@ namespace Kernel
         {
             const std::string& key = entry.first;
             json::QuickInterpreter schema = jsonSchemaBase[key];
-            if( check_condition( schema, inputJson ) )
+            if( ignoreParameter( schema, inputJson ) )
             {
                 continue; // param is missing and that's ok.
             }
@@ -1800,8 +1914,14 @@ namespace Kernel
         for (auto& entry : GetConfigData()->complexTypeMap)
         {
             const auto & key = entry.first;
-            IComplexJsonConfigurable * pJc = entry.second;
+            json::QuickInterpreter schema = jsonSchemaBase[key];
+            if ( ignoreParameter( schema, inputJson ) )
+            {
+               // param is missing and that's ok." << std::endl;
+               continue;
+            }
 
+            IComplexJsonConfigurable * pJc = entry.second;
             if( inputJson->Exist( key ) )
             {
                 pJc->ConfigureFromJsonAndKey( inputJson, key );
@@ -1956,8 +2076,7 @@ namespace Kernel
             {
                 if( _useDefaults )
                 {
-                    LOG_INFO_F( "Using the default value ( \"%s\" : \"%s\" ) for unspecified parameter.\n", param_key.c_str(), EventTrigger::NoTrigger.c_str() );
-                    *(entry.second) = EventTrigger::NoTrigger;
+                    LOG_INFO_F( "Using the default value ( \"%s\" : \"%s\" ) for unspecified parameter.\n", param_key.c_str(), "");
                 }
                 else
                 {
@@ -1967,22 +2086,7 @@ namespace Kernel
             else
             {
                 std::string candidate = (std::string) GET_CONFIG_STRING( inputJson, (entry.first).c_str() );
-                if( EventTriggerFactory::GetInstance()->IsValidEvent( candidate ) )
-                {
-                    *(entry.second) = candidate;
-                }
-                else
-                {
-                    std::ostringstream msg;
-                    msg << "EventTrigger with specified value "
-                        << candidate
-                        << " is invalid. Possible values are: ";
-                    for( auto value : EventTriggerFactory::GetInstance()->GetAllEventTriggers() )
-                    {
-                        msg << value.ToString() << "...";
-                    }
-                    throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
-                }
+                *(entry.second) = EventTriggerFactory::GetInstance()->CreateTrigger( param_key, candidate );
             }
         }
 
@@ -1999,25 +2103,87 @@ namespace Kernel
             else
             {
                 std::vector<std::string> candidate_list = GET_CONFIG_VECTOR_STRING( inputJson, (entry.first).c_str() );
-                for( auto candidate : candidate_list )
+                *(entry.second) = EventTriggerFactory::GetInstance()->CreateTriggerList( param_key, candidate_list );
+            }
+        }
+
+        // ---------------------------------- EventTriggerNode  ------------------------------------
+        for( auto& entry : GetConfigData()->eventTriggerNodeTypeMap )
+        {
+            const std::string& param_key = entry.first;
+            json::QuickInterpreter schema = jsonSchemaBase[ param_key ];
+            if( !inputJson->Exist( param_key ) && _useDefaults )
+            {
+                if( _useDefaults )
                 {
-                    if( EventTriggerFactory::GetInstance()->IsValidEvent( candidate ) )
-                    {
-                        (*(entry.second)).push_back( EventTrigger( candidate ) );
-                    }
-                    else
-                    {
-                        std::ostringstream msg;
-                        msg << "EventTrigger with specified value "
-                            << candidate
-                            << " is invalid. Possible values are: ";
-                        for( auto value : EventTriggerFactory::GetInstance()->GetAllEventTriggers() )
-                        {
-                            msg << value.ToString() << "...";
-                        }
-                        throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
-                    }
+                    LOG_INFO_F( "Using the default value ( \"%s\" : \"%s\" ) for unspecified parameter.\n", param_key.c_str(), "" );                    
                 }
+                else
+                {
+                    handleMissingParam( param_key, inputJson->GetDataLocation() );
+                }
+            }
+            else
+            {
+                std::string candidate = (std::string) GET_CONFIG_STRING( inputJson, (entry.first).c_str() );
+                *(entry.second) = EventTriggerNodeFactory::GetInstance()->CreateTrigger( param_key, candidate );
+            }
+        }
+
+        // ---------------------------------- EventTriggerNodeVector  ------------------------------------
+        for( auto& entry : GetConfigData()->eventTriggerNodeVectorTypeMap )
+        {
+            const std::string& param_key = entry.first;
+            json::QuickInterpreter schema = jsonSchemaBase[ param_key ];
+            if( !inputJson->Exist( param_key ) && _useDefaults )
+            {
+                LOG_INFO_F( "Using the default value ( \"%s\" : \"\" ) for unspecified parameter.\n", param_key.c_str() );
+                handleMissingParam( param_key, inputJson->GetDataLocation() );
+            }
+            else
+            {
+                std::vector<std::string> candidate_list = GET_CONFIG_VECTOR_STRING( inputJson, (entry.first).c_str() );
+                *(entry.second) = EventTriggerNodeFactory::GetInstance()->CreateTriggerList( param_key, candidate_list );
+            }
+        }
+
+        // ---------------------------------- EventTriggerCoordinator  ------------------------------------
+        for( auto& entry : GetConfigData()->eventTriggerCoordinatorTypeMap )
+        {
+            const std::string& param_key = entry.first;
+            json::QuickInterpreter schema = jsonSchemaBase[ param_key ];
+            if( !inputJson->Exist( param_key ) && _useDefaults )
+            {
+                if( _useDefaults )
+                {
+                    LOG_INFO_F( "Using the default value ( \"%s\" : \"%s\" ) for unspecified parameter.\n", param_key.c_str(), "" );
+                }
+                else
+                {
+                    handleMissingParam( param_key, inputJson->GetDataLocation() );
+                }
+            }
+            else
+            {
+                std::string candidate = (std::string) GET_CONFIG_STRING( inputJson, (entry.first).c_str() );
+                *(entry.second) = EventTriggerCoordinatorFactory::GetInstance()->CreateTrigger( param_key, candidate );
+            }
+        }
+
+        // ---------------------------------- EventTriggerCoordinatorVector  ------------------------------------
+        for( auto& entry : GetConfigData()->eventTriggerCoordinatorVectorTypeMap )
+        {
+            const std::string& param_key = entry.first;
+            json::QuickInterpreter schema = jsonSchemaBase[ param_key ];
+            if( !inputJson->Exist( param_key ) && _useDefaults )
+            {
+                LOG_INFO_F( "Using the default value ( \"%s\" : \"\" ) for unspecified parameter.\n", param_key.c_str() );
+                handleMissingParam( param_key, inputJson->GetDataLocation() );
+            }
+            else
+            {
+                std::vector<std::string> candidate_list = GET_CONFIG_VECTOR_STRING( inputJson, (entry.first).c_str() );
+                *(entry.second) = EventTriggerCoordinatorFactory::GetInstance()->CreateTriggerList( param_key, candidate_list );
             }
         }
 

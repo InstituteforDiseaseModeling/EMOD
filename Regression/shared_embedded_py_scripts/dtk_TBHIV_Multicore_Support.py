@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import json
-import dtk_sft
+import dtk_test.dtk_sft as sft
 import os
 import pandas as pd
 import numpy as np
@@ -71,7 +71,7 @@ def parse_json_report(keys, insetchart_name="InsetChart.json", output_folder="ou
             report_data_obj[key] = data
         if debug:
             # this plot is for debugging only
-            dtk_sft.plot_data(keys[0], dist2=None, label1=keys[0] + " channel",
+            sft.plot_data(keys[0], dist2=None, label1=keys[0] + " channel",
                               label2="NA",
                               title=keys[0],
                               xlabel="time step", ylabel=keys[0], category=keys[0],
@@ -135,7 +135,7 @@ def compare_report_json(column_to_test, channel_to_test, groupby_df, json_obj, o
         for t in range(len(incidence_json)):
             if i < len(years):
                 year = years[i]
-                if t == round(year * dtk_sft.DAYS_IN_YEAR): # at the last time step of each time window
+                if t == round(year * sft.DAYS_IN_YEAR): # at the last time step of each time window
                     incidence_count = incidence_json[t] - sum(incidence_counts)# new incidence = total incidence at the last time step - sum of incidence from all previous time windows
                     reporter_sum = int(groupby_df[groupby_df.index == year][column_to_test])
                     incidence_counts.append(incidence_count)
@@ -149,7 +149,7 @@ def compare_report_json(column_to_test, channel_to_test, groupby_df, json_obj, o
             else:
                 break
 
-        dtk_sft.plot_data(incidence_counts, dist2=np.array(groupby_df[column_to_test]), label1="insetchart",
+        sft.plot_data(incidence_counts, dist2=np.array(groupby_df[column_to_test]), label1="insetchart",
                           label2="reporter", title=str(column_to_test),
                           xlabel="every half year", ylabel=str(column_to_test), category=str(column_to_test)+"_insetchart",
                           show=True, line=False, alpha=0.8, overlap=True)

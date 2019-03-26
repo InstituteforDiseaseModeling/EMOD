@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -86,7 +86,7 @@ namespace Kernel
         }
         else
         {
-            LOG_DEBUG_F( "Negative diagnosis event is NoTrigger for individual %d.\n", iid );
+            LOG_DEBUG_F( "Negative diagnosis event is empty for individual %d.\n", iid );
         }
         expired = true;
     }

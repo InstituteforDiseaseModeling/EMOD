@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -8,8 +8,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 ***************************************************************************************************/
 
 #include "stdafx.h"
-
-#ifdef ENABLE_TBHIV
 
 #include "TBInterventionsContainer.h"
 #include "TBContexts.h"
@@ -21,6 +19,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IHealthSeekingBehavior.h" //for IHealthSeekingBehavior interface
 #include "NodeEventContext.h"    // for INodeEventContext (ICampaignCostObserver)
 #include "EventTrigger.h"
+#include "IIndividualHumanContext.h"
 
 SETUP_LOGGING( "TBInterventionsContainer" )
 
@@ -136,16 +135,12 @@ namespace Kernel
         }
         LOG_DEBUG_F( "Individual %d disease state is active %d, latent %d, pending relapse %d \n", parent->GetSuid().data,tb_patient->HasActiveInfection(), tb_patient->HasLatentInfection(), tb_patient->HasPendingRelapseInfection() );
         
-        INodeTriggeredInterventionConsumer* broadcaster = nullptr;
-        if (s_OK != parent->GetEventContext()->GetNodeEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster))
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()->GetNodeEventContext()", "INodeTriggeredInterventionConsumer", "INodeEventContext" );
-        }
+        IIndividualEventBroadcaster* broadcaster = parent->GetEventContext()->GetNodeEventContext()->GetIndividualEventBroadcaster();
 
         if( new_treatment_status == EventTrigger::TBStartDrugRegimen )
         {
             LOG_DEBUG_F( "Individual %d starting the drug, broadcasting that this person started \n", parent->GetSuid().data );
-            broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), EventTrigger::TBStartDrugRegimen );
+            broadcaster->TriggerObservers( parent->GetEventContext(), EventTrigger::TBStartDrugRegimen );
 
             LOG_DEBUG( "Started drug regimen, update tx_naive flag to false in TB IVC \n" );
             m_is_tb_tx_naive_TBIVC = false;
@@ -159,7 +154,7 @@ namespace Kernel
             if( tb_patient->HasActiveInfection() )
             {
                 LOG_DEBUG_F( "Individual %d finished the drug but still has active disease, broadcasting that this person failed \n", parent->GetSuid().data );
-                broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), EventTrigger::TBFailedDrugRegimen );
+                broadcaster->TriggerObservers( parent->GetEventContext(), EventTrigger::TBFailedDrugRegimen );
 
                 //Update the person's failed flag to false in the TBInterventionsContainer
                 LOG_DEBUG( "Finished drug regimen but failed, update failed flag to true in TB IVC \n" );
@@ -168,7 +163,7 @@ namespace Kernel
             else if( tb_patient->HasPendingRelapseInfection() )
             {
                 LOG_DEBUG_F( "Individual %d finished the drug but is pending relapse broadcasting that this person is pending relapse\n", parent->GetSuid().data );
-                broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), EventTrigger::TBRelapseAfterDrugRegimen );
+                broadcaster->TriggerObservers( parent->GetEventContext(), EventTrigger::TBRelapseAfterDrugRegimen );
 
                 //Update the person's failed flag to false in the TBInterventionsContainer
                 LOG_DEBUG( "Finished drug regimen but now pending relapse, update ever relapsed flag to true in TB IVC \n" );
@@ -260,4 +255,3 @@ namespace Kernel
     }
 }
 
-#endif // ENABLE_TBHIV

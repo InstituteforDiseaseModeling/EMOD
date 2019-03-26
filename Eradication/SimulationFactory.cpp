@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -44,7 +44,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #ifndef DISABLE_AIRBORNE
 #include "SimulationAirborne.h"
 #endif
-#ifdef ENABLE_TBHIV
+#ifndef DISABLE_TBHIV
 #include "SimulationTBHIV.h"
 #endif
 #ifndef DISABLE_STI
@@ -67,6 +67,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <chrono>
 #include "FileSystem.h"
 #include "EventTrigger.h"
+#include "EventTriggerNode.h"
+#include "EventTriggerCoordinator.h"
+#include "RandomNumberGeneratorFactory.h"
 
 SETUP_LOGGING( "SimulationFactory" )
 
@@ -74,7 +77,9 @@ namespace Kernel
 {
     ISimulation * SimulationFactory::CreateSimulation()
     {
-        EventTriggerFactory::GetInstance()->Configure(EnvPtr->Config);
+        EventTriggerFactory::GetInstance()->Configure( EnvPtr->Config );
+        EventTriggerNodeFactory::GetInstance()->Configure( EnvPtr->Config );
+        EventTriggerCoordinatorFactory::GetInstance()->Configure( EnvPtr->Config );
         NPFactory::CreateFactory();
         IPFactory::CreateFactory();
 
@@ -139,7 +144,7 @@ namespace Kernel
             else if (sSimType == "AIRBORNE_SIM")
                 sim_type = SimType::AIRBORNE_SIM;
 #endif
-#ifdef ENABLE_TBHIV
+#ifndef DISABLE_TBHIV
             else if (sSimType == "TBHIV_SIM")
                 sim_type = SimType::TBHIV_SIM;
 #endif // TBHIV
@@ -224,7 +229,7 @@ namespace Kernel
                 break;
 #endif
 
-#ifdef ENABLE_TBHIV
+#ifndef DISABLE_TBHIV
                 case SimType::TBHIV_SIM:
                     newsim = SimulationTBHIV::CreateSimulation(EnvPtr->Config);
                 break;

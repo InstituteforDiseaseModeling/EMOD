@@ -68,7 +68,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>BOOST_ALL_NO_LIB;ENABLE_TBHIV;IDM_EXPORT;_SCL_SECURE_NO_WARNINGS;WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BOOST_ALL_NO_LIB;IDM_EXPORT;_SCL_SECURE_NO_WARNINGS;WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(IDM_BOOST_PATH);..\Dependencies\ComputeClusterPack\Include;..\cajun\Include;..\campaign;..\Eradication\;..\utils\;..\rapidjson\include;..\rapidjson\modp</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <FloatingPointModel>Precise</FloatingPointModel>
@@ -88,7 +88,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>BOOST_ALL_NO_LIB;ENABLE_TBHIV;IDM_EXPORT;_SCL_SECURE_NO_WARNINGS;WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BOOST_ALL_NO_LIB;IDM_EXPORT;_SCL_SECURE_NO_WARNINGS;WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(IDM_BOOST_PATH);..\Dependencies\ComputeClusterPack\Include;..\cajun\Include;..\campaign;..\Eradication\;..\utils\;..\rapidjson\include;..\rapidjson\modp</AdditionalIncludeDirectories>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
@@ -109,7 +109,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>BOOST_ALL_NO_LIB;ENABLE_TBHIV;IDM_EXPORT;_SCL_SECURE_NO_WARNINGS;WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BOOST_ALL_NO_LIB;IDM_EXPORT;_SCL_SECURE_NO_WARNINGS;WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(IDM_BOOST_PATH);..\cajun\Include;..\campaign;..\Eradication\;..\utils\;..\rapidjson\include;..\rapidjson\modp</AdditionalIncludeDirectories>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -129,7 +129,6 @@
     <ClInclude Include="..\campaign\InterventionEnums.h" />
     <ClInclude Include="..\campaign\Interventions.h" />
     <ClInclude Include="..\campaign\InterventionValidator.h" />
-    <ClInclude Include="..\Eradication\Contexts.h" />
     <ClInclude Include="..\Eradication\IContagionPopulation.h" />
     <ClInclude Include="..\Eradication\IIndividualHuman.h" />
     <ClInclude Include="..\Eradication\IInfectable.h" />
@@ -176,6 +175,7 @@
     <ClInclude Include="BaseEventReportIntervalOutput.h" />
     <ClInclude Include="BaseTextReport.h" />
     <ClInclude Include="BaseTextReportEvents.h" />
+    <ClInclude Include="BaseTextReportEventsTemplate.h" />
     <ClInclude Include="BinnedReport.h" />
     <ClInclude Include="IReport.h" />
     <ClInclude Include="ChannelDataMap.h" />

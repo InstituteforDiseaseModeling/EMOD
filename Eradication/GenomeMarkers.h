@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -13,6 +13,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 namespace Kernel
 {
+    class RANDOMBASE;
+
     // GenomeMarkers maintains the relationship between the name of marker and the "bit" used
     // to represent that marker in a strain of an infection.  An infection strain has antigen
     // and genetic components where the bits of these components provide information about
@@ -53,7 +55,7 @@ namespace Kernel
         static std::vector<std::vector<std::string>> GetCombinations( const std::vector<std::string>& rNames );
 
         // Combine the bits of the two genetic ID's into one new one.
-        static uint32_t FromOutcrossing( uint32_t id1, uint32_t id2 );
+        static uint32_t FromOutcrossing( RANDOMBASE* pRNG, uint32_t id1, uint32_t id2 );
 
     protected:
         const std::pair<std::string, uint32_t>* Get( const std::string& rName ) const;

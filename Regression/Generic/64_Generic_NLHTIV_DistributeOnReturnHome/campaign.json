@@ -1,24 +1,26 @@
 {
     "Use_Defaults": 1,
-    "Events": 
-    [
+    "Events": [
         {
-            "COMMENT" : "",
+            "COMMENT": "",
             "class": "CampaignEvent",
             "Start_Day": 1,
             "Nodeset_Config": {
-                "class": "NodeSetNodeList", 
-                "Node_List": [ 1 ]
+                "class": "NodeSetNodeList",
+                "Node_List": [
+                    1
+                ]
             },
             "Event_Coordinator_Config": {
                 "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition_List": [ "HappyBirthday" ],
+                    "Trigger_Condition_List": [
+                        "HappyBirthday"
+                    ],
                     "Demographic_Coverage": 1.0,
-                    "Distribute_On_Return_Home" : 1,
-                    "Actual_IndividualIntervention_Config":
-                    {
+                    "Distribute_On_Return_Home": 1,
+                    "Actual_IndividualIntervention_Config": {
                         "class": "OutbreakIndividual",
                         "Outbreak_Source": "PrevalenceIncrease",
                         "Antigen": 0,
@@ -28,28 +30,28 @@
             }
         },
         {
-            "COMMENT" : "",
+            "COMMENT": "",
             "Event_Name": "Outbreak",
             "class": "CampaignEvent",
             "Start_Day": 25,
             "Nodeset_Config": {
-                "class": "NodeSetNodeList", 
-                "Node_List": [ 1 ]
-            }, 
-            "Event_Coordinator_Config": 
-            {
+                "class": "NodeSetNodeList",
+                "Node_List": [
+                    1
+                ]
+            },
+            "Event_Coordinator_Config": {
                 "class": "StandardInterventionDistributionEventCoordinator",
                 "Demographic_Coverage": 0.2,
-                "Target_Demographic": "Everyone", 
-                "Intervention_Config": 
-                {
+                "Target_Demographic": "Everyone",
+                "Intervention_Config": {
                     "class": "MigrateIndividuals",
                     "NodeID_To_Migrate_To": 2,
-                    "Duration_Before_Leaving_Distribution_Type" : "FIXED_DURATION",
-                    "Duration_Before_Leaving_Fixed": 0, 
-                    "Duration_At_Node_Distribution_Type" : "FIXED_DURATION",
-                    "Duration_At_Node_Fixed": 50, 
-                    "Is_Moving" : 0
+                    "Duration_Before_Leaving_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Duration_At_Node_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Is_Moving": 0,
+                    "Duration_Before_Leaving_Constant": 0,
+                    "Duration_At_Node_Constant": 50
                 }
             }
         }

@@ -19,7 +19,7 @@
         },
         "DISEASE": {
             "INCUBATION": {
-                "Base_Incubation_Period": 0
+                "Incubation_Period_Constant": 0
             },
             "INFECTIOUSNESS": {
                 "Base_Infectivity": 0.7

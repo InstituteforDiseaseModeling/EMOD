@@ -78,11 +78,11 @@ class DtkFile(object):
                 index += 1
 
         def __getitem__(self, index):
-            data = uncompress(self.__parent__.chunks[index], self.__parent__.compression)
+            data = str(uncompress(self.__parent__.chunks[index], self.__parent__.compression), 'utf-8')
             return data
 
         def __setitem__(self, index, value):
-            data = compress(value, self.__parent__.compression)
+            data = compress(value.encode(), self.__parent__.compression)
             self.__parent__.chunks[index] = data
             return
 

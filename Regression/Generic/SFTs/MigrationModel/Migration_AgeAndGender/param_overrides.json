@@ -1,0 +1,37 @@
+{
+    "Default_Config_Path": "../../../../defaults/generic_science_config.json",
+    "parameters": {
+        "DEMOGRAPHICS": {
+            "Age_Initialization_Distribution_Type": "DISTRIBUTION_COMPLEX",
+            "Demographics_Filenames": [
+                "3x3_demographics.json"
+            ],
+            "Enable_Demographics_Reporting": 1,
+            "Enable_Vital_Dynamics": 0,
+            "IMMUNITY": {
+                "Enable_Immune_Decay": 0
+            },
+            "MORTALITY": {
+                "Enable_Natural_Mortality": 0
+            },
+            "SAMPLING": {
+                "Sample_Rate_Birth": 1
+            }
+        },
+        "MIGRATION": {
+            "Enable_Local_Migration": 1,
+            "Local_Migration_Filename": "3X3_Age_Gender_Local.bin",
+            "Migration_Model": "FIXED_RATE_MIGRATION"
+        },
+        "OUTPUT": {
+            "Custom_Reports_Filename": "custom_reports.json"
+        },
+        "PRIMARY": {
+            "Config_Name": "SFT_Generic_MigrationByAgeAndGender",
+            "Geography": "NONE",
+            "Run_Number": 1,
+            "Simulation_Duration": 400
+        },
+        "Serialization_Type": "NONE"
+    }
+}

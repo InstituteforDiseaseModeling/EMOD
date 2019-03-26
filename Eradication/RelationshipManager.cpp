@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -12,8 +12,10 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IRelationship.h"
 #include "Debug.h"
 #include "Log.h"
+#include "ISimulationContext.h"
 #include "ISTISimulationContext.h"
 #include "RelationshipGroups.h"
+#include "INodeContext.h"
 
 SETUP_LOGGING( "RelationshipMgr" )
 
@@ -339,7 +341,7 @@ namespace Kernel
         matrixRow.push_back( 1.0f );
         scalingMatrix.push_back( matrixRow );
         relationshipListsForMP[ propertyKey ].push_back( relationship->GetSuid().data );
-        nodePools->AddProperty( propertyKey, relationshipListsForMP[ propertyKey ], scalingMatrix, "contact" );
+        nodePools->AddProperty( propertyKey, relationshipListsForMP[ propertyKey ], scalingMatrix );
     }
 
 #define MAX_DEAD_REL_QUEUE_SIZE 200 // found by sweeping, might make config param
@@ -393,7 +395,7 @@ namespace Kernel
             MatrixRow_t matrixRow;
             matrixRow.push_back( 1.0f );
             scalingMatrix.push_back( matrixRow );
-            nodePools->AddProperty( thisRelTypeKey.c_str(), relationshipListsForMP[ thisRelTypeKey ], scalingMatrix, "contact" );
+            nodePools->AddProperty( thisRelTypeKey.c_str(), relationshipListsForMP[ thisRelTypeKey ], scalingMatrix );
         }
     }
 

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -11,16 +11,16 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IdmApi.h"
 #include "ISerializable.h"
 #include "suids.hpp"
-#include "RANDOM.h"
-#include "IdmDateTime.h"
-#include "IInfectable.h"
-#include "TransmissionGroupMembership.h"
 #include "ITransmissionGroups.h"
 #include "SimulationEnums.h"
 #include "EventTrigger.h"
+#include "ExternalNodeId.h"
 
 namespace Kernel
 {
+    struct IdmDateTime;
+    class RANDOMBASE;
+    struct IInfectable;
     struct IMigrationInfo;
     struct IMigrationInfoFactory;
     struct NodeDemographics;
@@ -32,8 +32,6 @@ namespace Kernel
     struct IIndividualHuman;
     struct ISimulationContext;
     class NPKeyValueContainer;
-
-    typedef uint32_t ExternalNodeId_t;
 
     struct IDMAPI INodeContext : ISerializable
     {
@@ -66,25 +64,29 @@ namespace Kernel
         virtual void InitializeTransmissionGroupPopulations() = 0;
 
         virtual suids::suid GetNextInfectionSuid() = 0;
-        virtual ::RANDOMBASE* GetRng() = 0; 
+        virtual RANDOMBASE* GetRng() = 0; 
+        virtual void SetRng( RANDOMBASE* prng ) = 0;
 
         virtual void Update(float dt) = 0;
         virtual IIndividualHuman* processImmigratingIndividual( IIndividualHuman* ) = 0;
+        virtual void SortHumans() = 0;
 
         // heterogeneous intra-node transmission
-        virtual void ExposeIndividual(IInfectable* candidate, const TransmissionGroupMembership_t* individual, float dt) = 0;
-        virtual void DepositFromIndividual( const IStrainIdentity& strain_IDs, float contagion_quantity, const TransmissionGroupMembership_t* individual) = 0;
-        virtual void GetGroupMembershipForIndividual(const RouteList_t& route, tProperties* properties, TransmissionGroupMembership_t* membershipOut ) = 0;
-        virtual void UpdateTransmissionGroupPopulation(const TransmissionGroupMembership_t* membership, float size_changes,float mc_weight) = 0;
+        virtual void ExposeIndividual(IInfectable* candidate, TransmissionGroupMembership_t individual, float dt) = 0;
+        virtual void DepositFromIndividual( const IStrainIdentity& strain_IDs, float contagion_quantity, TransmissionGroupMembership_t individual, TransmissionRoute::Enum route = TransmissionRoute::TRANSMISSIONROUTE_CONTACT) = 0;
+        virtual void GetGroupMembershipForIndividual(const RouteList_t& route, const tProperties& properties, TransmissionGroupMembership_t& membershipOut ) = 0;
+        virtual void UpdateTransmissionGroupPopulation(const tProperties& properties, float size_changes,float mc_weight) = 0;
         virtual std::map< std::string, float > GetContagionByRoute() const = 0; // developed for Typhoid/Environmental
-        virtual float GetTotalContagion(const TransmissionGroupMembership_t* membership) = 0;
+        virtual float GetTotalContagion( void ) = 0;
+        virtual ITransmissionGroups* GetTransmissionGroups() const = 0;
         virtual const RouteList_t& GetTransmissionRoutes( ) const = 0;
-        
+        virtual float GetContagionByRouteAndProperty( const std::string& route, const IPKeyValue& property_value ) = 0;
+
         virtual float getSinusoidalCorrection(float sinusoidal_amplitude, float sinusoidal_phase) const = 0;
         virtual float getBoxcarCorrection(float boxcar_amplitude, float boxcar_start_time, float boxcar_end_time) const = 0;
 
         // Discrete HINT contagion
-        virtual act_prob_vec_t DiscreteGetTotalContagion(const TransmissionGroupMembership_t* membership) = 0;
+        virtual act_prob_vec_t DiscreteGetTotalContagion( void ) = 0;
 
         virtual IMigrationInfo* GetMigrationInfo() = 0;
         virtual const NodeDemographics* GetDemographics() const = 0;
@@ -92,8 +94,10 @@ namespace Kernel
         virtual NPKeyValueContainer& GetNodeProperties() = 0;
 
         // reporting interfaces
-        virtual IdmDateTime GetTime()          const = 0;
+        virtual const IdmDateTime& GetTime()   const = 0;
         virtual float       GetInfected()      const = 0;
+        virtual float       GetSymptomatic()   const = 0;
+        virtual float       GetNewlySymptomatic()     const = 0;
         virtual float       GetStatPop()       const = 0;
         virtual float       GetBirths()        const = 0;
         virtual float       GetCampaignCost()  const = 0;

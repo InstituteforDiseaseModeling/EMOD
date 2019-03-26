@@ -1,40 +1,37 @@
 {
-    "Use_Defaults": 1,
-    "Campaign_Name": "RandomChoice validation", 
+    "Campaign_Name": "RandomChoice validation",
     "Events": [
         {
-            "class": "CampaignEvent",
-            "Event_Name": "RandomChoice event", 
-            "Start_Day": 1,
-
-            "Nodeset_Config":
-            {
-                "class": "NodeSetAll"
-            }, 
-
-            "Event_Coordinator_Config": 
-            {
-                "class": "StandardInterventionDistributionEventCoordinator",
+            "Event_Coordinator_Config": {
                 "Demographic_Coverage": 1,
-
-                "Intervention_Config":
-                {
-                    "class": "HIVRandomChoice",
-
+                "Intervention_Config": {
+                    "Choice_Names": [
+                        "OnART1",
+                        "OnART2",
+                        "OnART4",
+                        "OnART5"
+                    ],
+                    "Choice_Probabilities": [
+                        0.1,
+                        0.2,
+                        0.3,
+                        0.4
+                    ],
                     "Days_To_Diagnosis": 0,
-                    "Event_Or_Config" : "Event",
-
                     "Disqualifying_Properties": [],
+                    "Event_Or_Config": "Event",
                     "New_Property_Value": "InterventionStatus:None",
-
-                    "Choices": {
-                        "OnART1": 0.1,
-                        "OnART2": 0.2,
-                        "OnART4": 0.3,
-                        "OnART5": 0.4
-                    }
-                }
-            }
+                    "class": "HIVRandomChoice"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "RandomChoice event",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 1,
+            "class": "CampaignEvent"
         }
-    ]
+    ],
+    "Use_Defaults": 1
 }

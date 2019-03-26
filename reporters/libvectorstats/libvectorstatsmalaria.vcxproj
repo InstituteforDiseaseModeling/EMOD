@@ -96,6 +96,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Eradication\StrainIdentity.cpp" />
+    <ClCompile Include="..\..\Eradication\Infection.cpp" />
     <ClCompile Include="ReportVectorStats.cpp" />
     <ClCompile Include="ReportVectorStatsMalaria.cpp" />
     <ClCompile Include="stdafx.cpp">

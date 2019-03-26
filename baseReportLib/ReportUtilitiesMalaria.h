@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -16,19 +16,19 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 namespace Kernel
 {
     class IndividualHuman;
+    class RANDOMBASE;
 }
 
-class RANDOMBASE;
 namespace ReportUtilitiesMalaria
 {
     // Smears infectiousness values using a binomial draw given 40 draws
-    float BinomialInfectiousness( RANDOMBASE * rng, float infec );
+    float BinomialInfectiousness( Kernel::RANDOMBASE * rng, float infec );
 
     // Converting +ve microscopic fields of view out of 200 slide views to parasite densities
     float FieldsOfViewToDensity( float positive_fields );
 
     // Adding uncertainty to PCR derived densities a la Walker et al. (2015)
-    float NASBADensityWithUncertainty( RANDOMBASE * rng, float true_density );
+    float NASBADensityWithUncertainty( Kernel::RANDOMBASE * rng, float true_density );
 
     // Evaluates polynomial of form : f(x) = p( 0 ) * x ^ (n - 1) + p( 1 ) *x ^ (n - 2)…
     // where n = the length of the vector p

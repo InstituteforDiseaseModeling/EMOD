@@ -1,0 +1,24 @@
+{
+    "Metadata": {
+        "DateCreated": "Sun Sep 25 23:19:55 2011",
+        "Tool": "convertdemog.py",
+        "Author": "jsteinkraus",
+        "IdReference": "Gridded world grump2.5arcmin",
+        "NodeCount": 1
+    },
+    "Defaults": {
+    	"IndividualProperties": [
+            {
+            "Property": "Risk",
+            "Values": [ "Starter", "Vaccinated", "Unvaccinated"],
+            "Initial_Distribution": [ 0.10, 0.45, 0.45 ],
+            "Transitions": []
+            }
+    	]
+    },
+    "Nodes": [
+        {
+            "NodeID": 340461476
+        }
+    ]
+}

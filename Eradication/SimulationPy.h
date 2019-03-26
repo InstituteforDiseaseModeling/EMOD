@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -35,7 +35,8 @@ namespace Kernel
         virtual void Initialize(const ::Configuration *config) override;
 
         // Allows correct type of community to be added by derived class Simulations
-        virtual void addNewNodeFromDemographics( suids::suid node_suid,
+        virtual void addNewNodeFromDemographics( ExternalNodeId_t externalNodeId,
+                                                 suids::suid node_suid,
                                                  NodeDemographicsFactory *nodedemographics_factory,
                                                  ClimateFactory *climate_factory,
                                                  bool white_list_enabled ) override;

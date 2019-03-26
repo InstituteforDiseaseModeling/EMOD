@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import json
-import dtk_sft
+import dtk_test.dtk_sft as sft
 import math
 import numpy as np
 import pandas as pd
@@ -61,7 +61,7 @@ def parse_output_file(output_filename="test.txt", simulation_timestep=1, debug=F
     filtered_lines = []
     with open(output_filename) as logfile:
         for line in logfile:
-            if dtk_sft.has_match(line,matches):
+            if sft.has_match(line,matches):
                 filtered_lines.append(line)
     if debug:
         with open("DEBUG_filtered_lines.txt", "w") as outfile:
@@ -101,7 +101,7 @@ def create_report_file(param_obj, output_dict, reporter_df, report_name, debug):
         timestep = param_obj[Config.simulation_timestep]
         if not len(output_dict):
             success = False
-            outfile.write(dtk_sft.sft_no_test_data)
+            outfile.write(sft.sft_no_test_data)
         else:
             outfile.write("Group the incidence by year and get the sum for all age bins:\n")
             # the year column becomes the index of the groupby_df
@@ -129,7 +129,7 @@ def create_report_file(param_obj, output_dict, reporter_df, report_name, debug):
                 for t in output_dict:
                     if i < len(years):
                         year = years[i]
-                        if t <= round(year * dtk_sft.DAYS_IN_YEAR):
+                        if t <= round(year * sft.DAYS_IN_YEAR):
                             incidence_count += output_dict[t]
                         else:
                             reporter_sum = int(groupby_df[groupby_df.index==year][ReportColumn.incidence])
@@ -143,7 +143,7 @@ def create_report_file(param_obj, output_dict, reporter_df, report_name, debug):
                     else:
                         break
 
-                dtk_sft.plot_data(incidence_counts, dist2=np.array(groupby_df[ReportColumn.incidence]), label1="reporter",
+                sft.plot_data(incidence_counts, dist2=np.array(groupby_df[ReportColumn.incidence]), label1="reporter",
                                            label2="log_valid", title="incidence",
                                            xlabel="every half year", ylabel="incidence", category='incidence',
                                            show=True, line=False, alpha=0.8)
@@ -160,14 +160,14 @@ def create_report_file(param_obj, output_dict, reporter_df, report_name, debug):
                     success = False
                     outfile.write("BAD: the reporter has data up to year {0} but the simulation duration is {1}, we are expecting "
                                   "not more than year {2} from reporter.\n".format(max(years), simulation_duration,
-                                                                           math.floor(simulation_duration/dtk_sft.DAYS_IN_YEAR)))
+                                                                           math.floor(simulation_duration/sft.DAYS_IN_YEAR)))
                     outfile.write("i={0}, len(years)={1}\n".format(i, len(years)))
-                if simulation_duration > round(max(years) * dtk_sft.DAYS_IN_YEAR) + 180:
+                if simulation_duration > round(max(years) * sft.DAYS_IN_YEAR) + 180:
                     success = False
                     outfile.write("BAD: the reporter has data up to year {0} but the simulation duration is {1}, we are expecting "
                                   "data after year {0} from reporter.\n".format(max(years), simulation_duration))
 
-        outfile.write(dtk_sft.format_success_msg(success))
+        outfile.write(sft.format_success_msg(success))
 
         if debug:
             print( "SUMMARY: Success={0}\n".format(success) )
@@ -175,7 +175,7 @@ def create_report_file(param_obj, output_dict, reporter_df, report_name, debug):
 
 def application( output_folder="output", stdout_filename="test.txt", reporter_filename="Report_TBHIV_ByAge.csv",
                  config_filename="config.json",
-                 report_name=dtk_sft.sft_output_filename,
+                 report_name=sft.sft_output_filename,
                  debug=True):
     if debug:
         print( "output_folder: " + output_folder )
@@ -185,7 +185,7 @@ def application( output_folder="output", stdout_filename="test.txt", reporter_fi
         print( "report_name: " + report_name + "\n" )
         print( "debug: " + str(debug) + "\n" )
 
-    dtk_sft.wait_for_done()
+    sft.wait_for_done()
     param_obj = load_emod_parameters(config_filename, debug)
     output_dict = parse_output_file(stdout_filename, param_obj[Config.simulation_timestep], debug)
     reporter_df = parse_custom_reporter(reporter_path=output_folder, reporter_filename=reporter_filename, debug=debug)
@@ -200,7 +200,7 @@ if __name__ == "__main__":
     parser.add_argument('-s', '--stdout', default="test.txt", help="Name of stdoutfile to parse (test.txt")
     parser.add_argument('-j', '--reportername', default="Report_TBHIV_ByAge.csv", help="reporter to test(Report_TBHIV_ByAge.csv)")
     parser.add_argument('-c', '--config', default="config.json", help="Config name to load (config.json)")
-    parser.add_argument('-r', '--reportname', default=dtk_sft.sft_output_filename, help="Report file to generate")
+    parser.add_argument('-r', '--reportname', default=sft.sft_output_filename, help="Report file to generate")
     parser.add_argument('-d', '--debug', default=False, help="Debug = True or False")
     args = parser.parse_args()
 

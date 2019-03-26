@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -15,7 +15,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Exceptions.h"
 #include "NodeEventContext.h"
 #include "IndividualEventContext.h"
-#include "Contexts.h"
 #include "FileSystem.h"
 #include "SimulationEnums.h"
 #include "ISimulation.h"
@@ -23,8 +22,35 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 SETUP_LOGGING( "ReportEventRecorder" )
 
+// These need to be after SETUP_LOGGING so that the LOG messages in the
+// templates don't make GCC complain.
+#include "BaseTextReportEventsTemplate.h"
+#include "BaseReportEventRecorderTemplate.h"
+
 namespace Kernel
 {
+    template std::string BaseReportEventRecorder< IIndividualEventBroadcaster,
+                                                  IIndividualEventObserver,
+                                                  IIndividualHumanEventContext,
+                                                  EventTrigger,
+                                                  EventTriggerFactory>::GetEnableParameterName();
+
+    template void BaseTextReportEventsTemplate< IIndividualEventBroadcaster,
+                                                IIndividualEventObserver,
+                                                IIndividualHumanEventContext,
+                                                EventTrigger >::Reduce();
+
+    template void BaseTextReportEventsTemplate< IIndividualEventBroadcaster,
+                                                IIndividualEventObserver,
+                                                IIndividualHumanEventContext,
+                                                EventTrigger >::UnregisterAllBroadcasters();
+
+    const std::string ReportEventRecorder::ENABLE_PARAMETER_NAME   = "Report_Event_Recorder";
+    const std::string ReportEventRecorder::EVENTS_LIST_NAME        = "Report_Event_Recorder_Events";
+    const std::string ReportEventRecorder::EVENTS_LIST_DESC        =  Report_Event_Recorder_Events_DESC_TEXT;
+    const std::string ReportEventRecorder::IGNORE_EVENTS_LIST_NAME = "Report_Event_Recorder_Ignore_Events_In_List";
+    const std::string ReportEventRecorder::IGNORE_EVENTS_LIST_DESC =  Report_Event_Recorder_Ignore_Events_In_List_DESC_TEXT;
+
     GET_SCHEMA_STATIC_WRAPPER_IMPL(ReportEventRecorder,ReportEventRecorder)
 
     IReport* ReportEventRecorder::CreateReport()
@@ -33,8 +59,8 @@ namespace Kernel
     }
 
     ReportEventRecorder::ReportEventRecorder()
-        : BaseTextReportEvents("ReportEventRecorder.csv")
-        , ignore_events_in_list(false)
+        : BaseReportEventRecorder("ReportEventRecorder.csv")
+        , properties_to_report()
     {
     }
 
@@ -42,65 +68,57 @@ namespace Kernel
     {
     }
 
-    bool ReportEventRecorder::Configure( const Configuration * inputJson )
+    void ReportEventRecorder::ConfigureOther( const Configuration * inputJson )
     {
-        std::vector<EventTrigger> tmp_event_trigger_list ;
+        properties_to_report.value_source = IPKey::GetConstrainedStringConstraintKey(); 
+        initConfigTypeMap("Report_Event_Recorder_Individual_Properties", &properties_to_report, Property_Restriction_DESC_TEXT, ENABLE_PARAMETER_NAME.c_str() );
+    }
 
-        initConfigTypeMap( "Report_Event_Recorder_Ignore_Events_In_List", &ignore_events_in_list, Report_Event_Recorder_Ignore_Events_In_List_DESC_TEXT, false, "Report_Event_Recorder" );
-        initConfigTypeMap( "Report_Event_Recorder_Events", &tmp_event_trigger_list, Report_Event_Recorder_Events_DESC_TEXT, "Report_Event_Recorder" );
-
-        if( inputJson && inputJson->Exist("Report_Event_Recorder_Individual_Properties" ) || JsonConfigurable::_dryrun )
+    void ReportEventRecorder::Initialize( unsigned int nrmSize )
+    {
+        for( auto key_name : properties_to_report )
         {
-            properties_to_report.value_source = IPKey::GetConstrainedStringConstraintKey(); 
-            // xpath-y way of saying that the possible values for prop restrictions comes from demographics file IP's.
-            initConfigTypeMap("Report_Event_Recorder_Individual_Properties", &properties_to_report, Property_Restriction_DESC_TEXT, "Intervention_Config.*.iv_type", "IndividualTargeted" );
-        }
-
-        bool ret = JsonConfigurable::Configure( inputJson );
-
-        if( ret && !JsonConfigurable::_dryrun )
-        {
-            if( !ignore_events_in_list && tmp_event_trigger_list.empty() )
+            IndividualProperty* p_ip = IPFactory::GetInstance()->GetIP( key_name, "Report_Event_Recorder_Individual_Properties", false );
+            if( p_ip == nullptr )
             {
-                LOG_WARN( "No data will be recorded.  The Report_Event_Recorder_Events list is empty and Report_Event_Recorder_Ignore_Events_In_List is false.\n" );
-            }
-            else
-            {
-                // This logic goes through all possible events.  It checks to see if that event
-                // is in the listen-to-these event_list provided by the user. But that list can be a 
-                // whitelist or blacklist. If using whitelist AND event-requested is in master THEN listen.
-                // else if using blacklist AND if event-(de)requested is not in master THEN listen.
-
-                std::vector<EventTrigger> all_trigger_list = EventTriggerFactory::GetInstance()->GetAllEventTriggers();
-                for( auto trigger : all_trigger_list )
-                {
-                    bool in_event_list = std::find( tmp_event_trigger_list.begin(), 
-                                                    tmp_event_trigger_list.end(), trigger ) != tmp_event_trigger_list.end() ;
-
-                    if( (!ignore_events_in_list &&  in_event_list) ||
-                        ( ignore_events_in_list && !in_event_list) )
-                    {
-                        // list of events to listen for
-                        eventTriggerList.push_back( trigger );
-                    }
-                }
+                std::stringstream ss;
+                ss << "The IP Key (" << key_name << ") specified in 'Report_Event_Recorder_Individual_Properties' is unknown.\n"
+                    << "Valid values are: " << IPFactory::GetInstance()->GetKeysAsString();
+                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
             }
         }
+        BaseReportEventRecorder::Initialize( nrmSize );
+    }
 
-        return ret;
+    void ReportEventRecorder::UpdateEventRegistration( float currentTime,
+                                                       float dt,
+                                                       std::vector<INodeEventContext*>& rNodeEventContextList,
+                                                       ISimulationEventContext* pSimEventContext )
+    {
+        if( !is_registered )
+        {
+            for( auto pNEC : rNodeEventContextList )
+            {
+                release_assert( pNEC );
+                IIndividualEventBroadcaster* broadcaster = pNEC->GetIndividualEventBroadcaster();
+                UpdateRegistration( broadcaster, true );
+                broadcaster_list.push_back( broadcaster );
+            }
+            is_registered = true;
+        }
     }
 
     std::string ReportEventRecorder::GetHeader() const
     {
         std::stringstream header ;
-        header << GetTimeHeader()           << ","
-               << "Node_ID"                 << ","
-               << "Event_Name"              << ","
-               << "Individual_ID"           << ","
-               << "Age"                     << ","
-               << "Gender"                  << ","
-               << "Infected"                << ","
-               << "Infectiousness"          ;
+        header << BaseReportEventRecorder::GetHeader()
+               << "," << "Node_ID"
+               << "," << "Event_Name"
+               << "," << "Individual_ID"
+               << "," << "Age"
+               << "," << "Gender"
+               << "," << "Infected"
+               << "," << "Infectiousness" ;
 
         for (const auto& prop : properties_to_report)
         {
@@ -110,30 +128,25 @@ namespace Kernel
         return header.str();
     }
 
-    bool
-    ReportEventRecorder::notifyOnEvent(
-        IIndividualHumanEventContext *context,
-        const EventTrigger& trigger
-    )
+    std::string ReportEventRecorder::GetOtherData( IIndividualHumanEventContext *context,
+                                                   const EventTrigger& trigger )
     {
         int         id           = context->GetSuid().data;
         ExternalNodeId_t node_id = context->GetNodeEventContext()->GetExternalId();
-        IdmDateTime sim_time     = context->GetNodeEventContext()->GetTime();
         const char* event_name   = trigger.c_str();
         float       age          = context->GetAge();
         const char  gender       = (context->GetGender() == Gender::MALE) ? 'M' : 'F' ;
         bool        infected     = context->IsInfected();
         float       infectious   = context->GetInfectiousness() ;
 
-
-        GetOutputStream() << GetTime( sim_time ) << ","
-                          << node_id             << ","
-                          << event_name          << ","
-                          << id                  << ","
-                          << age                 << ","
-                          << gender              << ","
-                          << infected            << ","
-                          << infectious;
+        std::stringstream ss;
+        ss << "," << node_id
+           << "," << event_name
+           << "," << id
+           << "," << age
+           << "," << gender
+           << "," << infected
+           << "," << infectious;
 
         // Report requested properties
         const auto * pProp = context->GetProperties();
@@ -145,28 +158,13 @@ namespace Kernel
             {
                 throw BadMapKeyException( __FILE__, __LINE__, __FUNCTION__, "properties", prop_name.c_str() );
             }
-            GetOutputStream() << "," << pProp->Get( key ).GetValueAsString();
+            ss << "," << pProp->Get( key ).GetValueAsString();
         }
-
-        GetOutputStream() << GetOtherData( context, trigger );
-        GetOutputStream() << std::endl;
-
-        return true ;
+        return ss.str();
     }
 
-    std::string ReportEventRecorder::GetTimeHeader() const
+    float ReportEventRecorder::GetTime( IIndividualHumanEventContext* pEntity ) const
     {
-        return "Time";
-    }
-
-    float ReportEventRecorder::GetTime( const IdmDateTime& rDateTime ) const
-    {
-        return rDateTime.time;
-    }
-
-    std::string ReportEventRecorder::GetOtherData( IIndividualHumanEventContext *context, 
-                                                   const EventTrigger& trigger )
-    {
-        return "" ;
+        return pEntity->GetNodeEventContext()->GetTime().time;
     }
 }

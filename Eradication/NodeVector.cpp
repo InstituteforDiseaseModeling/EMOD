@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -21,9 +21,11 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "VectorParameters.h"
 #include "Log.h"
 #include "SimulationConfig.h"
+#include "ISimulationContext.h"
 #include "TransmissionGroupsFactory.h"
 #include "TransmissionGroupMembership.h"
 #include "IMigrationInfoVector.h"
+#include "Infection.h"
 
 SETUP_LOGGING( "NodeVector" )
 
@@ -34,6 +36,12 @@ SETUP_LOGGING( "NodeVector" )
 
 using namespace std;
 
+#define INDOOR  "indoor"
+#define OUTDOOR "outdoor"
+
+#define HUMAN   "human"
+#define VECTOR  "vector"
+
 namespace Kernel
 {
     BEGIN_QUERY_INTERFACE_DERIVED(NodeVector, Node)
@@ -43,12 +51,10 @@ namespace Kernel
 
     GET_SCHEMA_STATIC_WRAPPER_IMPL(NodeVector, NodeVector)
 
-    TransmissionGroupMembership_t NodeVector::human_to_vector_all;
-    TransmissionGroupMembership_t NodeVector::human_to_vector_indoor;
-    TransmissionGroupMembership_t NodeVector::human_to_vector_outdoor;
-    TransmissionGroupMembership_t NodeVector::vector_to_human_all;
-    TransmissionGroupMembership_t NodeVector::vector_to_human_indoor;
-    TransmissionGroupMembership_t NodeVector::vector_to_human_outdoor;
+    TransmissionGroupMembership_t NodeVector::human_indoor;
+    TransmissionGroupMembership_t NodeVector::human_outdoor;
+    TransmissionGroupMembership_t NodeVector::vector_indoor;
+    TransmissionGroupMembership_t NodeVector::vector_outdoor;
 
     NodeVector::NodeVector() 
         : m_larval_habitats()
@@ -59,13 +65,14 @@ namespace Kernel
         , vector_mortality( true )
         , mosquito_weight( 0 )
         , vector_migration_info( nullptr )
+        , txOutdoor( nullptr )
     {
         delete event_context_host;
         NodeVector::setupEventContextHost();    // This is marked as a virtual function, but isn't virtualized here because we're still in the ctor.
     }
 
-    NodeVector::NodeVector(ISimulationContext *context, suids::suid _suid) 
-        : Node(context, _suid)
+    NodeVector::NodeVector(ISimulationContext *context, ExternalNodeId_t externalNodeId, suids::suid _suid) 
+        : Node(context, externalNodeId, _suid)
         , m_larval_habitats()
         , m_vectorpopulations()
         , m_VectorPopulationReportingList()
@@ -74,6 +81,7 @@ namespace Kernel
         , vector_mortality( true )
         , mosquito_weight( 1 )
         , vector_migration_info( nullptr )
+        , txOutdoor( nullptr )
     {
         delete event_context_host;
         NodeVector::setupEventContextHost();    // This is marked as a virtual function, but isn't virtualized here because we're still in the ctor.
@@ -84,6 +92,7 @@ namespace Kernel
         const Configuration * config
     )
     {
+        larval_habitat_multiplier.SetExternalNodeId(externalId);
         larval_habitat_multiplier.Initialize();
 
         initConfigTypeMap( "Enable_Vector_Mortality", &vector_mortality, Enable_Vector_Mortality_DESC_TEXT, true );
@@ -115,7 +124,11 @@ namespace Kernel
 
         if (demographics["NodeAttributes"].Contains("LarvalHabitatMultiplier"))
         {
-            larval_habitat_multiplier.Read( demographics["NodeAttributes"]["LarvalHabitatMultiplier"].GetJsonObject(), externalId );
+            // This bit of magic gets around the fact that we have a few competing JSON patterns colliding right here, and we have to
+            // go from one JSON view to string to another JSON view
+            std::istringstream config_string(demographics["NodeAttributes"].GetJsonObject().ToString());
+            Configuration* config = Configuration::Load(config_string, std::string(""));
+            larval_habitat_multiplier.Configure(config);
         }
         else
         {
@@ -128,9 +141,9 @@ namespace Kernel
         event_context_host = _new_ NodeVectorEventContextHost(this);
     }
 
-    NodeVector *NodeVector::CreateNode(ISimulationContext *context, suids::suid suid)
+    NodeVector *NodeVector::CreateNode(ISimulationContext *context, ExternalNodeId_t externalNodeId, suids::suid suid)
     {
-        NodeVector *newnode = _new_ NodeVector(context, suid);
+        NodeVector *newnode = _new_ NodeVector(context, externalNodeId, suid);
         newnode->Initialize();
 
         return newnode;
@@ -193,44 +206,34 @@ namespace Kernel
     {
         // create two routes (indoor and outdoor), and two groups for each route (human, mosquito).
         // future expansion of heterogeneous intra-node transmission could start here.
-        transmissionGroups = TransmissionGroupsFactory::CreateNodeGroups(TransmissionGroupType::HumanVectorGroups);
-        string propertyAndRouteName("Indoor");
-        PropertyValueList_t valueList;
-        valueList.push_back(string("Human"));
-        valueList.push_back(string("Vector"));
+        transmissionGroups = CreateTransmissionGroups();
 
-        MatrixRow_t rowOne(2, 0.0f);
-        rowOne[0] = 1.0f;
-        ScalingMatrix_t scalingMatrix;
-        scalingMatrix.push_back(rowOne);
-        MatrixRow_t rowTwo(2, 0.0f);
-        rowTwo[1] = 1.0f;
-        scalingMatrix.push_back(rowTwo);
-        transmissionGroups->AddProperty(propertyAndRouteName, valueList, scalingMatrix, propertyAndRouteName);
-        
-        propertyAndRouteName = "Outdoor";
-        transmissionGroups->AddProperty(propertyAndRouteName, valueList, scalingMatrix, propertyAndRouteName);
+        ScalingMatrix_t scalingMatrix{
+            { 0.0f, 1.0f },
+            { 1.0f, 0.0f } };
+        transmissionGroups->AddProperty( /*property*/ INDOOR,  { HUMAN, VECTOR }, scalingMatrix );
+        txOutdoor->AddProperty(          /*property*/ OUTDOOR, { HUMAN, VECTOR }, scalingMatrix );
 
         LOG_DEBUG("groups added.\n");
 
         VectorSamplingType::Enum vector_sampling_type = GET_CONFIGURABLE(SimulationConfig)->vector_params->vector_sampling_type;
         if ( (vector_sampling_type == VectorSamplingType::VECTOR_COMPARTMENTS_NUMBER || vector_sampling_type == VectorSamplingType::VECTOR_COMPARTMENTS_PERCENT) &&
-              params()->number_basestrains > 1 &&
-              params()->number_substrains  > 1 )
+              InfectionConfig::number_basestrains > 1 &&
+              InfectionConfig::number_substrains  > 1 )
         {
             // Ideally error messages would all be in Exceptions.cpp
             std::ostringstream msg;
             msg << "Strain tracking is only fully supported for the individual (not cohort) vector model."
                 << " Simulations will run for cohort models, but all vector-to-human transmission defaults to strain=(0,0)." 
-                << " Specified values for number_basestrains = " << params()->number_basestrains << " and number_substrains = " << params()->number_substrains
+                << " Specified values for InfectionConfig::number_basestrains = " << InfectionConfig::number_basestrains << " and number_substrains = " << InfectionConfig::number_substrains
                 << " are not allowed. They may only be set to 1 for the cohort model.  To use the individual vector model, switch vector sampling type to TRACK_ALL_VECTORS or SAMPLE_IND_VECTORS."
                 << std::endl;
             LOG_ERR( msg.str().c_str() );
             std::ostringstream err_msg;
-            err_msg << params()->number_basestrains << " and " << params()->number_substrains;
+            err_msg << InfectionConfig::number_basestrains << " and " << InfectionConfig::number_substrains;
             throw IncoherentConfigurationException(
                 __FILE__, __LINE__, __FUNCTION__,
-                "params()->number_basestrains > 1 and params()->number_substrains > 1",
+                "InfectionConfig::number_basestrains > 1 and number_substrains > 1",
                 err_msg.str().c_str(),
                 "vector_sampling_type",
                 VectorSamplingType::pairs::lookup_key( vector_sampling_type )
@@ -239,39 +242,29 @@ namespace Kernel
 
         LOG_DEBUG("Building indoor/outdoor human-vector groups.\n");
 
-        RouteToContagionDecayMap_t decayMap; 
-        decayMap.clear();
-        decayMap["Indoor"] = 1.0f;
-        decayMap["Outdoor"] = 1.0f;
-        transmissionGroups->Build(decayMap, params()->number_basestrains, params()->number_substrains);
+        BuildTransmissionRoutes( 1.0f );
 
         // Do once for all nodes
-        RouteList_t route_all;
-        RouteList_t route_indoor;
-        RouteList_t route_outdoor;
-        route_indoor.push_back("Indoor");
-        route_all.push_back("Indoor");
-        route_outdoor.push_back("Outdoor");
-        route_all.push_back("Outdoor");
+        RouteList_t route_indoor{ INDOOR };
+        RouteList_t route_outdoor{ OUTDOOR };
 
-        tProperties vectorProperties;
-        tProperties humanProperties;
-        vectorProperties[string("Indoor")] = string("Vector");
-        vectorProperties[string("Outdoor")] = string("Vector");
-        humanProperties[string("Indoor")] = string("Human");
-        humanProperties[string("Outdoor")] = string("Human");
+        tProperties vectorProperties{ { INDOOR, VECTOR }, { OUTDOOR, VECTOR } };
+        tProperties humanProperties{ { INDOOR, HUMAN }, { OUTDOOR, HUMAN } };
 
-        GetGroupMembershipForIndividual( route_all, &humanProperties, &human_to_vector_all );
-        GetGroupMembershipForIndividual( route_all, &vectorProperties, &vector_to_human_all );
-        GetGroupMembershipForIndividual( route_indoor, &humanProperties, &human_to_vector_indoor );
-        GetGroupMembershipForIndividual( route_outdoor, &humanProperties, &human_to_vector_outdoor );
-        GetGroupMembershipForIndividual( route_indoor, &vectorProperties, &vector_to_human_indoor );
-        GetGroupMembershipForIndividual( route_outdoor, &vectorProperties, &vector_to_human_outdoor );
+        // Note, this works, but has potential for a problem - these static membership
+        // variables are shared by all (demographic) nodes on the same compute core. It is
+        // just maybe possible that the HINT configuration is different for different nodes
+        // and should not all be using the same static variables.
+        transmissionGroups->GetGroupMembershipForProperties( humanProperties, human_indoor );
+        txOutdoor->GetGroupMembershipForProperties( humanProperties, human_outdoor );
+
+        transmissionGroups->GetGroupMembershipForProperties( vectorProperties, vector_indoor );
+        txOutdoor->GetGroupMembershipForProperties( vectorProperties, vector_outdoor );
 
 // Workaround (AKA hack) for deserialization
 for (auto pop : m_vectorpopulations)
 {
-    pop->SetupIntranodeTransmission(transmissionGroups);
+    pop->SetupIntranodeTransmission(transmissionGroups, txOutdoor);
 }
     }
 
@@ -293,7 +286,8 @@ for (auto pop : m_vectorpopulations)
         float weight = 1.0f - invie->GetPFVKill();
 
         // Acquire infections with strain tracking for exposed queues
-        transmissionGroups->CorrectInfectivityByGroup(weight, &NodeVector::human_to_vector_all);
+        transmissionGroups->CorrectInfectivityByGroup(weight, NodeVector::human_indoor);
+        txOutdoor->CorrectInfectivityByGroup( weight, NodeVector::human_outdoor );
 
         // changes in larval capacities.
         // drying of larval habitat, function of temperature and humidity
@@ -308,7 +302,8 @@ for (auto pop : m_vectorpopulations)
             }
         }
 
-        transmissionGroups->EndUpdate(1.0f); // finish processing human-to-mosquito infectiousness
+        transmissionGroups->EndUpdate();    // finish processing human-to-mosquito infectiousness
+        txOutdoor->EndUpdate();
 
         // don't need to update the vector populations before the first timestep
         if ( dt <= 0 ) 
@@ -330,7 +325,8 @@ for (auto pop : m_vectorpopulations)
         }
 
         // do again so that humans bitten this time step get infected
-        transmissionGroups->EndUpdate( 1.0f ); // finish processing mosquito-to-human infectiousness
+        transmissionGroups->EndUpdate();    // finish processing mosquito-to-human infectiousness
+        txOutdoor->EndUpdate();
 
         // Now process the node's emigrating mosquitoes
         processEmigratingVectors( dt );
@@ -551,7 +547,7 @@ for (auto pop : m_vectorpopulations)
         for (auto population : m_vectorpopulations)
         {
             population->SetContextTo(getContextPointer());
-            population->SetupIntranodeTransmission(transmissionGroups);
+            population->SetupIntranodeTransmission(transmissionGroups, txOutdoor);
         }
 
         if ( vector_migration_info != nullptr )
@@ -613,7 +609,7 @@ for (auto pop : m_vectorpopulations)
         // Link vector population to group collection to allow it to update vector-to-human infectivity
         // TBD: QI socialNetwork to IWVPC pointer
 
-        vp->SetupIntranodeTransmission(transmissionGroups);
+        vp->SetupIntranodeTransmission(transmissionGroups, txOutdoor);
 
         // Create larval habitat objects for this species
         // and keep a list of pointers so the node can update it with new rainfall, etc.
@@ -636,6 +632,73 @@ for (auto pop : m_vectorpopulations)
     {
         return m_VectorPopulationReportingList;
     }
+
+    void NodeVector::UpdateTransmissionGroupPopulation(const tProperties& properties, float size_changes, float mc_weight)
+    {
+        transmissionGroups->UpdatePopulationSize(human_indoor, size_changes, mc_weight);
+        txOutdoor->UpdatePopulationSize(human_outdoor, size_changes, mc_weight);
+    }
+
+    ITransmissionGroups* NodeVector::CreateTransmissionGroups()
+    {
+        txOutdoor = TransmissionGroupsFactory::CreateNodeGroups( TransmissionGroupType::StrainAwareGroups, GetRng() );
+        txOutdoor->SetTag( OUTDOOR );
+        auto txIndoor = TransmissionGroupsFactory::CreateNodeGroups( TransmissionGroupType::StrainAwareGroups, GetRng() );
+        txIndoor->SetTag( INDOOR );
+        return txIndoor;    // Will become this->transmissionGroups
+    }
+
+    void NodeVector::BuildTransmissionRoutes( float /* contagionDecayRate */ )
+    {
+        transmissionGroups->Build( 1.0f, InfectionConfig::number_basestrains, InfectionConfig::number_substrains );
+        txOutdoor->Build( 1.0f, InfectionConfig::number_basestrains, InfectionConfig::number_substrains );
+    }
+
+    void NodeVector::DepositFromIndividual(
+        const IStrainIdentity& strainIDs,
+        float contagion_quantity,
+        TransmissionGroupMembership_t shedder,
+        TransmissionRoute::Enum route)
+    {
+        LOG_DEBUG_F( "deposit from individual: antigen index =%d, substain index = %d, quantity = %f, route = %d\n", strainIDs.GetAntigenID(), strainIDs.GetGeneticID(), contagion_quantity, uint32_t(route) );
+
+        switch (route)
+        {
+            case TransmissionRoute::TRANSMISSIONROUTE_HUMAN_TO_VECTOR_INDOOR:
+                transmissionGroups->DepositContagion( strainIDs, contagion_quantity, shedder );
+                break;
+
+            case TransmissionRoute::TRANSMISSIONROUTE_HUMAN_TO_VECTOR_OUTDOOR:
+                txOutdoor->DepositContagion( strainIDs, contagion_quantity, shedder );
+                break;
+
+            case TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_INDOOR:
+                transmissionGroups->DepositContagion( strainIDs, contagion_quantity, shedder );
+                break;
+
+            case TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_OUTDOOR:
+                txOutdoor->DepositContagion( strainIDs, contagion_quantity, shedder );
+                break;
+
+            default:
+                // TODO - try to get proper string from route enum
+                throw new BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "route", uint32_t(route), "???" );
+        }
+    }
+
+    void NodeVector::ExposeIndividual( IInfectable* candidate, TransmissionGroupMembership_t individual, float dt )
+    {
+        transmissionGroups->ExposeToContagion( candidate, human_indoor, dt, TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_INDOOR );
+        txOutdoor->ExposeToContagion( candidate, human_outdoor, dt, TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_OUTDOOR );
+    }
+
+    float NodeVector::GetTotalContagion( void )
+    {
+        float contagion = transmissionGroups->GetTotalContagion() + txOutdoor->GetTotalContagion();
+
+        return contagion;
+    }
+
 
     REGISTER_SERIALIZABLE(NodeVector);
 
@@ -672,6 +735,5 @@ for (auto pop : m_vectorpopulations)
 
         if ((node.serializationMask & SerializationFlags::Properties) != 0) {
         }
-
     }
 } // end namespace Kernel

@@ -1,0 +1,207 @@
+{        
+    "Events": [
+        {
+            "comment": "Triggered by Broadcast_Event",
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+             "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 1, 2 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "SurveillanceEventCoordinator",
+                "Coordinator_Name" : "ACF_Counter_1_1n2",
+                "Start_Trigger_Condition_List" : [ "Start_Vaccinating_1n2" ],
+                "Stop_Trigger_Condition_List" : [ 
+                    "Ind_Start_SIA_2_1n2"
+                ],
+                "Duration" : -1,
+                "Incidence_Counter" : {
+                    "Counter_Type" : "PERIODIC",
+                    "Counter_Period" : 100,
+                    "Counter_Event_Type" : "INDIVIDUAL",
+                    "Trigger_Condition_List" : ["HappyBirthday"],
+                    "Node_Property_Restrictions" : [],
+                    "Property_Restrictions_Within_Node" : [],
+                    "Target_Demographic": "Everyone",
+                    "Demographic_Coverage" : 1.0
+                },
+                "Responder" : {
+                    "Threshold_Type" : "COUNT",
+                    "Action_List" :
+                    [
+                        {
+                            "Threshold" : 5,
+                            "Event_Type" : "COORDINATOR",
+                            "Event_To_Broadcast" : "Ind_Start_SIA_2_1n2"
+                        },
+                        {
+                            "Threshold" : 2,
+                            "Event_Type" : "COORDINATOR",
+                            "Event_To_Broadcast" : "Ind_Start_SIA_4_1n2"
+                        }
+                    ]
+                }
+            }    
+        }, 
+        {
+            "comment": "Triggered by Broadcast_Event",
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+             "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 1, 2 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "SurveillanceEventCoordinator",
+                "Coordinator_Name" : "ACF_Counter_2_1n2",
+                "Start_Trigger_Condition_List" : [ "Ind_Start_SIA_2_1n2" ],
+                "Stop_Trigger_Condition_List" : [ 
+                ],
+                "Duration" : -1,
+                "Incidence_Counter" : {
+                    "Counter_Type" : "PERIODIC",
+                    "Counter_Period" : 100,
+                    "Counter_Event_Type" : "INDIVIDUAL",
+                    "Trigger_Condition_List" : ["HappyBirthday"],
+                    "Node_Property_Restrictions" : [],
+                    "Property_Restrictions_Within_Node" : [],
+                    "Target_Demographic": "Everyone",
+                    "Demographic_Coverage" : 1.0
+                },
+                "Responder" : {
+                    "Threshold_Type" : "COUNT",
+                    "Action_List" :
+                    [
+                        {
+                            "Threshold" : 5,
+                            "Event_Type" : "COORDINATOR",
+                            "Event_To_Broadcast" : "Ind_End_SIA_2_1n2"
+                        },
+                        {
+                            "Threshold" : 2,
+                            "Event_Type" : "COORDINATOR",
+                            "Event_To_Broadcast" : "Ind_End_SIA_4_1n2"
+                        }
+                    ]
+                }
+            }    
+        },
+        {
+            "comment": "Triggered by Broadcast_Event",
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+             "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 3, 4 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "SurveillanceEventCoordinator",
+                "Coordinator_Name" : "ACF_Counter_1_3n4",
+                "Start_Trigger_Condition_List" : [ "Ind_Start_SIA_2_3n4" ],
+                "Stop_Trigger_Condition_List" : [ 
+                ],
+                "Duration" : -1,
+                "Incidence_Counter" : {
+                    "Counter_Type" : "PERIODIC",
+                    "Counter_Period" : 100,
+                    "Counter_Event_Type" : "INDIVIDUAL",
+                    "Trigger_Condition_List" : ["HappyBirthday"],
+                    "Node_Property_Restrictions" : [],
+                    "Property_Restrictions_Within_Node" : [],
+                    "Target_Demographic": "Everyone",
+                    "Demographic_Coverage" : 1.0
+                },
+                "Responder" : {
+                    "Threshold_Type" : "COUNT",
+                    "Action_List" :
+                    [
+                        {
+                            "Threshold" : 5,
+                            "Event_Type" : "COORDINATOR",
+                            "Event_To_Broadcast" : "Ind_End_SIA_2_3n4"
+                        },
+                        {
+                            "Threshold" : 2,
+                            "Event_Type" : "COORDINATOR",
+                            "Event_To_Broadcast" : "Ind_End_SIA_4_3n4"
+                        }
+                    ]
+                }
+            }    
+        }, 
+ {
+            "comment": "Triggered by Broadcast_Event",
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+             "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 3, 4 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "SurveillanceEventCoordinator",
+                "Coordinator_Name" : "ACF_Counter_2_3n4",
+                "Start_Trigger_Condition_List" : [ "Start_Vaccinating_3n4" ],
+                "Stop_Trigger_Condition_List" : [ 
+                    "Ind_Start_SIA_2_3n4"
+                ],
+                "Duration" : -1,
+                "Incidence_Counter" : {
+                    "Counter_Type" : "PERIODIC",
+                    "Counter_Period" : 100,
+                    "Counter_Event_Type" : "INDIVIDUAL",
+                    "Trigger_Condition_List" : ["HappyBirthday"],
+                    "Node_Property_Restrictions" : [],
+                    "Property_Restrictions_Within_Node" : [],
+                    "Target_Demographic": "Everyone",
+                    "Demographic_Coverage" : 1.0
+                },
+                "Responder" : {
+                    "Threshold_Type" : "COUNT",
+                    "Action_List" :
+                    [
+                        {
+                            "Threshold" : 5,
+                            "Event_Type" : "COORDINATOR",
+                            "Event_To_Broadcast" : "Ind_Start_SIA_2_3n4"
+                        },
+                        {
+                            "Threshold" : 2,
+                            "Event_Type" : "COORDINATOR",
+                            "Event_To_Broadcast" : "Ind_Start_SIA_4_3n4"
+                        }
+                    ]
+                }
+            }    
+        },        
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 1, 2 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "BroadcastCoordinatorEvent",
+                "Coordinator_Name" : "Start_Coordnator_1n2",
+                "Cost_To_Consumer" : 100,
+                "Broadcast_Event" : "Start_Vaccinating_1n2"
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 205,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 3, 4 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "BroadcastCoordinatorEvent",
+                "Coordinator_Name" : "Start_Coordnator_3n4",
+                "Cost_To_Consumer" : 200,
+                "Broadcast_Event" : "Start_Vaccinating_3n4"
+            }
+        }
+    ],
+    "Use_Defaults": 1
+}

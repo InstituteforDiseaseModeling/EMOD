@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -46,9 +46,9 @@ namespace Kernel
         static float ART_viral_suppression_multiplier;
         static float personal_infectivity_heterogeneity;
         static float personal_infectivity_scale;
-        static float personal_infectivity_median;
         static float max_CD4_cox;
         static FerrandAgeDependentDistribution mortality_distribution_by_age;
+        static IDistribution* p_hetero_infectivity_distribution;
     };
 
     //---------------------------- InfectionHIV ----------------------------------------
@@ -107,6 +107,10 @@ namespace Kernel
         float m_aids_duration;
 
         float m_hetero_infectivity_multiplier;
+
+        virtual void UpdateSymptomatic( float const duration, float const incubation_timer ) override {};
+        virtual bool IsSymptomatic() const override { return false; };
+
 
         IIndividualHumanHIV * hiv_parent;
 

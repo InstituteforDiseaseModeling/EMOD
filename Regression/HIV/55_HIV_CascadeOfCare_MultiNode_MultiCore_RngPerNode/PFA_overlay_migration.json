@@ -1,0 +1,21 @@
+{
+    "Metadata": {
+        "Author": "dbridenbecker", 
+        "NodeCount": 2, 
+        "Tool": "notepad", 
+        "IdReference": "0", 
+        "DateCreated": "2016-2-13"
+    },
+    "Defaults": {
+        "Society" : {
+            "MARITAL" :
+            {
+                "Relationship_Parameters" :
+                {
+                    "Migration_Actions" : [ "MIGRATE" ],
+                    "Migration_Actions_Distribution" : [ 1.0 ]
+                }
+            }
+        }
+    }
+}

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -9,12 +9,10 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "stdafx.h"
 
-#ifdef ENABLE_TBHIV
-
 #include "AntiTBDrug.h"
 
-#include "Contexts.h"                  // for IIndividualHumanContext, IIndividualHumanInterventionsContext
-#include "Debug.h"                     // for IIndividualHumanContext, IIndividualHumanInterventionsContext
+#include "IIndividualHumanContext.h"
+#include "Debug.h"
 #include "TBInterventionsContainer.h"  // for ITBDrugEffectsApply methods
 #include "NodeEventContext.h"          // for INodeEventContext (ICampaignCostObserver)
 #include "EventTrigger.h"
@@ -182,4 +180,3 @@ namespace Kernel
     }
 }
 
-#endif // ENABLE_TBHIV

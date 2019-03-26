@@ -2,9 +2,9 @@
 
 import json
 import os.path as path
-import dtk_sft as sft
+import dtk_test.dtk_sft as sft
 import math
-import dtk_SimpleBoosterVaccine_Support as sbvs
+import dtk_test.dtk_SimpleBoosterVaccine_Support as sbvs
 
 KEY_TOTAL_TIMESTEPS = "Simulation_Duration"
 KEY_NEW_INFECTIONS = "New Infections"
@@ -120,11 +120,15 @@ def create_report_file(report_data_obj, report_name, debug):
             expected_new_disease_death = (1.0 - effect) * new_infection
             tolerance = 0.0 if expected_new_disease_death == 0.0 else 3e-2 * new_infection
             actual_effect = 1.0 - new_disease_death/float(new_infection) if new_infection != 0 else 0.0
+            result = f"At time step {timestep}, outbreak {Interventions[i]}, {new_disease_death} reported" \
+                     f" new disease death, expected {expected_new_disease_death} with tolerance {tolerance}.\n"
+            mortality_effect_message = f"actual MortalityBlocking effect is {actual_effect}, expected {effect}."
             if math.fabs(new_disease_death - expected_new_disease_death) > tolerance:
                 success = False
-                outfile.write("BAD: At time step {0}, outbreak {1}, {2} reported new disease death, expected {3}.\n".format(
-                    timestep, Interventions[i], new_disease_death, expected_new_disease_death))
-                outfile.write("actual MortalityBlocking effect is {0}, expected {1}.\n".format(actual_effect, effect))
+                outfile.write(f"BAD:  {result}")
+            else:
+                outfile.write(f"GOOD: {result}")
+            outfile.write(f"\t {mortality_effect_message}\n")
             new_disease_deaths.append(new_disease_death)
             expected_new_disease_deaths.append(expected_new_disease_death)
             actual_effects.append(actual_effect)

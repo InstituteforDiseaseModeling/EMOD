@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -76,9 +76,9 @@ private:
 class MyIntervention : public Kernel::INodeDistributableIntervention
 {
 public:
-    MyIntervention( INodeTriggeredInterventionConsumer* pNTIC ) 
+    MyIntervention( IIndividualEventBroadcaster* broadcaster )
         : INodeDistributableIntervention()
-        , m_pNTIC( pNTIC )
+        , m_Broadcaster( broadcaster )
         , m_Name("MyIntervention")
     {};
 
@@ -86,7 +86,7 @@ public:
 
     virtual void Update(float dt) override
     {
-        m_pNTIC->TriggerNodeEventObservers( nullptr, EventTrigger::NonDiseaseDeaths );
+        m_Broadcaster->TriggerObservers( nullptr, EventTrigger::NonDiseaseDeaths );
     };
 
     virtual INodeDistributableIntervention* Clone() override { return nullptr; };
@@ -101,7 +101,7 @@ public:
     virtual int32_t Release() override { return 0 ;};
 
 private:
-    INodeTriggeredInterventionConsumer* m_pNTIC ;
+    IIndividualEventBroadcaster* m_Broadcaster ;
     std::string m_Name;
 };
 
@@ -204,15 +204,15 @@ SUITE(BaseEventReportTest)
 
         // -------------------------------------------------------------------------
         // --- Show that an update before the start day does not update the report
-        // --- NOTE: the calls to TriggerNodeEventObservers() in this method simulate
+        // --- NOTE: the calls to TriggerObservers() in this method simulate
         // ---       calls to these methods from within the Node::Update() method
         // ---       which happens after updating the interventions.
         // -------------------------------------------------------------------------
-        report.UpdateEventRegistration( 122.0, 1.0, nec_list );
+        report.UpdateEventRegistration( 122.0, 1.0, nec_list, nullptr );
         nec.UpdateInterventions( 1.0 );
-        nec.TriggerNodeEventObservers( nullptr, EventTrigger::Births );
-        nec.TriggerNodeEventObservers( nullptr, EventTrigger::NonDiseaseDeaths );
-        nec.TriggerNodeEventObservers( nullptr, EventTrigger::EveryUpdate ); // not listening for
+        nec.TriggerObservers( nullptr, EventTrigger::Births );
+        nec.TriggerObservers( nullptr, EventTrigger::NonDiseaseDeaths );
+        nec.TriggerObservers( nullptr, EventTrigger::EveryUpdate ); // not listening for
 
         CHECK( !report.HaveRegisteredAllEvents() );
         CHECK( !report.HaveUnregisteredAllEvents() );
@@ -223,11 +223,11 @@ SUITE(BaseEventReportTest)
         // --------------------------------------------------------------------------------------
         // --- START_DAY - Show that we register for two events and get updates on those events.
         // --------------------------------------------------------------------------------------
-        report.UpdateEventRegistration( 123.0, 1.0, nec_list );
+        report.UpdateEventRegistration( 123.0, 1.0, nec_list, nullptr );
         nec.UpdateInterventions( 1.0 ); // a NonDiseaseDeaths from MyIntervention
-        nec.TriggerNodeEventObservers( nullptr, EventTrigger::Births );
-        nec.TriggerNodeEventObservers( nullptr, EventTrigger::NonDiseaseDeaths );
-        nec.TriggerNodeEventObservers( nullptr, EventTrigger::EveryUpdate ); // not listening for
+        nec.TriggerObservers( nullptr, EventTrigger::Births );
+        nec.TriggerObservers( nullptr, EventTrigger::NonDiseaseDeaths );
+        nec.TriggerObservers( nullptr, EventTrigger::EveryUpdate ); // not listening for
 
         CHECK(  report.HaveRegisteredAllEvents() );
         CHECK( !report.HaveUnregisteredAllEvents() );
@@ -238,12 +238,12 @@ SUITE(BaseEventReportTest)
         // ------------------------------------------
         // --- Simple update but with an extra birth
         // ------------------------------------------
-        report.UpdateEventRegistration( 124.0, 1.0, nec_list );
+        report.UpdateEventRegistration( 124.0, 1.0, nec_list, nullptr );
         nec.UpdateInterventions( 1.0 ); // a NonDiseaseDeaths from MyIntervention
-        nec.TriggerNodeEventObservers( nullptr, EventTrigger::Births );
-        nec.TriggerNodeEventObservers( nullptr, EventTrigger::Births );
-        nec.TriggerNodeEventObservers( nullptr, EventTrigger::NonDiseaseDeaths );
-        nec.TriggerNodeEventObservers( nullptr, EventTrigger::EveryUpdate ); // not listening for
+        nec.TriggerObservers( nullptr, EventTrigger::Births );
+        nec.TriggerObservers( nullptr, EventTrigger::Births );
+        nec.TriggerObservers( nullptr, EventTrigger::NonDiseaseDeaths );
+        nec.TriggerObservers( nullptr, EventTrigger::EveryUpdate ); // not listening for
 
         CHECK(  report.HaveRegisteredAllEvents() );
         CHECK( !report.HaveUnregisteredAllEvents() );
@@ -254,11 +254,11 @@ SUITE(BaseEventReportTest)
         // ------------------
         // --- Simple Update
         // ------------------
-        report.UpdateEventRegistration( 125.0, 1.0, nec_list );
+        report.UpdateEventRegistration( 125.0, 1.0, nec_list, nullptr );
         nec.UpdateInterventions( 1.0 ); // a NonDiseaseDeaths from MyIntervention
-        nec.TriggerNodeEventObservers( nullptr, EventTrigger::Births );
-        nec.TriggerNodeEventObservers( nullptr, EventTrigger::NonDiseaseDeaths );
-        nec.TriggerNodeEventObservers( nullptr, EventTrigger::EveryUpdate ); // not listening for
+        nec.TriggerObservers( nullptr, EventTrigger::Births );
+        nec.TriggerObservers( nullptr, EventTrigger::NonDiseaseDeaths );
+        nec.TriggerObservers( nullptr, EventTrigger::EveryUpdate ); // not listening for
 
         CHECK(  report.HaveRegisteredAllEvents() );
         CHECK( !report.HaveUnregisteredAllEvents() );
@@ -269,11 +269,11 @@ SUITE(BaseEventReportTest)
         // ----------------------------------------------------------
         // --- LAST UPDATE - Duration_Days = 4 => 123, 124, 125, 126
         // ----------------------------------------------------------
-        report.UpdateEventRegistration( 126.0, 1.0, nec_list );
+        report.UpdateEventRegistration( 126.0, 1.0, nec_list, nullptr );
         nec.UpdateInterventions( 1.0 ); // a NonDiseaseDeaths from MyIntervention
-        nec.TriggerNodeEventObservers( nullptr, EventTrigger::Births );
-        nec.TriggerNodeEventObservers( nullptr, EventTrigger::NonDiseaseDeaths );
-        nec.TriggerNodeEventObservers( nullptr, EventTrigger::EveryUpdate ); // not listening for
+        nec.TriggerObservers( nullptr, EventTrigger::Births );
+        nec.TriggerObservers( nullptr, EventTrigger::NonDiseaseDeaths );
+        nec.TriggerObservers( nullptr, EventTrigger::EveryUpdate ); // not listening for
 
         CHECK(  report.HaveRegisteredAllEvents() );
         CHECK( !report.HaveUnregisteredAllEvents() );
@@ -287,11 +287,11 @@ SUITE(BaseEventReportTest)
         // --- stop getting events from UpdateInterventions(), the onNotifyEvent() method must have
         // --- a check to see if report has unregistered the events so it will stop processing them.
         // --------------------------------------------------------------------------------------------
-        report.UpdateEventRegistration( 127.0, 1.0, nec_list );
+        report.UpdateEventRegistration( 127.0, 1.0, nec_list, nullptr );
         nec.UpdateInterventions( 1.0 ); // see note above
-        nec.TriggerNodeEventObservers( nullptr, EventTrigger::Births );
-        nec.TriggerNodeEventObservers( nullptr, EventTrigger::NonDiseaseDeaths );
-        nec.TriggerNodeEventObservers( nullptr, EventTrigger::EveryUpdate ); // not listening for
+        nec.TriggerObservers( nullptr, EventTrigger::Births );
+        nec.TriggerObservers( nullptr, EventTrigger::NonDiseaseDeaths );
+        nec.TriggerObservers( nullptr, EventTrigger::EveryUpdate ); // not listening for
 
         // --------------------------------------------------
         // --- Notice that the numbers have not been updated
@@ -305,11 +305,11 @@ SUITE(BaseEventReportTest)
         // -------------------------------------------------------
         // --- Simple Update but we are not listening for events.
         // -------------------------------------------------------
-        report.UpdateEventRegistration( 128.0, 1.0, nec_list );
+        report.UpdateEventRegistration( 128.0, 1.0, nec_list, nullptr );
         nec.UpdateInterventions( 1.0 );
-        nec.TriggerNodeEventObservers( nullptr, EventTrigger::Births );
-        nec.TriggerNodeEventObservers( nullptr, EventTrigger::NonDiseaseDeaths );
-        nec.TriggerNodeEventObservers( nullptr, EventTrigger::EveryUpdate ); // not listening for
+        nec.TriggerObservers( nullptr, EventTrigger::Births );
+        nec.TriggerObservers( nullptr, EventTrigger::NonDiseaseDeaths );
+        nec.TriggerObservers( nullptr, EventTrigger::EveryUpdate ); // not listening for
 
         CHECK(  report.HaveRegisteredAllEvents() );
         CHECK(  report.HaveUnregisteredAllEvents() );

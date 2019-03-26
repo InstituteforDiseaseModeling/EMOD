@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -21,6 +21,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Configuration.h"
 #include "BoostLibWrapper.h"
 #include "IdmMpi.h"
+#include "Debug.h"
 
 #include "JsonFullWriter.h"
 #include "JsonFullReader.h"
@@ -34,6 +35,8 @@ ChannelDataMap::ChannelDataMap()
     : channel_data_map()
     , timesteps_reduced(0)
     , p_output_augmentor(nullptr)
+    , start_year( -FLT_MAX )
+    , stop_year( FLT_MAX )
 {
 }
 
@@ -272,6 +275,13 @@ void ChannelDataMap::Reduce()
     timesteps_reduced = total_timesteps_recorded;
 }
 
+void ChannelDataMap::SetStartStopYears( float start, float stop )
+{
+    release_assert( start < stop );
+    start_year = start;
+    stop_year = stop;
+}
+
 void ChannelDataMap::WriteOutput( 
     const std::string& filename, 
     std::map<std::string, std::string>& units_map )
@@ -312,10 +322,10 @@ void ChannelDataMap::WriteOutput(
     pIJsonObj->Insert("Report_Type",         "InsetChart");
     pIJsonObj->Insert("Report_Version",      "3.2");
     pIJsonObj->Insert("Start_Time",          (*EnvPtr->Config)["Start_Time"         ].As<Number>() );
-    if( (*EnvPtr->Config).Exist( "Inset_Chart_Reporting_Start_Year" ) )
+    if( start_year > -FLT_MAX )
     {
-        pIJsonObj->Insert("Report_Start_Year",   (*EnvPtr->Config)["Inset_Chart_Reporting_Start_Year"  ].As<Number>() );
-        pIJsonObj->Insert("Report_Stop_Year",    (*EnvPtr->Config)["Inset_Chart_Reporting_Stop_Year"   ].As<Number>() );
+        pIJsonObj->Insert("Report_Start_Year", start_year );
+        pIJsonObj->Insert("Report_Stop_Year",  stop_year  );
     }
     pIJsonObj->Insert("Simulation_Timestep", (*EnvPtr->Config)["Simulation_Timestep"].As<Number>() );
     unsigned int timesteps = 0;

@@ -10,7 +10,7 @@ Test:
 - testing the correctness of the saved serialized individual data is out ot scope thus only some variables in the report are tested
 '''
 from __future__ import division
-import dtk_FileTools as dft
+import dtk_test.dtk_FileTools as dft
 import json
 import numpy
 numpy.seterr(all='raise')

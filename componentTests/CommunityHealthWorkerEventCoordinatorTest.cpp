@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -21,7 +21,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "SimulationConfig.h"
 #include "IdmMpi.h"
 #include "EventTrigger.h"
-#include "common.h"
+#include "componentTests.h"
 
 using namespace std; 
 using namespace Kernel; 
@@ -29,7 +29,6 @@ using namespace Kernel;
 // maybe these shouldn't be protected in Simulation.h
 typedef boost::bimap<ExternalNodeId_t, suids::suid> nodeid_suid_map_t;
 typedef nodeid_suid_map_t::value_type nodeid_suid_pair;
-
 
 SUITE(CommunityHealthWorkerEventCoordinatorTest)
 {
@@ -66,8 +65,6 @@ SUITE(CommunityHealthWorkerEventCoordinatorTest)
             string statePath("testdata/CommunityHealthWorkerEventCoordinatorTest");
             string dllPath("");
             Environment::Initialize( m_pMpi, configFilename, inputPath, outputPath, /*statePath, */dllPath, false);
-
-            const_cast<Environment*>(Environment::getInstance())->RNG = new PSEUDO_DES();
 
             Environment::setSimulationConfig( m_pSimulationConfig );
 
@@ -171,12 +168,8 @@ SUITE(CommunityHealthWorkerEventCoordinatorTest)
 
     void BroadcastEvent( IIndividualHumanEventContext* pIHEC, const EventTrigger& rTrigger )
     {
-        INodeTriggeredInterventionConsumer* broadcaster = nullptr;
-        if (s_OK != pIHEC->GetNodeEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster))
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()->GetNodeEventContext()", "INodeTriggeredInterventionConsumer", "INodeEventContext" );
-        }
-        broadcaster->TriggerNodeEventObservers( pIHEC, rTrigger );
+        IIndividualEventBroadcaster* broadcaster = pIHEC->GetNodeEventContext()->GetIndividualEventBroadcaster();
+        broadcaster->TriggerObservers( pIHEC, rTrigger );
     }
 
     //typedef std::function<void (/*suids::suid, */IIndividualHumanEventContext*)> individual_visit_function_t;
@@ -203,12 +196,19 @@ SUITE(CommunityHealthWorkerEventCoordinatorTest)
         sec.AddNode( p_nc_3->GetEventContext() );
 
         CommunityHealthWorkerEventCoordinator chw;
-        chw.SetContextTo( &sec );
 
         try
         {
             bool configured = chw.Configure( p_config.get() );
             CHECK( configured );
+
+            // ----------------------
+            // --- Test Adding Nodes
+            // ----------------------
+            chw.SetContextTo( &sec );
+            chw.AddNode( p_nc_1->GetSuid() );
+            chw.AddNode( p_nc_2->GetSuid() );
+            chw.AddNode( p_nc_3->GetSuid() );
 
             CHECK_EQUAL(   7, chw.GetCurrentStock()       );
             CHECK_EQUAL(   1, chw.GetDaysToNextShipment() );
@@ -220,13 +220,6 @@ SUITE(CommunityHealthWorkerEventCoordinatorTest)
             PrintDebug( re.GetMsg() );
             CHECK( false );
         }
-
-        // ----------------------
-        // --- Test Adding Nodes
-        // ----------------------
-        chw.AddNode( p_nc_1->GetSuid() );
-        chw.AddNode( p_nc_2->GetSuid() );
-        chw.AddNode( p_nc_3->GetSuid() );
 
         // -----------------------------------
         // --- Test Update() & Updating stock
@@ -427,12 +420,19 @@ SUITE(CommunityHealthWorkerEventCoordinatorTest)
         sec.AddNode( p_nc_3->GetEventContext() );
 
         CommunityHealthWorkerEventCoordinator chw;
-        chw.SetContextTo( &sec );
 
         try
         {
             bool configured = chw.Configure( p_config.get() );
             CHECK( configured );
+
+            // ----------------------
+            // --- Test Adding Nodes
+            // ----------------------
+            chw.SetContextTo( &sec );
+            chw.AddNode( p_nc_1->GetSuid() );
+            chw.AddNode( p_nc_2->GetSuid() );
+            chw.AddNode( p_nc_3->GetSuid() );
 
             CHECK_EQUAL(   6, chw.GetCurrentStock()       );
             CHECK_EQUAL(   6, chw.GetDaysToNextShipment() );
@@ -444,13 +444,6 @@ SUITE(CommunityHealthWorkerEventCoordinatorTest)
             PrintDebug( re.GetMsg() );
             CHECK( false );
         }
-
-        // ----------------------
-        // --- Test Adding Nodes
-        // ----------------------
-        chw.AddNode( p_nc_1->GetSuid() );
-        chw.AddNode( p_nc_2->GetSuid() );
-        chw.AddNode( p_nc_3->GetSuid() );
 
         // -----------------------------------
         // --- Test Update() & UpdateNodes()
@@ -666,12 +659,25 @@ SUITE(CommunityHealthWorkerEventCoordinatorTest)
         sec.AddNode( p_nc_9->GetEventContext() );
 
         CommunityHealthWorkerEventCoordinator chw;
-        chw.SetContextTo( &sec );
 
         try
         {
             bool configured = chw.Configure( p_config.get() );
             CHECK( configured );
+
+            // ----------------------
+            // --- Test Adding Nodes
+            // ----------------------
+            chw.SetContextTo( &sec );
+            chw.AddNode( p_nc_1->GetSuid() );
+            chw.AddNode( p_nc_2->GetSuid() );
+            chw.AddNode( p_nc_3->GetSuid() );
+            chw.AddNode( p_nc_4->GetSuid() );
+            chw.AddNode( p_nc_5->GetSuid() );
+            chw.AddNode( p_nc_6->GetSuid() );
+            chw.AddNode( p_nc_7->GetSuid() );
+            chw.AddNode( p_nc_8->GetSuid() );
+            chw.AddNode( p_nc_9->GetSuid() );
 
             CHECK_EQUAL(  10, chw.GetCurrentStock()       );
             CHECK_EQUAL(  10, chw.GetDaysToNextShipment() );
@@ -683,19 +689,6 @@ SUITE(CommunityHealthWorkerEventCoordinatorTest)
             PrintDebug( re.GetMsg() );
             CHECK( false );
         }
-
-        // ----------------------
-        // --- Test Adding Nodes
-        // ----------------------
-        chw.AddNode( p_nc_1->GetSuid() );
-        chw.AddNode( p_nc_2->GetSuid() );
-        chw.AddNode( p_nc_3->GetSuid() );
-        chw.AddNode( p_nc_4->GetSuid() );
-        chw.AddNode( p_nc_5->GetSuid() );
-        chw.AddNode( p_nc_6->GetSuid() );
-        chw.AddNode( p_nc_7->GetSuid() );
-        chw.AddNode( p_nc_8->GetSuid() );
-        chw.AddNode( p_nc_9->GetSuid() );
 
         // -----------------------------------
         // --- Test Update() & UpdateNodes()

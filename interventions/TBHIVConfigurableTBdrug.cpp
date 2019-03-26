@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -9,11 +9,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "stdafx.h"
 
-#ifdef ENABLE_TBHIV
-
 #include "TBHIVConfigurableTBdrug.h"
-#include "Contexts.h"
 #include "IndividualEventContext.h"
+#include "IIndividualHumanContext.h"
 #include "TBContexts.h"
 #include "Debug.h"                        // for release-assert
 #include "SimulationConfig.h"
@@ -116,8 +114,8 @@ namespace Kernel
     )
     {
         initConfigTypeMap("TB_Drug_Name", &drug_name_string);
-		initConfigTypeMap("Latency_Multiplier", &latent_efficacy_multiplier, TB_Latent_Efficacy_Multiplier_DESC_TEXT, 0, 1.0, 1.0);
-		initConfigTypeMap("Active_Multiplier", &active_efficacy_multiplier, TB_Active_Efficacy_Multiplier_DESC_TEXT, 0, 1.0, 1.0);
+        initConfigTypeMap("Latency_Multiplier", &latent_efficacy_multiplier, TB_Latent_Efficacy_Multiplier_DESC_TEXT, 0, 1.0, 1.0);
+        initConfigTypeMap("Active_Multiplier", &active_efficacy_multiplier, TB_Active_Efficacy_Multiplier_DESC_TEXT, 0, 1.0, 1.0);
         return GenericDrug::Configure( inputJson );
 
     }
@@ -313,4 +311,3 @@ namespace Kernel
     }
 }
 
-#endif

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -10,6 +10,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "stdafx.h"
 #include <memory> // unique_ptr
 #include "UnitTest++.h"
+#include "componentTests.h"
+
 #include "IncidenceEventCoordinator.h"
 #include "IndividualHumanContextFake.h"
 #include "IndividualHumanInterventionsContextFake.h"
@@ -21,7 +23,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "SimulationConfig.h"
 #include "IdmMpi.h"
 #include "EventTrigger.h"
-#include "common.h"
 
 using namespace std;
 using namespace Kernel;
@@ -66,8 +67,6 @@ SUITE( IncidenceEventCoordinatorTest )
             string statePath( "testdata/IncidenceEventCoordinatorTest" );
             string dllPath( "" );
             Environment::Initialize( m_pMpi, configFilename, inputPath, outputPath, dllPath, false );
-
-            const_cast<Environment*>(Environment::getInstance())->RNG = new PSEUDO_DES();
 
             Environment::setSimulationConfig( m_pSimulationConfig );
 
@@ -211,12 +210,8 @@ SUITE( IncidenceEventCoordinatorTest )
 
     void BroadcastEvent( IIndividualHumanEventContext* pIHEC, const EventTrigger& rTrigger )
     {
-        INodeTriggeredInterventionConsumer* broadcaster = nullptr;
-        if( s_OK != pIHEC->GetNodeEventContext()->QueryInterface( GET_IID( INodeTriggeredInterventionConsumer ), (void**)&broadcaster ) )
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()->GetNodeEventContext()", "INodeTriggeredInterventionConsumer", "INodeEventContext" );
-        }
-        broadcaster->TriggerNodeEventObservers( pIHEC, rTrigger );
+        IIndividualEventBroadcaster* broadcaster = pIHEC->GetNodeEventContext()->GetIndividualEventBroadcaster();
+        broadcaster->TriggerObservers( pIHEC, rTrigger );
     }
 
     void BroadcastEvent_NewClinicalCase( IIndividualHumanEventContext* pIHEC )
@@ -247,13 +242,13 @@ SUITE( IncidenceEventCoordinatorTest )
         INodeEventContextFake* p_nec_fake_2 = static_cast<INodeEventContextFake*>(p_nc_2->GetEventContext());
         INodeEventContextFake* p_nec_fake_3 = static_cast<INodeEventContextFake*>(p_nc_3->GetEventContext());
 
-        p_nec_fake_1->RegisterNodeEventObserver( &event_listener_1, event_listener_1.GetListeningForEvent() );
-        p_nec_fake_2->RegisterNodeEventObserver( &event_listener_1, event_listener_1.GetListeningForEvent() );
-        p_nec_fake_3->RegisterNodeEventObserver( &event_listener_1, event_listener_1.GetListeningForEvent() );
+        p_nec_fake_1->RegisterObserver( &event_listener_1, event_listener_1.GetListeningForEvent() );
+        p_nec_fake_2->RegisterObserver( &event_listener_1, event_listener_1.GetListeningForEvent() );
+        p_nec_fake_3->RegisterObserver( &event_listener_1, event_listener_1.GetListeningForEvent() );
 
-        p_nec_fake_1->RegisterNodeEventObserver( &event_listener_2, event_listener_2.GetListeningForEvent() );
-        p_nec_fake_2->RegisterNodeEventObserver( &event_listener_2, event_listener_2.GetListeningForEvent() );
-        p_nec_fake_3->RegisterNodeEventObserver( &event_listener_2, event_listener_2.GetListeningForEvent() );
+        p_nec_fake_1->RegisterObserver( &event_listener_2, event_listener_2.GetListeningForEvent() );
+        p_nec_fake_2->RegisterObserver( &event_listener_2, event_listener_2.GetListeningForEvent() );
+        p_nec_fake_3->RegisterObserver( &event_listener_2, event_listener_2.GetListeningForEvent() );
 
         ISimulationEventContextFake sec;
         sec.AddNode( p_nc_1->GetEventContext() );

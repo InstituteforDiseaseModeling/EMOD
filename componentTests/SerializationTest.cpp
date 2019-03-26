@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -10,7 +10,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "stdafx.h"
 #include <memory> // unique_ptr
 #include "UnitTest++.h"
-#include "common.h"
+#include "componentTests.h"
 #include "Environment.h"
 #include "SimulationConfig.h"
 #include "JsonFullReader.h"
@@ -35,7 +35,6 @@ SUITE(SerializationTest)
     struct SerializationFixture
     {
         SimulationConfig* m_pSimulationConfig ;
-        RandomFake fake_rng ;
 
         SerializationFixture()
         :  m_pSimulationConfig( new SimulationConfig() )
@@ -43,7 +42,6 @@ SUITE(SerializationTest)
             Environment::Finalize();
             Environment::setLogger( new SimpleLogger() );
             Environment::setSimulationConfig( m_pSimulationConfig );
-            const_cast<Environment*>(Environment::getInstance())->RNG = &fake_rng;
 
             IPFactory::DeleteFactory();
             IPFactory::CreateFactory();
@@ -79,12 +77,12 @@ SUITE(SerializationTest)
         {
             JsonObjectDemog json ;
             json.ParseFile( "testdata/SerializationTest/SerializationTest.json" );
-            CHECK( json.Contains( "Listed_Events" ) );
-            CHECK( json["Listed_Events"].IsArray() );
+            CHECK( json.Contains( "Custom_Individual_Events" ) );
+            CHECK( json["Custom_Individual_Events"].IsArray() );
 
-            for( int i = 0 ; i < json["Listed_Events"].size() ; i++ )
+            for( int i = 0 ; i < json["Custom_Individual_Events"].size() ; i++ )
             {
-                EventTriggerFactory::GetInstance()->CreateUserEventTrigger( json["Listed_Events"][i].AsString() );
+                EventTriggerFactory::GetInstance()->CreateUserEventTrigger( json["Custom_Individual_Events"][i].AsString() );
             }
 
             std::map<std::string, float> ip_values_state ;

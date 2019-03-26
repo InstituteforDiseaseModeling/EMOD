@@ -1,0 +1,53 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 50, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender", 
+                "Target_Gender" : "FEMALE",
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "InterventionForCurrentPartners",
+                    "Disqualifying_Properties": [],  
+                    "New_Property_Value": "", 
+                    "Minimum_Duration_Years": 0.05,
+                    "Prioritize_Partners_By": "LONGER_TIME_IN_RELATIONSHIP",
+                    "Relationship_Types": [],
+                    "Maximum_Partners": 5,
+                    "Event_Or_Config" : "Config",
+                    "Intervention_Config": {
+                        "class": "MaleCircumcision",
+                        "Circumcision_Reduced_Acquire": 1.0,
+                        "Distributed_Event_Trigger" : "Reduced_Acquire_Lowest",
+                        "Apply_If_Higher_Reduced_Acquire" : 1
+                    }
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 70, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender", 
+                "Target_Gender" : "FEMALE",
+                "Demographic_Coverage": 0.5,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Antigen": 0, 
+                    "Genome": 0, 
+                    "Incubation_Period_Override": 0
+                }
+            }
+        }
+    ]
+}

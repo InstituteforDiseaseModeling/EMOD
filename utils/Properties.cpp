@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -634,30 +634,83 @@ namespace Kernel
     }
 
     // ------------------------------------------------------------------------
-    // --- IPIntraNodeTransmissions
+    // --- IPIntraNodeTransmission
     // ------------------------------------------------------------------------
 
-    IPIntraNodeTransmissions::IPIntraNodeTransmissions()
+    IPIntraNodeTransmission::IPIntraNodeTransmission()
         : m_RouteName("contact")
         , m_Matrix()
     {
     }
 
-    IPIntraNodeTransmissions::~IPIntraNodeTransmissions()
+    IPIntraNodeTransmission::~IPIntraNodeTransmission()
     {
     }
 
-    void IPIntraNodeTransmissions::Read( const std::string& rKeyStr, const JsonObjectDemog& rDemog, int numValues )
+    void IPIntraNodeTransmission::ReadTxMatrix( const std::string& rKeyStr, const JsonObjectDemog& rDemog, int numValues )
+    {
+        if( rDemog.IsArray() &&
+            rDemog.size() != numValues )
+        {
+            std::ostringstream msg;
+            msg << "Invalid Transmission Matrix for property '" << rKeyStr << "'.  It has "
+                << rDemog.size() << " rows when it should have " << numValues
+                << ".  It should be square with one row/col per value for the property." ;
+            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+        }
+
+        std::cout << "Parsing the matrix (rows & cols) itself." << std::endl;
+        for( int i = 0 ; i < rDemog.size() ; i++ )
+        {
+            if( rDemog[i].size() != numValues )
+            {
+                std::ostringstream msg;
+                msg << "Invalid Transmission Matrix for property '" << rKeyStr << "'.  Row " << i << " has "
+                    << rDemog[i].size() << " columns when it should have " << numValues
+                    << ".  It should be square with one row/col per value for the property." ;
+                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+            }
+
+            std::vector<float> row ;
+            for( int j = 0 ; j < rDemog[i].size() ; j++ )
+            {
+                float val = rDemog[i][j].AsDouble();
+                row.push_back( val );
+            }
+            m_Matrix.push_back( row );
+        }
+    }
+
+    void IPIntraNodeTransmission::Read( const std::string& rKeyStr, const JsonObjectDemog& rDemog, int numValues )
     {
         if( rDemog.Contains( IP_TM_KEY ) )
         {
+            std::cout << "Found 'Transmission_Matrix' key." << std::endl;
             if( !rDemog[ IP_TM_KEY ].Contains( IP_TM_MATRIX_KEY ) )
             {
+                std::cout << "Did NOT find 'Matrix' key." << std::endl;
+                // Going to assume we have "version 2" format (multiroute), which is a map of routes to Matrices. Possible values are: "contact" and "environmental".
+                std::set< std::string > routeNames { "contact", "environmental" };
+                for( auto route : routeNames )
+                {
+                    if( rDemog[ IP_TM_KEY ].Contains( route.c_str() ) )
+                    { 
+                        if( rDemog[ IP_TM_KEY ][ route.c_str() ].Contains( IP_TM_MATRIX_KEY ) )
+                        {
+                            std::cout << "Found 'Matrix' key under route." << std::endl;
+                            ReadTxMatrix( rKeyStr, rDemog[ IP_TM_KEY ][ route.c_str() ][ IP_TM_MATRIX_KEY ], numValues );
+                            //m_RouteToMatrixMap.insert( std::make_pair( route, m_Matrix.back() ) );
+                            m_RouteToMatrixMap[ route ] = m_Matrix;
+                            m_Matrix.clear();
+                        }
+                    }
+                }
                 return;
             }
 
             if( rDemog[ IP_TM_KEY ].Contains( IP_TM_ROUTE_KEY ) )
             {
+                std::cout << "Found 'Route' key." << std::endl;
                 m_RouteName =  rDemog[ IP_TM_KEY ][ IP_TM_ROUTE_KEY ].AsString();
                 std::transform(m_RouteName.begin(), m_RouteName.end(), m_RouteName.begin(), ::tolower);
             }
@@ -665,52 +718,28 @@ namespace Kernel
             {
                 LOG_WARN_F("Missing '%s' in demographics for property '%s'. Will use default route 'contact'.\n",IP_TM_ROUTE_KEY, rKeyStr.c_str());
             }
-
-            if( rDemog[ IP_TM_KEY ][ IP_TM_MATRIX_KEY ].IsArray() &&
-                rDemog[ IP_TM_KEY ][ IP_TM_MATRIX_KEY ].size() != numValues )
-            {
-                std::ostringstream msg;
-                msg << "Invalid Transmission Matrix for property '" << rKeyStr << "'.  It has "
-                    << rDemog[ IP_TM_KEY ][ IP_TM_MATRIX_KEY ].size() << " rows when it should have " << numValues
-                    << ".  It should be square with one row/col per value for the property." ;
-                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
-            }
-
-            for( int i = 0 ; i < rDemog[ IP_TM_KEY ][ IP_TM_MATRIX_KEY ].size() ; i++ )
-            {
-                if( rDemog[ IP_TM_KEY ][ IP_TM_MATRIX_KEY ][i].size() != numValues )
-                {
-                    std::ostringstream msg;
-                    msg << "Invalid Transmission Matrix for property '" << rKeyStr << "'.  Row " << i << " has "
-                        << rDemog[ IP_TM_KEY ][ IP_TM_MATRIX_KEY ][i].size() << " columns when it should have " << numValues
-                        << ".  It should be square with one row/col per value for the property." ;
-                    throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
-                }
-
-                std::vector<float> row ;
-                for( int j = 0 ; j < rDemog[ IP_TM_KEY ][ IP_TM_MATRIX_KEY ][i].size() ; j++ )
-                {
-                    float val = rDemog[ IP_TM_KEY ][ IP_TM_MATRIX_KEY ][i][j].AsDouble();
-                    row.push_back( val );
-                }
-                m_Matrix.push_back( row );
-            }
+            ReadTxMatrix( rKeyStr, rDemog[ IP_TM_KEY ][ IP_TM_MATRIX_KEY ], numValues );
         }
     }
 
-    bool IPIntraNodeTransmissions::HasMatrix() const
+    bool IPIntraNodeTransmission::HasMatrix() const
     {
-        return m_Matrix.size() > 0 ;
+        return m_Matrix.size() > 0 || m_RouteToMatrixMap.size() > 0;
     }
 
-    const std::string& IPIntraNodeTransmissions::GetRouteName() const
+    const std::string& IPIntraNodeTransmission::GetRouteName() const
     {
         return m_RouteName;
     }
 
-    const std::vector<std::vector<float>>& IPIntraNodeTransmissions::GetMatrix() const
+    const std::vector<std::vector<float>>& IPIntraNodeTransmission::GetMatrix() const
     {
         return m_Matrix;
+    }
+
+    const std::map< std::string, std::vector<std::vector<float>>>& IPIntraNodeTransmission::GetRouteToMatrixMap() const
+    {
+        return m_RouteToMatrixMap;
     }
 
     // ------------------------------------------------------------------------
@@ -720,14 +749,14 @@ namespace Kernel
     IndividualProperty::IndividualProperty()
         : BaseProperty()
         , m_Transitions()
-        , m_IntraNodeTransmissionsMap()
+        , m_IntraNodeTransmissionMap()
     {
     }
 
     IndividualProperty::IndividualProperty( uint32_t externalNodeId, const std::string& rKeyStr, const std::map<std::string,float>& rValues )
         : BaseProperty()
         , m_Transitions()
-        , m_IntraNodeTransmissionsMap()
+        , m_IntraNodeTransmissionMap()
     {
         m_Key = rKeyStr;
 
@@ -762,11 +791,11 @@ namespace Kernel
         }
         m_Transitions.clear();
 
-        for( auto entry : m_IntraNodeTransmissionsMap )
+        for( auto entry : m_IntraNodeTransmissionMap )
         {
             delete entry.second;
         }
-        m_IntraNodeTransmissionsMap.clear();
+        m_IntraNodeTransmissionMap.clear();
     }
 
     void IndividualProperty::Read( int idx, uint32_t externalNodeId, const JsonObjectDemog& rDemog, bool isNotFirstNode )
@@ -778,9 +807,9 @@ namespace Kernel
             ReadPropertyAgeBin( idx, externalNodeId, rDemog, isNotFirstNode );
         }
 
-        IPIntraNodeTransmissions* p_transmission = new IPIntraNodeTransmissions();
+        IPIntraNodeTransmission* p_transmission = new IPIntraNodeTransmission();
         p_transmission->Read( m_Key, rDemog, m_Values.size() );
-        m_IntraNodeTransmissionsMap[ externalNodeId ] = p_transmission;
+        m_IntraNodeTransmissionMap[ externalNodeId ] = p_transmission;
     }
 
     KeyValueInternal* IndividualProperty::get_kvi_func( BaseFactory* pFact, const char* ip_key_str, const std::string& rKvStr )
@@ -975,9 +1004,9 @@ namespace Kernel
         return main_list;
     }
 
-    const IPIntraNodeTransmissions& IndividualProperty::GetIntraNodeTransmissions( uint32_t externalNodeId ) const
+    const IPIntraNodeTransmission& IndividualProperty::GetIntraNodeTransmission( uint32_t externalNodeId ) const
     {
-        return *m_IntraNodeTransmissionsMap.at( externalNodeId );
+        return *m_IntraNodeTransmissionMap.at( externalNodeId );
     }
 
     // ------------------------------------------------------------------------
@@ -1017,11 +1046,6 @@ namespace Kernel
     IPFactory* IPFactory::GetInstance()
     {
         IPFactory* p_factory = (IPFactory*)Environment::getIPFactory();
-        // Jonathan temp hack. Need solution
-        /*if( p_factory == nullptr )
-        {
-            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, "IPFactory has not been created." );
-        }*/
         return p_factory;
     }
 
@@ -1114,6 +1138,34 @@ namespace Kernel
         }
         return properties;
     }
+
+#if 0 // something not working here yet. function currently lives in PropertyReport as a static method.
+    void
+    IPFactory::GenerateAllPermutationsOnce(
+        std::set< std::string > &keys,
+        tKeyValuePair perm,
+        tPermutations &permutationsSet
+    )
+    {
+        if( keys.size() )
+        {
+            const std::string key = *keys.begin();
+            keys.erase( key );
+            const IndividualProperty * p_ip = IPFactory::GetInstance()->GetIP( key );
+            for( auto kv : p_ip->GetValues<IPKeyValueContainer>() )
+            {
+                std::string value = kv.GetValueAsString();
+                auto kvp = perm;
+                kvp.insert( make_pair( key, value ) );
+                GenerateAllPermutationsOnce( keys, kvp, permutationsSet );
+            }
+        }
+        else
+        { 
+            permutationsSet.insert( perm );
+        }
+    }
+#endif
 
     // -------------------------------------------------------------------------------
     // --- This defines the implementations for these templetes with these parameters.

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -24,7 +24,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #endif
 
 static char FILE_SEPARATOR = '/' ; // this works on both windows and linux
-static std::string TRAIL_CHARS(" \n\r\t\\/");
+static std::string TRAIL_CHARS(" \n\r\t\\/\"");
 
 
 // Instantiate the the std:string and std:wstring versions of Concat()

@@ -1,13 +1,13 @@
 {
-    "Default_Config_Path": "defaults/generic_default_config.json", 
+    "Default_Config_Path": "../../defaults/generic_default_config.json", 
     "parameters": {
         "Config_Name": "68_Generic_NChooser_Multinode", 
         "Geography": "SamplesInput", 
         "Simulation_Duration": 120, 
         "Run_Number": 1,
-        "Base_Population_Scale_Factor": 1.0, 
+        "x_Base_Population": 1.0, 
         "Demographics_Filenames": [ "NChooser_demographics.json" ],
-        "Listed_Events": [
+        "Custom_Individual_Events": [
             "Vaccinated",
             "VaccineExpired"
         ]

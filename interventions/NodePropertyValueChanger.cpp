@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -9,12 +9,13 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "stdafx.h"
 #include "NodePropertyValueChanger.h"
-#include "Contexts.h"
 #include "Debug.h" // for release_assert
 #include "RANDOM.h"
 #include "Common.h"             // for INFINITE_TIME
-#include "MathFunctions.h"
+#include "DistributionFactory.h"
 #include "NodeEventContext.h"  // for INodeEventContext (ICampaignCostObserver)
+#include "INodeContext.h"
+#include "EventTrigger.h"
 
 SETUP_LOGGING( "NodePropertyValueChanger" )
 
@@ -49,7 +50,6 @@ namespace Kernel
         , action_timer( 0.0f )
         , reversion_timer( rThat.reversion_timer )
     {
-        SetActionTimer( this );
     }
 
     NodePropertyValueChanger::~NodePropertyValueChanger()
@@ -66,7 +66,6 @@ namespace Kernel
         bool ret = BaseNodeIntervention::Configure( inputJson );
         if( ret && !JsonConfigurable::_dryrun )
         {
-            SetActionTimer( this );
             if( !m_TargetKeyValue.IsValid() )
             {
                 throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, "You must specify 'Target_NP_Key_Value'" );
@@ -75,21 +74,20 @@ namespace Kernel
         return ret;
     }
 
-    void NodePropertyValueChanger::SetActionTimer( NodePropertyValueChanger* npvc )
-    {
-        if( npvc->probability < 1.0 )
-        {
-            npvc->action_timer = Probability::getInstance()->fromDistribution( DistributionFunction::EXPONENTIAL_DURATION, npvc->probability, 0, 0, 0 );
-            if( npvc->action_timer > npvc->max_duration )
-            {
-                npvc->action_timer = FLT_MAX;
-            }
-            LOG_DEBUG_F( "Time until property change occurs = %f\n", npvc->action_timer );
-        }
-    }
-
     bool NodePropertyValueChanger::Distribute( INodeEventContext *pNodeEventContext, IEventCoordinator2 *pEC )
     {
+        if( probability < 1.0 )
+        {
+            std::unique_ptr<IDistribution> distribution( DistributionFactory::CreateDistribution( DistributionFunction::EXPONENTIAL_DISTRIBUTION ) );
+            distribution->SetParameters( (double)probability, (double)0.0, (double)0.0 );
+            action_timer = distribution->Calculate( pNodeEventContext->GetRng() );
+
+            if( action_timer > max_duration )
+            {
+                action_timer = FLT_MAX;
+            }
+            LOG_DEBUG_F( "Time until property change occurs = %f\n", action_timer );
+        }
         return BaseNodeIntervention::Distribute( pNodeEventContext, pEC );
     }
 
@@ -118,13 +116,8 @@ namespace Kernel
             p_node_context->GetNodeProperties().Set( m_TargetKeyValue );
 
             //broadcast that the individual changed properties
-            INodeTriggeredInterventionConsumer* broadcaster = nullptr;
-            if (s_OK != parent->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster))
-            {
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "INodeTriggeredInterventionConsumer", "INodeEventContext" );
-            }
-            broadcaster->TriggerNodeEventObservers( nullptr, EventTrigger::NodePropertyChange );
-
+            IIndividualEventBroadcaster* broadcaster = parent->GetIndividualEventBroadcaster();
+            broadcaster->TriggerObservers( nullptr, EventTrigger::NodePropertyChange );
 
             if( revert )
             {

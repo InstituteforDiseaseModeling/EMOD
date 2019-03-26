@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import json
-import dtk_sft as sft
+import dtk_test.dtk_sft as sft
 import math
 import scipy.stats as stats
 import numpy as np
@@ -79,7 +79,7 @@ def create_report_file(param_obj, multipliers, infectiousness, report_name, debu
             outfile.write("mean of the Infectiousness is {0}, while base infectivity is {1}.\n".format(mean_infectiousness,
                                                                                            base_infectivity))
 
-            tolerance  = 2e-2
+            tolerance  = 3e-2
             if math.fabs(mean_l - 1.0) > tolerance:
                 outfile.write("BAD: mean of the multipliers is {}, expected 1.0.\n".format(mean_l))
                 success = False

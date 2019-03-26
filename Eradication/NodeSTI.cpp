@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -21,6 +21,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IIdGeneratorSTI.h"
 #include "NodeEventContextHost.h"
 #include "ISTISimulationContext.h"
+#include "ISimulationContext.h"
 #include "EventTrigger.h"
 
 SETUP_LOGGING( "NodeSTI" )
@@ -60,8 +61,8 @@ namespace Kernel
         return ret ;
     }
 
-    NodeSTI::NodeSTI(ISimulationContext *_parent_sim, suids::suid node_suid)
-        : Node(_parent_sim, node_suid)
+    NodeSTI::NodeSTI(ISimulationContext *_parent_sim, ExternalNodeId_t externalNodeId, suids::suid node_suid)
+        : Node(_parent_sim, externalNodeId, node_suid)
         , relMan(nullptr)
         , society(nullptr)
         , pfa_burnin_duration( 15 * DAYSPERYEAR )
@@ -86,9 +87,9 @@ namespace Kernel
         delete relMan ;
     }
 
-    NodeSTI *NodeSTI::CreateNode(ISimulationContext *_parent_sim, suids::suid node_suid)
+    NodeSTI *NodeSTI::CreateNode(ISimulationContext *_parent_sim, ExternalNodeId_t externalNodeId, suids::suid node_suid)
     {
-        NodeSTI *newnode = _new_ NodeSTI(_parent_sim, node_suid);
+        NodeSTI *newnode = _new_ NodeSTI(_parent_sim, externalNodeId, node_suid);
         newnode->Initialize();
 
         return newnode;
@@ -110,7 +111,7 @@ namespace Kernel
         }
         std::istringstream iss( demographics[SOCIETY_KEY].ToString() );
         Configuration* p_config = Configuration::Load( iss, "demographics" );
-        society->SetParameters( dynamic_cast<IIdGeneratorSTI*>(parent), p_config );
+        society->SetParameters( GetRng(), dynamic_cast<IIdGeneratorSTI*>(parent), p_config );
         delete p_config ;
     }
 
@@ -122,13 +123,11 @@ namespace Kernel
     void NodeSTI::SetupIntranodeTransmission()
     {
         //RelationshipGroups * relNodePools = dynamic_cast<RelationshipGroups*>(TransmissionGroupsFactory::CreateNodeGroups(TransmissionGroupType::RelationshipGroups));
-        RelationshipGroups * relNodePools = _new_ RelationshipGroups();
+        RelationshipGroups * relNodePools = _new_ RelationshipGroups( GetRng() );
         relNodePools->SetParent( this );
         transmissionGroups = relNodePools;
-        RouteToContagionDecayMap_t decayMap;
-        decayMap[string("contact")] = 1.0f;
         routes.push_back(string("contact"));
-        transmissionGroups->Build(decayMap, 1, 1);
+        transmissionGroups->Build(1.0f, 1, 1);
     }
 
     void NodeSTI::Update( float dt )
@@ -168,18 +167,24 @@ namespace Kernel
 
         society->UpdatePairFormationAgents( GetTime(), dt );
 
-        {
-            RouteToContagionDecayMap_t decayMap;
-            decayMap[string("contact")] = 1.0f; 
-            transmissionGroups->Build( decayMap, 1, 1 );
-        }
-
+        transmissionGroups->Build( 1.0f, 1, 1 );
+        
         Node::Update( dt );
+
+        for( auto& person : individualHumans )
+        {
+            IIndividualHumanSTI* sti_person = nullptr;
+            if( person->QueryInterface( GET_IID( IIndividualHumanSTI ), (void**)&sti_person ) != s_OK )
+            {
+                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "person", "IIndividualHumanSTI", "IIndividualHuman" );
+            }
+            sti_person->UpdatePausedRelationships( GetTime(), dt );
+        }
     }
 
-    act_prob_vec_t NodeSTI::DiscreteGetTotalContagion(const TransmissionGroupMembership_t* membership)
+    act_prob_vec_t NodeSTI::DiscreteGetTotalContagion( void )
     {
-        return transmissionGroups->DiscreteGetTotalContagion(membership);
+        return transmissionGroups->DiscreteGetTotalContagion();
     }
 
     /*const?*/ IRelationshipManager*
@@ -199,7 +204,7 @@ namespace Kernel
         IIndividualHuman* individual
     )
     {
-        event_context_host->TriggerNodeEventObservers( individual->GetEventContext(), EventTrigger::STIPreEmigrating );
+        event_context_host->TriggerObservers( individual->GetEventContext(), EventTrigger::STIPreEmigrating );
 
         IIndividualHumanSTI* sti_individual=nullptr;
         if (individual->QueryInterface(GET_IID(IIndividualHumanSTI), (void**)&sti_individual) != s_OK)
@@ -233,17 +238,29 @@ namespace Kernel
 
         auto retVal = Node::processImmigratingIndividual( movedind );
 
-        event_context_host->TriggerNodeEventObservers( retVal->GetEventContext(), EventTrigger::STIPostImmigrating );
+        event_context_host->TriggerObservers( retVal->GetEventContext(), EventTrigger::STIPostImmigrating );
 
         return retVal;
     }
 
-    void NodeSTI::GetGroupMembershipForIndividual_STI( const RouteList_t& route, std::map<std::string, uint32_t>* properties, TransmissionGroupMembership_t* membershipOut )
+    void NodeSTI::GetGroupMembershipForIndividual_STI(
+        const std::map<std::string, uint32_t>& properties,
+        std::map< int, TransmissionGroupMembership_t> &membershipOut
+    )
     {
         RelationshipGroups* p_rg = static_cast<RelationshipGroups*>(transmissionGroups);
-        p_rg->GetGroupMembershipForProperties( route, properties, membershipOut );
+        p_rg->GetGroupMembershipForProperties( properties, membershipOut );
     }
 
+    void NodeSTI::UpdateTransmissionGroupPopulation(
+        const tProperties& properties,
+        float size_changes,
+        float mc_weight
+    )
+    {
+        //TransmissionGroupMembership_t membership;
+        //transmissionGroups->UpdatePopulationSize( membership, 0, 0 );
+    }
 
     REGISTER_SERIALIZABLE(NodeSTI);
 

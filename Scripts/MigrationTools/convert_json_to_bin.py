@@ -29,11 +29,11 @@ AGE_Max = 125.0
 # -----------------------------------------------------------------------------
 def CheckAge( age ):
     if( age < AGE_Min ):
-        print "Invalid age=" + str(age) + " < " + str(AGE_Min)
+        print(f"Invalid age={age} < {AGE_Min}")
         exit(-1)
 
     if( age > AGE_Max ):
-        print "Invalid age=" + str(age) + " > " + str(AGE_Max)
+        print(f"Invalid age={age} > {AGE_Max}")
         exit(-1)
 
 # -----------------------------------------------------------------------------
@@ -42,14 +42,14 @@ def CheckAge( age ):
 def CheckAgeArray( ages_years ):
     errmsg = JSON_AgesYears + " must be an array of ages in years and in increasing order."
     if( len( ages_years ) == 0 ):
-        print errmsg
+        print(errmsg)
         exit(-1)
 
     prev = 0.0
     for age in ages_years:
         CheckAge( age )
         if( age < prev ):
-            print errmsg
+            print(errmsg)
             exit(-1)
         prev = age
 
@@ -72,7 +72,7 @@ def CheckGenderDataType( gdt ):
         found |= (type == gdt)
 
     if( not found ):
-        print "Invalid GenderDataType = " + gdt
+        print(f"Invalid GenderDataType = {gdt}")
         exit(-1)
 
 # -----------------------------------------------------------------------------
@@ -91,7 +91,7 @@ def CheckInterpolationType( interp_type ):
         found |= (type == interp_type)
 
     if( not found ):
-        print "Invalid InterpolationType = " + interp_type
+        print(f"Invalid InterpolationType = {interp_type}")
         exit(-1)
 
 # -----------------------------------------------------------------------------
@@ -112,7 +112,7 @@ def CheckMigrationType( mig_type ):
         found |= (type == mig_type)
 
     if( not found ):
-        print "Invalid MigrationType = " + mig_type
+        print(f"Invalid MigrationType = {mig_type}")
         exit(-1)
 
 # -----------------------------------------------------------------------------
@@ -137,7 +137,7 @@ JSON_RD_RatesFemale         = "Avg_Num_Trips_Per_Day_Female"
 # -----------------------------------------------------------------------------
 def CheckInJson( fn, data, key ):
     if( not key in data ):
-        print "Could not find " + key + " in file " + fn
+        print(f"Could not find {key} in file {fn}.")
         exit(-1)
 
 # -----------------------------------------------------------------------------
@@ -145,7 +145,7 @@ def CheckInJson( fn, data, key ):
 # -----------------------------------------------------------------------------
 def CheckRatesSize( num_ages, rd_data, key ):
     if( len( rd_data[ key ] ) != num_ages ):
-        print JSON_AgesYears + " has " + str(num_ages) + " values and one of the " + key + " has " + str(len( rd_data[ key ] )) + " values.  They must have the same number."
+        print (f"{JSON_AgesYears} has {num_ages} values and one of the {key} has {len( rd_data[ key ] )} values.  They must have the same number.")
         exit(-1)
 
 # -----------------------------------------------------------------------------
@@ -167,7 +167,7 @@ def ReadJson( json_fn ):
     CheckAgeArray( json_data[ JSON_AgesYears ] )
 
     if( len( json_data[ JSON_NodeData ] ) == 0 ):
-        print JSON_NodeData + " has no elements so there would be no migration data."
+        print(f"{JSON_NodeData} has no elements so there would be no migration data.")
         exit(-1)
 
     num_ages = len( json_data[ JSON_AgesYears ] )
@@ -177,7 +177,7 @@ def ReadJson( json_fn ):
         CheckInJson( json_fn, nd_data, JSON_ND_RateData    )
 
         if( len( nd_data[ JSON_ND_RateData ] ) == 0 ):
-            print JSON_ND_RateData + " has no elements so there would be no migration data."
+            print(f"{JSON_ND_RateData} has no elements so there would be no migration data.")
             exit(-1)
 
         for rd_data in nd_data[ JSON_ND_RateData ]:
@@ -223,7 +223,7 @@ def GetSummaryData( json_data ):
         if( destinations > max_destinations ):
             max_destinations = destinations
 
-    print "max_destinations = " + str(max_destinations)
+    print(f"max_destinations = {max_destinations}")
 
     # -------------------------------------------------------------------
     # Create NodeOffsets string
@@ -259,13 +259,13 @@ def WriteBinFile( bin_fn, json_data, summary ):
 # WriteBinFileGender
 # -----------------------------------------------------------------------------
 def WriteBinFileGender( bin_file, json_data, summary, rates_key ):
-    for age_index in xrange( len( json_data[ JSON_AgesYears ] ) ):
+    for age_index in range( len( json_data[ JSON_AgesYears ] ) ):
         for node_data in json_data[ JSON_NodeData ]:
             array_id = []
             array_rt = []
                 
             # Initialize with zeros
-            for i in xrange( summary.max_destinations_per_node ):
+            for i in range( summary.max_destinations_per_node ):
                 array_id.append(0)
                 array_rt.append(0)
 
@@ -327,5 +327,5 @@ if __name__ == "__main__":
     WriteBinFile( bin_fn, json_data, summary )
     WriteMetadataFile( metadata_fn, mig_type, json_data, summary )
 
-    print "Finished converting " + json_fn + " to " + bin_fn + " and " + metadata_fn
+    print(f"Finished converting {json_fn} to {bin_fn} and {metadata_fn}")
 

@@ -2,7 +2,7 @@
 
 import json
 import os.path as path
-import dtk_sft as sft
+import dtk_test.dtk_sft as sft
 import math
 
 KEY_TOTAL_TIMESTEPS = "Simulation_Duration"
@@ -99,10 +99,15 @@ def create_report_file(param_obj, report_data_obj, report_name, debug):
             statistical_population = report_data_obj[KEY_STATISTICAL_POPULATION_GROUP[i]][timestep]
             expected_new_infection = statistical_population * (new_infection_portions[i])
             tolerance = 0.0 if expected_new_infection == 0.0 else 2e-2 * statistical_population
+            result = f"At time step: {timestep} Group: {KEY_NEW_INFECTIONS_GROUP[i]}" \
+                     f" reported new infections: {new_infection} expected: {expected_new_infection}" \
+                     f" tolerance: {tolerance}.\n"
             if math.fabs(new_infection - expected_new_infection) > tolerance:
                 success = False
-                outfile.write("BAD: At time step {0}, {1} has {2} reported, expected {3}.\n".format(
-                    timestep, KEY_NEW_INFECTIONS_GROUP[i], new_infection, expected_new_infection))
+                outfile.write(f"BAD:  {result}")
+            else:
+                outfile.write(f"GOOD: {result}")
+
             new_infections.append(new_infection)
             expected_new_infections.append(expected_new_infection)
         outfile.write(sft.format_success_msg(success))

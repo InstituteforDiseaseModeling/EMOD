@@ -1,7 +1,6 @@
 {
-    "Default_Config_Path": "defaults/generic_scenario_default_config.json",
+    "Default_Config_Path": "../../defaults/generic_scenario_default_config.json",
     "parameters": {
-        "Base_Incubation_Period": 0,
         "Base_Infectivity": 0.7,
         "Birth_Rate_Dependence": "POPULATION_DEP_RATE",
         "Config_Name": "65_Generic_CHW_GH1289",
@@ -14,13 +13,14 @@
         "Enable_Property_Output": 1,
         "Enable_Vital_Dynamics": 0,
         "Geography": "SamplesInput",
-        "Listed_Events": [
+        "Custom_Individual_Events": [
             "CHW_Give_Drugs",
             "Received_Treatment"
         ],
         "Run_Number": 1,
         "Sample_Rate_Birth": 1,
         "Simulation_Duration": 120,
-        "logLevel_JsonConfigurable": "WARNING"
+        "logLevel_JsonConfigurable": "WARNING",
+        "Incubation_Period_Constant": 0
     }
 }

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -39,7 +39,15 @@ namespace Kernel
             Environment::setInstance(const_cast<Environment*>(pEnv));
             CreateRandomNumberGenerator( pEnv );
             ProgDllVersion pv;
-            DLL_LOG(INFO,"GetVersion called with ver=%s for %s\n", pv.getVersion(), m_TypeName);
+            DLL_LOG( INFO, "%s: Version=%s  Branch=%s  SccsDate=%s  BuilderName=%s  BuildDate=%s\n",
+                     m_TypeName, 
+                     pv.getVersion(),
+                     pv.getSccsBranch(),
+                     pv.getSccsDate(),
+                     pv.getBuilderName(),
+                     pv.getBuildDate() );
+            fflush(stdout);
+
             if (sVer)
             {
                 int length = strlen(pv.getVersion()) + 1 ;
@@ -79,11 +87,14 @@ namespace Kernel
     private:
         void CreateRandomNumberGenerator( const Environment* pEnv )
         {
-            uint16_t run_number = GET_CONFIG_INTEGER( pEnv->Config, "Run_Number" );
-            uint16_t randomseed[2];
-            randomseed[0] = (uint16_t) run_number;
-            randomseed[1] = (uint16_t) pEnv->MPI.Rank;
-            m_RNG = new PSEUDO_DES(*((uint32_t*) randomseed));
+            if( pEnv->Config != nullptr )
+            {
+                uint16_t run_number = GET_CONFIG_INTEGER( pEnv->Config, "Run_Number" );
+                uint16_t randomseed[2];
+                randomseed[0] = (uint16_t) run_number;
+                randomseed[1] = (uint16_t) pEnv->MPI.Rank;
+                m_RNG = new PSEUDO_DES(*((uint32_t*) randomseed));
+            }
         }
 
         RANDOMBASE * m_RNG;

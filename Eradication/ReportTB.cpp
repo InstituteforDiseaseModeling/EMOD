@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -9,13 +9,10 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "stdafx.h"
 
-#ifdef ENABLE_TBHIV
-
 #include "ReportTB.h"
 #include "Types.h"
-#ifdef ENABLE_TBHIV
 #include "IndividualCoInfection.h"
-#endif
+#include "INodeContext.h"
 
 SETUP_LOGGING( "ReportTB" )
 
@@ -378,4 +375,3 @@ namespace Kernel
     }
 }
 
-#endif // ENABLE_TBHIV

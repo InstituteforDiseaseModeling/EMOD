@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -9,7 +9,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "stdafx.h"
 #include "UnitTest++.h"
-#include "common.h"
+#include "componentTests.h"
 #include <memory> // unique_ptr
 
 
@@ -77,14 +77,22 @@ SUITE(LarvalHabitatMultiplierTest)
     {
     }
 
+    void ConfigFromJson(JsonObjectDemog &json, LarvalHabitatMultiplier &lhm)
+    {
+        std::istringstream config_string(json.ToString());
+        Configuration* config = Configuration::Load(config_string, std::string(""));
+        lhm.Configure(config);
+    }
+
     TEST_FIXTURE(LhmFixture, TestReadOneValueA)
     {
         JsonObjectDemog json;
         json.ParseFile( "testdata/LarvalHabitatMultiplierTest/TestReadOneValue.json" );
 
         LarvalHabitatMultiplier lhm;
+        lhm.Initialize();
 
-        lhm.Read( json["LarvalHabitatMultiplier"], 789 );
+        ConfigFromJson(json, lhm);
 
         for( int i = 0 ; i < VectorHabitatType::pairs::count() ; ++i )
         {
@@ -105,25 +113,6 @@ SUITE(LarvalHabitatMultiplierTest)
             }
         }
     }
-
-    TEST_FIXTURE(LhmFixture, TestReadOneValueB)
-    {
-        std::unique_ptr<Configuration> p_config( Configuration_Load( "testdata/LarvalHabitatMultiplierTest/TestReadOneValue.json" ) );
-
-        LarvalHabitatMultiplier lhm;
-
-        try
-        {
-            lhm.ConfigureFromJsonAndKey( p_config.get(), "LarvalHabitatMultiplier" );
-            CHECK( false );
-        }
-        catch( SerializationException&  )
-        {
-            // invalid to read the one line value in the campaign file
-            CHECK( true );
-        }
-    }
-
 
     void CheckReadHabitatValue( LarvalHabitatMultiplier& lhm )
     {
@@ -158,8 +147,9 @@ SUITE(LarvalHabitatMultiplierTest)
         json.ParseFile( "testdata/LarvalHabitatMultiplierTest/TestReadHabitatValue.json" );
 
         LarvalHabitatMultiplier lhm;
+        lhm.Initialize();
 
-        lhm.Read( json["LarvalHabitatMultiplier"], 789 );
+        ConfigFromJson(json, lhm);
 
         CheckReadHabitatValue( lhm );
     }
@@ -169,8 +159,9 @@ SUITE(LarvalHabitatMultiplierTest)
         std::unique_ptr<Configuration> p_config( Configuration_Load( "testdata/LarvalHabitatMultiplierTest/TestReadHabitatValue.json" ) );
 
         LarvalHabitatMultiplier lhm;
+        lhm.Initialize();
 
-        lhm.ConfigureFromJsonAndKey( p_config.get(), "LarvalHabitatMultiplier" );
+        lhm.Configure( p_config.get() );
 
         CheckReadHabitatValue( lhm );
     }
@@ -210,8 +201,9 @@ SUITE(LarvalHabitatMultiplierTest)
         json.ParseFile( "testdata/LarvalHabitatMultiplierTest/TestReadHabitatSpeciesValue.json" );
 
         LarvalHabitatMultiplier lhm;
+        lhm.Initialize();
 
-        lhm.Read( json["LarvalHabitatMultiplier"], 789 );
+        ConfigFromJson(json, lhm);
 
         CheckReadHabitatSpeciesValue( lhm );
     }
@@ -221,8 +213,9 @@ SUITE(LarvalHabitatMultiplierTest)
         std::unique_ptr<Configuration> p_config( Configuration_Load( "testdata/LarvalHabitatMultiplierTest/TestReadHabitatSpeciesValue.json" ) );
 
         LarvalHabitatMultiplier lhm;
+        lhm.Initialize();
 
-        lhm.ConfigureFromJsonAndKey( p_config.get(), "LarvalHabitatMultiplier" );
+        lhm.Configure( p_config.get() );
 
         CheckReadHabitatSpeciesValue( lhm );
     }
@@ -264,8 +257,9 @@ SUITE(LarvalHabitatMultiplierTest)
         json.ParseFile( "testdata/LarvalHabitatMultiplierTest/TestReadMix.json" );
 
         LarvalHabitatMultiplier lhm;
+        lhm.Initialize();
 
-        lhm.Read( json["LarvalHabitatMultiplier"], 789 );
+        ConfigFromJson(json, lhm);
 
         CheckReadMix( lhm );
     }
@@ -275,8 +269,9 @@ SUITE(LarvalHabitatMultiplierTest)
         std::unique_ptr<Configuration> p_config( Configuration_Load( "testdata/LarvalHabitatMultiplierTest/TestReadMix.json" ) );
 
         LarvalHabitatMultiplier lhm;
+        lhm.Initialize();
 
-        lhm.ConfigureFromJsonAndKey( p_config.get(), "LarvalHabitatMultiplier" );
+        lhm.Configure( p_config.get() );
 
         CheckReadMix( lhm );
     }
@@ -287,10 +282,11 @@ SUITE(LarvalHabitatMultiplierTest)
         json.ParseFile( "testdata/LarvalHabitatMultiplierTest/TestInvalidValue.json" );
 
         LarvalHabitatMultiplier lhm;
+        lhm.Initialize();
 
         try
         {
-            lhm.Read( json["LarvalHabitatMultiplier"], 789 );
+            ConfigFromJson(json, lhm);
             CHECK( false );
         }
         catch( DetailedException& /*re*/ )
@@ -306,16 +302,37 @@ SUITE(LarvalHabitatMultiplierTest)
         json.ParseFile( "testdata/LarvalHabitatMultiplierTest/TestInvalidHabitat.json" );
 
         LarvalHabitatMultiplier lhm;
+        lhm.Initialize();
 
         try
         {
-            lhm.Read( json[ "LarvalHabitatMultiplier" ], 789 );
+            ConfigFromJson(json, lhm);
             CHECK( false );
         }
         catch( DetailedException& re )
         {
             PrintDebug( re.GetMsg() );
             CHECK( true );
+        }
+    }
+
+    TEST_FIXTURE(LhmFixture, TestOverspecification)
+    {
+        JsonObjectDemog json;
+        json.ParseFile("testdata/LarvalHabitatMultiplierTest/TestOverspecification.json");
+
+        LarvalHabitatMultiplier lhm;
+        lhm.Initialize();
+
+        try
+        {
+            ConfigFromJson(json, lhm);
+            CHECK(false);
+        }
+        catch (DetailedException& re)
+        {
+            PrintDebug(re.GetMsg());
+            CHECK(true);
         }
     }
 }

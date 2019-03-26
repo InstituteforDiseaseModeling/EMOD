@@ -9,6 +9,7 @@
                     "Base_Specificity": 0.9,
                     "Cost_To_Consumer": 0,
                     "Days_To_Diagnosis": 0.0,
+					"Event_Or_Config": "Config",
                     "Positive_Diagnosis_Config": {
                         "class": "MultiInterventionDistributor",
                         "Intervention_List": [

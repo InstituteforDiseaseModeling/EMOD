@@ -11,5 +11,5 @@
     "Intervention_State"            : "non_abort_state",
     "Retest_Until_Positive"    : 0,
     "Absolute_Duration"        : 5,
-    "Negative_Diagnosis_Event" : "NoTrigger"
+    "Negative_Diagnosis_Event" : ""
 }

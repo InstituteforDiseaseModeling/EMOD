@@ -77,8 +77,6 @@ For more information about the log files see the DTK File Format Guide."
 #define Report_Sabin_Wild_Phenotype_As_Wild_DESC_TEXT "Changes categorization from VDPV to WPV for reporting based on phenotype."
 #define Enable_Contact_Tracing_DESC_TEXT "Set to false to override genomes to enumerate infections for a WPV outbreak. Infections are only traced up to the number of substrains, although disease transmission continues as normal. In this mode, the evolution algorithm increments the substrain value of any infection by 1. \
 Warning: This parameter applies to WPV outbreaks only. Do not use for VDPV simulations."
-#define x_Population_Immunity_DESC_TEXT "Multiplier (dimensionless) for initial population immunity. This value represents the fraction of individuals exposed to vaccination programs before the simulation begins. \
-Note: This parameter has no effect on campaigns applied in the simulation domain."
 #define Evolution_Polio_Clock_Type_DESC_TEXT "Functional form of the molecular clock for evolution dynamics. Applies to vaccine-derived strains in host. Possible values are: \
 POLIO_EVOCLOCK_NONE, \
 POLIO_EVOCLOCK_LINEAR, \

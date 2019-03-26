@@ -1,21 +1,18 @@
 {
     "Use_Defaults": 1,
-    "Events": 
-    [
+    "Events": [
         {
             "Event_Name": "Outbreak",
             "class": "CampaignEvent",
             "Start_Day": 10,
             "Nodeset_Config": {
                 "class": "NodeSetAll"
-            }, 
-            "Event_Coordinator_Config": 
-            {
+            },
+            "Event_Coordinator_Config": {
                 "class": "StandardInterventionDistributionEventCoordinator",
                 "Demographic_Coverage": 0.1,
-                "Target_Demographic": "Everyone", 
-                "Intervention_Config": 
-                {
+                "Target_Demographic": "Everyone",
+                "Intervention_Config": {
                     "Antigen": 0,
                     "Genome": 0,
                     "Outbreak_Source": "PrevalenceIncrease",
@@ -28,35 +25,41 @@
             "class": "CampaignEvent",
             "Start_Day": 1,
             "Nodeset_Config": {
-                "class": "NodeSetNodeList", 
-                "Node_List": [ 2, 3, 4 ]
+                "class": "NodeSetNodeList",
+                "Node_List": [
+                    2,
+                    3,
+                    4
+                ]
             },
             "Event_Coordinator_Config": {
                 "class": "CommunityHealthWorkerEventCoordinator",
-                "Duration" : 400,
-                "Max_Distributed_Per_Day" : 25,
-                "Waiting_Period" : 10,
-                "Days_Between_Shipments" : 25,
-                "Amount_In_Shipment" : 250,
-                "Max_Stock" : 1000,
-                "Initial_Amount_Distribution_Type" : "FIXED_DURATION",
-                "Initial_Amount" :  500,
-                "Target_Demographic": "Everyone", 
+                "Duration": 400,
+                "Max_Distributed_Per_Day": 25,
+                "Waiting_Period": 10,
+                "Days_Between_Shipments": 25,
+                "Amount_In_Shipment": 250,
+                "Max_Stock": 1000,
+                "Initial_Amount_Distribution": "CONSTANT_DISTRIBUTION",
+                "Target_Demographic": "Everyone",
                 "Demographic_Coverage": 1.0,
-                "Property_Restrictions" : [ ],
-                "Target_Residents_Only" : 0,
-                "Trigger_Condition_List" : [ "NewInfectionEvent" ],
+                "Property_Restrictions": [],
+                "Target_Residents_Only": 0,
+                "Trigger_Condition_List": [
+                    "NewInfectionEvent"
+                ],
                 "Intervention_Config": {
                     "class": "SimpleVaccine",
-                    "Cost_To_Consumer": 10.0, 
-                    "Vaccine_Take": 1, 
-                    "Vaccine_Type": "AcquisitionBlocking", 
+                    "Cost_To_Consumer": 10.0,
+                    "Vaccine_Take": 1,
+                    "Vaccine_Type": "AcquisitionBlocking",
                     "Waning_Config": {
                         "class": "WaningEffectBox",
                         "Initial_Effect": 1,
-                        "Box_Duration" : 200
+                        "Box_Duration": 200
                     }
-                }
+                },
+                "Initial_Amount_Constant": 500
             }
         }
     ]

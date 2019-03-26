@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -15,7 +15,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Exceptions.h"
 #include "NodeEventContext.h"
 #include "IndividualEventContext.h"
-#include "Contexts.h"
+#include "IIndividualHumanContext.h"
 #include "FileSystem.h"
 #include "IIndividualHumanHIV.h"
 #include "SimulationEnums.h"
@@ -97,6 +97,7 @@ namespace Kernel
         }
 
         std::stringstream ss ;
+        ss << STIReportEventRecorder::GetOtherData( context, trigger );
         ss                  << ","
            << has_hiv       << ","
            << on_ART        << ","

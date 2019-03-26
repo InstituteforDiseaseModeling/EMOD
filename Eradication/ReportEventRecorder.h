@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -11,38 +11,44 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include <vector>
 
-#include "BaseTextReportEvents.h"
-#include "Interventions.h"
+#include "BaseReportEventRecorder.h"
 
 namespace Kernel
 {
-    struct IdmDateTime;
+    class EventTriggerFactory;
 
-    class ReportEventRecorder : public BaseTextReportEvents
+    class ReportEventRecorder : public BaseReportEventRecorder< IIndividualEventBroadcaster,
+                                                                IIndividualEventObserver,
+                                                                IIndividualHumanEventContext,
+                                                                EventTrigger,
+                                                                EventTriggerFactory >
     {
-        GET_SCHEMA_STATIC_WRAPPER(ReportEventRecorder)
+    public:
+        GET_SCHEMA_STATIC_WRAPPER( ReportEventRecorder )
+
     public:
         static IReport* CreateReport();
 
-    protected:
+    public:
         ReportEventRecorder();
         virtual ~ReportEventRecorder();
 
-        // -----------------------------
-        // --- BaseTextReportEvents
-        // -----------------------------
-        virtual bool Configure( const Configuration* inputJson );
-        virtual std::string GetHeader() const ;
-        virtual bool notifyOnEvent(IIndividualHumanEventContext *context, const EventTrigger& trigger);
+        // ------------
+        // --- IReport
+        // ------------
+        virtual void Initialize( unsigned int nrmSize ) override;
+        virtual void UpdateEventRegistration( float currentTime,
+                                              float dt,
+                                              std::vector<INodeEventContext*>& rNodeEventContextList,
+                                              ISimulationEventContext* pSimEventContext ) override;
+
+        virtual std::string GetHeader() const override;
 
     protected:
-        virtual std::string GetOtherData( IIndividualHumanEventContext *context, const EventTrigger& trigger );
-        virtual std::string GetTimeHeader() const;
-        virtual float GetTime( const IdmDateTime& rDateTime ) const;
+        virtual void ConfigureOther( const Configuration* inputJson ) override;
+        virtual std::string GetOtherData( IIndividualHumanEventContext *context, const EventTrigger& trigger ) override;
+        virtual float GetTime( IIndividualHumanEventContext* pEntity ) const override;
 
         jsonConfigurable::tDynamicStringSet properties_to_report;
-
-    private:
-        bool ignore_events_in_list ;
     };
 }

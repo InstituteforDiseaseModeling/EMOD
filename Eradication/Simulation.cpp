@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -30,9 +30,13 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "SimulationEventContext.h"
 #include "NodeInfo.h"
 #include "ReportEventRecorder.h"
+#include "ReportEventRecorderNode.h"
+#include "ReportEventRecorderCoordinator.h"
+#include "ReportSurveillanceEventRecorder.h"
 #include "Individual.h"
 #include "LoadBalanceScheme.h"
 #include "EventTrigger.h"
+#include "RandomNumberGeneratorFactory.h"
 
 #include "DllLoader.h"
 
@@ -89,7 +93,6 @@ namespace Kernel
         , m_interventionFactoryObj(nullptr)
         , demographicsContext(nullptr)
         , infectionSuidGenerator(EnvPtr->MPI.Rank, EnvPtr->MPI.NumTasks)
-        , individualHumanSuidGenerator(EnvPtr->MPI.Rank, EnvPtr->MPI.NumTasks)
         , nodeSuidGenerator(EnvPtr->MPI.Rank, EnvPtr->MPI.NumTasks)
         , campaignFilename()
         , loadBalanceFilename()
@@ -101,47 +104,47 @@ namespace Kernel
         , spatialReportClassCreator(nullptr)
         , propertiesReportClassCreator(nullptr)
         , demographicsReportClassCreator(nullptr)
-        , eventReportClassCreator(nullptr)
+        , eventReportClassCreator( nullptr )
+        , nodeEventReportClassCreator( nullptr )
+        , coordinatorEventReportClassCreator( nullptr )
+        , surveillanceEventReportClassCreator( nullptr )
         , event_coordinators()
         , campaign_events()
         , event_context_host(nullptr)
         , currentTime()
-        , random_type(RandomType::USE_PSEUDO_DES)
         , sim_type(SimType::GENERIC_SIM)
         , demographic_tracking(false)
         , enable_spatial_output(false)
         , enable_property_output(false)
         , enable_default_report(false)
-        , enable_event_report(false)
+        , enable_event_report( false )
+        , enable_node_event_report( false )
+        , enable_coordinator_event_report( false )
+        , enable_surveillance_event_report( false )
+        , enable_termination_on_zero_total_infectivity(false)
         , campaign_filename()
         , custom_reports_filename( RUN_ALL_CUSTOM_REPORTS )
         , loadbalance_filename()
-        , Run_Number(0)
         , can_support_family_trips( false )
         , m_IPWhiteListEnabled(true)
         , demographics_factory(nullptr)
+        , m_pRngFactory( new RandomNumberGeneratorFactory() )
+        , min_sim_endtime(0.0f)
         , new_node_observers()
     {
         LOG_DEBUG( "CTOR\n" );
 
-        reportClassCreator              = Report::CreateReport;
-        binnedReportClassCreator        = BinnedReport::CreateReport;
-        spatialReportClassCreator       = SpatialReport::CreateReport;
-        propertiesReportClassCreator    = PropertyReport::CreateReport;
-        demographicsReportClassCreator  = DemographicsReport::CreateReport;
-        eventReportClassCreator         = ReportEventRecorder::CreateReport;
+        reportClassCreator                  = Report::CreateReport;
+        binnedReportClassCreator            = BinnedReport::CreateReport;
+        spatialReportClassCreator           = SpatialReport::CreateReport;
+        propertiesReportClassCreator        = PropertyReport::CreateReport;
+        demographicsReportClassCreator      = DemographicsReport::CreateReport;
+        eventReportClassCreator             = ReportEventRecorder::CreateReport;
+        nodeEventReportClassCreator         = ReportEventRecorderNode::CreateReport;
+        coordinatorEventReportClassCreator  = ReportEventRecorderCoordinator::CreateReport;
+        surveillanceEventReportClassCreator = ReportSurveillanceEventRecorder::CreateReport;
 
         nodeRankMap.SetNodeInfoFactory( this );
-
-        initConfigTypeMap( "Enable_Default_Reporting", &enable_default_report, Enable_Default_Reporting_DESC_TEXT, true );
-        initConfigTypeMap( "Enable_Demographics_Reporting", &demographic_tracking, Enable_Demographics_Reporting_DESC_TEXT, true );
-        initConfigTypeMap( "Report_Event_Recorder", &enable_event_report, Report_Event_Recorder_DESC_TEXT,   false);
-        initConfigTypeMap( "Enable_Spatial_Output", &enable_spatial_output, Enable_Spatial_Output_DESC_TEXT, false );
-        initConfigTypeMap( "Enable_Property_Output", &enable_property_output, Enable_Property_Output_DESC_TEXT, false );
-        initConfigTypeMap( "Campaign_Filename", &campaign_filename, Campaign_Filename_DESC_TEXT, "", "Enable_Interventions" );
-        initConfigTypeMap( "Load_Balance_Filename", &loadbalance_filename, Load_Balance_Filename_DESC_TEXT ); 
-        initConfigTypeMap( "Run_Number", &Run_Number, Run_Number_DESC_TEXT, 0, INT_MAX, 1 );
-
 
         if( (EnvPtr != nullptr) &&
             (EnvPtr->Config != nullptr) &&
@@ -203,20 +206,95 @@ namespace Kernel
 */        
     }
 
-    bool
-    Simulation::Configure(
-        const Configuration * inputJson
-    )
+    bool Simulation::Configure( const Configuration * inputJson )
     {
         initConfig( "Simulation_Type", sim_type, inputJson, MetadataDescriptor::Enum("sim_type", Simulation_Type_DESC_TEXT, MDD_ENUM_ARGS(SimType)) ); // simulation only (???move)
+
+        initConfigTypeMap( "Enable_Termination_On_Zero_Total_Infectivity",  &enable_termination_on_zero_total_infectivity,  Enable_Termination_On_Zero_Total_Infectivity_DESC_TEXT,  false );
+        initConfigTypeMap( "Enable_Default_Reporting",       &enable_default_report,          Enable_Default_Reporting_DESC_TEXT,       true  );
+        initConfigTypeMap( "Enable_Demographics_Reporting",  &demographic_tracking,           Enable_Demographics_Reporting_DESC_TEXT,  true  );
+        initConfigTypeMap( "Enable_Property_Output",         &enable_property_output,         Enable_Property_Output_DESC_TEXT,         false );
+        initConfigTypeMap( "Enable_Spatial_Output",          &enable_spatial_output,          Enable_Spatial_Output_DESC_TEXT,          false );
+        initConfigTypeMap( "Report_Event_Recorder",          &enable_event_report,            Report_Event_Recorder_DESC_TEXT,          false );
+
+        initConfigTypeMap( ReportEventRecorder::GetEnableParameterName().c_str(),             &enable_event_report,              Report_Event_Recorder_DESC_TEXT,             false );
+        initConfigTypeMap( ReportEventRecorderNode::GetEnableParameterName().c_str(),         &enable_node_event_report,         Report_Node_Event_Recorder_DESC_TEXT,        false );
+        initConfigTypeMap( ReportEventRecorderCoordinator::GetEnableParameterName().c_str(),  &enable_coordinator_event_report,  Report_Coordinator_Event_Recorder_DESC_TEXT, false );
+        initConfigTypeMap( ReportSurveillanceEventRecorder::GetEnableParameterName().c_str(), &enable_surveillance_event_report, Report_Coordinator_Event_Recorder_DESC_TEXT, false );        
+        
+        initConfigTypeMap( "Campaign_Filename",       &campaign_filename,      Campaign_Filename_DESC_TEXT, "", "Enable_Interventions" );
+        initConfigTypeMap( "Load_Balance_Filename",   &loadbalance_filename,   Load_Balance_Filename_DESC_TEXT ); 
+        initConfigTypeMap( "Minimum_End_Time",        &min_sim_endtime,        Minimum_End_Time_DESC_TEXT, 0.0f, 1000000.0f, 0.0f, "Enable_Termination_On_Zero_Total_Infectivity" );
 
         if( JsonConfigurable::_dryrun || EnvPtr->Config->Exist( "Custom_Reports_Filename" ) )
         {
             initConfigTypeMap( "Custom_Reports_Filename", &custom_reports_filename, Custom_Reports_Filename_DESC_TEXT, RUN_ALL_CUSTOM_REPORTS );
         }
 
+        bool create_rng_from_serialized_data = false;
+        if( JsonConfigurable::_dryrun || EnvPtr->Config->Exist( "Enable_Random_Generator_From_Serialized_Population" ) )
+        {
+            initConfigTypeMap( "Enable_Random_Generator_From_Serialized_Population", &create_rng_from_serialized_data, Enable_Random_Generator_From_Serialized_Population_DESC_TEXT, false );
+        }
+
         bool ret = JsonConfigurable::Configure( inputJson );
+        if( ret || JsonConfigurable::_dryrun )
+        {
+            if( create_rng_from_serialized_data && !inputJson->Exist( "Serialized_Population_Filenames" ) )
+            {
+                throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__,
+                                                        "Serialized_Population_Filenames", "<not exist>",
+                                                        "Enable_Random_Generator_From_Serialized_Population", "1",
+                                                        "'Enable_Random_Generator_From_Serialized_Population' can only be enabled if using a serialized population.");
+            }
+            m_pRngFactory->CreateFromSerializeData( create_rng_from_serialized_data );
+            if( JsonConfigurable::_dryrun || !create_rng_from_serialized_data )
+            {
+                m_pRngFactory->Configure( inputJson );
+            }
+        }
+
+        if(enable_termination_on_zero_total_infectivity && EnvPtr->MPI.NumTasks > 1)
+        {
+            throw IncoherentConfigurationException(__FILE__, __LINE__, __FUNCTION__, "Enable_Termination_On_Zero_Total_Infectivity", 1, "number of processes",
+                                                    EnvPtr->MPI.NumTasks , "Multi-core simulation abort conditions are not currently supported." );
+        }
+
+        if( !JsonConfigurable::_dryrun && 
+            ((GET_CONFIGURABLE(SimulationConfig)->starttime + GET_CONFIGURABLE(SimulationConfig)->Sim_Duration) < min_sim_endtime) )
+        {
+            throw IncoherentConfigurationException(__FILE__, __LINE__, __FUNCTION__, "Minimum_End_Time", min_sim_endtime, "maximum simulation time step",
+                                                    GET_CONFIGURABLE(SimulationConfig)->starttime + GET_CONFIGURABLE(SimulationConfig)->Sim_Duration,
+                                                   "Start_Time + Simulation_Duration must be greater than Minimum_End_Time." );
+        }
+
         return ret;
+    }
+
+    // Check simulation abort conditions
+    bool Simulation::TimeToStop()
+    {
+        bool abortSim = false;
+
+        if(enable_termination_on_zero_total_infectivity && currentTime.time > min_sim_endtime)
+        {
+            // Accumulate node infectivity
+            float totInfVal = 0.0f;
+            for (auto iterator = nodes.rbegin(); iterator != nodes.rend(); ++iterator)
+            {
+                INodeContext* n = iterator->second;
+                totInfVal += n->GetInfectivity();
+            }
+
+            // Abort on zero infectivity
+            if(totInfVal == 0.0f)
+            {
+                LOG_INFO("Zero infectivity at current time-step; simulation aborting.\n");
+                abortSim = true;
+            }
+        }
+
+        return abortSim;
     }
 
     Simulation *Simulation::CreateSimulation()
@@ -306,62 +384,11 @@ namespace Kernel
 
     void Simulation::setupRng()
     {
-        if ( CONFIG_PARAMETER_EXISTS(EnvPtr->Config, "Random_Number_Engine") )
+        RANDOMBASE* tmp_rng = m_pRngFactory->CreateRng();
+        // don't change pointer in case created from serialization
+        if( tmp_rng != nullptr )
         {
-            std::string specified_enum = GET_CONFIG_STRING(EnvPtr->Config, "Random_Number_Engine");
-            std::transform(specified_enum.begin(), specified_enum.end(), specified_enum.begin(), ::toupper);
-            MetadataDescriptor::Enum descriptor("Random_Number_Engine", "Pseudo-random number generator", MDD_ENUM_ARGS(RandomType));
-            bool found = false;
-            for (auto& vs : descriptor.enum_value_specs)
-            {
-                std::string enum_option(vs.first);
-                std::transform(enum_option.begin(), enum_option.end(), enum_option.begin(), ::toupper);
-                if (specified_enum == enum_option)
-                {
-                    found = true;
-                    random_type = RandomType::Enum(vs.second);
-                    break;
-                }
-            }
-
-            if (!found)
-            {
-                std::ostringstream msg;
-                msg << "Unknown random number generator selection: '" << specified_enum << "'" << std::endl;
-                throw GeneralConfigurationException(__FILE__, __LINE__, __FUNCTION__, msg.str().c_str());
-            }
-        }
-
-        switch (random_type)
-        {
-        case RandomType::USE_PSEUDO_DES:
-        {
-            uint16_t randomseed[2];
-            randomseed[0] = uint16_t(Run_Number);
-            randomseed[1] = uint16_t(EnvPtr->MPI.Rank);
-            rng = _new_ PSEUDO_DES(*reinterpret_cast<uint32_t*>(randomseed));
-            const_cast<Environment*>(Environment::getInstance())->RNG = rng;
-
-            LOG_INFO("Using PSEUDO_DES random number generator.\n");
-        }
-        break;
-
-        case RandomType::USE_AES_COUNTER:
-        {
-            rng = _new_ AES_COUNTER(Run_Number, EnvPtr->MPI.Rank);
-            const_cast<Environment*>(Environment::getInstance())->RNG = rng;
-
-            LOG_INFO("Using AES_COUNTER random number generator.\n");
-        }
-        break;
-
-        default:
-        {
-            std::ostringstream oss;
-            oss << "Error in " << __FUNCTION__ << ".  Only USE_PSEUDO_DES is currently supported for key 'Random_Type'." << std::endl;
-            throw NotYetImplementedException(__FILE__, __LINE__, __FUNCTION__, oss.str().c_str());
-        }
-        // break;
+            rng = tmp_rng;
         }
     }
 
@@ -377,7 +404,7 @@ namespace Kernel
             campaignFilename = campaign_filename ;
         }
 
-        loadBalanceFilename = FileSystem::Concat( EnvPtr->InputPath, loadbalance_filename );
+        loadBalanceFilename  = Environment::FindFileOnPath( loadbalance_filename  );
         currentTime.time    = m_simConfigObj->starttime;
     }
 
@@ -427,6 +454,27 @@ namespace Kernel
             IReport * event_report = (*eventReportClassCreator)();
             release_assert(event_report);
             reports.push_back(event_report);
+        }
+
+        if( enable_node_event_report )
+        {
+            IReport * node_event_report = (*nodeEventReportClassCreator)();
+            release_assert( node_event_report );
+            reports.push_back( node_event_report );
+        }
+
+        if( enable_coordinator_event_report )
+        {
+            IReport * coordinator_event_report = (*coordinatorEventReportClassCreator)();
+            release_assert( coordinator_event_report );
+            reports.push_back( coordinator_event_report );
+        }
+
+        if( enable_surveillance_event_report )
+        {
+            IReport * surveillance_event_report = (*surveillanceEventReportClassCreator)();
+            release_assert( surveillance_event_report );
+            reports.push_back( surveillance_event_report );
         }
 
         if(demographic_tracking)
@@ -521,6 +569,11 @@ namespace Kernel
         }
         node_events_added.clear();
 
+    }
+
+    ISimulationEventContext* Simulation::GetSimulationEventContext()
+    {
+        return event_context_host;
     }
 
     void Simulation::Reports_ConfigureBuiltIn()
@@ -662,7 +715,7 @@ namespace Kernel
     {
         for (auto report : reports)
         {
-            report->UpdateEventRegistration( _currentTime, dt, node_event_context_list );
+            report->UpdateEventRegistration( _currentTime, dt, node_event_context_list, event_context_host );
         }
     }
 
@@ -1000,7 +1053,7 @@ namespace Kernel
     int Simulation::populateFromDemographics(const char* campaignfilename, const char* loadbalancefilename)
     {
         string idreference  = demographics_factory->GetIdReference();
-        vector<ExternalNodeId_t> nodeIDs = demographics_factory->GetNodeIDs();
+        const vector<ExternalNodeId_t>& nodeIDs = demographics_factory->GetNodeIDs();
         ClimateFactory * climate_factory = nullptr;
 #ifndef DISABLE_CLIMATE
         // Initialize climate from file
@@ -1009,8 +1062,10 @@ namespace Kernel
         {
             throw InitializationException( __FILE__, __LINE__, __FUNCTION__, "Failed to create ClimateFactory" );
         }
-#endif
         // We can validate climate structure against sim_type now.
+#endif
+
+        m_pRngFactory->SetNodeIds( nodeIDs );
 
         // Initialize load-balancing scheme from file
         IInitialLoadBalanceScheme* p_lbs = LoadBalanceSchemeFactory::Create( loadbalancefilename, nodeIDs.size(), EnvPtr->MPI.NumTasks );
@@ -1029,16 +1084,20 @@ namespace Kernel
         if (nodes.size() == 0)   // "Standard" initialization path
         {
             // Add nodes according to demographics-and climate file specifications
-            for (auto node_id : nodeIDs)
+            uint32_t node_index = 0;
+            for (auto external_node_id : nodeIDs)
             {
-                if (getInitialRankFromNodeId(node_id) == EnvPtr->MPI.Rank) // inclusion criteria to be added to this processor's shared memory space
+                if (getInitialRankFromNodeId( external_node_id ) == EnvPtr->MPI.Rank) // inclusion criteria to be added to this processor's shared memory space
                 {
-                    suids::suid node_suid = GetNextNodeSuid();
-                    LOG_DEBUG_F( "Creating/adding new node: node_id = %lu, node_suid = %lu\n", node_id, node_suid.data );
-                    nodeid_suid_map.insert( nodeid_suid_pair( node_id, node_suid ) );
+                    suids::suid node_suid;
+                    node_suid.data = node_index + 1;
 
-                    addNewNodeFromDemographics( node_suid, demographics_factory, climate_factory, m_IPWhiteListEnabled );
+                    LOG_DEBUG_F( "Creating/adding new node: external_node_id = %lu, node_suid = %lu\n", external_node_id, node_suid.data );
+                    nodeid_suid_map.insert( nodeid_suid_pair( external_node_id, node_suid ) );
+
+                    addNewNodeFromDemographics( external_node_id, node_suid, demographics_factory, climate_factory, m_IPWhiteListEnabled );
                 }
+                ++node_index;
             }
         }
         else    // We already have nodes... must have loaded a serialized population.
@@ -1103,22 +1162,29 @@ namespace Kernel
         return int(nodes.size());
     }
 
-    void Kernel::Simulation::addNewNodeFromDemographics( suids::suid node_suid, 
+    void Kernel::Simulation::addNewNodeFromDemographics( ExternalNodeId_t externalNodeId,
+                                                         suids::suid node_suid, 
                                                          NodeDemographicsFactory *nodedemographics_factory, 
                                                          ClimateFactory *climate_factory,
                                                          bool white_list_enabled )
     {
-        Node *node = Node::CreateNode(this, node_suid);
+        Node *node = Node::CreateNode(this, externalNodeId, node_suid);
         addNode_internal( node, nodedemographics_factory, climate_factory, white_list_enabled );
     }
 
-    void Kernel::Simulation::addNode_internal( INodeContext *node, NodeDemographicsFactory *nodedemographics_factory, ClimateFactory *climate_factory, bool white_list_enabled )
+    void Kernel::Simulation::addNode_internal( INodeContext *node,
+                                               NodeDemographicsFactory *nodedemographics_factory,
+                                               ClimateFactory *climate_factory,
+                                               bool white_list_enabled )
     {
+
         release_assert(node);
         release_assert(nodedemographics_factory);
 #ifndef DISABLE_CLIMATE
         release_assert(climate_factory);
 #endif
+
+        node->SetRng( m_pRngFactory->CreateRng( node->GetExternalID() ) );
 
         // Node initialization 
         node->SetParameters( nodedemographics_factory, climate_factory, white_list_enabled );
@@ -1253,6 +1319,19 @@ namespace Kernel
 
         MpiDataExchanger exchanger( "HumanMigration", to_self_func, to_others_func, from_others_func, clear_data_func );
         exchanger.ExchangeData( this->currentTime );
+
+        // -----------------------------------------------------------
+        // --- We sort the humans so that they are in a known order.
+        // --- This solves the problem where individuals will get in
+        // --- different orders depending on how many cores are used.
+        // -----------------------------------------------------------
+        if( m_pRngFactory->GetPolicy() == RandomNumberGeneratorPolicy::ONE_PER_NODE )
+        {
+            for( auto node : nodes )
+            {
+                node.second->SortHumans();
+            }
+        }
     }
 
     void Simulation::PostMigratingIndividualHuman(IIndividualHuman *i)
@@ -1274,7 +1353,7 @@ namespace Kernel
         return demographicsContext;
     }
 
-    IdmDateTime Simulation::GetSimulationTime() const
+    const IdmDateTime& Simulation::GetSimulationTime() const
     {
         return currentTime;
     }
@@ -1282,16 +1361,6 @@ namespace Kernel
     int Simulation::GetSimulationTimestep() const
     {
         return currentTime.timestep;
-    }
-
-    suids::suid Simulation::GetNextNodeSuid()
-    {
-        return nodeSuidGenerator();
-    }
-
-    suids::suid Simulation::GetNextIndividualHumanSuid()
-    {
-        return individualHumanSuidGenerator();
     }
 
     suids::suid Simulation::GetNextInfectionSuid()
@@ -1314,14 +1383,10 @@ namespace Kernel
         return nodeRankMap.GetRankFromNodeSuid( rNodeSuid );
     }
 
+    // Should only be accessed by Node
     RANDOMBASE* Simulation::GetRng()
     {
         return rng;
-    }
-
-    void Simulation::ResetRng()
-    {
-        setupRng();
     }
 
     std::vector<IReport*>& Simulation::GetReports()
@@ -1375,7 +1440,8 @@ namespace Kernel
             ((sim.serializationMask & SerializationFlags::Properties) != 0))
         {
             ar.labelElement("infectionSuidGenerator") & sim.infectionSuidGenerator;
-            ar.labelElement("individualHumanSuidGenerator") & sim.individualHumanSuidGenerator;
+            ar.labelElement("m_RngFactory") & sim.m_pRngFactory;
+            ar.labelElement( "rng" ) & sim.rng;
         }
 
         if ((sim.serializationMask & SerializationFlags::Population) != 0) {
@@ -1397,16 +1463,17 @@ namespace Kernel
             ar.labelElement( "campaignFilename" ) & sim.campaignFilename;
             ar.labelElement( "custom_reports_filename" ) & sim.custom_reports_filename;
 
-
             ar.labelElement("sim_type") & (uint32_t&)sim.sim_type;
             ar.labelElement("demographic_tracking") & sim.demographic_tracking;
             ar.labelElement("enable_spatial_output") & sim.enable_spatial_output;
             ar.labelElement("enable_property_output") & sim.enable_property_output;
             ar.labelElement("enable_default_report") & sim.enable_default_report;
-            ar.labelElement("enable_event_report") & sim.enable_event_report;
+            ar.labelElement( "enable_event_report" ) & sim.enable_event_report;
+            ar.labelElement( "enable_node_event_report" ) & sim.enable_event_report;
+            ar.labelElement( "enable_coordinator_event_report" ) & sim.enable_coordinator_event_report;
+            ar.labelElement( "enable_surveillance_event_report" ) & sim.enable_surveillance_event_report;
 
             ar.labelElement("loadbalance_filename") & sim.loadbalance_filename;
-            ar.labelElement("Run_Number") & sim.Run_Number;
         }
 
         if ((sim.serializationMask & SerializationFlags::Properties) != 0) {
@@ -1428,11 +1495,12 @@ namespace Kernel
 // clorton          ar.labelElement("propertiesReportClassCreator") & sim.propertiesReportClassCreator;
 // clorton          ar.labelElement("demographicsReportClassCreator") & sim.demographicsReportClassCreator;
 // clorton          ar.labelElement("eventReportClassCreator") & sim.eventReportClassCreator;
+// clorton          ar.labelElement("nodeEventReportClassCreator") & sim.nodeEventReportClassCreator;
+// clorton          ar.labelElement("coordinatorEventReportClassCreator") & sim.coordinatorEventReportClassCreator;
 // clorton          ar.labelElement("event_coordinators") & sim.event_coordinators;
 // clorton          ar.labelElement("campaign_events") & sim.campaign_events;
 // clorton          ar.labelElement("event_context_host") & sim.event_context_host;
 // clorton          ar.labelElement("currentTime") & sim.currentTime;
-            ar.labelElement("random_type") & (uint32_t&)sim.random_type;
             ar.labelElement("campaign_filename") & sim.campaign_filename;
 // clorton          ar.labelElement("demographics_factory") & sim.demographics_factory;
 // clorton          ar.labelElement("new_node_observers") & sim.new_node_observers;

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -20,6 +20,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "ValidationLog.h"
 #include "IdmMpi.h"
 #include "EventTrigger.h"
+#include "EventTriggerNode.h"
+#include "EventTriggerCoordinator.h"
+#include "IdmString.h"
 
 #include <iso646.h>
 
@@ -38,19 +41,20 @@ Environment::Environment()
 , SimConfig(nullptr)
 , pIPFactory( nullptr )
 , pNPFactory( nullptr )
-, pEventTriggerFactory(nullptr)
+, pRngFactory( nullptr )
 , Status_Reporter(nullptr)
-, InputPath()
+, InputPaths()
 , OutputPath()
 , StatePath()
 , DllPath()
-, RNG( nullptr )
 {
     MPI.NumTasks  = 1;
     MPI.Rank      = 0;
     MPI.p_idm_mpi = nullptr;
 
     Report.Validation = nullptr;
+
+    event_trigger_factories.resize( Kernel::EventType::pairs::count(), nullptr );
 }
 
 bool Environment::Initialize(
@@ -69,10 +73,18 @@ bool Environment::Initialize(
     localEnv->MPI.NumTasks  = pMpi->GetNumTasks();
     localEnv->MPI.Rank      = pMpi->GetRank();
 
-    inputPath = FileSystem::RemoveTrailingChars( inputPath );
-    if( !FileSystem::DirectoryExists(inputPath) )
+    std::list< std::string > inputPaths;
+    // Split inputPaths into list based on semi-colon separation
+    auto input_paths = IdmString( FileSystem::RemoveTrailingChars( inputPath ) ).split(';');
+    for( auto path : input_paths )
     {
-        LOG_WARN_F("Input path %s doesn't exist\n", inputPath.c_str());
+        path = FileSystem::RemoveTrailingChars( path );
+
+        if( !FileSystem::DirectoryExists( path ) )
+        {
+            LOG_WARN_F("Input path %s doesn't exist\n", path.c_str());
+        }
+        inputPaths.push_back( path );
     }
 
     outputPath = FileSystem::RemoveTrailingChars( outputPath );
@@ -116,7 +128,7 @@ bool Environment::Initialize(
     }
 
     localEnv->OutputPath  = outputPath;
-    localEnv->InputPath   = inputPath;
+    localEnv->InputPaths   = inputPaths;
 // 2.5    localEnv->StatePath   = statePath;
     localEnv->DllPath     = dllPath;
 
@@ -162,8 +174,11 @@ Environment::~Environment()
     delete pNPFactory ;
     pNPFactory = nullptr ;
 
-    delete pEventTriggerFactory;
-    pEventTriggerFactory = nullptr;
+    for( auto factory : event_trigger_factories )
+    {
+        delete factory;
+    }
+    event_trigger_factories.clear();
 }
 
 void Environment::Finalize()
@@ -174,23 +189,31 @@ void Environment::Finalize()
 
 std::string Environment::FindFileOnPath( const std::string& rFilename )
 {
+    if( rFilename == "" )
+    {
+        return "";
+    }
+
     if( localEnv == nullptr )
     {
         throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "Environment has not been created." );
     }
-    if( FileSystem::FileExists( FileSystem::Concat(FileSystem::GetCurrentWorkingDirectory(), rFilename) ) )
+    std::string error = "";
+    for( auto path : localEnv->InputPaths )
     {
-        return rFilename;
+        std::string filepath = FileSystem::Concat( path, rFilename );
+        error += filepath;
+        if( FileSystem::FileExists( filepath ) )
+        {
+            return filepath;
+        }
+        else
+        {
+            error += ":";
+        }
     }
-    std::string filepath = FileSystem::Concat( localEnv->InputPath, rFilename );
-    if( FileSystem::FileExists( filepath ) )
-    {
-        return filepath;
-    }
-    else
-    {
-        throw Kernel::FileNotFoundException( __FILE__, __LINE__, __FUNCTION__, filepath.c_str() );
-    }
+        
+    throw Kernel::FileNotFoundException( __FILE__, __LINE__, __FUNCTION__, error.c_str() );
 }
 
 const Configuration* Environment::getConfiguration()
@@ -229,7 +252,14 @@ void Environment::setInstance(Environment * env)
         delete localEnv ;
     }
     localEnv = env ;
-    Kernel::EventTriggerFactory::SetBuiltIn();
+
+    // The factory can be null when getting just the version information of the DLL
+    if( localEnv->getEventTriggerFactory(Kernel::EventType::INDIVIDUAL) != nullptr )
+    {
+        Kernel::EventTriggerFactory::SetBuiltIn();
+        Kernel::EventTriggerNodeFactory::SetBuiltIn();
+        Kernel::EventTriggerCoordinatorFactory::SetBuiltIn();
+    }
 }
 
 void Environment::setLogger(SimpleLogger* log)
@@ -288,13 +318,13 @@ void* Environment::getNPFactory()
     return localEnv->pNPFactory;
 }
 
-const void* Environment::getEventTriggerFactory()
+const void* Environment::getEventTriggerFactory( int event_type )
 {
-    return getInstance()->pEventTriggerFactory;
+    return getInstance()->event_trigger_factories[ event_type ];
 }
 
-void Environment::setEventTriggerFactory( void* pFactory )
+void Environment::setEventTriggerFactory( int event_type, void* pFactory )
 {
     release_assert( localEnv );
-    localEnv->pEventTriggerFactory = pFactory;
+    localEnv->event_trigger_factories[ event_type ] = pFactory;
 }

@@ -25,7 +25,8 @@
         },
         "DISEASE": {
             "INCUBATION": {
-                "Incubation_Period_Distribution": "EXPONENTIAL_DURATION"
+                "Incubation_Period_Distribution": "EXPONENTIAL_DISTRIBUTION",
+                "Incubation_Period_Exponential": 3
             },
             "INFECTIOUSNESS": {
                 "Base_Infectivity": 2.5

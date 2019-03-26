@@ -2,8 +2,8 @@
 
 import json
 import os.path as path
-import dtk_sft as sft
-import dtk_TBHIV_Support as dts
+import dtk_test.dtk_sft as sft
+import dtk_test.dtk_TBHIV_Support as dts
 import math
 
 matches = [ "Evolved drug resistance", "Time:" ]

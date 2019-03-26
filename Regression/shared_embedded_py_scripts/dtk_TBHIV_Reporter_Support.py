@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import json
-import dtk_sft
+import dtk_test.dtk_sft as sft
 import math
 import numpy as np
 import pandas as pd
@@ -44,7 +44,7 @@ def parse_output_file(matches, file_name, output_filename="test.txt", simulation
     filtered_lines = []
     with open(output_filename) as logfile:
         for line in logfile:
-            if dtk_sft.has_match(line,matches):
+            if sft.has_match(line,matches):
                 filtered_lines.append(line)
     if debug:
         with open("DEBUG_filtered_lines.txt", "w") as outfile:
@@ -84,7 +84,7 @@ def create_report_file_incidence(column_to_test, column_year, param_obj, output_
         # timestep = param_obj[Config.simulation_timestep]
         if not len(output_dict):
             success = False
-            outfile.write(dtk_sft.sft_no_test_data)
+            outfile.write(sft.sft_no_test_data)
         else:
             outfile.write("Group the {} by year and get the sum for all age bins:\n".format(column_to_test))
             # the year column becomes the index of the groupby_df
@@ -107,7 +107,7 @@ def create_report_file_incidence(column_to_test, column_year, param_obj, output_
                 for t in output_dict:
                     if i < len(years):
                         year = years[i]
-                        if t <= round(year * dtk_sft.DAYS_IN_YEAR):
+                        if t <= round(year * sft.DAYS_IN_YEAR):
                             incidence_count += output_dict[t]
                         else:
                             reporter_sum = int(groupby_df[groupby_df.index==year][column_to_test])
@@ -121,7 +121,7 @@ def create_report_file_incidence(column_to_test, column_year, param_obj, output_
                     else:
                         break
 
-                dtk_sft.plot_data(incidence_counts, dist2=np.array(groupby_df[column_to_test]), label1="reporter",
+                sft.plot_data(incidence_counts, dist2=np.array(groupby_df[column_to_test]), label1="reporter",
                                            label2="log_valid", title=str(column_to_test),
                                            xlabel="every half year", ylabel=str(column_to_test), category=str(column_to_test),
                                            show=True, line=False, alpha=0.8, overlap=True)
@@ -132,13 +132,13 @@ def create_report_file_incidence(column_to_test, column_year, param_obj, output_
                     outfile.write("BAD: the reporter has data up to year {0} but the simulation duration is {1}, we are expecting "
                                   "not more than year {2} from reporter.".format(max(years), simulation_duration,
                                                                            math.floor(simulation_duration/180)))
-                if simulation_duration > round(max(years) * dtk_sft.DAYS_IN_YEAR) + 180:
+                if simulation_duration > round(max(years) * sft.DAYS_IN_YEAR) + 180:
                     success = False
                     outfile.write("BAD: the reporter has data up to year {0} but the simulation duration is {1}, we are expecting "
                                   "data after year {0} from reporter.".format(max(years), simulation_duration))
 
 
-        outfile.write(dtk_sft.format_success_msg(success))
+        outfile.write(sft.format_success_msg(success))
 
         if debug:
             print( "SUMMARY: Success={0}\n".format(success) )
@@ -153,7 +153,7 @@ def create_report_file_prevalence(column_to_test, column_year, param_obj, output
         # timestep = param_obj[Config.simulation_timestep]
         if not len(output_dict):
             success = False
-            outfile.write(dtk_sft.sft_no_test_data)
+            outfile.write(sft.sft_no_test_data)
 
         outfile.write("Group the {} prevalence by year and get the sum for all age bins:\n".format(column_to_test))
         # the year column becomes the index of the groupby_df
@@ -176,13 +176,13 @@ def create_report_file_prevalence(column_to_test, column_year, param_obj, output
         for t in output_dict:
             if i < len(years):
                 year = years[i]
-                if t <= round(year * dtk_sft.DAYS_IN_YEAR):
+                if t <= round(year * sft.DAYS_IN_YEAR):
                     prevalence_sum += output_dict[t]
-                    if t == round(year * dtk_sft.DAYS_IN_YEAR):
+                    if t == round(year * sft.DAYS_IN_YEAR):
                         prevalence_at_last_time_step[t] = output_dict[t]
                 else:
                     reporter_sum = int(groupby_df[groupby_df.index==year][column_to_test])
-                    prevalence = prevalence_sum / (years[0] * dtk_sft.DAYS_IN_YEAR)
+                    prevalence = prevalence_sum / (years[0] * sft.DAYS_IN_YEAR)
                     prevalence_counts.append(prevalence)
                     # uncomment the following lines to test average prevalence
                     # if prevalence != reporter_sum:
@@ -199,11 +199,11 @@ def create_report_file_prevalence(column_to_test, column_year, param_obj, output
             else:
                 break
         # uncomment the following lines to plot average prevalence from logging and prevalence from reporter
-        # dtk_sft.plot_data(prevalence_counts, dist2=np.array(groupby_df[ReportColumn.HIV]), label1="log_valid_on_average",
+        # sft.plot_data(prevalence_counts, dist2=np.array(groupby_df[ReportColumn.HIV]), label1="log_valid_on_average",
         #                            label2="reporter", title="HIV prevalence",
         #                            xlabel="every half year", ylabel="HIV prevalence", category='HIV_prevalence',
         #                            show=True, line=True, alpha=0.8, overlap=True)
-        dtk_sft.plot_data([prevalence_at_last_time_step[key] for key in sorted(prevalence_at_last_time_step.keys())],
+        sft.plot_data([prevalence_at_last_time_step[key] for key in sorted(prevalence_at_last_time_step.keys())],
                           dist2=np.array(groupby_df[column_to_test]), label1="log_valid",
                           label2="reporter", title="{} prevalence at last timestep of each report time window".format(column_to_test),
                           xlabel="every half year", ylabel="{} prevalence".format(column_to_test),
@@ -212,7 +212,7 @@ def create_report_file_prevalence(column_to_test, column_year, param_obj, output
         if debug:
             with open('DEBUG_prevalence_at_last_time_step.json','w') as file:
                 json.dump(prevalence_at_last_time_step, file, indent=4)
-        outfile.write(dtk_sft.format_success_msg(success))
+        outfile.write(sft.format_success_msg(success))
 
     if debug:
         print( "SUMMARY: Success={0}\n".format(success) )

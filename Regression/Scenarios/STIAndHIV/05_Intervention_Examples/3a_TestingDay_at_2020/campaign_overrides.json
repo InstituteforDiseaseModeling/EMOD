@@ -1,22 +1,12 @@
 {
     "Campaign_Name": "3a_TestingDay_at_2020",
     "Default_Campaign_Path": "defaults/hiv_default_campaign.json",
-    "Use_Defaults": 1,
     "Events": [
         {
             "BEGIN": "TESTING FOR 20% OF POPULATION ON JAN 1, 2020",
-            "class": "CampaignEventByYear",
-            "Event_Name": "Select 20% of the population for testing day on Jan 1, 2020",
-            "Start_Year": 2020,
-            "Nodeset_Config": {
-                "class": "NodeSetAll"
-            },
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Demographic_Coverage": 0.2,
                 "Intervention_Config": {
-                    "class": "HIVRapidHIVDiagnostic",
-                    "Negative_Diagnosis_Event": "NoTrigger",
                     "Disqualifying_Properties": [
                         "InterventionStatus:LostForever",
                         "InterventionStatus:OnART",
@@ -25,28 +15,33 @@
                         "InterventionStatus:LinkingToPreART",
                         "InterventionStatus:ARTStaging"
                     ],
-                    "New_Property_Value": "InterventionStatus:HCTTestingLoop",
                     "Event_Or_Config": "Event",
-                    "Positive_Diagnosis_Event": "ARTStaging7"
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "ARTStaging: state 7 (random choice: linking from positive diagnostic test on Testing Day)",
-            "Start_Year": 1990,
+                    "New_Property_Value": "InterventionStatus:HCTTestingLoop",
+                    "Positive_Diagnosis_Event": "ARTStaging7",
+                    "class": "HIVRapidHIVDiagnostic"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "Select 20% of the population for testing day on Jan 1, 2020",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
+            "Start_Year": 2020,
+            "class": "CampaignEventByYear"
+        },
+        {
+            "END": "TESTING FOR 20% OF POPULATION ON JAN 1, 2020",
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition_List": [
-                        "ARTStaging7"
-                    ],
                     "Actual_IndividualIntervention_Config": {
-                        "class": "HIVRandomChoice",
+                        "Choice_Names": [
+                            "DummyTrigger",
+                            "ARTStaging2"
+                        ],
+                        "Choice_Probabilities": [
+                            0.9,
+                            0.1
+                        ],
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -55,14 +50,22 @@
                             "InterventionStatus:LinkingToPreART"
                         ],
                         "New_Property_Value": "InterventionStatus:None",
-                        "Choices": {
-                            "NoTrigger": 0.9,
-                            "ARTStaging2": 0.1
-                        }
-                    }
-                }
+                        "class": "HIVRandomChoice"
+                    },
+                    "Trigger_Condition_List": [
+                        "ARTStaging7"
+                    ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
             },
-            "END": "TESTING FOR 20% OF POPULATION ON JAN 1, 2020"
+            "Event_Name": "ARTStaging: state 7 (random choice: linking from positive diagnostic test on Testing Day)",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
         }
-    ]
+    ],
+    "Use_Defaults": 1
 }

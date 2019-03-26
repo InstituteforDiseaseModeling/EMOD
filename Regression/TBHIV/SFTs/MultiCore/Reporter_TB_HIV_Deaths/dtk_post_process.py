@@ -1,8 +1,8 @@
 #!/usr/bin/python
 
-import dtk_sft
-import dtk_TBHIV_Reporter_Support as trs
-import dtk_TBHIV_Multicore_Support as tms
+import dtk_test.dtk_sft as sft
+import dtk_test.dtk_TBHIV_Reporter_Support as trs
+import dtk_test.dtk_TBHIV_Multicore_Support as tms
 import json
 import math
 import numpy as np
@@ -65,7 +65,7 @@ def parse_output_file(output_filename="test.txt", debug=False):
     filtered_lines = []
     with open(output_filename) as logfile:
         for line in logfile:
-            if dtk_sft.has_match(line,matches):
+            if sft.has_match(line,matches):
                 filtered_lines.append(line)
     if debug:
         with open("DEBUG_filtered_lines.txt", "w") as outfile:
@@ -80,7 +80,7 @@ def parse_output_file(output_filename="test.txt", debug=False):
         try:
             if matches[0] in line:
                 #this may raise LookupError
-                value = dtk_sft.get_val(matches[0], line)
+                value = sft.get_val(matches[0], line)
                 if debug:
                     print("time value I get is '{}'".format(value))
                 # this may raise ValueError
@@ -88,7 +88,7 @@ def parse_output_file(output_filename="test.txt", debug=False):
 
                 if matches[1] in line:
                     # this may raise ValueError or LookupError
-                    core = int(dtk_sft.get_val(matches[1], line))
+                    core = int(sft.get_val(matches[1], line))
                 else:
                     print (line)
                     raise Exception("at timestep = {0}, {1} and {2) are not in the same line.\n".format(
@@ -165,7 +165,7 @@ def create_report_file_incidence(column_diseasedeath, column_hivdeath, column_ye
                 else:
                     if not len(output_dict):
                         success = False
-                        outfile.write(dtk_sft.sft_no_test_data)
+                        outfile.write(sft.sft_no_test_data)
                         outfile.write("BAD: stdout file has no test data")
                     # skip the following if parsing stdout doesn't throw exception but there is no test data in stdout file.
                     else:
@@ -180,7 +180,7 @@ def create_report_file_incidence(column_diseasedeath, column_hivdeath, column_ye
                             for t in output_dict:
                                 if i < len(years):
                                     year = years[i]
-                                    if t <= round(year * dtk_sft.DAYS_IN_YEAR):
+                                    if t <= round(year * sft.DAYS_IN_YEAR):
                                         for core in output_dict[t]:
                                             incidence_count += output_dict[t][core][n]
                                     else: # after the last time step of the reporting window
@@ -197,7 +197,7 @@ def create_report_file_incidence(column_diseasedeath, column_hivdeath, column_ye
                                 else:
                                     break
 
-                            dtk_sft.plot_data(incidence_counts, dist2=np.array(groupby_df[column_to_test]), label1="log_valid",
+                            sft.plot_data(incidence_counts, dist2=np.array(groupby_df[column_to_test]), label1="log_valid",
                                                        label2="reporter", title=str(column_to_test),
                                                        xlabel="every half year", ylabel=str(column_to_test),
                                                        category=str(column_to_test)+"_log_valid",
@@ -210,7 +210,7 @@ def create_report_file_incidence(column_diseasedeath, column_hivdeath, column_ye
                                               "we are expecting not more than year {2} from reporter."
                                               "".format(max(years), simulation_duration, math.floor(simulation_duration/180)))
 
-                            if simulation_duration > round(max(years) * dtk_sft.DAYS_IN_YEAR) + 180:
+                            if simulation_duration > round(max(years) * sft.DAYS_IN_YEAR) + 180:
                                 success = result1 = False
                                 outfile.write("BAD: the reporter has data up to year {0} but the simulation duration is {1}, "
                                               "we are expecting data after year {0} from reporter."
@@ -238,7 +238,7 @@ def create_report_file_incidence(column_diseasedeath, column_hivdeath, column_ye
             success = False
             outfile.write("BAD: report doesn't match insetchart.\n")
         outfile.write("compare {0} in report with json output result is {1}.\n".format(column_diseasedeath, result))
-        outfile.write(dtk_sft.format_success_msg(success))
+        outfile.write(sft.format_success_msg(success))
 
         if debug:
             print( "SUMMARY: Success={0}\n".format(success) )
@@ -248,7 +248,7 @@ def create_report_file_incidence(column_diseasedeath, column_hivdeath, column_ye
 def application( output_folder="output", stdout_filename="test.txt", reporter_filename="Report_TBHIV_ByAge.csv",
                  inset_chart_filename = "InsetChart.json", migration_report_filename="ReportHumanMigrationTracking.csv",
                  config_filename="config.json",
-                 report_name=dtk_sft.sft_output_filename,
+                 report_name=sft.sft_output_filename,
                  debug=False):
     if debug:
         print( "output_folder: " + output_folder )
@@ -261,7 +261,7 @@ def application( output_folder="output", stdout_filename="test.txt", reporter_fi
         print( "debug: " + str(debug) + "\n" )
 
 
-    dtk_sft.wait_for_done()
+    sft.wait_for_done()
 
     param_obj = tms.load_emod_parameters([Config.config_name, Config.simulation_timestep, Config.duration,
                                           Config.num_core, Config.demog_filename],config_filename, debug)
@@ -291,7 +291,7 @@ if __name__ == "__main__":
     parser.add_argument('-i', '--insetchartname', default="InsetChart.json", help="insetchart to test(InsetChart.json)")
     parser.add_argument('-m', '--migrationreport', default="ReportHumanMigrationTracking.csv", help="migration report to test(ReportHumanMigrationTracking.csv)")
     parser.add_argument('-c', '--config', default="config.json", help="Config name to load (config.json)")
-    parser.add_argument('-r', '--reportname', default=dtk_sft.sft_output_filename, help="Report file to generate")
+    parser.add_argument('-r', '--reportname', default=sft.sft_output_filename, help="Report file to generate")
     parser.add_argument('-d', '--debug', default=False, help="Debug = True or False")
     args = parser.parse_args()
 
