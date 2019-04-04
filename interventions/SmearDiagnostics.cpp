@@ -33,7 +33,7 @@ namespace Kernel
 
     SmearDiagnostic::SmearDiagnostic() : SimpleDiagnostic()
     {
-        initSimTypes( 0 );
+        initSimTypes( 1, "TBHIV_SIM" );
     }
 
     SmearDiagnostic::SmearDiagnostic( const SmearDiagnostic& master )
