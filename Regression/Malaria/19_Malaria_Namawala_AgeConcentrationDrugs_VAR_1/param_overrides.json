@@ -16,7 +16,7 @@
         "Enable_Initial_Prevalence": 1,
         "Population_Scale_Type": "FIXED_SCALING"
     },
-    "Default_Config_Path": "defaults/malaria_default_config.json",
+    "Default_Config_Path": "../../defaults/malaria_default_config.json",
     "Enable_Nondisease_Mortality": 0,
     "GENERAL_DISEASE": {
         "Infection_Updates_Per_Timestep": 8,

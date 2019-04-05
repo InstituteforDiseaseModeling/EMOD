@@ -1,8 +1,8 @@
 {
-    "Default_Config_Path": "defaults/sti_default_config.json",
+    "Default_Config_Path": "../../defaults/sti_default_config.json",
     "parameters": {
         "Age_Initialization_Distribution_Type": "DISTRIBUTION_SIMPLE",
-        "Base_Population_Scale_Factor": 1,
+        "x_Base_Population": 1,
         "Config_Name": "83_STI_GH1240_STIDebut",
         "Demographics_Filenames": [
             "demographics_STIDebut.json",
@@ -11,7 +11,7 @@
         "Disable_IP_Whitelist": 1,
         "Enable_Birth": 0,
         "Enable_Natural_Mortality": 0,
-        "Listed_Events": [
+        "Custom_Individual_Events": [
             "PersonDebuted"
         ],
         "Report_Event_Recorder": 1,
@@ -20,6 +20,7 @@
             "PersonDebuted"
         ],
         "Report_Event_Recorder_Ignore_Events_In_List": 0,
+        "Report_Event_Recorder_Individual_Properties": [],
         "Run_Number": 9,
         "Sexual_Debut_Age_Female_Weibull_Heterogeneity": 0.0,
         "Sexual_Debut_Age_Female_Weibull_Scale": 14.95,

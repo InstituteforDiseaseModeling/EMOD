@@ -5,7 +5,6 @@ import json
 import threading
 import subprocess
 import glob
-import shutil   # copyfile
 import regression_local_monitor
 import regression_hpc_monitor
 import regression_utils as ru
@@ -18,7 +17,6 @@ class MyRegressionRunner(object):
     emodules_map = {}
 
     # class variables
-    known_files = {}
     debug = False
     campaign_filename = "campaign.json"
 
@@ -29,6 +27,7 @@ class MyRegressionRunner(object):
         self.emodules_map["interventions"] = []
         self.emodules_map["disease_plugins"] = []
         self.emodules_map["reporter_plugins"] = []
+        self.src_dest_set = set()
         if params.dll_root is not None and params.use_dlls is True:
             # print( "dll_root (remote) = " + params.dll_root )
             self.copyEModulesOver(params)
@@ -42,47 +41,46 @@ class MyRegressionRunner(object):
             print(message)
         return
 
-    def hash_for_file(self, filename):
-
-        if filename not in self.known_files:
-            self.log("Calculating hash for '{0}'.".format(filename))
-            md5_hash = ru.md5_hash_of_file(filename)
-            self.known_files[filename] = md5_hash
-        else:
-            self.log("Found hash for '{0}' in known files.".format(filename))
-
-        return self.known_files[filename]
-
     def update_file(self, source, destination):
 
         succeeded = False
         self.log("Updating '{0}' from'{1}'".format(destination, source))
         if os.path.exists(source):
-            source_hash = self.hash_for_file(source)
-
-            # If hash for destination file is not cached
-            if destination not in self.known_files:
-                # It is just as expensive to read and calculate the destination file hash as it is to copy
-                # the source over. We will just copy the source over.
-                self.log("Have not checked '{0}' before, copying.".format(destination))
-                shutil.copy(source, destination)
-                self.known_files[destination] = source_hash
-            else:   # Else, compare cached hash value
-                dest_hash = self.known_files[destination]
-                if dest_hash == source_hash:    # If same, continue, all is good
-                    self.log("'{0}' matches known hash, skipping copy.".format(destination))
-                else:   # Else, collision between different versions of the input file, exception
-                    self.log("Hash for '{0}' ({1}) does not match source hash ({2}), error.".format(destination,
-                                                                                                    dest_hash,
-                                                                                                    source_hash))
-                    raise Exception("Already copied different file '{0}' to user input.".format(destination))
-
+            src_dest_pair = (source, destination)
+            if src_dest_pair not in self.src_dest_set:
+                ru.copy(source, destination)
+                self.src_dest_set.add(src_dest_pair)
             succeeded = True
         else:
             self.log("Could not find source file '{0}' to copy to '{1}'".format(source, destination))
             print("Could not find source file '{0}' to copy to '{1}'".format(source, destination))
 
         return succeeded
+
+    def copy_serialized_population_files(self, config_json, simulation_directory, scenario_directory):
+        input_files = config_json['parameters'].get('Serialized_Population_Filenames', [])
+
+        serialized_pop_filenames = []
+        #config_json["parameters"]["Serialized_Population_Filenames"] = []
+
+        for filename in input_files:
+            if not filename or len(filename.strip(' ')) == 0:
+                continue
+
+            scenario_file = os.path.join(scenario_directory, filename)
+
+            # Copy directly to remote simulation working directory
+            if os.path.isfile(scenario_file):
+                #print('Copying %s to remote working directory'%filename)
+                simulation_path = os.path.join(self.params.sim_root, simulation_directory)
+                simulation_file = os.path.join(simulation_path, os.path.basename(filename))
+                self.update_file(scenario_file, simulation_file)
+                serialized_pop_filenames.append(os.path.basename(filename))
+
+        if( len(serialized_pop_filenames) > 0 ):
+            config_json["parameters"]["Serialized_Population_Filenames"] = serialized_pop_filenames
+
+        return
 
     def copy_demographics_files_to_user_input(self, simulation_directory, config_json, working_input_directory,
                                               scenario_directory, source_input_directory):
@@ -99,13 +97,16 @@ class MyRegressionRunner(object):
             if not filename or len(filename.strip(' ')) == 0:
                 continue
 
-            scenario_file = os.path.join(scenario_directory, filename)
-            source_path = os.path.join(source_input_directory, filename)
-            dest_path = os.path.join(working_input_directory, os.path.basename(filename))
+            scenario_file = None
+            source_path = "."
+            if working_input_directory != None:
+                scenario_file = os.path.join(scenario_directory, filename)
+                source_path = os.path.join(source_input_directory, filename)
+                dest_path = os.path.join(working_input_directory, os.path.basename(filename))
 
             # For any demographics overlays WITHIN regression folder:
             # Copy directly to remote simulation working directory
-            if os.path.isfile(scenario_file):
+            if scenario_file and os.path.isfile(scenario_file):
                 # print('Copying %s to remote working directory'%filename)
                 simulation_path = os.path.join(self.params.sim_root, simulation_directory)
                 simulation_file = os.path.join(simulation_path, os.path.basename(filename))
@@ -129,13 +130,14 @@ class MyRegressionRunner(object):
 
         return
 
-    def copy_climate_and_migration_files_to_user_input(self, config_json, source_input_directory,
+    def copy_climate_and_migration_files_to_user_input(self, simulation_directory, config_json, source_input_directory,
                                                        working_input_directory, scenario):
 
         filter_list = ['Demographics_Filename', 'Demographics_Filenames',
                        'Campaign_Filename',
                        'Custom_Reports_Filename',
-                       'Serialized_Population_Filenames']
+                       'Serialized_Population_Filenames',
+                       '.Serialized_Population_Filenames']
 
         # Copy climate and migration files also
         for key in config_json["parameters"]:
@@ -145,13 +147,53 @@ class MyRegressionRunner(object):
                     continue
                 source = os.path.join(source_input_directory, filename)
                 dest = os.path.join(working_input_directory, os.path.basename(filename))
-                if not self.update_file(source, dest):
-                    print("Could not find input file '{0}' to copy to '{1}' for scenario '{2}'".format(source, dest,
+                scenario_file = os.path.join(scenario, filename)
+
+                # For any demographics overlays WITHIN regression folder:
+                # Copy directly to remote simulation working directory
+                if os.path.isfile(scenario_file):
+                    # print('Copying %s to remote working directory'%filename)
+                    simulation_path = os.path.join(self.params.sim_root, simulation_directory)
+                    simulation_file = os.path.join(simulation_path, os.path.basename(filename))
+                    self.update_file(scenario_file, simulation_file)
+                    if( key != "Load_Balance_Filename" ):
+                        dest = simulation_file + ".json"
+                        source = scenario_file + ".json"
+                        self.update_file(source, dest)
+
+                else:
+                    if not self.update_file(source, dest):
+                        print("Could not find input file '{0}' to copy to '{1}' for scenario '{2}'".format(source, dest,
                                                                                                        scenario))
-                if( key != "Load_Balance_Filename" ):
-                    dest += ".json"
-                    source += ".json"
-                    self.update_file(source, dest)
+        return
+
+    def copy_pymod_files( self, config_json, simulation_directory, scenario_path ):
+        if "emodularization" not in scenario_path:
+            return
+
+        # Copy *_template.json and *_test.py from scenario_path to simulation_directory.
+        # And copy ../*.pyd files
+        sim_dir = os.path.join(self.params.sim_root, simulation_directory)
+
+        # just search for all pyd files by walking the tree and copy them to each sim folder for now
+        pyds = glob.glob(os.path.join( "../emodularization/**/*.pyd" ), recursive=True)
+        for pyd in pyds:
+            ru.copy( pyd, os.path.join( sim_dir, os.path.basename( pyd ) ) )
+       
+        # Yes, I can combine the below 3 blocks by having list pairs of root-dir and regex but I 
+        # want the last two to go away.
+        regexes = [ "*_template.json", "demographics_*.json", "*.py" ]
+        # copy certain files (nice if we can be more specific)
+        for pattern in regexes:
+            foundfiles = glob.glob(os.path.join( scenario_path, pattern ))
+            for myfile in foundfiles:
+                ru.copy( myfile, os.path.join( sim_dir, os.path.basename( myfile ) ) )
+       
+
+        # WANT TO GET RID OF THIS: Some multi-test situations have common python scripts in the parent folder
+        # but regular tests (non-sub-foldered) could have who-knows-what in their parent dir!
+        for py in glob.glob( os.path.join( os.path.join( scenario_path, ".." ), "*.py" )):
+            ru.copy( py, os.path.join( sim_dir, os.path.basename( py ) ) )
 
         return
 
@@ -160,15 +202,21 @@ class MyRegressionRunner(object):
         # E.g., //diamonds-hn/EMOD/home/jbloedow/input/Bihar, where "//diamonds-hn/EMOD/home/jbloedow/input/"
         # is gotten from config["home"] and "Bihar" is from config_json["Geography"]
         # Then use that directory as the input.
-        source_input_directory = os.path.join(self.params.shared_input, config_json["parameters"]["Geography"])
-        working_input_directory = os.path.join(self.params.user_input, config_json["parameters"]["Geography"])
+        source_input_directory = "."
+        working_input_directory = self.params.user_input
+        if "parameters" in config_json and "Geography" in config_json["parameters"]:
+            source_input_directory = os.path.join(self.params.shared_input, config_json["parameters"]["Geography"])
+            working_input_directory = os.path.join(self.params.user_input, config_json["parameters"]["Geography"])
 
-        if not os.path.exists(working_input_directory):
-            print("Creating " + working_input_directory)
-            os.makedirs(working_input_directory)
+            if not os.path.exists(working_input_directory):
+                print("Creating " + working_input_directory)
+                os.makedirs(working_input_directory)
 
-        self.copy_demographics_files_to_user_input(simulation_directory, config_json, working_input_directory, scenario_path, source_input_directory)
-        self.copy_climate_and_migration_files_to_user_input(config_json, source_input_directory, working_input_directory, scenario_path)
+        # Harmonizing these to do the same thing
+        self.copy_demographics_files_to_user_input(simulation_directory, config_json, working_input_directory, scenario_path, source_input_directory) 
+        self.copy_climate_and_migration_files_to_user_input(simulation_directory, config_json, source_input_directory, working_input_directory, scenario_path) 
+        self.copy_serialized_population_files(config_json,simulation_directory, scenario_path)
+        self.copy_pymod_files(config_json, simulation_directory, scenario_path)
         self.params.use_user_input_root = True
 
         return
@@ -229,7 +277,7 @@ class MyRegressionRunner(object):
 
                     if not os.path.isdir(target_dir) and not params.sec:   # sec = command-line option to skip this
                         os.makedirs(target_dir)
-                        shutil.copy(dll, os.path.join(target_dir, os.path.basename(dll)))
+                        ru.copy(dll, os.path.join(target_dir, os.path.basename(dll)))
 
                     self.emodules_map[dll_subdir].append(os.path.join(target_dir, os.path.basename(dll)))
 
@@ -244,23 +292,23 @@ class MyRegressionRunner(object):
             filename = os.path.join(config_id, filename)
             if os.path.isfile(filename):
                 # print( "Copying " + filename )
-                shutil.copy(filename, sim_dir)
+                ru.copy(filename, sim_dir, True)
             else:
                 print("ERROR: Failed to find file to copy: " + filename)
         return
+
+    def is_local_simulation(self):
+        return True if os.name == "posix" else self.params.local_execution
 
     def commissionFromConfigJson(self, sim_id, reply_json, scenario_path, report, scenario_type='tests'):
         # scenario_type == 'tests' will compare results to reference
         # scenario_type != 'tests', e.g. 'science' or 'sweep' will skip comparison
         # now we have the config_json, find out if we're commissioning locally or on HPC
 
-        def is_local_simulation():
-            return True if os.name == "posix" else self.params.local_execution
-
         sim_dir = os.path.join(self.params.sim_root, sim_id)
         bin_dir = os.path.join(self.params.bin_root, self.dtk_hash)     # may not exist yet
 
-        if is_local_simulation():
+        if self.is_local_simulation():
             print("Commissioning locally (not on cluster)!")
             sim_dir = os.path.join(self.params.local_sim_root, sim_id)
             bin_dir = os.path.join(self.params.local_bin_root, self.dtk_hash)   # may not exist yet
@@ -279,7 +327,13 @@ class MyRegressionRunner(object):
 
         # check in bin_dir to see if our binary exists there...
         foundit = False
-        bin_path = os.path.join(bin_dir, "Eradication" if os.name == "posix" else "Eradication.exe")
+        bin_path = None 
+        if scenario_type == "pymod":
+            bin_path = "python " # py script needs to come from folder not hardcoded
+            script_name = os.path.basename( scenario_path.strip('/') ) + "_test.py"
+            bin_path += script_name
+        else:
+            bin_path = os.path.join(bin_dir, "Eradication" if os.name == "posix" else "Eradication.exe")
         if os.path.exists(bin_dir):
             if os.path.exists(bin_path):
                 foundit = True
@@ -288,7 +342,7 @@ class MyRegressionRunner(object):
         
         if not foundit:
             print("We didn't have it, copy it up...")
-            shutil.copy(self.params.executable_path, bin_path)
+            ru.copy(self.params.executable_path, bin_path)
             print("Copied!")
 
         reply_json["bin_path"] = bin_path
@@ -298,11 +352,12 @@ class MyRegressionRunner(object):
         # campaign_json is non, and config.json contains double the stuff it needs in the sim dir... :-(
         
         # tease out campaign json, save separately
-        campaign_json = json.dumps(reply_json["campaign_json"]).replace("u'", "'").replace("'", '"').strip('"')
+        if "campaign_json" in reply_json:
+            campaign_json = json.dumps(reply_json["campaign_json"]).replace("u'", "'").replace("'", '"').strip('"')
         reply_json["campaign_json"] = None
 
         # tease out custom_reports json, save separately
-        if reply_json["custom_reports_json"] is not None:
+        if "custom_reports_json" in reply_json and reply_json["custom_reports_json"] is not None:
             reports_json = json.dumps(reply_json["custom_reports_json"]).replace("u'", "'").replace("'", '"').strip('"')
             reply_json["custom_reports_json"] = None
             # save custom_reports.json
@@ -313,7 +368,7 @@ class MyRegressionRunner(object):
         # Use a local variable here because we don't want the PSP in the config.json that gets written out to disk
         # but we need it passed through to the monitor thread execution in the reply_json/config_json.
         py_input = None
-        if "Python_Script_Path" in reply_json["parameters"]:
+        if "parameters" in reply_json and "Python_Script_Path" in reply_json["parameters"]:
             psp_param = reply_json["parameters"]["Python_Script_Path"]
             if psp_param == "LOCAL" or psp_param == ".":    # or . is for new usecase when using existing config.json (SFT)
                 py_input = "."
@@ -325,9 +380,6 @@ class MyRegressionRunner(object):
                     os.makedirs(py_input)
                 for py_file in glob.glob(os.path.join(scenario_path, "dtk_*.py")):
                     self.copy_sim_file(scenario_path, sim_dir, os.path.basename(py_file))
-
-                for py_file in glob.glob(os.path.join("shared_embedded_py_scripts", "dtk_*.py")):
-                    self.copy_sim_file("shared_embedded_py_scripts", py_input, os.path.basename(py_file))
 
             elif psp_param != "NO":
                 print(psp_param + " is not a valid value for Python_Script_Path. Valid values are NO, LOCAL, SHARED. Exiting.")
@@ -342,7 +394,7 @@ class MyRegressionRunner(object):
             f.write(json.dumps(reply_json, sort_keys=True, indent=4))
 
         # now that config.json is written out, add Py Script Path back (if non-empty)
-        if py_input is not None:
+        if py_input is not None: # or scenario_type == "pymod":
             reply_json["PSP"] = py_input
 
         # save campaign.json
@@ -359,7 +411,7 @@ class MyRegressionRunner(object):
         # This will help you get a stack trace with files and line numbers.
         # ------------------------------------------------------------------
         # print( "Copying PDB file...." )
-        # shutil.copy( "../Eradication/x64/Release/Eradication.pdb", sim_dir )
+        # ru.copy( "../Eradication/x64/Release/Eradication.pdb", sim_dir )
         # ------------------------------------------------------------------
 
         if os.path.isfile(os.path.join(scenario_path, "dtk_post_process.py")):
@@ -368,7 +420,7 @@ class MyRegressionRunner(object):
         monitorThread = None    # need scoped here
 
         # print "Creating run & monitor thread."
-        if is_local_simulation():
+        if self.is_local_simulation():
             monitorThread = regression_local_monitor.Monitor(sim_id, scenario_path, report, self.params, reply_json, scenario_type)
         else:
             monitorThread = regression_hpc_monitor.HpcMonitor(sim_id, scenario_path, report, self.params, self.params.label, reply_json, scenario_type)
@@ -380,6 +432,21 @@ class MyRegressionRunner(object):
 
         # print "Monitor thread started, notify data service, and return."
         return monitorThread
+
+    def attempt_test(self):
+        if self.is_local_simulation():
+            pass  # No test submissions for local simulations
+        else:
+            monitor_thread = regression_hpc_monitor.HpcMonitor("TestJob", None, None, self.params, self.params.label,
+                                                               None, None, priority="Highest")
+
+            # Test whether we can submit jobs to the cluster as specified
+            try:
+                monitor_thread.test_submission()
+            except (subprocess.TimeoutExpired, AssertionError) as ex:
+                print("FAILED to submit test job to the cluster. Make sure that you have valid credentials "
+                      "cached with the cluster and that the cluster at the specified address is available.")
+                raise ex
 
     def doSchemaTest(self):
         # print( "Testing schema generation..." )

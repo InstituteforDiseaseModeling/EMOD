@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -21,12 +21,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IMigrationInfoVector.h"
 #include "VectorParameters.h"
 #include "VectorSpeciesParameters.h"
-
-#ifdef randgen
-#undef randgen
-#endif
 #include "RANDOM.h"
-#define randgen (m_context->GetRng())
+#include "TransmissionGroupMembership.h"
 
 SETUP_LOGGING( "VectorPopulationIndividual" )
 
@@ -142,8 +138,12 @@ namespace Kernel
             m_average_oviposition_killing  += capacity * habitat->GetOvipositionTrapKilling();
             total_larval_capacity += capacity;
         }
-        m_average_oviposition_killing /= total_larval_capacity;
-
+        
+        if( total_larval_capacity != 0 )
+        {
+            m_average_oviposition_killing /= total_larval_capacity;
+        }
+        
         // Use the verbose "foreach" construct here because empty queues (i.e. dead individuals) will be removed
         for (size_t iCohort = 0; iCohort < AdultQueues.size(); /* increment in loop */)
         {
@@ -193,7 +193,8 @@ namespace Kernel
         // Acquire infections with strain tracking for exposed queues
 
         LOG_DEBUG("Exposure to contagion: human to vector.\n");
-        m_transmissionGroups->ExposeToContagion((IInfectable*)this, &NodeVector::human_to_vector_all, dt);
+        m_txIndoor->ExposeToContagion(  (IInfectable*)this, NodeVector::vector_indoor,  dt, TransmissionRoute::TRANSMISSIONROUTE_HUMAN_TO_VECTOR_INDOOR );
+        m_txOutdoor->ExposeToContagion( (IInfectable*)this, NodeVector::vector_outdoor, dt, TransmissionRoute::TRANSMISSIONROUTE_HUMAN_TO_VECTOR_OUTDOOR );
         IndoorExposedQueues.clear();
         OutdoorExposedQueues.clear();
     }
@@ -223,13 +224,6 @@ namespace Kernel
         // start with die_outdoor
         //rFeedProbs.die_outdoor                   = rFeedProbs.die_outdoor;
         rFeedProbs.successful_feed_human_outdoor += rFeedProbs.die_outdoor;
-    }
-
-    void VectorPopulationIndividual::VectorToHumanDeposit( const IStrainIdentity& strain,
-                                                           uint32_t attemptFeed,
-                                                           const TransmissionGroupMembership_t* pTransmissionVectorToHuman )
-    {
-        m_transmissionGroups->DepositContagion( strain, float( attemptFeed ) * species()->transmissionmod, pTransmissionVectorToHuman );
     }
 
     bool VectorPopulationIndividual::DidDie( IVectorCohort* cohort,
@@ -270,7 +264,7 @@ namespace Kernel
         {
             if( m_average_oviposition_killing > 0 ) // avoid drawing random number if zero
             {
-                if( DidDie( cohort, m_average_oviposition_killing, randgen->e(), dead_mosquitoes_before ) ) return true;
+                if( DidDie( cohort, m_average_oviposition_killing, m_context->GetRng()->e(), dead_mosquitoes_before ) ) return true;
             }
 
             AddEggsToLayingQueue( cohort, num_eggs );
@@ -281,7 +275,7 @@ namespace Kernel
                   (params()->vector_params->vector_sugar_feeding == VectorSugarFeeding::VECTOR_SUGAR_FEEDING_EVERY_DAY ) )
                 && (probs()->sugarTrapKilling > 0) )  // avoid drawing random number if zero
             {
-                if( DidDie( cohort, probs()->sugarTrapKilling, randgen->e(), dead_mosquitoes_before ) ) return true;
+                if( DidDie( cohort, probs()->sugarTrapKilling, m_context->GetRng()->e(), dead_mosquitoes_before ) ) return true;
             }
         }
         return false;
@@ -297,7 +291,7 @@ namespace Kernel
         FeedingProbabilities feed_probs = CalculateFeedingProbabilities( dt, cohort );
 
         // Uniform random number between 0 and 1 for feeding-cycle outcome calculations
-        float outcome = randgen->e();
+        float outcome = m_context->GetRng()->e();
 
         // Determine whether it will feed? (i.e. die without attempting to feed)
         tempentry2->SetOvipositionTimer( tempentry2->GetOvipositionTimer() - dt );
@@ -352,11 +346,11 @@ namespace Kernel
                 indoorbites += float( indoor_bites );
 
                 // for the infectious cohort, need to update infectious bites
-                indoorinfectiousbites += VectorToHumanTransmission( INDOOR_STR, &NodeVector::vector_to_human_indoor, cohort, cohort->GetPopulation() );
+                indoorinfectiousbites += VectorToHumanTransmission( cohort, cohort->GetPopulation(), TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_INDOOR );
 
                 // Reset cumulative probability for another random draw
                 // to assign outdoor-feeding outcomes among the following:
-                outcome = randgen->e();
+                outcome = m_context->GetRng()->e();
 
                 // (a) die in attempt to indoor feed?
                 if( DidDie( cohort, feed_probs.die_indoor, outcome, dead_mosquitoes_indoor ) ) return 0;
@@ -385,11 +379,11 @@ namespace Kernel
                 outdoorbites += float( outdoor_bites );
 
                 // for the infectious cohort, need to update infectious bites
-                outdoorinfectiousbites += VectorToHumanTransmission( OUTDOOR_STR, &NodeVector::vector_to_human_outdoor, cohort, cohort->GetPopulation() );
+                outdoorinfectiousbites += VectorToHumanTransmission( cohort, cohort->GetPopulation(), TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_OUTDOOR );
 
                 // Reset cumulative probability for another random draw
                 // to assign outdoor-feeding outcomes among the following:
-                outcome = randgen->e();
+                outcome = m_context->GetRng()->e();
 
                 // (a) die in attempt to outdoor feed?
                 if( DidDie( cohort, feed_probs.die_outdoor, outcome, dead_mosquitoes_outdoor ) ) return 0;
@@ -434,7 +428,7 @@ namespace Kernel
 
         // Allocate timers randomly to upper and lower bounds of fractional duration
         // If mean is 2.8 days: 80% will have 3-day cycles, and 20% will have 2-day cycles
-        uint32_t timer = randgen->randomRound( mean_cycle_duration );
+        uint32_t timer = m_context->GetRng()->randomRound( mean_cycle_duration );
 
         return timer;
     }
@@ -442,7 +436,7 @@ namespace Kernel
     void VectorPopulationIndividual::RandomlySetOvipositionTimer( VectorCohortIndividual* pvci )
     {
         uint32_t days_between_feeds = CalculateOvipositionTime();
-        uint32_t timer = randgen->uniformZeroToN( days_between_feeds );
+        uint32_t timer = m_context->GetRng()->uniformZeroToN32( days_between_feeds );
 
         // --------------------------------------------------------------------------------------
         // --- We shift these values by one day so that 1/days_between_feeds will feed each day.
@@ -474,7 +468,7 @@ namespace Kernel
         for( uint32_t i = 0; i < temppop; i++ )
         {
             // now if sugar feeding exists every day or after each feed, and mortality is associated, then check for killing
-            if( !is_sugar_trap_killing_enabled || (randgen->e() >= probs()->sugarTrapKilling) )
+            if( !is_sugar_trap_killing_enabled || (m_context->GetRng()->e() >= probs()->sugarTrapKilling) )
             {
                 VectorCohortIndividual* tempentrynew = VectorCohortIndividual::CreateCohort( VectorStateEnum::STATE_ADULT, 0, 0, m_mosquito_weight, rVgiFemle, &species_ID );
                 ApplyMatingGenetics( tempentrynew, VectorMatingStructure( rVgiMale ) );
@@ -536,7 +530,8 @@ namespace Kernel
                 x_infectionWolbachia = params()->vector_params->WolbachiaInfectionModification;
             }
             // Determine if there is a new infection
-            if( randgen->e() < species()->acquiremod * x_infectionWolbachia * infection_prob / success_prob )
+            float prob = species()->acquiremod * x_infectionWolbachia * infection_prob / success_prob;
+            if( m_context->GetRng()->SmartDraw( prob ) )
             {
                 LOG_DEBUG_F( "(individual) VECTOR (%d) acquired infection from HUMAN.\n", exposed->GetPopulation() );
                 // Draw weighted random strain from ContagionPopulation
@@ -570,7 +565,7 @@ namespace Kernel
             suids::suid destination = suids::nil_suid();
             MigrationType::Enum mig_type = MigrationType::NO_MIGRATION;
             float time = 0.0;
-            pMigInfo->PickMigrationStep( nullptr, 1.0, destination, mig_type, time );
+            pMigInfo->PickMigrationStep( m_context->GetRng(), nullptr, 1.0, destination, mig_type, time );
 
             // test if each vector will migrate this time step
             if( !destination.is_nil() && (time <= dt) )

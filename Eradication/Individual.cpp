@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -12,7 +12,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include <list>
 #include <map>
-#include <string>
 
 #include "Common.h"
 #include "IContagionPopulation.h"
@@ -32,7 +31,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Properties.h"
 #include "StrainIdentity.h"
 #include "EventTrigger.h"
-
+#include "ISimulationContext.h"
+#include "RANDOM.h"
 #include "RapidJsonImpl.h" // Once JSON lib wrapper is completely done, this underlying JSON library specific include can be taken out
 #include <IArchive.h>
 
@@ -120,7 +120,7 @@ namespace Kernel
         initConfigTypeMap( "Enable_Aging", &aging, Enable_Aging_DESC_TEXT, true, "Enable_Vital_Dynamics" );
         initConfigTypeMap( "Infection_Updates_Per_Timestep", &infection_updates_per_tstep, Infection_Updates_Per_Timestep_DESC_TEXT, 0, 144, 1 );
         initConfigTypeMap( "Enable_Immunity", &enable_immunity, Enable_Immunity_DESC_TEXT, true, "Simulation_Type", "GENERIC_SIM,VECTOR_SIM,STI_SIM,ENVIRONMENTAL_SIM,TBHIV_SIM,PY_SIM");
-        initConfigTypeMap( "Enable_Superinfection", &superinfection, Enable_Superinfection_DESC_TEXT, false, "Simulation_Type", "GENERIC_SIM,VECTOR_SIM,STI_SIM,ENVIRONMENTAL_SIM,MALARIA_SIM");
+        initConfigTypeMap( "Enable_Superinfection", &superinfection, Enable_Superinfection_DESC_TEXT, false, "Simulation_Type", "VECTOR_SIM,STI_SIM,ENVIRONMENTAL_SIM,MALARIA_SIM");
         initConfigTypeMap( "Max_Individual_Infections", &max_ind_inf, Max_Individual_Infections_DESC_TEXT, 0, 1000, 1, "Enable_Superinfection" );
         initConfigTypeMap( "Minimum_Adult_Age_Years", &min_adult_age_years, Minimum_Adult_Age_Years_DESC_TEXT, 0.0f, FLT_MAX, 15.0f, "Individual_Sampling_Type", "ADAPTED_SAMPLING_BY_AGE_GROUP" );
         // Don't really like this; could put the conditional in the initConfigTypeMap but we already have a conditional and our API
@@ -301,6 +301,7 @@ namespace Kernel
         , m_PropertyReportString()
         , parent(nullptr)
         , broadcaster(nullptr)
+        , m_newly_symptomatic(false)
     {
     }
 
@@ -346,6 +347,7 @@ namespace Kernel
         , m_PropertyReportString()
         , parent(nullptr)
         , broadcaster(nullptr)
+        , m_newly_symptomatic( false )
     {
     }
 
@@ -498,10 +500,7 @@ namespace Kernel
 
         if( parent && parent->GetEventContext() )
         {
-            if (s_OK != parent->GetEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), reinterpret_cast<void**>(&broadcaster)))
-            {
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()", "INodeTriggeredInterventionConsumer", "INodeEventContext" );
-            }
+            broadcaster = parent->GetEventContext()->GetIndividualEventBroadcaster();
         }
     }
 
@@ -551,7 +550,7 @@ namespace Kernel
         // Populate the individuals set of Individual Properties with one value for each property
         if( IPFactory::GetInstance() )
         {
-            Properties = IPFactory::GetInstance()->GetInitialValues( pParent->GetExternalID(), EnvPtr->RNG );
+            Properties = IPFactory::GetInstance()->GetInitialValues( pParent->GetExternalID(), GetRng() );
         }
     }
 
@@ -571,7 +570,7 @@ namespace Kernel
         if (desired_mc_weight > m_mc_weight)
         {
             LOG_DEBUG_F("ratio = %f\n", m_mc_weight / desired_mc_weight);
-            if (randgen->e() < m_mc_weight / desired_mc_weight)
+            if (GetRng()->e() < m_mc_weight / desired_mc_weight)
             {
                 UpdateGroupPopulation(-1.0f);
                 m_mc_weight = desired_mc_weight;
@@ -648,6 +647,7 @@ namespace Kernel
         {
             for (int i = 0; i < numsteps; i++)
             {
+                bool prev_symptomatic = IsSymptomatic();
                 for (auto it = infections.begin(); it != infections.end();)
                 {
                     // Update infection
@@ -665,16 +665,11 @@ namespace Kernel
                         if ( inf_state_change == InfectionStateChange::Cleared )
                         {
                             LOG_DEBUG_F( "Individual %d's infection cleared.\n", GetSuid().data );
-                            // --------------------------------------------
-                            // --- the following makes sense but it changes
-                            // --- results unexpectedly.
-                            // --------------------------------------------
-                            //ClearNewInfectionState(); // Seems to break things
-                            // --------------------------------------------
                             if ( IndividualHumanConfig::enable_immunity )
                             {
                                 susceptibility->UpdateInfectionCleared();
                             } //Immunity update: survived infection
+
                             delete *it;
                             it = infections.erase(it);
                             continue;
@@ -682,13 +677,23 @@ namespace Kernel
 
                         // Set human state change and stop updating infections if the person has died
                         if ( inf_state_change == InfectionStateChange::Fatal )
-                        {
+                        {                            
                             Die( HumanStateChange::KilledByInfection );
                             break;
                         }
                     }
-
                     ++it;
+                }
+
+                m_newly_symptomatic = !prev_symptomatic && IsSymptomatic();
+                if( m_newly_symptomatic )
+                {
+                    broadcaster->TriggerObservers( GetEventContext(), EventTrigger::NewlySymptomatic );
+                }
+
+                if( prev_symptomatic && !IsSymptomatic() ) //no longer symptomatic 
+                {
+                    broadcaster->TriggerObservers( GetEventContext(), EventTrigger::SymptomaticCleared );
                 }
 
                 if ( IndividualHumanConfig::enable_immunity )
@@ -712,11 +717,15 @@ namespace Kernel
         // Trigger "every-update" event observers 
         if( broadcaster )
         {
-            broadcaster->TriggerNodeEventObservers(GetEventContext(), EventTrigger::EveryUpdate);
+            broadcaster->TriggerObservers(GetEventContext(), EventTrigger::EveryUpdate);
         }
 
         //  Get new infections
-        ExposeToInfectivity(dt, &transmissionGroupMembership); // Need to do it even if infectivity==0, because of diseases in which immunity of acquisition depends on challenge (eg malaria)
+        ExposeToInfectivity(dt, transmissionGroupMembership); // Need to do it even if infectivity==0, because of diseases in which immunity of acquisition depends on challenge (eg malaria)
+        if( broadcaster )
+        {
+            broadcaster->TriggerObservers(GetEventContext(), EventTrigger::ExposureComplete);
+        }
 
         //  Is there an active infection for statistical purposes?
         m_is_infected = (infections.size() > 0);
@@ -744,7 +753,7 @@ namespace Kernel
         float birthday_in_days = years * DAYSPERYEAR;
         if( (broadcaster != nullptr) && (age_was < birthday_in_days) && (birthday_in_days <= m_age) )
         {
-            broadcaster->TriggerNodeEventObservers( GetEventContext(), EventTrigger::HappyBirthday );
+            broadcaster->TriggerObservers( GetEventContext(), EventTrigger::HappyBirthday );
         }
     }
 
@@ -755,15 +764,12 @@ namespace Kernel
             m_daily_mortality_rate = parent->GetNonDiseaseMortalityRateByAgeAndSex( m_age, Gender::Enum( GetGender() ) );
         }
 
-        if( m_daily_mortality_rate > 0 )
+        float adjusted_rate = m_daily_mortality_rate * dt;
+        
+        if( (GetRng()!= nullptr) && GetRng()->SmartDraw( adjusted_rate ) )
         {
-            float adjusted_rate = m_daily_mortality_rate * dt;
-
-            if( adjusted_rate > 0 && randgen->e() < adjusted_rate ) // not using SMART_DRAW macro coz parent might be null in pymod.
-            {
-                // LOG_DEBUG_F("%s died of natural causes at age %f with daily_mortality_rate = %f\n", (GetGender() == Gender::FEMALE ? "Female" : "Male"), GetAge() / DAYSPERYEAR, m_daily_mortality_rate);
-                Die( HumanStateChange::DiedFromNaturalCauses );
-            }
+            // LOG_DEBUG_F("%s died of natural causes at age %f with daily_mortality_rate = %f\n", (GetGender() == Gender::FEMALE ? "Female" : "Male"), GetAge() / DAYSPERYEAR, m_daily_mortality_rate);
+            Die( HumanStateChange::DiedFromNaturalCauses );
         }
     }
 
@@ -799,14 +805,10 @@ namespace Kernel
                 birth_this_timestep = true;
 
                 // Broadcast GaveBirth
-                INodeTriggeredInterventionConsumer* broadcaster = nullptr;
-                if (GetNodeEventContext() && GetNodeEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), reinterpret_cast<void**>(&broadcaster)) != s_OK)
+                if( GetNodeEventContext() != nullptr )
                 {
-                    throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()", "INodeTriggeredInterventionConsumer", "IIIndividualHumanEventContext" );
-                }
-                if( broadcaster )
-                {
-                    broadcaster->TriggerNodeEventObservers( GetEventContext(), EventTrigger::GaveBirth );
+                    IIndividualEventBroadcaster* broadcaster = GetNodeEventContext()->GetIndividualEventBroadcaster();
+                    broadcaster->TriggerObservers( GetEventContext(), EventTrigger::GaveBirth );
                 }
             }
         }
@@ -822,15 +824,10 @@ namespace Kernel
             pregnancy_timer = duration; 
 
             // Broadcast Pregnant
-            INodeTriggeredInterventionConsumer* broadcaster = nullptr;
-            if( ( GetNodeEventContext() != nullptr ) &&
-                ( GetNodeEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), reinterpret_cast<void**>(&broadcaster)) != s_OK) )
+            if( GetNodeEventContext() != nullptr )
             {
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()", "INodeTriggeredInterventionConsumer", "IIIndividualHumanEventContext" );
-            }
-            if( broadcaster )
-            {
-                broadcaster->TriggerNodeEventObservers( GetEventContext(), EventTrigger::Pregnant );
+                IIndividualEventBroadcaster* broadcaster = GetNodeEventContext()->GetIndividualEventBroadcaster();
+                broadcaster->TriggerObservers( GetEventContext(), EventTrigger::Pregnant );
             }
         }
     }
@@ -931,7 +928,7 @@ namespace Kernel
 
             if( migration_outbound && (migration_info->GetReachableNodes().size() > 0) )
             {
-                migration_info->PickMigrationStep( this, migration_mod, migration_destination, migration_type, migration_time_until_trip );
+                migration_info->PickMigrationStep( GetRng(), this, migration_mod, migration_destination, migration_type, migration_time_until_trip );
 
                 if( migration_type == MigrationType::NO_MIGRATION )
                 {
@@ -968,14 +965,7 @@ namespace Kernel
                             throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "migration_type", migration_type, MigrationType::pairs::lookup_key(migration_type) );
                     }
 
-                    migration_will_return = (return_prob > 0.0f);
-                    if( migration_will_return && (return_prob < 1.0f) )
-                    {
-                        if(randgen->e() > return_prob)
-                        {
-                            migration_will_return = false;
-                        }
-                    }
+                    migration_will_return = GetRng()->SmartDraw( return_prob );
                 }
             }
             else if( waypoints.size() > 0 )
@@ -1015,7 +1005,7 @@ namespace Kernel
         float duration = 0.0;
         if(return_duration_rate > 0.0f)
         {
-            duration = float(randgen->expdist( return_duration_rate ));
+            duration = float( GetRng()->expdist( return_duration_rate ) );
         }
         return duration;
     }
@@ -1035,12 +1025,12 @@ namespace Kernel
         tProperties properties = GetProperties()->GetOldVersion();
         const RouteList_t& routes = parent->GetTransmissionRoutes();
 
-        parent->GetGroupMembershipForIndividual( routes, &properties, &transmissionGroupMembership );
+        parent->GetGroupMembershipForIndividual( routes, properties, transmissionGroupMembership );
     }
 
     void IndividualHuman::UpdateGroupPopulation(float size_changes)
     {
-        parent->UpdateTransmissionGroupPopulation(&transmissionGroupMembership, size_changes, this->GetMonteCarloWeight());
+        parent->UpdateTransmissionGroupPopulation( GetProperties()->GetOldVersion(), size_changes, this->GetMonteCarloWeight() );
     }
 
     bool IndividualHuman::AtHome() const
@@ -1117,7 +1107,7 @@ namespace Kernel
     //   Infection methods
     //------------------------------------------------------------------
 
-    void IndividualHuman::ExposeToInfectivity(float dt, const TransmissionGroupMembership_t* transmissionGroupMembership)
+    void IndividualHuman::ExposeToInfectivity(float dt, TransmissionGroupMembership_t transmissionGroupMembership)
     {
         parent->ExposeIndividual(static_cast<IInfectable*>(this), transmissionGroupMembership, dt);
     }
@@ -1127,7 +1117,7 @@ namespace Kernel
     {
         ProbabilityNumber prob = EXPCDF(-cp->GetTotalContagion()*dt*susceptibility->getModAcquire()*interventions->GetInterventionReducedAcquire());
         LOG_DEBUG_F( "id = %lu, group_id = %d, total contagion = %f, dt = %f, immunity factor = %f, interventions factor = %f, prob=%f\n",
-                     GetSuid().data, transmissionGroupMembership.at(0), cp->GetTotalContagion(), dt, susceptibility->getModAcquire(), interventions->GetInterventionReducedAcquire(), float(prob) );
+                     GetSuid().data, transmissionGroupMembership.group, cp->GetTotalContagion(), dt, susceptibility->getModAcquire(), interventions->GetInterventionReducedAcquire(), float(prob) );
         bool acquire = false; 
         if( IndividualHumanConfig::enable_skipping ) 
         {
@@ -1147,7 +1137,7 @@ namespace Kernel
                     LOG_DEBUG_F( "Individual is maximally susceptible." );
                     acquire = true; 
                 }
-                else if( prob/maxProb > randgen->e() )
+                else if( prob/maxProb > GetRng()->e() )
                 {
                     // DLC - individual is not maximally susceptible
                     LOG_DEBUG_F( "Individual is infected stochastically." );
@@ -1157,16 +1147,16 @@ namespace Kernel
         }
         else
         {
-            //if( SMART_DRAW( prob ) ) // Let's move to this ASAP, but requires new regressions
-            if (randgen->e() < prob ) // infection results from this strain? 
+            if( GetRng()->SmartDraw( prob ) ) // infection results from this strain? 
             {
                 acquire = true;
             }
         }
-        LOG_VALID_F( "acquire = %d.", acquire );
+        LOG_VALID_F( "acquire = %d.\n", acquire );
 
         if( acquire ) 
         {
+            LOG_VALID_F( "Individual %d is acquiring a new infection on route %s.\n", GetSuid().data, TransmissionRoute::pairs::lookup_key( transmission_route ) );
             AcquireNewInfection( (IStrainIdentity*)cp );
         }
     }
@@ -1199,7 +1189,7 @@ namespace Kernel
             IIndividualTriggeredInterventionConsumer * pITIC = nullptr;
             if (s_OK == GetInterventionsContext()->QueryInterface(GET_IID(IIndividualTriggeredInterventionConsumer), (void**)&pITIC) )
             {
-                pITIC->TriggerIndividualEventObservers( GetEventContext(), EventTrigger::NewInfectionEvent );
+                pITIC->TriggerObservers( GetEventContext(), EventTrigger::NewInfectionEvent );
             }
 #endif
         }
@@ -1222,7 +1212,7 @@ namespace Kernel
             if( tmp_infectiousness )
             {
                 LOG_DEBUG_F( "Individual %d depositing contagion into transmission group.\n", GetSuid().data );
-                parent->DepositFromIndividual( tmp_strainIDs, tmp_infectiousness, &transmissionGroupMembership );
+                parent->DepositFromIndividual( tmp_strainIDs, tmp_infectiousness, transmissionGroupMembership );
             }
         }
         float raw_inf = infectiousness;
@@ -1257,20 +1247,7 @@ namespace Kernel
 
     void IndividualHuman::ReportInfectionState()
     {
-        LOG_DEBUG( "ReportInfectionState\n" );
-        // Is infection reported this turn?
-        // Will only implement delayed reporting (for fever response) later
-        // 50% reporting immediately
-        if (randgen->e() < .5)
-        {
-            m_new_infection_state = NewInfectionState::NewAndDetected;
-        }
-        else
-        {
-            release_assert(parent);
-            //parent->notifyOnNewInfection( this );
-            m_new_infection_state = NewInfectionState::NewInfection;
-        }
+        m_new_infection_state = NewInfectionState::NewInfection;
     }
 
     void IndividualHuman::ClearNewInfectionState()
@@ -1285,12 +1262,12 @@ namespace Kernel
     // IIndividualHumanContext methods
     suids::suid IndividualHuman::GetSuid() const         { return suid; }
     suids::suid IndividualHuman::GetNextInfectionSuid()  { return parent->GetNextInfectionSuid(); }
-    ::RANDOMBASE* IndividualHuman::GetRng()              { return parent->GetRng(); }
+    RANDOMBASE* IndividualHuman::GetRng()              { return parent->GetRng(); }
 
     const NodeDemographics* IndividualHuman::GetDemographics()           const { return parent->GetDemographics(); }
 
     IIndividualHumanInterventionsContext* IndividualHuman::GetInterventionsContext()  const { return static_cast<IIndividualHumanInterventionsContext*>(interventions); }
-    IIndividualHumanInterventionsContext* IndividualHuman::GetInterventionsContextbyInfection(Infection* infection) { 
+    IIndividualHumanInterventionsContext* IndividualHuman::GetInterventionsContextbyInfection(IInfection* infection) { 
         return static_cast<IIndividualHumanInterventionsContext*>(interventions); 
         }; //Note can also throw exception here since it's not using the infection to find the intervention
     IIndividualHumanEventContext*         IndividualHuman::GetEventContext()                { return static_cast<IIndividualHumanEventContext*>(this); }
@@ -1312,10 +1289,10 @@ namespace Kernel
     {
         StateChange = newState;
 
-        INodeTriggeredInterventionConsumer* broadcaster = nullptr;
-        if (GetNodeEventContext() && GetNodeEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), reinterpret_cast<void**>(&broadcaster)) != s_OK)
+        IIndividualEventBroadcaster* broadcaster = nullptr;
+        if( GetNodeEventContext() != nullptr )
         {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()", "INodeTriggeredInterventionConsumer", "IIIndividualHumanEventContext" );
+            broadcaster = GetNodeEventContext()->GetIndividualEventBroadcaster();
         }
 
         switch (newState)
@@ -1325,7 +1302,7 @@ namespace Kernel
                 //LOG_DEBUG_F( "%s: individual %d (%s) died of natural causes at age %f with daily_mortality_rate = %f\n", __FUNCTION__, suid.data, (GetGender() == Gender::FEMALE ? "Female" : "Male"), GetAge() / DAYSPERYEAR, m_daily_mortality_rate );
                 if( broadcaster )
                 {
-                    broadcaster->TriggerNodeEventObservers( GetEventContext(), EventTrigger::NonDiseaseDeaths );
+                    broadcaster->TriggerObservers( GetEventContext(), EventTrigger::NonDiseaseDeaths );
                 }
             }
             break;
@@ -1335,7 +1312,7 @@ namespace Kernel
                 LOG_DEBUG_F( "%s: individual %d died from infection\n", __FUNCTION__, suid.data );
                 if( broadcaster )
                 {
-                    broadcaster->TriggerNodeEventObservers( GetEventContext(), EventTrigger::DiseaseDeaths );
+                    broadcaster->TriggerObservers( GetEventContext(), EventTrigger::DiseaseDeaths );
                 }
             }
             break;
@@ -1366,20 +1343,38 @@ namespace Kernel
         return parent;
     }
 
+    suids::suid IndividualHuman::GetParentSuid() const
+    {
+        return parent->GetSuid();
+    }
+
+
     IPKeyValueContainer* IndividualHuman::GetProperties()
     {
         return &Properties;
     }
 
-    const infection_list_t&
-    IndividualHuman::GetInfections() const
+    const infection_list_t& IndividualHuman::GetInfections() const
     {
         return infections;
     }
 
-    ProbabilityNumber
-    IndividualHuman::getProbMaternalTransmission()
-    const
+    bool  IndividualHuman::IsSymptomatic() const
+    {
+        for( auto &it : infections )
+        {
+            if( ( *it ).IsSymptomatic() ) return true;
+        }
+        return false;
+    }
+
+    bool  IndividualHuman::IsNewlySymptomatic() const
+    {
+        return m_newly_symptomatic;
+    }
+
+
+    ProbabilityNumber IndividualHuman::getProbMaternalTransmission() const
     {
         return parent->GetProbMaternalTransmission();
     }
@@ -1545,6 +1540,7 @@ namespace Kernel
         ar.labelElement("family_migration_time_at_destination") & individual.family_migration_time_at_destination;
         ar.labelElement("family_migration_is_destination_new_home") & individual.family_migration_is_destination_new_home;
         ar.labelElement("family_migration_destination") & individual.family_migration_destination;
+        ar.labelElement("m_newly_symptomatic") & individual.m_newly_symptomatic;
     }
 
     REGISTER_SERIALIZABLE(IndividualHuman);

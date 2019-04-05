@@ -17,7 +17,7 @@ configjson = json.loads( configjson_file.read() )
 
 configjson["parameters"]["Campaign_Filename"] = campaign_name
 configjson["parameters"]["Simulation_Duration"] = 365              # just one year for now
-configjson["parameters"]["Base_Population_Scale_Factor"] = 0.001   # scale the 15M down to a manageable 15k
+configjson["parameters"]["x_Base_Population"] = 0.001   # scale the 15M down to a manageable 15k
 configjson["parameters"]["Base_Individual_Scale_Factor"] = 1       # ...and count every one
 
 configjson["parameters"]["Demographics_Filename"] = "Netherlands_single_node_demographics.compiled.json" # the birth-rate in here corresponds to the per-population rate

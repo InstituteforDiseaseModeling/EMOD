@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -16,8 +16,14 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "EventTrigger.h"
 #include "NodeEventContext.h"
 #include "INodeContext.h"
+#include "ISimulationContext.h"
+#include "SimulationEventContext.h"
 #include "IndividualEventContext.h"
+#include "IIndividualHumanContext.h"
 #include "IIndividualHuman.h"
+#include "BaseEventTrigger.h"
+#include "EventTriggerNode.h"
+#include "EventTriggerCoordinator.h"
 
 SETUP_LOGGING( "IncidenceEventCoordinator" )
 
@@ -34,6 +40,10 @@ namespace Kernel
         : JsonConfigurable()
         , m_Threshold( 0 )
         , m_EventToBroadcast()
+        , m_EventType(EventType::INDIVIDUAL)
+        , m_TriggerCoordinator()
+        , m_TriggerNode()
+        , m_TriggerIndividual()
     {
     }
 
@@ -44,26 +54,54 @@ namespace Kernel
     bool Action::Configure( const Configuration * inputJson )
     {
         initConfigTypeMap( "Threshold", &m_Threshold, ICE_Action_Threshold_DESC_TEXT, 0.0, FLT_MAX, 0.0 );
-
+        initConfig("Event_Type", m_EventType, inputJson, MetadataDescriptor::Enum("Event_Type", ICE_Event_Type_DESC_TEXT, MDD_ENUM_ARGS( EventType )));
         initConfigTypeMap( "Event_To_Broadcast", &m_EventToBroadcast, ICE_Action_Event_To_Broadcast_DESC_TEXT );
 
         bool ret = JsonConfigurable::Configure( inputJson );
+
         if( ret && !JsonConfigurable::_dryrun )
         {
-            if( m_EventToBroadcast.IsUninitialized() )
-            {
-                throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, "You must define Event_To_Broadcast." );
-            }
+            CheckConfigurationTriggers();
         }
         return ret;
     }
+
+    void Action::CheckConfigurationTriggers()
+    {
+        if( m_EventToBroadcast.empty() || (m_EventToBroadcast == JsonConfigurable::default_string) )
+        {
+            throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, "You must define Event_To_Broadcast" );
+        } 
+
+        switch( m_EventType )
+        {
+            case EventType::INDIVIDUAL:
+            {
+                m_TriggerIndividual = EventTriggerFactory::GetInstance()->CreateTrigger( "Event_To_Broadcast", m_EventToBroadcast );
+                break;
+            }
+            case EventType::NODE:
+            {
+                m_TriggerNode = EventTriggerNodeFactory::GetInstance()->CreateTrigger( "Event_To_Broadcast", m_EventToBroadcast );
+                break;
+            }
+            case EventType::COORDINATOR:
+            {
+                m_TriggerCoordinator = EventTriggerCoordinatorFactory::GetInstance()->CreateTrigger( "Event_To_Broadcast", m_EventToBroadcast );
+                break;
+            }
+            default:
+                throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "Event_Type", m_EventType, EventType::pairs::lookup_key( m_EventType ) );
+        }
+    }
+
 
     float Action::GetThreshold() const
     {
         return m_Threshold;
     }
 
-    const EventTrigger& Action::GetEventToBroadcast() const
+    const std::string& Action::GetEventToBroadcast() const
     {
         return m_EventToBroadcast;
     }
@@ -125,6 +163,8 @@ namespace Kernel
         , m_ThresholdType(ThresholdType::COUNT)
         , m_ActionList()
         , m_pCurrentAction( nullptr )
+        , m_sim(nullptr)
+        , m_Parent(nullptr)
     {
     }
 
@@ -141,31 +181,33 @@ namespace Kernel
         bool ret = JsonConfigurable::Configure( inputJson );
         if( ret && !JsonConfigurable::_dryrun )
         {
+            CheckConfiguration( inputJson );
             m_ActionList.CheckConfiguration();
         }
         return ret;
+    }
+
+    void Responder::CheckConfiguration( const Configuration * inputJson )
+    {
+        if( m_ThresholdType == ThresholdType::PERCENTAGE_EVENTS )
+        {
+            throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, "IncidenceEventCoordinator does not support 'Threshold_Type' == 'PERCENTAGE_EVENTS'" );
+        }
     }
 
     bool Responder::visitIndividualCallback( IIndividualHumanEventContext *ihec, float & incrementalCostOut, ICampaignCostObserver * pICCO )
     {
         release_assert( m_pCurrentAction != nullptr );
 
-        INodeTriggeredInterventionConsumer* broadcaster = nullptr;
-        if( s_OK != ihec->GetNodeEventContext()->QueryInterface( GET_IID( INodeTriggeredInterventionConsumer ), (void**)&broadcaster ) )
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__,
-                                           "ihec->GetNodeEventContext()->GetNodeEventContext()",
-                                           "INodeTriggeredInterventionConsumer", 
-                                           "INodeEventContext" );
-        }
-        broadcaster->TriggerNodeEventObservers( ihec, m_pCurrentAction->GetEventToBroadcast() );
+        IIndividualEventBroadcaster* broadcaster = ihec->GetNodeEventContext()->GetIndividualEventBroadcaster();
+        broadcaster->TriggerObservers( ihec, m_pCurrentAction->GetEventToBroadcastIndividual() );
 
         return true;
     }
 
-    void Responder::Distribute( const std::vector<INodeEventContext*>& nodes, uint32_t numIncidences, uint32_t qualifyingPopulation )
+    bool Responder::Distribute( const std::vector<INodeEventContext*>& nodes, uint32_t numIncidences, uint32_t qualifyingPopulation )
     {
-        float incidence_value = CalculateIndidence( numIncidences, qualifyingPopulation );
+        float incidence_value = CalculateIncidence( numIncidences, qualifyingPopulation );
 
         m_pCurrentAction = GetAction( incidence_value );
 
@@ -173,22 +215,51 @@ namespace Kernel
         if( m_pCurrentAction != nullptr )
         {
             int num_distributed = 0;
-            for( INodeEventContext* p_node : nodes )
-            {
-                num_distributed += p_node->VisitIndividuals( this, -1 );
-            }
             std::stringstream ss;
-            ss << "UpdateNodes() broadcasted '" << m_pCurrentAction->GetEventToBroadcast().ToString() << "' to " << num_distributed << " individuals\n";
+
+            switch(m_pCurrentAction->GetEventType())
+            {
+            case EventType::INDIVIDUAL:
+                for (INodeEventContext* p_node : nodes)
+                {
+                    num_distributed += p_node->VisitIndividuals( this );
+                    ss << "Distribute() broadcasted '" << m_pCurrentAction->GetEventToBroadcast() << "' to " << num_distributed << " individuals\n";
+                }
+                break;
+            case EventType::NODE:
+                for (INodeEventContext* p_node : nodes)
+                {
+                    auto TriggerNode = m_pCurrentAction->GetEventToBroadcastNode();
+                    p_node->GetNodeContext()->GetParent()->GetSimulationEventContext()->GetNodeEventBroadcaster()->TriggerObservers(p_node, TriggerNode);
+                    ss << "Distribute() broadcasted Node Event: '" << TriggerNode.ToString() << "'\n";
+                }
+                break;
+            case EventType::COORDINATOR:
+                auto TriggerCoordinator = m_pCurrentAction->GetEventToBroadcastCooridnator();
+                m_sim->GetCoordinatorEventBroadcaster()->TriggerObservers(m_Parent, TriggerCoordinator);
+                ss << "Distribute() broadcasted Coordinator Event: '" << TriggerCoordinator.ToString() << "'\n";
+                break;
+            }
             LOG_INFO( ss.str().c_str() );
         }
+        return (m_pCurrentAction != nullptr);
     }
 
-    float Responder::CalculateIndidence( uint32_t numIncidences, uint32_t qualifyingPopulation ) const
+    float Responder::CalculateIncidence( uint32_t numIncidences, uint32_t qualifyingPopulation ) const
     {
         float value = float( numIncidences );
-        if( m_ThresholdType == ThresholdType::PERCENTAGE )
+        if( (m_ThresholdType == ThresholdType::PERCENTAGE       ) ||
+            (m_ThresholdType == ThresholdType::PERCENTAGE_EVENTS) )
         {
-            value = value / float(qualifyingPopulation);
+            if( qualifyingPopulation == 0 )
+            {
+                value = 0.0;
+            }
+            else
+            {
+                value = value / float( qualifyingPopulation );
+            }
+            printf("numIncidences=%d  qualifyingPopulation=%d\n", numIncidences, qualifyingPopulation );
         }
         return value;
     }
@@ -207,6 +278,11 @@ namespace Kernel
         return p_action;
     }
 
+    const Action* Responder::GetCurrentAction() const
+    {
+        return m_pCurrentAction;
+    }
+
     // ------------------------------------------------------------------------
     // --- IncidenceCounter
     // ------------------------------------------------------------------------
@@ -217,12 +293,12 @@ namespace Kernel
     IncidenceCounter::IncidenceCounter()
         : JsonConfigurable()
         , m_Count(0)
+        , m_NodePropertyRestrictions()
+        , m_DemographicRestrictions()
+        , m_TriggerConditionListIndividual()
         , m_CountEventsForNumTimeSteps(1)
         , m_NumTimeStepsCounted(-1)
-        , m_IsDoneCounting(false)
-        , m_DemographicRestrictions()
-        , m_TriggerConditionList()
-        , m_NodePropertyRestrictions()
+        , m_IsDoneCounting(false)  
     {
         m_NumTimeStepsCounted = -1;
     }
@@ -234,21 +310,29 @@ namespace Kernel
     bool IncidenceCounter::Configure( const Configuration * inputJson )
     {
         initConfigTypeMap( "Count_Events_For_Num_Timesteps", &m_CountEventsForNumTimeSteps, ICE_Count_Events_For_Num_Timesteps_DESC_TEXT, 1, INT_MAX, 1 );
-
-        initConfigTypeMap( "Trigger_Condition_List", &m_TriggerConditionList, ICE_Trigger_Condition_List_DESC_TEXT );
-
         initConfigComplexType( "Node_Property_Restrictions", &m_NodePropertyRestrictions, ICE_Node_Property_Restriction_DESC_TEXT );
-
+        
         m_DemographicRestrictions.ConfigureRestrictions( this, inputJson );
+        ConfigureTriggers( inputJson );
 
         bool ret = JsonConfigurable::Configure( inputJson );
         if( ret && !JsonConfigurable::_dryrun )
         {
             m_DemographicRestrictions.CheckConfiguration();
+            CheckConfigurationTriggers();
         }
         return ret;
     }
 
+    void IncidenceCounter::ConfigureTriggers( const Configuration * inputJson )
+    {
+        initConfigTypeMap( "Trigger_Condition_List", &m_TriggerConditionListIndividual, ICE_Trigger_Condition_List_DESC_TEXT );        
+    }
+
+    void IncidenceCounter::CheckConfigurationTriggers()
+    {
+        //overwritten by child classes
+    }
 
     bool IncidenceCounter::notifyOnEvent( IIndividualHumanEventContext *context,
                                           const EventTrigger& trigger )
@@ -264,7 +348,8 @@ namespace Kernel
                 // don't draw random number if coverage equals 1.
                 if( demographic_coverage < 1.0 )
                 {
-                    count_event = (randgen->e() <= demographic_coverage);
+                    RANDOMBASE* p_rng = context->GetInterventionsContext()->GetParent()->GetRng();
+                    count_event = p_rng->SmartDraw( demographic_coverage );
                 }
                 if( count_event )
                 {
@@ -272,7 +357,6 @@ namespace Kernel
                 }
             }
         }
-
         return true;
     }
 
@@ -325,37 +409,34 @@ namespace Kernel
         return m_IsDoneCounting;
     }
 
+    void IncidenceCounter::RegisterForEvents( ISimulationEventContext * pSEC )
+    {
+        //to be overridden
+    }
+
+    void IncidenceCounter::UnregisterForEvents( ISimulationEventContext * pSEC )
+    {
+        //to be overriden
+    }
+
     void IncidenceCounter::RegisterForEvents( INodeEventContext* pNEC )
     {
-        INodeTriggeredInterventionConsumer* pNTIC = GetNodeTriggeredConsumer( pNEC );
+        IIndividualEventBroadcaster* broadcaster = pNEC->GetIndividualEventBroadcaster();
 
-        for( auto& trigger : m_TriggerConditionList )
+        for( auto& trigger : m_TriggerConditionListIndividual )
         {
-            pNTIC->RegisterNodeEventObserver( this, trigger );
+            broadcaster->RegisterObserver( this, trigger );
         }
     }
 
     void IncidenceCounter::UnregisterForEvents( INodeEventContext* pNEC )
     {
-        INodeTriggeredInterventionConsumer* pNTIC = GetNodeTriggeredConsumer( pNEC );
+        IIndividualEventBroadcaster* broadcaster = pNEC->GetIndividualEventBroadcaster();
 
-        for( auto& trigger : m_TriggerConditionList )
+        for( auto& trigger : m_TriggerConditionListIndividual )
         {
-            pNTIC->UnregisterNodeEventObserver( this, trigger );
+            broadcaster->UnregisterObserver( this, trigger );
         }
-    }
-
-    INodeTriggeredInterventionConsumer* IncidenceCounter::GetNodeTriggeredConsumer( INodeEventContext* pNEC )
-    {
-        release_assert( pNEC );
-        INodeTriggeredInterventionConsumer* pNTIC = nullptr;
-        if( pNEC->QueryInterface( GET_IID( INodeTriggeredInterventionConsumer ), (void**)&pNTIC ) != s_OK )
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "pNEC", "INodeTriggeredInterventionConsumer", "INodeEventContext" );
-        }
-        release_assert( pNTIC );
-
-        return pNTIC;
     }
 
     int32_t IncidenceCounter::GetCountEventsForNumTimeSteps() const
@@ -363,14 +444,50 @@ namespace Kernel
         return m_CountEventsForNumTimeSteps;
     }
 
+    bool IncidenceCounter::IsNodeQualified( INodeEventContext* pNEC )
+    {
+        return m_NodePropertyRestrictions.Qualifies( pNEC->GetNodeContext()->GetNodeProperties() );
+    }
+
+    individual_qualified_function_t IncidenceCounter::GetIndividualQualifiedFunction()
+    {
+        individual_qualified_function_t qual_func =
+            [ this ]( IIndividualHumanEventContext* pIHEC )
+        {
+            return m_DemographicRestrictions.IsQualified( pIHEC );
+        };
+        return qual_func;
+    }
+
     // ------------------------------------------------------------------------
     // --- IncidenceEventCoordinator
     // ------------------------------------------------------------------------
 
     IMPLEMENT_FACTORY_REGISTERED( IncidenceEventCoordinator )
-    IMPL_QUERY_INTERFACE2( IncidenceEventCoordinator, IEventCoordinator, IConfigurable )
+
+    BEGIN_QUERY_INTERFACE_BODY( IncidenceEventCoordinator )
+        HANDLE_INTERFACE( IConfigurable )
+        HANDLE_INTERFACE( IEventCoordinator )
+        HANDLE_ISUPPORTS_VIA( IEventCoordinator )
+    END_QUERY_INTERFACE_BODY( IncidenceEventCoordinator )
 
     IncidenceEventCoordinator::IncidenceEventCoordinator()
+        : JsonConfigurable()
+        , m_Parent(nullptr)
+        , m_CachedNodes()
+        , m_IsExpired(false)
+        , m_HasBeenDistributed(false)
+        , m_NumReps(-1)
+        , m_NumTimestepsBetweenReps(1)
+        , m_NumTimestepsInRep(0)
+        , m_pIncidenceCounter(new IncidenceCounter())
+        , m_pResponder(new Responder)
+    {
+        // Start at zero in constructor so it gets set to 1 on first call to Update()
+        m_NumTimestepsInRep = 0;
+    }
+
+    IncidenceEventCoordinator::IncidenceEventCoordinator( IncidenceCounter* ic, Responder* pResponder )
         : JsonConfigurable()
         , m_Parent( nullptr )
         , m_CachedNodes()
@@ -379,8 +496,8 @@ namespace Kernel
         , m_NumReps( -1 )
         , m_NumTimestepsBetweenReps(1)
         , m_NumTimestepsInRep(0)
-        , m_IncidenceCounter()
-        , m_Responder()
+        , m_pIncidenceCounter(ic)
+        , m_pResponder(pResponder)
     {
         // Start at zero in constructor so it gets set to 1 on first call to Update()
         m_NumTimestepsInRep = 0;
@@ -388,6 +505,8 @@ namespace Kernel
 
     IncidenceEventCoordinator::~IncidenceEventCoordinator()
     {
+        delete m_pIncidenceCounter;
+        delete m_pResponder;
     }
 
 
@@ -398,30 +517,40 @@ namespace Kernel
 
     bool IncidenceEventCoordinator::Configure( const Configuration * inputJson )
     {
-        initConfigTypeMap( "Number_Repetitions", &m_NumReps, ICE_Number_Repetitions_DESC_TEXT, -1, 1000, 1 );
-        initConfigTypeMap( "Timesteps_Between_Repetitions", &m_NumTimestepsBetweenReps, ICE_Timesteps_Between_Repetitions_DESC_TEXT, -1, 10000, -1 );
-        initConfigTypeMap( "Incidence_Counter", &m_IncidenceCounter, ICE_Incidence_Counter_DESC_TEXT );
-        initConfigTypeMap( "Responder", &m_Responder, ICE_Responder_DESC_TEXT );
+        initConfigTypeMap( "Incidence_Counter", m_pIncidenceCounter, ICE_Incidence_Counter_DESC_TEXT );
+        initConfigTypeMap( "Responder", m_pResponder, ICE_Responder_DESC_TEXT );
+
+        ConfigureRepetitions( inputJson );
 
         bool retValue = JsonConfigurable::Configure( inputJson );
-
         if( retValue && !JsonConfigurable::_dryrun )
         {
-            if( m_NumTimestepsBetweenReps < m_IncidenceCounter.GetCountEventsForNumTimeSteps() )
-            {
-                throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__,
-                                                        "Timesteps_Between_Repetitions", m_NumTimestepsBetweenReps,
-                                                        "Count_Events_For_Num_Timesteps", m_IncidenceCounter.GetCountEventsForNumTimeSteps(),
-                                                        "'Timesteps_Between_Repetitions' must be >= 'Count_Events_For_Num_Timesteps'" );
-            }
+            CheckConfigureRepetitions();
         }
-
         return retValue;
+    }
+
+    void IncidenceEventCoordinator::ConfigureRepetitions( const Configuration * inputJson )
+    {
+        initConfigTypeMap( "Number_Repetitions", &m_NumReps, ICE_Number_Repetitions_DESC_TEXT, -1, 1000, 1 );
+        initConfigTypeMap( "Timesteps_Between_Repetitions", &m_NumTimestepsBetweenReps, ICE_Timesteps_Between_Repetitions_DESC_TEXT, -1, 10000, -1 );
+    }
+
+    void IncidenceEventCoordinator::CheckConfigureRepetitions()
+    {
+        if( m_NumTimestepsBetweenReps < m_pIncidenceCounter->GetCountEventsForNumTimeSteps() )
+        {
+            throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__,
+                "Timesteps_Between_Repetitions", m_NumTimestepsBetweenReps,
+                "Count_Events_For_Num_Timesteps", m_pIncidenceCounter->GetCountEventsForNumTimeSteps(),
+                "'Timesteps_Between_Repetitions' must be >= 'Count_Events_For_Num_Timesteps'" );
+        }
     }
 
     void IncidenceEventCoordinator::SetContextTo( ISimulationEventContext *isec )
     {
         m_Parent = isec;
+        m_pIncidenceCounter->RegisterForEvents( isec );
     }
 
     void IncidenceEventCoordinator::AddNode( const suids::suid& node_suid )
@@ -429,7 +558,7 @@ namespace Kernel
         INodeEventContext* pNEC = m_Parent->GetNodeEventContext( node_suid );
         m_CachedNodes.push_back( pNEC );
 
-        m_IncidenceCounter.RegisterForEvents( pNEC );
+        m_pIncidenceCounter->RegisterForEvents( pNEC );
     }
 
     // Update() is called for all the coordinators before calling UpdateNodes()
@@ -443,15 +572,13 @@ namespace Kernel
         ++m_NumTimestepsInRep;
     }
 
-    void IncidenceEventCoordinator::UpdateNodes( float dt )
+    void IncidenceEventCoordinator::ConsiderResponding()
     {
-        m_IncidenceCounter.Update( dt );
-
-        if( m_IncidenceCounter.IsDoneCounting() && !m_HasBeenDistributed )
+        if( m_pIncidenceCounter->IsDoneCounting() && !m_HasBeenDistributed )
         {
-            uint32_t num_incidences = m_IncidenceCounter.GetCount();
-            uint32_t num_qualifying_pop = m_IncidenceCounter.GetCountOfQualifyingPopulation( m_CachedNodes );
-            m_Responder.Distribute( m_CachedNodes, num_incidences, num_qualifying_pop );
+            uint32_t num_incidences = m_pIncidenceCounter->GetCount();
+            uint32_t num_qualifying_pop = m_pIncidenceCounter->GetCountOfQualifyingPopulation( m_CachedNodes );
+            m_pResponder->Distribute( m_CachedNodes, num_incidences, num_qualifying_pop );
             m_HasBeenDistributed = true;
         }
 
@@ -460,15 +587,21 @@ namespace Kernel
             // Start at 1 because we are setting this after Update()
             m_NumTimestepsInRep = 1;
 
-            m_IncidenceCounter.StartCounting();
+            m_pIncidenceCounter->StartCounting();
             m_HasBeenDistributed = false;
 
             if( m_NumReps > -1 )
             {
                 --m_NumReps;
-                m_IsExpired = (m_NumReps <= 0 );
+                m_IsExpired = (m_NumReps <= 0);
             }
         }
+    }
+
+    void IncidenceEventCoordinator::UpdateNodes( float dt )
+    {
+        m_pIncidenceCounter->Update( dt );
+        ConsiderResponding();
     }
 
     bool IncidenceEventCoordinator::IsFinished()
@@ -476,9 +609,11 @@ namespace Kernel
         if( m_IsExpired )
         {
             for( auto pNEC : m_CachedNodes )
-            {
-                m_IncidenceCounter.UnregisterForEvents( pNEC );
+            {                
+                m_pIncidenceCounter->UnregisterForEvents( pNEC );    //unregister from node events 
             }
+
+            m_pIncidenceCounter->UnregisterForEvents( m_Parent );    //unregister from coordinator event
         }
         return m_IsExpired;
     }

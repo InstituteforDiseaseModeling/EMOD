@@ -19,7 +19,6 @@
         { "path" : "Multicore_Nosibe/Scenarios/Generic/06_SEIRS" },
         { "path" : "Multicore_Nosibe/Scenarios/Generic/08_SIS" },
         { "path" : "Multicore_Nosibe/Scenarios/Generic/09_DensityScaling" },
-        { "path" : "Multicore_Nosibe/Scenarios/Generic/10_Zoonosis" },        
         { "path" : "Multicore_Nosibe/Scenarios/HINT/01_RiskGroups" },
         { "path" : "Multicore_Nosibe/Scenarios/HINT/02_SchoolClosure" },
         { "path" : "Multicore_Nosibe/Scenarios/HINT/03_AgeAndAccess/A_BaselineOutbreak" },

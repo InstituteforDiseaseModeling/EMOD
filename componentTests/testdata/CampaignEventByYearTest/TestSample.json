@@ -1,0 +1,38 @@
+{
+     "Use_Defaults": 1,
+     "Events": [
+          {
+               "COMMENT1" : "This configuration provides a baseline for testing CampaignEventByYear.",
+
+               "class": "CampaignEventByYear",
+               "Start_Year": 2003, 
+               "Nodeset_Config": {
+                    "class": "NodeSetAll"
+               }, 
+               "Event_Coordinator_Config": {
+                    "class": "ReferenceTrackingEventCoordinator",
+                    "Target_Demographic": "Everyone",
+                    "Update_Period": 30.41667,
+                    "End_Year": 2008,
+                    "Time_Value_Map": {
+                        "Times" : [ 1960, 1961, 1962, 1963, 1964 ],
+                        "Values": [ 0.2,   0.3,  0.4,  0.5,  0.8 ]
+                    },
+                    "Intervention_Config": {
+                        "class": "ControlledVaccine",
+                        "Intervention_Name" : "VaccineA",
+                        "Cost_To_Consumer": 1,
+                        "Vaccine_Type": "AcquisitionBlocking",
+                        "Vaccine_Take": 1.0,
+                        "Waning_Config": {
+                            "class": "WaningEffectConstant",
+                            "Initial_Effect" : 1.0
+                        },
+                        "Distributed_Event_Trigger" : "Vaccinated",
+                        ".Expired_Event_Trigger"     : "",
+                        "Duration_To_Wait_Before_Revaccination" : 0
+                    }
+               }
+          }
+     ]
+}

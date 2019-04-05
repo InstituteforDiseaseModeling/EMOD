@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -12,14 +12,13 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "EventCoordinator.h"
 #include "Configure.h"
 #include "DemographicRestrictions.h"
-#include "DurationDistribution.h"
 #include "Interventions.h"
 
 namespace Kernel
 {
+    struct IDistribution;
     struct INodeEventContext;
     struct IIndividualHumanEventContext;
-    struct INodeTriggeredInterventionConsumer;
 
     template<typename T>
     struct QueueEntry
@@ -64,6 +63,7 @@ namespace Kernel
         virtual void Update( float dt ) override;
         virtual void UpdateNodes( float dt ) override;
         virtual bool IsFinished() override;
+        virtual IEventCoordinatorEventContext* GetEventContext() override { return nullptr; }
 
         // IIndividualEventObserver methods
         virtual bool notifyOnEvent( IIndividualHumanEventContext *context, 
@@ -86,7 +86,6 @@ namespace Kernel
         bool AlreadyInQueue( float currentTime, uint32_t id );
         void RegisterForEvents( INodeEventContext* pNEC );
         void UnregisterForEvents( INodeEventContext* pNEC );
-        INodeTriggeredInterventionConsumer* GetNodeTriggeredConsumer( INodeEventContext* pNEC );
 
         bool IsRemoveIndividualEvent( const EventTrigger& rTrigger ) const;
         void RemoveEntity( IIndividualHumanEventContext *context );
@@ -125,6 +124,7 @@ namespace Kernel
         float                    m_MapTime;
         std::map<uint32_t,float> m_InQueueMap;
 
+        IDistribution* m_pInitialAmount;
         int   m_CurrentStock;
         int   m_MaxStock;
         float m_DaysBetweenShipments;

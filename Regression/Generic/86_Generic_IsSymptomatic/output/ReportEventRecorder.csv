@@ -1,0 +1,5 @@
+Time,Node_ID,Event_Name,Individual_ID,Age,Gender,Infected,Infectiousness
+16,1,NewlySymptomatic,2,11844.2,F,1,0.3
+16,1,NewlySymptomatic,3,14765.2,F,1,0.3
+20,1,SymptomaticCleared,2,11848.2,F,1,0.3
+20,1,SymptomaticCleared,3,14769.2,F,1,0.3

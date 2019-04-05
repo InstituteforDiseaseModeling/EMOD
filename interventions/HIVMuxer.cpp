@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -11,6 +11,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "HIVMuxer.h"
 #include "MathFunctions.h"
 #include "IndividualEventContext.h"
+#include "IIndividualHumanContext.h"
 #include "NodeEventContext.h"
 #include "RANDOM.h"
 #include "IHIVInterventionsContainer.h" // for access to campaign_semaphores
@@ -56,22 +57,22 @@ namespace Kernel
         // The HIVMuxer can not work appropriately if the delay can be zero.
         if( !JsonConfigurable::_dryrun )
         {
-            if( (delay_distribution.GetType() == DistributionFunction::FIXED_DURATION) && (delay_distribution.GetParam1() == 0.0) )
+            if( (delay_distribution->GetType() == DistributionFunction::CONSTANT_DISTRIBUTION) && (delay_distribution->GetParam1() == 0.0) )
             {
-                throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Delay_Distribution", "FIXED_DURATION", "Delay_Period", "0" );
+                throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Delay_Period_Distribution", "CONSTANT_DISTRIBUTION", "Delay_Period", "0" );
             }
-            else if( delay_distribution.GetType() == DistributionFunction::GAUSSIAN_DURATION )
+            else if( delay_distribution->GetType() == DistributionFunction::GAUSSIAN_DISTRIBUTION )
             {
                 // 99.7% of all numbers will be with 3 std devs of the mean
-                float mean    = delay_distribution.GetParam1();
-                float std_dev = delay_distribution.GetParam2();
+                float mean    = delay_distribution->GetParam1();
+                float std_dev = delay_distribution->GetParam2();
                 float min = mean - 3.0*std_dev ;
                 float max = mean + 3.0*std_dev ;
                 if( (min <= 0) && (0 <= max) )
                 {
                     throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, 
                                                             "Delay_Distribution",
-                                                            "GAUSSIAN_DURATION",
+                                                            "GAUSSIAN_DISTRIBUTION",
                                                             "Delay_Period_Mean && Delay_Period_Std_Dev", 
                                                             "(can include zero)" );
                 }

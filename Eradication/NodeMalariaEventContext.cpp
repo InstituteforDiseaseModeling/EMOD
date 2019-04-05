@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -14,6 +14,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "InterventionsContainer.h" //IDrugVaccineInterventionEffects
 #include "MalariaContexts.h" // for IMalariaHumanInfectable
 #include "IInfectable.h"     // for IInfectionAcquirable
+#include "RANDOM.h"
 
 SETUP_LOGGING( "NodeMalariaEventContext" )
 
@@ -60,7 +61,7 @@ namespace Kernel
                 throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "ihec", "IMalariaHumanInfectable", "IIndividualHumanEventContext" );
             }
 
-            if ( randgen->e() < coverage*relative_risk && imhi->ChallengeWithSporozoites(n_sporozoites) )
+            if( GetRng()->SmartDraw( coverage*relative_risk ) && imhi->ChallengeWithSporozoites( n_sporozoites ) )
             {
                 IInfectionAcquirable* iia = nullptr;
                 if ( s_OK !=  ihec->QueryInterface(GET_IID(IInfectionAcquirable), (void**)&iia) )
@@ -103,7 +104,7 @@ namespace Kernel
                 throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "ihec", "IMalariaHumanInfectable", "IIndividualHumanEventContext" );
             }
 
-            if ( randgen->e() < coverage*relative_risk && imhi->ChallengeWithBites(n_bites) )
+            if( GetRng()->SmartDraw( coverage*relative_risk ) && imhi->ChallengeWithBites( n_bites ) )
             {
                 IInfectionAcquirable* iia = nullptr;
                 if ( s_OK !=  ihec->QueryInterface(GET_IID(IInfectionAcquirable), (void**)&iia) )

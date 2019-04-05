@@ -2,8 +2,8 @@
 
 import json
 import os.path as path
-import dtk_sft
-import dtk_TBHIV_Support as dts
+import dtk_test.dtk_sft as sft
+import dtk_test.dtk_TBHIV_Support as dts
 import numpy
 import math
 
@@ -56,7 +56,7 @@ def parse_stdout_file(drug_start_time, start_timestep, stdout_filename="test.txt
     filtered_lines = []
     with open(stdout_filename) as logfile:
         for line in logfile:
-            if dtk_sft.has_match(line, matches):
+            if sft.has_match(line, matches):
                 filtered_lines.append(line)
     if debug:
         with open("filtered_lines.txt", "w") as outfile:
@@ -77,12 +77,12 @@ def parse_stdout_file(drug_start_time, start_timestep, stdout_filename="test.txt
             infected_individuals.append(infected)
             inactivations.append(inactivation_daily)
             active_count.append(active)
-            infected = int(dtk_sft.get_val("Infected: ", line))
+            infected = int(sft.get_val("Infected: ", line))
             inactivation_daily = 0
             timestep += 1
         elif matches[0] in line:
             # deactivation: have to track individual
-            individual = int(dtk_sft.get_val("TB drug deactivated my \(", line))
+            individual = int(sft.get_val("TB drug deactivated my \(", line))
             # if timestep <= duration_of_interest + start_timestep + drug_start_time:
             inactivation_time = timestep - start_timestep - drug_start_time
             if individual in reactivation_times:
@@ -97,12 +97,12 @@ def parse_stdout_file(drug_start_time, start_timestep, stdout_filename="test.txt
                 inactivation_times.append( inactivation_time )
         elif matches[1] in line: # "progressing from Latent to Active Presymptomatic while on TB Drugs"
             # activation: have to track individual
-            individual = int(dtk_sft.get_val("Individual ", line))
+            individual = int(sft.get_val("Individual ", line))
             reactivation_times[individual] = timestep
         elif matches[3] in line: # move to active
             active += 1
         else: #die from HIV
-            individual = int(dtk_sft.get_val("individual ", line))
+            individual = int(sft.get_val("individual ", line))
             if individual in reactivation_times:
                 active -= 1
                 reactivation_times.pop(individual)
@@ -149,7 +149,7 @@ def create_report_file(drug_start_timestep, inactivation_times, active_count, in
         if drug_inactivation_rate < 0.1:
             outfile.write( "Testing inactivation times as draws from exponential distrib with rate {0}. "
                            "Dataset size = {1}.\n".format( drug_inactivation_rate, len( inactivation_times ) ) )
-            success = dtk_sft.test_exponential( inactivation_times, drug_inactivation_rate, outfile, integers=True,
+            success = sft.test_exponential( inactivation_times, drug_inactivation_rate, outfile, integers=True,
                                                 roundup=True, round_nearest=False )
             if not success:
                 outfile.write("BAD: ks test for rate {} is False.\n".format(drug_inactivation_rate))
@@ -157,17 +157,17 @@ def create_report_file(drug_start_timestep, inactivation_times, active_count, in
             scale = 1.0 / drug_inactivation_rate
             dist_exponential_np = numpy.random.exponential(scale, size)
             dist_exponential_np = [math.ceil(x) for x in dist_exponential_np]
-            dtk_sft.plot_data_sorted(inactivation_times, dist_exponential_np,
+            sft.plot_data_sorted(inactivation_times, dist_exponential_np,
                               label1="test times", label2="numpy data",
                               title="inactivation_times_actual_vs_numpy",
                               xlabel="data points", ylabel="Inactivation times",
                               category="inactivation_times", show = True, line = True, overlap=True)
-            dtk_sft.plot_cdf(inactivation_times, dist_exponential_np,
+            sft.plot_cdf(inactivation_times, dist_exponential_np,
                              label1="test times", label2="numpy data",
                              title="inactivation_times_cdf",
                              xlabel="days", ylabel="probability",
                              category="inactivation_times_cdf", show = True)
-            dtk_sft.plot_probability(inactivation_times, dist_exponential_np,
+            sft.plot_probability(inactivation_times, dist_exponential_np,
                                      label1="test times", label2="numpy data",
                                      title="inactivation_times_pdf",
                                      xlabel="days", ylabel="probability",
@@ -190,26 +190,26 @@ def create_report_file(drug_start_timestep, inactivation_times, active_count, in
                 test_inactivation_dates = inactivations[drug_start_timestep + 1:drug_start_timestep + 1 + len(expected_inactivation)]
             #print (len(inactivations), len(test_inactivation_dates), len(expected_inactivation))
             #print (test_inactivation_dates, expected_inactivation)
-            dtk_sft.plot_data(test_inactivation_dates, expected_inactivation,
+            sft.plot_data(test_inactivation_dates, expected_inactivation,
                                      label1="actual inactivation", label2="expected inactivation",
                                      title="inactivation per day",
                                      xlabel="date after drug start day", ylabel="inactivation per day",
                                      category="inactivation_counts", show=True, line=True, overlap=True, sort=False)
 
-            chi_result = dtk_sft.test_multinomial(dist=test_inactivation_dates, proportions=expected_inactivation,
+            chi_result = sft.test_multinomial(dist=test_inactivation_dates, proportions=expected_inactivation,
                                                   report_file=outfile, prob_flag=False)
             if not chi_result:
                 success = False
                 outfile.write("BAD: Chi-squared test reuslt is False.\n")
-        outfile.write(dtk_sft.format_success_msg(success))
+        outfile.write(sft.format_success_msg(success))
         if debug:
-            print(dtk_sft.format_success_msg(success))
+            print(sft.format_success_msg(success))
         return success
 
 def application( output_folder="output", stdout_filename="test.txt",
                  config_filename="config.json",campaign_filename="campaign.json",
                  chart_name="InsetChart.json",
-                 report_name=dtk_sft.sft_output_filename,
+                 report_name=sft.sft_output_filename,
                  debug=True):
     if debug:
         print( "output_folder: " + output_folder )
@@ -218,7 +218,7 @@ def application( output_folder="output", stdout_filename="test.txt",
         print( "chart_name: " + chart_name + "\n" )
         print( "report_name: " + report_name + "\n" )
         print( "debug: " + str(debug) + "\n" )
-    dtk_sft.wait_for_done()
+    sft.wait_for_done()
     param_obj = load_emod_parameters(config_filename, campaign_filename)
     #total_timesteps = param_obj[KEY_TOTAL_TIMESTEPS]
 

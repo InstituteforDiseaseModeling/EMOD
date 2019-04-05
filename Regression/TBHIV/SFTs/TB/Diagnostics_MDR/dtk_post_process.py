@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import json
-import dtk_sft
+import dtk_test.dtk_sft as sft
 import os
 import pandas as pd
 import csv
@@ -14,6 +14,9 @@ What we are testing is three outcomes Positive Event, Negative Event, or Dropout
 Positive proportion  = Test Sensitivity * Treatment_Proportion
 Negative Proportion = (1-Test_Sensitivity) * Treatment_Porportion
 Dropout = 1- Treatment_Proportion.
+
+This test should fail if the total proportions across all times do not pass a chi-square
+test, or if more than one of the timesteps fail.
 """
 # campaign parameter
 KEY_BASE_SENSITIVITY = "Base_Sensitivity"
@@ -84,7 +87,7 @@ def parse_output_file(output_filename="test.txt", debug=False):
     filtered_lines = []
     with open(output_filename) as logfile:
         for line in logfile:
-            if dtk_sft.has_match(line,matches):
+            if sft.has_match(line,matches):
                 filtered_lines.append(line)
     if debug:
         with open("DEBUG_filtered_lines.txt", "w") as outfile:
@@ -102,13 +105,13 @@ def parse_output_file(output_filename="test.txt", debug=False):
         if matches[0] in line:
             output_dict[time_step] = {KEY_STAT_POP:statpop, KEY_INFECTED:infected, KEY_MDR_POSITIVE:mdr_positive,
                                  KEY_MDR_NEGATIVE:mdr_negative}
-            infected = dtk_sft.get_val(matches[2], line)
-            statpop = dtk_sft.get_val(matches[1], line)
+            infected = sft.get_val(matches[2], line)
+            statpop = sft.get_val(matches[1], line)
             time_step += simulation_timestep
             mdr_positive = 0
             mdr_negative = 0
         if matches[3] in line:
-            mdr_test_result = dtk_sft.get_val(matches[3], line)
+            mdr_test_result = sft.get_val(matches[3], line)
             if int(mdr_test_result)==1:
                 mdr_positive += 1
             else:
@@ -165,42 +168,62 @@ def create_report_file(param_obj, campaign_obj, output_dict, report_dict, report
         negative = []
         default = []
         total = []
+        pass_count = 0
+        fail_count = 0
         for t in report_dict:
             value_to_test = [report_dict[t][KEY_MDR_POSITIVE], report_dict[t][KEY_MDR_NEGATIVE], report_dict[t][KEY_MDR_DEFAULT]]
             positive.append(value_to_test[0])
             negative.append(value_to_test[1])
             default.append(value_to_test[2])
-            total.append(int(sum(value_to_test)/total_proportion))
-            outfile.write("Run Chi-squared test at time step {}.\n".format(t))
-            result = dtk_sft.test_multinomial(dist=value_to_test, proportions=proportions, report_file=outfile)
+            total.append(int(sum(value_to_test)/total_proportion)) 
+            outfile.write(f"Timestep {t} Chi-squared test: {value_to_test[0]} positive, {value_to_test[1]} negative," \
+                          f" {value_to_test[2]} default.\n")
+            result = sft.test_multinomial(dist=value_to_test, proportions=proportions, report_file=outfile)
             if not result:
-                success = False
-                outfile.write(
-                    "BAD: At timestep {0}, the Chi-squared test failed.\n".format(t))
+                # success = False
+                fail_count += 1
+                outfile.write("BAD: At timestep {0}, the Chi-squared test failed.\n".format(t))
+            else:
+                pass_count += 1
 
-        dtk_sft.plot_data(positive, dist2=total, label1="TBMDRTestPositive", label2="Total tested",
+        point_count = pass_count + fail_count
+        point_check_tolerance = 0.2
+        if fail_count / point_count > point_check_tolerance:
+            success = False
+            outfile.write(f"FAIL: more than {point_check_tolerance} of the points checked failed validation.\n")
+        positives = sum(positive)
+        negatives = sum(negative)
+        defaults = sum(default)
+        outfile.write("BIG TEST: testing all of the diagnoses in the sim next!\n")
+        sum_result = sft.test_multinomial(dist=[positives, negatives, defaults], proportions=proportions,
+                                              report_file=outfile)
+        if not sum_result:
+            success = False
+            outfile.write("FAIL: the sum chi-square test fails.\n")
+
+        sft.plot_data(positive, dist2=total, label1="TBMDRTestPositive", label2="Total tested",
                                    title="MDR Test positive vs. total, positive proportion = {}".format(
                                        proportions[0]),
                                    xlabel="time step", ylabel="# of individuals", category='MDR_Test_positive_vs_total',
                                    show=True, line=False)
-        dtk_sft.plot_data(negative, dist2=total, label1="TBMDRTestNegative", label2="Total tested",
+        sft.plot_data(negative, dist2=total, label1="TBMDRTestNegative", label2="Total tested",
                                    title="MDR Test negative vs. total, negative proportion = {}".format(
                                        proportions[1]),
                                    xlabel="time step", ylabel="# of individuals", category='MDR_Test_negative_vs_total',
                                    show=True, line=False)
-        dtk_sft.plot_data(default, dist2=total, label1="TBMDRTestDefault", label2="Total tested",
+        sft.plot_data(default, dist2=total, label1="TBMDRTestDefault", label2="Total tested",
                                    title="MDR Test default vs. total, default proportion = {}".format(
                                        proportions[2]),
                                    xlabel="time step", ylabel="# of individuals", category='MDR_Test_default_vs_total',
                                    show=True, line=False)
-        outfile.write(dtk_sft.format_success_msg(success))
+        outfile.write(sft.format_success_msg(success))
     if debug:
         print( "SUMMARY: Success={0}\n".format(success) )
     return success
 
 def application( output_folder="output", stdout_filename="test.txt", insetchart_name="InsetChart.json",
                  config_filename="config.json", campaign_filename="campaign.json",
-                 report_name=dtk_sft.sft_output_filename,
+                 report_name=sft.sft_output_filename,
                  debug=False):
     if debug:
         print( "output_folder: " + output_folder )
@@ -211,7 +234,7 @@ def application( output_folder="output", stdout_filename="test.txt", insetchart_
         print( "report_name: " + report_name + "\n" )
         print( "debug: " + str(debug) + "\n" )
 
-    dtk_sft.wait_for_done()
+    sft.wait_for_done()
     param_obj = load_emod_parameters(config_filename, debug)
     campaign_obj = load_campaign_file(campaign_filename, debug)
     output_dict = parse_output_file(stdout_filename, debug)
@@ -228,7 +251,7 @@ if __name__ == "__main__":
     parser.add_argument('-j', '--jsonreport', default="InsetChart.json", help="Json report to load (InsetChart.json)")
     parser.add_argument('-c', '--config', default="config.json", help="Config name to load (config.json)")
     parser.add_argument('-C', '--campaign', default="campaign.json", help="campaign name to load (campaign.json)")
-    parser.add_argument('-r', '--reportname', default=dtk_sft.sft_output_filename, help="Report file to generate")
+    parser.add_argument('-r', '--reportname', default=sft.sft_output_filename, help="Report file to generate")
     args = parser.parse_args()
 
     application(output_folder=args.output, stdout_filename=args.stdout, insetchart_name=args.jsonreport,

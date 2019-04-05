@@ -2,7 +2,7 @@
 
 import json
 import os.path as path
-import dtk_sft as sft
+import dtk_test.dtk_sft as sft
 import math
 
 KEY_TOTAL_TIMESTEPS = "Simulation_Duration"

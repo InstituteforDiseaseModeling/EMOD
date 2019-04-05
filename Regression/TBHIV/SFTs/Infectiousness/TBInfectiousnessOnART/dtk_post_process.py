@@ -2,7 +2,7 @@
 
 import json
 import os.path as path
-import dtk_sft
+import dtk_test.dtk_sft as sft
 
 TB_CD4_STRATA_I_S = "TB_CD4_Strata_Infectiousness_Susceptibility"
 TB_CD4_S = "TB_CD4_Susceptibility"
@@ -68,7 +68,7 @@ def parse_stdout_file(curr_timestep=0, stdout_filename="test.txt", debug=False):
             if update_time in line:
                 time += 1
             if update_infectiousness in line:
-                new_line = dtk_sft.add_time_stamp(time, line)
+                new_line = sft.add_time_stamp(time, line)
                 filtered_lines.append(new_line)
 
     if debug:
@@ -122,23 +122,23 @@ def create_report_file(data):
             outfile.write("BAD: No relevant test data found.\n")
             success = False
         for line in lines:
-            tot_inf_actual = float(dtk_sft.get_val("total_infectiousness= ", line))
-            cd4_count = float(dtk_sft.get_val("CD4count= ", line))
-            cd4_mod_actual = float(dtk_sft.get_val("CD4mod= ", line))
+            tot_inf_actual = float(sft.get_val("total_infectiousness= ", line))
+            cd4_count = float(sft.get_val("CD4count= ", line))
+            cd4_mod_actual = float(sft.get_val("CD4mod= ", line))
             cd4_mod_expected = tb_cd4_infectiousness_calc([mod_array, cd4_strata, cd4_count])
             if "Latent" in line:
                 latent_data_points += 1
                 if tot_inf_actual != 0:
                     success = False
                     outfile.write("BAD, found Latent infection with total_infectiousness= {} at time= {}. "
-                                  "Expected 0. \n".format(tot_inf_actual, dtk_sft.get_val("time= ", line)))
+                                  "Expected 0. \n".format(tot_inf_actual, sft.get_val("time= ", line)))
             elif "SmearNegative" in line:
                 smear_negative_data_points += 1
                 tot_inf_expected = cd4_mod_expected * base_inf * smear_neg_mult
                 if abs(tot_inf_expected - tot_inf_actual) > epsilon:
                     success = False
                     outfile.write("BAD, found SmearNegative infection with total_infectiousness= {} at time= {},  "
-                                  "Expected {}. \n {} \n ".format(tot_inf_actual, dtk_sft.get_val("time= ", line),
+                                  "Expected {}. \n {} \n ".format(tot_inf_actual, sft.get_val("time= ", line),
                                                                   tot_inf_expected, line))
             elif "SmearPositive" in line:
                 smear_positive_data_points += 1
@@ -146,7 +146,7 @@ def create_report_file(data):
                 if abs(tot_inf_expected - tot_inf_actual) > epsilon:
                     success = False
                     outfile.write("BAD, found SmearPositive infection with total_infectiousness= {} at time= {},  "
-                                  "Expected {}. \n {} \n".format(tot_inf_actual, dtk_sft.get_val("time= ", line),
+                                  "Expected {}. \n {} \n".format(tot_inf_actual, sft.get_val("time= ", line),
                                                                  tot_inf_expected, line))
             elif "Presymptomatic" in line:
                 presymptomatic_data_points += 1
@@ -154,14 +154,14 @@ def create_report_file(data):
                 if abs(tot_inf_expected - tot_inf_actual) > epsilon:
                     success = False
                     outfile.write("BAD, found Presymptomatic infection with total_infectiousness= {} at time= {},  "
-                                  "Expected {}. \n {}\n ".format(tot_inf_actual, dtk_sft.get_val("time= ", line),
+                                  "Expected {}. \n {}\n ".format(tot_inf_actual, sft.get_val("time= ", line),
                                                                  tot_inf_expected, line))
             elif "Extrapulmonary" in line:
                 extrapulmonary_data_points += 1
                 if tot_inf_actual != 0:
                     success = False
                     outfile.write("BAD, found Extrapulmonary infection with total_infectiousness= {} at time= {}. "
-                                  "Should be 0. \n".format(tot_inf_actual, dtk_sft.get_val("time= ", line)))
+                                  "Should be 0. \n".format(tot_inf_actual, sft.get_val("time= ", line)))
 
         outfile.write("Data points for each TBHIV infection state:\nLatent = {} \nPresymptomatic = {} "
                       "\nSmear Negative = {} \nSmear Positive = {} \nExtrapulmonary = {} "
@@ -173,7 +173,7 @@ def create_report_file(data):
 def application(output_folder="output", stdout_filename="test.txt",
                 config_filename="config.json",
                 insetchart_name="InsetChart.json",
-                report_name=dtk_sft.sft_output_filename,
+                report_name=sft.sft_output_filename,
                 debug=False):
     if debug:
         print( "output_folder: " + output_folder )
@@ -182,7 +182,7 @@ def application(output_folder="output", stdout_filename="test.txt",
         print( "insetchart_name: " + insetchart_name + "\n" )
         print( "report_name: " + report_name + "\n" )
         print( "debug: " + str(debug) + "\n" )
-    dtk_sft.wait_for_done()
+    sft.wait_for_done()
     param_obj = load_emod_parameters(config_filename)
     parsed_data = parse_stdout_file()
     inset_days = parse_json_report()

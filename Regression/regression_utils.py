@@ -9,6 +9,9 @@ import sys
 from hashlib import md5
 from io import open
 import argparse
+import subprocess
+import shutil
+from pathlib import Path # hereby making this script dependent on Python3.6 :(
 
 # below is list of 'global' variables that are shared across >1 modules in the regression suite of code. 
 # probably all of them could ultimately be made at least a static member of MyRegressionRunner or Monitor.
@@ -65,12 +68,20 @@ def flattenConfig( configjson_path, new_config_name="config" ):
         default_config_path = configjson_flat["Default_Config_Path"]
 
         try:
-            default_config_json = load_json(os.path.join(".", default_config_path))
+            # This code has always worked by treating the default_configpath as relative the Regression directory.
+            # No longer doing that, but preserving that capability for back-compat. Going forward, relative to the 
+            # configjson_path.
+            simdir = Path( configjson_path ).parent
+            default_config_json = None
+            if Path( os.path.join( str( simdir ), default_config_path) ).exists():
+                default_config_json = load_json(os.path.join( str(simdir), default_config_path))
+            else:
+                default_config_json = load_json(os.path.join( '.', default_config_path))
+            recursive_json_overrider( default_config_json, configjson_flat ) 
         except Exception as ex:
             print( "Exception opening default config: " + str( ex ) )
             raise ex
 
-        recursive_json_overrider( default_config_json, configjson_flat )
     else:
         print( "Didn't find 'Default_Config_Path' in '{0}'".format( configjson_path ) )
         raise Exception( "Bad Default_Config_Path!!!" )
@@ -329,6 +340,63 @@ def touch_file(filename):
     """Update a file's last modification date by opening/closing it"""
     with open(filename, "a"):
         os.utime(filename, None)
+
+def files_are_identical(source, target):
+    """
+    Determine whether a speculative file copy is necessary by comparing the md5 hash of file contents.
+
+    :param source: source file path
+    :param target: destination directory or file path
+    :return: true if source and destination files exist and have identical md5 hashes
+    """
+    # if the target doesn't exist, it can't be identical
+    if os.path.exists(target):
+        # if the source doesn't exist then we have bigger problems, if it isn't a file, skip this check
+        if os.path.isfile(source):
+            # if the target is a directory, find out what the target file will be and check that
+            target_file = target
+            if os.path.isdir(target):
+                target_file = os.path.join(target, os.path.basename(source))
+                if not os.path.exists(target_file):
+                    return False
+            # only check hash equality if file sizes are identical
+            if os.path.getsize(source) == os.path.getsize(target_file):
+                source_hash = md5_hash_of_file(source)
+                target_hash = md5_hash_of_file(target_file)
+                return source_hash == target_hash
+    return False
+
+
+def copy(source, destination, skip_unchanged=False):
+    fnull = open(os.devnull, 'w')
+    source = os.path.abspath(source)
+    destination = os.path.abspath(destination)
+    result = 1
+
+    if skip_unchanged and files_are_identical(source, destination):
+        return 0
+
+    # If 'copy' exists, use that
+    try:
+        result = subprocess.call(['copy', source, destination], shell=True, stdout=fnull, stderr=subprocess.STDOUT)
+    except OSError:
+        pass
+    if result == 0:
+        return result
+
+    # If 'cp' exists, use that
+    try:
+        return subprocess.call(['cp', source, destination], shell=False, stdout=fnull, stderr=subprocess.STDOUT)
+    except OSError:
+        pass
+    if result == 0:
+        return result
+
+    # Otherwise, fall back to shutil.copy, but emit a warning
+    print("Warning: 'copy' and 'cp' not found on the system, falling back to shutil.copy (may be "
+              "substantially slower)")
+    return shutil.copy(source, destination)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

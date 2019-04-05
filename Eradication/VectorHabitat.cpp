@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -11,7 +11,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "VectorHabitat.h"
 
 #include "Climate.h"
-#include "Contexts.h"
 #include "Exceptions.h"
 #include "Log.h"
 #include "SimulationConfig.h" // TODO: long-term, it seems that lloffset should belong to Node and the larval decay rates and rainfall mortality thresholds to this class.
@@ -347,15 +346,15 @@ namespace Kernel
         {
             m_rainfall_mortality = 0;
         }
-        else if(params()->vector_params->vector_larval_rainfall_mortality == VectorRainfallMortality::SIGMOID)
+        else if( params()->vector_params->vector_larval_rainfall_mortality == VectorRainfallMortality::SIGMOID )
         {
-            if( rainfall * MM_PER_METER < params()->vector_params->larval_rainfall_mortality_threshold * dt )
+            if( ( rainfall * MM_PER_METER < params()->vector_params->larval_rainfall_mortality_threshold * dt ) || ( dt <= 0 ) )
             {
-                m_rainfall_mortality = 0;
+	            m_rainfall_mortality = 0;
             }
             else
             {
-                m_rainfall_mortality = (rainfall * MM_PER_METER - params()->vector_params->larval_rainfall_mortality_threshold * dt) / (params()->vector_params->larval_rainfall_mortality_threshold * dt);
+	            m_rainfall_mortality = ( rainfall * MM_PER_METER - params()->vector_params->larval_rainfall_mortality_threshold * dt ) / ( params()->vector_params->larval_rainfall_mortality_threshold * dt );
             }
         }
         else if(params()->vector_params->vector_larval_rainfall_mortality == VectorRainfallMortality::SIGMOID_HABITAT_SHIFTING)

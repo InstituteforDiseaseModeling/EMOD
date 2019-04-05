@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -17,16 +17,16 @@ static const char* BUILD_DATE = __DATE__ " " __TIME__;
 #endif
 
 #ifndef SCCS_BRANCH
-#define    SCCS_BRANCH      "2.18-release (c736ea0)"
+#define    SCCS_BRANCH      "unknown-branch (unknown)"
 #endif
 #ifndef SCCS_DATE
-#define    SCCS_DATE        "2018-06-12 11:32:40 -0700"
+#define    SCCS_DATE        "date time unknown"
 #endif
 
 #define    MAJOR_VERSION    2
-#define    MINOR_VERSION    18
+#define    MINOR_VERSION    20
 #ifndef REVISION_NUMBER
-#define    REVISION_NUMBER  16
+#define    REVISION_NUMBER  00
 #endif
 #define    BUILD_NUMBER     0
 

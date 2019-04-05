@@ -5,13 +5,13 @@
             "Event_Coordinator_Config": {
                 "Demographic_Coverage": 1.0,
                 "Intervention_Config": {
-                    "class": "SimpleHealthSeekingBehavior",
-                    "Tendency": 0.01,
-                    "Actual_IndividualIntervention_Config": 
-                    {
+                    "Actual_IndividualIntervention_Config": {
                         "Outbreak_Source": "PrevalenceIncrease",
                         "class": "OutbreakIndividual"
-                    }
+                    },
+                    "Event_Or_Config": "Config",
+                    "Tendency": 0.01,
+                    "class": "SimpleHealthSeekingBehavior"
                 },
                 "Target_Demographic": "Everyone",
                 "class": "StandardInterventionDistributionEventCoordinator"
@@ -27,13 +27,13 @@
             "Event_Coordinator_Config": {
                 "Demographic_Coverage": 1.0,
                 "Intervention_Config": {
-                    "class": "SimpleHealthSeekingBehavior",
-                    "Tendency": 0.9,
-                    "Actual_IndividualIntervention_Config": 
-                    {
+                    "Actual_IndividualIntervention_Config": {
                         "Outbreak_Source": "PrevalenceIncrease",
                         "class": "OutbreakIndividual"
-                    }
+                    },
+                    "Event_Or_Config": "Config",
+                    "Tendency": 0.9,
+                    "class": "SimpleHealthSeekingBehavior"
                 },
                 "Target_Demographic": "Everyone",
                 "class": "StandardInterventionDistributionEventCoordinator"
@@ -49,13 +49,13 @@
             "Event_Coordinator_Config": {
                 "Demographic_Coverage": 1.0,
                 "Intervention_Config": {
-                    "class": "SimpleHealthSeekingBehavior",
-                    "Tendency": 0.1,
-                    "Actual_IndividualIntervention_Config": 
-                    {
+                    "Actual_IndividualIntervention_Config": {
                         "Outbreak_Source": "PrevalenceIncrease",
                         "class": "OutbreakIndividual"
-                    }
+                    },
+                    "Event_Or_Config": "Config",
+                    "Tendency": 0.1,
+                    "class": "SimpleHealthSeekingBehavior"
                 },
                 "Target_Demographic": "Everyone",
                 "class": "StandardInterventionDistributionEventCoordinator"
@@ -71,14 +71,14 @@
             "Event_Coordinator_Config": {
                 "Demographic_Coverage": 1.0,
                 "Intervention_Config": {
-                    "class": "SimpleHealthSeekingBehavior",
-                    "Delay_Distribution": "EXPONENTIAL_DURATION",
-                    "Delay_Period": 25,
-                    "Actual_IndividualIntervention_Config": 
-                    {
+                    "Actual_IndividualIntervention_Config": {
                         "Outbreak_Source": "PrevalenceIncrease",
                         "class": "OutbreakIndividual"
-                    }
+                    },
+                    "Delay_Period_Distribution": "EXPONENTIAL_DISTRIBUTION",
+                    "Delay_Period_Exponential": 25,
+                    "Event_Or_Config": "Config",
+                    "class": "SimpleHealthSeekingBehavior"
                 },
                 "Target_Demographic": "Everyone",
                 "class": "StandardInterventionDistributionEventCoordinator"

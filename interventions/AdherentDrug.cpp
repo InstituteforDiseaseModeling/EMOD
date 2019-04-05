@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -13,11 +13,12 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <numeric>      // std::accumulate
 
 #include "IWaningEffect.h"
-#include "Contexts.h"
 #include "InterventionEnums.h"
 #include "InterventionFactory.h"
 #include "IndividualEventContext.h"
 #include "NodeEventContext.h"
+#include "IIndividualHumanContext.h"
+#include "RANDOM.h"
 
 SETUP_LOGGING( "AdherentDrug" )
 
@@ -251,7 +252,7 @@ namespace Kernel
         {
             float current = m_pAdherenceEffect->Current();
             float ran = -1.0;
-            is_taking_dose = SMART_DRAW( current );
+            is_taking_dose = parent->GetRng()->SmartDraw( current );
         }
 
         if( !is_taking_dose )
@@ -288,15 +289,8 @@ namespace Kernel
 
         if( is_taking_dose && !m_TookDoseEvent.IsUninitialized() )
         {
-            INodeTriggeredInterventionConsumer* broadcaster = nullptr;
-            if( s_OK != parent->GetEventContext()->GetNodeEventContext()->QueryInterface( GET_IID( INodeTriggeredInterventionConsumer ), (void**)&broadcaster ) )
-            {
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__,
-                                               "context->GetParent()->GetEventContext()->GetNodeEventContext()",
-                                               "INodeTriggeredInterventionConsumer",
-                                               "INodeEventContext" );
-            }
-            broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), m_TookDoseEvent );
+            IIndividualEventBroadcaster* broadcaster = parent->GetEventContext()->GetNodeEventContext()->GetIndividualEventBroadcaster();
+            broadcaster->TriggerObservers( parent->GetEventContext(), m_TookDoseEvent );
         }
 
         return is_taking_dose;

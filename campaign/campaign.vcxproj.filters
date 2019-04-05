@@ -252,6 +252,12 @@
     <ClInclude Include="Interventions.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\utils\Properties.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BroadcasterObserver.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

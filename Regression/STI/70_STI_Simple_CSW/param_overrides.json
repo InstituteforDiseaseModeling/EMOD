@@ -1,34 +1,34 @@
 {
-    "Default_Config_Path": "./defaults/sti_default_config.json", 
+    "Default_Config_Path": "../.././defaults/sti_default_config.json",
     "parameters": {
         "DEMOGRAPHICS": {
-            "Enable_Vital_Dynamics": 0,
             "Demographics_Filenames": [
-                 "../../HIV/input/SA_UN_demographics.json", 
-                 "../../HIV/input/PFA_overlay.json", 
-                 "../../HIV/input/PFA_overlay_commercial.json",
-                 "PFA_overlay_commercial_assortivity.json",
-                 "PFA_Concurrency.json"
+                "../../HIV/input/SA_UN_demographics.json",
+                "../../HIV/input/PFA_overlay.json",
+                "../../HIV/input/PFA_overlay_commercial.json",
+                "PFA_overlay_commercial_assortivity.json",
+                "PFA_Concurrency.json"
             ],
+            "Enable_Vital_Dynamics": 0,
             "MORTALITY": {
-                "Base_Mortality": 0.01, 
+                "Base_Mortality": 0.01,
                 "Post_Infection_Mortality_Multiplier": 0.5
             }
-        }, 
-        "DISEASE": {
-            "INFECTIOUSNESS": {
-                "Base_Infectivity": 10.0, 
-                "Infectious_Period_Mean": 120
-            }, 
-            "INCUBATION": {
-                "Base_Incubation_Period": 1
-            },
-            "Enable_Disease_Mortality": 0
-        }, 
-        "PRIMARY": {
-            "Simulation_Duration": 1500, 
-            "Config_Name": "70_STI_Simple_CSW"
         },
-        "Min_Days_Between_Adding_Relationships": 1
+        "DISEASE": {
+            "Enable_Disease_Mortality": 0,
+            "INCUBATION": {
+                "Incubation_Period_Constant": 1
+            },
+            "INFECTIOUSNESS": {
+                "Base_Infectivity": 10.0,
+                "Infectious_Period_Gaussian_Mean": 120
+            }
+        },
+        "Min_Days_Between_Adding_Relationships": 1,
+        "PRIMARY": {
+            "Config_Name": "70_STI_Simple_CSW",
+            "Simulation_Duration": 1500
+        }
     }
 }

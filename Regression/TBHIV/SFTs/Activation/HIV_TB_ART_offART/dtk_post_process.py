@@ -2,7 +2,7 @@
 
 import json
 import os.path as path
-import dtk_sft
+import dtk_test.dtk_sft as sft
 import numpy as np
 from scipy import stats
 import numpy as np
@@ -50,10 +50,10 @@ def parse_stdout_file(curr_timestep=0, stdout_filename="test.txt", debug=False):
             if update_time in line:
                 time += 1
             elif incubation_timer_update in line:
-                new_line = dtk_sft.add_time_stamp(time, line)
+                new_line = sft.add_time_stamp(time, line)
                 filtered_lines.append(new_line)
             elif art_notify_event in line:
-                new_line = dtk_sft.add_time_stamp(time, line)
+                new_line = sft.add_time_stamp(time, line)
                 filtered_lines.append(new_line)
 
     if debug:
@@ -111,12 +111,12 @@ def create_report_file(data):
             success = False
         for line in lines:
             if "has event" in line:
-                ind_id = int(dtk_sft.get_val("Individual ", line))
+                ind_id = int(sft.get_val("Individual ", line))
                 art_status = line.split(" ")[9].strip(".")  # get_val only gets digits
                 art_events_dict[ind_id] = art_status
             if "LifeCourseLatencyTimerUpdate" in line:
-                ind_id = int(dtk_sft.get_val("Individual ", line))
-                new_incubation_timer = float(dtk_sft.get_val("timer ", line))
+                ind_id = int(sft.get_val("Individual ", line))
+                new_incubation_timer = float(sft.get_val("timer ", line))
                 if ind_id in art_events_dict.keys():
                     if art_events_dict.get(ind_id) == "StartedART":
                         started_art_latency_data.append(new_incubation_timer)
@@ -126,10 +126,10 @@ def create_report_file(data):
                 else:
                     success = False
                     outfile.write("BAD: No art-related event found in the logs for this timer update for Individual {},"
-                                  " at time {}.\n".format(ind_id, int(dtk_sft.get_val("time= ", line))))
+                                  " at time {}.\n".format(ind_id, int(sft.get_val("time= ", line))))
         # we want the stopped art latency data to NOT match the started art latency data
         # and we expect the stopped art latency data to be long period times as made my our cd4_Activation_vector
-        if dtk_sft.test_exponential(stopped_art_latency_data, tb_cd4_activation_vector[2], integers=False,
+        if sft.test_exponential(stopped_art_latency_data, tb_cd4_activation_vector[2], integers=False,
                                     roundup=False, round_nearest=False):
             outfile.write("BAD: The StoppedArt latency data distribution matches the StartedArt latency data"
                           " distribution, but shouldn't.\n")
@@ -147,7 +147,7 @@ def create_report_file(data):
         outfile.write("Data points checked = {}.\n".format(len(stopped_art_latency_data)))
         outfile.write("SUMMARY: Success={0}\n".format(success))
 
-        dtk_sft.plot_data(sorted(stopped_art_latency_data), sorted(expected_stopped_art_data), label1="Actual",
+        sft.plot_data(sorted(stopped_art_latency_data), sorted(expected_stopped_art_data), label1="Actual",
                           label2="Expected",
                           title="StoppedART Latency data should have a similar shape/scale of duration but will not "
                                 "match",
@@ -158,7 +158,7 @@ def create_report_file(data):
 def application(output_folder="output", stdout_filename="test.txt",
                 config_filename="config.json",
                 insetchart_name="InsetChart.json",
-                report_name=dtk_sft.sft_output_filename,
+                report_name=sft.sft_output_filename,
                 debug=False):
     if debug:
         print( "output_folder: " + output_folder )
@@ -167,7 +167,7 @@ def application(output_folder="output", stdout_filename="test.txt",
         print( "insetchart_name: " + insetchart_name + "\n" )
         print( "report_name: " + report_name + "\n" )
         print( "debug: " + str(debug) + "\n" )
-    dtk_sft.wait_for_done()
+    sft.wait_for_done()
     param_obj = load_emod_parameters(config_filename)
     parsed_data = parse_stdout_file()
     inset_days = parse_json_report()

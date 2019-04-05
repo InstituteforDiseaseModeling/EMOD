@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -22,7 +22,7 @@ namespace Kernel
     {
         virtual const std::string& get_SpeciesID() const = 0;
         virtual void SetContextTo( INodeContext *context ) = 0;
-        virtual void SetupIntranodeTransmission( ITransmissionGroups *transmissionGroups ) = 0;
+        virtual void SetupIntranodeTransmission( ITransmissionGroups* txIndoor, ITransmissionGroups* txOutdoor ) = 0;
         virtual void SetupLarvalHabitat( INodeContext *context ) = 0;
         virtual void SetVectorMortality( bool mortality ) = 0;
 

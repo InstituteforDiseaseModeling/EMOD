@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -9,7 +9,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #pragma once
 
-#include "Contexts.h"
+#include "IIndividualHumanContext.h"
 #include "IIndividualHumanHIV.h"
 #include "RandomFake.h"
 #include "IHIVInterventionsContainer.h"
@@ -18,6 +18,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IIndividualHuman.h"
 #include "IndividualEventContext.h"
 #include "Interventions.h"
+#include "ISimulationContext.h"
 #include "MalariaContexts.h"
 
 using namespace Kernel;
@@ -44,6 +45,7 @@ public:
         , m_pNodeEventContext(pNEC)
         , m_pISusceptibilityHIV( pISusceptibilityHIV )
         , m_Rand()
+        , m_pMyRand(nullptr)
         , m_IntendsToBreastfeed(false)
         , m_IsPregnant(false)
         , m_Age(0.0)
@@ -62,7 +64,10 @@ public:
         }
     }
 
-    virtual ~IndividualHumanContextFake() {};
+    virtual ~IndividualHumanContextFake()
+    {
+        delete m_pMyRand;
+    };
 
     // ---------------------
     // --- ISupport Methods
@@ -121,9 +126,16 @@ public:
         return static_cast<IIndividualHumanEventContext*>(this) ;
     }
 
-    virtual ::RANDOMBASE* GetRng() override
+    virtual RANDOMBASE* GetRng() override
     { 
-        return &m_Rand ; 
+        if( m_pMyRand != nullptr )
+        {
+            return m_pMyRand;
+        }
+        else
+        {
+            return &m_Rand;
+        }
     }
 
     virtual suids::suid   GetNextInfectionSuid()                    override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
@@ -133,7 +145,7 @@ public:
     virtual ISusceptibilityContext* GetSusceptibilityContext() const override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual const NodeDemographics* GetDemographics()          const override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
 
-    virtual IIndividualHumanInterventionsContext* GetInterventionsContextbyInfection(Infection* infection)       override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+    virtual IIndividualHumanInterventionsContext* GetInterventionsContextbyInfection(IInfection* infection)       override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
 
     virtual const std::string& GetPropertyReportString() const     override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual void SetPropertyReportString( const std::string& str ) override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
@@ -183,6 +195,9 @@ public:
     virtual const suids::suid& GetMigrationDestination(void)                                       override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual void SetContextTo(Kernel::INodeContext *)                                              override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual void SetMigrationModifier( float modifier )                                            override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+    virtual bool IsSymptomatic() const                                                             override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+    virtual bool IsNewlySymptomatic() const                                                        override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." ); }
+
 
     virtual void SetGoingOnFamilyTrip( suids::suid migrationDestination, 
                                         MigrationType::Enum migrationType, 
@@ -332,7 +347,7 @@ public:
     virtual void UpdateInfectiousnessSTI(std::vector<act_prob_t> &act_prob_vec, unsigned int rel_id) override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
 
 
-
+    virtual void UpdatePausedRelationships( const Kernel::IdmDateTime &, float ) override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual void UpdateHistory( const IdmDateTime& rCurrentTime, float dt ) override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual bool AvailableForRelationship(RelationshipType::Enum) const override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual void UpdateEligibility()                                    override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
@@ -472,12 +487,19 @@ public:
 
     void SetRandUL( uint32_t ul )
     {
+        release_assert( m_pMyRand == nullptr );
         m_Rand.SetUL( ul );
     }
 
     void SetRandUL( const std::vector<uint32_t>& rUlVector )
     {
+        release_assert( m_pMyRand == nullptr );
         m_Rand.SetUL( rUlVector );
+    }
+
+    void SetMyRand( RANDOMBASE* pRng )
+    {
+        m_pMyRand = pRng;
     }
 
 private:
@@ -488,6 +510,7 @@ private:
     INodeEventContext* m_pNodeEventContext ;
     ISusceptibilityHIV* m_pISusceptibilityHIV ;
     RandomFake m_Rand ;
+    RANDOMBASE* m_pMyRand;
     bool m_IntendsToBreastfeed ;
     bool m_IsPregnant ;
     int m_Gender ;

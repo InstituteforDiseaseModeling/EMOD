@@ -1,7 +1,7 @@
 from __future__ import division    # for dividsion to be zero, required in threshold comparison in create_report_file()
 import numpy as np
 import json
-import dtk_sft
+import dtk_test.dtk_sft as sft
 import re
 import pandas as pd
 import os
@@ -99,7 +99,7 @@ def parse_output_file(output_filename="test.txt", debug=False):
     filtered_lines = []
     with open(output_filename) as logfile:
         for line in logfile:
-            if dtk_sft.has_match(line, ["Update(): Time: ",KEY_INDIVIDUAL_MOD_ACQUIRE]):   # search for "Update(): time" | Susceptibility update
+            if sft.has_match(line, ["Update(): Time: ",KEY_INDIVIDUAL_MOD_ACQUIRE]):   # search for "Update(): time" | Susceptibility update
                 filtered_lines.append(line)
     if debug:
         with open("filtered_lines.txt", "w") as outfile:
@@ -344,7 +344,7 @@ def create_report_file(param_obj, output_df, report_name, debug=False):
                         outfile.write("mfvals: " + str(mfvals) + "\n")
                         success = False
 
-        outfile.write(dtk_sft.format_success_msg(success))
+        outfile.write(sft.format_success_msg(success))
 
     return success
 

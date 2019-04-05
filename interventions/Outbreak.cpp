@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -15,6 +15,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "InterventionFactory.h"
 #include "NodeEventContext.h"  // for IOutbreakConsumer methods
 #include "StrainIdentity.h"
+#include "ISimulationContext.h"
+#include "RANDOM.h"
 
 SETUP_LOGGING( "Outbreak" )
 
@@ -52,6 +54,7 @@ namespace Kernel
     {
         initConfigTypeMap( "Number_Cases_Per_Node",  &num_cases_per_node,  Num_Import_Cases_Per_Node_DESC_TEXT, 0, INT_MAX, 1 );
         initConfigTypeMap( "Import_Age", &import_age, Import_Age_DESC_TEXT, 0, MAX_INDIVIDUAL_AGE_IN_YRS*DAYSPERYEAR, DAYSPERYEAR );
+        initConfigTypeMap( "Probability_Of_Infection", &prob_infection, Probability_Of_Infection_DESC_TEXT, 1.0 );
         
         JsonConfigurable::Configure( inputJson );
         return true;
@@ -64,7 +67,7 @@ namespace Kernel
         IOutbreakConsumer *ioc;
         if (s_OK == context->QueryInterface(GET_IID(IOutbreakConsumer), (void**)&ioc))
         {
-            ioc->AddImportCases(GetNewStrainIdentity( context ), import_age, num_cases_per_node);
+            ioc->AddImportCases(GetNewStrainIdentity( context ), import_age, num_cases_per_node, prob_infection);
             wasDistributed = true;
         }
         else
@@ -98,33 +101,14 @@ namespace Kernel
             throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, "The pointer to IInterventionFactory object is not valid (could be DLL specific)" );
         }
 
-        if (( antigen < 0 ) || ( antigen >= simConfigObj->number_basestrains ))
+        //if (( antigen < 0 ) || ( antigen >= simConfigObj->number_basestrains ))
+        if( antigen < 0 )
         {
-            throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "antigen", antigen, "number_basestrains", simConfigObj->number_basestrains );
+            //throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "antigen", antigen, "number_basestrains", simConfigObj->number_basestrains );
+            throw ConfigurationRangeException( __FILE__, __LINE__, __FUNCTION__, "antigen", antigen, 0 );
         }
 
-        if ( genome < 0 )
-        {
-            int ss = simConfigObj->number_substrains;
-            if (ss & (ss-1))
-            {
-                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Only supporting random genome generation for Number_Substrains as factor of two." );
-            }
-            unsigned int BARCODE_BITS = 0;
-            while(ss >>= 1) ++BARCODE_BITS;
-            uint32_t genome = context->GetRng()->ul() & ((1 << BARCODE_BITS)-1);
-            //genome = context->GetRng()->i(simConfigObj->number_substrains);
-            outbreak_strainID = _new_ StrainIdentity(antigen, genome);
-            LOG_DEBUG_F("random genome generation... antigen: %d\t genome: %d\n", antigen, genome);
-        }
-        else if (genome >= 0 && genome <= simConfigObj->number_substrains )
-        {
-            outbreak_strainID = _new_ StrainIdentity(antigen, genome);
-        }
-        else
-        {
-            throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "genome", genome, "number_substrains", simConfigObj->number_substrains );
-        }
+        outbreak_strainID = _new_ StrainIdentity(antigen, genome);
 
         return outbreak_strainID;
     }

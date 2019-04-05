@@ -1,0 +1,22 @@
+{
+    "Metadata": {
+      "DateCreated": "12/2/2016",
+      "Tool": "manual",
+      "Author": "stitova",
+      "IdReference": "Typhoid",
+      "Resolution": 150,
+      "NodeCount": 1
+    },
+    "Defaults": {
+              "IndividualAttributes": {
+                  "AgeDistributionFlag": 0,
+                  "AgeDistribution1": 25550,
+                  "AgeDistribution2": 0
+            }
+    },
+    "Nodes": [
+        {
+            "NodeID": 340461476
+        }
+    ]
+}

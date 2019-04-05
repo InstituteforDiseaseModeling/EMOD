@@ -1,5 +1,4 @@
 {
-    "Default_Config_Path": "defaults/vector_default_config.json",
     "CLIMATE": {
         "AIR_TEMPERATURE": {
             "Base_Air_Temperature": 30
@@ -26,25 +25,27 @@
             "Namawala_single_node_demographics.json"
         ],
         "Enable_Birth": 1,
+        "Enable_Immune_Decay": 1,
+        "Enable_Immunity": 1,
         "Enable_Initial_Prevalence": 1,
-		"Enable_Immunity": 1,
-		"Enable_Immune_Decay": 1,
         "Enable_Maternal_Protection": 0,
-        "Enable_Natural_Mortality": 0, 
+        "Enable_Natural_Mortality": 0,
         "Population_Scale_Type": "FIXED_SCALING"
     },
+    "Default_Config_Path": "../../defaults/vector_default_config.json",
     "GENERAL_DISEASE": {
-        "Base_Incubation_Period": 25,
-		"Base_Infectious_Period": 180,
-		"Base_Infectivity": 1,
-		"Infectious_Period_Distribution": "EXPONENTIAL_DURATION",
-        "Infection_Updates_Per_Timestep": 1
+        "Base_Infectivity": 1,
+        "Infection_Updates_Per_Timestep": 1,
+        "Infectious_Period_Distribution": "EXPONENTIAL_DISTRIBUTION",
+        "Infectious_Period_Exponential": 180,
+        "Incubation_Period_Constant": 25
     },
     "MOSQUITO": {
         "Egg_Hatch_Density_Dependence": "NO_DENSITY_DEPENDENCE",
         "HEG_Fecundity_Limiting": 0.2,
         "HEG_Homing_Rate": 1.0,
         "HEG_Model": "DRIVING_Y",
+        "Vector_Sampling_Type": "TRACK_ALL_VECTORS",
         "Vector_Species_Names": [
             "arabiensis"
         ],
@@ -53,7 +54,6 @@
                 "Acquire_Modifier": 1
             }
         },
-        "Vector_Sampling_Type": "TRACK_ALL_VECTORS",
         "Wolbachia_Infection_Modification": 0.5,
         "Wolbachia_Mortality_Modification": 1.2
     },

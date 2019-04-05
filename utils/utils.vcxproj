@@ -140,9 +140,14 @@
     </ClCompile>
     <ClCompile Include="Configure.cpp" />
     <ClCompile Include="Coredump.cpp" />
-    <ClCompile Include="DurationDistribution.cpp" />
+    <ClCompile Include="DistributionBase.cpp" />
+    <ClCompile Include="DistributionFactory.cpp" />
+    <ClCompile Include="Distributions.cpp" />
+    <ClCompile Include="DistributionsConfigurable.cpp" />
     <ClCompile Include="Environment.cpp" />
     <ClCompile Include="EventTrigger.cpp" />
+    <ClCompile Include="EventTriggerCoordinator.cpp" />
+    <ClCompile Include="EventTriggerNode.cpp" />
     <ClCompile Include="Exceptions.cpp" />
     <ClCompile Include="FileSystem.cpp" />
     <ClCompile Include="IArchive.cpp" />
@@ -164,11 +169,13 @@
     <ClCompile Include="MathFunctions.cpp" />
     <ClCompile Include="Memory.cpp" />
     <ClCompile Include="NodeProperties.cpp" />
+    <ClCompile Include="PiecewiseDistributionBase.cpp" />
     <ClCompile Include="ProgramOptions.cpp" />
     <ClCompile Include="ProgVersion.cpp" />
     <ClCompile Include="Properties.cpp" />
     <ClCompile Include="BaseProperties.cpp" />
     <ClCompile Include="RANDOM.cpp" />
+    <ClCompile Include="RandomNumberGeneratorFactory.cpp" />
     <ClCompile Include="RapidJsonImpl.cpp" />
     <ClCompile Include="Serialization.cpp" />
     <ClCompile Include="Serializer.cpp" />
@@ -206,6 +213,8 @@
     <ClInclude Include="..\rapidjson\include\rapidjson\stringbuffer.h" />
     <ClInclude Include="..\rapidjson\include\rapidjson\writer.h" />
     <ClInclude Include="..\rapidjson\modp\modp_numtoa.h" />
+    <ClInclude Include="BaseEventTrigger.h" />
+    <ClInclude Include="BaseEventTriggerTemplates.h" />
     <ClInclude Include="BasePropertiesTemplates.h" />
     <ClInclude Include="BinaryArchiveReader.h" />
     <ClInclude Include="BinaryArchiveWriter.h" />
@@ -216,13 +225,17 @@
     <ClInclude Include="Configure.h" />
     <ClInclude Include="Coredump.h" />
     <ClInclude Include="Debug.h" />
-    <ClInclude Include="DurationDistribution.h" />
+    <ClInclude Include="DistributionsConfigurable.h" />
     <ClInclude Include="EnumSupport.h" />
     <ClInclude Include="Environment.h" />
     <ClInclude Include="EventTrigger.h" />
+    <ClInclude Include="EventTriggerCoordinator.h" />
+    <ClInclude Include="EventTriggerNode.h" />
     <ClInclude Include="Exceptions.h" />
+    <ClInclude Include="ExternalNodeId.h" />
     <ClInclude Include="FactorySupport.h" />
     <ClInclude Include="IArchive.h" />
+    <ClInclude Include="IDistribution.h" />
     <ClInclude Include="IdmDateTime.h" />
     <ClInclude Include="FileSystem.h" />
     <ClInclude Include="IdmApi.h" />
@@ -249,6 +262,7 @@
     <ClInclude Include="BaseProperties.h" />
     <ClInclude Include="PropertiesString.h" />
     <ClInclude Include="RANDOM.h" />
+    <ClInclude Include="RandomNumberGeneratorFactory.h" />
     <ClInclude Include="RapidJsonImpl.h" />
     <ClInclude Include="Serialization.h" />
     <ClInclude Include="Serializer.h" />

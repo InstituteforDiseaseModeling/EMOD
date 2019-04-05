@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -75,6 +75,7 @@ namespace Kernel
         virtual void InitializeHuman() override;
         virtual void Update(float currenttime, float dt) override;
         virtual void UpdateHistory( const IdmDateTime& rCurrentTime, float dt ) override;
+        virtual void UpdatePausedRelationships( const IdmDateTime& rCurrentTime, float dt ) override;
 
         virtual void UpdateSTINetworkParams(const char *prop = nullptr, const char* new_value = nullptr) override;
 
@@ -87,7 +88,7 @@ namespace Kernel
 
         // Infections and Susceptibility
         virtual void CreateSusceptibility( float imm_mod=1.0f, float risk_mod=1.0f ) override;
-        virtual void ExposeToInfectivity(float dt, const TransmissionGroupMembership_t* transmissionGroupMembership) override;
+        virtual void ExposeToInfectivity(float dt, TransmissionGroupMembership_t transmissionGroupMembership) override;
         virtual void Expose(const IContagionPopulation* cp, float dt, TransmissionRoute::Enum transmission_route) override;
 
         virtual void UpdateGroupMembership() override;
@@ -157,7 +158,6 @@ namespace Kernel
         virtual void UpdateAge( float dt ) override;
         virtual IInfection* createInfection(suids::suid _suid) override;
         virtual void setupInterventionsContainer() override;
-        virtual void ReportInfectionState() override;
 
         RelationshipSet_t relationships;
         unsigned int max_relationships[RelationshipType::Enum::COUNT];
@@ -174,6 +174,7 @@ namespace Kernel
         float delay_between_adding_relationships_timer;
         bool potential_exposure_flag;
         STIInterventionsContainer* m_pSTIInterventionsContainer;
+        std::map< int, TransmissionGroupMembership_t > transmissionGroupMembershipByRelationship;
 
     private:
         virtual void IndividualHumanSTI::SetConcurrencyParameters( const char *prop, const char* prop_value );

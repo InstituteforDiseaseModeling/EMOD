@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -14,6 +14,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <iostream>
 #include <fstream>
 #include <sstream> // ostringstream
+#include <csignal>
 
 #include <math.h>
 #include <stdio.h>
@@ -24,6 +25,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #ifdef WIN32
 #include <windows.h>
+#else
+#include <fenv.h>
 #endif
 
 #include "ProgramOptions.h"
@@ -64,8 +67,65 @@ void Usage(char* cmd)
     exit(1);
 }
 
-int main(int argc, char* argv[])
+void FPE_SignalHandler( int signal )
 {
+    // From https://en.cppreference.com/w/cpp/utility/program/signal, "On entry to the signal handler, the state of the floating-point environment
+    // and the values of all objects is unspecified... ". Value of control word seems to be reset to _MCW_EM
+
+    std::stringstream ss;
+    ss << "Floating Point Exception, signal: " << signal << ".";
+
+    Kernel::IllegalOperationException exp(__FILE__, __LINE__, __FUNCTION__, ss.str().c_str());
+    std::cerr << exp.GetMsg() << "\n\n";
+    std::cerr << exp.GetStackTrace() << "\n\n";
+    fflush( stderr );
+
+    std::cout << "\n\n";
+    std::cout << exp.GetMsg() << "\n\n";
+    std::cout << exp.GetStackTrace() << "\n\n";
+    fflush( stdout );
+    exit(-1);
+}
+
+void SetFloatingPointSignalHandler()
+{
+#ifdef WIN32
+    unsigned int currentlControl = 0;        
+    _controlfp_s( &currentlControl, 0, 0 );      //read current FPE control word
+
+    _controlfp_s(&currentlControl, ~(_EM_ZERODIVIDE | _EM_OVERFLOW | _EM_INVALID), _MCW_EM);	// division by 0 | positive/negative infinity (e.g. FLT_MAX/FLT_MIN) |  NaN 
+
+    _controlfp_s(&currentlControl, 0, 0);        //read FPE control word after clearing the bits
+    LOG_DEBUG_F("Signal Handler control word: %u \n", currentlControl);
+
+#else
+    feenableexcept(FE_INVALID | FE_DIVBYZERO | FE_OVERFLOW);    // division by 0 | positive/negative infinity (e.g. FLT_MAX/FLT_MIN) |  NaN 
+    LOG_DEBUG_F("Signal Handler control word: %d \n", fegetexcept() );
+#endif
+
+    // Install a signal handler
+    if( std::signal(SIGFPE, FPE_SignalHandler) )
+    {
+        LOG_WARN("Could not install Floating Point Exception signal handler\n");
+    }
+
+}
+
+void DisableFloatingPointSignalHandler()
+{
+#ifdef WIN32
+    unsigned int currentlControl = 0;
+    _controlfp_s(&currentlControl, 0, 0);   //read current control word
+
+    _controlfp_s(&currentlControl, currentlControl | _EM_ZERODIVIDE | _EM_INVALID , _MCW_EM);	// disable FPE signals by setting bits    
+#else
+    feclearexcept(FE_INVALID | FE_DIVBYZERO | FE_OVERFLOW);    // disable FPE signals
+#endif
+    std::signal(SIGFPE, SIG_DFL);	//set default signal handler for SIGFPE
+}
+
+int main(int argc, char* argv[])
+{    
     // First thing to do when app launches
     Environment::setLogger(new SimpleLogger());
     if (argc < 2)
@@ -94,8 +154,9 @@ int main(int argc, char* argv[])
     }
     sim_types_str.pop_back();
     sim_types_str.pop_back();
-    output << sim_types_str << "." << std::endl;
+    output << sim_types_str << "." << std::endl << std::endl;
     LOG_INFO_F( output.str().c_str() );
+    EnvPtr->Log->Flush();
     delete pv;
  
 /* // for debugging all kernel allocations, use inner block around controller lifetime to ignore some environment and mpi stuff
@@ -170,7 +231,7 @@ int MPIInitWrapper( int argc, char* argv[])
         // caught, tear everything down, decisively.
         if (!fSuccessful)
         {
-            if( EnvPtr != nullptr )
+            if( EnvPtr != nullptr && EnvPtr->Log != nullptr )
             {
                 EnvPtr->Log->Flush();
             }
@@ -238,6 +299,7 @@ bool ControllerInitWrapper( int argc, char *argv[], IdmMpi::MessageInterface* pM
         {
             ProgDllVersion pv;
             std::ostringstream oss;
+            oss << std::endl;
             oss << argv[0] << " version: " << pv.getVersion()  << std::endl;
             std::list<string> dllNames;
             std::list<string> dllVersions;
@@ -437,6 +499,7 @@ bool ControllerInitWrapper( int argc, char *argv[], IdmMpi::MessageInterface* pM
         LOG_INFO( "Loaded Configuration...\n" ); 
         //LOG_INFO_F( "Name: %s\n", GET_CONFIGURABLE(SimulationConfig)->ConfigName.c_str() );  // can't get ConfigName because we haven't initialized SimulationConfig yet...
         LOG_INFO_F( "%d parameters found.\n", (EnvPtr->Config)->As<json::Object>().Size() );
+        EnvPtr->Log->Flush();
 
         Kernel::SimulationConfig* SimConfig = Kernel::SimulationConfigFactory::CreateInstance(EnvPtr->Config);
         if (SimConfig)
@@ -451,14 +514,17 @@ bool ControllerInitWrapper( int argc, char *argv[], IdmMpi::MessageInterface* pM
 
         // override controller selection if unit tests requested on command line
         LOG_INFO("Initializing Controller...\n");
+        EnvPtr->Log->Flush();
         IController *controller = ControllerFactory::CreateController(EnvPtr->Config);
 
         if (controller)
         {
+            SetFloatingPointSignalHandler();    // Enable floating point signal handler while controller is running
             status = controller->Execute();
             if (status)
             {
-                release_assert( EnvPtr );
+                DisableFloatingPointSignalHandler();	//prevent external programs from triggering fpe, e.g. Python dll
+            	release_assert( EnvPtr );
                 if ( EnvPtr->MPI.Rank == 0 )
                 {
                     // Run python post-process script; does nothing if no python.

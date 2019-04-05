@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -20,6 +20,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Log.h"
 #include "Configure.h"
 #include "InterventionFactory.h"
+#include "EventTriggerCoordinator.h"
 
 /*
     Notes on extending ECH functionality
@@ -34,20 +35,27 @@ SETUP_LOGGING( "SimulationEventContext" )
 
 namespace Kernel
 {
-
     IMPL_QUERY_INTERFACE1(SimulationEventContextHost, ISimulationEventContext)
 
     SimulationEventContextHost::SimulationEventContextHost(Simulation* _sim)
-    : sim(_sim)
+        : sim(_sim)
+        , event_coordinators()
+        , event_queue()
+        , coordinator_broadcaster_impl()
+        , node_broadcaster_impl()
     {
     }
 
     SimulationEventContextHost::SimulationEventContextHost()
-    : sim(nullptr)
+        : sim(nullptr)
+        , event_coordinators()
+        , event_queue()
+        , coordinator_broadcaster_impl()
+        , node_broadcaster_impl()
     {
     }
 
-    IdmDateTime
+    const IdmDateTime&
     SimulationEventContextHost::GetSimulationTime()
     const
     {
@@ -59,12 +67,6 @@ namespace Kernel
     const
     {
         return sim->GetSimulationTimestep();
-    }
-
-    RANDOMBASE*
-    SimulationEventContextHost::GetRng()
-    {
-        return sim->GetRng();
     }
 
     SimulationEventContextHost::~SimulationEventContextHost()
@@ -149,6 +151,9 @@ namespace Kernel
                 ++iterator;
             }
         }
+
+        coordinator_broadcaster_impl.DisposeOfUnregisteredObservers();
+        node_broadcaster_impl.DisposeOfUnregisteredObservers();
     }
 
     void SimulationEventContextHost::LoadCampaignFromFile(const std::string& campaignfile, const std::vector<ExternalNodeId_t>& nodeIds_demographics)
@@ -248,6 +253,52 @@ namespace Kernel
     void SimulationEventContextHost::RegisterEventCoordinator( IEventCoordinator* iec )
     {
         event_coordinators.push_back(iec); iec->AddRef();
+    }
+
+    ICoordinatorEventBroadcaster* SimulationEventContextHost::GetCoordinatorEventBroadcaster()
+    {
+        return this;
+    }
+
+    INodeEventBroadcaster* SimulationEventContextHost::GetNodeEventBroadcaster()
+    {
+        return this;
+    }
+
+    void SimulationEventContextHost::RegisterObserver( ICoordinatorEventObserver* pObserver,
+                                                       const EventTriggerCoordinator& trigger )
+    {
+        coordinator_broadcaster_impl.RegisterObserver( pObserver, trigger );
+    }
+
+    void SimulationEventContextHost::UnregisterObserver( ICoordinatorEventObserver* pObserver,
+                                                         const EventTriggerCoordinator& trigger )
+    {
+        coordinator_broadcaster_impl.UnregisterObserver( pObserver, trigger );
+    }
+
+    void SimulationEventContextHost::TriggerObservers( IEventCoordinatorEventContext* pCoordinator,
+                                                       const EventTriggerCoordinator& trigger )
+    {
+        coordinator_broadcaster_impl.TriggerObservers( pCoordinator, trigger );
+    }
+
+    void SimulationEventContextHost::RegisterObserver( INodeEventObserver* pObserver,
+                                                       const EventTriggerNode& trigger )
+    {
+        node_broadcaster_impl.RegisterObserver( pObserver, trigger );
+    }
+
+    void SimulationEventContextHost::UnregisterObserver( INodeEventObserver* pObserver,
+                                                         const EventTriggerNode& trigger )
+    {
+        node_broadcaster_impl.UnregisterObserver( pObserver, trigger );
+    }
+
+    void SimulationEventContextHost::TriggerObservers( INodeEventContext* pNodeEventContext,
+                                                       const EventTriggerNode& trigger )
+    {
+        node_broadcaster_impl.TriggerObservers( pNodeEventContext, trigger );
     }
 
     void SimulationEventContextHost::propagateContextToDependents()

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -12,13 +12,14 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Log.h" // for base class
 #include "VectorContexts.h"
 #include "VectorPopulation.h"
+#include "INodeContext.h"
 
 SETUP_LOGGING( "VectorReporter" )
 
-static const string _adult_vectors_label( "Adult Vectors" );
-static const string _infectious_vectors_label( "Infectious Vectors" );
-static const string _daily_eir_label( "Daily EIR" );
-static const string _daily_bites_per_human_label( "Daily Bites per Human" );
+static const std::string _adult_vectors_label( "Adult Vectors" );
+static const std::string _infectious_vectors_label( "Infectious Vectors" );
+static const std::string _daily_eir_label( "Daily EIR" );
+static const std::string _daily_bites_per_human_label( "Daily Bites per Human" );
 
 namespace Kernel {
 

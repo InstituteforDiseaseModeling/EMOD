@@ -1,80 +1,72 @@
 {
-    "Campaign_Name": "1c_MaleCircumcision_Continuous", 
-    "Default_Campaign_Path": "defaults/hiv_default_campaign.json", 
-    "Use_Defaults": 1,
-    "Events":
-    [
+    "Campaign_Name": "1c_MaleCircumcision_Continuous",
+    "Default_Campaign_Path": "defaults/hiv_default_campaign.json",
+    "Events": [
         {
             "BEGIN": "MALE CIRCUMCISION AT 5%/YEAR STARTING IN 2020",
-            "class": "CampaignEventByYear",
-            "Event_Name": "Total population draws from an exponential distribution for male circumcision on Jan 1, 2020",
-            "Start_Year": 2020,
-            "Nodeset_Config":
-            {
-                "class": "NodeSetAll"
-            },
-            "Event_Coordinator_Config":
-            {
-                "class": "StandardInterventionDistributionEventCoordinator", 
-                "Target_Demographic": "ExplicitAgeRangesAndGender", 
-                "Target_Gender": "Male", 
-                "Demographic_Coverage": 1, 
-                "Intervention_Config":
-                {
-                    "class": "DelayedIntervention", 
-                    "Delay_Distribution": "EXPONENTIAL_DURATION", 
-                    "Delay_Period": 7300, 
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
                     "Actual_IndividualIntervention_Configs": [
                         {
-                            "class": "HIVSimpleDiagnostic", 
+                            "Base_Sensitivity": 1,
+                            "Base_Specificity": 1,
+                            "Event_Or_Config": "Event",
+                            "Negative_Diagnosis_Event": "HIVNeedsMaleCircumcision",
                             "New_Property_Value": "InterventionStatus:None",
-                            "Base_Specificity": 1, 
-                            "Base_Sensitivity": 1, 
-                            "Event_Or_Config": "Event", 
-                            "Positive_Diagnosis_Event": "NoTrigger", 
-                            "Negative_Diagnosis_Event": "HIVNeedsMaleCircumcision" 
+                            "Positive_Diagnosis_Event": "",
+                            "class": "HIVSimpleDiagnostic"
                         }
-                    ]
-                }
-            }
-        }, 
-        {
-            "class": "CampaignEventByYear", 
-            "Event_Name": "Male circumcision after birth starting Jan 1, 2020", 
-            "Start_Year": 2020, 
-            "Nodeset_Config":
-            {
+                    ],
+                    "Delay_Period_Distribution": "EXPONENTIAL_DISTRIBUTION",
+                    "Delay_Period_Exponential": 7300,
+                    "class": "DelayedIntervention"
+                },
+                "Target_Demographic": "ExplicitAgeRangesAndGender",
+                "Target_Gender": "Male",
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "Total population draws from an exponential distribution for male circumcision on Jan 1, 2020",
+            "Nodeset_Config": {
                 "class": "NodeSetAll"
-            }, 
-            "Event_Coordinator_Config":
-            {
-                "class": "StandardInterventionDistributionEventCoordinator", 
-                "Intervention_Config":
-                {
-                    "class": "BirthTriggeredIV", 
-                    "Demographic_Coverage": 1, 
-                    "Target_Demographic": "ExplicitGender", 
-                    "Target_Gender": "Male", 
-                    "Actual_IndividualIntervention_Config":
-                    {
-                        "class": "DelayedIntervention",
-                        "Delay_Distribution": "EXPONENTIAL_DURATION",
-                        "Delay_Period": 7300,
+            },
+            "Start_Year": 2020,
+            "class": "CampaignEventByYear"
+        },
+        {
+            "END": "MALE CIRCUMCISION AT 5%/YEAR STARTING IN 2020",
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "Actual_IndividualIntervention_Config": {
                         "Actual_IndividualIntervention_Configs": [
                             {
-                                "class": "HIVSimpleDiagnostic",
-                                "New_Property_Value": "InterventionStatus:None",
-                                "Base_Specificity": 1,
                                 "Base_Sensitivity": 1,
+                                "Base_Specificity": 1,
                                 "Event_Or_Config": "Event",
-                                "Positive_Diagnosis_Event": "NoTrigger",
-                                "Negative_Diagnosis_Event": "HIVNeedsMaleCircumcision"
+                                "Negative_Diagnosis_Event": "HIVNeedsMaleCircumcision",
+                                "New_Property_Value": "InterventionStatus:None",
+                                "Positive_Diagnosis_Event": "",
+                                "class": "HIVSimpleDiagnostic"
                             }
-                        ]
-                    }
-                }
+                        ],
+                        "Delay_Period_Distribution": "EXPONENTIAL_DISTRIBUTION",
+                        "Delay_Period_Exponential": 7300,
+                        "class": "DelayedIntervention"
+                    },
+                    "Demographic_Coverage": 1,
+                    "Target_Demographic": "ExplicitGender",
+                    "Target_Gender": "Male",
+                    "class": "BirthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
             },
-            "END": "MALE CIRCUMCISION AT 5%/YEAR STARTING IN 2020"
+            "Event_Name": "Male circumcision after birth starting Jan 1, 2020",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Year": 2020,
+            "class": "CampaignEventByYear"
         }
-    ]
+    ],
+    "Use_Defaults": 1
 }

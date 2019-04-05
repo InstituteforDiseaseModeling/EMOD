@@ -1,52 +1,72 @@
 {
     "Campaign_Name": "1a_MaleCircumcision_After_Negative_HIV_Test_Post2020",
     "Default_Campaign_Path": "defaults/hiv_default_campaign.json",
-    "Use_Defaults": 1,
     "Events": [
         {
-            "class": "CampaignEventByYear",
-            "Event_Name": "HIVNeedsMaleCircumcision: Hand out MaleCircumcision",
-            "Start_Year": 1990,
-            "Nodeset_Config": {
-                "class": "NodeSetAll"
-            },
+            "END": "MALE CIRCUMCISION",
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
+                    "Actual_IndividualIntervention_Config": {
+                        "Circumcision_Reduced_Acquire": 0.6,
+                        "class": "MaleCircumcision"
+                    },
                     "Trigger_Condition_List": [
                         "HIVNeedsMaleCircumcision",
                         "HCTTestingLoop8",
                         "ARTStaging9"
                     ],
-                    "Actual_IndividualIntervention_Config": {
-                        "class": "MaleCircumcision",
-                        "Circumcision_Reduced_Acquire": 0.6
-                    }
-                }
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
             },
-            "END": "MALE CIRCUMCISION"
-        },
-        {
-            "BEGIN": "HCT TESTING LOOP",
-            "class": "CampaignEventByYear",
-            "Event_Name": "HCTTestingLoop: state 0 (delay to next HCT)",
-            "Start_Year": 1990,
+            "Event_Name": "HIVNeedsMaleCircumcision: Hand out MaleCircumcision",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
+            "BEGIN": "HCT TESTING LOOP",
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
+                    "Actual_IndividualIntervention_Config": {
+                        "Broadcast_Event": "HCTTestingLoop1",
+                        "Delay_Period_Distribution": "EXPONENTIAL_DISTRIBUTION",
+                        "Delay_Period_Exponential": 365,
+                        "Disqualifying_Properties": [
+                            "InterventionStatus:LostForever",
+                            "InterventionStatus:OnART",
+                            "InterventionStatus:LinkingToART",
+                            "InterventionStatus:OnPreART",
+                            "InterventionStatus:LinkingToPreART",
+                            "InterventionStatus:ARTStaging"
+                        ],
+                        "Max_Entries": 1,
+                        "Muxer_Name": "HCTTestingLoop",
+                        "New_Property_Value": "InterventionStatus:HCTTestingLoop",
+                        "class": "HIVMuxer"
+                    },
                     "Trigger_Condition_List": [
                         "HCTTestingLoop0",
                         "HCTTestingLoop8"
                     ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "HCTTestingLoop: state 0 (delay to next HCT)",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
+            "END": "HCT TESTING LOOP",
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "class": "HIVMuxer",
-                        "Muxer_Name": "HCTTestingLoop",
-                        "Max_Entries": 1,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -55,30 +75,31 @@
                             "InterventionStatus:LinkingToPreART",
                             "InterventionStatus:ARTStaging"
                         ],
+                        "Event_Or_Config": "Event",
+                        "Negative_Diagnosis_Event": "HCTTestingLoop7",
                         "New_Property_Value": "InterventionStatus:HCTTestingLoop",
-                        "Delay_Distribution": "EXPONENTIAL_DURATION",
-                        "Delay_Period": 365,
-                        "Broadcast_Event": "HCTTestingLoop1"
-                    }
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "HCTTestingLoop: state 1 (HIV rapid diagnostic)",
-            "Start_Year": 1990,
-            "Nodeset_Config": {
-                "class": "NodeSetAll"
-            },
-            "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
-                "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
+                        "Positive_Diagnosis_Event": "ARTStaging1",
+                        "class": "HIVRapidHIVDiagnostic"
+                    },
                     "Trigger_Condition_List": [
                         "HCTTestingLoop1"
                     ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "HCTTestingLoop: state 1 (HIV rapid diagnostic)",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "class": "HIVRapidHIVDiagnostic",
+                        "Days_To_Diagnosis": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -87,118 +108,80 @@
                             "InterventionStatus:LinkingToPreART",
                             "InterventionStatus:ARTStaging"
                         ],
-                        "New_Property_Value": "InterventionStatus:HCTTestingLoop",
                         "Event_Or_Config": "Event",
-                        "Positive_Diagnosis_Event": "ARTStaging1",
-                        "Negative_Diagnosis_Event": "HCTTestingLoop7"
-                    }
-                }
-            },
-            "END": "HCT TESTING LOOP"
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "Consider male circumcision after negative HIV test (HCTTestingLoop7)",
-            "Start_Year": 1990,
-            "Nodeset_Config": {
-                "class": "NodeSetAll"
-            },
-            "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
-                "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
+                        "Female_Multiplier": 0,
+                        "Interpolation_Order": 0,
+                        "Negative_Diagnosis_Event": "HCTTestingLoop0",
+                        "New_Property_Value": "InterventionStatus:HCTTestingLoop",
+                        "Positive_Diagnosis_Event": "HCTTestingLoop8",
+                        "Time_Value_Map": {
+                            "Times": [
+                                1960,
+                                2020
+                            ],
+                            "Values": [
+                                0,
+                                0.5
+                            ]
+                        },
+                        "class": "HIVPiecewiseByYearAndSexDiagnostic"
+                    },
+                    "Property_Restrictions_Within_Node": [
+                        {
+                            "Accessibility": "Yes"
+                        }
+                    ],
                     "Trigger_Condition_List": [
                         "HCTTestingLoop7"
                     ],
-                    "Property_Restrictions_Within_Node": [
-                        {
-                            "Accessibility": "Yes"
-                        }
-                    ],
-                    "Actual_IndividualIntervention_Config": {
-                        "class": "HIVPiecewiseByYearAndSexDiagnostic",
-                        "Disqualifying_Properties": [
-                            "InterventionStatus:LostForever",
-                            "InterventionStatus:OnART",
-                            "InterventionStatus:LinkingToART",
-                            "InterventionStatus:OnPreART",
-                            "InterventionStatus:LinkingToPreART",
-                            "InterventionStatus:ARTStaging"
-                        ],
-                        "New_Property_Value": "InterventionStatus:HCTTestingLoop",
-                        "Days_To_Diagnosis": 0,
-                        "Time_Value_Map": {
-                            "Times": [
-                                1960,
-                                2020
-                            ],
-                            "Values": [
-                                0,
-                                0.5
-                            ]
-                        },
-                        "Interpolation_Order": 0,
-                        "Female_Multiplier": 0,
-                        "Event_Or_Config": "Event",
-                        "Positive_Diagnosis_Event": "HCTTestingLoop8",
-                        "Negative_Diagnosis_Event": "HCTTestingLoop0"
-                    }
-                }
-            }
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "Consider male circumcision after negative HIV test (HCTTestingLoop7)",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
         },
         {
             "BEGIN": "ART STAGING",
-            "class": "CampaignEventByYear",
-            "Event_Name": "ART Staging: state 0 (HIV rapid diagnostic)",
-            "Start_Year": 1990,
-            "Nodeset_Config": {
-                "class": "NodeSetAll"
-            },
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
+                    "Actual_IndividualIntervention_Config": {
+                        "Disqualifying_Properties": [
+                            "InterventionStatus:LostForever",
+                            "InterventionStatus:OnART",
+                            "InterventionStatus:LinkingToART",
+                            "InterventionStatus:OnPreART",
+                            "InterventionStatus:LinkingToPreART"
+                        ],
+                        "Event_Or_Config": "Event",
+                        "Negative_Diagnosis_Event": "ARTStaging8",
+                        "New_Property_Value": "InterventionStatus:ARTStagingDiagnosticTest",
+                        "Positive_Diagnosis_Event": "ARTStaging1",
+                        "class": "HIVRapidHIVDiagnostic"
+                    },
                     "Trigger_Condition_List": [
                         "ARTStaging0"
                     ],
-                    "Actual_IndividualIntervention_Config": {
-                        "class": "HIVRapidHIVDiagnostic",
-                        "Disqualifying_Properties": [
-                            "InterventionStatus:LostForever",
-                            "InterventionStatus:OnART",
-                            "InterventionStatus:LinkingToART",
-                            "InterventionStatus:OnPreART",
-                            "InterventionStatus:LinkingToPreART"
-                        ],
-                        "New_Property_Value": "InterventionStatus:ARTStagingDiagnosticTest",
-                        "Event_Or_Config": "Event",
-                        "Positive_Diagnosis_Event": "ARTStaging1",
-                        "Negative_Diagnosis_Event": "ARTStaging8"
-                    }
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "Consider male circumcision after negative HIV test (ARTStaging8)",
-            "Start_Year": 1990,
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "ART Staging: state 0 (HIV rapid diagnostic)",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition_List": [
-                        "ARTStaging8"
-                    ],
-                    "Property_Restrictions_Within_Node": [
-                        {
-                            "Accessibility": "Yes"
-                        }
-                    ],
                     "Actual_IndividualIntervention_Config": {
-                        "class": "HIVPiecewiseByYearAndSexDiagnostic",
+                        "Days_To_Diagnosis": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -206,8 +189,11 @@
                             "InterventionStatus:OnPreART",
                             "InterventionStatus:LinkingToPreART"
                         ],
+                        "Event_Or_Config": "Event",
+                        "Female_Multiplier": 0,
+                        "Interpolation_Order": 0,
                         "New_Property_Value": "InterventionStatus:ARTStagingDiagnosticTest",
-                        "Days_To_Diagnosis": 0,
+                        "Positive_Diagnosis_Event": "ARTStaging9",
                         "Time_Value_Map": {
                             "Times": [
                                 1960,
@@ -218,13 +204,27 @@
                                 0.5
                             ]
                         },
-                        "Interpolation_Order": 0,
-                        "Female_Multiplier": 0,
-                        "Event_Or_Config": "Event",
-                        "Positive_Diagnosis_Event": "ARTStaging9"
-                    }
-                }
-            }
+                        "class": "HIVPiecewiseByYearAndSexDiagnostic"
+                    },
+                    "Property_Restrictions_Within_Node": [
+                        {
+                            "Accessibility": "Yes"
+                        }
+                    ],
+                    "Trigger_Condition_List": [
+                        "ARTStaging8"
+                    ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "Consider male circumcision after negative HIV test (ARTStaging8)",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
         }
-    ]
+    ],
+    "Use_Defaults": 1
 }

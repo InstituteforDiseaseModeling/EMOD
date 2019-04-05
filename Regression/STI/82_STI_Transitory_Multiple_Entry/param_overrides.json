@@ -1,36 +1,37 @@
 {
-    "Default_Config_Path": "./defaults/sti_default_config.json", 
+    "Default_Config_Path": "../.././defaults/sti_default_config.json",
     "parameters": {
         "DEMOGRAPHICS": {
-            "Base_Population_Scale_Factor": 0.001, 
+            "Demographics_Filenames": [
+                "../../HIV/input/SA_UN_demographics.json",
+                "../../HIV/input/PFA_overlay.json",
+                "../../HIV/input/PFA_overlay_commercial.json",
+                "PFA_Commercial_HighConcurrency.json"
+            ],
             "Enable_Vital_Dynamics": 0,
-            "Demographics_Filenames": [ 
-                "../../HIV/input/SA_UN_demographics.json", 
-                "../../HIV/input/PFA_overlay.json", 
-                "../../HIV/input/PFA_overlay_commercial.json", 
-                "PFA_Commercial_HighConcurrency.json" ],
             "MORTALITY": {
-                "Base_Mortality": 0.01, 
+                "Base_Mortality": 0.01,
                 "Post_Infection_Mortality_Multiplier": 0.5
-            }
-        }, 
-        "NETWORK" : {
-            "Min_Days_Between_Adding_Relationships": 1
+            },
+            "x_Base_Population": 0.001
         },
         "DISEASE": {
-            "INFECTIOUSNESS": {
-                "Base_Infectivity": 10.0, 
-                "Infectious_Period_Mean": 120
-            }, 
+            "Enable_Disease_Mortality": 0,
             "INCUBATION": {
-                "Base_Incubation_Period": 1
+                "Incubation_Period_Constant": 1
             },
-            "Enable_Disease_Mortality": 0
-        }, 
+            "INFECTIOUSNESS": {
+                "Base_Infectivity": 10.0,
+                "Infectious_Period_Gaussian_Mean": 120
+            }
+        },
+        "NETWORK": {
+            "Min_Days_Between_Adding_Relationships": 1
+        },
         "PRIMARY": {
-            "Simulation_Duration": 50, 
             "Config_Name": "82_STI_Commercial_Multiple_Entry",
-            "Report_Relationship_Start": 1
+            "Report_Relationship_Start": 1,
+            "Simulation_Duration": 50
         }
     }
 }

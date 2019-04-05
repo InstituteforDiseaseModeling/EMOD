@@ -1,39 +1,34 @@
 {
     "Campaign_Name": "1d_MaleCircumcision_at_2020_AgeTargeted",
     "Default_Campaign_Path": "defaults/hiv_default_campaign.json",
-    "Use_Defaults": 1,
-    "Events":
-    [
+    "Events": [
         {
             "BEGIN": "MALE CIRCUMCISION FOR 50% OF UNINFECTED AGED 18-25 ON JAN 1, 2020",
-            "class": "CampaignEventByYear",
+            "END": "MALE CIRCUMCISION FOR 50% OF UNINFECTED AGED 18-25 ON JAN 1, 2020",
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 0.5,
+                "Intervention_Config": {
+                    "Base_Sensitivity": 1,
+                    "Base_Specificity": 1,
+                    "Event_Or_Config": "Event",
+                    "Negative_Diagnosis_Event": "HIVNeedsMaleCircumcision",
+                    "New_Property_Value": "InterventionStatus:None",
+                    "Positive_Diagnosis_Event": "",
+                    "class": "HIVSimpleDiagnostic"
+                },
+                "Target_Age_Max": 25,
+                "Target_Age_Min": 18,
+                "Target_Demographic": "ExplicitAgeRangesAndGender",
+                "Target_Gender": "Male",
+                "Travel_Linked": 0,
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
             "Event_Name": "Select 20% of uninfected population for male circumcision on Jan 1, 2020",
-            "Start_Year": 2020,
-            "Nodeset_Config":
-            {
+            "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
-            "Event_Coordinator_Config":
-            {
-                "class": "StandardInterventionDistributionEventCoordinator",
-                "Target_Demographic": "ExplicitAgeRangesAndGender",
-                "Target_Age_Min": 18,
-                "Target_Age_Max": 25,
-                "Target_Gender": "Male",
-                "Demographic_Coverage": 0.5,
-                "Travel_Linked": 0,
-                "Intervention_Config":
-                {
-                    "class": "HIVSimpleDiagnostic",
-                    "New_Property_Value": "InterventionStatus:None",
-                    "Base_Specificity": 1,
-                    "Base_Sensitivity": 1,
-                    "Event_Or_Config": "Event",
-                    "Positive_Diagnosis_Event": "NoTrigger",
-                    "Negative_Diagnosis_Event": "HIVNeedsMaleCircumcision"
-                }
-            },
-            "END": "MALE CIRCUMCISION FOR 50% OF UNINFECTED AGED 18-25 ON JAN 1, 2020"
+            "Start_Year": 2020,
+            "class": "CampaignEventByYear"
         },
         {
             "Event_Coordinator_Config": {
@@ -357,8 +352,8 @@
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
                         "Broadcast_Event": "HCTUptakePostDebut2",
-                        "Delay_Distribution": "EXPONENTIAL_DURATION",
-                        "Delay_Period": 365,
+                        "Delay_Period_Distribution": "EXPONENTIAL_DISTRIBUTION",
+                        "Delay_Period_Exponential": 365,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -442,9 +437,12 @@
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Choices": {
-                            "HCTUptakePostDebut0": 1
-                        },
+                        "Choice_Names": [
+                            "HCTUptakePostDebut0"
+                        ],
+                        "Choice_Probabilities": [
+                            1
+                        ],
                         "Disqualifying_Properties": [],
                         "NOTE": "No Invalid_Intervention_States so we can churn from deep in the cascade",
                         "New_Property_Value": "InterventionStatus:HCTUptakePostDebut",
@@ -471,8 +469,8 @@
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
                         "Broadcast_Event": "HCTTestingLoop1",
-                        "Delay_Distribution": "EXPONENTIAL_DURATION",
-                        "Delay_Period": 365,
+                        "Delay_Period_Distribution": "EXPONENTIAL_DISTRIBUTION",
+                        "Delay_Period_Exponential": 365,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -559,7 +557,7 @@
                         "class": "HIVSigmoidByYearAndSexDiagnostic"
                     },
                     "Trigger_Condition_List": [
-                        "HIVSymptomatic"
+                        "NewlySymptomatic"
                     ],
                     "class": "NodeLevelHealthTriggeredIV"
                 },
@@ -650,10 +648,14 @@
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Choices": {
-                            "ARTStaging1": 0.67,
-                            "NoTrigger": 0.33
-                        },
+                        "Choice_Names": [
+                            "ARTStaging1",
+                            "DummyTrigger"
+                        ],
+                        "Choice_Probabilities": [
+                            0.67,
+                            0.33
+                        ],
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -916,10 +918,14 @@
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Choices": {
-                            "ARTStaging2": 0.85,
-                            "HCTUptakePostDebut3": 0.15
-                        },
+                        "Choice_Names": [
+                            "ARTStaging2",
+                            "HCTUptakePostDebut3"
+                        ],
+                        "Choice_Probabilities": [
+                            0.85,
+                            0.15
+                        ],
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -949,8 +955,7 @@
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
                         "Broadcast_Event": "ARTStaging3",
-                        "Delay_Distribution": "FIXED_DURATION",
-                        "Delay_Period": 1,
+                        "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -961,7 +966,8 @@
                         "Max_Entries": 1,
                         "Muxer_Name": "ARTStaging",
                         "New_Property_Value": "InterventionStatus:ARTStaging",
-                        "class": "HIVMuxer"
+                        "class": "HIVMuxer",
+                        "Delay_Period_Constant": 1
                     },
                     "Trigger_Condition_List": [
                         "ARTStaging2"
@@ -1098,10 +1104,14 @@
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Choices": {
-                            "ARTStaging6": 0.85,
-                            "HCTUptakePostDebut9": 0.15
-                        },
+                        "Choice_Names": [
+                            "ARTStaging6",
+                            "HCTUptakePostDebut9"
+                        ],
+                        "Choice_Probabilities": [
+                            0.85,
+                            0.15
+                        ],
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -1232,8 +1242,7 @@
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
                         "Broadcast_Event": "OnPreART1",
-                        "Delay_Distribution": "FIXED_DURATION",
-                        "Delay_Period": 182,
+                        "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -1242,7 +1251,8 @@
                         "Max_Entries": 1,
                         "Muxer_Name": "PreART",
                         "New_Property_Value": "InterventionStatus:OnPreART",
-                        "class": "HIVMuxer"
+                        "class": "HIVMuxer",
+                        "Delay_Period_Constant": 182
                     },
                     "Trigger_Condition_List": [
                         "OnPreART0"
@@ -1262,10 +1272,14 @@
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Choices": {
-                            "HCTUptakePostDebut9": 0.25,
-                            "OnPreART2": 0.75
-                        },
+                        "Choice_Names": [
+                            "HCTUptakePostDebut9",
+                            "OnPreART2"
+                        ],
+                        "Choice_Probabilities": [
+                            0.25,
+                            0.75
+                        ],
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -1503,7 +1517,7 @@
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
                         "Broadcast_Event": "OnART1",
-                        "Delay_Distribution": "UNIFORM_DURATION",
+                        "Delay_Period_Distribution": "UNIFORM_DISTRIBUTION",
                         "Delay_Period_Max": 120,
                         "Delay_Period_Min": 1,
                         "Disqualifying_Properties": [
@@ -1553,8 +1567,8 @@
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
                         "Broadcast_Event": "OnART3",
-                        "Delay_Distribution": "EXPONENTIAL_DURATION",
-                        "Delay_Period": 7300,
+                        "Delay_Period_Distribution": "EXPONENTIAL_DISTRIBUTION",
+                        "Delay_Period_Exponential": 7300,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever"
                         ],
@@ -1602,10 +1616,14 @@
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Choices": {
-                            "HCTUptakePostDebut3": 0.75,
-                            "LostForever0": 0.25
-                        },
+                        "Choice_Names": [
+                            "HCTUptakePostDebut3",
+                            "LostForever0"
+                        ],
+                        "Choice_Probabilities": [
+                            0.75,
+                            0.25
+                        ],
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever"
                         ],
@@ -1664,5 +1682,6 @@
             "Start_Year": 1990,
             "class": "CampaignEventByYear"
         }
-    ]
+    ],
+    "Use_Defaults": 1
 }

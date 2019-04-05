@@ -14,7 +14,6 @@
             "Enable_Aging": 1,
             "Enable_Birth": 0,
             "Enable_Demographics_Birth": 0,
-            "Enable_Demographics_Gender": 0,
             "Enable_Demographics_Initial": 1,
             "Enable_Demographics_Risk": 0,
             "Enable_Initial_Prevalence": 1,
@@ -29,13 +28,13 @@
         },
         "DISEASE": {
             "INCUBATION": {
-                "Base_Incubation_Period": 0,
-                "Incubation_Period_Distribution": "FIXED_DURATION"
+                "Incubation_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                "Incubation_Period_Constant": 0
             },
             "INFECTIOUSNESS": {
-                "Base_Infectious_Period": 25,
                 "Base_Infectivity": 0.048,
-                "Infectious_Period_Distribution": "EXPONENTIAL_DURATION",
+                "Infectious_Period_Distribution": "EXPONENTIAL_DISTRIBUTION",
+                "Infectious_Period_Exponential": 25,
                 "Infectivity_Scale_Type": "CONSTANT_INFECTIVITY",
                 "Population_Density_Infectivity_Correction": "CONSTANT_INFECTIVITY"
             },

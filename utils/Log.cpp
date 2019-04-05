@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -222,7 +222,11 @@ SimpleLogger::Log(
         GetLogInfo(tInfo);
 
         fprintf(stdout, "%02d:%02d:%02d [%d] [%s] [%s] ", static_cast<int>(tInfo.hours), static_cast<int>(tInfo.mins), static_cast<int>(tInfo.secs), _rank, logLevelStrMap[log_level].c_str(), module);
-        if (log_level == Logger::_ERROR || log_level == Logger::WARNING)
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // !!! GH-2693 - Don't write warning messages to StdErr until the issue with how
+        // !!! MPI causes the sim to slow down when writing to StdErr is resolved.
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        if (log_level == Logger::_ERROR /*|| log_level == Logger::WARNING*/)
         {
             // Yes, this line is mostly copy-pasted from above. Yes, I'm comfortable with that. :)
             fprintf(stderr, "%02d:%02d:%02d [%d] [%s] [%s] ", static_cast<int>(tInfo.hours), static_cast<int>(tInfo.mins), static_cast<int>(tInfo.secs), _rank, logLevelStrMap[log_level].c_str(), module);
@@ -245,7 +249,6 @@ SimpleLogger::Log(
     {
         throw Kernel::WarningException( __FILE__, __LINE__, __FUNCTION__ );
     }
-
 }
 
 void

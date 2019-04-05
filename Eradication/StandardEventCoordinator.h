@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -48,6 +48,8 @@ namespace Kernel
         virtual bool visitIndividualCallback(IIndividualHumanEventContext *ihec, float &incrementalCostOut, ICampaignCostObserver * pICCO );
 
         virtual bool IsFinished(); // returns true when the EC requires no further updates and can be disposed of
+
+        virtual IEventCoordinatorEventContext* GetEventContext() override { return nullptr; }
 
         // ITravelLinkedDistributionSource
         virtual void ProcessDeparting(IIndividualHumanEventContext *dc);

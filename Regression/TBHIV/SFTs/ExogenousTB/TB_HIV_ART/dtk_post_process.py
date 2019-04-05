@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import json
-import dtk_sft
+import dtk_test.dtk_sft as sft
 import os
 
 
@@ -84,18 +84,18 @@ def parse_stdout_file(initial_timestep=0, stdout_filename="test.txt", debug=Fals
                     exogenous_infected_dict[time] = [exogenous_infected_count, latent_count]
                 time += 1
                 if time == 1:
-                    initial_population = int(dtk_sft.get_val("StatPop: ", line))
+                    initial_population = int(sft.get_val("StatPop: ", line))
                 exogenous_infected_count = 0  # resetting for the next time step
                 latent_count = 0
                 filtered_lines.append(line)
             elif exogenous in line:
-                ind_id = int(float(dtk_sft.get_val("Individual ", line)))
+                ind_id = int(float(sft.get_val("Individual ", line)))
                 if ind_id <= initial_population: # ignoring imported people
                     exogenous_infected_count += 1
                 filtered_lines.append(line)
             elif infectiousness in line and state_latent in line:
-                ind_id = int(float(dtk_sft.get_val("Individual ", line)))
-                fast_progressor = int(float(dtk_sft.get_val("progressor=", line)))
+                ind_id = int(float(sft.get_val("Individual ", line)))
+                fast_progressor = int(float(sft.get_val("progressor=", line)))
                 filtered_lines.append(line)
                 if not fast_progressor and ind_id <= initial_population:  # ignoring imported people
                         latent_count += 1
@@ -118,7 +118,7 @@ def create_report_file(param_obj, stdout_data_obj, report_name, debug):
         results = []
         for key, value in stdout_data_obj[0].items():
             if key > 2 and value[1] > 35:  # ignoring the smaller latent #s because there's not enough data for the test
-                result = dtk_sft.test_binomial_95ci(value[0], value[1],
+                result = sft.test_binomial_95ci(value[0], value[1],
                                                     fast_progressor_fraction * cd4_progressor_multiplier, outfile,
                                                     "Time {} :{} new exogenous infections for {} latent infections."
                                                      "\n".format(key, value[0], value[1]))
@@ -129,8 +129,8 @@ def create_report_file(param_obj, stdout_data_obj, report_name, debug):
         elif results.count(False) > 2:  # not enough data for a binomial test on the binomial results,
             success = False           # so, the closest we can come is "less than two False is good".
             outfile.write("{} out of {} tests failed.\n".format(results.count(False), len(results)))
-        outfile.write(dtk_sft.format_success_msg(success))
-        dtk_sft.plot_data(stdout_data_obj[1], title="Exogenous infections for tracked time steps",
+        outfile.write(sft.format_success_msg(success))
+        sft.plot_data(stdout_data_obj[1], title="Exogenous infections for tracked time steps",
                           category="exogenous_infections_tb_hiv_art")
 
     if debug:
@@ -139,7 +139,7 @@ def create_report_file(param_obj, stdout_data_obj, report_name, debug):
 
 
 def application(output_folder="output", stdout_filename="test.txt", initial_timestep=0,
-                config_filename="config.json",  report_name=dtk_sft.sft_output_filename, debug=False):
+                config_filename="config.json",  report_name=sft.sft_output_filename, debug=False):
     if debug:
         print("output_folder: " + output_folder)
         print("stdout_filename: " + stdout_filename + "\n")
@@ -148,7 +148,7 @@ def application(output_folder="output", stdout_filename="test.txt", initial_time
         print("report_name: " + report_name + "\n")
         print("debug: " + str(debug) + "\n")
 
-    dtk_sft.wait_for_done()
+    sft.wait_for_done()
     param_obj = load_emod_parameters(config_filename, debug)
     stdout_data_obj = parse_stdout_file(initial_timestep, stdout_filename, debug)
     create_report_file(param_obj, stdout_data_obj, report_name, debug)
@@ -163,7 +163,7 @@ if __name__ == "__main__":
     parser.add_argument('-o', '--output', default="output", help="Folder to load outputs from (output)")
     parser.add_argument('-t', '--time', default=0, help="initial timestep for filterting test.txt data(test.txt)")
     parser.add_argument('-s', '--stdout', default="test.txt", help="Name of stdoutfile to parse (test.txt")
-    parser.add_argument('-r', '--reportname', default=dtk_sft.sft_output_filename, help="Report file to generate")
+    parser.add_argument('-r', '--reportname', default=sft.sft_output_filename, help="Report file to generate")
     args = parser.parse_args()
 
     application(output_folder=args.output, stdout_filename=args.stdout, config_filename=args.config,

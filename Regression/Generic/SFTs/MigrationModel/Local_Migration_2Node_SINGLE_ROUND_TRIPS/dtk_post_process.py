@@ -52,15 +52,15 @@ if the SFT failed, the output file (normally scientific_feature_report.txt) will
 
 """
 
-import dtk_MigrationModel_Support as MM_Support
-import dtk_sft
+import dtk_test.dtk_MigrationModel_Support as MM_Support
+import dtk_test.dtk_sft as sft
 import os
 
 
 def application(output_folder="output", stdout_filename="test.txt",
                 config_filename="config.json",
                 insetchart_name="InsetChart.json",
-                report_name=dtk_sft.sft_output_filename,
+                report_name=sft.sft_output_filename,
                 debug=False):
     if debug:
         print("output_folder: " + output_folder)
@@ -70,7 +70,7 @@ def application(output_folder="output", stdout_filename="test.txt",
         print("report_name: " + report_name + "\n")
         print("debug: " + str(debug) + "\n")
     print("current dir = " + os.getcwd())
-    dtk_sft.wait_for_done()
+    sft.wait_for_done()
     param_obj, config_json = MM_Support.load_emod_parameters(config_filename)
     if debug:
         print (param_obj)

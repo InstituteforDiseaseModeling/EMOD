@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -41,7 +41,8 @@ namespace Kernel
         virtual void CheckForValidNodeIDs(const std::vector<ExternalNodeId_t>& nodeIds_demographics);
         virtual void UpdateEventRegistration( float currentTime, 
                                               float dt, 
-                                              std::vector<INodeEventContext*>& rNodeEventContextList ) override;
+                                              std::vector<INodeEventContext*>& rNodeEventContextList,
+                                              ISimulationEventContext* pSimEventContext ) override;
         virtual void BeginTimestep() override;
         virtual bool IsCollectingIndividualData( float currentTime, float dt ) const override;
         virtual void LogIndividualData( Kernel::IIndividualHuman* individual ) override;
@@ -76,7 +77,6 @@ namespace Kernel
         void RegisterEvents( Kernel::INodeEventContext* pNEC );
         void UnregisterEvents( Kernel::INodeEventContext* pNEC );
         void UnregisterAllNodes();
-        Kernel::INodeTriggeredInterventionConsumer* GetNodeTriggeredConsumer( Kernel::INodeEventContext* pNEC );
 
         Kernel::INodeEventContext* GetFirstINodeEventContext();
 

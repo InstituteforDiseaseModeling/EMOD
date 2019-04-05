@@ -1,0 +1,51 @@
+{
+    "Events": [
+        {
+            "comment": "Trigger to start EventCoordinator",
+            "class": "CampaignEvent",
+            "Start_Day": 10,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "BroadcastCoordinatorEvent",
+                "Coordinator_Name" : "Coordnator_1",
+                "Cost_To_Consumer" : 10,
+                "Broadcast_Event" : "Start_Campaign_Event_1"
+            }
+        },
+        {
+            "comment":"No Completion_Event but Cost_To_Consumer show that event was started",
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "TriggeredEventCoordinator",
+                "Coordinator_Name": "1n2_Vaccinator",
+                "Start_Trigger_Condition_List": [ "Start_Campaign_Event_1" ],
+                "Stop_Trigger_Condition_List": [],
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 1,
+                "Duration": -1,
+                "Target_Demographic": "Everyone",
+                "Node_Property_Restrictions": [],
+                "Property_Restrictions_Within_Node": [],
+                "Demographic_Coverage": 0.05,
+                "Intervention_Config": {
+                   "class": "SimpleVaccine",
+                   "Cost_To_Consumer": 1,
+                   "Vaccine_Take": 1,
+                   "Vaccine_Type": "AcquisitionBlocking",
+                   "Waning_Config": {
+                      "class": "WaningEffectBox",
+                      "Initial_Effect": 0.59,
+                      "Box_Duration": 20
+                   }
+                },
+                "Completion_Event": ""
+            }
+        } 
+    ],
+    "Use_Defaults": 1
+}
+

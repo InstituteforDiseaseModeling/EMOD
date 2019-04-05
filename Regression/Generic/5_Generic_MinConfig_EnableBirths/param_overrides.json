@@ -1,6 +1,6 @@
 {
     "parameters": { 
-        "Default_Config_Path": "defaults/minimum_default_config.json",
+        "Default_Config_Path": "../../defaults/minimum_default_config.json",
         "Config_Name": "5_Generic_MinimalConfig_EnableBirths",
 
         "Enable_Birth": 1,
@@ -9,7 +9,7 @@
         "Birth_Rate_Dependence": "FIXED_BIRTH_RATE",
         "Birth_Rate_Time_Dependence": "NONE",
         "Config_Name": "5_Generic_MinimalConfig_EnableBirths",
-        "Default_Config_Path": "defaults/minimum_default_config.json",
+        "Default_Config_Path": "../../defaults/minimum_default_config.json",
         "Enable_Aging": 0,
         "Enable_Birth": 1,
         "Enable_Demographics_Birth": 0,

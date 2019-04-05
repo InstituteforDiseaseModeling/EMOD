@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -9,7 +9,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "stdafx.h"
 #include "UnitTest++.h"
-#include "common.h"
+#include "componentTests.h"
 
 #include "FileSystem.h"
 #include "NodeDemographics.h"
@@ -411,7 +411,7 @@ SUITE(NodeDemographicsTest)
 
     TEST_FIXTURE(NodeDemographicsFactoryFixture, TestTwoFileGoodDifferentDirectories)
     {
-        NodeDemographicsFactory::SetDemographicsFileList( NodeDemographicsFactory::ConvertLegacyStringToSet("demographics_TestTwoFileGood_base.json;testdata/NodeDemographicsTest/another_folder/demographics_TestTwoFileGood_overlay.json") ) ;
+        NodeDemographicsFactory::SetDemographicsFileList( NodeDemographicsFactory::ConvertLegacyStringToSet("demographics_TestTwoFileGood_base.json;another_folder/demographics_TestTwoFileGood_overlay.json") ) ;
 
         nodeid_suid_map_t node_id_suid_map;
         unique_ptr<NodeDemographicsFactory> factory( NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config, true, 10, 1000 ) );
@@ -1565,59 +1565,6 @@ SUITE(NodeDemographicsTest)
 
         const vector<uint32_t>& ids = factory->GetNodeIDs();
         CHECK_EQUAL(30145, ids.size());
-    }
-
-    TEST_FIXTURE(NodeDemographicsFactoryFixture, TestTwoNodeCompiled)
-    {
-        NodeDemographicsFactory::SetDemographicsFileList( NodeDemographicsFactory::ConvertLegacyStringToSet("Seattle_30arcsec_demographics.compiled.json;Seattle_30arcsec_demographics_zoonosis.compiled.json") ) ;
-
-        nodeid_suid_map_t node_id_suid_map;
-        unique_ptr<NodeDemographicsFactory> factory( NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config, true, 10, 1000 ) );
-        const vector<uint32_t>& nodeIDs = factory->GetNodeIDs();
-        CHECK_EQUAL(124, nodeIDs.size());
-        for( int id = 1 ; id <= 124 ; id++ )
-        {
-            CHECK_EQUAL(id, nodeIDs[id-1]);
-        }
-
-        suids::suid node_suid = GetNextNodeSuid();
-        node_id_suid_map.insert( nodeid_suid_pair( 1, node_suid ) );
-        INodeContextFake ncf_a( node_suid );
-
-        node_suid = GetNextNodeSuid();
-        node_id_suid_map.insert( nodeid_suid_pair( 45, node_suid ) );
-        INodeContextFake ncf_b( node_suid );
-
-        unique_ptr<NodeDemographics> p_node_demo_a( factory->CreateNodeDemographics(&ncf_a) );
-        unique_ptr<NodeDemographics> p_node_demo_b( factory->CreateNodeDemographics(&ncf_b) );
-
-        // -------------------------------------------------
-        // --- Check properties that are unique for the node
-        // -------------------------------------------------
-
-        double lat_a = (*p_node_demo_a)["NodeAttributes"]["Latitude"         ].AsDouble();
-        double lon_a = (*p_node_demo_a)["NodeAttributes"]["Longitude"        ].AsDouble();
-        double alt_a = (*p_node_demo_a)["NodeAttributes"]["Altitude"         ].AsDouble();
-        int    pop_a = (*p_node_demo_a)["NodeAttributes"]["InitialPopulation"].AsInt();
-        double zoo_a = (*p_node_demo_a)["NodeAttributes"]["Zoonosis"         ].AsDouble();
-
-        CHECK_CLOSE(   47.72628134, lat_a, FLT_EPSILON );
-        CHECK_CLOSE( -122.2887375,  lon_a, FLT_EPSILON );
-        CHECK_CLOSE(   67.6646,     alt_a, FLT_EPSILON );
-        CHECK_EQUAL( 5530,          pop_a );
-        CHECK_CLOSE(    0.0,        zoo_a, FLT_EPSILON );
-
-        double lat_b = (*p_node_demo_b)["NodeAttributes"]["Latitude"         ].AsDouble();
-        double lon_b = (*p_node_demo_b)["NodeAttributes"]["Longitude"        ].AsDouble();
-        double alt_b = (*p_node_demo_b)["NodeAttributes"]["Altitude"         ].AsDouble();
-        int    pop_b = (*p_node_demo_b)["NodeAttributes"]["InitialPopulation"].AsInt();
-        double zoo_b = (*p_node_demo_b)["NodeAttributes"]["Zoonosis"         ].AsDouble();
-
-        CHECK_CLOSE(   47.67402239, lat_b, FLT_EPSILON );
-        CHECK_CLOSE( -122.3378015,  lon_b, FLT_EPSILON );
-        CHECK_CLOSE(   60.8318,     alt_b, FLT_EPSILON );
-        CHECK_EQUAL( 3023,          pop_b );
-        CHECK_CLOSE(    1.0,        zoo_b, FLT_EPSILON );
     }
 
     TEST_FIXTURE(NodeDemographicsFactoryFixture, TestAgeAndAccess)

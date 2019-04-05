@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -17,7 +17,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "Configuration.h"
 #include "Configure.h"
-#include "Contexts.h"
 #include "InterventionEnums.h"
 #include "InterventionFactory.h"
 #include "Interventions.h"
@@ -37,6 +36,7 @@ namespace Kernel
         SimpleDiagnostic( const SimpleDiagnostic& master );
         virtual ~SimpleDiagnostic() {  }
         bool Configure( const Configuration* pConfig ) override;
+        virtual void CheckConfigTriggers( const Configuration * inputJson );
         void ConfigurePositiveEventOrConfig( const Configuration * inputJson );
 
         // IDistributingDistributableIntervention
@@ -64,6 +64,7 @@ namespace Kernel
         ProbabilityNumber base_sensitivity;
         ProbabilityNumber treatment_fraction;
         CountdownTimer days_to_diagnosis; // can go negative if dt is > 1
+        bool enable_isSymptomatic;
 
         EventOrConfig::Enum use_event_or_config;
         IndividualInterventionConfig positive_diagnosis_config;

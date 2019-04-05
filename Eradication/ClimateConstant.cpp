@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -10,7 +10,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "stdafx.h"
 #include <cstdlib>
 #include "ClimateConstant.h"
-#include "Contexts.h"
 #include "Common.h"
 #include "Debug.h"
 
@@ -23,14 +22,17 @@ namespace Kernel {
     BEGIN_QUERY_INTERFACE_BODY(ClimateConstant)
     END_QUERY_INTERFACE_BODY(ClimateConstant)
 
-    ClimateConstant * ClimateConstant::CreateClimate(ClimateUpdateResolution::Enum update_resolution, INodeContext * _parent, float start_time)
+    ClimateConstant * ClimateConstant::CreateClimate( ClimateUpdateResolution::Enum update_resolution,
+                                                      INodeContext * _parent,
+                                                      float start_time,
+                                                      RANDOMBASE* pRNG )
     {
         ClimateConstant * new_climate = _new_ ClimateConstant(update_resolution, _parent);
         release_assert( new_climate );
         new_climate->Configure( EnvPtr->Config );
 
         // initialize climate values
-        new_climate->UpdateWeather(start_time, 1.0f);
+        new_climate->UpdateWeather( start_time, 1.0f, pRNG );
 
         return new_climate;
     }
@@ -80,14 +82,14 @@ namespace Kernel {
         return true;
     }
 
-    void ClimateConstant::UpdateWeather(float time, float dt)
+    void ClimateConstant::UpdateWeather( float time, float dt, RANDOMBASE* pRNG )
     {
         m_airtemperature = (float)base_airtemperature;
         m_landtemperature = (float)base_landtemperature;
         m_accumulated_rainfall = (float)base_rainfall * dt;
         m_humidity = (float)base_humidity;
 
-        Climate::UpdateWeather(time, dt); // call base-class UpdateWeather() to add stochasticity and check values are within valid bounds
+        Climate::UpdateWeather( time, dt, pRNG ); // call base-class UpdateWeather() to add stochasticity and check values are within valid bounds
     }
 }
 

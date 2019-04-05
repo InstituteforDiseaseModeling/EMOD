@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -19,6 +19,42 @@ using namespace Kernel;
 
 SUITE(SigmoidTest)
 {
+    TEST(Test_exp_vs_tanh_variableWidthSigmoid)
+    {
+        //We replaced the exp() function by tanh(). Check result by comparing it to original code.
+        float result_tanh;
+        float result_exp;
+        const float threshold = 2.0;
+        const float invwidth = 1.0;
+
+        for( float val = -140; val < 140; val+= 0.17f )
+        {
+            result_tanh = Sigmoid::variableWidthSigmoid(val,  threshold, invwidth);
+            result_exp = 1.0f / ( 1.0f + exp(( threshold - val ) / ( threshold / invwidth )) );     // exp(70) is close to FLT_MAX
+            CHECK( fabs (result_tanh - result_exp) < 7e-8);         //check if difference is +/- 7e-8 
+        }
+    }
+
+
+    TEST(Test_exp_vs_tanh_variableWidthAndHeightSigmoid)
+    {
+        //We replaced the exp() function by tanh(). Check result by comparing it to original code.
+        float result_tanh;
+        float result_exp;
+        const float center = 0.0;
+        const float rate = 0.5;
+        const float min_val = 0.0;
+        const float max_val = 1.0;
+
+        for( float val = -140; val < 140; val += 0.17f )
+        {
+            result_tanh = Sigmoid::variableWidthAndHeightSigmoid( val, center, rate, min_val, max_val);
+            result_exp =  min_val + ( max_val - min_val ) / ( 1.0f + exp( -rate * ( val - center ) ) ); // exp(70) is close to FLT_MAX
+            CHECK(fabs(result_tanh - result_exp) < 2e-7);;           //check if difference is +/- 2e-7 
+        }
+    }
+
+
     TEST(Test1)
     {
         // Start of by checking that basic_sigmoid does what is expected. The reference values are 

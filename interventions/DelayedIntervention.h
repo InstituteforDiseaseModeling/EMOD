@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -11,7 +11,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "MathFunctions.h"
 #include "Interventions.h"
 #include "InterventionFactory.h"
-#include "DurationDistribution.h"
+#include "IDistribution.h"
 #include "Timers.h"
 
 namespace Kernel
@@ -46,7 +46,7 @@ namespace Kernel
         CountdownTimer remaining_delay_days;
         float coverage;
 
-        DurationDistribution delay_distribution;
+        IDistribution* delay_distribution;
 
         IndividualInterventionConfig actual_intervention_config;
 

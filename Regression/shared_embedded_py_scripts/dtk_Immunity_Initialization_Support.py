@@ -4,7 +4,7 @@ import json
 import os.path as path
 import numpy as np
 import pandas as pd
-import dtk_sft as sft
+import dtk_test.dtk_sft as sft
 from scipy import stats
 
 
@@ -45,9 +45,9 @@ class ConfigKeys:
     CONFIG_NAME = "Config_Name"
     DEMOGRAPHIC_FILENAMES = "Demographics_Filenames"
     CAMPAIGN_FILENAME = "Campaign_Filename"
-    IMM_DIST_TYPE = "Immunity_Initialization_Distribution_Type"
+    SUS_INIT_DIST_TYPE = "Susceptibility_Initialization_Distribution_Type"
     ENABLE_IMMUNITY = "Enable_Immunity"
-    ENABLE_IMMUNITY_DISTRIBUTION = "Enable_Immunity_Distribution"
+    ENABLE_INITIAL_SUSCEPTIBILITY_DISTRIBUTION = "Enable_Initial_Susceptibility_Distribution"
 
 
 class CampaignKeys:
@@ -207,8 +207,8 @@ def load_config_file(config_filename="config.json",
     config_object[ConfigKeys.DEMOGRAPHIC_FILENAMES] = config_parameters[ConfigKeys.DEMOGRAPHIC_FILENAMES]
     config_object[ConfigKeys.CAMPAIGN_FILENAME] = config_parameters[ConfigKeys.CAMPAIGN_FILENAME]
     config_object[ConfigKeys.ENABLE_IMMUNITY] = config_parameters[ConfigKeys.ENABLE_IMMUNITY]
-    config_object[ConfigKeys.ENABLE_IMMUNITY_DISTRIBUTION] = config_parameters[ConfigKeys.ENABLE_IMMUNITY_DISTRIBUTION]
-    config_object[ConfigKeys.IMM_DIST_TYPE] = config_parameters[ConfigKeys.IMM_DIST_TYPE]
+    config_object[ConfigKeys.ENABLE_INITIAL_SUSCEPTIBILITY_DISTRIBUTION] = config_parameters[ConfigKeys.ENABLE_INITIAL_SUSCEPTIBILITY_DISTRIBUTION]
+    config_object[ConfigKeys.SUS_INIT_DIST_TYPE] = config_parameters[ConfigKeys.SUS_INIT_DIST_TYPE]
     config_object[ConfigKeys.CONFIG_NAME] = config_parameters[ConfigKeys.CONFIG_NAME]
 
     if debug:
@@ -216,14 +216,14 @@ def load_config_file(config_filename="config.json",
             json.dump(config_object, outfile, indent=4)
 
     if not (config_parameters[ConfigKeys.ENABLE_IMMUNITY] and
-            config_parameters[ConfigKeys.ENABLE_IMMUNITY_DISTRIBUTION]):
-        raise ValueError("Enable_Immunity and Enable_Immunity_Distribution must both be 1.")
+            config_parameters[ConfigKeys.ENABLE_INITIAL_SUSCEPTIBILITY_DISTRIBUTION]):
+        raise ValueError("Enable_Immunity and Enable_Initial_Susceptibility_Distribution must both be 1.")
 
     return config_object
 
 
 def load_demographics_file(demographics_filename="demographics.json",
-                           immunity_initialization_type=InitializationTypes.SIMPLE,
+                           susceptibility_initialization_type=InitializationTypes.SIMPLE,
                            debug=False):
     demographic_json = None
     with open(demographics_filename) as infile:
@@ -245,14 +245,14 @@ def load_demographics_file(demographics_filename="demographics.json",
     demographics_object[DemographicFileKeys.SusceptibilityDistribution.DIST2] = \
         ind_attributes[DemographicFileKeys.SusceptibilityDistribution.DIST2]
 
-    if immunity_initialization_type in [InitializationTypes.SIMPLE, InitializationTypes.OFF]:
+    if susceptibility_initialization_type in [InitializationTypes.SIMPLE, InitializationTypes.OFF]:
         demographics_object[DemographicFileKeys.KEY_AVERAGE_IMMUNITY] = \
-            1.0 - get_average_susceptibility(demographics_object, immunity_initialization_type)
-    elif immunity_initialization_type == InitializationTypes.COMPLEX:
+            1.0 - get_average_susceptibility(demographics_object, susceptibility_initialization_type)
+    elif susceptibility_initialization_type == InitializationTypes.COMPLEX:
         demographics_object[DemographicFileKeys.SusceptibilityDistribution.KEY] = \
             ind_attributes[DemographicFileKeys.SusceptibilityDistribution.KEY]
     else:
-        raise ValueError("Didn't recognize Initialization Type {0}".format(immunity_initialization_type))
+        raise ValueError("Didn't recognize Initialization Type {0}".format(susceptibility_initialization_type))
     if debug:
         with open('DEBUG_demographics_object.json','w') as outfile:
             json.dump(demographics_object, outfile, indent=4)

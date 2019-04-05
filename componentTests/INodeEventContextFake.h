@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -9,15 +9,17 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #pragma once
 
-#include "Contexts.h"
+#include "ISimulationContext.h"
 #include "NodeEventContext.h"
 #include "IIndividualHuman.h"
+#include "IIndividualHumanContext.h"
 #include "EventTrigger.h"
+#include "RANDOM.h"
 
 using namespace Kernel;
 
 class INodeEventContextFake : public INodeEventContext,
-                              public INodeTriggeredInterventionConsumer,
+                              public IIndividualEventBroadcaster,
                               public INodeInterventionConsumer,
                               public ICampaignCostObserver
 {
@@ -30,6 +32,7 @@ public:
         , m_IdmDateTime()
         , m_HumanList()
         , m_ObserversMap()
+        , m_Rng()
     {
     }
 
@@ -60,8 +63,8 @@ public:
         *ppvObject = nullptr ;
         if ( iid == GET_IID(INodeEventContext)) 
             *ppvObject = static_cast<INodeEventContext*>(this);
-        else if ( iid == GET_IID(INodeTriggeredInterventionConsumer)) 
-            *ppvObject = static_cast<INodeTriggeredInterventionConsumer*>(this);
+        else if ( iid == GET_IID( IIndividualEventBroadcaster ))
+            *ppvObject = static_cast<IIndividualEventBroadcaster*>(this);
         else if ( iid == GET_IID(ICampaignCostObserver)) 
             *ppvObject = static_cast<ICampaignCostObserver*>(this);
         else if ( iid == GET_IID(INodeInterventionConsumer)) 
@@ -85,19 +88,19 @@ public:
                                               IIndividualHumanContext * pDistributeeIndividual ) {};
 
     // -----------------------------------------------
-    // --- INodeTriggeredInterventionConsumer Methods
+    // --- IIndividualEventBroadcaster Methods
     // -----------------------------------------------
-    virtual void RegisterNodeEventObserver( IIndividualEventObserver* pIEO, const EventTrigger &trigger )
+    virtual void RegisterObserver( IIndividualEventObserver* pIEO, const EventTrigger &trigger )
     {
         m_ObserversMap[ trigger.GetIndex() ].push_back( pIEO );
     }
 
-    virtual void UnregisterNodeEventObserver( IIndividualEventObserver* pIEO, const EventTrigger &trigger )
+    virtual void UnregisterObserver( IIndividualEventObserver* pIEO, const EventTrigger &trigger )
     {
         //m_Observers.erase( pIEO );
     }
 
-    virtual void TriggerNodeEventObservers( IIndividualHumanEventContext* pIndiv, const EventTrigger &trigger )
+    virtual void TriggerObservers( IIndividualHumanEventContext* pIndiv, const EventTrigger &trigger )
     {
         m_TriggeredEvent = trigger ;
 
@@ -107,10 +110,16 @@ public:
         }
     }
 
+
     // ------------------------------
     // --- INodeEventContext Methods
     // ------------------------------
-    virtual IdmDateTime GetTime() const
+    virtual IIndividualEventBroadcaster* GetIndividualEventBroadcaster()
+    {
+        return this;
+    }
+
+    virtual const IdmDateTime& GetTime() const
     {
         return m_IdmDateTime ;
     }
@@ -144,7 +153,7 @@ public:
         }
     }
 
-    virtual int VisitIndividuals(IVisitIndividual* pIndividualVisitImpl, int limit = -1)
+    virtual int VisitIndividuals(IVisitIndividual* pIndividualVisitImpl)
     { 
         float cost = 0.0;
         int count = 0;
@@ -176,9 +185,12 @@ public:
        
     virtual bool IsInPolygon(float* vertex_coords, int numcoords) { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual bool IsInPolygon( const json::Array &poly )           { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
-    virtual bool IsInExternalIdSet( const tNodeIdList& nodelist ) { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+    virtual bool IsInExternalIdSet( const std::list<ExternalNodeId_t>& nodelist ) { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
 
-    virtual ::RANDOMBASE* GetRng()         { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+    virtual RANDOMBASE* GetRng()
+    {
+        return &m_Rng;
+    }
 
     virtual int GetIndividualHumanCount() const { return m_HumanList.size(); }
     virtual ExternalNodeId_t GetExternalId()  const { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
@@ -221,4 +233,5 @@ private:
     IdmDateTime m_IdmDateTime ;
     std::vector<IIndividualHumanContext*> m_HumanList;
     std::vector<std::vector<IIndividualEventObserver*> > m_ObserversMap;
+    PSEUDO_DES m_Rng;
 };

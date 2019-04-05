@@ -6,7 +6,7 @@ import pandas as pd
 import os
 from struct import unpack
 from collections import namedtuple
-import dtk_sft
+import dtk_test.dtk_sft as sft
 
 
 # DEVNOTE: add contact to point to input path, although we should probably interrogate the environment to get the input_path passed to dtk
@@ -399,7 +399,7 @@ def create_report_file_stationary_distribution(param_obj, node_demog_df, report_
                 print("!!! Stationary Distribution validation only work with Random walk, {} was given\n".format(migration_pattern))
                 success = False
 
-        outfile.write(dtk_sft.format_success_msg(success))
+        outfile.write(sft.format_success_msg(success))
 
     return success
 
@@ -646,7 +646,7 @@ def create_report_file(param_obj, node_demog_df, human_migration_df, report_name
                     print("!!! Bad migration pattern () detected!\n", migration_pattern)
                     success = False
 
-        outfile.write(dtk_sft.format_success_msg(success))
+        outfile.write(sft.format_success_msg(success))
 
     return success
 

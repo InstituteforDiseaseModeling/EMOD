@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -14,8 +14,12 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Log.h"
 #include "Debug.h"
 #include "NodeEventContext.h"  // for INodeEventContext (ICampaignCostObserver)
+#include "INodeContext.h"
 #include "EventTrigger.h"
 #include "IIndividualHuman.h"
+#include "IIndividualHumanContext.h"
+#include "ISimulationContext.h"
+#include "RANDOM.h"
 
 SETUP_LOGGING( "NodeLevelHealthTriggeredIV" )
 
@@ -179,15 +183,11 @@ namespace Kernel
             LOG_DEBUG_F("Distributed Nodelevel health-triggered intervention to NODE: %d\n", pNodeEventContext->GetId().data);
 
             // QI to register ourself as a NodeLevelHealthTriggeredIV observer
-            INodeTriggeredInterventionConsumer * pNTIC = nullptr;
-            if (s_OK != pNodeEventContext->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&pNTIC))
-            {
-                throw QueryInterfaceException(__FILE__, __LINE__, __FUNCTION__, "pNodeEventContext", "INodeTriggeredInterventionConsumer", "INodeEventContext");
-            }
-            release_assert(pNTIC);
+            IIndividualEventBroadcaster * broadcaster = pNodeEventContext->GetIndividualEventBroadcaster();
+            release_assert( broadcaster );
             for (auto &trigger : m_trigger_conditions)
             {
-                pNTIC->RegisterNodeEventObserver((IIndividualEventObserver*)this, trigger);
+                broadcaster->RegisterObserver((IIndividualEventObserver*)this, trigger);
             }
         }
         return was_distributed;
@@ -269,12 +269,8 @@ namespace Kernel
         {
             if( (event_occured_list[ trigger.GetIndex() ].count( pIndiv->GetSuid().data ) > 0) || (!missed_intervention && (blackout_time_remaining > 0.0f)) )
             {
-                INodeTriggeredInterventionConsumer * pNTIC = NULL;
-                if (s_OK != parent->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&pNTIC) )
-                {
-                    throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "INodeTriggeredInterventionConsumer", "INodeEventContext" );
-                }
-                pNTIC->TriggerNodeEventObservers( pIndiv, blackout_event_trigger );
+                IIndividualEventBroadcaster * broadcaster = parent->GetIndividualEventBroadcaster();
+                broadcaster->TriggerObservers( pIndiv, blackout_event_trigger );
                 return false;
             }
         }
@@ -285,7 +281,6 @@ namespace Kernel
                    );
 
         assert( parent );
-        assert( parent->GetRng() );
 
         bool distributed = false;
         if( _di != nullptr )
@@ -369,15 +364,11 @@ namespace Kernel
     void NodeLevelHealthTriggeredIV::Unregister()
     {
         // unregister ourself as a node level health triggered observer
-        INodeTriggeredInterventionConsumer * pNTIC = nullptr;
-        if (s_OK != parent->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&pNTIC))
-        {
-            throw QueryInterfaceException(__FILE__, __LINE__, __FUNCTION__, "parent", "INodeTriggeredInterventionConsumer", "INodeEventContext");
-        }
-        release_assert(pNTIC);
+        IIndividualEventBroadcaster * broadcaster = parent->GetIndividualEventBroadcaster();
+        release_assert( broadcaster );
         for (auto &trigger : m_trigger_conditions)
         {
-            pNTIC->UnregisterNodeEventObserver( this, trigger );
+            broadcaster->UnregisterObserver( this, trigger );
         }
         SetExpired( true );
     }
@@ -461,7 +452,7 @@ namespace Kernel
         if (retQualifies)
         {
             LOG_DEBUG_F("demographic_coverage = %f\n", getDemographicCoverage());
-            if( !SMART_DRAW( getDemographicCoverage() ) )
+            if( !pIndividual->GetInterventionsContext()->GetParent()->GetRng()->SmartDraw( getDemographicCoverage() ) )
             {
                 m_disqualified_by_coverage_only = true;
                 LOG_DEBUG_F("Demographic coverage ruled this out, m_disqualified_by_coverage_only is %d \n", m_disqualified_by_coverage_only);

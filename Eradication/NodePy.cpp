@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -38,7 +38,8 @@ namespace Kernel
 
     NodePy::NodePy() : Node() { }
 
-    NodePy::NodePy(ISimulationContext *_parent_sim, suids::suid node_suid) : Node(_parent_sim, node_suid)
+    NodePy::NodePy(ISimulationContext *_parent_sim, ExternalNodeId_t externalNodeId, suids::suid node_suid)
+        : Node(_parent_sim, externalNodeId, node_suid)
     {
     }
 
@@ -54,9 +55,9 @@ namespace Kernel
         return Node::Configure( config );
     }
 
-    NodePy *NodePy::CreateNode(ISimulationContext *_parent_sim, suids::suid node_suid)
+    NodePy *NodePy::CreateNode(ISimulationContext *_parent_sim, ExternalNodeId_t externalNodeId, suids::suid node_suid)
     {
-        NodePy *newnode = _new_ NodePy(_parent_sim, node_suid);
+        NodePy *newnode = _new_ NodePy(_parent_sim, externalNodeId, node_suid);
         newnode->Initialize();
 
         return newnode;
@@ -73,7 +74,6 @@ namespace Kernel
     {
         //transmissionGroups = TransmissionGroupsFactory::CreateNodeGroups( TransmissionGroupType::MultiRouteGroups );
         transmissionGroups = TransmissionGroupsFactory::CreateNodeGroups( TransmissionGroupType::StrainAwareGroups );
-        RouteToContagionDecayMap_t decayMap;
         LOG_DEBUG_F("Number of basestrains: %d\n", GET_CONFIGURABLE(SimulationConfig)->number_basestrains);
 
         if( demographics.Contains( IP_KEY ) && GET_CONFIGURABLE(SimulationConfig)->heterogeneous_intranode_transmission_enabled)
@@ -128,7 +128,7 @@ namespace Kernel
                         scalingMatrix.push_back(matrixRow);
                     }
                     LOG_DEBUG_F("adding property [%s]:%s\n", propertyName.c_str(), routeName.c_str());
-                    transmissionGroups->AddProperty(propertyName, valueList, scalingMatrix, routeName);
+                    transmissionGroups->AddProperty(propertyName, valueList, scalingMatrix);
                 }
                 else //HINT is enabled, but no transmission matrix is detected
                 {
@@ -201,37 +201,16 @@ namespace Kernel
         return IndividualHumanPy::CreateHuman(this, suid, monte_carlo_weight, initial_age, gender);
     }
 
-    std::map< std::string, float >
-    NodePy::GetTotalContagion()
-    const
-    {
-        std::map< std::string, float > returnThis;
-        auto routes = GetTransmissionRoutes();
-        unsigned int route_idx = 0;
-        for( auto & route: routes )
-        {
-            // how do we get membership? That's from an individual, but we are at node level here?????
-            // Need to get proper mapping for route name, route idx, and group id. Just hacking it here.
-            TransmissionGroupMembership_t membership;
-            membership[ 1-route_idx ] = 0;
-            route_idx++;
-            auto contagion = transmissionGroups->GetTotalContagion(&membership);
-            returnThis.insert( std::make_pair( route, contagion ) );
-            ///LOG_INFO_F("route and contagion %s, %f\n", route, contagion);
-        }
-        return returnThis;
-    }
-
     NodePyTest *
-    NodePyTest::CreateNode(ISimulationContext *_parent_sim, suids::suid node_suid)
+    NodePyTest::CreateNode(ISimulationContext *_parent_sim, ExternalNodeId_t externalNodeId, suids::suid node_suid)
     {
-        auto *newnode = _new_ NodePyTest(_parent_sim, node_suid);
+        auto *newnode = _new_ NodePyTest(_parent_sim, externalNodeId, node_suid);
         newnode->Initialize();
 
         return newnode;
     }
 
-    NodePyTest::NodePyTest(ISimulationContext *_parent_sim, suids::suid node_suid)
+    NodePyTest::NodePyTest(ISimulationContext *_parent_sim, ExternalNodeId_t externalNodeId, suids::suid node_suid)
     {
         parent = _parent_sim;
         auto newPerson = configureAndAddNewIndividual(1.0F /*mc*/, 0 /*age*/, 0.0f /*prev*/, 0.5f /*gender*/); // N.B. temp_prevalence=0 without maternal_transmission flag

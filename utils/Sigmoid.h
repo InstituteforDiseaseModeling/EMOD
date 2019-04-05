@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -27,6 +27,13 @@ namespace Kernel
             return (variable > 0) ? (variable / (threshold + variable)) : 0.0;
         }
 
+
+        inline static float sigmoid(float x)
+        {
+            return 0.5f + 0.5f * tanh(x / 2.0f); // instead of 1/(1+exp(x)), prevents exp() from overflowing
+        }
+
+
         inline static float variableWidthSigmoid( float variable, float threshold, float invwidth )
         {
             if( threshold == 0.0 )
@@ -35,7 +42,7 @@ namespace Kernel
             }
             if ( invwidth > 0 )
             {
-                return 1.0f / ( 1.0f + exp( (threshold-variable) / (threshold/invwidth) ) );
+                return sigmoid(-( threshold - variable ) / ( threshold / invwidth ));
             }
             else
             {
@@ -43,13 +50,14 @@ namespace Kernel
             }
         }
 
+
         inline static float variableWidthAndHeightSigmoid( float variable, float center, float rate, float min_val, float max_val)
         {
             // max_val must be >= min_val, however rate can be negative.
             // A positive (negative) rate creates a sigmoid that increases (decreases) with variable
             if ( max_val - min_val >= 0 )
             {
-                return min_val + (max_val-min_val) / ( 1 + exp(-rate * (variable-center)) );
+                return min_val + ( max_val - min_val ) * sigmoid(rate* ( variable - center ));
             }
             else
             {

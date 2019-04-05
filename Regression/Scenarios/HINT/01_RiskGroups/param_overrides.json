@@ -3,7 +3,9 @@
     "parameters": {
         "DEMOGRAPHICS": {
             "Birth_Rate_Dependence": "POPULATION_DEP_RATE",
-            "Demographics_Filenames": ["hint_riskgroups_demographics.json"],
+            "Demographics_Filenames": [
+                "hint_riskgroups_demographics.json"
+            ],
             "IMMUNITY": {
                 "Acquisition_Blocking_Immunity_Decay_Rate": 0.01,
                 "Acquisition_Blocking_Immunity_Duration_Before_Decay": 90,
@@ -21,12 +23,12 @@
         },
         "DISEASE": {
             "INCUBATION": {
-                "Base_Incubation_Period": 1,
-                "Incubation_Period_Distribution": "EXPONENTIAL_DURATION"
+                "Incubation_Period_Distribution": "EXPONENTIAL_DISTRIBUTION",
+                "Incubation_Period_Exponential": 1
             },
             "INFECTIOUSNESS": {
-                "Base_Infectious_Period": 1.8,
-                "Base_Infectivity": 1
+                "Base_Infectivity": 1,
+                "Infectious_Period_Exponential": 1.8
             }
         },
         "INTRANODE_TRANSMISSION": {

@@ -12,7 +12,8 @@ import regression_utils as ru
 import regression_clg as clg
 
 class HpcMonitor(regression_local_monitor.Monitor):
-    def __init__(self, sim_id, scenario_path, report, params, suffix, config_json=None, scenario_type='tests'):
+    def __init__(self, sim_id, scenario_path, report, params, suffix, config_json=None, scenario_type='tests',
+                 priority='Normal'):
         #super(regression_local_monitor.Monitor,self).__init__( sim_id, scenario_path, report, params, config_json, scenario_type )
         regression_local_monitor.Monitor.__init__( self, sim_id, scenario_path, report, params, config_json, scenario_type )
         #print "Running DTK execution and monitor thread for HPC commissioning."
@@ -20,6 +21,36 @@ class HpcMonitor(regression_local_monitor.Monitor):
         self.config_json = config_json
         self.scenario_path = scenario_path
         self.suffix = suffix
+        self.options = {'/priority:': priority}
+
+        # Prepare job command line options as they're available at this point
+        self.prepare_options()
+
+    def prepare_options(self):
+        self.options['/scheduler:'] = self.params.hpc_head_node
+        self.options['/nodegroup:'] = self.params.hpc_node_group
+        if self.params.hpc_user != '':
+            self.options['/user:'] = self.params.hpc_user
+        # if self.params.hpc_password != '':
+        #    self.options['/password:'] = self.params.hpc_password
+        if self.params.measure_perf:
+            self.options['/exclusive'] = ' '
+        if self.scenario_type == 'tests':
+            self.options['/stdout:'] = 'StdOut.txt'
+        # else:
+        #    print( "Going to redirect stdout, not using parameter." )
+        #    self.options['/stdout:'] = 'Test.txt'
+        self.options['/stderr:'] = 'StdErr.txt'
+
+    def test_submission(self):
+
+        jobsubmit_bin = 'job submit'
+        jobsubmit_command = clg.CommandlineGenerator(jobsubmit_bin, self.options, ['dir'])
+        hpc_command_line = jobsubmit_command.Commandline
+
+        p = subprocess.Popen(hpc_command_line, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        p.wait(timeout=30)
+        assert p.returncode is 0, hpc_command_line
 
     def run(self):
     
@@ -33,7 +64,9 @@ class HpcMonitor(regression_local_monitor.Monitor):
                
             return int(num_cores)
     
-        input_dir = self.params.input_root + self.config_json["parameters"]["Geography"] + "\\"
+        input_dir = ".;"
+        if "Geography" in self.config_json["parameters"]:
+            input_dir += os.path.join( self.params.input_root, self.config_json["parameters"]["Geography"] )
         sim_dir = self.sim_root + "\\" + self.sim_timestamp   # can't use os.path.join() here because on linux it'll give us the wrong dir-separator...
         if self.suffix is not None:
             job_name = self.config_json["parameters"]["Config_Name"].replace( ' ', '_' ) + "_" + self.suffix + "_(" + self.sim_timestamp + ")"
@@ -63,7 +96,9 @@ class HpcMonitor(regression_local_monitor.Monitor):
 
         #eradication.exe commandline
         eradication_bin = self.config_json['bin_path']
-        eradication_options = { '--config':'config.json', '--input-path':input_dir, '--progress':' ' }
+        eradication_options = {}
+        if "Eradication" in eradication_bin:
+            eradication_options = { '--config':'config.json', '--input-path':input_dir, '--progress':' ' }
 
         # python-script-path is optional parameter.
         if "PSP" in self.config_json:
@@ -83,27 +118,11 @@ class HpcMonitor(regression_local_monitor.Monitor):
         
         #job submit commandline
         jobsubmit_bin = 'job submit'
-        jobsubmit_options = {}
-        jobsubmit_options['/workdir:'] = sim_dir
-        jobsubmit_options['/scheduler:'] = self.params.hpc_head_node
-        jobsubmit_options['/nodegroup:'] = self.params.hpc_node_group
-        if self.params.hpc_user != '':
-            jobsubmit_options['/user:'] = self.params.hpc_user
-        #if self.params.hpc_password != '':
-        #    jobsubmit_options['/password:'] = self.params.hpc_password
-        jobsubmit_options['/jobname:'] = job_name
-        jobsubmit_options[hpc_resource_option] = hpc_resource_count
-        if self.params.measure_perf:
-            jobsubmit_options['/exclusive'] = ' '
-        if self.scenario_type == 'tests':
-            jobsubmit_options['/stdout:'] = 'StdOut.txt'
-        else:
-            print( "Going to redirect stdout, not using parameter." )
-            #jobsubmit_options['/stdout:'] = 'Test.txt'
-        jobsubmit_options['/stderr:'] = 'StdErr.txt'
-        jobsubmit_options['/priority:'] = 'Lowest'
+        self.options['/workdir:'] = sim_dir
+        self.options['/jobname:'] = job_name
+        self.options[hpc_resource_option] = hpc_resource_count
         jobsubmit_params = [mpi_command.Commandline]
-        jobsubmit_command = clg.CommandlineGenerator(jobsubmit_bin, jobsubmit_options, jobsubmit_params)
+        jobsubmit_command = clg.CommandlineGenerator(jobsubmit_bin, self.options, jobsubmit_params)
 
         #print( 'simulation command line:', eradication_command.Commandline )
         #print( 'mpiexec command line:   ', mpi_command.Commandline )
@@ -180,12 +199,13 @@ class HpcMonitor(regression_local_monitor.Monitor):
                         print( str(self.__class__.completed) + " out of " + str(len(ru.reg_threads)) + " completed." )
                         check_status = False
 
-                        with open( os.path.join(sim_dir, "status.txt"), "r" ) as status_file:
-                            for status_line in status_file.readlines():
-                                if status_line.startswith("Done"):
-                                    time_split = status_line.split('-')[1].strip().split(':')
-                                    self.duration = datetime.timedelta(hours=int(time_split[0]), minutes=int(time_split[1]), seconds=int(time_split[2]))
-                                    break
+                        if self.scenario_type != 'pymod':
+                            with open( os.path.join(sim_dir, "status.txt"), "r" ) as status_file:
+                                for status_line in status_file.readlines():
+                                    if status_line.startswith("Done"):
+                                        time_split = status_line.split('-')[1].strip().split(':')
+                                        self.duration = datetime.timedelta(hours=int(time_split[0]), minutes=int(time_split[1]), seconds=int(time_split[2]))
+                                        break
 
                         if self.scenario_type == 'tests':
                             if self.params.all_outputs == False:
@@ -198,6 +218,8 @@ class HpcMonitor(regression_local_monitor.Monitor):
                                         self.verify( sim_dir, file, "Channels" )
                         elif self.scenario_type == 'science':   # self.report <> None:
                             self.science_verify( sim_dir )
+                        elif self.scenario_type == 'pymod':   # self.report <> None:
+                            self.pymod_verify( sim_dir )
 
                     break
             time.sleep(5)

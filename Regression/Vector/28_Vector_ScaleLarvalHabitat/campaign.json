@@ -3,20 +3,25 @@
         {
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
-                    "class": "ScaleLarvalHabitat",
-                    "Larval_Habitat_Multiplier" :
-                    {
-                        "TEMPORARY_RAINFALL" : 0.05
-                    }
-                }, 
+                    "Larval_Habitat_Multiplier": {
+                        "LarvalHabitatMultiplier": [
+                            {
+                                "Factor": 0.05,
+                                "Habitat": "TEMPORARY_RAINFALL",
+                                "Species": "ALL_SPECIES"
+                            }
+                        ]
+                    },
+                    "class": "ScaleLarvalHabitat"
+                },
                 "class": "StandardInterventionDistributionEventCoordinator"
-            }, 
+            },
             "Nodeset_Config": {
                 "class": "NodeSetAll"
-            }, 
-            "Start_Day": 730, 
+            },
+            "Start_Day": 730,
             "class": "CampaignEvent"
         }
-    ], 
+    ],
     "Use_Defaults": 1
 }

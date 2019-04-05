@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -39,11 +39,6 @@ namespace Kernel
         susceptibility = SusceptibilityAirborne::CreateSusceptibility(this, m_age, imm_mod, risk_mod);
     }
 
-    void IndividualHumanAirborne::ReportInfectionState()
-    {
-        m_new_infection_state = NewInfectionState::NewInfection;
-    }
-
     IndividualHumanAirborne::IndividualHumanAirborne(suids::suid _suid, float monte_carlo_weight, float initial_age, int gender) :
         IndividualHuman(_suid, monte_carlo_weight, initial_age, gender)
     {
@@ -63,4 +58,4 @@ namespace Kernel
     }
 }
 
-#endif // ENABLE_TBHIV
+#endif // DISABLE_AIRBORNE

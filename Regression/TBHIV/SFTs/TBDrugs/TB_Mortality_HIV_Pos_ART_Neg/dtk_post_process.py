@@ -2,8 +2,8 @@
 
 import json
 import os.path as path
-import dtk_sft
-import dtk_TBHIV_Support as dts
+import dtk_test.dtk_sft as sft
+import dtk_test.dtk_TBHIV_Support as dts
 import numpy
 import math
 
@@ -59,7 +59,7 @@ def parse_stdout_file( start_timestep, duration_of_interest, stdout_filename="te
     filtered_lines = []
     with open(stdout_filename) as logfile:
         for line in logfile:
-            if dtk_sft.has_match(line, matches):
+            if sft.has_match(line, matches):
                 filtered_lines.append(line)
     if debug:
         with open("filtered_lines.txt", "w") as outfile:
@@ -79,7 +79,7 @@ def parse_stdout_file( start_timestep, duration_of_interest, stdout_filename="te
             cum_deaths.append(cum)
             deaths.append(death_daily)
             death_daily = 0
-            infected = int(dtk_sft.get_val("Infected: ", line))
+            infected = int(sft.get_val("Infected: ", line))
         else:
             cum += 1
             death_daily += 1
@@ -118,7 +118,7 @@ def create_report_file(drug_start_timestep, disease_deaths, cum_deaths, deaths, 
         length = len(cum_deaths)
         if sum(disease_deaths)==0 or sum(cum_deaths)==0 or len(death_times)==0:
             success = False
-            outfile.write(dtk_sft.no_test_data)
+            outfile.write(sft.no_test_data)
         for x in range(length):
             if disease_deaths[x] != cum_deaths[x]:
                 success = False
@@ -128,7 +128,7 @@ def create_report_file(drug_start_timestep, disease_deaths, cum_deaths, deaths, 
         if drug_mortality_rate_HIV < 0.1:
             outfile.write("Testing death times as draws from exponential distrib with rate {0}. "
                           "Dataset size = {1}.\n".format(drug_mortality_rate_HIV, len(death_times)))
-            ks_result = dtk_sft.test_exponential( death_times, drug_mortality_rate_HIV, report_file = outfile,
+            ks_result = sft.test_exponential( death_times, drug_mortality_rate_HIV, report_file = outfile,
                                                   integers=True, roundup=True, round_nearest=False )
             if not ks_result:
                 success = False
@@ -137,12 +137,12 @@ def create_report_file(drug_start_timestep, disease_deaths, cum_deaths, deaths, 
             scale = 1.0 / drug_mortality_rate_HIV
             dist_exponential_np = numpy.random.exponential(scale, size)
             dist_exponential_np = [math.ceil(x) for x in dist_exponential_np]
-            dtk_sft.plot_data_sorted(death_times, dist_exponential_np,
+            sft.plot_data_sorted(death_times, dist_exponential_np,
                               label1="death times", label2="numpy data",
                               title="death_times_actual_vs_numpy",
                               xlabel="data points", ylabel="death times",
                               category="death_times", show=True, line = True, overlap=True)
-            dtk_sft.plot_cdf(death_times, dist_exponential_np,
+            sft.plot_cdf(death_times, dist_exponential_np,
                              label1="death times", label2="numpy data",
                              title="death_times_cdf",
                              xlabel="days", ylabel="probability",
@@ -160,26 +160,26 @@ def create_report_file(drug_start_timestep, disease_deaths, cum_deaths, deaths, 
                     expected_mortality.append(drug_mortality_rate_HIV * infected_individuals[t])
             expected_mortality.pop(0) # the Infected is off by one day
             test_death_dates = deaths[drug_start_timestep + 1:drug_start_timestep + 1 + len(expected_mortality)]
-            dtk_sft.plot_data(test_death_dates, expected_mortality,
+            sft.plot_data(test_death_dates, expected_mortality,
                                      label1="actual death", label2="expected death",
                                      title="death per day",
                                      xlabel="date after drug start day", ylabel="death per day",
                                      category="death_counts", show=True, line=True, overlap=True, sort=False)
 
-            chi_result = dtk_sft.test_multinomial(dist=test_death_dates, proportions=expected_mortality,
+            chi_result = sft.test_multinomial(dist=test_death_dates, proportions=expected_mortality,
                                                   report_file=outfile, prob_flag=False)
             if not chi_result:
                 success = False
                 outfile.write("BAD: Chi-squared test reuslt is False.\n")
 
-        outfile.write(dtk_sft.format_success_msg(success))
+        outfile.write(sft.format_success_msg(success))
         return success
 
 
 def application( output_folder="output", stdout_filename="test.txt",
                  config_filename="config.json",campaign_filename="campaign.json",
                  chart_name="InsetChart.json",
-                 report_name=dtk_sft.sft_output_filename,
+                 report_name=sft.sft_output_filename,
                  debug=True):
     if debug:
         print( "output_folder: " + output_folder )
@@ -189,7 +189,7 @@ def application( output_folder="output", stdout_filename="test.txt",
         print( "report_name: " + report_name + "\n" )
         print( "debug: " + str(debug) + "\n" )
 
-    dtk_sft.wait_for_done()
+    sft.wait_for_done()
 
     param_obj = load_emod_parameters(config_filename,campaign_filename)
     drug_mortality_rate_HIV = param_obj[dts.ConfigKeys.DrugParams.KEY_TbDrugMortalityRateHIV]
@@ -198,7 +198,7 @@ def application( output_folder="output", stdout_filename="test.txt",
     cum_deaths, deaths, infected_individuals, death_times = parse_stdout_file(drug_start_timestep, duration_of_interest, stdout_filename, debug)
     disease_deaths = parse_json_report(output_folder, chart_name, debug)
 
-    dtk_sft.plot_data( cum_deaths, disease_deaths,
+    sft.plot_data( cum_deaths, disease_deaths,
                        label1="stdout", label2="insetchart",
                        title="Cumulative Deaths stdout vs. insetchart",
                        category="Cumulative_Deaths",

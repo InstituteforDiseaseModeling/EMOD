@@ -1,5 +1,5 @@
 {
-    "Default_Config_Path": "defaults/vector_default_config.json",
+    "Default_Config_Path": "../../defaults/vector_default_config.json",
     "parameters": {
         "CLIMATE": {
             "AIR": {
@@ -29,7 +29,7 @@
         },
         "DISEASE": {
             "INCUBATION": {
-                "Base_Incubation_Period": 20
+                "Incubation_Period_Constant": 20
             }
         },
         "HPC": {
@@ -76,14 +76,14 @@
             "Enable_Vector_Migration_Local": 1,
             "Enable_Vector_Migration_Regional": 0,
             "Mosquito_Weight": 10,
-            "Vector_Migration_Filename_Local" : "Garki_30arcsec_local_migration.bin",
+            "Vector_Migration_Filename_Local": "Garki_30arcsec_local_migration.bin",
             "Vector_Migration_Filename_Regional": "",
             "Vector_Migration_Food_Modifier": 0.0,
             "Vector_Migration_Habitat_Modifier": 0.0,
             "Vector_Migration_Modifier_Equation": "LINEAR",
             "Vector_Migration_Stay_Put_Modifier": 0.0,
             "Vector_Sampling_Type": "SAMPLE_IND_VECTORS",
-            "x_Vector_Migration_Local" : 6.25,
+            "x_Vector_Migration_Local": 6.25,
             "x_Vector_Migration_Regional": 1
         },
         "logLevel_VectorPopulation": "WARNING"

@@ -54,6 +54,7 @@
     "family_migration_time_until_trip"         : 0.0,
     "family_migration_time_at_destination"     : 0.0,
     "family_migration_is_destination_new_home" : false,
-    "family_migration_destination"             : { "id" : 0 }
+    "family_migration_destination"             : { "id" : 0 },
+    "m_newly_symptomatic"                      : false
   }
 }

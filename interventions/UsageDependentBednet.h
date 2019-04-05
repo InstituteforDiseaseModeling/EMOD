@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -11,7 +11,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "Bednet.h"
 #include "Timers.h"
-#include "DurationDistribution.h"
+#include "IDistribution.h"
 
 namespace Kernel
 {
@@ -48,7 +48,7 @@ namespace Kernel
         EventTrigger m_TriggerReceived;
         EventTrigger m_TriggerUsing;
         EventTrigger m_TriggerDiscard;
-        DurationDistribution m_ExpirationDuration;
+        IDistribution* m_ExpirationDuration;
         CountdownTimer m_ExpirationTimer;
         bool m_TimerHasExpired;
 

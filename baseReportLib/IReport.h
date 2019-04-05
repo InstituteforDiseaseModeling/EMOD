@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -13,13 +13,14 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <functional>
 #include "IdmApi.h"
 #include "Configure.h"
-#include "INodeContext.h"
+#include "ExternalNodeId.h"
 
 namespace Kernel
 {
     struct INodeContext;
     struct INodeEventContext;
     struct IIndividualHuman;
+    struct ISimulationEventContext;
 
     class IDMAPI IReport : public JsonConfigurable
     {
@@ -40,7 +41,8 @@ namespace Kernel
 
         virtual void UpdateEventRegistration( float currentTime, 
                                               float dt, 
-                                              std::vector<INodeEventContext*>& rNodeEventContextList ) = 0;
+                                              std::vector<INodeEventContext*>& rNodeEventContextList,
+                                              ISimulationEventContext* pSimEventContext ) = 0;
         virtual void BeginTimestep() = 0;
         virtual void LogIndividualData( IIndividualHuman* individual ) = 0;
         virtual void LogNodeData( INodeContext* pNC ) = 0;
@@ -77,7 +79,8 @@ namespace Kernel
         virtual void CheckForValidNodeIDs(const std::vector<ExternalNodeId_t>& demographicNodeIds) {};
         virtual void UpdateEventRegistration( float currentTime, 
                                               float dt, 
-                                              std::vector<INodeEventContext*>& rNodeEventContextList ) {} ;
+                                              std::vector<INodeEventContext*>& rNodeEventContextList,
+                                              ISimulationEventContext* pSimEventContext ) {} ;
     };
 
     // This is a pointer to a function that is used to create/instantiate reports

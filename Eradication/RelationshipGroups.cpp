@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -11,7 +11,10 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "RelationshipGroups.h"
 #include "Relationship.h"
-#include "NodeSTI.h"
+#include "INodeSTI.h"
+#include "IndividualEventContext.h"
+#include "IIndividualHumanContext.h"
+#include "INodeContext.h"
 #include "Debug.h"
 #include <algorithm>
 
@@ -34,7 +37,9 @@ namespace Kernel {
         HANDLE_INTERFACE(IContagionProbabilities)
     END_QUERY_INTERFACE_BODY(DiscreteContagionPopulation)
 
-    RelationshipGroups::RelationshipGroups()
+    std::string RelationshipGroups::tag( "relationship" );
+
+    RelationshipGroups::RelationshipGroups( RANDOMBASE * prng )
     {
     }
 
@@ -45,7 +50,7 @@ namespace Kernel {
         m_parent = parent;
     }
 
-    void RelationshipGroups::AddPropertyValuesToValueToIndexMap(
+    void RelationshipGroups::addPropertyValuesToValueToIndexMap(
         const string& propertyName,
         const std::list<uint32_t>& valueSet,
         int currentMatrixSize
@@ -86,17 +91,12 @@ namespace Kernel {
         max_index = valueIndex-1;
     }
 
-    void RelationshipGroups::AddProperty( const string& property, const PropertyValueList_t& values, const ScalingMatrix_t& scalingMatrix, const string& route )
+    void RelationshipGroups::AddProperty( const string& property, const PropertyValueList_t& values, const ScalingMatrix_t& scalingMatrix )
     {
         throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "not supported in STI" );
     }
 
-    void RelationshipGroups::GetGroupMembershipForProperties( const RouteList_t& route, const tProperties* properties, TransmissionGroupMembership_t* membershipOut ) const
-    {
-        throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "not supported in STI" );
-    }
-
-    void RelationshipGroups::IncrementWeightedPopulation( const TransmissionGroupMembership_t* transmissionGroupMembership, float weight )
+    void RelationshipGroups::GetGroupMembershipForProperties( const tProperties& properties, TransmissionGroupMembership_t& membershipOut ) const
     {
         throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "not supported in STI" );
     }
@@ -105,20 +105,18 @@ namespace Kernel {
     RelationshipGroups::AddProperty(
         const string& property,
         const list<uint32_t>& values,
-        const ScalingMatrix_t& scalingMatrix,
-        const string& route
+        const ScalingMatrix_t& scalingMatrix
     )
     {
-        LOG_VALID_F( "%s( property = '%s', #values = %d, route = '%s' )\n", __FUNCTION__, property.c_str(), values.size(), route.c_str() );
-        LOG_DEBUG_F( "Adding Property for property %s (and route %s); values.size() = %d, value[last]=???.\n",
+        LOG_VALID_F( "%s( property = '%s', #values = %d )\n", __FUNCTION__, property.c_str(), values.size() );
+        LOG_DEBUG_F( "Adding Property for property %s; values.size() = %d, value[last]=???.\n",
                      property.c_str(),
-                     route.c_str(),
                      values.size()
                      //values[values.size()-1].c_str()
                     );
-        //CheckForDuplicatePropertyName(property);
-        //CheckForValidValueListSize(values);
-        //CheckForValidScalingMatrixSize(scalingMatrix, values);
+        //checkForDuplicatePropertyName(property);
+        //checkForValidValueListSize(values);
+        //checkForValidScalingMatrixSize(scalingMatrix, values);
 
         propertyNameToValuesMap[property] = values;
         // I think we need to rebuild scaling matrix to be N*N 
@@ -134,7 +132,7 @@ namespace Kernel {
         {
             const string& propertyName = entry.first;
             const std::list<uint32_t>& valueList = entry.second;
-            AddPropertyValuesToValueToIndexMap(propertyName, valueList, scalingMatrix.size());
+            addPropertyValuesToValueToIndexMap(propertyName, valueList, scalingMatrix.size());
             if( rg_propertyNameToMatrixMap.find( propertyName ) == rg_propertyNameToMatrixMap.end() )
             {
                 throw BadMapKeyException( __FILE__, __LINE__, __FUNCTION__, "propertyNameToMatrixMap", propertyName.c_str() );
@@ -143,20 +141,7 @@ namespace Kernel {
         }
     }
 
-    void RelationshipGroups::StoreRouteDecayValues( const RouteToContagionDecayMap_t& contagionDecayRatesByRoute )
-    {
-        if (contagionDecayRatesByRoute.find(transmissionRouteName) != contagionDecayRatesByRoute.end())
-        {
-            contagionDecayRate = contagionDecayRatesByRoute.at(transmissionRouteName);
-        }
-    }
-
-    void
-    RelationshipGroups::Build(
-        const RouteToContagionDecayMap_t& contagionDecayRatesByRoute,
-        int numberOfStrains,
-        int numberOfSubstrains
-    )
+    void RelationshipGroups::Build( float contagionDecayRate, int numberOfStrains, int numberOfSubstrains )
     {
         infectors.clear();
         LOG_DEBUG( "Clearing propertyValueToIndexMap: should be done once each timestep, but NO more.\n" );
@@ -166,7 +151,7 @@ namespace Kernel {
 
         BuildRouteScalingMatrices(); // The time spent in this grows linearly with number of relationships, but not scary yet. 
 
-        StoreRouteDecayValues(contagionDecayRatesByRoute);
+        this->contagionDecayRate = contagionDecayRate;
 
         unsigned int vector_size = 0;
         for (auto& entry : propertyNameToValuesMap)
@@ -181,16 +166,13 @@ namespace Kernel {
 
     void
     RelationshipGroups::GetGroupMembershipForProperties(
-        const RouteList_t& route,
-        const std::map<std::string,uint32_t>* properties,
-        TransmissionGroupMembership_t* membershipOut
+        const std::map<std::string,uint32_t>& properties,
+        std::map< int, TransmissionGroupMembership_t >& membershipOut
     )
     const
     {
-        (*membershipOut)[0] = (GroupIndex)0; // map route 0 to index 0 // why?
-        membershipOut->clear();
-
-        for( auto iProperty = properties->begin(); iProperty != properties->end(); iProperty++ )
+        membershipOut.clear();
+        for( auto iProperty = properties.begin(); iProperty != properties.end(); iProperty++ )
         {
             const string& propertyName = iProperty->first;
             uint32_t propertyValue = iProperty->second;
@@ -210,12 +192,17 @@ namespace Kernel {
                     // ------------------------------------------------------------------------------------------------------
                     if( (unsigned int)rg_propertyValueToIndexMap.at(propertyName).at(propertyValue) <= max_index  )
                     {
-                        (*membershipOut)[ propertyValue ] = rg_propertyValueToIndexMap.at(propertyName).at(propertyValue);
+                        if( rg_propertyValueToIndexMap.at(propertyName).find( propertyValue ) != rg_propertyValueToIndexMap.at(propertyName).end() )
+                        {
+                            membershipOut[ propertyValue ] = rg_propertyValueToIndexMap.at(propertyName).at(propertyValue);
+                            LOG_VALID_F( "%s found relationship id %d for group id %d.\n", __FUNCTION__, propertyValue, rg_propertyValueToIndexMap.at(propertyName).at(propertyValue) );
+                        }
+                        //else { ERROR??? }
                     }
                     else
                     {
                         // ----------------------------------------------------------------------------------
-                        // --- DMB 6-17-2016 - I think the fix in AddPropertyValuesToValueToIndexMap() that 
+                        // --- DMB 6-17-2016 - I think the fix in addPropertyValuesToValueToIndexMap() that 
                         // --- only does the insert if it is not already in the map gets us around this issue.
                         // ----------------------------------------------------------------------------------
                         std::stringstream ss;
@@ -249,105 +236,87 @@ namespace Kernel {
         }*/
     }
 
-    void RelationshipGroups::UpdatePopulationSize(const TransmissionGroupMembership_t* transmissionGroupMembership, float size_changes, float mc_weight)
+    void RelationshipGroups::UpdatePopulationSize(const TransmissionGroupMembership_t& transmissionGroupMembership, float size_changes, float mc_weight)
     {
-        float delta = size_changes * mc_weight;
-        populationSize += delta;
-        LOG_DEBUG_F( "Increased group population to %f with addition of %f\n", populationSize, delta );
+        populationSize = 2; // how could this be otherwise? Also don't think this matters.
     }
 
     void
     RelationshipGroups::ExposeToContagion(
         IInfectable* candidate,
-        const TransmissionGroupMembership_t* poolMembership,
-        float deltaTee
+        TransmissionGroupMembership_t poolMembership,
+        float deltaTee,
+        TransmissionRoute::Enum tx_route
     )
     const
     {
-        //LOG_DEBUG_F( "%s: poolMembership size = %d\n", __FUNCTION__, poolMembership->size() );
-        // Iterate over all pools. This works for expose, not for deposit.
-        for( auto groupIt = poolMembership->begin();
-             groupIt != poolMembership->end();
-             ++groupIt )
+        GroupIndex poolIndex = poolMembership.group;
+
+        act_prob_vec_t act_prob_vec = infectionRate[poolIndex];
+        for( auto &entry : act_prob_vec )
         {
-            //GroupIndex poolIndex = poolMembership->begin()->second;
-            GroupIndex poolIndex = groupIt->second;
-            //IRelationship * pRel = m_parent->GetRelationshipManager()->GetRelationshipById( atoi( poolIndexToRelationshipReverseMap.at( poolIndex ).c_str() ) );
+            entry.prob_per_act *= candidate->GetInterventionReducedAcquire();
+            LOG_DEBUG_F( "prob_per_act = %f after multiplying by %f\n", entry.prob_per_act, candidate->GetInterventionReducedAcquire() );
+        } 
 
-            //float poolInfectionRate = infectionRate[poolIndex];
-            act_prob_vec_t act_prob_vec = infectionRate[poolIndex];
-            for( auto &entry : act_prob_vec )
+        if (act_prob_vec.size() > 0)
+        {
+            LOG_INFO_F( "act_prob_vec.size() = %d for index %d\n", act_prob_vec.size(), poolIndex );
+            if (candidate != nullptr)
             {
-                entry.prob_per_act *= candidate->GetInterventionReducedAcquire();
-                LOG_DEBUG_F( "prob_per_act = %f after multiplying by %f\n", entry.prob_per_act, candidate->GetInterventionReducedAcquire() );
-            }
-
-            //LOG_DEBUG_F( "Pool index %d has contagion value/infectionRate %f\n", poolIndex, poolInfectionRate );
-
-            if (act_prob_vec.size() > 0)
-            {
-                LOG_INFO_F( "act_prob_vec.size() = %d for index %d\n", act_prob_vec.size(), poolIndex );
-                if (candidate != nullptr)
-                {
 #if 0
-                    std::cout << "I am "
-                              << dynamic_cast<IIndividualHumanSTI*>(candidate)->GetSuid().data
-                              << " and I'm exposing partner in relationship "
-                              << poolIndexToRelationshipReverseMap[ poolIndex ]
-                              << " with id "
-                              << pRel->GetPartner( dynamic_cast<IIndividualHumanSTI*>(candidate) )->GetSuid().data
-                              << " to contagion qty "
-                              << infectionRate[poolIndex]
-                              << std::endl;
+                std::cout << "I am "
+                    << dynamic_cast<IIndividualHumanSTI*>(candidate)->GetSuid().data
+                    << " and I'm exposing partner in relationship "
+                    << poolIndexToRelationshipReverseMap[ poolIndex ]
+                    << " with id "
+                    << pRel->GetPartner( dynamic_cast<IIndividualHumanSTI*>(candidate) )->GetSuid().data
+                    << " to contagion qty "
+                    << infectionRate[poolIndex]
+                    << std::endl;
 #endif
-                    IIndividualHumanSTI* sti_human = nullptr;
-                    unsigned int receiver = ~0;
-                    if (candidate->QueryInterface(GET_IID(IIndividualHumanSTI), (void**)&sti_human) == s_OK) {
-                        receiver = sti_human->GetSuid().data;
-                    }
-                    //LogActivity( 0x0EC5B05E, receiver, poolIndex, poolInfectionRate );
-                    //candidate->Expose((IContagionPopulation*)&contagionPopulation, deltaTee, TransmissionRoute::TRANSMISSIONROUTE_ALL);
-                    release_assert( infectors.size() );
-                    if( infectors.find( poolIndex ) == infectors.end() )
-                    {
-                        throw BadMapKeyException( __FILE__, __LINE__, __FUNCTION__, "infectors", std::to_string(poolIndex).c_str() );
-                    }
-                    if( dynamic_cast<IIndividualHuman*>(candidate)->IsInfected() == false )
-                    {
-                        //LOG_DEBUG_F( "Exposing (STI) individual to PROBABILITY set from depositor %d.\n", infectors.at( poolIndex ) );
-                        DiscreteContagionPopulation contagionPopulation( act_prob_vec, infectors.at( poolIndex ) );
-                        candidate->Expose( &contagionPopulation, deltaTee );
-                    }
+                IIndividualHumanSTI* sti_human = nullptr;
+                unsigned int receiver = ~0;
+                if (candidate->QueryInterface(GET_IID(IIndividualHumanSTI), (void**)&sti_human) == s_OK) {
+                    receiver = sti_human->GetSuid().data;
+                }
+                release_assert( infectors.size() );
+                if( infectors.find( poolIndex ) == infectors.end() )
+                {
+                    throw BadMapKeyException( __FILE__, __LINE__, __FUNCTION__, "infectors", std::to_string(poolIndex).c_str() );
+                }
+                if( dynamic_cast<IIndividualHuman*>(candidate)->IsInfected() == false )
+                {
+                    //LOG_DEBUG_F( "Exposing (STI) individual to PROBABILITY set from depositor %d.\n", infectors.at( poolIndex ) );
+                    DiscreteContagionPopulation contagionPopulation( act_prob_vec, infectors.at( poolIndex ) );
+                    candidate->Expose( &contagionPopulation, deltaTee );
                 }
             }
         }
     }
 
-    float RelationshipGroups::GetTotalContagion(const TransmissionGroupMembership_t* transmissionGroupMembership)
+    float RelationshipGroups::GetContagionByProperty( const IPKeyValue& property_value )
     {
-        GroupIndex groupIndex = transmissionGroupMembership->at(0);
-        return 0;
+        throw new NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "Not implemented for RelationshipGroups." );
     }
 
     void
     RelationshipGroups::DepositContagion(
         const IStrainIdentity& strain,
         float prob,
-        const TransmissionGroupMembership_t* poolMembership
+        TransmissionGroupMembership_t poolMembership
     )
     {
-#if 0
-        if( poolMembership->size() > 1 )
-        {
-            LOG_WARN_F( "This means code is wrong. Put breakpoint here and debug.\n" );
-        }
-#endif
-        release_assert( poolMembership->size() == 1 );
-        auto it = poolMembership->begin();
-
-        GroupIndex poolIndex = it->second;
+        GroupIndex poolIndex = poolMembership.group;
         LOG_DEBUG_F( "%s: poolIndex = %d\n", __FUNCTION__, poolIndex );
-        IRelationship * pRel = m_parent->GetRelationshipManager()->GetRelationshipById( poolIndexToRelationshipReverseMap[ poolIndex ] );
+        if( poolIndexToRelationshipReverseMap.find( poolIndex ) == poolIndexToRelationshipReverseMap.end() )
+        {
+            std::ostringstream msg;
+            msg << "Failed to find poolIndex " << poolIndex << " in poolIndexToRelationshipReverseMap." << std::endl;
+            throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+        }
+
+        IRelationship * pRel = m_parent->GetRelationshipManager()->GetRelationshipById( poolIndexToRelationshipReverseMap.at( poolIndex ) );
         if( !pRel )
         {
             std::ostringstream msg;
@@ -360,7 +329,9 @@ namespace Kernel {
 
         const tRelationshipMembers& members = pRel->GetMembers();
         auto male_partner = *(members.begin());
+        release_assert( male_partner );
         auto female_partner = *(members.rbegin());
+        release_assert( female_partner );
 
         IIndividualHumanContext* human1 = nullptr;
         IIndividualHumanContext* human2 = nullptr;
@@ -426,13 +397,13 @@ namespace Kernel {
     }
 
     void 
-    RelationshipGroups::CorrectInfectivityByGroup(float infectivityCorrection, const TransmissionGroupMembership_t* transmissionGroupMembership)
+    RelationshipGroups::CorrectInfectivityByGroup(float infectivityCorrection, TransmissionGroupMembership_t transmissionGroupMembership)
     {
         // do nothing
     }
 
     void
-    RelationshipGroups::EndUpdate(float infectivityCorrection)
+    RelationshipGroups::EndUpdate(float infectivityMultiplier, float infectivityAddition)
     {
         LOG_DEBUG_F( "%s: shedContagion.size() = %d\n", __FUNCTION__, shedContagion.size() );
 

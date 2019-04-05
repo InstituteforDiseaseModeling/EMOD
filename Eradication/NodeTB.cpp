@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -8,8 +8,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 ***************************************************************************************************/
 
 #include "stdafx.h"
-
-#ifdef ENABLE_TBHIV
 
 #include "NodeTB.h"
 #include "TransmissionGroupsFactory.h" //for SetupIntranodeTransmission
@@ -31,11 +29,14 @@ namespace Kernel
 
     NodeTB::NodeTB() : NodeAirborne() { }
 
-    NodeTB::NodeTB(ISimulationContext *_parent_sim, suids::suid node_suid) : NodeAirborne(_parent_sim, node_suid) { }
-
-    NodeTB *NodeTB::CreateNode(ISimulationContext *_parent_sim, suids::suid node_suid)
+    NodeTB::NodeTB(ISimulationContext *_parent_sim, ExternalNodeId_t externalNodeId, suids::suid node_suid)
+        : NodeAirborne(_parent_sim, externalNodeId, node_suid)
     {
-        NodeTB *newnode = _new_ NodeTB(_parent_sim, node_suid);
+    }
+
+    NodeTB *NodeTB::CreateNode(ISimulationContext *_parent_sim, ExternalNodeId_t externalNodeId, suids::suid node_suid)
+    {
+        NodeTB *newnode = _new_ NodeTB(_parent_sim, externalNodeId, node_suid);
         newnode->Initialize();
 
         return newnode;
@@ -70,7 +71,7 @@ namespace Kernel
         {
         //  Latent infection that became active pre-symptomatic
         case InfectionStateChange::TBActivationPresymptomatic:
-            event_context_host->TriggerNodeEventObservers(ih->GetEventContext(), EventTrigger::TBActivationPresymptomatic);
+            event_context_host->TriggerObservers(ih->GetEventContext(), EventTrigger::TBActivationPresymptomatic);
             break;
 
         //  Active pre-symptomatic infection to active symptomatic
@@ -82,17 +83,17 @@ namespace Kernel
         case InfectionStateChange::TBActivationExtrapulm:
             if ( tb_ind->HasEverRelapsedAfterTreatment() )
             {
-                 event_context_host->TriggerNodeEventObservers(ih->GetEventContext(), EventTrigger::TBActivationPostRelapse);
+                 event_context_host->TriggerObservers(ih->GetEventContext(), EventTrigger::TBActivationPostRelapse);
             }
             else
             {
-                event_context_host->TriggerNodeEventObservers(ih->GetEventContext(), EventTrigger::TBActivation);
+                event_context_host->TriggerObservers(ih->GetEventContext(), EventTrigger::TBActivation);
             }
             break;
 
         //  Infection got treatment and is now pending relapse - trigger goes off if you are ON OR OFF DRUGS.
         case InfectionStateChange::ClearedPendingRelapse:
-            event_context_host->TriggerNodeEventObservers(ih->GetEventContext(), EventTrigger::TBPendingRelapse);
+            event_context_host->TriggerObservers(ih->GetEventContext(), EventTrigger::TBPendingRelapse);
             break;
 
         // no other infection state change is connected to a trigger, no trigger goes off in this time step
@@ -104,15 +105,15 @@ namespace Kernel
 
     ITransmissionGroups* NodeTB::CreateTransmissionGroups()
     {
-        return TransmissionGroupsFactory::CreateNodeGroups( TransmissionGroupType::StrainAwareGroups );
+        return TransmissionGroupsFactory::CreateNodeGroups( TransmissionGroupType::StrainAwareGroups, GetRng() );
     }
 
-    void NodeTB::BuildTransmissionRoutes( RouteToContagionDecayMap_t& rDecayMap )
+    void NodeTB::BuildTransmissionRoutes( float contagionDecayRate )
     {
-        int max_antigens = GET_CONFIGURABLE(SimulationConfig)->number_basestrains;
-        int max_genomes = GET_CONFIGURABLE(SimulationConfig)->number_substrains;
+        int max_antigens = InfectionConfig::number_basestrains;
+        int max_genomes = InfectionConfig::number_substrains;
         LOG_DEBUG_F("max_antigens %f, max_genomes %f", max_antigens, max_genomes);
-        transmissionGroups->Build( rDecayMap, max_antigens, max_genomes ); 
+        transmissionGroups->Build( contagionDecayRate, max_antigens, max_genomes ); 
     }
 
     void NodeTB::resetNodeStateCounters(void)
@@ -164,4 +165,3 @@ namespace Kernel
     }
 }
 
-#endif // ENABLE_TBHIV

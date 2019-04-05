@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -11,8 +11,10 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "UsageDependentBednet.h"
 #include "InterventionFactory.h"
 #include "Log.h"
-#include "Contexts.h"
 #include "IndividualEventContext.h"
+#include "IIndividualHumanContext.h"
+#include "RANDOM.h"
+#include "DistributionFactory.h"
 
 SETUP_LOGGING( "UsageDependentBednet" )
 
@@ -93,7 +95,7 @@ namespace Kernel
     , m_TriggerReceived()
     , m_TriggerUsing()
     , m_TriggerDiscard()
-    , m_ExpirationDuration( DistributionFunction::FIXED_DURATION )
+    , m_ExpirationDuration( nullptr )
     , m_ExpirationTimer(0.0)
     , m_TimerHasExpired(false)
     {
@@ -106,7 +108,7 @@ namespace Kernel
     , m_TriggerReceived( master.m_TriggerReceived )
     , m_TriggerUsing( master.m_TriggerUsing )
     , m_TriggerDiscard( master.m_TriggerDiscard )
-    , m_ExpirationDuration( master.m_ExpirationDuration )
+    , m_ExpirationDuration( master.m_ExpirationDuration->Clone() )
     , m_ExpirationTimer(master.m_ExpirationTimer)
     , m_TimerHasExpired(master.m_TimerHasExpired)
     {
@@ -124,6 +126,7 @@ namespace Kernel
             delete p_effect;
         }
         m_UsageEffectList.clear();
+        delete m_ExpirationDuration;
     }
 
     bool UsageDependentBednet::ConfigureUsage( const Configuration * inputJson )
@@ -147,30 +150,15 @@ namespace Kernel
 
     bool UsageDependentBednet::ConfigureEvents( const Configuration * inputJson )
     {
-        m_ExpirationDuration.SetTypeNameDesc( "Expiration_Distribution_Type", UDBednet_Expiration_Distribution_Type_DESC_TEXT );
-        m_ExpirationDuration.AddSupportedType( DistributionFunction::FIXED_DURATION,       "Expiration_Period",      UDBednet_Expiration_Period_DESC_TEXT,      "", "" );
-        m_ExpirationDuration.AddSupportedType( DistributionFunction::UNIFORM_DURATION,     "Expiration_Period_Min",  UDBednet_Expiration_Period_Min_DESC_TEXT,  "Expiration_Period_Max",     UDBednet_Expiration_Period_Max_DESC_TEXT );
-        m_ExpirationDuration.AddSupportedType( DistributionFunction::GAUSSIAN_DURATION,    "Expiration_Period_Mean", UDBednet_Expiration_Period_Mean_DESC_TEXT, "Expiration_Period_Std_Dev", UDBednet_Expiration_Period_Std_Dev_DESC_TEXT );
-        m_ExpirationDuration.AddSupportedType( DistributionFunction::EXPONENTIAL_DURATION, "Expiration_Period",      UDBednet_Expiration_Period_DESC_TEXT, "", "" );
-
-        m_ExpirationDuration .AddSupportedType( DistributionFunction::DUAL_TIMESCALE_DURATION,
-                                               "Expiration_Period_1",            UDBednet_Expiration_Period_1_DESC_TEXT, 
-                                               "Expiration_Period_2",            UDBednet_Expiration_Period_2_DESC_TEXT,
-                                               "Expiration_Percentage_Period_1", UDBednet_Expiration_Percentage_Period_1_DESC_TEXT );
-
-        m_ExpirationDuration.Configure( this, inputJson );
+        DistributionFunction::Enum expiration_function( DistributionFunction::CONSTANT_DISTRIBUTION );
+        initConfig("Expiration_Period_Distribution", expiration_function, inputJson, MetadataDescriptor::Enum("Expiration_Distribution_Type", UDBednet_Expiration_Distribution_Type_DESC_TEXT, MDD_ENUM_ARGS(DistributionFunction)));                 
+        m_ExpirationDuration = DistributionFactory::CreateDistribution( this, expiration_function, "Expiration_Period", inputJson );
 
         initConfigTypeMap( "Received_Event", &m_TriggerReceived, UDBednet_Received_Event_DESC_TEXT );
         initConfigTypeMap( "Using_Event",    &m_TriggerUsing,    UDBednet_Using_Event_DESC_TEXT );
         initConfigTypeMap( "Discard_Event",  &m_TriggerDiscard,  UDBednet_Discard_Event_DESC_TEXT );
 
-        bool configured = JsonConfigurable::Configure( inputJson ); // AbstractBednet is responsible for calling BaseIntervention::Configure()
-
-        if( configured && !JsonConfigurable::_dryrun )
-        {
-            m_ExpirationDuration.CheckConfiguration();
-        }
-        return configured;
+        return JsonConfigurable::Configure( inputJson ); // AbstractBednet is responsible for calling BaseIntervention::Configure()
     }
 
     bool UsageDependentBednet::Distribute( IIndividualHumanInterventionsContext *context,
@@ -179,7 +167,7 @@ namespace Kernel
         bool distributed = AbstractBednet::Distribute( context, pCCO );
         if( distributed )
         {
-            m_ExpirationTimer = m_ExpirationDuration.CalculateDuration();
+            m_ExpirationTimer = m_ExpirationDuration->Calculate( context->GetParent()->GetRng() );
             BroadcastEvent( m_TriggerReceived );
         }
         return distributed;
@@ -187,22 +175,9 @@ namespace Kernel
 
     bool UsageDependentBednet::IsUsingBednet() const
     {
-        bool is_using = false;
-
         float usage_effect = GetEffectUsage();
 
-        if( usage_effect >= 1.0 )
-        {
-            is_using = true;
-        }
-        else if( usage_effect <= 0.0 )
-        {
-            is_using = false;
-        }
-        else
-        {
-            is_using = (usage_effect > parent->GetRng()->e());
-        }
+        bool is_using = parent->GetRng()->SmartDraw( usage_effect );
 
         if( is_using )
         {

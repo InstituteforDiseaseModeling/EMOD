@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -15,6 +15,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Debug.h"
 #include "NodeEventContext.h"  // for INodeEventContext (ICampaignCostObserver)
 #include "EventTrigger.h"
+#include "RANDOM.h"
+#include "ISimulationContext.h"
+#include "IIndividualHumanContext.h"
 
 SETUP_LOGGING( "BirthTriggeredIV" )
 
@@ -77,13 +80,9 @@ namespace Kernel
             LOG_DEBUG_F("Distributed birth-triggered intervention to NODE: %d\n", pNodeEventContext->GetId().data);
 
             // QI to register ourself as a birth observer
-            INodeTriggeredInterventionConsumer * pNTIC = nullptr;
-            if (s_OK != pNodeEventContext->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&pNTIC))
-            {
-                throw QueryInterfaceException(__FILE__, __LINE__, __FUNCTION__, "pNodeEventContext", "INodeTriggeredInterventionConsumer", "INodeEventContext");
-            }
-            release_assert(pNTIC);
-            pNTIC->RegisterNodeEventObserver(this, EventTrigger::Births);
+            IIndividualEventBroadcaster * broadcaster = pNodeEventContext->GetIndividualEventBroadcaster();
+            release_assert( broadcaster );
+            broadcaster->RegisterObserver(this, EventTrigger::Births);
         }
         return was_distributed;
     }
@@ -96,7 +95,6 @@ namespace Kernel
         LOG_DEBUG("A baby was born, distribute actual_intervention (conditionally)\n");
 
         assert( parent );
-        assert( parent->GetRng() );
 
         if( !demographic_restrictions.IsQualified( pIndiv ) )
         {
@@ -106,7 +104,7 @@ namespace Kernel
         // want some way to demonstrate selective distribution of calender; no rng available to us, individual property value???
         float demographic_coverage = demographic_restrictions.GetDemographicCoverage();
         LOG_DEBUG_F("demographic_coverage = %f\n", demographic_coverage);
-        if( !SMART_DRAW( demographic_coverage ) )
+        if( !pIndiv->GetInterventionsContext()->GetParent()->GetRng()->SmartDraw( demographic_coverage ) )
         {
             LOG_DEBUG("Demographic coverage ruled this out\n");
             return false;
@@ -152,14 +150,9 @@ namespace Kernel
     void BirthTriggeredIV::Unregister()
     {
         // unregister ourself as a birth observer
-        INodeTriggeredInterventionConsumer * pNTIC = nullptr;
-        if (s_OK != parent->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&pNTIC))
-        {
-            throw QueryInterfaceException(__FILE__, __LINE__, __FUNCTION__, "parent", "IIndividualTriggeredInterventionConsumer", "INodeEventContext");
-        }
-
-        release_assert(pNTIC);
-        pNTIC->UnregisterNodeEventObserver(this, EventTrigger::Births);
+        IIndividualEventBroadcaster * broadcaster = parent->GetIndividualEventBroadcaster();
+        release_assert( broadcaster );
+        broadcaster->UnregisterObserver(this, EventTrigger::Births);
         SetExpired( true );
     }
 

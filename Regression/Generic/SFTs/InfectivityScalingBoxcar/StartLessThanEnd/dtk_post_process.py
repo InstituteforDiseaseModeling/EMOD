@@ -1,14 +1,14 @@
 #!/usr/bin/python
 
-import dtk_InfectivityScalingBoxcar_Support as isb_support
-import dtk_sft
+import dtk_test.dtk_InfectivityScalingBoxcar_Support as isb_support
+import dtk_test.dtk_sft as sft
 
 KEY_SIMULATION_TIMESTEP = "Simulation_Timestep"
 
 def application( output_folder="output", stdout_filename="test.txt",
                  config_filename="config.json",
                  insetchart_name="InsetChart.json",
-                 report_name=dtk_sft.sft_output_filename,
+                 report_name=sft.sft_output_filename,
                  debug=False):
     if debug:
         print( "output_folder: " + output_folder )
@@ -17,7 +17,7 @@ def application( output_folder="output", stdout_filename="test.txt",
         print( "insetchart_name: " + insetchart_name + "\n" )
         print( "report_name: " + report_name + "\n" )
         print( "debug: " + str(debug) + "\n" )
-    dtk_sft.wait_for_done()
+    sft.wait_for_done()
     param_obj = isb_support.load_emod_parameters(config_filename)
     simulation_timestep = param_obj[KEY_SIMULATION_TIMESTEP]
     output_df = isb_support.parse_output_file(stdout_filename, simulation_timestep, debug)

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import json
-import dtk_sft
+import dtk_test.dtk_sft as sft
 import math
 import numpy as np
 
@@ -66,7 +66,7 @@ def parse_output_file(output_filename="test.txt", debug=False):
     filtered_lines = []
     with open(output_filename) as logfile:
         for line in logfile:
-            if dtk_sft.has_match(line,matches):
+            if sft.has_match(line,matches):
                 filtered_lines.append(line)
     if debug:
         with open("DEBUG_filtered_lines.txt", "w") as outfile:
@@ -80,19 +80,19 @@ def parse_output_file(output_filename="test.txt", debug=False):
         if matches[0] in line:
             time_step += simulation_timestep
         elif matches[1] in line: # this individual is Cleared
-            individual_id = dtk_sft.get_val(KEY_INDIVIDUAL, line)
+            individual_id = sft.get_val(KEY_INDIVIDUAL, line)
             if individual_id in output_dict:
                 output_dict[individual_id][KEY_CLEARED] = time_step
             else:
                 output_dict[individual_id] = {KEY_CLEARED: time_step}
         elif matches[2] in line: # this individual is Latent
-            individual_id = dtk_sft.get_val(KEY_INDIVIDUAL, line)
+            individual_id = sft.get_val(KEY_INDIVIDUAL, line)
             if individual_id in output_dict:
                 output_dict[individual_id][KEY_LATENT] = time_step
             else:
                 output_dict[individual_id] = {KEY_LATENT: time_step}
         elif matches[3] in line: # this individual is PreSymptomatic active
-            individual_id = dtk_sft.get_val(KEY_INDIVIDUAL, line)
+            individual_id = sft.get_val(KEY_INDIVIDUAL, line)
             if individual_id in output_dict:
                 output_dict[individual_id][KEY_PRESYMPTOMATIC] = time_step
             else:
@@ -114,7 +114,7 @@ def create_report_file(param_obj, output_dict, report_name, debug):
         simulation_duration = param_obj[KEY_DURATION]
         if not len(output_dict):
             success = False
-            outfile.write(dtk_sft.sft_no_test_data)
+            outfile.write(sft.sft_no_test_data)
 
         outfile.write("checking test conditions: \n")
         if not child_fast_fraction or not adult_fast_fraction:
@@ -161,11 +161,11 @@ def create_report_file(param_obj, output_dict, report_name, debug):
         size = len(actual_timer)
         scale = 1.0 / latent_cure_rate
         dist_exponential_np = np.random.exponential(scale, size)
-        dtk_sft.plot_data_sorted(actual_timer, dist2=np.array(dist_exponential_np), label1="latent to cleared duration",
+        sft.plot_data_sorted(actual_timer, dist2=np.array(dist_exponential_np), label1="latent to cleared duration",
                           label2="numpy exponential", title="exponential rate = {}".format(latent_cure_rate),
                           xlabel="data point", ylabel="latent to cleared duration",
                           category='latent_to_cleared_duration', show=True, line=False, overlap=True)
-        result = dtk_sft.test_exponential(actual_timer, p1=latent_cure_rate, report_file=outfile, integers=True, roundup=True,
+        result = sft.test_exponential(actual_timer, p1=latent_cure_rate, report_file=outfile, integers=True, roundup=True,
                                           round_nearest=False)
         outfile.write("ks test result is {0}, exponential rate = {1}, # of data point = {2}.\n".format(result, latent_cure_rate, size))
         if not result:
@@ -176,14 +176,14 @@ def create_report_file(param_obj, output_dict, report_name, debug):
             outfile.write("GOOD: test exponential for latent to cleared duration passed with {0} "
                           "= {1}.\n".format(KEY_LATENT_CURE_RATE, latent_cure_rate))
 
-        outfile.write(dtk_sft.format_success_msg(success))
+        outfile.write(sft.format_success_msg(success))
     if debug:
         print( "SUMMARY: Success={0}\n".format(success) )
     return success
 
 def application( output_folder="output", stdout_filename="test.txt", insetchart_name="InsetChart.json",
                  config_filename="config.json", campaign_filename="campaign.json",
-                 report_name=dtk_sft.sft_output_filename,
+                 report_name=sft.sft_output_filename,
                  debug=False):
     if debug:
         print( "output_folder: " + output_folder )
@@ -194,7 +194,7 @@ def application( output_folder="output", stdout_filename="test.txt", insetchart_
         print( "report_name: " + report_name + "\n" )
         print( "debug: " + str(debug) + "\n" )
 
-    dtk_sft.wait_for_done()
+    sft.wait_for_done()
     param_obj = load_emod_parameters(config_filename, debug)
     output_dict = parse_output_file(stdout_filename, debug)
     create_report_file(param_obj, output_dict, report_name, debug)
@@ -209,7 +209,7 @@ if __name__ == "__main__":
     parser.add_argument('-j', '--jsonreport', default="InsetChart.json", help="Json report to load (InsetChart.json)")
     parser.add_argument('-c', '--config', default="config.json", help="Config name to load (config.json)")
     parser.add_argument('-C', '--campaign', default="campaign.json", help="campaign name to load (campaign.json)")
-    parser.add_argument('-r', '--reportname', default=dtk_sft.sft_output_filename, help="Report file to generate")
+    parser.add_argument('-r', '--reportname', default=sft.sft_output_filename, help="Report file to generate")
     args = parser.parse_args()
 
     application(output_folder=args.output, stdout_filename=args.stdout, insetchart_name=args.jsonreport,

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -16,6 +16,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IIndividualHumanSTI.h"
 #include "IIndividualHumanHIV.h"
 #include "IHIVInterventionsContainer.h"
+#include "IdmDateTime.h"
+#include "SimulationEventContext.h"
 
 SETUP_LOGGING( "NChooserEventCoordinator" )
 
@@ -194,7 +196,7 @@ namespace Kernel
         pNEC->VisitIndividuals( fn );
     }
 
-    std::vector<IIndividualHumanEventContext*> TargetedByAgeAndGender::SelectIndividuals()
+    std::vector<IIndividualHumanEventContext*> TargetedByAgeAndGender::SelectIndividuals( RANDOMBASE* pRNG )
     {
         if( GetNumTargeted() >= m_QualifyingIndividuals.size() )
         {
@@ -206,23 +208,9 @@ namespace Kernel
         // --- http://www.nowherenearithaca.com/2013/05/robert-floyds-tiny-and-beautiful.html
         // ----------------------------------------------------------------------------------
 
-        std::set<int> selected_indexes;
         uint32_t N = m_QualifyingIndividuals.size();
         uint32_t M = GetNumTargeted();
-
-        for( uint32_t j = (N - M) ; j < N ; j++ )
-        {
-            uint32_t index = EnvPtr->RNG->uniformZeroToN( j+1 );
-            release_assert( index < N );
-            if( selected_indexes.find( index ) == selected_indexes.end() )
-            {
-                selected_indexes.insert( index );
-            }
-            else
-            {
-                selected_indexes.insert( j );
-            }
-        }
+        std::set<uint32_t> selected_indexes = pRNG->chooseMofN( M, N );
 
         std::vector<IIndividualHumanEventContext*> selected_individuals;
         for( auto index : selected_indexes )
@@ -244,7 +232,6 @@ namespace Kernel
             return false;
         }
     }
-
 
     // ------------------------------------------------------------------------
     // --- TargetedDistribution
@@ -378,7 +365,7 @@ namespace Kernel
             if( num_total == 0 )
             {
                 std::stringstream msg;
-                msg << "The Base_Population_Scale_Factor (" << popScaleFactor << ") has scaled the values of Num_Targets all to zero so won't target anyone.\n";
+                msg << "The x_Base_Population (" << popScaleFactor << ") has scaled the values of Num_Targets all to zero so won't target anyone.\n";
                 LOG_WARN( msg.str().c_str() ); //GH-605 - Change to warning so users can more easily test configuration.
             }
         }
@@ -395,7 +382,7 @@ namespace Kernel
             if( num_total == 0 )
             {
                 std::stringstream msg;
-                msg << "The Base_Population_Scale_Factor (" << popScaleFactor << ") has scaled the values of Num_Targets_Males and Num_Target_Females all to zero so won't target anyone.\n";
+                msg << "The x_Base_Population (" << popScaleFactor << ") has scaled the values of Num_Targets_Males and Num_Target_Females all to zero so won't target anyone.\n";
                 LOG_WARN( msg.str().c_str() ); //GH-605 - Change to warning so users can more easily test configuration.
             }
         }
@@ -495,7 +482,7 @@ namespace Kernel
         }
         // ----------------------------------------------------------------------------------
         // --- DMB 9/26/2016 - I want this to be an error but users need the ability to test
-        // --- set Base_Population_Scale_Factor very small in order to test other things. 
+        // --- set x_Base_Population very small in order to test other things. 
         // --- Hence, we need warning. (GH-605)
         // ----------------------------------------------------------------------------------
         if( m_AgeAndGenderList.size() == 0 )
@@ -520,7 +507,7 @@ namespace Kernel
     }
 
     std::vector< IIndividualHumanEventContext* >
-    TargetedDistribution::DetermineWhoGetsIntervention( const std::vector<INodeEventContext*> nodeList )
+    TargetedDistribution::DetermineWhoGetsIntervention( RANDOMBASE* pRNG, const std::vector<INodeEventContext*> nodeList )
     {
         // ---------------------------------------------------------
         // --- Find the individuals for each age and gender
@@ -557,7 +544,7 @@ namespace Kernel
 
         for( auto p_ag : m_AgeAndGenderList )
         {
-            std::vector< IIndividualHumanEventContext* > selected = p_ag->SelectIndividuals();
+            std::vector< IIndividualHumanEventContext* > selected = p_ag->SelectIndividuals( pRNG );
             distribute_to.insert( distribute_to.end(), selected.begin(), selected.end() );
         }
         return distribute_to;
@@ -858,6 +845,8 @@ namespace Kernel
 
     void NChooserEventCoordinator::UpdateNodes( float dt )
     {
+        release_assert( m_CachedNodes.size() > 0 );
+
         // ---------------------------------------
         // --- Determine who gets the intervention
         // ---------------------------------------
@@ -865,7 +854,7 @@ namespace Kernel
 
         if( p_current_targets != nullptr ) // can be nullptr if in between periods
         {
-            std::vector< IIndividualHumanEventContext *> individual_list = p_current_targets->DetermineWhoGetsIntervention( m_CachedNodes );
+            std::vector< IIndividualHumanEventContext *> individual_list = p_current_targets->DetermineWhoGetsIntervention( m_CachedNodes[ 0 ]->GetRng(), m_CachedNodes );
 
             // ------------------------------------------------------------------------------------------------------
             // --- Distribute the intervention

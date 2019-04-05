@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -9,13 +9,13 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "stdafx.h"
 #include "PropertyValueChanger.h"
-#include "Contexts.h"
 #include "Debug.h" // for release_assert
 #include "RANDOM.h"
 #include "Common.h"             // for INFINITE_TIME
 #include "IIndividualHuman.h"
+#include "IIndividualHumanContext.h"
 #include "InterventionsContainer.h"
-#include "MathFunctions.h"  // for Probability && DistributionFunction
+#include "DistributionFactory.h" // for Probability && DistributionFunction
 #include "NodeEventContext.h"  // for INodeEventContext (ICampaignCostObserver)
 #include "EventTrigger.h"
 
@@ -58,7 +58,6 @@ namespace Kernel
         , action_timer( 0.0f )
         , reversion_timer( rThat.reversion_timer )
     {
-        SetActionTimer( this );
     }
 
 
@@ -83,8 +82,6 @@ namespace Kernel
         bool ret = BaseIntervention::Configure( inputJson );
         if( ret && !JsonConfigurable::_dryrun )
         {
-            SetActionTimer( this );
-
             std::set<std::string> key_set = IPFactory::GetInstance()->GetKeysAsStringSet();
             if( key_set.find( target_property_key ) == key_set.end() )
             {
@@ -107,25 +104,24 @@ namespace Kernel
         return ret;
     }
 
-    void PropertyValueChanger::SetActionTimer( PropertyValueChanger* pvc )
-    {
-        if( pvc->probability < 1.0 )
-        {
-            pvc->action_timer = Probability::getInstance()->fromDistribution( DistributionFunction::EXPONENTIAL_DURATION, pvc->probability, 0, 0, 0 );
-            if( pvc->action_timer > pvc->max_duration )
-            {
-                pvc->action_timer = FLT_MAX;
-            }
-            LOG_DEBUG_F( "Time until property change occurs = %f\n", pvc->action_timer );
-        }
-    }
-
     bool
     PropertyValueChanger::Distribute(
         IIndividualHumanInterventionsContext *context,
         ICampaignCostObserver * const pCCO
     )
     {
+        if( probability < 1.0 )
+        {
+            std::unique_ptr<IDistribution> distribution( DistributionFactory::CreateDistribution( DistributionFunction::EXPONENTIAL_DISTRIBUTION ) );
+            distribution->SetParameters( (double) probability, 0, 0 );
+            action_timer = distribution->Calculate( context->GetParent()->GetRng() );
+            
+            if( action_timer > max_duration )
+            {
+                action_timer = FLT_MAX;
+            }
+            LOG_DEBUG_F( "Time until property change occurs = %f\n", action_timer );
+        }
         return BaseIntervention::Distribute( context, pCCO );
     }
 

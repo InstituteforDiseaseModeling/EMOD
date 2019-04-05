@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -13,6 +13,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "NodeEventContext.h"  // for INodeEventContext
 #include "SimulationEnums.h"
 #include "Sigmoid.h"
+#include "IIndividualHumanContext.h"
+#include "IdmDateTime.h"
+#include "RANDOM.h"
 
 SETUP_LOGGING( "HIVSigmoidByYearAndSexDiagnostic" )
 
@@ -68,7 +71,7 @@ namespace Kernel
         LOG_DEBUG_F("min=%f, max=%f, rate=%f, midYear=%f, multiplier=%f, year=%f\n", rampMin, rampMax, rampRate, rampMidYear, valueMultiplier, year);
         LOG_DEBUG_F("rampMin + (rampMax-rampMin)/(1.0 + exp(-rampRate*(year-rampMidYear))) = %f\n", value_tmp );
 
-        bool testResult = ( SMART_DRAW( value) );
+        bool testResult = (parent->GetRng()->SmartDraw( value) );
         LOG_DEBUG_F("Individual %d: sex=%d, year=%f, value=%f, returning %d.\n", parent->GetSuid().data, gender, year, value, testResult);
  
         return testResult;

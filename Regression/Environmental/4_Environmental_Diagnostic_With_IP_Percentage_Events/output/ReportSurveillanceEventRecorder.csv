@@ -1,0 +1,2 @@
+Time,Coordinator_Name,Event_Name,NumCounted,ThresholdOfAction,NumIndividuals,NumInfected,Geographic:A:NumIndividuals,Geographic:A:NumInfected,Geographic:B:NumIndividuals,Geographic:B:NumInfected,Geographic:C:NumIndividuals,Geographic:C:NumInfected,Geographic:D:NumIndividuals,Geographic:D:NumInfected
+127,ACF_Counter,Respond_To_Surveillance,4,0.5,1000,101,257,5,236,9,264,30,243,57

@@ -1,10 +1,10 @@
 {
-    "Default_Config_Path": "defaults/vector_default_config.json", 
+    "Default_Config_Path": "../../defaults/vector_default_config.json", 
     "parameters": {
         "PRIMARY": {
             "Config_Name": "60_Vector_CohortMigration_local_3_nodes_one_way_GH1856", 
             "Geography": "MigrationTest", 
-            "Listed_Events": [], 
+            "Custom_Individual_Events": [], 
             "Node_Grid_Size": 0.005, 
             "Custom_Reports_Filename" : "NoCustomReports",
             "Run_Number": 1, 

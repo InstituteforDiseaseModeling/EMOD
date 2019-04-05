@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -11,11 +11,11 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <iostream>
 #include <fstream>
 #include "UnitTest++.h"
-#include "MathFunctions.h"
+#include "DistributionFactory.h"
 #include "Environment.h"
 #include "RANDOM.h"
 #include "Log.h"
-#include "common.h"
+#include "componentTests.h"
 
 using namespace Kernel;
 
@@ -23,18 +23,19 @@ SUITE(MathFunctionsTest)
 {
     struct MathFunctionsFixture
     {
-
+        RANDOMBASE* m_pRNG;
         MathFunctionsFixture()
         {
             Environment::Finalize();
             Environment::setLogger( new SimpleLogger( Logger::tLevel::WARNING ) );
 
-            const_cast<Environment*>(Environment::getInstance())->RNG = new PSEUDO_DES( 0 );
+            m_pRNG = new PSEUDO_DES( 0 );
         }
 
         ~MathFunctionsFixture()
         {
             Environment::Finalize();
+            delete m_pRNG;
         }
     };
 
@@ -85,8 +86,6 @@ SUITE(MathFunctionsTest)
 
     TEST_FIXTURE( MathFunctionsFixture, TestDualTimescaleDistribution )
     {
-        Probability* prob = Probability::getInstance();
-
         float decay_length_1 = 180.0f;
         float decay_length_2 =  60.0f;
         float percentage_is_1 = 0.75f;
@@ -96,7 +95,10 @@ SUITE(MathFunctionsTest)
 
         for( int i = 0; i < 1000; ++i )
         {
-            double duration = prob->fromDistribution( DistributionFunction::DUAL_TIMESCALE_DURATION, d1, d2, percentage_is_1, 0.0 );
+            std::unique_ptr<IDistribution> distribution( DistributionFactory::CreateDistribution( DistributionFunction::DUAL_EXPONENTIAL_DISTRIBUTION ) );
+            distribution->SetParameters( d1, d2, percentage_is_1 );
+            double duration = distribution->Calculate( m_pRNG );
+
             //std::stringstream ss;
             //ss << duration << std::endl;
             //PrintDebug( ss.str() );

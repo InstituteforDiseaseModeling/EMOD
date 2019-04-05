@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -58,7 +58,7 @@ namespace Kernel {
         , counting_all_events(false)
         , event_counter_vector()
         , eventTriggerList()
-        , ntic_list()
+        , broadcaster_list()
     {
         // ------------------------------------------------------------------------------------------------
         // --- Since this report will be listening for events, it needs to increment its reference count
@@ -122,7 +122,8 @@ namespace Kernel {
                 std::vector<EventTrigger> all_triggers = EventTriggerFactory::GetInstance()->GetAllEventTriggers();
                 for( auto trig : all_triggers )
                 {
-                    if( (trig != EventTrigger::EveryUpdate) && (trig != EventTrigger::EveryTimeStep) )
+                    // we'll need better solution here as we add more built-in model events
+                    if( (trig != EventTrigger::EveryUpdate) && (trig != EventTrigger::EveryTimeStep && trig != EventTrigger::ExposureComplete ) ) 
                     {
                         LOG_INFO_F( "Adding %s to eventTriggerList.\n", trig.c_str() );
                         eventTriggerList.push_back( trig );
@@ -139,28 +140,25 @@ namespace Kernel {
 
     void ReportHIV::UpdateEventRegistration( float currentTime, 
                                              float dt, 
-                                             std::vector<INodeEventContext*>& rNodeEventContextList ) 
+                                             std::vector<INodeEventContext*>& rNodeEventContextList,
+                                             ISimulationEventContext* pSimEventContext )
     {
-        if( ntic_list.size() > 0 )
+        if( broadcaster_list.size() > 0 )
         {
             return ;
         }
 
         for( auto pNEC : rNodeEventContextList )
         {
-            INodeTriggeredInterventionConsumer* pNTIC = nullptr;
-            if( pNEC->QueryInterface( GET_IID(INodeTriggeredInterventionConsumer), (void**)&pNTIC ) != s_OK )
-            {
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "pNEC", "INodeTriggeredInterventionConsumer", "INodeEventContext" );
-            }
-            release_assert( pNTIC );
+            IIndividualEventBroadcaster* broadcaster = pNEC->GetIndividualEventBroadcaster();
+            release_assert( broadcaster );
 
             for( auto trig : eventTriggerList )
             {
                 LOG_INFO_F( "ReportHIV is registering to listen to event %s\n", trig.c_str() );
-                pNTIC->RegisterNodeEventObserver( this, trig );
+                broadcaster->RegisterObserver( this, trig );
             }
-            ntic_list.push_back( pNTIC );
+            broadcaster_list.push_back( broadcaster );
         }
     }
 
@@ -281,14 +279,14 @@ namespace Kernel {
         ReportSTI::Reduce();
 
         // make sure we are unregistered before objects start being deleted
-        for( auto p_ntic : ntic_list )
+        for( auto broadcaster : broadcaster_list )
         {
             for( auto trig : eventTriggerList )
             {
-                p_ntic->UnregisterNodeEventObserver( this, trig  );
+                broadcaster->UnregisterObserver( this, trig  );
             }
         }
-        ntic_list.clear();
+        broadcaster_list.clear();
     }
 
     bool ReportHIV::notifyOnEvent( IIndividualHumanEventContext *context, 

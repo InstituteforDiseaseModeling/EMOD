@@ -1,29 +1,28 @@
 {
-     "Default_Config_Path": "defaults/generic_default_config.json", 
-     "parameters": {
-          "DISEASE": {
-            "Base_Incubation_Period": 0, 
-            "Base_Infectious_Period": 10000, 
-            "Base_Infectivity": 0.00001,
-            "Base_Population_Scale_Factor": 10.0,
-            "Population_Scale_Type": "FIXED_SCALING"
-          },
-          "DEMOGRAPHICS": {
-               "Demographics_Filenames": [
-                   "Namawala_single_node_demographics.json", 
-                   "Namawala_noinitprev.json" 
-               ]
-          }, 
-          "PRIMARY": {
-               "Config_Name": "55_Generic_Namawala_HSB", 
-               "Geography": "Namawala", 
-               "Simulation_Timestep": 1, 
-               "Simulation_Duration": 300
-          },
-          "REPORTING":
-          {
-              "Enable_Demographics_Reporting": 0 
-          },
-          "Enable_Vital_Dynamics": 0 
-     }
+    "Default_Config_Path": "../../defaults/generic_default_config.json",
+    "parameters": {
+        "DEMOGRAPHICS": {
+            "Demographics_Filenames": [
+                "Namawala_single_node_demographics.json",
+                "Namawala_noinitprev.json"
+            ]
+        },
+        "DISEASE": {
+            "Base_Infectivity": 1e-05,
+            "x_Base_Population": 10.0,
+            "Infectious_Period_Exponential": 10000,
+            "Population_Scale_Type": "FIXED_SCALING",
+            "Incubation_Period_Constant": 0
+        },
+        "Enable_Vital_Dynamics": 0,
+        "PRIMARY": {
+            "Config_Name": "55_Generic_Namawala_HSB",
+            "Geography": "Namawala",
+            "Simulation_Duration": 300,
+            "Simulation_Timestep": 1
+        },
+        "REPORTING": {
+            "Enable_Demographics_Reporting": 0
+        }
+    }
 }

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -8,7 +8,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 ***************************************************************************************************/
 
 #pragma once
-#if defined(ENABLE_TBHIV)
 #include "InfectionAirborne.h"
 
 #include "TBInterventionsContainer.h"
@@ -79,6 +78,7 @@ namespace Kernel
 
         static vector <float> TB_cd4_activation_vec;
         static vector <float> CD4_strata_act_vec;
+        static IDistribution* p_infectious_timer_distribution;
     };
 
     //---------------------------- InfectionTB ----------------------------------------
@@ -94,8 +94,9 @@ namespace Kernel
         virtual void SetParameters(IStrainIdentity* infstrain=nullptr, int incubation_period_override = -1) override;
         virtual void Update(float dt, ISusceptibilityContext* immunity = nullptr) override;
         virtual void InitInfectionImmunology(ISusceptibilityContext* _immunity) override;
-
-        // Inherited from base class
+        virtual void SetContextTo(IIndividualHumanContext * context) override;
+        
+       // Inherited from base class
         virtual bool IsActive() const override;
 
         //TB-specific
@@ -111,7 +112,7 @@ namespace Kernel
         virtual void LifeCourseLatencyTimerUpdate() override;
 
         // Exogenous re-infection
-        virtual void ModifyInfectionStrain(IStrainIdentity * exog_strain_id); 
+        virtual void ModifyInfectionStrain(IStrainIdentity * exog_strain_id);
         virtual void ExogenousLatentSlowToFast();
 
     protected:
@@ -148,4 +149,3 @@ namespace Kernel
     };
 }
 
-#endif

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -118,7 +118,7 @@ namespace Kernel
         // Infections and Susceptibility
         virtual void AcquireNewInfection( const IStrainIdentity *infstrain = nullptr, int incubation_period_override = -1) override;
         virtual void AcquireNewInfectionHIV( const IStrainIdentity *infstrain = nullptr, int incubation_period_override = -1); // does not override
-
+        virtual bool IsSymptomatic() const override { return false; };
         virtual void CreateSusceptibility(float=1.0, float=1.0) override;
         virtual void UpdateInfectiousness(float dt) override;
         virtual void Update(float currenttime, float dt) override;
@@ -179,7 +179,7 @@ namespace Kernel
         virtual ITBInterventionsContainer* GetTBInterventionsContainer() const override;
 
         //IIndividualHumanContext
-        virtual IIndividualHumanInterventionsContext* GetInterventionsContextbyInfection(Infection* infection) override;
+        virtual IIndividualHumanInterventionsContext* GetInterventionsContextbyInfection(IInfection* infection) override;
         virtual float GetNextLatentActivation(float time) const override;
 
         //Hooks for changing infectiousness, activation, mortality based on CD4 count and age (maybe there is a more natural spot for this)
@@ -203,6 +203,7 @@ namespace Kernel
         float new_mdr_fast_active_infection_counter;
 
         virtual float GetImmunityReducedAcquire() override;
+        virtual float GetImmuneFailage() const override;
 
     protected:
         IndividualHumanCoInfection( suids::suid _suid, float monte_carlo_weight = 1.0f, float initial_age = 0.0f, int gender = 0);

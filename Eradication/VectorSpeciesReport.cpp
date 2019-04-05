@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -19,18 +19,19 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Exceptions.h"
 #include "VectorContexts.h"
 #include "Sugar.h"
+#include "INodeContext.h"
 
 SETUP_LOGGING( "VectorSpeciesReport" )
 
 static const std::string _report_name = "VectorSpeciesReport.json";   // Report output file name
 
-static const string _label_adult_vectors(        "Adult Vectors Per Node"                      );
-static const string _label_infectious_vectors(   "Percent Infectious Vectors"                  );
-static const string _label_daily_eir(            "Daily EIR"                                   );
-static const string _label_daily_hbr(            "Daily HBR"                                   );
-static const string _label_dead_vectors_before(  "Percent Vectors Died Before Feeding"         );
-static const string _label_dead_vectors_indoor(  "Percent Vectors Died During Indoor Feeding"  );
-static const string _label_dead_vectors_outdoor( "Percent Vectors Died During Outdoor Feeding" );
+static const std::string _label_adult_vectors(        "Adult Vectors Per Node"                      );
+static const std::string _label_infectious_vectors(   "Percent Infectious Vectors"                  );
+static const std::string _label_daily_eir(            "Daily EIR"                                   );
+static const std::string _label_daily_hbr(            "Daily HBR"                                   );
+static const std::string _label_dead_vectors_before(  "Percent Vectors Died Before Feeding"         );
+static const std::string _label_dead_vectors_indoor(  "Percent Vectors Died During Indoor Feeding"  );
+static const std::string _label_dead_vectors_outdoor( "Percent Vectors Died During Outdoor Feeding" );
 
 
 #ifndef _WIN32

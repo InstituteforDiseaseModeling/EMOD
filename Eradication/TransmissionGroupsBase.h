@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -16,6 +16,10 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 namespace Kernel
 {
+    typedef map<const string, PropertyValueList_t> PropertyToValuesMap_t;
+    typedef map<const string, int> ValueToIndexMap_t;
+    typedef map<const string, ValueToIndexMap_t> PropertyValueToIndexMap_t;
+    typedef vector<float> ContagionAccumulator_t;
     typedef map<const string, ScalingMatrix_t> PropertyToMatrixMap_t;
 
     class TransmissionGroupsBase : public ITransmissionGroups
@@ -23,23 +27,18 @@ namespace Kernel
     protected:
         TransmissionGroupsBase();
 
-        typedef map<const string, PropertyValueList_t> PropertyToValuesMap_t;
-
         PropertyToMatrixMap_t propertyNameToMatrixMap;
 
-        typedef map<const string, int> ValueToIndexMap_t;
-        typedef map<const string, ValueToIndexMap_t> PropertyValueToIndexMap_t;
         PropertyValueToIndexMap_t propertyValueToIndexMap;      // Used to determine group membership
 
-        typedef vector<float> ContagionAccumulator_t;
-
         // Common implementation
-        void CheckForDuplicatePropertyName( const string& property ) const;
-        void CheckForValidValueListSize( const PropertyValueList_t& values ) const;
-        void CheckForValidScalingMatrixSize( const ScalingMatrix_t& scalingMatrix, const PropertyValueList_t& values ) const;
-        void AddScalingMatrixToPropertyToMatrixMap( const string& property, const ScalingMatrix_t& scalingMatrix );
+        void checkForDuplicatePropertyName( const string& property ) const;
+        void checkForValidValueListSize( const PropertyValueList_t& values ) const;
+        void checkForValidScalingMatrixSize( const ScalingMatrix_t& scalingMatrix, const PropertyValueList_t& values ) const;
+        void addScalingMatrixToPropertyToMatrixMap( const string& property, const ScalingMatrix_t& scalingMatrix );
         void CheckForValidStrainListSize( const StrainIdentitySet_t& strains ) const;
-        virtual void AddPropertyValuesToValueToIndexMap( const string& propertyName, const PropertyValueList_t& valueSet, int currentMatrixSize );
+        virtual void addPropertyValuesToValueToIndexMap( const string& propertyName, const PropertyValueList_t& valueSet, int currentMatrixSize );
+        void getGroupIndicesForProperty( const IPKeyValue& property_value, const PropertyToValuesMap_t& propertyNameToValuesMap, std::vector<size_t>& indices );
 
     public:
         static void InitializeCumulativeMatrix( ScalingMatrix_t& cumulativeMatrix );
@@ -68,13 +67,13 @@ namespace Kernel
 
     protected:
         // Utility function(s)
-        inline float VectorDotProduct(const vector<float>& vectorOne, const vector<float>& vectorTwo)
+        inline float vectorDotProduct(const vector<float>& vectorOne, const vector<float>& vectorTwo)
         {
-            int vectorSize = min(vectorOne.size(), vectorTwo.size());
+            size_t vectorSize = min(vectorOne.size(), vectorTwo.size());
             float result = 0.0f;
             const float* pOne = vectorOne.data();
             const float* pTwo = vectorTwo.data();
-            for (int iElement = 0; iElement < vectorSize; iElement++)
+            for (size_t iElement = 0; iElement < vectorSize; ++iElement)
             {
                 result += *pOne++ * *pTwo++;
             }
@@ -82,28 +81,66 @@ namespace Kernel
             return result;
         }
 
-        inline void VectorScalarMultiplyInPlace(ContagionAccumulator_t& vector, float scalar)
+        inline void vectorElementAdd(vector<float>& a, vector<float>& b)
         {
-            int vectorSize = vector.size();
-            float* pElement = vector.data();
-            for (int iElement = 0; iElement < vectorSize; iElement++)
+            size_t count = min(a.size(), b.size());
+            float* aData = a.data();
+            const float* bData = b.data();
+            for (size_t index = 0; index < count; ++index)
             {
-                *pElement++ *= scalar;
+                *aData += *bData;
+                ++aData;
+                ++bData;
             }
+        }
+
+        inline void vectorElementDivide(vector<float>& numerator, vector<float>& denominator)
+        {
+            size_t count = min(numerator.size(), denominator.size());
+            float* pNumerator = numerator.data();
+            const float* pDenominator = denominator.data();
+            for (size_t index = 0; index < count; ++index)
+            {
+                if (*pDenominator != 0.0f)
+                {
+                    *pNumerator /= *pDenominator;
+                }
+                else
+                {
+                    *pNumerator = 0.0f;
+                }
+                ++pNumerator;
+                ++pDenominator;
+            }
+        }
+
+        inline void vectorScalarAdd(ContagionAccumulator_t& vector, float scalar)
+        {
+            for (float& entry : vector)
+            {
+                entry += scalar;
+            }
+        }
+
+        inline void vectorScalarMultiply(ContagionAccumulator_t& vector, float scalar)
+        {
+           for (float& entry : vector)
+           {
+               entry *= scalar;
+           }
         }
 
     private:
 
         // ITransmissionGroups implementation
-        virtual void AddProperty(const string& property, const PropertyValueList_t& values, const ScalingMatrix_t& scalingMatrix, const string& route) {}
-        virtual void Build(const RouteToContagionDecayMap_t& contagionDecayRatesByRoute, int numberOfAntigens = 1, int numberOfSubstrains = 1) {}
-        virtual void GetGroupMembershipForProperties(const RouteList_t& route, const tProperties* properties) const { }
-        virtual void DepositContagion(const IStrainIdentity& strain, float amount, const TransmissionGroupMembership_t* transmissionGroupMembership) {}
-        virtual void ExposeToContagion(IInfectable* candidate, const TransmissionGroupMembership_t* transmissionGroupMembership, float deltaTee) const {}
-        virtual void CorrectInfectivityByGroup(float infectivityCorrection, const TransmissionGroupMembership_t* transmissionGroupMembership) {}
-        virtual void IncrementWeightedPopulation(const TransmissionGroupMembership_t* transmissionGroupMembership, float weight) {}
-        virtual void EndUpdate(float infectivityCorrection) {}
+        virtual void AddProperty(const string& property, const PropertyValueList_t& values, const ScalingMatrix_t& scalingMatrix) {}
+        virtual void Build(float contagionDecayRate, int numberOfAntigens = 1, int numberOfSubstrains = 1) {}
+        virtual void GetGroupMembershipForProperties(const tProperties& properties) const { }
+        virtual void DepositContagion(const IStrainIdentity& strain, float amount, TransmissionGroupMembership_t transmissionGroupMembership) {}
+        virtual void ExposeToContagion(IInfectable* candidate, TransmissionGroupMembership_t transmissionGroupMembership, float deltaTee, TransmissionRoute::Enum tx_route = TransmissionRoute::TRANSMISSIONROUTE_CONTACT) const {}
+        virtual void CorrectInfectivityByGroup(float infectivityCorrection, TransmissionGroupMembership_t transmissionGroupMembership) {}
+        virtual void EndUpdate(float infectivityCorrection, float infectivityAddition) {}
 
-        virtual act_prob_vec_t DiscreteGetTotalContagion(const TransmissionGroupMembership_t* transmissionGroupMembership);
+        virtual act_prob_vec_t DiscreteGetTotalContagion( void );
    };
 }

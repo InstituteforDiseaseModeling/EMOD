@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -18,6 +18,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "VectorContexts.h"
 #include "VectorPopulation.h"
 #include "IMigrate.h"
+#include "INodeContext.h"
+#include "IdmDateTime.h"
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!! CREATING NEW REPORTS
@@ -156,8 +158,9 @@ namespace Kernel
     }
 
     void SpatialReportMalariaFiltered::UpdateEventRegistration( float currentTime,
-        float dt,
-        std::vector<INodeEventContext*>& rNodeEventContextList )
+                                                                float dt,
+                                                                std::vector<INodeEventContext*>& rNodeEventContextList,
+                                                                ISimulationEventContext* pSimEventContext )
     {
         m_IsValidDay = (m_StartDay <= currentTime) && (currentTime <= m_EndDay);
         m_Dt = dt;

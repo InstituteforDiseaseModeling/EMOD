@@ -10,13 +10,13 @@ Support for three formats of serialized population files:
 
 from __future__ import print_function
 import copy
-import dtk_FileSupport as support
+import dtk_test.dtk_FileSupport as support
 import json
 import os
 import snappy
 import time
 
-IDTK = b'IDTK'
+IDTK = 'IDTK'
 NONE = 'NONE'
 LZ4 = 'LZ4'
 SNAPPY = 'SNAPPY'
@@ -78,11 +78,11 @@ class DtkFile(object):
                 index += 1
 
         def __getitem__(self, index):
-            data = uncompress(self.__parent__.chunks[index], self.__parent__.compression)
+            data = str(uncompress(self.__parent__.chunks[index], self.__parent__.compression), 'utf-8')
             return data
 
         def __setitem__(self, index, value):
-            data = compress(value, self.__parent__.compression)
+            data = compress(value.encode(), self.__parent__.compression)
             self.__parent__.chunks[index] = data
             return
 
@@ -383,7 +383,7 @@ def read(filename):
 
 
 def __check_magic_number__(handle):
-    magic = handle.read(4)
+    magic = handle.read(4).decode()
     if magic != IDTK:
         raise UserWarning("File has incorrect magic 'number': '{0}'".format(magic))
     return
@@ -464,18 +464,18 @@ def write(dtk_file, filename):
 
 
 def __write_magic_number__(handle):
-    handle.write('IDTK')
+    handle.write('IDTK'.encode())
     return
 
 
 def __write_header_size__(size, handle):
     size_string = '{:>12}'.format(size)     # decimal value right aligned in 12 character space
-    handle.write(size_string)
+    handle.write(size_string.encode())
     return
 
 
 def __write_header__(string, handle):
-    handle.write(string)
+    handle.write(string.encode())
     return
 
 

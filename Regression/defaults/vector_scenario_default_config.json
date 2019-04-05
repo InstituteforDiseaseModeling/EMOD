@@ -2,8 +2,10 @@
     "parameters": {
         "CAMPAIGNS": {
             "Campaign_Filename": "campaign.json",
+            "Custom_Coordinator_Events": [],
+            "Custom_Individual_Events": [],
+            "Custom_Node_Events": [],
             "Enable_Interventions": 1,
-            "Listed_Events": [],
             "PKPD_Model": "FIXED_DURATION_CONSTANT_EFFECT"
         },
         "CLIMATE": {
@@ -33,7 +35,6 @@
         },
         "DEMOGRAPHICS": {
             "Age_Initialization_Distribution_Type": "DISTRIBUTION_SIMPLE",
-            "Base_Population_Scale_Factor": 1,
             "Birth_Rate_Dependence": "POPULATION_DEP_RATE",
             "Birth_Rate_Time_Dependence": "NONE",
             "Default_Geography_Initial_Node_Population": 1000,
@@ -45,21 +46,20 @@
             "Enable_Birth": 1,
             "Enable_Demographics_Birth": 0,
             "Enable_Demographics_Builtin": 0,
-            "Enable_Demographics_Gender": 1,
             "Enable_Demographics_Reporting": 1,
-        "Enable_Maternal_Protection": 0,
-        "Enable_Susceptibility_Scaling": 0,
             "Enable_Demographics_Risk": 0,
-            "Enable_Immunity_Distribution": 0,
             "Enable_Initial_Prevalence": 0,
+            "Enable_Initial_Susceptibility_Distribution": 0,
+            "Enable_Maternal_Protection": 0,
+            "Enable_Susceptibility_Scaling": 0,
             "Enable_Vital_Dynamics": 1,
             "IMMUNITY": {
                 "Acquisition_Blocking_Immunity_Decay_Rate": 0.01,
                 "Acquisition_Blocking_Immunity_Duration_Before_Decay": 90,
                 "Enable_Immune_Decay": 1,
                 "Enable_Immunity": 1,
+                "Susceptibility_Initialization_Distribution_Type": "DISTRIBUTION_OFF",
                 "Post_Infection_Acquisition_Multiplier": 1,
-                "Immunity_Initialization_Distribution_Type": "DISTRIBUTION_OFF",
                 "Post_Infection_Transmission_Multiplier": 1,
                 "Susceptibility_Scale_Type": "CONSTANT_SUSCEPTIBILITY",
                 "Transmission_Blocking_Immunity_Decay_Rate": 0.01,
@@ -68,12 +68,12 @@
             "MORTALITY": {
                 "Base_Mortality": 0,
                 "Death_Rate_Dependence": "NONDISEASE_MORTALITY_BY_AGE_AND_GENDER",
-				"Enable_Disease_Mortality": 0,
+                "Enable_Disease_Mortality": 0,
                 "Enable_Natural_Mortality": 1,
-                "Post_Infection_Mortality_Multiplier": 1,
                 "Mortality_Blocking_Immunity_Decay_Rate": 0.001,
                 "Mortality_Blocking_Immunity_Duration_Before_Decay": 90,
-                "Mortality_Time_Course": "DAILY_MORTALITY"
+                "Mortality_Time_Course": "DAILY_MORTALITY",
+                "Post_Infection_Mortality_Multiplier": 1
             },
             "Minimum_Adult_Age_Years": 15,
             "Population_Density_C50": 30,
@@ -89,19 +89,20 @@
                 "Sample_Rate_20_Plus": 1,
                 "Sample_Rate_5_9": 1,
                 "Sample_Rate_Birth": 2
-            }
+            },
+            "x_Base_Population": 1
         },
         "DISEASE": {
-            "Animal_Reservoir_Type": "NO_ZOONOSIS",
+            "Enable_Infectivity_Reservoir": 0,
             "Enable_Superinfection": 1,
             "INCUBATION": {
-                "Base_Incubation_Period": 25,
-                "Incubation_Period_Distribution": "FIXED_DURATION"
+                "Incubation_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                "Incubation_Period_Constant": 25
             },
             "INFECTIOUSNESS": {
-                "Base_Infectious_Period": 180,
                 "Base_Infectivity": 1,
-                "Infectious_Period_Distribution": "EXPONENTIAL_DURATION",
+                "Infectious_Period_Distribution": "EXPONENTIAL_DISTRIBUTION",
+                "Infectious_Period_Exponential": 180,
                 "Infectivity_Scale_Type": "CONSTANT_INFECTIVITY",
                 "Population_Density_Infectivity_Correction": "CONSTANT_INFECTIVITY"
             },
@@ -117,14 +118,11 @@
             "x_Birth": 1,
             "x_Local_Migration": 1,
             "x_Other_Mortality": 1,
-            "x_Population_Immunity": 1,
             "x_Regional_Migration": 1,
             "x_Sea_Migration": 1,
             "x_Temporary_Larval_Habitat": 1
         },
         "HPC": {
-            "Job_Node_Groups": "Chassis08",
-            "Job_Priority": "BELOWNORMAL",
             "Load_Balance_Filename": "",
             "Local_Simulation": 0,
             "Num_Cores": 1
@@ -147,11 +145,15 @@
             "Enable_Default_Reporting": 1,
             "Enable_Property_Output": 0,
             "Enable_Spatial_Output": 0,
-            "Report_Event_Recorder": 0
+            "Report_Event_Recorder": 0,
+            "Report_Node_Event_Recorder": 0,
+            "Report_Coordinator_Event_Recorder": 0,
+            "Report_Surveillance_Event_Recorder": 0
         },
         "POLIO": {},
         "PRIMARY": {
             "Config_Name": "NO_DEFAULT_CONFIG_NAME",
+            "Enable_Termination_On_Zero_Total_Infectivity": 0,
             "Geography": "NO_DEFAULT_CONFIG_GEOGRAPHY",
             "Memory_Usage_Halting_Threshold_Working_Set_MB": 4000,
             "Memory_Usage_Warning_Threshold_Working_Set_MB": 3500,
@@ -163,10 +165,7 @@
             "Start_Time": 0
         },
         "SERIALIZATION": {
-            "Burnin_Cache_Mode": "none",
-            "Burnin_Cache_Period": 0,
-            "Burnin_Name": "",
-            "Serialization_Test_Cycles": 0
+            "Serialization_Type": "NONE"
         },
         "STRAIN_TRACKING": {
             "Number_Basestrains": 1,

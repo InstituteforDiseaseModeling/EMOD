@@ -1,5 +1,5 @@
 {
-    "Default_Config_Path": "defaults/malaria_default_config.json",
+    "Default_Config_Path": "../../defaults/malaria_default_config.json",
     "CLIMATE": {
         "Climate_Model": "CLIMATE_CONSTANT"
     },

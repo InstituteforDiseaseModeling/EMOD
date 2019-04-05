@@ -1,56 +1,48 @@
 {
     "Campaign_Name": "2c_UniversalART_Increased_LTFU_CD4_500",
     "Default_Campaign_Path": "defaults/hiv_default_campaign.json",
-    "Use_Defaults": 1,
     "Events": [
         {
-            "class": "CampaignEventByYear",
-            "Event_Name": "ARTStaging: state 1 (random choice: linking from positive diagnostic test)",
-            "Start_Year": 1990,
-            "Nodeset_Config": {
-                "class": "NodeSetAll"
-            },
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
+                    "Actual_IndividualIntervention_Config": {
+                        "Choice_Names": [
+                            "ARTStaging2",
+                            "HCTUptakePostDebut8"
+                        ],
+                        "Choice_Probabilities": [
+                            0.85,
+                            0.15
+                        ],
+                        "Disqualifying_Properties": [
+                            "InterventionStatus:LostForever",
+                            "InterventionStatus:OnART",
+                            "InterventionStatus:LinkingToART",
+                            "InterventionStatus:OnPreART",
+                            "InterventionStatus:LinkingToPreART"
+                        ],
+                        "New_Property_Value": "InterventionStatus:ARTStaging",
+                        "class": "HIVRandomChoice"
+                    },
                     "Trigger_Condition_List": [
                         "ARTStaging1"
                     ],
-                    "Actual_IndividualIntervention_Config": {
-                        "class": "HIVRandomChoice",
-                        "Disqualifying_Properties": [
-                            "InterventionStatus:LostForever",
-                            "InterventionStatus:OnART",
-                            "InterventionStatus:LinkingToART",
-                            "InterventionStatus:OnPreART",
-                            "InterventionStatus:LinkingToPreART"
-                        ],
-                        "New_Property_Value": "InterventionStatus:ARTStaging",
-                        "Choices": {
-                            "HCTUptakePostDebut8": 0.15,
-                            "ARTStaging2": 0.85
-                        }
-                    }
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "HCTUptakePostDebut8: Eliminate losses after 2020",
-            "Start_Year": 1990,
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "ARTStaging: state 1 (random choice: linking from positive diagnostic test)",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition_List": [
-                        "HCTUptakePostDebut8"
-                    ],
                     "Actual_IndividualIntervention_Config": {
-                        "class": "HIVPiecewiseByYearAndSexDiagnostic",
+                        "Days_To_Diagnosis": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -58,8 +50,12 @@
                             "InterventionStatus:OnPreART",
                             "InterventionStatus:LinkingToPreART"
                         ],
+                        "Event_Or_Config": "Event",
+                        "Female_Multiplier": 1,
+                        "Interpolation_Order": 0,
+                        "Negative_Diagnosis_Event": "HCTUptakePostDebut9",
                         "New_Property_Value": "InterventionStatus:ARTStaging",
-                        "Days_To_Diagnosis": 0,
+                        "Positive_Diagnosis_Event": "OnART0",
                         "Time_Value_Map": {
                             "Times": [
                                 1960,
@@ -70,41 +66,42 @@
                                 1
                             ]
                         },
-                        "Interpolation_Order": 0,
-                        "Female_Multiplier": 1,
-                        "Event_Or_Config": "Event",
-                        "Positive_Diagnosis_Event": "OnART0",
-                        "Negative_Diagnosis_Event": "HCTUptakePostDebut9"
-                    }
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "ARTStaging: state 4 (check eligibility for ART, CD4 agnostic)",
-            "Start_Year": 1990,
+                        "class": "HIVPiecewiseByYearAndSexDiagnostic"
+                    },
+                    "Trigger_Condition_List": [
+                        "HCTUptakePostDebut8"
+                    ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "HCTUptakePostDebut8: Eliminate losses after 2020",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition_List": [
-                        "ARTStaging4"
-                    ],
                     "Actual_IndividualIntervention_Config": {
-                        "class": "HIVARTStagingCD4AgnosticDiagnostic",
-                        "Disqualifying_Properties": [
-                            "InterventionStatus:LostForever",
-                            "InterventionStatus:OnART",
-                            "InterventionStatus:LinkingToART",
-                            "InterventionStatus:OnPreART",
-                            "InterventionStatus:LinkingToPreART"
-                        ],
-                        "New_Property_Value": "InterventionStatus:ARTStaging",
-                        "NOTE1": "Threshold for adult vs child guidelines",
-                        "Adult_Treatment_Age": 5,
+                        "Adult_By_Pregnant": {
+                            "Times": [
+                                2013.2
+                            ],
+                            "Values": [
+                                1
+                            ]
+                        },
+                        "Adult_By_TB": {
+                            "Times": [
+                                2013.2
+                            ],
+                            "Values": [
+                                1
+                            ]
+                        },
                         "Adult_By_WHO_Stage": {
                             "Times": [
                                 2004,
@@ -117,30 +114,13 @@
                                 0
                             ]
                         },
-                        "Adult_By_TB": {
+                        "Adult_Treatment_Age": 5,
+                        "Child_By_TB": {
                             "Times": [
-                                2013.2
+                                2004
                             ],
                             "Values": [
-                                1
-                            ]
-                        },
-                        "Adult_By_Pregnant": {
-                            "Times": [
-                                2013.2
-                            ],
-                            "Values": [
-                                1
-                            ]
-                        },
-                        "Child_Treat_Under_Age_In_Years_Threshold": {
-                            "Times": [
-                                2010.34,
-                                2013.2
-                            ],
-                            "Values": [
-                                1,
-                                5
+                                0
                             ]
                         },
                         "Child_By_WHO_Stage": {
@@ -155,69 +135,85 @@
                                 0
                             ]
                         },
-                        "Child_By_TB": {
+                        "Child_Treat_Under_Age_In_Years_Threshold": {
                             "Times": [
-                                2004
+                                2010.34,
+                                2013.2
                             ],
                             "Values": [
-                                0
+                                1,
+                                5
                             ]
                         },
+                        "Disqualifying_Properties": [
+                            "InterventionStatus:LostForever",
+                            "InterventionStatus:OnART",
+                            "InterventionStatus:LinkingToART",
+                            "InterventionStatus:OnPreART",
+                            "InterventionStatus:LinkingToPreART"
+                        ],
                         "Event_Or_Config": "Event",
+                        "NOTE1": "Threshold for adult vs child guidelines",
+                        "Negative_Diagnosis_Event": "ARTStaging5",
+                        "New_Property_Value": "InterventionStatus:ARTStaging",
                         "Positive_Diagnosis_Event": "LinkingToART0",
-                        "Negative_Diagnosis_Event": "ARTStaging5"
-                    }
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "ARTStaging: state 5 (random choice: Return for CD4 or LTFU)",
-            "Start_Year": 1990,
+                        "class": "HIVARTStagingCD4AgnosticDiagnostic"
+                    },
+                    "Trigger_Condition_List": [
+                        "ARTStaging4"
+                    ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "ARTStaging: state 4 (check eligibility for ART, CD4 agnostic)",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
+                    "Actual_IndividualIntervention_Config": {
+                        "Choice_Names": [
+                            "ARTStaging6",
+                            "HCTUptakePostDebut8"
+                        ],
+                        "Choice_Probabilities": [
+                            0.85,
+                            0.15
+                        ],
+                        "Disqualifying_Properties": [
+                            "InterventionStatus:LostForever",
+                            "InterventionStatus:OnART",
+                            "InterventionStatus:LinkingToART",
+                            "InterventionStatus:OnPreART",
+                            "InterventionStatus:LinkingToPreART"
+                        ],
+                        "New_Property_Value": "InterventionStatus:ARTStaging",
+                        "class": "HIVRandomChoice"
+                    },
                     "Trigger_Condition_List": [
                         "ARTStaging5"
                     ],
-                    "Actual_IndividualIntervention_Config": {
-                        "class": "HIVRandomChoice",
-                        "Disqualifying_Properties": [
-                            "InterventionStatus:LostForever",
-                            "InterventionStatus:OnART",
-                            "InterventionStatus:LinkingToART",
-                            "InterventionStatus:OnPreART",
-                            "InterventionStatus:LinkingToPreART"
-                        ],
-                        "New_Property_Value": "InterventionStatus:ARTStaging",
-                        "Choices": {
-                            "HCTUptakePostDebut8": 0.15,
-                            "ARTStaging6": 0.85
-                        }
-                    }
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "ARTStaging: state 6 (check eligibility for ART by CD4)",
-            "Start_Year": 1990,
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "ARTStaging: state 5 (random choice: Return for CD4 or LTFU)",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
+            "END": "ART STAGING",
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition_List": [
-                        "ARTStaging6"
-                    ],
                     "Actual_IndividualIntervention_Config": {
-                        "class": "HIVARTStagingByCD4Diagnostic",
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -225,21 +221,7 @@
                             "InterventionStatus:OnPreART",
                             "InterventionStatus:LinkingToPreART"
                         ],
-                        "New_Property_Value": "InterventionStatus:ARTStaging",
-                        "Threshold": {
-                            "Times": [
-                                2004,
-                                2011.8,
-                                2015,
-                                2020
-                            ],
-                            "Values": [
-                                200,
-                                350,
-                                500,
-                                1000
-                            ]
-                        },
+                        "Event_Or_Config": "Event",
                         "If_Active_TB": {
                             "Times": [
                                 2010.34
@@ -258,106 +240,131 @@
                                 1000
                             ]
                         },
-                        "Event_Or_Config": "Event",
+                        "Negative_Diagnosis_Event": "LinkingToPreART0",
+                        "New_Property_Value": "InterventionStatus:ARTStaging",
                         "Positive_Diagnosis_Event": "LinkingToART0",
-                        "Negative_Diagnosis_Event": "LinkingToPreART0"
-                    }
-                }
+                        "Threshold": {
+                            "Times": [
+                                2004,
+                                2011.8,
+                                2015,
+                                2020
+                            ],
+                            "Values": [
+                                200,
+                                350,
+                                500,
+                                1000
+                            ]
+                        },
+                        "class": "HIVARTStagingByCD4Diagnostic"
+                    },
+                    "Trigger_Condition_List": [
+                        "ARTStaging6"
+                    ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
             },
-            "END": "ART STAGING"
-        },
-        {
-            "BEGIN": "PRE-ART LINKING",
-            "class": "CampaignEventByYear",
-            "Event_Name": "LinkingToPreART: state 0 (Linking probability)",
-            "Start_Year": 1990,
+            "Event_Name": "ARTStaging: state 6 (check eligibility for ART by CD4)",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
+            "BEGIN": "PRE-ART LINKING",
+            "END": "PRE-ART LINKING",
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition_List": [
-                        "LinkingToPreART0"
-                    ],
                     "Actual_IndividualIntervention_Config": {
-                        "class": "HIVSigmoidByYearAndSexDiagnostic",
+                        "Days_To_Diagnosis": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
                             "InterventionStatus:LinkingToART",
                             "InterventionStatus:OnPreART"
                         ],
+                        "Event_Or_Config": "Event",
+                        "Female_Multiplier": 1,
+                        "Negative_Diagnosis_Event": "HCTUptakePostDebut8",
                         "New_Property_Value": "InterventionStatus:LinkingToPreART",
-                        "Days_To_Diagnosis": 0,
-                        "Ramp_Min": 0.46,
+                        "Positive_Diagnosis_Event": "OnPreART0",
                         "Ramp_Max": 0.7,
                         "Ramp_MidYear": 2002,
+                        "Ramp_Min": 0.46,
                         "Ramp_Rate": 1,
-                        "Female_Multiplier": 1,
-                        "Event_Or_Config": "Event",
-                        "Positive_Diagnosis_Event": "OnPreART0",
-                        "Negative_Diagnosis_Event": "HCTUptakePostDebut8"
-                    }
-                }
+                        "class": "HIVSigmoidByYearAndSexDiagnostic"
+                    },
+                    "Trigger_Condition_List": [
+                        "LinkingToPreART0"
+                    ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
             },
-            "END": "PRE-ART LINKING"
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "OnPreART: state 1 (random choice: pre-ART or LTFU)",
-            "Start_Year": 1990,
+            "Event_Name": "LinkingToPreART: state 0 (Linking probability)",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
+                    "Actual_IndividualIntervention_Config": {
+                        "Choice_Names": [
+                            "HCTUptakePostDebut8",
+                            "OnPreART2"
+                        ],
+                        "Choice_Probabilities": [
+                            0.25,
+                            0.75
+                        ],
+                        "Disqualifying_Properties": [
+                            "InterventionStatus:LostForever",
+                            "InterventionStatus:OnART",
+                            "InterventionStatus:LinkingToART"
+                        ],
+                        "New_Property_Value": "InterventionStatus:OnPreART",
+                        "class": "HIVRandomChoice"
+                    },
                     "Trigger_Condition_List": [
                         "OnPreART1"
                     ],
-                    "Actual_IndividualIntervention_Config": {
-                        "class": "HIVRandomChoice",
-                        "Disqualifying_Properties": [
-                            "InterventionStatus:LostForever",
-                            "InterventionStatus:OnART",
-                            "InterventionStatus:LinkingToART"
-                        ],
-                        "New_Property_Value": "InterventionStatus:OnPreART",
-                        "Choices": {
-                            "HCTUptakePostDebut8": 0.25,
-                            "OnPreART2": 0.75
-                        }
-                    }
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "OnPreART: state 2 (check eligibility for ART, CD4 agnostic)",
-            "Start_Year": 1990,
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "OnPreART: state 1 (random choice: pre-ART or LTFU)",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition_List": [
-                        "OnPreART2"
-                    ],
                     "Actual_IndividualIntervention_Config": {
-                        "class": "HIVARTStagingCD4AgnosticDiagnostic",
-                        "Disqualifying_Properties": [
-                            "InterventionStatus:LostForever",
-                            "InterventionStatus:OnART",
-                            "InterventionStatus:LinkingToART"
-                        ],
-                        "New_Property_Value": "InterventionStatus:OnPreART",
-                        "NOTE1": "Threshold for adult vs child guidelines",
-                        "Adult_Treatment_Age": 5,
+                        "Adult_By_Pregnant": {
+                            "Times": [
+                                2013.2
+                            ],
+                            "Values": [
+                                1
+                            ]
+                        },
+                        "Adult_By_TB": {
+                            "Times": [
+                                2013.2
+                            ],
+                            "Values": [
+                                1
+                            ]
+                        },
                         "Adult_By_WHO_Stage": {
                             "Times": [
                                 2004,
@@ -370,30 +377,13 @@
                                 0
                             ]
                         },
-                        "Adult_By_TB": {
+                        "Adult_Treatment_Age": 5,
+                        "Child_By_TB": {
                             "Times": [
-                                2013.2
+                                2004
                             ],
                             "Values": [
-                                1
-                            ]
-                        },
-                        "Adult_By_Pregnant": {
-                            "Times": [
-                                2013.2
-                            ],
-                            "Values": [
-                                1
-                            ]
-                        },
-                        "Child_Treat_Under_Age_In_Years_Threshold": {
-                            "Times": [
-                                2010.34,
-                                2013.2
-                            ],
-                            "Values": [
-                                1,
-                                5
+                                0
                             ]
                         },
                         "Child_By_WHO_Stage": {
@@ -408,57 +398,53 @@
                                 0
                             ]
                         },
-                        "Child_By_TB": {
+                        "Child_Treat_Under_Age_In_Years_Threshold": {
                             "Times": [
-                                2004
+                                2010.34,
+                                2013.2
                             ],
                             "Values": [
-                                0
+                                1,
+                                5
                             ]
                         },
-                        "Event_Or_Config": "Event",
-                        "Positive_Diagnosis_Event": "OnART0",
-                        "Negative_Diagnosis_Event": "OnPreART3"
-                    }
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "OnPreART: state 4 (check eligibility for ART by CD4)",
-            "Start_Year": 1990,
-            "Nodeset_Config": {
-                "class": "NodeSetAll"
-            },
-            "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
-                "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition_List": [
-                        "OnPreART4"
-                    ],
-                    "Actual_IndividualIntervention_Config": {
-                        "class": "HIVARTStagingByCD4Diagnostic",
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
                             "InterventionStatus:LinkingToART"
                         ],
+                        "Event_Or_Config": "Event",
+                        "NOTE1": "Threshold for adult vs child guidelines",
+                        "Negative_Diagnosis_Event": "OnPreART3",
                         "New_Property_Value": "InterventionStatus:OnPreART",
-                        "Threshold": {
-                            "Times": [
-                                2004,
-                                2011.8,
-                                2015,
-                                2020
-                            ],
-                            "Values": [
-                                200,
-                                350,
-                                500,
-                                1000
-                            ]
-                        },
+                        "Positive_Diagnosis_Event": "OnART0",
+                        "class": "HIVARTStagingCD4AgnosticDiagnostic"
+                    },
+                    "Trigger_Condition_List": [
+                        "OnPreART2"
+                    ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "OnPreART: state 2 (check eligibility for ART, CD4 agnostic)",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
+            "END": "PRE-ART",
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "Actual_IndividualIntervention_Config": {
+                        "Disqualifying_Properties": [
+                            "InterventionStatus:LostForever",
+                            "InterventionStatus:OnART",
+                            "InterventionStatus:LinkingToART"
+                        ],
+                        "Event_Or_Config": "Event",
                         "If_Active_TB": {
                             "Times": [
                                 2010.34
@@ -477,66 +463,84 @@
                                 1000
                             ]
                         },
-                        "Event_Or_Config": "Event",
+                        "Negative_Diagnosis_Event": "OnPreART0",
+                        "New_Property_Value": "InterventionStatus:OnPreART",
                         "Positive_Diagnosis_Event": "OnART0",
-                        "Negative_Diagnosis_Event": "OnPreART0"
-                    }
-                }
+                        "Threshold": {
+                            "Times": [
+                                2004,
+                                2011.8,
+                                2015,
+                                2020
+                            ],
+                            "Values": [
+                                200,
+                                350,
+                                500,
+                                1000
+                            ]
+                        },
+                        "class": "HIVARTStagingByCD4Diagnostic"
+                    },
+                    "Trigger_Condition_List": [
+                        "OnPreART4"
+                    ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
             },
-            "END": "PRE-ART"
+            "Event_Name": "OnPreART: state 4 (check eligibility for ART by CD4)",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
         },
         {
             "BEGIN": "ART",
-            "class": "CampaignEventByYear",
-            "Event_Name": "OnART: state 0 (muxer and delay)",
-            "Start_Year": 1990,
-            "Nodeset_Config": {
-                "class": "NodeSetAll"
-            },
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
+                    "Actual_IndividualIntervention_Config": {
+                        "Broadcast_Event": "OnART1",
+                        "Delay_Period_Distribution": "UNIFORM_DISTRIBUTION",
+                        "Delay_Period_Max": 120,
+                        "Delay_Period_Min": 1,
+                        "Disqualifying_Properties": [
+                            "InterventionStatus:LostForever"
+                        ],
+                        "Max_Entries": 1,
+                        "Muxer_Name": "OnART",
+                        "New_Property_Value": "InterventionStatus:OnART",
+                        "class": "HIVMuxer"
+                    },
                     "Trigger_Condition_List": [
                         "OnART2"
                     ],
-                    "Actual_IndividualIntervention_Config": {
-                        "class": "HIVMuxer",
-                        "Muxer_Name": "OnART",
-                        "Max_Entries": 1,
-                        "Disqualifying_Properties": [
-                            "InterventionStatus:LostForever"
-                        ],
-                        "New_Property_Value": "InterventionStatus:OnART",
-                        "Delay_Distribution": "UNIFORM_DURATION",
-                        "Delay_Period_Min": 1,
-                        "Delay_Period_Max": 120,
-                        "Broadcast_Event": "OnART1"
-                    }
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "ARTStaging: state 2 (after 2020?)",
-            "Start_Year": 1990,
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "OnART: state 0 (muxer and delay)",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition_List": [
-                        "OnART0"
-                    ],
                     "Actual_IndividualIntervention_Config": {
-                        "class": "HIVPiecewiseByYearAndSexDiagnostic",
+                        "Days_To_Diagnosis": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever"
                         ],
+                        "Event_Or_Config": "Event",
+                        "Female_Multiplier": 1,
+                        "Interpolation_Order": 0,
+                        "Negative_Diagnosis_Event": "OnART2",
                         "New_Property_Value": "InterventionStatus:OnART",
-                        "Days_To_Diagnosis": 0,
+                        "Positive_Diagnosis_Event": "OnART7",
                         "Time_Value_Map": {
                             "Times": [
                                 1990,
@@ -547,96 +551,104 @@
                                 1
                             ]
                         },
-                        "Interpolation_Order": 0,
-                        "Female_Multiplier": 1,
-                        "Event_Or_Config": "Event",
-                        "Positive_Diagnosis_Event": "OnART7",
-                        "Negative_Diagnosis_Event": "OnART2"
-                    }
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "OnART: state 7 (CD4 > 500?)",
-            "Start_Year": 1990,
+                        "class": "HIVPiecewiseByYearAndSexDiagnostic"
+                    },
+                    "Trigger_Condition_List": [
+                        "OnART0"
+                    ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "ARTStaging: state 2 (after 2020?)",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
+                    "Actual_IndividualIntervention_Config": {
+                        "CD4_Thresholds": [
+                            {
+                                "Event": "OnART1",
+                                "High": 500,
+                                "Low": 0
+                            },
+                            {
+                                "Event": "OnART8",
+                                "High": 100000,
+                                "Low": 500
+                            }
+                        ],
+                        "class": "CD4Diagnostic"
+                    },
                     "Trigger_Condition_List": [
                         "OnART7"
                     ],
-                    "Actual_IndividualIntervention_Config": {
-                        "class": "CD4Diagnostic",
-                        "CD4_Thresholds": [
-                            {
-                                "Low": 0,
-                                "High": 500,
-                                "Event": "OnART1"
-                            },
-                            {
-                                "Low": 500,
-                                "High": 100000,
-                                "Event": "OnART8"
-                            }
-                        ]
-                    }
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "OnART: state 1 (run ARTBasic)",
-            "Start_Year": 1990,
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "OnART: state 7 (CD4 > 500?)",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "ARTBasic"
+                    },
                     "Trigger_Condition_List": [
                         "OnART1",
                         "OnART8"
                     ],
-                    "Actual_IndividualIntervention_Config": {
-                        "class": "ARTBasic"
-                    }
-                }
-            }
-        },
-        {
-            "class": "CampaignEventByYear",
-            "Event_Name": "OnART: state 8 (increased delay to dropout post 2020)",
-            "Start_Year": 1990,
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "OnART: state 1 (run ARTBasic)",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
+        },
+        {
             "Event_Coordinator_Config": {
-                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition_List": [
-                        "OnART8"
-                    ],
                     "Actual_IndividualIntervention_Config": {
-                        "class": "HIVMuxer",
-                        "Muxer_Name": "ARTDropoutDelay",
-                        "Max_Entries": 1,
+                        "Broadcast_Event": "OnART3",
+                        "Delay_Period_Distribution": "EXPONENTIAL_DISTRIBUTION",
+                        "Delay_Period_Exponential": 4866.67,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever"
                         ],
+                        "Max_Entries": 1,
+                        "Muxer_Name": "ARTDropoutDelay",
                         "New_Property_Value": "InterventionStatus:OnART",
-                        "Delay_Distribution": "EXPONENTIAL_DURATION",
-                        "Delay_Period": 4866.67,
-                        "Broadcast_Event": "OnART3"
-                    }
-                }
-            }
+                        "class": "HIVMuxer"
+                    },
+                    "Trigger_Condition_List": [
+                        "OnART8"
+                    ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "OnART: state 8 (increased delay to dropout post 2020)",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
         }
-    ]
+    ],
+    "Use_Defaults": 1
 }

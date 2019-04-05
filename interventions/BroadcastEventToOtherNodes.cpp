@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -14,6 +14,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "NodeEventContext.h"  // for INodeEventContext (ICampaignCostObserver)
 #include "MathFunctions.h"
 #include "Migration.h"
+#include "INodeContext.h"
+#include "ISimulationContext.h"
+#include "IIndividualHumanContext.h"
 
 SETUP_LOGGING( "BroadcastEventToOtherNodes" )
 
@@ -47,7 +50,9 @@ namespace Kernel
 
         if( !JsonConfigurable::_dryrun && event_trigger.IsUninitialized() )
         {
-            LOG_WARN_F("BroadcastEventToOtherNodes was configured with NoTrigger as the Broadcast_Event.  This special event will not be broadcast.");
+            std::stringstream ss;
+            ss << "BroadcastEventToOtherNodes was configured with empty (or uninitialized) Event_Trigger.\n";
+            throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
         }
         return ret;
     }

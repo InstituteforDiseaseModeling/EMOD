@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -21,8 +21,8 @@ namespace Kernel
         HANDLE_INTERFACE(INodeHIV)
     END_QUERY_INTERFACE_DERIVED(NodeHIV, NodeSTI)
 
-    NodeHIV::NodeHIV(ISimulationContext *_parent_sim, suids::suid node_suid)
-        : NodeSTI(_parent_sim, node_suid)
+    NodeHIV::NodeHIV(ISimulationContext *_parent_sim, ExternalNodeId_t externalNodeId, suids::suid node_suid)
+        : NodeSTI(_parent_sim, externalNodeId, node_suid)
     {
         enable_maternal_infection_transmission = true;
     }
@@ -37,9 +37,9 @@ namespace Kernel
     {
     }
 
-    NodeHIV *NodeHIV::CreateNode(ISimulationContext *_parent_sim, suids::suid node_suid)
+    NodeHIV *NodeHIV::CreateNode(ISimulationContext *_parent_sim, ExternalNodeId_t externalNodeId, suids::suid node_suid)
     {
-        NodeHIV *newnode = _new_ NodeHIV(_parent_sim, node_suid);
+        NodeHIV *newnode = _new_ NodeHIV(_parent_sim, externalNodeId, node_suid);
         newnode->Initialize();
 
         return newnode;

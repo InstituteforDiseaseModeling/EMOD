@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -29,10 +29,12 @@ namespace Kernel
         virtual ~WaningEffectRandomBox();
         virtual bool Configure( const Configuration *config ) override;
         virtual IWaningEffect* Clone() override;
+        virtual void  SetContextTo( IIndividualHumanContext *context ) override;
         virtual void  Update(float dt) override;
         virtual bool  Expired() const override;
 
     protected:
+        float m_ExpectedDiscardTime = 0;
         float m_DiscardCounter;
 
         DECLARE_SERIALIZABLE(WaningEffectRandomBox);

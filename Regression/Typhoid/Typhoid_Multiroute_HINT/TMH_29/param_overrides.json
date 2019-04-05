@@ -1,0 +1,39 @@
+{
+    "Default_Config_Path": "../../defaults/typhoid_default_config.json", 
+    "parameters": {
+        "Typhoid_Acute_Infectiousness": 10674.280188306639, 
+        "Base_Year": 1875, 
+        "Enable_Heterogeneous_Intranode_Transmission": 1, 
+        "Typhoid_Environmental_Ramp_Down_Duration": 231.6363077424437, 
+        "Enable_Natural_Mortality": 0, 
+        "Simulation_Duration": 365, 
+        "Typhoid_Environmental_Peak_Start": 287.2811494864098, 
+        "Typhoid_6month_Susceptible_Fraction": 0, 
+        "Typhoid_Symptomatic_Fraction": 0.04406079358419036, 
+        "Typhoid_Environmental_Cutoff_Days": 9.903791443116283, 
+        "Typhoid_Protection_Per_Infection": 0.9812352505, 
+        "Typhoid_Environmental_Ramp_Up_Duration": 8.002436644332, 
+        "Enable_Property_Output": 1, 
+        "Typhoid_6year_Susceptible_Fraction": 0, 
+        "Typhoid_3year_Susceptible_Fraction": 0, 
+        "Base_Individual_Sample_Rate": 0.25, 
+        "Demographics_Filenames": [
+            "TestDemographics_V2_HINT.json"
+        ], 
+        "Typhoid_Carrier_Probability": 0, 
+        "Individual_Sampling_Type": "FIXED_SAMPLING", 
+        "Typhoid_Chronic_Relative_Infectiousness": 0.18485495966903792, 
+        "Custom_Reports_Filename": "NoCustomReports", 
+<<<<<<< HEAD
+        "x_Base_Population": 0.03, 
+=======
+        "Base_Population_Scale_Factor": 0.03, 
+>>>>>>> origin/Typhoid-Ongoing
+        "Inset_Chart_Reporting_Start_Year": 1870, 
+        "Config_Name": "Typhoid_Multiroute_HINT_IntraContact_InterEnviro", 
+        "Typhoid_Carrier_Probability_Male": 0.15, 
+        "Run_Number": 231096, 
+        "Typhoid_Contact_Exposure_Rate": 0.008984704456447843, 
+        "Typhoid_Carrier_Probability_Female": 0.15
+    }
+}

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -14,7 +14,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 namespace Kernel
 {
     ENUM_DEFINE(TransmissionRoute, 
-        //ENUM_VALUE_SPEC(TRANSMISSIONROUTE_ALL                             , 0)
+        ENUM_VALUE_SPEC(TRANSMISSIONROUTE_OUTBREAK                        , 0)
         ENUM_VALUE_SPEC(TRANSMISSIONROUTE_CONTACT                         , 1)
         ENUM_VALUE_SPEC(TRANSMISSIONROUTE_ENVIRONMENTAL                   , 2)
         ENUM_VALUE_SPEC(TRANSMISSIONROUTE_VECTOR_TO_HUMAN                 , 10)
@@ -27,9 +27,6 @@ namespace Kernel
         ENUM_VALUE_SPEC(TRANSMISSIONROUTE_OUTDOOR                         , 32))
 
     ENUM_DEFINE(TransmissionGroupType,
-        ENUM_VALUE_SPEC(SimpleGroups                                      , 0)
-        ENUM_VALUE_SPEC(MultiRouteGroups                                  , 1)
-        ENUM_VALUE_SPEC(StrainAwareGroups                                 , 2)
-        ENUM_VALUE_SPEC(RelationshipGroups                                , 3)
-        ENUM_VALUE_SPEC(HumanVectorGroups                                 , 4))
+        ENUM_VALUE_SPEC(StrainAwareGroups                                 , 0)
+        ENUM_VALUE_SPEC(RelationshipGroups                                , 1))
 }

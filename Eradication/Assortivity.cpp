@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -14,6 +14,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IndividualEventContext.h"
 #include "Node.h"
 #include "SimulationConfig.h"
+#include "Simulation.h"
 
 SETUP_LOGGING( "Assortivity" )
 
@@ -83,16 +84,16 @@ namespace Kernel
                 }
             }
 
-            if( JsonConfigurable::_dryrun || (m_Group == AssortivityGroup::STI_COINFECTION_STATUS     ) 
-                                          || (m_Group == AssortivityGroup::HIV_INFECTION_STATUS       )
-                                          || (m_Group == AssortivityGroup::HIV_TESTED_POSITIVE_STATUS )
-                                          || (m_Group == AssortivityGroup::HIV_RECEIVED_RESULTS_STATUS) )
-            {
-                initConfigTypeMap( "Start_Year", &m_StartYear, "TBD - The year to start using the assortivity preference.", MIN_YEAR, MAX_YEAR, MIN_YEAR);
-            }
+            initConfigTypeMap( "Start_Year", &m_StartYear, "TBD - The year to start using the assortivity preference.", MIN_YEAR, MAX_YEAR, MIN_YEAR, "Group", "STI_COINFECTION_STATUS,HIV_INFECTION_STATUS,HIV_TESTED_POSITIVE_STATUS,HIV_RECEIVED_RESULTS_STATUS");
             AddConfigurationParameters( m_Group, config );
 
             ret = JsonConfigurable::Configure( config );
+
+            if (ret && !JsonConfigurable::_dryrun && 
+                UsesStartYear() && m_StartYear < Simulation::base_year)
+                {
+                    LOG_WARN_F("Start_Year (%f) specified before Base_Year (%f), for relationship type %s\n", m_StartYear, Simulation::base_year, RelationshipType::pairs::lookup_key(m_RelType));
+                }
 
             JsonConfigurable::_useDefaults = prev_use_defaults ;
             JsonConfigurable::_track_missing = resetTrackMissing;
@@ -265,6 +266,14 @@ namespace Kernel
             m_WeightingMatrix[0][1] = m_WeightingMatrix[1][0];
             m_WeightingMatrix[1][0] = tmp;
         }
+    }
+
+    bool Assortivity::UsesStartYear() const
+    {
+        return (m_Group == AssortivityGroup::STI_COINFECTION_STATUS)
+            || (m_Group == AssortivityGroup::HIV_INFECTION_STATUS)
+            || (m_Group == AssortivityGroup::HIV_TESTED_POSITIVE_STATUS)
+            || (m_Group == AssortivityGroup::HIV_RECEIVED_RESULTS_STATUS);
     }
 
     int GetIndexSTI( const Assortivity* pAssortivity, const IIndividualHumanSTI* pIndividual )

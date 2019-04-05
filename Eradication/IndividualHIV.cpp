@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -98,11 +98,6 @@ namespace Kernel
         immunity_config.Configure( config );
         IndividualHumanHIVConfig individual_config;
         individual_config.Configure( config );
-
-        // We used to instantiate an individual which would make one or two calls to the PRNG.
-        // Let's emulate that here just so our results don't vary.
-        Environment::getInstance()->RNG->Weibull2(IndividualHumanSTIConfig::debutAgeYrsMale_lambda, IndividualHumanSTIConfig::debutAgeYrsMale_inv_kappa );
-        Environment::getInstance()->RNG->e();
     }
 
     void IndividualHumanHIV::setupInterventionsContainer()
@@ -176,11 +171,11 @@ namespace Kernel
         {
             if( ((m_age - dt) < SIX_WEEKS) && (SIX_WEEKS <= m_age) )
             {
-                broadcaster->TriggerNodeEventObservers( GetEventContext(), EventTrigger::SixWeeksOld );
+                broadcaster->TriggerObservers( GetEventContext(), EventTrigger::SixWeeksOld );
             }
             else if( ((m_age - dt) < EIGHTEEN_MONTHS) && (EIGHTEEN_MONTHS <= m_age) )
             {
-                broadcaster->TriggerNodeEventObservers( GetEventContext(), EventTrigger::EighteenMonthsOld );
+                broadcaster->TriggerObservers( GetEventContext(), EventTrigger::EighteenMonthsOld );
             }
         }
     }
@@ -195,14 +190,14 @@ namespace Kernel
                                           ((DAYSPERWEEK*WEEKS_FOR_GESTATION - TWELVE_WEEKS) <= pregnancy_timer) )
             {
                 LOG_DEBUG_F( "Hit 12 weeks in pregnancy with pregnancy_timer of %f\n", pregnancy_timer );
-                broadcaster->TriggerNodeEventObservers( GetEventContext(), EventTrigger::TwelveWeeksPregnant);
+                broadcaster->TriggerObservers( GetEventContext(), EventTrigger::TwelveWeeksPregnant);
             }
 
             if( ((pregnancy_timer - dt) < (DAYSPERWEEK*WEEKS_FOR_GESTATION - FOURTEEN_WEEKS)) && 
                                           ((DAYSPERWEEK*WEEKS_FOR_GESTATION - FOURTEEN_WEEKS) <= pregnancy_timer) )
             {
                 LOG_DEBUG_F( "Hit 14 weeks in pregnancy with pregnancy_timer of %f\n", pregnancy_timer );
-                broadcaster->TriggerNodeEventObservers( GetEventContext(), EventTrigger::FourteenWeeksPregnant );
+                broadcaster->TriggerObservers( GetEventContext(), EventTrigger::FourteenWeeksPregnant );
             }
             else
             {

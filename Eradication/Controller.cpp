@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -12,6 +12,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <queue>
 #include <iomanip> //setw(), setfill()
 #include <algorithm>
+#include <deque>
 
 #include "BoostLibWrapper.h"
 #include "FileSystem.h"
@@ -29,13 +30,12 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "SimulationPolio.h"
 #endif
 
-#ifdef ENABLE_TBHIV
 #include "SimulationTBHIV.h"
-#endif // TBHIV
 #endif // _DLLS_
 #include "ControllerFactory.h"
 
 #include "SerializedPopulation.h"
+#include "SerializationTimeCalc.h"
 
 #pragma warning(disable : 4244)
 
@@ -68,12 +68,10 @@ bool call_templated_functor_with_sim_type_hack(ControllerExecuteFunctorT &cef)
     else if (sSimType == "POLIO_SIM")
         sim_type = SimType::POLIO_SIM;
 #endif
-#ifdef ENABLE_TBHIV
     else if (sSimType == "AIRBORNE_SIM")
         sim_type = SimType::AIRBORNE_SIM;
     else if (sSimType == "TBHIV_SIM")
         sim_type = SimType::TBHIV_SIM;
-#endif // TBHIV
     else
     {
         std::string note = "The Simulation_Type (='"+sSimType+"') is unknown.  Please select a valid type." ;
@@ -89,10 +87,8 @@ bool call_templated_functor_with_sim_type_hack(ControllerExecuteFunctorT &cef)
         case SimType::ENVIRONMENTAL_SIM: return cef.template call<SimulationEnvironmental>();
         case SimType::POLIO_SIM:         return cef.template call<SimulationPolio>();
 #endif
-#ifdef ENABLE_TBHIV
         case SimType::AIRBORNE_SIM:      return cef.template call<SimulationAirborne>();
         case SimType::TBHIV_SIM:         return cef.template call<SimulationTBHIV>();
-#endif // TBHIV
     default: 
         // ERROR: ("call_templated_functor_with_sim_type_hack(): Error, Sim_Type %d is not implemented.\n", sim_type);
         throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "sim_type", sim_type, SimType::pairs::lookup_key( sim_type ) );
@@ -122,46 +118,38 @@ void RunSimulation(SimulationT &sim, int steps, float dt)
 {
     LOG_DEBUG( "RunSimulation\n" );
 
-    std::queue< int32_t > serialization_time_steps;
-    if ( CONFIG_PARAMETER_EXISTS(EnvPtr->Config, "Serialization_Time_Steps") )
-    {
-        vector< int32_t > specified_time_steps = GET_CONFIG_VECTOR_INT( EnvPtr->Config, "Serialization_Time_Steps" );
-        // Sort specified_time_steps in case the user entered the values out of order.
-        std::sort( specified_time_steps.begin(), specified_time_steps.end() );
-        for (int32_t time_step : specified_time_steps)
-        {
-            serialization_time_steps.push( time_step );
-        }
-    }
-    else
-    {
-        serialization_time_steps.push( -1 );
-    }
+    SerializationTimeCalc stc;
+    stc.Configure(EnvPtr->Config);
+
+    // Calculate the sorted set of time steps to serialize
+    std::deque< int32_t > serialization_time_steps = stc.GetSerializedTimeSteps(steps);
 
     for (int t = 0; t < steps; t++)
     {
-        // Specifying serialization time step 0 means "please serialize the initial state."
-        if ( (t == 0) && (serialization_time_steps.size() > 0) && (serialization_time_steps.front() == t) )
+        if (!serialization_time_steps.empty() && t == serialization_time_steps.front())
         {
             SerializedState::SaveSerializedSimulation(dynamic_cast<Simulation*>(&sim), t, true);
-            serialization_time_steps.pop();
+            serialization_time_steps.pop_front();
         }
 
         StepSimulation(&sim, dt);
-
-        // Compare against t + 1 so, e.g., a simulation of duration 90 can specify serialization time step 90 to save the final state.
-        int step = t + 1;
-        if ( (serialization_time_steps.size() > 0) && (serialization_time_steps.front() == step) )
-        {
-            // Using step, (t+1), here too.
-            SerializedState::SaveSerializedSimulation(dynamic_cast<Simulation*>(&sim), step, true);
-            serialization_time_steps.pop();
-        }
 
         if (EnvPtr->MPI.Rank == 0)
         {
             EnvPtr->getStatusReporter()->ReportProgress(t+1, steps);
         }
+
+        if(sim.TimeToStop())
+        {
+            break;
+        }
+    }
+
+    // Serialize the final state if it was requested
+    bool final_in_list = std::find(serialization_time_steps.begin(), serialization_time_steps.end(), steps) != serialization_time_steps.end();
+    if (!serialization_time_steps.empty() && final_in_list)
+    {
+        SerializedState::SaveSerializedSimulation(dynamic_cast<Simulation*>(&sim), steps, true);
     }
 }
 
@@ -180,6 +168,11 @@ void RunSimulation(SimulationT &sim, std::function<bool(SimulationT &, float)> t
     {
         StepSimulation(&sim, dt);
         branch_time = sim.GetSimulationTime() - branch_begin;
+
+        if(sim.TimeToStop())
+        {
+            break;
+        }
     }
 }
 

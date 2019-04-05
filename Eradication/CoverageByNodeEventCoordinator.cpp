@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -11,6 +11,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "CoverageByNodeEventCoordinator.h"
 
 #include "NodeEventContext.h"
+#include "IIndividualHumanContext.h"
+#include "RANDOM.h"
 
 SETUP_LOGGING( "CoverageByNodeEventCoordinator" )
 
@@ -124,9 +126,7 @@ namespace Kernel
         if (coverage_it != coverage_by_node.node_coverage_map.end())
         {
             float coverage = coverage_it->second;
-            double randomDraw = randgen->e();
-            LOG_DEBUG_F("nodeid = %d, coverage = %f, randomDraw = %f, \n", nodeid, coverage, randomDraw);
-            covered = randomDraw <= coverage;
+            covered = ihec->GetInterventionsContext()->GetParent()->GetRng()->SmartDraw( coverage );
         }
         else
         {

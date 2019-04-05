@@ -3,11 +3,21 @@
         { "path": "TBHIV/SFTs/Outbreaks/TB_Only" },
         { "path": "TBHIV/SFTs/Outbreaks/HIV_Only" },
         { "path": "TBHIV/SFTs/Outbreaks/Both" },
-		
-		{ "path": "TBHIV/SFTs/ExogenousTB/TB_HIV" },
+        
+        { "path": "TBHIV/SFTs/ExogenousTB/TB_HIV" },
         { "path": "TBHIV/SFTs/ExogenousTB/TB_HIV_ART" },
         { "path": "TBHIV/SFTs/ExogenousTB/TB_Disable_Coinfection" },
-		{ "path": "TBHIV/SFTs/ExogenousTB/TB_Enable_Coinfection" },
+        { "path": "TBHIV/SFTs/ExogenousTB/TB_Enable_Coinfection" },
+
+        { "path": "TBHIV/SFTs/ExogenousTB/TB_HIV" },
+        { "path": "TBHIV/SFTs/ExogenousTB/TB_HIV_ART" },
+        { "path": "TBHIV/SFTs/ExogenousTB/TB_Disable_Coinfection" },
+        { "path": "TBHIV/SFTs/ExogenousTB/TB_Enable_Coinfection" },
+
+        { "path": "TBHIV/SFTs/ExogenousTB/TB_HIV" },
+        { "path": "TBHIV/SFTs/ExogenousTB/TB_HIV_ART" },
+        { "path": "TBHIV/SFTs/ExogenousTB/TB_Disable_Coinfection" },
+        { "path": "TBHIV/SFTs/ExogenousTB/TB_Enable_Coinfection" },
 
         { "path": "TBHIV/SFTs/TBDrugs/TB_Inactivation_HIV_Pos_ART_Neg" },
         { "path": "TBHIV/SFTs/TBDrugs/TB_Clearance_HIV_Pos_ART_Neg" },
@@ -18,8 +28,8 @@
         { "path": "TBHIV/SFTs/Susceptibility/PreART" },
         { "path": "TBHIV/SFTs/Susceptibility/OnART" },
 
-		{ "path": "TBHIV/SFTs/Interventions/HIVSimpleDiagnostic" },
-		
+        { "path": "TBHIV/SFTs/Interventions/HIVSimpleDiagnostic" },
+        
         { "path": "TBHIV/SFTs/Infectiousness/TBInfectiousnessAndCD4" },
         { "path": "TBHIV/SFTs/Infectiousness/TBInfectiousnessOnART" },
 
@@ -38,39 +48,41 @@
         { "path": "TBHIV/SFTs/Mortality/TBHIV_Smear_Negative_onART" },
         { "path": "TBHIV/SFTs/Mortality/TBHIV_Smear_Positive_offART" },
         { "path": "TBHIV/SFTs/Mortality/TBHIV_Smear_Positive_onART" },
-		
-		{ "path": "TBHIV/SFTs/TB/MDR_Outbreak" },
-		{ "path": "TBHIV/SFTs/TB/MDR_Transmit_No_MDR" },
-		
-		{ "path": "TBHIV/SFTs/TB/Diagnostics_MDR" },
-		{ "path": "TBHIV/SFTs/TB/Diagnostics_Active_Smear_Pos" },
-		{ "path": "TBHIV/SFTs/TB/Diagnostics_Active_Smear_Neg" },
-		{ "path": "TBHIV/SFTs/TB/Diagnostics_All_Active" },
-		
-		{ "path": "TBHIV/SFTs/TB/Immunity_BCG" },
-	    { "path": "TBHIV/SFTs/TB/Immunity_Natural_Immunity" },
+        
+        { "path": "TBHIV/SFTs/TB/MDR_Outbreak" },
+        { "path": "TBHIV/SFTs/TB/MDR_Transmit_No_MDR" },
+        
+        { "path": "TBHIV/SFTs/TB/Diagnostics_MDR" },
+        { "path": "TBHIV/SFTs/TB/Diagnostics_Active_Smear_Pos" },
+        { "path": "TBHIV/SFTs/TB/Diagnostics_Active_Smear_Neg" },
+        { "path": "TBHIV/SFTs/TB/Diagnostics_All_Active" },
+        
+        { "path": "TBHIV/SFTs/TB/Immunity_BCG" },
+        { "path": "TBHIV/SFTs/TB/Immunity_Natural_Immunity" },
         { "path": "TBHIV/SFTs/TB/Immunity_Natural_Immunity_Decay" },
-		
-		{ "path": "TBHIV/SFTs/TB/SEIR_Cure" },
-		{ "path": "TBHIV/SFTs/TB/SEIR_Death" },
-		{ "path": "TBHIV/SFTs/TB/SEIR_Fast_Progress_HIV/adult" },
-		{ "path": "TBHIV/SFTs/TB/SEIR_Fast_Progress_HIV/child" },
-		{ "path": "TBHIV/SFTs/TB/SEIR_Latent_Slow" },
-		{ "path": "TBHIV/SFTs/TB/SEIR_PreSymptomatic" },
-		{ "path": "TBHIV/SFTs/TB/SEIR_Latent_Cure" },
-		{ "path": "TBHIV/SFTs/TB/SEIR_PreSymptomatic_Cure" },
-		
-		{ "path": "TBHIV/SFTs/Reporter/Incidence" },
-		{ "path": "TBHIV/SFTs/Reporter/Incidence_timestep_30days" },
-		{ "path": "TBHIV/SFTs/Reporter/NonDiseaseDeaths" },
-		{ "path": "TBHIV/SFTs/Reporter/DiseaseDeaths" },
-		{ "path": "TBHIV/SFTs/Reporter/TBTest_Events" },
-		{ "path": "TBHIV/SFTs/Reporter/Active_Sx_Prevalence" },
-		{ "path": "TBHIV/SFTs/Reporter/HIV_Prevalence" },
-		{ "path": "TBHIV/SFTs/Reporter/HIVDeaths" },
-		
-		{ "path": "TBHIV/SFTs/MultiCore/Immunity_Natural_Immunity_Decay" },
-		{ "path": "TBHIV/SFTs/MultiCore/Reporter_TB_HIV_Deaths" }
+        
+        { "path": "TBHIV/SFTs/TB/SEIR_Cure" },
+        { "path": "TBHIV/SFTs/TB/SEIR_Death" },
+        { "path": "TBHIV/SFTs/TB/SEIR_Fast_Progress_HIV/adult" },
+        { "path": "TBHIV/SFTs/TB/SEIR_Fast_Progress_HIV/child" },
+        { "path": "TBHIV/SFTs/TB/SEIR_Latent_Slow" },
+        { "path": "TBHIV/SFTs/TB/SEIR_PreSymptomatic" },
+        { "path": "TBHIV/SFTs/TB/SEIR_Latent_Cure" },
+        { "path": "TBHIV/SFTs/TB/SEIR_PreSymptomatic_Cure" },
+        
+        { "path": "TBHIV/SFTs/Reporter/Incidence" },
+        { "path": "TBHIV/SFTs/Reporter/Incidence_timestep_30days" },
+        { "path": "TBHIV/SFTs/Reporter/NonDiseaseDeaths" },
+        { "path": "TBHIV/SFTs/Reporter/DiseaseDeaths" },
+        { "path": "TBHIV/SFTs/Reporter/TBTest_Events" },
+        { "path": "TBHIV/SFTs/Reporter/Active_Sx_Prevalence" },
+        { "path": "TBHIV/SFTs/Reporter/HIV_Prevalence" },
+        { "path": "TBHIV/SFTs/Reporter/HIVDeaths" },
+        
+        { "path": "TBHIV/SFTs/MultiCore/Immunity_Natural_Immunity_Decay" },
+        { "path": "TBHIV/SFTs/MultiCore/Reporter_TB_HIV_Deaths" }, 
+        { "path": "TBHIV/SFTs/Serialization/01_write_single_file" },
+        { "path": "TBHIV/SFTs/Serialization/02_read_single_file" }
 
     ]
 }

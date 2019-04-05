@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -111,7 +111,8 @@ namespace Kernel
 
     void BaseEventReport::UpdateEventRegistration( float currentTime,
                                                    float dt,
-                                                   std::vector<INodeEventContext*>& rNodeEventContextList )
+                                                   std::vector<INodeEventContext*>& rNodeEventContextList,
+                                                   ISimulationEventContext* pSimEventContext )
     {
         bool register_now = false ;
         bool unregister_now = false ;
@@ -208,12 +209,12 @@ namespace Kernel
 
     void BaseEventReport::RegisterEvents( INodeEventContext* pNEC )
     {
-        INodeTriggeredInterventionConsumer* pNTIC = GetNodeTriggeredConsumer( pNEC );
+        IIndividualEventBroadcaster* broadcaster = pNEC->GetIndividualEventBroadcaster();
 
         for( auto trigger : eventTriggerList )
         {
             LOG_DEBUG_F( "BaseEventReport is registering to listen to event %s\n", trigger.c_str() );
-            pNTIC->RegisterNodeEventObserver( this, trigger );
+            broadcaster->RegisterObserver( this, trigger );
         }
         nodeEventContextList.push_back( pNEC );
         events_registered = true ;
@@ -221,12 +222,12 @@ namespace Kernel
 
     void BaseEventReport::UnregisterEvents( INodeEventContext* pNEC )
     {
-        INodeTriggeredInterventionConsumer* pNTIC = GetNodeTriggeredConsumer( pNEC );
+        IIndividualEventBroadcaster* broadcaster = pNEC->GetIndividualEventBroadcaster();
 
         for( auto trigger : eventTriggerList )
         {
             LOG_DEBUG_F( "BaseEventReport is unregistering to listen to event %s\n", trigger.c_str() );
-            pNTIC->UnregisterNodeEventObserver( this, trigger );
+            broadcaster->UnregisterObserver( this, trigger );
         }
         events_unregistered = true ;
     }
@@ -240,20 +241,6 @@ namespace Kernel
                 UnregisterEvents( p_nec );
             }
         }
-    }
-
-    INodeTriggeredInterventionConsumer*
-        BaseEventReport::GetNodeTriggeredConsumer( INodeEventContext* pNEC )
-    {
-        release_assert( pNEC );
-        INodeTriggeredInterventionConsumer* pNTIC = nullptr;
-        if( pNEC->QueryInterface( GET_IID(INodeTriggeredInterventionConsumer), (void**)&pNTIC ) != s_OK )
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "pNEC", "INodeTriggeredInterventionConsumer", "INodeEventContext" );
-        }
-        release_assert( pNTIC );
-
-        return pNTIC ;
     }
 
     bool BaseEventReport::HaveRegisteredAllEvents() const

@@ -1,0 +1,10 @@
+{
+    "parameters": {
+        "Config_Name": "Typhoid_3",
+        "Simulation_Duration": 60,
+        "Typhoid_Acute_Infectiousness": 100000.0,
+        "Typhoid_Carrier_Probability_Female": 0.15,
+        "Typhoid_Protection_Per_Infection": 0.0
+    },
+    "Default_Config_Path": "../../defaults/typhoid_default_config.json"
+}

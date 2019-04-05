@@ -2,7 +2,7 @@
 
 import json
 import os.path as path
-import dtk_sft
+import dtk_test.dtk_sft as sft
 import numpy as np
 
 COINFECTION_MORTALITY_RATE_OFF_ART = "CoInfection_Mortality_Rate_Off_ART"
@@ -48,10 +48,10 @@ def parse_stdout_file(curr_timestep=0, stdout_filename="test.txt", debug=False):
             if update_time in line:
                 time += 1
             elif died_of_coinfection in line:
-                new_line = dtk_sft.add_time_stamp(time, line)
+                new_line = sft.add_time_stamp(time, line)
                 filtered_lines.append(new_line)
             elif state_active_symptomatic in line:
-                new_line = dtk_sft.add_time_stamp(time, line)
+                new_line = sft.add_time_stamp(time, line)
                 filtered_lines.append(new_line)
     if debug:
         with open("filtered_lines.txt", "w") as outfile:
@@ -106,8 +106,8 @@ def create_report_file(data):
             success = False
         for line in lines:
             if died_of_coinfection in line:
-                ind_id = int(dtk_sft.get_val("Individual ", line))
-                time_stamp = int(dtk_sft.get_val("time= ", line))
+                ind_id = int(sft.get_val("Individual ", line))
+                time_stamp = int(sft.get_val("time= ", line))
                 if ind_id in active_infections_dictionary.keys():
                     time_to_death_data.append(time_stamp - active_infections_dictionary[ind_id])
                 else:
@@ -115,8 +115,8 @@ def create_report_file(data):
                     outfile.write("BAD: Individual {} died of coinfection without going active, at time {}."
                                   "\n".format(ind_id, time_stamp))
             elif state_active_symptomatic in line:
-                ind_id = int(dtk_sft.get_val("Individual ", line))
-                start_time_stamp = int(dtk_sft.get_val("time= ", line))
+                ind_id = int(sft.get_val("Individual ", line))
+                start_time_stamp = int(sft.get_val("time= ", line))
                 if ind_id in active_infections_dictionary.keys():
                     outfile.write("Individual {} went active symptomatic while already being active symptomatic"
                                   "at time {}. \n".format(ind_id, start_time_stamp))
@@ -124,13 +124,13 @@ def create_report_file(data):
                     active_infections_dictionary[ind_id] = start_time_stamp
         # expected_data here only used for graphing purposes
         expected_data = map(int, np.random.exponential(1/coinfection_mortality_rate_off_art, len(time_to_death_data)))
-        if not dtk_sft.test_exponential(time_to_death_data, coinfection_mortality_rate_off_art, outfile,
+        if not sft.test_exponential(time_to_death_data, coinfection_mortality_rate_off_art, outfile,
                                         integers=True, roundup=False, round_nearest=False):
             success = False
         outfile.write("Data points checked = {}.\n".format(len(time_to_death_data)))
         outfile.write("SUMMARY: Success={0}\n".format(success))
 
-        dtk_sft.plot_data(sorted(time_to_death_data), sorted(expected_data), label1="Actual", label2="Expected",
+        sft.plot_data(sorted(time_to_death_data), sorted(expected_data), label1="Actual", label2="Expected",
                           title="Time from Extrapulmonary Off ART TBHIV to Death", xlabel="Data Points", ylabel="Days",
                           category="tbhiv_mortality_extrapulmonary_off_art", line = True, overlap=True)
 
@@ -138,7 +138,7 @@ def create_report_file(data):
 def application(output_folder="output", stdout_filename="test.txt",
                 config_filename="config.json",
                 insetchart_name="InsetChart.json",
-                report_name=dtk_sft.sft_output_filename,
+                report_name=sft.sft_output_filename,
                 debug=False):
     if debug:
         print( "output_folder: " + output_folder )
@@ -147,7 +147,7 @@ def application(output_folder="output", stdout_filename="test.txt",
         print( "insetchart_name: " + insetchart_name + "\n" )
         print( "report_name: " + report_name + "\n" )
         print( "debug: " + str(debug) + "\n" )
-    dtk_sft.wait_for_done()
+    sft.wait_for_done()
     param_obj = load_emod_parameters(config_filename)
     parsed_data = parse_stdout_file()
     inset_days = parse_json_report()

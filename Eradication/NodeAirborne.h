@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -17,11 +17,11 @@ namespace Kernel
     {
     public:
         virtual ~NodeAirborne(void);
-        static NodeAirborne *CreateNode(ISimulationContext *_parent_sim, suids::suid node_suid);
+        static NodeAirborne *CreateNode(ISimulationContext *_parent_sim, ExternalNodeId_t externalNodeId, suids::suid node_suid);
 
     protected:
         NodeAirborne();
-        NodeAirborne(ISimulationContext *_parent_sim, suids::suid node_suid);
+        NodeAirborne(ISimulationContext *_parent_sim, ExternalNodeId_t externalNodeId, suids::suid node_suid);
 
         // Factory methods
         virtual IIndividualHuman* createHuman(suids::suid suid, float monte_carlo_weight, float initial_age, int gender) override;

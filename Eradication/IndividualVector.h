@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -37,7 +37,7 @@ namespace Kernel
         virtual ~IndividualHumanVector();
 
         virtual void CreateSusceptibility(float immunity_modifier = 1.0, float risk_modifier = 1.0) override;
-        virtual void ExposeToInfectivity(float dt = 1.0, const TransmissionGroupMembership_t* transmissionGroupMembership = nullptr) override;
+        virtual void ExposeToInfectivity(float dt, TransmissionGroupMembership_t transmissionGroupMembership) override;
         virtual void UpdateInfectiousness(float dt) override;
         virtual void Expose( const IContagionPopulation* cp, float dt, TransmissionRoute::Enum tranmsission_route = TransmissionRoute::TRANSMISSIONROUTE_CONTACT ) override;
 
@@ -65,6 +65,8 @@ namespace Kernel
         virtual void PropagateContextToDependents() override;
 
         static void InitializeStaticsVector( const Configuration* config );
+
+        void ReportInfectionState() override;
 
         DECLARE_SERIALIZABLE(IndividualHumanVector);
     };

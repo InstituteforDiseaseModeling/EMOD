@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -10,14 +10,15 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "stdafx.h"
 #include "ReportMalaria.h" // for base class
 #include "MalariaContexts.h" // for base class
+#include "INodeContext.h"
 
-static const string _parasite_prevalence_label( "Parasite Prevalence" );
-static const string _mean_parasitemia_label( "Mean Parasitemia" );
-static const string _new_diagnostic_prevalence_label( "New Diagnostic Prevalence" );
-static const string _fever_prevalence_label( "Fever Prevalence" );
-static const string _new_clinical_cases_label( "New Clinical Cases" );
-static const string _new_severe_cases_label( "New Severe Cases" );
-static const string _statistical_population_label( "Statistical Population" );
+static const std::string _parasite_prevalence_label( "Parasite Prevalence" );
+static const std::string _mean_parasitemia_label( "Mean Parasitemia" );
+static const std::string _new_diagnostic_prevalence_label( "New Diagnostic Prevalence" );
+static const std::string _fever_prevalence_label( "Fever Prevalence" );
+static const std::string _new_clinical_cases_label( "New Clinical Cases" );
+static const std::string _new_severe_cases_label( "New Severe Cases" );
+static const std::string _statistical_population_label( "Statistical Population" );
 
 namespace Kernel {
 

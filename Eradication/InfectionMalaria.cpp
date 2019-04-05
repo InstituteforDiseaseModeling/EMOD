@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -25,14 +25,10 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Interventions.h"
 #include "SimulationConfig.h"
 #include "IndividualEventContext.h" // for Die() interface
+#include "IIndividualHumanContext.h"
 #include "MalariaInterventionsContainerContexts.h"
 #include "StrainIdentity.h"
-
-#ifdef randgen
-#undef randgen
-#endif
 #include "RANDOM.h"
-#define randgen (parent->GetRng())
 
 SETUP_LOGGING( "InfectionMalaria" )
 
@@ -197,7 +193,7 @@ namespace Kernel
                 for (int i = 0; i < CLONAL_PfEMP1_VARIANTS; i++)
                 {
                     m_IRBCtype[i] = i;
-                    m_minor_epitope_type[i] = randgen->i(MINOR_EPITOPE_VARS_PER_SET) + MINOR_EPITOPE_VARS_PER_SET * m_nonspectype;
+                    m_minor_epitope_type[i] = parent->GetRng()->uniformZeroToN16(MINOR_EPITOPE_VARS_PER_SET) + MINOR_EPITOPE_VARS_PER_SET * m_nonspectype;
                 }
                 break;
 
@@ -210,21 +206,21 @@ namespace Kernel
 
                 for (int i = 0; i < CLONAL_PfEMP1_VARIANTS; i++)
                 {
-                    m_IRBCtype[i] = randgen->i(CLONAL_PfEMP1_VARIANTS); 
-                    m_minor_epitope_type[i] = randgen->i(MINOR_EPITOPE_VARS_PER_SET) + MINOR_EPITOPE_VARS_PER_SET * m_nonspectype;
+                    m_IRBCtype[i] = parent->GetRng()->uniformZeroToN16(CLONAL_PfEMP1_VARIANTS);
+                    m_minor_epitope_type[i] = parent->GetRng()->uniformZeroToN16(MINOR_EPITOPE_VARS_PER_SET) + MINOR_EPITOPE_VARS_PER_SET * m_nonspectype;
                 }
                 break;
 
             case MalariaStrains::FALCIPARUM_RANDOM_STRAIN:
-                m_MSPtype = randgen->i(params()->malaria_params->falciparumMSPVars);
-                m_nonspectype = randgen->i(params()->malaria_params->falciparumNonSpecTypes);
+                m_MSPtype = parent->GetRng()->uniformZeroToN16(params()->malaria_params->falciparumMSPVars);
+                m_nonspectype = parent->GetRng()->uniformZeroToN16(params()->malaria_params->falciparumNonSpecTypes);
 
                 #pragma loop(hint_parallel(8))
 
                 for (int i = 0; i < CLONAL_PfEMP1_VARIANTS; i++)
                 {
-                    m_IRBCtype[i] = randgen->i(params()->malaria_params->falciparumPfEMP1Vars); 
-                    m_minor_epitope_type[i] = randgen->i(MINOR_EPITOPE_VARS_PER_SET) + MINOR_EPITOPE_VARS_PER_SET * m_nonspectype;
+                    m_IRBCtype[i] = parent->GetRng()->uniformZeroToN16(params()->malaria_params->falciparumPfEMP1Vars);
+                    m_minor_epitope_type[i] = parent->GetRng()->uniformZeroToN16(MINOR_EPITOPE_VARS_PER_SET) + MINOR_EPITOPE_VARS_PER_SET * m_nonspectype;
                 }
                 break;
 
@@ -242,7 +238,7 @@ namespace Kernel
                 {
                     m_IRBCtype[i] = tempStridePosition; 
                     tempStridePosition = (tempStridePosition + tempStrideLength)% params()->malaria_params->falciparumPfEMP1Vars;
-                    m_minor_epitope_type[i] = randgen->i(MINOR_EPITOPE_VARS_PER_SET) + MINOR_EPITOPE_VARS_PER_SET * m_nonspectype;
+                    m_minor_epitope_type[i] = parent->GetRng()->uniformZeroToN16(MINOR_EPITOPE_VARS_PER_SET) + MINOR_EPITOPE_VARS_PER_SET * m_nonspectype;
                 }
                 break;
 
@@ -532,7 +528,7 @@ namespace Kernel
 
                 double tempval1 = m_IRBC_count[i] * pkill;
                 if ( tempval1 > 0 ) // don't need to smear the killing by a random number if it is going to be zero
-                    tempval1 = randgen->eGauss() * sqrt(tempval1 * (1.0 - pkill)) + tempval1;
+                    tempval1 = parent->GetRng()->eGauss() * sqrt(tempval1 * (1.0 - pkill)) + tempval1;
 
                 if (tempval1 < 0.5)
                     tempval1 = 0;
@@ -669,7 +665,7 @@ namespace Kernel
                         #pragma loop(hint_parallel(8))
                         for ( int iswitch = 0; iswitch < SWITCHING_IRBC_VARIANT_COUNT; iswitch++ )
                         {
-                            switchingIRBC[iswitch] = (iswitch < 7) ? randgen->Poisson(InfectionMalariaConfig::antigen_switch_rate * m_IRBC_count[j]) : 0;
+                            switchingIRBC[iswitch] = (iswitch < 7) ? parent->GetRng()->Poisson(InfectionMalariaConfig::antigen_switch_rate * m_IRBC_count[j]) : 0;
                         }
 
                         // now test to see if these add up to more than 100 percent
@@ -702,11 +698,11 @@ namespace Kernel
 
             case ParasiteSwitchType::RATE_PER_PARASITE_5VARS_DECAYING:
                 {
-                    switchingIRBC[0] = randgen->Poisson(1.000 * InfectionMalariaConfig::antigen_switch_rate * m_IRBC_count[j]);  // This switching model preferentially swtiches to the next one in the queue, with later variants being less probable
-                    switchingIRBC[1] = randgen->Poisson(0.200 * InfectionMalariaConfig::antigen_switch_rate * m_IRBC_count[j]);  // Switching to five variants is the current option, this can be varied by the programmer for testing
-                    switchingIRBC[2] = randgen->Poisson(0.040 * InfectionMalariaConfig::antigen_switch_rate * m_IRBC_count[j]);  // This switch rate model is NOT the canonical model of the Intrahost paper
-                    switchingIRBC[3] = randgen->Poisson(0.010 * InfectionMalariaConfig::antigen_switch_rate * m_IRBC_count[j]);  //
-                    switchingIRBC[4] = randgen->Poisson(0.002 * InfectionMalariaConfig::antigen_switch_rate * m_IRBC_count[j]);  //
+                    switchingIRBC[0] = parent->GetRng()->Poisson(1.000 * InfectionMalariaConfig::antigen_switch_rate * m_IRBC_count[j]);  // This switching model preferentially swtiches to the next one in the queue, with later variants being less probable
+                    switchingIRBC[1] = parent->GetRng()->Poisson(0.200 * InfectionMalariaConfig::antigen_switch_rate * m_IRBC_count[j]);  // Switching to five variants is the current option, this can be varied by the programmer for testing
+                    switchingIRBC[2] = parent->GetRng()->Poisson(0.040 * InfectionMalariaConfig::antigen_switch_rate * m_IRBC_count[j]);  // This switch rate model is NOT the canonical model of the Intrahost paper
+                    switchingIRBC[3] = parent->GetRng()->Poisson(0.010 * InfectionMalariaConfig::antigen_switch_rate * m_IRBC_count[j]);  //
+                    switchingIRBC[4] = parent->GetRng()->Poisson(0.002 * InfectionMalariaConfig::antigen_switch_rate * m_IRBC_count[j]);  //
                     int64_t temp_sum_IRBC = 0;
                     temp_sum_IRBC = std::accumulate(switchingIRBC, switchingIRBC + 5, temp_sum_IRBC);
 
@@ -723,7 +719,7 @@ namespace Kernel
                 {
                     // OLD SWITCHING brought down from processEndOfAsexualCycle body
                     // TODO: deprecate
-                    int64_t antigenswitch = (randgen->e() < InfectionMalariaConfig::antigen_switch_rate) ? 1 : 0;
+                    int64_t antigenswitch = parent->GetRng()->SmartDraw( InfectionMalariaConfig::antigen_switch_rate ) ? 1 : 0;
                     double samerate = InfectionMalariaConfig::merozoites_per_schizont * ((1.0 - m_gametorate) - 0.02 * antigenswitch);
                     double nextrate = InfectionMalariaConfig::merozoites_per_schizont * (0.01 * antigenswitch);
                     tmpIRBCcount[j]                                = int64_t(tmpIRBCcount[j]                                + m_IRBC_count[j] * samerate * merozoitesurvival);
@@ -834,7 +830,7 @@ namespace Kernel
 
                 for (int i = 0; i < m_hepatocytes; i++)
                 {
-                    if (randgen->e() < pkill)
+                    if( parent->GetRng()->SmartDraw( pkill ) )
                         tempval1++;
                 }
 
@@ -847,7 +843,7 @@ namespace Kernel
             // --- development of parasitologic and clinical immunity during primary infection." Am J Trop Med Hyg 61(1 Suppl): 4-19.
             // --- process start of asexual phase if the incubation period is over and there are still hepatocytes
             // ----------------------------------------------------------------------------------------------------------------------
-            float incubation_period = InfectionConfig::incubation_distribution.GetParam1();
+            float incubation_period = InfectionConfig::incubation_distribution->GetParam1();
             if (m_asexual_phase == AsexualCycleStatus::NoAsexualCycle && duration >= incubation_period)
             {
                 m_IRBC_count.assign(CLONAL_PfEMP1_VARIANTS, 0);
@@ -917,8 +913,8 @@ namespace Kernel
     void InfectionMalaria::apply_MatureGametocyteKillProbability(float pkill)
     { 
         // Gaussian approximation of binomial errors for male and female mature gametocytes
-        m_femalegametocytes[ GametocyteStages::Mature ] = ApplyKillProbability( pkill, m_femalegametocytes[ GametocyteStages::Mature ], randgen->eGauss() );
-        m_malegametocytes[ GametocyteStages::Mature ] = ApplyKillProbability(   pkill, m_malegametocytes[   GametocyteStages::Mature ], randgen->eGauss() );
+        m_femalegametocytes[ GametocyteStages::Mature ] = ApplyKillProbability( pkill, m_femalegametocytes[ GametocyteStages::Mature ], parent->GetRng()->eGauss() );
+        m_malegametocytes[ GametocyteStages::Mature ] = ApplyKillProbability(   pkill, m_malegametocytes[   GametocyteStages::Mature ], parent->GetRng()->eGauss() );
     }
 
     int64_t InfectionMalaria::get_FemaleGametocytes(int stage) const

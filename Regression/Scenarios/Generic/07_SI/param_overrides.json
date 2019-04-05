@@ -3,7 +3,9 @@
     "parameters": {
         "DEMOGRAPHICS": {
             "Birth_Rate_Dependence": "POPULATION_DEP_RATE",
-            "Demographics_Filenames": ["generic_scenarios_demographics.json"],
+            "Demographics_Filenames": [
+                "generic_scenarios_demographics.json"
+            ],
             "MORTALITY": {
                 "Base_Mortality": 0
             },
@@ -13,13 +15,13 @@
         },
         "DISEASE": {
             "INCUBATION": {
-                "Base_Incubation_Period": 0,
-                "Incubation_Period_Distribution": "FIXED_DURATION"
+                "Incubation_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                "Incubation_Period_Constant": 0
             },
             "INFECTIOUSNESS": {
-                "Base_Infectious_Period": 50000,
                 "Base_Infectivity": 0.0003653,
-                "Infectious_Period_Distribution": "FIXED_DURATION"
+                "Infectious_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                "Infectious_Period_Constant": 50000
             }
         },
         "PRIMARY": {

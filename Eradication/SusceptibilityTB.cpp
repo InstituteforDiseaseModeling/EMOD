@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -9,13 +9,10 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "stdafx.h"
 
-#ifdef ENABLE_TBHIV
-
 #include "SusceptibilityTB.h"
 #include "Common.h"
 #include "RANDOM.h"
 #include "IndividualCoInfection.h"
-#include "Individual.h"
 
 
 #define CHILD_AGE_YEARS (15.0f)
@@ -97,7 +94,7 @@ namespace Kernel
         {
             LOG_DEBUG_F("Acqdecayoffset = %f \n", acqdecayoffset);
             if (mod_acquire < 1) { acqdecayoffset -= dt; }
-            if (SusceptibilityConfig::enable_immune_decay && acqdecayoffset < 0 && randgen->e() < SusceptibilityConfig::acqdecayrate * dt)
+            if( SusceptibilityConfig::enable_immune_decay && (acqdecayoffset < 0) && parent->GetRng()->SmartDraw( SusceptibilityConfig::acqdecayrate * dt ) )
             {
                 m_is_immune = false; // the TB immune flag (used for reporting only) represents acquisition immunity since this is basically what BCG gives you
                 mod_acquire = 1.0;            
@@ -121,7 +118,6 @@ namespace Kernel
         if (SusceptibilityTBConfig::TB_fast_progressor_fraction_type == TBFastProgressorType::AGE)
         {
             float progression_modifier = 1.0;
-#ifdef ENABLE_TBHIV
             IIndividualHumanCoInfection* pInCo = nullptr;
 
             if (s_OK == parent->QueryInterface(GET_IID(IIndividualHumanCoInfection), (void **)&pInCo))
@@ -131,7 +127,7 @@ namespace Kernel
                     progression_modifier = pInCo->GetCD4PrimaryMap(pInCo->GetCD4());
                 }
             }
-#endif
+
             //Assumes HIV progression has same relative effect on children and adults
             float age_years = age / DAYSPERYEAR ;
             if (!IndividualHumanConfig::IsAdultAge(age_years))
@@ -231,7 +227,7 @@ namespace Kernel
         // and node-based risk factors based on _riskmod argument
         m_is_immune = false; 
         m_current_infections = 0;
-        m_is_immune_competent = randgen->e() > SusceptibilityTBConfig::TB_immune_loss_fraction;
+        m_is_immune_competent = parent->GetRng()->e() > SusceptibilityTBConfig::TB_immune_loss_fraction;
         Flag_use_CD4_for_act = false;
         //GHH note the above does nothing with riskmod! 
         //blatant misuse of riskmod here, use as a modulator of infectiousness
@@ -294,4 +290,3 @@ namespace Kernel
     }
 }
 
-#endif // ENABLE_TBHIV

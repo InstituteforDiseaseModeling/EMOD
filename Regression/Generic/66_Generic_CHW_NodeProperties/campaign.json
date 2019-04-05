@@ -1,138 +1,175 @@
 {
     "Use_Defaults": 1,
-    "Events": 
-    [
+    "Events": [
         {
-            "COMMENT" : "Node 1 is the hospital node.  People get a vaccine when they arrive.",
+            "COMMENT": "Node 1 is the hospital node.  People get a vaccine when they arrive.",
             "class": "CampaignEvent",
             "Start_Day": 1,
             "Nodeset_Config": {
-                "class": "NodeSetNodeList", 
-                "Node_List": [ 1 ]
+                "class": "NodeSetNodeList",
+                "Node_List": [
+                    1
+                ]
             },
             "Event_Coordinator_Config": {
                 "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
                     "class": "NodeLevelHealthTriggeredIV",
-                    "Trigger_Condition_List": [ "Immigrating" ],
+                    "Trigger_Condition_List": [
+                        "Immigrating"
+                    ],
                     "Demographic_Coverage": 1.0,
-                    "Actual_IndividualIntervention_Config":
-                    {
+                    "Actual_IndividualIntervention_Config": {
                         "class": "SimpleVaccine",
                         "Cost_To_Consumer": 10,
                         "Vaccine_Type": "Generic",
                         "Vaccine_Take": 1,
-                        "Efficacy_Is_Multiplicative" : 1,
+                        "Efficacy_Is_Multiplicative": 1,
                         "Waning_Config": {
                             "class": "WaningEffectRandomBox",
                             "Initial_Effect": 1.0,
-                            "Expected_Discard_Time" : 200
+                            "Expected_Discard_Time": 200
                         }
                     }
                 }
             }
         },
         {
-            "COMMENT" : "The CHW here sends all of the people in a node when one person in the node becomes infected.",
+            "COMMENT": "The CHW here sends all of the people in a node when one person in the node becomes infected.",
             "class": "CampaignEvent",
             "Start_Day": 1,
             "Nodeset_Config": {
-                "class": "NodeSetNodeList", 
-                "Node_List": [ 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
+                "class": "NodeSetNodeList",
+                "Node_List": [
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9,
+                    10
+                ]
             },
             "Event_Coordinator_Config": {
                 "class": "CommunityHealthWorkerEventCoordinator",
-                "Duration" : 400,
-                "Max_Distributed_Per_Day" : 5,
-                "Waiting_Period" : 5,
-                "Days_Between_Shipments" : 20,
-                "Amount_In_Shipment" : 20,
-                "Max_Stock" : 40,
-                "Initial_Amount_Distribution_Type" : "FIXED_DURATION",
-                "Initial_Amount" :  40,
-                "Target_Demographic": "Everyone", 
+                "Duration": 400,
+                "Max_Distributed_Per_Day": 5,
+                "Waiting_Period": 5,
+                "Days_Between_Shipments": 20,
+                "Amount_In_Shipment": 20,
+                "Max_Stock": 40,
+                "Initial_Amount_Distribution": "CONSTANT_DISTRIBUTION",
+                "Initial_Amount": 40,
+                "Target_Demographic": "Everyone",
                 "Demographic_Coverage": 1.0,
-                "Property_Restrictions" : [ ],
-                "Target_Residents_Only" : 0,
-                "Trigger_Condition_List" : [ "NewInfectionEvent" ],
-                "Node_Property_Restrictions" : [ { "Accessibility": "YES" } ],                
+                "Property_Restrictions": [],
+                "Target_Residents_Only": 0,
+                "Trigger_Condition_List": [
+                    "NewInfectionEvent"
+                ],
+                "Node_Property_Restrictions": [
+                    {
+                        "Accessibility": "YES"
+                    }
+                ],
                 "Intervention_Config": {
                     "class": "MigrateFamily",
                     "NodeID_To_Migrate_To": 1,
-                    "Duration_Before_Leaving_Distribution_Type" : "FIXED_DURATION",
-                    "Duration_Before_Leaving_Fixed": 0, 
-                    "Duration_At_Node_Distribution_Type" : "FIXED_DURATION",
-                    "Duration_At_Node_Fixed": 10, 
-                    "Is_Moving" : 0
+                    "Duration_Before_Leaving_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Duration_At_Node_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Is_Moving": 0,
+                    "Duration_Before_Leaving_Constant": 0,
+                    "Duration_At_Node_Constant": 10
                 }
             }
         },
         {
-            "COMMENT" : "Outbreak 1: During this outbreak, everyone is sent to the hospital node and gets the vaccine, stopping the spread of the infection.",
+            "COMMENT": "Outbreak 1: During this outbreak, everyone is sent to the hospital node and gets the vaccine, stopping the spread of the infection.",
             "Event_Name": "Outbreak",
             "class": "CampaignEvent",
             "Start_Day": 25,
             "Nodeset_Config": {
-                "class": "NodeSetNodeList", 
-                "Node_List": [ 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
-            }, 
-            "Event_Coordinator_Config": 
-            {
+                "class": "NodeSetNodeList",
+                "Node_List": [
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9,
+                    10
+                ]
+            },
+            "Event_Coordinator_Config": {
                 "class": "StandardInterventionDistributionEventCoordinator",
                 "Demographic_Coverage": 0.2,
-                "Target_Demographic": "Everyone", 
-                "Intervention_Config": 
-                {
+                "Target_Demographic": "Everyone",
+                "Intervention_Config": {
                     "Antigen": 0,
                     "Genome": 0,
-					"Incubation_Period_Override": 0,
+                    "Incubation_Period_Override": 0,
                     "Outbreak_Source": "PrevalenceIncrease",
                     "class": "OutbreakIndividual"
                 }
             }
         },
-        { 
-            "COMMENT" : "!!!THING BEING TESTED!!!  Here we change the Accessibility NodeProperty to NO so that we see CHW not sending the people of those nodes to the hospital.",
+        {
+            "COMMENT": "!!!THING BEING TESTED!!!  Here we change the Accessibility NodeProperty to NO so that we see CHW not sending the people of those nodes to the hospital.",
             "class": "CampaignEvent",
             "Start_Day": 300,
-            "Nodeset_Config": 
-            {
-                "class": "NodeSetNodeList", 
-                "Node_List": [ 6, 7, 8, 9, 10 ]
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [
+                    6,
+                    7,
+                    8,
+                    9,
+                    10
+                ]
             },
-            "Event_Coordinator_Config": 
-            { 
+            "Event_Coordinator_Config": {
                 "class": "StandardInterventionDistributionEventCoordinator",
-                "Intervention_Config": 
-                { 
+                "Intervention_Config": {
                     "class": "NodePropertyValueChanger",
-                    "Target_NP_Key_Value" : "Accessibility:NO",
-                    "Daily_Probability" : 1.0,
-                    "Maximum_Duration" : 0,
-                    "Revert" : 0
+                    "Target_NP_Key_Value": "Accessibility:NO",
+                    "Daily_Probability": 1.0,
+                    "Maximum_Duration": 0,
+                    "Revert": 0
                 }
             }
         },
         {
-            "COMMENT1" : "Outbreak 2: During this outbreak, we see the nodes with Accessibility:YES being sent to the hospital and the infections not spreading.",
-            "COMMENT2" : "The other nodes dont go to the hospital and get the vaccine so the infection continues to spread in those nodes.",
+            "COMMENT1": "Outbreak 2: During this outbreak, we see the nodes with Accessibility:YES being sent to the hospital and the infections not spreading.",
+            "COMMENT2": "The other nodes dont go to the hospital and get the vaccine so the infection continues to spread in those nodes.",
             "Event_Name": "Outbreak",
             "class": "CampaignEvent",
             "Start_Day": 325,
             "Nodeset_Config": {
-                "class": "NodeSetNodeList", 
-                "Node_List": [ 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
-            }, 
-            "Event_Coordinator_Config": 
-            {
+                "class": "NodeSetNodeList",
+                "Node_List": [
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9,
+                    10
+                ]
+            },
+            "Event_Coordinator_Config": {
                 "class": "StandardInterventionDistributionEventCoordinator",
                 "Demographic_Coverage": 0.2,
-                "Target_Demographic": "Everyone", 
-                "Intervention_Config": 
-                {
+                "Target_Demographic": "Everyone",
+                "Intervention_Config": {
                     "Antigen": 0,
                     "Genome": 0,
-					"Incubation_Period_Override": 0,
+                    "Incubation_Period_Override": 0,
                     "Outbreak_Source": "PrevalenceIncrease",
                     "class": "OutbreakIndividual"
                 }

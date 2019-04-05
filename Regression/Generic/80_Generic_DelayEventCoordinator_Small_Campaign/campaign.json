@@ -1,0 +1,142 @@
+{
+    "Events": [
+        {
+            "comment": "Broadcast Event to start Surveillance",
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "BroadcastCoordinatorEvent",
+                "Coordinator_Name": "Coordnator_1",
+                "Cost_To_Consumer": 10,
+                "Broadcast_Event": "Start_Surveillance"
+            }
+        },
+        {
+            "comment": "Surveillance, check number of new infections for one month",
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "SurveillanceEventCoordinator",
+                "Coordinator_Name": "ACF_Counter",
+                "Start_Trigger_Condition_List": [
+                    "Start_Surveillance"
+                ],
+                "Stop_Trigger_Condition_List": [],
+                "Duration": -1,
+                "Incidence_Counter": {
+                    "Counter_Type": "PERIODIC",
+                    "Counter_Period": 30,
+                    "Counter_Event_Type": "INDIVIDUAL",
+                    "Trigger_Condition_List": [
+                        "NewInfectionEvent"
+                    ],
+                    "Node_Property_Restrictions": [],
+                    "Property_Restrictions_Within_Node": [],
+                    "Target_Demographic": "Everyone",
+                    "Demographic_Coverage": 1.0
+                },
+                "Responder": {
+                    "Threshold_Type": "COUNT",
+                    "Action_List": [
+                        {
+                            "Threshold": 4,
+                            "Event_Type": "COORDINATOR",
+                            "Event_To_Broadcast": "Start_SIA_4"
+                        },
+                        {
+                            "Threshold": 2,
+                            "Event_Type": "COORDINATOR",
+                            "Event_To_Broadcast": "Start_SIA_2"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "comment": "Delay start of SIA",
+            "Event_Coordinator_Config": {
+                "class": "DelayEventCoordinator",
+                "Coordinator_Name": "DelayEventCoordinator_10",
+                "Start_Trigger_Condition_List": [
+                    "Start_SIA_4"
+                ],
+                "Stop_Trigger_Condition_List": [],
+                "Duration": -1,
+                "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                "Delay_Complete_Event": "Start_Delayed_SIA",
+                "Delay_Period_Constant": 25
+            },
+            "Event_Name": "Delay",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 1,
+            "Target_Demographic": "Everyone",
+            "class": "CampaignEvent"
+        },
+        {
+            "comment": "Start Outbreak",
+            "class": "CampaignEvent",
+            "Start_Day": 5,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 0.53,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Antigen": 0,
+                    "Genome": 0,
+                    "Outbreak_Source": "PrevalenceIncrease",
+                    "Incubation_Period_Override": 1
+                }
+            }
+        },
+        {
+            "comment": "Distribute Vaccine",
+            "Event_Coordinator_Config": {
+                "class": "TriggeredEventCoordinator",
+                "Coordinator_Name": "SIA-Distribute Vaccines",
+                "Start_Trigger_Condition_List": [
+                    "Start_Delayed_SIA"
+                ],
+                "Stop_Trigger_Condition_List": [],
+                "Duration": -1,
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 30,
+                "Node_Property_Restrictions": [],
+                "Property_Restrictions_Within_Node": [],
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "SimpleVaccine",
+                    "Cost_To_Consumer": 10,
+                    "Vaccine_Take": 1,
+                    "Vaccine_Type": "AcquisitionBlocking",
+                    "Waning_Config": {
+                        "Initial_Effect": 1,
+                        "Box_Duration": 1825,
+                        "class": "WaningEffectBox"
+                    }
+                },
+                "Completion_Event": "SIA_Finished"
+            },
+            "Event_Name": "TEC",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 1,
+            "Target_Demographic": "Everyone",
+            "class": "CampaignEvent"
+        }
+    ],
+    "Use_Defaults": 1
+}

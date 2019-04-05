@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -22,7 +22,7 @@ namespace Kernel
     // ENUM defs for Egg_Hatch_Delay_Distribution
     ENUM_DEFINE(EggHatchDelayDist, 
         ENUM_VALUE_SPEC(NO_DELAY                                            , 0)
-        ENUM_VALUE_SPEC(EXPONENTIAL_DURATION                                , 1))
+        ENUM_VALUE_SPEC(EXPONENTIAL_DISTRIBUTION                                , 1))
 
     // ENUM defs for Egg_Saturation_At_Oviposition
     ENUM_DEFINE(EggSaturation, 

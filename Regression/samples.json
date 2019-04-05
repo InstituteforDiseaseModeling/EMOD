@@ -11,17 +11,7 @@
         { "path": "Scenarios/Generic/07_SI" },
         { "path": "Scenarios/Generic/08_SIS" },
         { "path": "Scenarios/Generic/09_DensityScaling" },
-        { "path": "Scenarios/Generic/10_Zoonosis" },
-        
-        { "path": "Scenarios/HINT/01_RiskGroups" },
-        { "path": "Scenarios/HINT/02_SchoolClosure" },
-        { "path": "Scenarios/HINT/03_AgeAndAccess/A_BaselineOutbreak" },
-        { "path": "Scenarios/HINT/03_AgeAndAccess/B_AgeTargetedVaccine" },
-        { "path": "Scenarios/HINT/03_AgeAndAccess/C_AccessTargetedVaccine" },
-        { "path": "Scenarios/HINT/04_WAPertussis/A_BaselineOutbreak" },
-        { "path": "Scenarios/HINT/04_WAPertussis/B_TargetVaccineRefusers" },
-        { "path": "Scenarios/HINT/05_SeattleCommuting" },
-        
+
         { "path": "Scenarios/VectorAndMalaria/01_A_Namawala3Vectors_lowEIR" },
         { "path": "Scenarios/VectorAndMalaria/01_B_Namawala3Vectors_highEIR" },
         { "path": "Scenarios/VectorAndMalaria/02_Namawala_Full_Malaria_Model" },
@@ -121,5 +111,15 @@
     ],
     "toolarge": [
         { "path": "Scenarios/VectorAndMalaria/04_Madagascar_Vector" }
+    ],
+    "replaced_by_SFTs": [
+        { "path": "Scenarios/HINT/01_RiskGroups" },
+        { "path": "Scenarios/HINT/02_SchoolClosure" },
+        { "path": "Scenarios/HINT/03_AgeAndAccess/A_BaselineOutbreak" },
+        { "path": "Scenarios/HINT/03_AgeAndAccess/B_AgeTargetedVaccine" },
+        { "path": "Scenarios/HINT/03_AgeAndAccess/C_AccessTargetedVaccine" },
+        { "path": "Scenarios/HINT/04_WAPertussis/A_BaselineOutbreak" },
+        { "path": "Scenarios/HINT/04_WAPertussis/B_TargetVaccineRefusers" },
+        { "path": "Scenarios/HINT/05_SeattleCommuting" }
     ]
 }

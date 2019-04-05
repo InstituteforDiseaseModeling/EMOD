@@ -47,7 +47,7 @@ def __do_read__(args):
         else:
             output_filename = '.'.join([prefix, 'node-{:0>5}'.format(index), extension])
 
-        with open(output_filename, 'wb') as handle:
+        with open(output_filename, 'wt', encoding='utf-8') as handle:
             handle.write(output)
 
     return

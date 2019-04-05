@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -10,7 +10,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "stdafx.h"
 #include <memory> // unique_ptr
 #include "UnitTest++.h"
-#include "common.h"
+#include "componentTests.h"
 #include "IMigrationInfo.h"
 #include "IMigrationInfoVector.h"
 #include "SimulationConfig.h"
@@ -56,7 +56,6 @@ SUITE(MigrationTest)
 
             Environment::Initialize( m_pMpi, configFilename, inputPath, outputPath, dllPath, false );
 
-            const_cast<Environment*>(Environment::getInstance())->RNG = &m_RandomFake;
             m_pSimulationConfig->sim_type = SimType::VECTOR_SIM ;
             m_pSimulationConfig->demographics_initial = true ;
             Environment::setSimulationConfig( m_pSimulationConfig );
@@ -138,7 +137,7 @@ SUITE(MigrationTest)
             MigrationType::Enum mig_type = MigrationType::NO_MIGRATION;
             float trip_time = -1.0;
 
-            p_mi_2->PickMigrationStep( &traveler, 1.0, destination, mig_type, trip_time );
+            p_mi_2->PickMigrationStep( &m_RandomFake, &traveler, 1.0, destination, mig_type, trip_time );
 
             CHECK_EQUAL( 0, destination.data );
             CHECK_EQUAL( MigrationType::NO_MIGRATION, mig_type );
@@ -154,7 +153,7 @@ SUITE(MigrationTest)
             mig_type    = MigrationType::NO_MIGRATION;
             trip_time   = -1.0;
 
-            p_mi_2->PickMigrationStep( &traveler, 1.0, destination, mig_type, trip_time );
+            p_mi_2->PickMigrationStep( &m_RandomFake, &traveler, 1.0, destination, mig_type, trip_time );
 
             CHECK_EQUAL( 4, destination.data );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION, mig_type );
@@ -170,7 +169,7 @@ SUITE(MigrationTest)
             mig_type    = MigrationType::NO_MIGRATION;
             trip_time   = -1.0;
 
-            p_mi_2->PickMigrationStep( &traveler, 1.0, destination, mig_type, trip_time );
+            p_mi_2->PickMigrationStep( &m_RandomFake, &traveler, 1.0, destination, mig_type, trip_time );
 
             CHECK_EQUAL( 3, destination.data );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION, mig_type );
@@ -188,7 +187,7 @@ SUITE(MigrationTest)
 
             m_RandomFake.SetUL( 0 ); // 0.0 - need to change so we get the first in the list
 
-            p_mi_2->PickMigrationStep( &traveler, 1.0, destination, mig_type, trip_time );
+            p_mi_2->PickMigrationStep( &m_RandomFake, &traveler, 1.0, destination, mig_type, trip_time );
 
             CHECK_EQUAL( 1, destination.data );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION, mig_type );
@@ -204,7 +203,7 @@ SUITE(MigrationTest)
             mig_type    = MigrationType::NO_MIGRATION;
             trip_time   = -1.0;
 
-            p_mi_2->PickMigrationStep( &traveler, 1.0, destination, mig_type, trip_time );
+            p_mi_2->PickMigrationStep( &m_RandomFake, &traveler, 1.0, destination, mig_type, trip_time );
 
             CHECK_EQUAL( 0, destination.data );
             CHECK_EQUAL( MigrationType::NO_MIGRATION, mig_type );
@@ -347,7 +346,7 @@ SUITE(MigrationTest)
             MigrationType::Enum mig_type = MigrationType::NO_MIGRATION;
             float trip_time = -1.0;
 
-            p_mi_2->PickMigrationStep( &traveler, 1.0, destination, mig_type, trip_time );
+            p_mi_2->PickMigrationStep( &m_RandomFake, &traveler, 1.0, destination, mig_type, trip_time );
 
             CHECK_EQUAL( 0, destination.data );
             CHECK_EQUAL( MigrationType::NO_MIGRATION, mig_type );
@@ -363,7 +362,7 @@ SUITE(MigrationTest)
             mig_type    = MigrationType::NO_MIGRATION;
             trip_time   = -1.0;
 
-            p_mi_2->PickMigrationStep( &traveler, 1.0, destination, mig_type, trip_time );
+            p_mi_2->PickMigrationStep( &m_RandomFake, &traveler, 1.0, destination, mig_type, trip_time );
 
             CHECK_EQUAL( 4, destination.data );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION, mig_type );
@@ -379,7 +378,7 @@ SUITE(MigrationTest)
             mig_type    = MigrationType::NO_MIGRATION;
             trip_time   = -1.0;
 
-            p_mi_2->PickMigrationStep( &traveler, 1.0, destination, mig_type, trip_time );
+            p_mi_2->PickMigrationStep( &m_RandomFake, &traveler, 1.0, destination, mig_type, trip_time );
 
             CHECK_EQUAL( 3, destination.data );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION, mig_type );
@@ -397,7 +396,7 @@ SUITE(MigrationTest)
 
             m_RandomFake.SetUL( 0 ); // 0.0 - need to change so we get the first in the list
 
-            p_mi_2->PickMigrationStep( &traveler, 1.0, destination, mig_type, trip_time );
+            p_mi_2->PickMigrationStep( &m_RandomFake, &traveler, 1.0, destination, mig_type, trip_time );
 
             CHECK_EQUAL( 1, destination.data );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION, mig_type );
@@ -413,7 +412,7 @@ SUITE(MigrationTest)
             mig_type    = MigrationType::NO_MIGRATION;
             trip_time   = -1.0;
 
-            p_mi_2->PickMigrationStep( &traveler, 1.0, destination, mig_type, trip_time );
+            p_mi_2->PickMigrationStep( &m_RandomFake, &traveler, 1.0, destination, mig_type, trip_time );
 
             CHECK_EQUAL( 0, destination.data );
             CHECK_EQUAL( MigrationType::NO_MIGRATION, mig_type );
@@ -433,7 +432,7 @@ SUITE(MigrationTest)
             mig_type    = MigrationType::NO_MIGRATION;
             trip_time   = -1.0;
 
-            p_mi_2->PickMigrationStep( &traveler, 1.0, destination, mig_type, trip_time );
+            p_mi_2->PickMigrationStep( &m_RandomFake, &traveler, 1.0, destination, mig_type, trip_time );
 
             CHECK_EQUAL( 0, destination.data );
             CHECK_EQUAL( MigrationType::NO_MIGRATION, mig_type );
@@ -449,7 +448,7 @@ SUITE(MigrationTest)
             mig_type    = MigrationType::NO_MIGRATION;
             trip_time   = -1.0;
 
-            p_mi_2->PickMigrationStep( &traveler, 1.0, destination, mig_type, trip_time );
+            p_mi_2->PickMigrationStep( &m_RandomFake, &traveler, 1.0, destination, mig_type, trip_time );
 
             CHECK_EQUAL( 3, destination.data );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION, mig_type );
@@ -465,7 +464,7 @@ SUITE(MigrationTest)
             mig_type    = MigrationType::NO_MIGRATION;
             trip_time   = -1.0;
 
-            p_mi_2->PickMigrationStep( &traveler, 1.0, destination, mig_type, trip_time );
+            p_mi_2->PickMigrationStep( &m_RandomFake, &traveler, 1.0, destination, mig_type, trip_time );
 
             CHECK_EQUAL( 3, destination.data );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION, mig_type );
@@ -483,7 +482,7 @@ SUITE(MigrationTest)
 
             m_RandomFake.SetUL( 0 ); // 0.0 - 
 
-            p_mi_2->PickMigrationStep( &traveler, 1.0, destination, mig_type, trip_time );
+            p_mi_2->PickMigrationStep( &m_RandomFake, &traveler, 1.0, destination, mig_type, trip_time );
 
             CHECK_EQUAL( 1, destination.data );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION, mig_type );
@@ -499,7 +498,7 @@ SUITE(MigrationTest)
             mig_type    = MigrationType::NO_MIGRATION;
             trip_time   = -1.0;
 
-            p_mi_2->PickMigrationStep( &traveler, 1.0, destination, mig_type, trip_time );
+            p_mi_2->PickMigrationStep( &m_RandomFake, &traveler, 1.0, destination, mig_type, trip_time );
 
             CHECK_EQUAL( 0, destination.data );
             CHECK_EQUAL( MigrationType::NO_MIGRATION, mig_type );
@@ -601,7 +600,7 @@ SUITE(MigrationTest)
             suids::suid destination = suids::nil_suid();
             MigrationType::Enum mig_type = MigrationType::NO_MIGRATION ;
             float trip_time = -1.0 ;
-            p_mi->PickMigrationStep( &traveler, 1.0, destination, mig_type, trip_time );
+            p_mi->PickMigrationStep( &m_RandomFake, &traveler, 1.0, destination, mig_type, trip_time );
 
             CHECK_EQUAL( 10, destination.data );
             CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type );
@@ -615,7 +614,7 @@ SUITE(MigrationTest)
             destination = suids::nil_suid();
             mig_type = MigrationType::NO_MIGRATION ;
             trip_time = -1.0 ;
-            p_mi->PickMigrationStep( &traveler, 1.0, destination, mig_type, trip_time );
+            p_mi->PickMigrationStep( &m_RandomFake, &traveler, 1.0, destination, mig_type, trip_time );
 
             CHECK_EQUAL( 2, destination.data );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION, mig_type );
@@ -629,7 +628,7 @@ SUITE(MigrationTest)
             destination = suids::nil_suid();
             mig_type = MigrationType::NO_MIGRATION ;
             trip_time = -1.0 ;
-            p_mi->PickMigrationStep( &traveler, 1.0, destination, mig_type, trip_time );
+            p_mi->PickMigrationStep( &m_RandomFake, &traveler, 1.0, destination, mig_type, trip_time );
 
             CHECK_EQUAL( 26, destination.data );
             CHECK_EQUAL( MigrationType::SEA_MIGRATION, mig_type );

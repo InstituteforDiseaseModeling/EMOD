@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import lz4
+import lz4.block
 
 
 # noinspection PyCamelCase

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -12,6 +12,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IdmApi.h"
 #include <string>
 #include <fstream>
+#include <map>
 
 #include "BoostLibWrapper.h"
 #include "CajunIncludes.h"
@@ -24,7 +25,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 class SimpleLogger;
 class Configuration;
 class ValidationLog;
-class RANDOMBASE;
 class StatusReporter;
 
 namespace IdmMpi
@@ -48,16 +48,16 @@ public:
     void* SimConfig;
     void* pIPFactory;
     void* pNPFactory;
-    void* pEventTriggerFactory;
+    void* pRngFactory;
+    std::vector<void*> event_trigger_factories;
     StatusReporter * Status_Reporter;
     
 #pragma warning( push )
 #pragma warning( disable: 4251 ) // See IdmApi.h for details
-    std::string InputPath;
+    std::list< std::string > InputPaths;
     std::string OutputPath;
     std::string StatePath;
     std::string DllPath;
-    RANDOMBASE * RNG;
 #pragma warning( pop )
 
     struct _Report
@@ -94,8 +94,11 @@ public:
     static void setNPFactory( void* pnpf );
     static void* getNPFactory();
 
-    static const void* getEventTriggerFactory();
-    static void setEventTriggerFactory( void* pFactory );
+    static const void* getEventTriggerFactory( int event_type );
+    static void setEventTriggerFactory( int event_type, void* pFactory );
+
+    static const void* getRandomNumberGeneratorFactory();
+    static void setRandomNumberGeneratorFactory( void* pFactory );
 
     // Return path to specified file according to the following order of preference:
     // (1) in current working directory, (2) in specified InputPath

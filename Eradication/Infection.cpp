@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -17,6 +17,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "SimulationConfig.h"
 #include "MathFunctions.h"
 #include "StrainIdentity.h"
+#include "IIndividualHumanContext.h"
+#include "IDistribution.h"
+#include "DistributionFactory.h"
 
 SETUP_LOGGING( "Infection" )
 
@@ -24,11 +27,16 @@ namespace Kernel
 {
     // static initializers for config base class
     MortalityTimeCourse::Enum  InfectionConfig::mortality_time_course   =  MortalityTimeCourse::DAILY_MORTALITY;
-    DurationDistribution InfectionConfig::incubation_distribution = DurationDistribution( DistributionFunction::NOT_INITIALIZED);
-    DurationDistribution InfectionConfig::infectious_distribution = DurationDistribution( DistributionFunction::NOT_INITIALIZED );
+    IDistribution* InfectionConfig::infectious_distribution = nullptr;
+    IDistribution* InfectionConfig::incubation_distribution = nullptr;
     float InfectionConfig::base_infectivity = 1.0f;
     float InfectionConfig::base_mortality = 1.0f;
     bool  InfectionConfig::enable_disease_mortality = false;
+    unsigned int InfectionConfig::number_basestrains = 1;
+    unsigned int InfectionConfig::number_substrains = 0;
+    
+    // symptomatic
+    float InfectionConfig::symptomatic_infectious_offset = FLT_MAX; //disabled
 
     GET_SCHEMA_STATIC_WRAPPER_IMPL(Infection,InfectionConfig)
     BEGIN_QUERY_INTERFACE_BODY(InfectionConfig)
@@ -42,42 +50,26 @@ namespace Kernel
         initConfigTypeMap("Base_Mortality", &base_mortality, Base_Mortality_DESC_TEXT, 0.0f, 1000.0f, 0.001f, "Enable_Disease_Mortality"); // should default change depending on disease?
         initConfigTypeMap("Base_Infectivity", &base_infectivity, Base_Infectivity_DESC_TEXT, 0.0f, 1000.0f, 0.3f, "Simulation_Type", "GENERIC_SIM,VECTOR_SIM,STI_SIM,ENVIRONMENTAL_SIM,TBHIV_SIM,PY_SIM,HIV_SIM");// should default change depending on disease?
        
-
-        // Configure incubation period using depends-on.
-        float param1_incubation = 0.0, param2_incubation = 0.0;
-        DistributionFunction::Enum incubation_period_function(DistributionFunction::NOT_INITIALIZED);
+        // Configure incubation period
+        DistributionFunction::Enum incubation_period_function(DistributionFunction::CONSTANT_DISTRIBUTION);
         initConfig("Incubation_Period_Distribution", incubation_period_function, config, MetadataDescriptor::Enum("Incubation_Period_Distribution", Incubation_Period_Distribution_DESC_TEXT, MDD_ENUM_ARGS(DistributionFunction)));
-        initConfigTypeMap("Incubation_Period_Min", &param1_incubation, Incubation_Period_Min_DESC_TEXT, 0.0f, FLT_MAX, 0.0f, "Incubation_Period_Distribution", "UNIFORM_DURATION");
-        initConfigTypeMap("Incubation_Period_Max", &param2_incubation, Incubation_Period_Max_DESC_TEXT, 0.0f, FLT_MAX, 1.0f, "Incubation_Period_Distribution", "UNIFORM_DURATION");
-        initConfigTypeMap("Incubation_Period_Mean", &param1_incubation, Incubation_Period_Mean_DESC_TEXT, 0.0f, FLT_MAX, 6.0f, "Incubation_Period_Distribution", "GAUSSIAN_DURATION, POISSON_DURATION");
-        initConfigTypeMap("Incubation_Period_Std_Dev", &param2_incubation, Incubation_Period_Std_Dev_DESC_TEXT, 0.0f, FLT_MAX, 1.0f, "Incubation_Period_Distribution", "GAUSSIAN_DURATION");
-        initConfigTypeMap("Base_Incubation_Period", &param1_incubation, Base_Incubation_Period_DESC_TEXT, 0.0f, FLT_MAX, 6.0f, "Incubation_Period_Distribution", "FIXED_DURATION, EXPONENTIAL_DURATION");
-        initConfigTypeMap("Incubation_Period_Log_Mean", &param1_incubation, Incubation_Period_Log_Mean_DESC_TEXT, 0.0f, FLT_MAX, 6.0f, "Incubation_Period_Distribution", "LOG_NORMAL_DURATION");
-        initConfigTypeMap("Incubation_Period_Log_Width", &param2_incubation, Incubation_Period_Log_Width_DESC_TEXT, 0.0f, FLT_MAX, 1.0f, "Incubation_Period_Distribution", "LOG_NORMAL_DURATION");
+        incubation_distribution = DistributionFactory::CreateDistribution( this, incubation_period_function, "Incubation_Period", config );
         
-        bool bRet_incubation= JsonConfigurable::Configure(config);
-        if (bRet_incubation)
-        {
-            incubation_distribution.SetParameters(incubation_period_function, param1_incubation, param2_incubation);
-        }
-
-
         // Configure infectious duration using depends-on.
-        float param1 = 0.0, param2 = 0.0;
-        DistributionFunction::Enum infectious_distribution_function(DistributionFunction::NOT_INITIALIZED);
+        DistributionFunction::Enum infectious_distribution_function(DistributionFunction::CONSTANT_DISTRIBUTION);
         initConfig("Infectious_Period_Distribution", infectious_distribution_function, config, MetadataDescriptor::Enum("Infectious_Period_Distribution", Infectious_Period_Distribution_DESC_TEXT, MDD_ENUM_ARGS(DistributionFunction)), "Simulation_Type", "GENERIC_SIM, POLIO_SIM, VECTOR_SIM, ENVIRONMENTAL_SIM, PY_SIM, STI_SIM");
-        initConfigTypeMap("Base_Infectious_Period", &param1, Base_Infectious_Period_DESC_TEXT, 0.0f, FLT_MAX, 0.0f, "Infectious_Period_Distribution", "FIXED_DURATION,EXPONENTIAL_DURATION");
-        initConfigTypeMap("Infectious_Period_Min", &param1, Infectious_Period_Min_DESC_TEXT, 0.0f, FLT_MAX, 0.0f, "Infectious_Period_Distribution", "UNIFORM_DURATION");
-        initConfigTypeMap("Infectious_Period_Max", &param2, Infectious_Period_Max_DESC_TEXT, 0.0f, FLT_MAX, 0.0f, "Infectious_Period_Distribution", "UNIFORM_DURATION");
-        initConfigTypeMap("Infectious_Period_Mean", &param1, Infectious_Period_Mean_DESC_TEXT, 0.0f, FLT_MAX, 0.0f, "Infectious_Period_Distribution", "GAUSSIAN_DURATION,POISSON_DURATION");
-        initConfigTypeMap("Infectious_Period_Std_Dev", &param2, Infectious_Period_Std_Dev_DESC_TEXT, 0.0f, FLT_MAX, 0.0f, "Infectious_Period_Distribution", "GAUSSIAN_DURATION");
+        infectious_distribution = DistributionFactory::CreateDistribution( this, infectious_distribution_function, "Infectious_Period", config );
 
-        bool bRet_infectious = JsonConfigurable::Configure(config);
-        if(bRet_infectious)
+        // Symptomatic
+        initConfigTypeMap( "Symptomatic_Infectious_Offset", &symptomatic_infectious_offset, Symptomatic_Infectious_Offset_DESC_TEXT, -FLT_MAX, FLT_MAX, FLT_MAX, "Simulation_Type", "GENERIC_SIM" ); //FLT_MAX Individual never becomes symptomatic
+
+        initConfigTypeMap( "Number_Basestrains", &number_basestrains, Number_Basestrains_DESC_TEXT, 1,       10,   1 );
+        if( !JsonConfigurable::_dryrun && GET_CONFIGURABLE( SimulationConfig )->sim_type != SimType::MALARIA_SIM ) // Don't want this even in schema for MALARIA_SIM. TBD.
         {
-            infectious_distribution.SetParameters(infectious_distribution_function, param1, param2);
+            initConfigTypeMap( "Number_Substrains", &number_substrains, Number_Substrains_DESC_TEXT, 1, 16777216, 256 );
         }
-        return bRet_incubation && bRet_infectious;
+
+        return JsonConfigurable::Configure( config );
     }
 
     Infection::Infection()
@@ -91,6 +83,8 @@ namespace Kernel
         , infectiousnessByRoute()
         , StateChange(InfectionStateChange::None)
         , infection_strain(nullptr)
+        , m_is_symptomatic( false )
+        , m_is_newly_symptomatic( false )
     {
     }
 
@@ -110,6 +104,8 @@ namespace Kernel
         , infectiousnessByRoute()
         , StateChange(InfectionStateChange::None)
         , infection_strain(nullptr)
+        , m_is_symptomatic( false )
+        , m_is_newly_symptomatic( false )
     {
     }
 
@@ -142,11 +138,11 @@ namespace Kernel
         }
         else
         {
-            incubation_timer = InfectionConfig::incubation_distribution.CalculateDuration();
+            incubation_timer = InfectionConfig::incubation_distribution->Calculate( parent->GetRng() );
             LOG_DEBUG_F( "incubation_timer initialized to %f for individual %d\n", incubation_timer, parent->GetSuid().data );
         }
 
-        infectious_timer = InfectionConfig::infectious_distribution.CalculateDuration();
+        infectious_timer = InfectionConfig::infectious_distribution->Calculate( parent->GetRng() );
         
         LOG_DEBUG_F( "infectious_timer = %f\n", infectious_timer );
 
@@ -188,8 +184,8 @@ namespace Kernel
             {
                 throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetInterventionsContext()", "IDrugVaccineInterventionEffects", "IIndividualHumanInterventionsContext" );
             }
-
-            if ( randgen->e() < InfectionConfig::base_mortality * dt * immunity->getModMortality() * idvie->GetInterventionReducedMortality() )
+            float prob = InfectionConfig::base_mortality * dt * immunity->getModMortality() * idvie->GetInterventionReducedMortality();
+            if( parent->GetRng()->SmartDraw( prob ) )
             { 
                 StateChange = InfectionStateChange::Fatal; 
             }
@@ -204,8 +200,8 @@ namespace Kernel
                 {
                     throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetInterventionsContext()", "IDrugVaccineInterventionEffects", "IIndividualHumanInterventionsContext" );
                 }
-
-                if ( randgen->e() < InfectionConfig::base_mortality * immunity->getModMortality() * idvie->GetInterventionReducedMortality() )
+                float prob = InfectionConfig::base_mortality * immunity->getModMortality() * idvie->GetInterventionReducedMortality();
+                if( parent->GetRng()->SmartDraw( prob ) )
                 {
                     StateChange = InfectionStateChange::Fatal;
                 }
@@ -220,6 +216,8 @@ namespace Kernel
             }
         }
 
+        UpdateSymptomatic( duration, incubation_timer );
+        
         EvolveStrain(immunity, dt); // genomic modifications
     }
 
@@ -285,20 +283,44 @@ namespace Kernel
         return duration;
     }
 
+    bool Infection::IsNewlySymptomatic() const
+    {
+        return  m_is_newly_symptomatic;
+    }
+
+    bool Infection::IsSymptomatic() const
+    {
+        return m_is_symptomatic;
+    }
+
+    void Infection::UpdateSymptomatic( float const duration, float const incubation_timer )
+    {
+        bool prev_symptomatic = m_is_symptomatic;
+        m_is_symptomatic = DetermineSymptomatology( duration, incubation_timer );
+        m_is_newly_symptomatic = ( m_is_symptomatic && !prev_symptomatic );
+    }
+
+    bool Infection::DetermineSymptomatology( float const duration, float const incubation_timer )
+    {
+        return ( ( duration - incubation_timer ) > InfectionConfig::symptomatic_infectious_offset );
+    }
+
     REGISTER_SERIALIZABLE(Infection);
 
     void Infection::serialize(IArchive& ar, Infection* obj)
     {
         Infection& infection = *obj;
-        ar.labelElement("suid") & infection.suid;
-        ar.labelElement("duration") & infection.duration;
-        ar.labelElement("total_duration") & infection.total_duration;
-        ar.labelElement("incubation_timer") & infection.incubation_timer;
-        ar.labelElement("infectious_timer") & infection.infectious_timer;
-        ar.labelElement("infectiousness") & infection.infectiousness;
-        ar.labelElement("infectiousnessByRoute") & infection.infectiousnessByRoute;
-        ar.labelElement("StateChange") & (uint32_t&)infection.StateChange;
+        ar.labelElement( "suid" ) & infection.suid;
+        ar.labelElement( "duration" ) & infection.duration;
+        ar.labelElement( "total_duration" ) & infection.total_duration;
+        ar.labelElement( "incubation_timer" ) & infection.incubation_timer;
+        ar.labelElement( "infectious_timer" ) & infection.infectious_timer;
+        ar.labelElement( "infectiousness" ) & infection.infectiousness;
+        ar.labelElement( "infectiousnessByRoute" ) & infection.infectiousnessByRoute;
+        ar.labelElement( "StateChange" ) & (uint32_t&)infection.StateChange;
         ar.labelElement( "infection_strain" ); StrainIdentity::serialize( ar, infection.infection_strain );
+        ar.labelElement( "m_is_symptomatic" )  & infection.m_is_symptomatic;
+        ar.labelElement( "m_is_newly_symptomatic" )  & infection.m_is_newly_symptomatic;
     }
 
     bool

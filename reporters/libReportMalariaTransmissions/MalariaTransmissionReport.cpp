@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -23,12 +23,14 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "ReportUtilities.h"
 #include "Serializer.h"
 
+#include "ISimulationContext.h"
 #include "MalariaContexts.h"
 #include "VectorContexts.h"
 #include "IIndividualHuman.h"
 #include "NodeEventContext.h"
 #include "VectorCohortIndividual.h"
 #include "IMigrate.h"
+#include "RANDOM.h"
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // !!! CREATING NEW REPORTS
@@ -221,7 +223,7 @@ GetReportInstantiator( report_instantiator_function_t* pif )
             }
             LOG_DEBUG_F("%d infectious mosquitos in buffer at t=%d, node_id=%d.\n",
                 infectious_mosquitos.size(), location.second, location.first);
-            uint64_t mosq_id = infectious_mosquitos.at(DLL_HELPER.GetRandomNumberGenerator()->i(infectious_mosquitos.size())); // TODO: SuidGenerator + Reduce() for multicore
+            uint64_t mosq_id = infectious_mosquitos.at(DLL_HELPER.GetRandomNumberGenerator()->uniformZeroToN16(infectious_mosquitos.size())); // TODO: SuidGenerator + Reduce() for multicore
             LOG_DEBUG_F("Sampled infectious mosquito (id=%d) at t=%d, node_id=%d.\n",
                 mosq_id, location.second, location.first);
 

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -18,6 +18,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 namespace Kernel
 {
     struct INodeContext;
+    class RANDOMBASE;
 
     struct IDMAPI ISimulation : ISerializable
     {
@@ -26,7 +27,10 @@ namespace Kernel
         virtual void Update(float time_step) = 0;
 
         virtual int  GetSimulationTimestep() const = 0;
-        virtual IdmDateTime GetSimulationTime() const = 0;
+        virtual const IdmDateTime& GetSimulationTime() const = 0;
+        virtual bool TimeToStop() = 0;
+
+        virtual RANDOMBASE* GetRng() = 0; // should really only be accessed by Node
 
         typedef std::function<void(INodeContext*)> callback_t;
         virtual void RegisterNewNodeObserver(void* id, Kernel::ISimulation::callback_t observer) = 0;

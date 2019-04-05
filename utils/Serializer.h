@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -38,7 +38,7 @@ namespace Kernel
         void JSerialize(const vector<float>& vectorFloat, IJsonObjectAdapter* jsArrayRoot);
         void JSerialize(const vector<double>& vectorDouble, IJsonObjectAdapter* jsArrayRoot);
         void JSerialize(const vector<vector<double>>& vectorVDouble, IJsonObjectAdapter* jsArrayRoot);
-		void JSerialize(const vector<vector<vector<double>>>& vectorVDouble, IJsonObjectAdapter* jsArrayRoot);
+        void JSerialize(const vector<vector<vector<double>>>& vectorVDouble, IJsonObjectAdapter* jsArrayRoot);
         void JSerialize(const vector<string>& vectorString, IJsonObjectAdapter* jsArrayRoot);
 
         // Handle lists

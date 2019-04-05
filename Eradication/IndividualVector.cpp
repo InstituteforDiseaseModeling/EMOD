@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -19,16 +19,10 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "TransmissionGroupMembership.h"
 #include "TransmissionGroupsBase.h"
 #include "NodeVector.h"
-
 #include "VectorInterventionsContainer.h"
+#include "RANDOM.h"
 
 #include "Log.h"
-
-#ifdef randgen
-#undef randgen
-#endif
-#include "RANDOM.h"
-#define randgen (parent->GetRng())
 
 SETUP_LOGGING( "IndividualVector" )
 
@@ -107,7 +101,7 @@ namespace Kernel
     }
 
 
-    void IndividualHumanVector::ExposeToInfectivity(float dt, const TransmissionGroupMembership_t* transmissionGroupMembership)
+    void IndividualHumanVector::ExposeToInfectivity(float dt, TransmissionGroupMembership_t transmissionGroupMembership)
     {
         // Reset counters
         m_strain_exposure.clear();
@@ -115,7 +109,7 @@ namespace Kernel
 
         // Expose individual to all pools in weighted collection (i.e. indoor + outdoor)
         LOG_VALID("Exposure to contagion: vector to human.\n");
-        parent->ExposeIndividual((IInfectable*)this, &NodeVector::vector_to_human_all, dt);
+        parent->ExposeIndividual( this, transmissionGroupMembership, dt );
 
         // Decide based on total exposure to infectious bites
         // whether the individual becomes infected and with what strain
@@ -127,13 +121,8 @@ namespace Kernel
 
     void IndividualHumanVector::UpdateGroupPopulation(float size_changes)
     {
-        //update nodepool population for both human-vector and vector-human since we use the same normalization for both
-
-        parent->UpdateTransmissionGroupPopulation(&NodeVector::human_to_vector_all, size_changes, this->GetMonteCarloWeight());
-
-//        parent->UpdateNodePoolPopulation(&NodeVector::vector_to_human_all, size_changes, this->GetMonteCarloWeight());
-
- 
+        // Update nodepool population for both human-vector and vector-human since we use the same normalization for both
+        parent->UpdateTransmissionGroupPopulation({{"indoor","human"},{"outdoor","human"}}, size_changes, this->GetMonteCarloWeight());
         LOG_DEBUG_F("updated population for both human and vector, with size change %f and monte carlo weight %f.\n", size_changes, this->GetMonteCarloWeight());
     }
 
@@ -142,10 +131,10 @@ namespace Kernel
         // Make random draw whether to acquire new infection
         // dt incorporated already in ExposeIndividual function arguments
         float acquisition_probability = float(EXPCDF(-m_total_exposure));
-        if ( randgen->e() >= acquisition_probability ) return;
+        if ( GetRng()->e() >= acquisition_probability ) return;
             
         // Choose a strain based on a weighted draw over values from all vector-to-human pools
-        float strain_cdf_draw = randgen->e() * m_total_exposure;
+        float strain_cdf_draw = GetRng()->e() * m_total_exposure;
         std::vector<strain_exposure_t>::iterator it = std::lower_bound( m_strain_exposure.begin(), m_strain_exposure.end(), strain_cdf_draw, compare_strain_exposure_float_less());
         TransmissionGroupsBase::ContagionPopulationImpl contPop( &(it->first), (it->second) );
         LOG_DEBUG_F( "Mosquito->Human infection transmission based on total exposure %f. Existing infections = %d.\n", m_total_exposure, GetInfections().size() );
@@ -200,7 +189,7 @@ namespace Kernel
     void IndividualHumanVector::UpdateInfectiousness(float dt)
     {
         infectiousness = 0;
-        float tmp_infectiousness = 0;  
+        float tmp_infectiousness = 0;
 
         typedef std::map< StrainIdentity, float >     strain_infectivity_map_t;
         typedef strain_infectivity_map_t::value_type  strain_infectivity_t;
@@ -255,8 +244,8 @@ namespace Kernel
                          host_vector_weight,
                          infectivity.second * truncate_infectious_mod * modtransmit * ivie->GetblockIndoorVectorTransmit()
                        );
-            parent->DepositFromIndividual( *id, host_vector_weight * infectivity.second * truncate_infectious_mod * modtransmit * ivie->GetblockIndoorVectorTransmit(), &NodeVector::human_to_vector_indoor );
-            parent->DepositFromIndividual( *id, host_vector_weight * infectivity.second * truncate_infectious_mod * modtransmit * ivie->GetblockOutdoorVectorTransmit(), &NodeVector::human_to_vector_outdoor );
+            parent->DepositFromIndividual( *id, host_vector_weight * infectivity.second * truncate_infectious_mod * modtransmit * ivie->GetblockIndoorVectorTransmit(),  NodeVector::human_indoor,  TransmissionRoute::TRANSMISSIONROUTE_HUMAN_TO_VECTOR_INDOOR );
+            parent->DepositFromIndividual( *id, host_vector_weight * infectivity.second * truncate_infectious_mod * modtransmit * ivie->GetblockOutdoorVectorTransmit(), NodeVector::human_outdoor, TransmissionRoute::TRANSMISSIONROUTE_HUMAN_TO_VECTOR_OUTDOOR );
         }
     }
 
@@ -270,6 +259,23 @@ namespace Kernel
     {
         release_assert( vector_susceptibility );
         return vector_susceptibility->GetRelativeBitingRate();
+    }
+
+    void IndividualHumanVector::ReportInfectionState()
+    {
+        LOG_DEBUG( "ReportInfectionState\n" );
+        // Is infection reported this turn?
+        // Will only implement delayed reporting (for fever response) later
+        // 50% reporting immediately
+        if( GetRng()->e() < .5 )
+        {
+            m_new_infection_state = NewInfectionState::NewAndDetected;
+        }
+        else
+        {
+            release_assert( parent );
+            m_new_infection_state = NewInfectionState::NewInfection;
+        }
     }
 
     REGISTER_SERIALIZABLE(IndividualHumanVector);

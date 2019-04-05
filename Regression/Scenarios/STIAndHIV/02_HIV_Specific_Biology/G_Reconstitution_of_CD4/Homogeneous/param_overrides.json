@@ -3,7 +3,7 @@
     "parameters": {
         "____________DEMOGRAPHICS___________": {
             "Age_Initialization_Distribution_Type": "DISTRIBUTION_SIMPLE",
-            "Base_Population_Scale_Factor": 0.01,
+            "x_Base_Population": 0.01,
             "Birth_Rate_Dependence": "FIXED_BIRTH_RATE",
                 "Demographics_Filenames": [
                 "newborn_cohort_demographics.json",
@@ -29,7 +29,8 @@
             ]
         },
         "____________RARELY_CHANGED___________": {
-            "Config_Name": "02G_Reconstitution_of_CD4_Homogeneous"
+            "Config_Name": "02G_Reconstitution_of_CD4_Homogeneous",
+            "Run_Number": 11
         },
         "____________REPORTING___________": {
             "Enable_Demographics_Reporting": 1,

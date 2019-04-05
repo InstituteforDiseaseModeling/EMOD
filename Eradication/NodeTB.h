@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -13,9 +13,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "NodeAirborne.h"
 #include "IndividualCoInfection.h" // for serialization junk
 #include "TBContexts.h"
-#ifdef ENABLE_TBHIV
 #include "IndividualCoInfection.h"
-#endif
 
 class ReportTB;
 
@@ -38,11 +36,11 @@ namespace Kernel
 
     public:
         virtual ~NodeTB(void);
-        static NodeTB *CreateNode(ISimulationContext *_parent_sim, suids::suid node_suid);
+        static NodeTB *CreateNode(ISimulationContext *_parent_sim, ExternalNodeId_t externalNodeId, suids::suid node_suid);
         virtual bool Configure( const Configuration* config ) override;
 
         virtual ITransmissionGroups* CreateTransmissionGroups() override;
-        virtual void BuildTransmissionRoutes( RouteToContagionDecayMap_t& rDecayMap ) override;
+        virtual void BuildTransmissionRoutes( float contagionDecayRate ) override;
         virtual void resetNodeStateCounters(void) override;
 
         virtual void OnNewInfectionState(InfectionStateChange::_enum inf_state_change, IndividualHuman *ih);
@@ -64,7 +62,7 @@ namespace Kernel
 
     protected:
         NodeTB();
-        NodeTB(ISimulationContext *_parent_sim, suids::suid node_suid);
+        NodeTB(ISimulationContext *_parent_sim, ExternalNodeId_t externalNodeId, suids::suid node_suid);
 
         virtual void Initialize() override;
 

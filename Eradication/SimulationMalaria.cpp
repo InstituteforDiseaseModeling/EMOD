@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -155,12 +155,13 @@ namespace Kernel
     {
     }
 
-    void SimulationMalaria::addNewNodeFromDemographics( suids::suid node_suid,
+    void SimulationMalaria::addNewNodeFromDemographics( ExternalNodeId_t externalNodeId,
+                                                        suids::suid node_suid,
                                                         NodeDemographicsFactory *nodedemographics_factory,
                                                         ClimateFactory *climate_factory,
                                                         bool white_list_enabled )
     {
-        NodeMalaria *node = NodeMalaria::CreateNode(GetContextPointer(), node_suid);
+        NodeMalaria *node = NodeMalaria::CreateNode(GetContextPointer(), externalNodeId, node_suid);
         addNode_internal( node, nodedemographics_factory, climate_factory, white_list_enabled );
     }
 

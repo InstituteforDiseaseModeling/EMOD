@@ -1,5 +1,5 @@
 {
-    "Default_Config_Path": "defaults/generic_default_config.json",
+    "Default_Config_Path": "../../defaults/generic_default_config.json",
     "parameters": {
         "DEMOGRAPHICS": {
             "Birth_Rate_Dependence": "POPULATION_DEP_RATE",
@@ -11,10 +11,11 @@
         },
         "DISEASE": {
             "Acquisition_Blocking_Immunity_Duration_Before_Decay": 270,
-            "Infectious_Period_Distribution": "FIXED_DURATION",
+            "Infectious_Period_Distribution": "CONSTANT_DISTRIBUTION",
             "Mortality_Blocking_Immunity_Decay_Rate": 0.1,
             "Mortality_Blocking_Immunity_Duration_Before_Decay": 270,
-            "Transmission_Blocking_Immunity_Duration_Before_Decay": 270
+            "Transmission_Blocking_Immunity_Duration_Before_Decay": 270,
+            "Infectious_Period_Constant": 7
         },
         "MIGRATION": {
             "AIR": {

@@ -1,27 +1,29 @@
 {
     "class": "CommunityHealthWorkerEventCoordinator",
-    "Duration" : 100,
-    "Max_Distributed_Per_Day" : 1,
-    "Waiting_Period" : 3,
-    "Days_Between_Shipments" : 10,
-    "Amount_In_Shipment" : 10,
-    "Max_Stock" : 12,
-    "Initial_Amount_Distribution_Type" : "FIXED_DURATION",
-    "Initial_Amount" : 6,
-    "Trigger_Condition_List" : [ "ListenForEvent" ],
+    "Duration": 100,
+    "Max_Distributed_Per_Day": 1,
+    "Waiting_Period": 3,
+    "Days_Between_Shipments": 10,
+    "Amount_In_Shipment": 10,
+    "Max_Stock": 12,
+    "Initial_Amount_Distribution": "CONSTANT_DISTRIBUTION",
+    "Initial_Amount": 6,
+    "Trigger_Condition_List": [
+        "ListenForEvent"
+    ],
     "Intervention_Config": {
         "class": "SpaceSpraying",
-        "Cost_To_Consumer": 10.0, 
-        "Habitat_Target": "ALL_HABITATS", 
-        "Spray_Kill_Target": "SpaceSpray_Indoor", 
+        "Cost_To_Consumer": 10.0,
+        "Habitat_Target": "ALL_HABITATS",
+        "Spray_Kill_Target": "SpaceSpray_Indoor",
         "Killing_Config": {
             "class": "WaningEffectExponential",
-            "Initial_Effect": 0.7, 
-            "Box_Duration": 365 
-        }, 
+            "Initial_Effect": 0.7,
+            "Box_Duration": 365
+        },
         "Reduction_Config": {
             "class": "WaningEffectExponential",
-            "Initial_Effect": 0, 
+            "Initial_Effect": 0,
             "Box_Duration": 365
         }
     }

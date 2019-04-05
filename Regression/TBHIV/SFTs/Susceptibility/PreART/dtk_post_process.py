@@ -2,7 +2,7 @@
 
 import json
 import os.path as path
-import dtk_sft
+import dtk_test.dtk_sft as sft
 
 TB_CD4_STRATA_I_S = "TB_CD4_Strata_Infectiousness_Susceptibility"
 TB_CD4_S = "TB_CD4_Susceptibility"
@@ -68,9 +68,9 @@ def parse_stdout_file(curr_timestep=0, stdout_filename="test.txt", debug=False):
             if update_time in line:
                 time += 1
             if expose in line:
-                ind = int(dtk_sft.get_val("Individual ", line))
+                ind = int(sft.get_val("Individual ", line))
                 if ind <= 100:  # do not look at imported people
-                    new_line = dtk_sft.add_time_stamp(time, line)
+                    new_line = sft.add_time_stamp(time, line)
                     filtered_lines.append(new_line)
 
     if debug:
@@ -118,23 +118,23 @@ def create_report_file(data):
             outfile.write("BAD: No relevant test data found.\n")
             success = False
         for line in lines:
-            cd4_count = float(dtk_sft.get_val("CD4count=", line))
-            cd4_mod_actual = float(dtk_sft.get_val("CD4mod=", line))
+            cd4_count = float(sft.get_val("CD4count=", line))
+            cd4_mod_actual = float(sft.get_val("CD4mod=", line))
             cd4_mod_expected = tb_cd4_susceptibility_calc([mod_array, cd4_strata, cd4_count])
             actual_data.append(cd4_mod_actual)
             expected_data.append(cd4_mod_expected)
             if abs(cd4_mod_actual-cd4_mod_expected) > epsilon:
                 success = False
                 outfile.write("BAD: At Time: {} for Individual {} with CD4 count {} Expected susceptibility modifier "
-                              "was {}, but actual was {}.\n".format(dtk_sft.get_val("time= ", line),
-                                                                    dtk_sft.get_val("Individual ", line),
+                              "was {}, but actual was {}.\n".format(sft.get_val("time= ", line),
+                                                                    sft.get_val("Individual ", line),
                                                                     cd4_count,
                                                                     cd4_mod_expected, cd4_mod_actual))
 
         outfile.write("Data points checked = {} .\n".format(len(lines)))
         outfile.write("SUMMARY: Success={0}\n".format(success))
 
-        dtk_sft.plot_data_sorted(actual_data, expected_data, label1="Actual", label2="Expected",
+        sft.plot_data_sorted(actual_data, expected_data, label1="Actual", label2="Expected",
                           title="Susceptibility Modifier", xlabel="Data Points", ylabel="Modifying Multiplier",
                           category="tb_susceptibility_and_cd4", line = True, overlap=True)
 
@@ -142,7 +142,7 @@ def create_report_file(data):
 def application(output_folder="output", stdout_filename="test.txt",
                 config_filename="config.json",
                 insetchart_name="InsetChart.json",
-                report_name=dtk_sft.sft_output_filename,
+                report_name=sft.sft_output_filename,
                 debug=False):
     if debug:
         print( "output_folder: " + output_folder )
@@ -151,7 +151,7 @@ def application(output_folder="output", stdout_filename="test.txt",
         print( "insetchart_name: " + insetchart_name + "\n" )
         print( "report_name: " + report_name + "\n" )
         print( "debug: " + str(debug) + "\n" )
-    dtk_sft.wait_for_done()
+    sft.wait_for_done()
     param_obj = load_emod_parameters(config_filename)
     parsed_data = parse_stdout_file()
     inset_days = parse_json_report()

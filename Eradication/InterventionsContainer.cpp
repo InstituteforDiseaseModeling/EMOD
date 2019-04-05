@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -14,7 +14,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Sugar.h"
 #include "Environment.h"
 #include "InterventionsContainer.h"
-#include "IIndividualHuman.h"                // for IIndividualHumanContext functions e.g. GetEventContext()
+#include "IIndividualHuman.h"
+#include "IIndividualHumanContext.h"
 #include <typeinfo>
 #ifndef WIN32
 #include <cxxabi.h>
@@ -22,6 +23,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "NodeEventContext.h"
 #include "INodeContext.h"
 #include "Properties.h"
+#include "EventTrigger.h"
 
 SETUP_LOGGING( "InterventionsContainer" )
 
@@ -388,13 +390,9 @@ namespace Kernel
             parent->SetPropertyReportString("");
 
             //broadcast that the individual changed properties
-            INodeTriggeredInterventionConsumer* broadcaster = nullptr;
-            if( s_OK != parent->GetEventContext()->GetNodeEventContext()->QueryInterface( GET_IID( INodeTriggeredInterventionConsumer ), (void**)&broadcaster ) )
-            {
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()->GetNodeEventContext()", "INodeTriggeredInterventionConsumer", "INodeEventContext" );
-            }
+            IIndividualEventBroadcaster* broadcaster = parent->GetEventContext()->GetNodeEventContext()->GetIndividualEventBroadcaster();
             LOG_DEBUG_F( "Individual %d changed property, broadcasting PropertyChange \n", parent->GetSuid().data );
-            broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), EventTrigger::PropertyChange );
+            broadcaster->TriggerObservers( parent->GetEventContext(), EventTrigger::PropertyChange );
         }
     }
 

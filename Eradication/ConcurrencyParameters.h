@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -115,12 +115,14 @@ namespace Kernel
                                                          const char* prop, 
                                                          const char* prop_value ) const override;
 
-        virtual unsigned char GetProbExtraRelationalBitMask( const char* prop, 
+        virtual unsigned char GetProbExtraRelationalBitMask( RANDOMBASE* pRNG,
+                                                             const char* prop,
                                                              const char* prop_value, 
                                                              Gender::Enum gender,
                                                              bool isSuperSpreader ) const override;
 
-        virtual int GetMaxAllowableRelationships( const char* prop, 
+        virtual int GetMaxAllowableRelationships( RANDOMBASE* pRNG,
+                                                  const char* prop, 
                                                   const char* prop_value, 
                                                   Gender::Enum gender,
                                                   RelationshipType::Enum rel_type ) const override;

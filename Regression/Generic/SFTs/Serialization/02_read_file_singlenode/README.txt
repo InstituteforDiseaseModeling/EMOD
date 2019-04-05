@@ -1,0 +1,1 @@
+This is from \Regression\Scenarios\Generic\02_SIR_Vaccinations\B_Vaccinations

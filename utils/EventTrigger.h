@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -9,22 +9,23 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #pragma once
 
-#include "Configure.h"
+#include "BaseEventTrigger.h"
 
 namespace Kernel
 {
     class EventTriggerInternal;
+    class EventTriggerFactory;
+    class EventTrigger;
 
-    // An EventTrigger is the name of an event that occurs to an individual (node in future).
+    // An EventTrigger is the name of an event that occurs to an individual.
     // EventTriggers can be built-in or defined by the user.  They are broadcasted by
-    // a INodeTriggeredInterventionConsumer (which is implemented by NodeEventContextHost)
+    // a IIndividualEventBroadcaster (which is implemented by NodeEventContextHost)
     // to objects that have registered to be notified of these events.
     // This implementation of EventTrigger attempts to reduce string processing and
     // improve performance.
-    class IDMAPI EventTrigger
+    class EventTrigger : public BaseEventTrigger<EventTrigger,EventTriggerFactory>
     {
     public:
-        static const EventTrigger& NoTrigger;
         static const EventTrigger& Births;
         static const EventTrigger& EveryUpdate;
         static const EventTrigger& EveryTimeStep;
@@ -66,7 +67,8 @@ namespace Kernel
         static const EventTrigger& Immigrating;
         static const EventTrigger& HIVTestedNegative;
         static const EventTrigger& HIVTestedPositive;
-        static const EventTrigger& HIVSymptomatic;
+        static const EventTrigger& NewlySymptomatic;
+        static const EventTrigger& SymptomaticCleared;
         static const EventTrigger& TwelveWeeksPregnant;
         static const EventTrigger& FourteenWeeksPregnant;
         static const EventTrigger& SixWeeksOld;
@@ -80,89 +82,30 @@ namespace Kernel
         static const EventTrigger& EnteredRelationship;
         static const EventTrigger& ExitedRelationship;
         static const EventTrigger& FirstCoitalAct;
+        static const EventTrigger& ExposureComplete;
 
     public:
         EventTrigger();
-        EventTrigger( std::string &init_str );
-        EventTrigger( const char *init_str );
-
-        EventTrigger& operator=( const EventTrigger& rTrigger );
-        EventTrigger& operator=( const std::string& rTriggerStr );
-
-        bool operator==( const EventTrigger& rThat ) const;
-        bool operator!=( const EventTrigger& rThat ) const;
-
-        // Returns true if the trigger has not been intialized
-        bool IsUninitialized() const;
-
-        // Returns the string value of the event
-        const std::string& ToString() const;
-        const char* c_str() const;
-
-        // Returns the index/unique integer id of the event.  This is intended to be used
-        // by NodeEventContextHost so that it can use a vector and not map.
-        int GetIndex() const;
-
-        static void serialize( Kernel::IArchive& ar, EventTrigger& obj );
+        explicit EventTrigger( const std::string &init_str );
+        explicit EventTrigger( const char *init_str );
+        ~EventTrigger();
 
     protected:
-        friend class EventTriggerFactory;
+        template<class Trigger, class Factory> friend class Kernel::BaseEventTriggerFactory;
 
-        EventTrigger( EventTriggerInternal* );
-
-    private:
-        EventTriggerInternal* m_pInternal;
+        explicit EventTrigger( EventTriggerInternal* peti );
     };
 
-
-    class IDMAPI EventTriggerFactory : public JsonConfigurable
+    class EventTriggerFactory : public BaseEventTriggerFactory<EventTrigger, EventTriggerFactory>
     {
     public:
         GET_SCHEMA_STATIC_WRAPPER( EventTriggerFactory )
-        IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
-        DECLARE_QUERY_INTERFACE()
-
-        static const char* CONSTRAINT_SCHEMA_STRING;
-
-        static EventTriggerFactory* GetInstance();
-        static void DeleteInstance();
-        static void SetBuiltIn();
 
         ~EventTriggerFactory();
 
-        virtual bool Configure( const Configuration* inputJson ) override;
-        int GetNumEventTriggers() const;
-        std::vector<EventTrigger> GetAllEventTriggers();
-        bool IsValidEvent( const std::string& candidateEvent ) const;
-        const std::string& GetEventTriggerName( int eventIndex ) const;
-
-        EventTrigger CreateUserEventTrigger( const std::string& name );
-
-        const std::vector<std::string>& GetBuiltInNames();
-
-    protected:
-        friend class EventTrigger;
-        friend class EventTriggerInternal;
-
-        static const EventTrigger& CreateBuiltInEventTrigger( const char* name );
-
-        EventTriggerInternal* GetEventTriggerInternal( const std::string& str );
-        EventTriggerInternal* GetEventTriggerInternal( const char* str );
-        EventTriggerInternal* Add( const std::string& str );
-
     private:
-        static const char* PARAMETER_NAME;
+        template<class Trigger, class Factory> friend class Kernel::BaseEventTriggerFactory;
 
         EventTriggerFactory();
-
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
-        static std::vector<std::pair<std::string, EventTrigger*>> m_VectorBuiltIn;
-
-        std::vector<EventTriggerInternal*> m_VectorUser;
-        std::vector<EventTriggerInternal*> m_VectorAll;
-        std::map<std::string, EventTriggerInternal*> m_MapAll;
-        std::vector<std::string> m_BuiltInNames;
-#pragma warning( pop )
     };
 }

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -34,21 +34,21 @@ struct Gamma
 };
 
 namespace Kernel {
+    class RANDOMBASE;
 
     // ENUM defs for INCUBATION_DISTRIBUTION, INFECTIOUS_DISTRIBUTION
     ENUM_DEFINE(DistributionFunction, 
-        ENUM_VALUE_SPEC(NOT_INITIALIZED                                     , -1)
-        ENUM_VALUE_SPEC(FIXED_DURATION                                      , 0)
-        ENUM_VALUE_SPEC(UNIFORM_DURATION                                    , 1)
-        ENUM_VALUE_SPEC(GAUSSIAN_DURATION                                   , 2)
-        ENUM_VALUE_SPEC(EXPONENTIAL_DURATION                                , 3)
-        ENUM_VALUE_SPEC(POISSON_DURATION                                    , 4)
-        ENUM_VALUE_SPEC(LOG_NORMAL_DURATION                                 , 5)
-        ENUM_VALUE_SPEC(BIMODAL_DURATION                                    , 6)
-        ENUM_VALUE_SPEC(PIECEWISE_CONSTANT                                  , 7)
-        ENUM_VALUE_SPEC(PIECEWISE_LINEAR                                    , 8)
-        ENUM_VALUE_SPEC(WEIBULL_DURATION                                    , 9)
-        ENUM_VALUE_SPEC(DUAL_TIMESCALE_DURATION                             ,10)
+        ENUM_VALUE_SPEC( CONSTANT_DISTRIBUTION                               , 0 )
+        ENUM_VALUE_SPEC( UNIFORM_DISTRIBUTION                                , 1 )
+        ENUM_VALUE_SPEC( GAUSSIAN_DISTRIBUTION                               , 2 )
+        ENUM_VALUE_SPEC( EXPONENTIAL_DISTRIBUTION                            , 3 )
+        ENUM_VALUE_SPEC( POISSON_DISTRIBUTION                                , 4 )
+        ENUM_VALUE_SPEC( LOG_NORMAL_DISTRIBUTION                             , 5 )
+        ENUM_VALUE_SPEC( DUAL_CONSTANT_DISTRIBUTION                          , 6 )
+//        ENUM_VALUE_SPEC( PIECEWISE_CONSTANT                                  , 7 )	// Disable these distributions, but leave index as is (see demographics)
+//        ENUM_VALUE_SPEC( PIECEWISE_LINEAR                                    , 8 )
+        ENUM_VALUE_SPEC( WEIBULL_DISTRIBUTION                                , 9 )
+        ENUM_VALUE_SPEC( DUAL_EXPONENTIAL_DISTRIBUTION                       ,10 )
         )
 
 class IDMAPI Probability
@@ -63,7 +63,8 @@ class IDMAPI Probability
             return _instance;
         }
 
-        double Probability::fromDistribution( Kernel::DistributionFunction::Enum distribution_flag,
+        double Probability::fromDistribution( Kernel::RANDOMBASE* pRNG,
+                                              Kernel::DistributionFunction::Enum distribution_flag,
                                               double param1, 
                                               double param2 = 0.0, 
                                               double param3 = 0.0,

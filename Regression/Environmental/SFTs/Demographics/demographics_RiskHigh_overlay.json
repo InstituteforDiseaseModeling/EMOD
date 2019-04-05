@@ -1,0 +1,43 @@
+{
+    "Metadata": {
+        "DateCreated": "Mon Aug 20 13:40:55 2018", 
+        "Tool": "notepad++", 
+        "Author": "yechen", 
+        "IdReference": "Gridded world grump2.5arcmin", 
+        "NodeCount": 1
+    }, 
+	"Defaults":{
+	            "IndividualProperties": [
+                {
+                    "Property": "Risk",
+                    "Values": [
+                        "High",
+                        "Low"
+                    ],
+                    "Initial_Distribution": [ 0.99999, 0.00001],
+                    "Transitions": [],
+                    "TransmissionMatrix": {
+                        "contact":  {
+						"Matrix":
+						 [
+							[0.0, 0.0],
+							[0.0, 0.0]
+						 ]
+					 }
+					 ,
+					 "environmental" : {
+						 "Matrix":
+						 [
+							[1, 0.0],
+							[0.0, 0.0]
+						 ] }
+                    }
+                }
+            ]
+	},
+    "Nodes": [
+        {
+            "NodeID": 1
+        }
+    ]
+}

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -13,8 +13,11 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "JsonObjectDemog.h"
 #include "NoCrtWarnings.h"
 #include "IIndividualHuman.h"
+#include "IIndividualHumanContext.h"
 #include "IndividualEventContext.h"
 #include "IdmString.h"
+#include "RANDOM.h"
+#include "INodeContext.h"
 
 #define UNINITIALIZED_STRING "UNINITIALIZED STRING"
 
@@ -117,7 +120,8 @@ namespace Kernel
     {
     }
 
-    void MigrationInfoNull::PickMigrationStep( IIndividualHumanContext * traveler, 
+    void MigrationInfoNull::PickMigrationStep( RANDOMBASE* pRNG, 
+                                               IIndividualHumanContext * traveler, 
                                                float migration_rate_modifier, 
                                                suids::suid &destination, 
                                                MigrationType::Enum &migration_type,
@@ -218,7 +222,8 @@ namespace Kernel
         return m_IsHeterogeneityEnabled; 
     }
 
-    void MigrationInfoFixedRate::PickMigrationStep( IIndividualHumanContext *traveler, 
+    void MigrationInfoFixedRate::PickMigrationStep( RANDOMBASE* pRNG,
+                                                    IIndividualHumanContext *traveler, 
                                                     float migration_rate_modifier,
                                                     suids::suid &destination, 
                                                     MigrationType::Enum &migration_type, 
@@ -249,9 +254,9 @@ namespace Kernel
 
         int index = 0;
 
-        time = float(randgen->expdist( migration_rate_modifier * total_rate ));
+        time = float(pRNG->expdist( migration_rate_modifier * total_rate ));
 
-        float desttemp = randgen->e();
+        float desttemp = pRNG->e();
         while( desttemp > r_cdf[index] )
         {
             index++;
@@ -433,7 +438,7 @@ namespace Kernel
                                                         m_ParameterNameFilename.c_str(), "<empty>" );
             }
 
-            string filepath = FileSystem::Concat( EnvPtr->InputPath, m_Filename );
+            std::string filepath = Environment::FindFileOnPath( m_Filename );
 
             uint32_t expected_binary_file_size = ParseMetadataForFile( filepath, idreference );
 

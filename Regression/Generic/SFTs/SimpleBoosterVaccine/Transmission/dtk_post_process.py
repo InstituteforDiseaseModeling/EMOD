@@ -2,9 +2,9 @@
 
 import json
 import os.path as path
-import dtk_sft as sft
+import dtk_test.dtk_sft as sft
 import math
-import dtk_SimpleBoosterVaccine_Support as sbvs
+import dtk_test.dtk_SimpleBoosterVaccine_Support as sbvs
 
 KEY_TOTAL_TIMESTEPS = "Simulation_Duration"
 KEY_NEW_INFECTIONS_GROUP = [ "New Infections:QualityOfCare:1_Seed",
@@ -123,11 +123,15 @@ def create_report_file(report_data_obj, report_name, debug):
             expected_new_infection = (1.0 - tb_effect) * new_infection_baseline / (1.0- tb_effect_baseline)
             tolerance = 0.0 if expected_new_infection == 0.0 else 2e-2 * statistical_population
             actual_tb_effect = 1.0 - (new_infection * (1.0 - tb_effect_baseline) / new_infection_baseline)
+            result = f"At time step: {timestep}, outbreak: {Interventions[i]}," \
+                     f" {new_infection} reported new infections, expected {expected_new_infection}" \
+                     f" with tolerance {tolerance}\n"
             if math.fabs(new_infection - expected_new_infection) > tolerance:
                 success = False
-                outfile.write("BAD: At time step {0}, outbreak {1}, {2} reported new infections, expected {3}.\n".format(
-                    timestep, Interventions[i], new_infection, expected_new_infection))
-                outfile.write("actual TransmissionBlocking effect is {0}, expected {1}.\n".format(actual_tb_effect, tb_effect))
+                outfile.write(f"BAD:  {result}")
+            else:
+                outfile.write(f"GOOD: {result}")
+            outfile.write("\tactual TransmissionBlocking effect is {0}, expected {1}.\n".format(actual_tb_effect, tb_effect))
             new_infections.append(new_infection)
             expected_new_infections.append(expected_new_infection)
             actual_tb_effects.append(actual_tb_effect)

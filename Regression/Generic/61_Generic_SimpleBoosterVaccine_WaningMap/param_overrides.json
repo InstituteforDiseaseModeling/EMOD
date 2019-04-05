@@ -1,5 +1,5 @@
 {
-    "Default_Config_Path": "defaults/generic_default_config.json",
+    "Default_Config_Path": "../../defaults/generic_default_config.json",
     "parameters": {
         "DEMOGRAPHICS": {
             "Demographics_Filenames": [
@@ -10,12 +10,12 @@
         },
         "DISEASE": {
             "INCUBATION": {
-                "Base_Incubation_Period": 0
+                "Incubation_Period_Constant": 0
             },
             "INFECTIOUSNESS": {
-                "Base_Infectious_Period": 2,
                 "Base_Infectivity": 1e-07,
-                "Infectious_Period_Distribution": "FIXED_DURATION"
+                "Infectious_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                "Infectious_Period_Constant": 2
             }
         },
         "INTRANODE_TRANSMISSION": {

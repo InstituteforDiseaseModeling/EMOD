@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -79,13 +79,14 @@ namespace Kernel
         }
     }
 
-    void MigrationInfoVector::PickMigrationStep( IIndividualHumanContext *traveler, 
+    void MigrationInfoVector::PickMigrationStep( RANDOMBASE* pRNG,
+                                                 IIndividualHumanContext *traveler, 
                                                  float migration_rate_modifier,
                                                  suids::suid& destination, 
                                                  MigrationType::Enum& migration_type, 
                                                  float& timeUntilTrip ) 
     {
-        MigrationInfoFixedRate::PickMigrationStep( traveler, migration_rate_modifier, destination, migration_type, timeUntilTrip );
+        MigrationInfoFixedRate::PickMigrationStep( pRNG, traveler, migration_rate_modifier, destination, migration_type, timeUntilTrip );
 
         // ------------------------------------------------------------------
         // --- if the destination is the current node, then the selection

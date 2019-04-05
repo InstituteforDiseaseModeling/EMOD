@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -11,8 +11,11 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "MigrateIndividuals.h"
 #include "IMigrate.h"
 #include "SimulationConfig.h"
-
+#include "IIndividualHumanContext.h"
 #include "NodeEventContext.h"  // for INodeEventContext (ICampaignCostObserver)
+#include "INodeContext.h"
+#include "ISimulationContext.h"
+#include "DistributionFactory.h"
 
 SETUP_LOGGING( "MigrateIndividuals" )
 
@@ -27,64 +30,55 @@ namespace Kernel
 
     IMPLEMENT_FACTORY_REGISTERED(MigrateIndividuals)
 
-    bool MigrateIndividuals::Configure(
-        const Configuration * inputJson
-    )
+    bool MigrateIndividuals::Configure( const Configuration * inputJson )
     {
-        if( !JsonConfigurable::_dryrun && 
+        if ( !JsonConfigurable::_dryrun &&
             //(EnvPtr->getSimulationConfig() != nullptr) &&
-            (GET_CONFIGURABLE(SimulationConfig)->migration_structure == MigrationStructure::NO_MIGRATION) )
+            ( GET_CONFIGURABLE( SimulationConfig )->migration_structure == MigrationStructure::NO_MIGRATION ) )
         {
             std::stringstream msg;
             msg << _module << " cannot be used when 'Migration_Model' = 'NO_MIGRATION'.";
             throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
         }
+        
+        DistributionFunction::Enum before_leaving_function(DistributionFunction::CONSTANT_DISTRIBUTION);
+        initConfig( "Duration_Before_Leaving_Distribution", before_leaving_function, inputJson, MetadataDescriptor::Enum( "Duration_Before_Leaving_Distribution_Type", Duration_Before_Leaving_Distribution_DESC_TEXT, MDD_ENUM_ARGS(DistributionFunction) ) );
+        duration_before_leaving = DistributionFactory::CreateDistribution( this, before_leaving_function, "Duration_Before_Leaving", inputJson );
+
+        DistributionFunction::Enum at_node_function(DistributionFunction::CONSTANT_DISTRIBUTION);
+        initConfig( "Duration_At_Node_Distribution", at_node_function, inputJson, MetadataDescriptor::Enum( "Duration_At_Node_Distribution_Type", Duration_At_Node_Distribution_DESC_TEXT, MDD_ENUM_ARGS(DistributionFunction) ) );
+
+        duration_at_node = DistributionFactory::CreateDistribution( this, at_node_function, "Duration_At_Node", inputJson );
 
         initConfigTypeMap( "NodeID_To_Migrate_To", &destination_external_node_id, NodeID_To_Migrate_To_DESC_TEXT, 0, UINT_MAX, 0 );
         initConfigTypeMap( "Is_Moving", &is_moving, Is_Moving_DESC_TEXT, false );
 
-        duration_before_leaving.Configure( this, inputJson );
-        duration_at_node.Configure( this, inputJson );
-
-        bool ret = BaseIntervention::Configure( inputJson );
-
-        if( ret )
-        {
-            duration_before_leaving.CheckConfiguration();
-            duration_at_node.CheckConfiguration();
-        }
-        return ret;
+        return BaseIntervention::Configure( inputJson );
     }
 
     MigrateIndividuals::MigrateIndividuals()
         : BaseIntervention()
         , destination_external_node_id( 0 )
-        , duration_before_leaving()
-        , duration_at_node()
+        , duration_before_leaving( nullptr )
+        , duration_at_node( nullptr )
         , is_moving( false )
     {
-        duration_before_leaving.SetTypeNameDesc( "Duration_Before_Leaving_Distribution_Type", DBL_Type_DESC_TEXT );
-        duration_before_leaving.AddSupportedType( DistributionFunction::FIXED_DURATION,       "Duration_Before_Leaving_Fixed",              DBL_Fixed_DESC_TEXT,              "", "" );
-        duration_before_leaving.AddSupportedType( DistributionFunction::UNIFORM_DURATION,     "Duration_Before_Leaving_Uniform_Min",        DBL_Uniform_Min_DESC_TEXT,        "Duration_Before_Leaving_Uniform_Max",    DBL_Uniform_Max_DESC_TEXT    );
-        duration_before_leaving.AddSupportedType( DistributionFunction::GAUSSIAN_DURATION,    "Duration_Before_Leaving_Gausian_Mean",       DBL_Gausian_Mean_DESC_TEXT,       "Duration_Before_Leaving_Gausian_StdDev", DBL_Gausian_StdDev_DESC_TEXT );
-        duration_before_leaving.AddSupportedType( DistributionFunction::EXPONENTIAL_DURATION, "Duration_Before_Leaving_Exponential_Period", DBL_Exponential_Period_DESC_TEXT, "", "" );
-        duration_before_leaving.AddSupportedType( DistributionFunction::POISSON_DURATION,     "Duration_Before_Leaving_Poisson_Mean",       DBL_Poisson_Mean_DESC_TEXT,       "", "" );
-
-        duration_at_node.SetTypeNameDesc( "Duration_At_Node_Distribution_Type", DAN_Type_DESC_TEXT );
-        duration_at_node.AddSupportedType( DistributionFunction::FIXED_DURATION,       "Duration_At_Node_Fixed",              DAN_Fixed_DESC_TEXT,              "", "" );
-        duration_at_node.AddSupportedType( DistributionFunction::UNIFORM_DURATION,     "Duration_At_Node_Uniform_Min",        DAN_Uniform_Min_DESC_TEXT,        "Duration_At_Node_Uniform_Max",    DAN_Uniform_Max_DESC_TEXT    );
-        duration_at_node.AddSupportedType( DistributionFunction::GAUSSIAN_DURATION,    "Duration_At_Node_Gausian_Mean",       DAN_Gausian_Mean_DESC_TEXT,       "Duration_At_Node_Gausian_StdDev", DAN_Gausian_StdDev_DESC_TEXT );
-        duration_at_node.AddSupportedType( DistributionFunction::EXPONENTIAL_DURATION, "Duration_At_Node_Exponential_Period", DAN_Exponential_Period_DESC_TEXT, "", "" );
-        duration_at_node.AddSupportedType( DistributionFunction::POISSON_DURATION,     "Duration_At_Node_Poisson_Mean",       DAN_Poisson_Mean_DESC_TEXT,       "", "" );
+        
     }
 
     MigrateIndividuals::MigrateIndividuals( const MigrateIndividuals& master )
         : BaseIntervention( master )
         , destination_external_node_id( master.destination_external_node_id )
-        , duration_before_leaving( master.duration_before_leaving )
-        , duration_at_node( master.duration_at_node )
+        , duration_before_leaving( master.duration_before_leaving->Clone() )
+        , duration_at_node( master.duration_at_node->Clone() )
         , is_moving( master.is_moving )
     {
+    }
+
+    MigrateIndividuals::~MigrateIndividuals()
+    {
+       delete duration_before_leaving;
+       delete duration_at_node;
     }
 
     void MigrateIndividuals::Update( float dt )
@@ -98,8 +92,8 @@ namespace Kernel
 
         suids::suid destination_id = p_node_context->GetParent()->GetNodeSuid( destination_external_node_id );
 
-        float duration_before = duration_before_leaving.CalculateDuration();
-        float duration_at = duration_at_node.CalculateDuration();
+        float duration_before = duration_before_leaving->Calculate( parent->GetRng() );
+        float duration_at = duration_at_node->Calculate( parent->GetRng() );
 
         IMigrate * im = NULL;
         if (s_OK != parent->QueryInterface(GET_IID(IMigrate), (void**)&im) )

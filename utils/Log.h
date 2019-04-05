@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -107,8 +107,8 @@ public:
     SimpleLogger( Logger::tLevel syslevel );
     void Init( const json::QuickInterpreter * configJson );
     bool CheckLogLevel( Logger::tLevel log_level, const char* module );
-    void Log( Logger::tLevel log_level, const char* module, const char* msg, ...);
-    void Flush();
+    virtual void Log( Logger::tLevel log_level, const char* module, const char* msg, ...);
+    virtual void Flush();
 
     void GetLogInfo(LogTimeInfo &tInfo );
 

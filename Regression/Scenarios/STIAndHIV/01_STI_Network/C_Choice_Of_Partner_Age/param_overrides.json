@@ -4,7 +4,7 @@
         "Config_Name": "01C_Choice_of_Partner_Age",
         "Simulation_Duration": 1095,
         "Simulation_Timestep": 30.41667,
-        "Base_Population_Scale_Factor": 1,
+        "x_Base_Population": 1,
         "Demographics_Filenames": ["uniform_demographics.json", "pfa_transitory_2x2.json", "short_transitory_overlay.json"],
         "Report_Relationship_Start": 1,
         "PFA_Cum_Prob_Selection_Threshold" : 0

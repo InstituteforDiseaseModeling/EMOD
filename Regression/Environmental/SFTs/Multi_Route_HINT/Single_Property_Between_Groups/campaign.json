@@ -1,0 +1,31 @@
+{
+   "Campaign_Name": "Initial Seeding",
+   "Events": [
+      {
+         "Event_Coordinator_Config": {
+            "Demographic_Coverage": 0.05,
+            "Intervention_Config": {
+			   "Incubation_Period_Override": 0,
+               "Antigen": 0,
+               "Genome": 0,
+               "Outbreak_Source": "PrevalenceIncrease",
+               "class": "OutbreakIndividual"
+            },
+            "Number_Repetitions": 5,
+            "Property_Restrictions": [
+               "QualityOfCare:Seed"
+            ],
+            "Target_Demographic": "Everyone",
+            "Timesteps_Between_Repetitions": 10,
+            "class": "StandardInterventionDistributionEventCoordinator"
+         },
+         "Event_Name": "Outbreak",
+         "Nodeset_Config": {
+            "class": "NodeSetAll"
+         },
+         "Start_Day": 0,
+         "class": "CampaignEvent"
+      }
+   ],
+   "Use_Defaults": 1
+}

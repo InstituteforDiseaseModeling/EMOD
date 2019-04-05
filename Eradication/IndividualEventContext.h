@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -34,6 +34,7 @@ namespace Kernel
         virtual double GetMonteCarloWeight() const = 0;
         virtual bool   IsPossibleMother()    const = 0;
         virtual bool   IsInfected()          const = 0;
+        virtual bool   IsSymptomatic()       const = 0;
         virtual float  GetInfectiousness()   const = 0;
         virtual HumanStateChange GetStateChange(void) const = 0;
         virtual void   Die( HumanStateChange ) = 0; // for testing, quick results

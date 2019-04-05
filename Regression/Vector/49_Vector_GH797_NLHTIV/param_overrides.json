@@ -1,5 +1,5 @@
 {
-    "Default_Config_Path": "defaults/vector_default_config.json",
+    "Default_Config_Path": "../../defaults/vector_default_config.json",
     "parameters": {
         "CLIMATE": {
             "AIR": {
@@ -24,7 +24,7 @@
         "PRIMARY": {
             "Config_Name": "49_Vector_GH_797",
             "Geography": "Namawala",
-            "Listed_Events": [
+            "Custom_Individual_Events": [
                 "Acorn"
             ],
             "Run_Number": 1,

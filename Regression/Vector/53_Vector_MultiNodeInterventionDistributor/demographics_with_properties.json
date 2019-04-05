@@ -18,7 +18,7 @@
             "AgeDistribution1": 10950, 
             "AgeDistribution2": 7300, 
             "PrevalenceDistributionFlag": 0, 
-            "PrevalenceDistribution1": 0.05, 
+            "PrevalenceDistribution1": 0.1, 
             "PrevalenceDistribution2": 0.0, 
             "SusceptibilityDistributionFlag": 0, 
             "SusceptibilityDistribution1": 1, 
@@ -68,7 +68,7 @@
             "NodeAttributes": {
                 "Latitude": 12.5708, 
                 "Longitude": 9.00417,
-                "InitialPopulation": 10
+                "InitialPopulation": 100
             }
         },
         {
@@ -76,7 +76,7 @@
             "NodeAttributes": {
                 "Latitude": 12.5625, 
                 "Longitude": 8.99584,
-                "InitialPopulation": 10
+                "InitialPopulation": 100
             }
         }
     ]

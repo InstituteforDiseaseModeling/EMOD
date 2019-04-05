@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -19,12 +19,6 @@ namespace Kernel
         ENUM_VALUE_SPEC(MALE                                                , 0)        // previously: #define MALE 1
         ENUM_VALUE_SPEC(FEMALE                                              , 1)        // previously: #define FEMALE 2
         ENUM_VALUE_SPEC(COUNT                                               , 2) )
-    
-    // ENUM defs for Animal_Reservoir_Type
-    ENUM_DEFINE(AnimalReservoir,
-        ENUM_VALUE_SPEC(NO_ZOONOSIS                                         , 0)
-        ENUM_VALUE_SPEC(CONSTANT_ZOONOSIS                                   , 1)
-        ENUM_VALUE_SPEC(ZOONOSIS_FROM_DEMOGRAPHICS                          , 2))
 
     // ENUM defs for CLIMATE_STRUCTURE
     ENUM_DEFINE(ClimateStructure, 
@@ -95,12 +89,6 @@ namespace Kernel
     ENUM_DEFINE(PopulationScaling, 
         ENUM_VALUE_SPEC(USE_INPUT_FILE                                      , 0)
         ENUM_VALUE_SPEC(FIXED_SCALING                                       , 1))
-
-    // ENUM defs for RANDOM_TYPE
-    ENUM_DEFINE(RandomType, 
-        ENUM_VALUE_SPEC(USE_PSEUDO_DES                                      , 0)
-        ENUM_VALUE_SPEC(USE_LINEAR_CONGRUENTIAL                             , 1)
-        ENUM_VALUE_SPEC(USE_AES_COUNTER                                     , 2))
 
     // ENUM defs for Infectivity_Scale_Type (was SEASONAL_INFECTIVITY)
     ENUM_DEFINE(InfectivityScaling, 

@@ -1,0 +1,60 @@
+{
+    "Default_Config_Path": "../../defaults/generic_default_config.json",
+    "logLevel_ImmunityBloodTest": "DEBUG",
+    "parameters": {
+        "DEMOGRAPHICS": {
+            "Demographics_Filenames": ["demographics.json"],
+            "Enable_Initial_Prevalence": 1
+        },
+        "PRIMARY": {
+            "Config_Name": "78_Generic_SurveillanceEventCoordinator_Count_Node_Events",
+            "Geography": "Namawala",
+            "Run_Number": 1,
+            "Simulation_Duration": 100,
+            "Enable_Natural_Mortality": 0,
+            "Enable_Interventions": 1 
+        },
+        "Demographics_Reporting": 0,
+        "Custom_Individual_Events": [],
+        "Custom_Node_Events": [
+            "Node_Event_1",
+            "Node_Event_2"
+        ],
+        "Report_Node_Event_Recorder": 1,
+        "Report_Node_Event_Recorder_Events": [
+            "Node_Event_1",
+            "Node_Event_2"
+        ],
+        "Custom_Coordinator_Events": [            
+            "Start_ACF",
+            "Start_SIA_2",
+            "Start_SIA_4",
+            "Ind_Start_SIA_2",
+            "Ind_Start_SIA_4",
+            "Respond_To_Surveillance"
+        ],
+        "Enable_Demographics_Reporting": 0,
+        "Report_Coordinator_Event_Recorder": 1,
+        "Report_Coordinator_Event_Recorder_Events": [
+            "Start_ACF",
+            "Start_SIA_2",
+            "Start_SIA_4",
+            "Ind_Start_SIA_2",
+            "Ind_Start_SIA_4"
+        ],
+        "Report_Coordinator_Event_Recorder_Ignore_Events_In_List":0,
+        "Report_Surveillance_Event_Recorder": 1,
+        "Report_Surveillance_Event_Recorder_Events": [
+            "Respond_To_Surveillance"
+        ],
+        "Report_Surveillance_Event_Recorder_Ignore_Events_In_List":0,
+        "Report_Surveillance_Event_Recorder_Stats_By_IPs" : [],
+        "Custom_Reports_Filename": "",
+        "Enable_Default_Reporting": 1,
+        "Report_Event_Recorder_Ignore_Events_In_List": 0, 
+        "Report_Event_Recorder_Individual_Properties": [],
+        "Report_Node_Event_Recorder_Ignore_Events_In_List": 0,
+        "Report_Node_Event_Recorder_Node_Properties": [],
+        "Report_Node_Event_Recorder_Stats_By_IPs" : []
+    }
+}

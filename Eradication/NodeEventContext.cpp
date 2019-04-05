@@ -1,25 +1,26 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
 
 ***************************************************************************************************/
-#pragma once
 
 #include "stdafx.h"
 #include <typeinfo>
 
+#include "ISimulationContext.h"
 #include "NodeEventContext.h"
 #include "NodeEventContextHost.h"
 #include "Debug.h"
 #include "NodeDemographics.h"
 #include "Node.h"
 #include "IIndividualHuman.h"
+#include "IIndividualHumanContext.h"
 #include "EventTrigger.h"
 #include "StrainIdentity.h"
-
+#include "IdmDateTime.h"
 #include "Log.h"
 #include "Exceptions.h"
 #include "TransmissionGroupsBase.h"
@@ -33,13 +34,10 @@ namespace Kernel
     , arrival_distribution_sources()
     , departure_distribution_sources()
     , interventions()
-    , individual_event_observers()
-    , disposed_observers()
     , node_interventions()
+    , broadcaster_impl()
     {
         arrival_distribution_sources.clear();
-        individual_event_observers.resize( EventTriggerFactory::GetInstance()->GetNumEventTriggers() );
-        disposed_observers.resize( EventTriggerFactory::GetInstance()->GetNumEventTriggers() );
     }
 
     NodeEventContextHost::NodeEventContextHost(Node* _node)
@@ -47,13 +45,10 @@ namespace Kernel
     , arrival_distribution_sources()
     , departure_distribution_sources()
     , interventions()
-    , individual_event_observers()
-    , disposed_observers()
     , node_interventions()
+    , broadcaster_impl()
     {
         arrival_distribution_sources.clear();
-        individual_event_observers.resize( EventTriggerFactory::GetInstance()->GetNumEventTriggers() );
-        disposed_observers.resize( EventTriggerFactory::GetInstance()->GetNumEventTriggers() );
     }
 
     // This was done with macros, but prefer actual code.
@@ -74,8 +69,8 @@ namespace Kernel
             foundInterface = static_cast<IOutbreakConsumer*>(this);
         else if (iid == GET_IID(ICampaignCostObserver))
             foundInterface = static_cast<ICampaignCostObserver*>(this);
-        else if (iid == GET_IID(INodeTriggeredInterventionConsumer))
-            foundInterface = static_cast<INodeTriggeredInterventionConsumer*>(this);
+        else if (iid == GET_IID( IIndividualEventBroadcaster ))
+            foundInterface = static_cast<IIndividualEventBroadcaster*>(this);
         // -->> add support for other I*Consumer interfaces here <<--      
         else if (iid == GET_IID(IGlobalContext))
             node->QueryInterface(iid, (void**) &foundInterface);
@@ -119,36 +114,18 @@ namespace Kernel
     // method 2 for VisitIndividuals uses an interface
     int
     NodeEventContextHost::VisitIndividuals(
-        IVisitIndividual * pEventCoordinator,
-        int limit // = -1
+        IVisitIndividual * pEventCoordinator
     )
     {
         int retTotal = 0;
-        size_t nodePop = node->individualHumans.size();
-        float probThreshold = 1.0;
-        if( limit != -1 )
-        {
-            probThreshold = float(limit)/nodePop;
-        }
         float nodeCostThisInterventionThisTimestep = 0.0f;
         for( auto individual : node->individualHumans)
         {
-            /*
-             * hard limit
-            if( limit > -1 && retTotal >= limit )
+            float costForThisIntervention = 0.0f;
+            if( pEventCoordinator->visitIndividualCallback(individual->GetEventContext(), costForThisIntervention, this))
             {
-                break;
-            }*/
-
-            // Do probabilistically
-            if( node->GetRng()->e() < probThreshold )
-            {
-                float costForThisIntervention = 0.0f;
-                if( pEventCoordinator->visitIndividualCallback(individual->GetEventContext(), costForThisIntervention, this))
-                {
-                    retTotal++;
-                    //nodeCostThisInterventionThisTimestep += (float)( costForThisIntervention * ih->GetMonteCarloWeight() );
-                }
+                retTotal++;
+                //nodeCostThisInterventionThisTimestep += (float)( costForThisIntervention * ih->GetMonteCarloWeight() );
             }
         }
 
@@ -163,12 +140,16 @@ namespace Kernel
     )
     {
         release_assert( node );
-        release_assert( pIndiv );
         if( expenseIncurred > 0 )
         {
             LOG_DEBUG("Campaign expense was incurred\n");
         }
-        IncrementCampaignCost( expenseIncurred * float(pIndiv->GetMonteCarloWeight()) );
+        float cost = expenseIncurred;
+        if( pIndiv != nullptr )
+        {
+            cost *= float( pIndiv->GetMonteCarloWeight() );
+        }
+        IncrementCampaignCost( cost );
     }
 
     // First cut of this function writes the intervention report to stdout. It is an abbreviated,
@@ -257,91 +238,32 @@ namespace Kernel
         }
     }
 
-    void NodeEventContextHost::RegisterNodeEventObserver(
+    void NodeEventContextHost::RegisterObserver(
         IIndividualEventObserver * pObserver,
         const EventTrigger& trigger
     )
     {
-        std::vector<IIndividualEventObserver*>& observer_list = individual_event_observers[ trigger.GetIndex() ];
-
-        if( std::find( observer_list.begin(), observer_list.end(), pObserver ) != observer_list.end() )
-        {
-            std::stringstream ss ;
-            ss << "Trying to register an observer (" << typeid(*pObserver).name() << ") more than once to event " << trigger.ToString() ;
-            throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
-        }
-
-        INodeDistributableIntervention * ndi;
-        if( s_OK == pObserver->QueryInterface(GET_IID(INodeDistributableIntervention), (void**)&ndi) )
-        {
-            // DMB - something in HINT needs this
-            ndi->SetContextTo( node->GetEventContext() ); // this is probably unnecessarily circular (a GetContextPointer() function could be added?)
-            ndi->Release();
-        }
-
-        LOG_DEBUG_F( "Observer is registering for event %s.\n", trigger.c_str() );
-        observer_list.push_back( pObserver );
-        pObserver->AddRef();
+        broadcaster_impl.RegisterObserver( pObserver, trigger );
     }
 
-    void NodeEventContextHost::UnregisterNodeEventObserver(
+    void NodeEventContextHost::UnregisterObserver(
         IIndividualEventObserver * pObserver,
         const EventTrigger& trigger
     )
     {
-        LOG_INFO( "[UnregisterIndividualEventObserver] Putting individual event observer into the disposed observers list .\n" );
-        disposed_observers[ trigger.GetIndex() ].push_back( pObserver );
+        broadcaster_impl.UnregisterObserver( pObserver, trigger );
     }
 
-    void NodeEventContextHost::TriggerNodeEventObservers(
+    void NodeEventContextHost::TriggerObservers(
         IIndividualHumanEventContext *pIndiv,
         const EventTrigger& trigger
     )
     {
-        std::vector<IIndividualEventObserver*>& observer_list = individual_event_observers[ trigger.GetIndex() ];
-        std::vector<IIndividualEventObserver*>& disposed_list = disposed_observers[ trigger.GetIndex() ] ;
-
-        LOG_DEBUG_F( "Individual %d fired off event %s at time %f.\n", pIndiv->GetInterventionsContext()->GetParent()->GetSuid().data, trigger.c_str(), (float)GetTime().time );
-        LOG_DEBUG_F( "We have %d observers of event %s.\n", observer_list.size(), trigger.c_str() );
-        for (auto observer : observer_list )
-        {
-            // ---------------------------------------------------------------------
-            // --- Make sure the observer has not been requested to be unregistered
-            // --- from being notified of events.
-            // ---------------------------------------------------------------------
-            bool notify = true ;
-            if( disposed_list.size() > 0 )
-            {
-                // finding the observer will make notify FALSE which means we don't notify them of the event
-                notify = std::find( disposed_list.begin(), disposed_list.end(), observer ) == disposed_list.end();
-            }
-
-            if( notify )
-            {
-                observer->notifyOnEvent( pIndiv, trigger ); 
-            }
-        }
+        broadcaster_impl.TriggerObservers( pIndiv, trigger );
     }
 
     void NodeEventContextHost::PropagateContextToDependents()
     {
-        for (auto &observer_nvp : individual_event_observers)
-        {
-            for (auto &observer : observer_nvp) // observer_nvp is vector, observer is intervention
-            {
-                // QI for NDI to reset context
-                INodeDistributableIntervention * intervention = nullptr;
-                if( s_OK == observer->QueryInterface(GET_IID(INodeDistributableIntervention), (void**)&intervention) )
-                {
-                    intervention->SetContextTo( this );
-                }
-                else
-                {
-                    LOG_WARN( "Unable to get INodeDistributableIntervention interface from IIndividualEventObserver." );
-                }
-            }
-        }
-
         for (auto intervention : node_interventions)
         {
             intervention->SetContextTo( this );
@@ -352,7 +274,6 @@ namespace Kernel
     {
         node->Campaign_Cost += cost;
     }
-
 
     void NodeEventContextHost::UpdateInterventions(float dt)
     {
@@ -372,39 +293,7 @@ namespace Kernel
             delete intven;
         }
 
-        DisposeOfUnregisteredObservers();
-    }
-
-    void NodeEventContextHost::DisposeOfUnregisteredObservers()
-    {
-        if( disposed_observers.size() > 0 )
-        {
-            LOG_DEBUG_F( "We have %d disposed_observers to clean up.\n", disposed_observers.size() );
-        }
-
-        for( int event_index = 0 ; event_index < disposed_observers.size() ; ++event_index )
-        {
-            std::vector<IIndividualEventObserver*>& disposed_list = disposed_observers[ event_index ];
-            std::vector<IIndividualEventObserver*>& current_list = individual_event_observers[ event_index ];
-
-            for( auto observer : disposed_list )
-            {
-                for( int i = 0 ; i < current_list.size() ; ++i )
-                {
-                    if( current_list[ i ] == observer )
-                    {
-                        current_list[ i ] = current_list.back();
-                        current_list.pop_back();
-                        LOG_INFO_F( "[UnregisterIndividualEventObserver] Removed individual event observer from list: now %d observers of event %s.\n",
-                                    current_list.size(),
-                                    EventTriggerFactory::GetInstance()->GetEventTriggerName( event_index ).c_str()
-                        );
-                        break;
-                    }
-                }
-            }
-            disposed_list.clear();
-        }
+        broadcaster_impl.DisposeOfUnregisteredObservers();
     }
 
     bool NodeEventContextHost::GiveIntervention( INodeDistributableIntervention* iv )
@@ -460,19 +349,8 @@ namespace Kernel
 
     NodeEventContextHost::~NodeEventContextHost()
     {
-        DisposeOfUnregisteredObservers();
         cleanupDistributionSourceMap(arrival_distribution_sources);
         cleanupDistributionSourceMap(departure_distribution_sources);
-
-        for (auto &observer_list : individual_event_observers)
-        {
-            LOG_DEBUG_F( "Deleting %d observers.\n", observer_list.size() );
-            
-            for (auto &observer : observer_list )
-            {
-                observer->Release();
-            }
-        }
 
         for (auto intervention : node_interventions)
         {
@@ -506,7 +384,8 @@ namespace Kernel
     void NodeEventContextHost::AddImportCases(
         StrainIdentity* outbreak_strainID,
         float import_age,
-        NaturalNumber num_cases_per_node
+        NaturalNumber num_cases_per_node,
+        ProbabilityNumber prob_infection
     )
     {
         for (int i = 0; i < num_cases_per_node; i++)
@@ -515,7 +394,10 @@ namespace Kernel
 
             // 0 = incubation_period_override, outbreaks are instantaneously mature
             TransmissionGroupsBase::ContagionPopulationImpl cp( outbreak_strainID, 0 );
-            new_individual->AcquireNewInfection(&cp, 0 ); 
+            //if( prob_infection == 1.0f || ( prob_infection != 0 && randgen->e() < prob_infection ) ) // TBD, fix smart draw in merge with new RNG stuff.
+            {
+                new_individual->AcquireNewInfection(&cp, 0 ); 
+            }
         }
     }
 
@@ -530,12 +412,12 @@ namespace Kernel
         return node->IsInPolygon( poly );
     }
 
-    bool NodeEventContextHost::IsInExternalIdSet( const tNodeIdList& nodelist )
+    bool NodeEventContextHost::IsInExternalIdSet( const std::list<ExternalNodeId_t>& nodelist )
     {
         return node->IsInExternalIdSet( nodelist );
     }
 
-    IdmDateTime NodeEventContextHost::GetTime() const
+    const IdmDateTime& NodeEventContextHost::GetTime() const
     {
         return node->GetTime();
     }
@@ -560,5 +442,10 @@ namespace Kernel
     {
         ExternalNodeId_t nodeId = node->GetExternalID();
         return nodeId;
+    }
+
+    IIndividualEventBroadcaster* NodeEventContextHost::GetIndividualEventBroadcaster()
+    {
+        return this;
     }
 }

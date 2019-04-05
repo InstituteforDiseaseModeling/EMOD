@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import json
-import dtk_sft
+import dtk_test.dtk_sft as sft
 import os
 import csv
 import math
@@ -82,7 +82,7 @@ def parse_output_file(output_filename="test.txt", debug=False):
     filtered_lines = []
     with open(output_filename) as logfile:
         for line in logfile:
-            if dtk_sft.has_match(line,matches):
+            if sft.has_match(line,matches):
                 filtered_lines.append(line)
     if debug:
         with open("DEBUG_filtered_lines.txt", "w") as outfile:
@@ -101,14 +101,14 @@ def parse_output_file(output_filename="test.txt", debug=False):
         if matches[0] in line:
             output_dict[time_step] = {KEY_STAT_POP:statpop, KEY_INFECTED:infected, KEY_POSITIVE:positive,
                                  KEY_NEGATIVE: negative, KEY_DEFAULT: default}
-            infected = dtk_sft.get_val(matches[2], line)
-            statpop = dtk_sft.get_val(matches[1], line)
+            infected = sft.get_val(matches[2], line)
+            statpop = sft.get_val(matches[1], line)
             time_step += simulation_timestep
             positive = 0
             negative = 0
             default = 0
         if matches[3] in line:
-            result = int(dtk_sft.get_val(matches[3], line))
+            result = int(sft.get_val(matches[3], line))
             if result:
                 positive += 1
             else:
@@ -170,9 +170,12 @@ def create_report_file(param_obj, campaign_obj, output_dict, report_dict, report
         default = []
         total = []
         failed_timestep = []
+
+        point_fail = 0
+        point_tolerance = 0.3
         if not len(report_dict):
             success = False
-            outfile.write(dtk_sft.sft_no_test_data)
+            outfile.write(sft.sft_no_test_data)
         for t in report_dict:
             value_to_test = [report_dict[t][KEY_POSITIVE], report_dict[t][KEY_NEGATIVE],
                              report_dict[t][KEY_DEFAULT]]
@@ -181,8 +184,9 @@ def create_report_file(param_obj, campaign_obj, output_dict, report_dict, report
             default.append(report_dict[t][KEY_DEFAULT])
             total.append(sum(value_to_test))
             outfile.write("Run Chi-squared test at time step {}.\n".format(t))
-            result = dtk_sft.test_multinomial(dist=value_to_test, proportions=proportions, report_file=outfile)
+            result = sft.test_multinomial(dist=value_to_test, proportions=proportions, report_file=outfile)
             if not result:
+                point_fail += 1
                 failed_timestep.append(t)
                 outfile.write(
                     "Warning: At timestep {0}, the Chi-squared test failed.\n".format(t))
@@ -193,28 +197,35 @@ def create_report_file(param_obj, campaign_obj, output_dict, report_dict, report
         else:
             outfile.write(
                 "GOOD: the Chi-squared test failed {} times, less than 5% of the total timestep.\n".format(len(failed_timestep)))
+        outfile.write("BIG TEST: Testing the total proportion across the simulation\n")
+        total_result = sft.test_multinomial(dist=[sum(positive), sum(negative), sum(default)],
+                                                proportions=proportions,
+                                                report_file=outfile)
+        if not total_result:
+            success=False
+            outfile.write("FAIL: the total chi-square test fails.\n")
 
-        dtk_sft.plot_data(positive, dist2=total, label1="TBTestPositive", label2="Total tested",
+        sft.plot_data(positive, dist2=total, label1="TBTestPositive", label2="Total tested",
                                    title="Test positive vs. total, positive proportion = {}".format(sensitivity * treatment_fraction),
                                    xlabel="time step", ylabel="# of individuals", category='Test_positive_vs_total',
                                    show=True, line=False)
-        dtk_sft.plot_data(negative, dist2=total, label1="TBTestNegative", label2="Total tested",
+        sft.plot_data(negative, dist2=total, label1="TBTestNegative", label2="Total tested",
                                    title="Test negative vs. total, negative proportion = {}".format((1.0 - sensitivity) * treatment_fraction),
                                    xlabel="time step", ylabel="# of individuals", category='Test_negative_vs_total',
                                    show=True, line=False)
-        dtk_sft.plot_data(default, dist2=total, label1="TBTestDefault", label2="Total tested",
+        sft.plot_data(default, dist2=total, label1="TBTestDefault", label2="Total tested",
                                    title="Test default vs. total, default proportion = {}".format(1.0 - treatment_fraction),
                                    xlabel="time step", ylabel="# of individuals", category='Test_default_vs_total',
                                    show=True, line=False)
         # TODO: write test to check if report matches debug logging. Pending on #2279. May not need this part.
-        outfile.write(dtk_sft.format_success_msg(success))
+        outfile.write(sft.format_success_msg(success))
     if debug:
         print( "SUMMARY: Success={0}\n".format(success) )
     return success
 
 def application( output_folder="output", stdout_filename="test.txt", insetchart_name="InsetChart.json",
                  config_filename="config.json", campaign_filename="campaign.json",
-                 report_name=dtk_sft.sft_output_filename,
+                 report_name=sft.sft_output_filename,
                  debug=False):
     if debug:
         print( "output_folder: " + output_folder )
@@ -225,7 +236,7 @@ def application( output_folder="output", stdout_filename="test.txt", insetchart_
         print( "report_name: " + report_name + "\n" )
         print( "debug: " + str(debug) + "\n" )
 
-    dtk_sft.wait_for_done()
+    sft.wait_for_done()
     param_obj = load_emod_parameters(config_filename, debug)
     campaign_obj = load_campaign_file(campaign_filename, debug)
     output_dict = parse_output_file(stdout_filename, debug)
@@ -242,7 +253,7 @@ if __name__ == "__main__":
     parser.add_argument('-j', '--jsonreport', default="InsetChart.json", help="Json report to load (InsetChart.json)")
     parser.add_argument('-c', '--config', default="config.json", help="Config name to load (config.json)")
     parser.add_argument('-C', '--campaign', default="campaign.json", help="campaign name to load (campaign.json)")
-    parser.add_argument('-r', '--reportname', default=dtk_sft.sft_output_filename, help="Report file to generate")
+    parser.add_argument('-r', '--reportname', default=sft.sft_output_filename, help="Report file to generate")
     args = parser.parse_args()
 
     application(output_folder=args.output, stdout_filename=args.stdout, insetchart_name=args.jsonreport,

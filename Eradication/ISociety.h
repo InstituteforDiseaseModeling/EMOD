@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -17,6 +17,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 namespace Kernel {
 
+    class RANDOMBASE;
     struct IIdGeneratorSTI;
     struct IPairFormationRateTable;
     struct IPairFormationAgent;
@@ -34,7 +35,7 @@ namespace Kernel {
         virtual IPairFormationAgent* GetPFA(RelationshipType::Enum) = 0;
         virtual IPairFormationStats* GetStats(RelationshipType::Enum) = 0;
 
-        virtual void SetParameters( IIdGeneratorSTI* pIdGen, const Configuration* config ) = 0;
+        virtual void SetParameters( RANDOMBASE* pRNG, IIdGeneratorSTI* pIdGen, const Configuration* config ) = 0;
         virtual IRelationshipParameters* GetRelationshipParameters( RelationshipType::Enum type ) = 0;
 
         virtual IConcurrency* GetConcurrency() = 0;

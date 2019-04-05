@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -9,7 +9,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "stdafx.h"
 #include "ClimateByData.h"
-#include "Contexts.h"
 #include "Environment.h"
 #include "Common.h"
 #include "Exceptions.h"
@@ -27,7 +26,15 @@ namespace Kernel {
     BEGIN_QUERY_INTERFACE_BODY(ClimateByData)
     END_QUERY_INTERFACE_BODY(ClimateByData)
 
-    ClimateByData * ClimateByData::CreateClimate(ClimateUpdateResolution::Enum update_resolution, INodeContext * _parent, int datapoints, std::ifstream& airtemperature_file, std::ifstream& landtemperature_file, std::ifstream& rainfall_file, std::ifstream& humidity_file, float start_time)
+    ClimateByData * ClimateByData::CreateClimate( ClimateUpdateResolution::Enum update_resolution,
+                                                  INodeContext * _parent,
+                                                  int datapoints,
+                                                  std::ifstream& airtemperature_file,
+                                                  std::ifstream& landtemperature_file,
+                                                  std::ifstream& rainfall_file,
+                                                  std::ifstream& humidity_file,
+                                                  float start_time,
+                                                  RANDOMBASE* pRNG )
     {
         ClimateByData * new_climate = _new_ ClimateByData(update_resolution, _parent);
         new_climate->Configure( EnvPtr->Config );
@@ -35,7 +42,7 @@ namespace Kernel {
         new_climate->ReadDataFromFiles(datapoints, airtemperature_file, landtemperature_file, rainfall_file, humidity_file);
 
         // initialize climate values
-        new_climate->UpdateWeather(start_time, 1.0f);
+        new_climate->UpdateWeather( start_time, 1.0f, pRNG );
 
         return new_climate;
     }
@@ -186,7 +193,7 @@ namespace Kernel {
                 humidity_data[i] *= humidity_scale_factor;
     }
 
-    void ClimateByData::UpdateWeather(float time, float dt)
+    void ClimateByData::UpdateWeather( float time, float dt, RANDOMBASE* pRNG )
     {
         LOG_DEBUG_F("UpdateWeather: time = %f", time);
         int index = 0;
@@ -229,7 +236,7 @@ namespace Kernel {
         m_accumulated_rainfall = rainfall_data[index] * resolution_correction * dt; // just the mean rainfall each day
         m_humidity = humidity_data[index];
 
-        Climate::UpdateWeather(time, dt); // call base-class UpdateWeather() to add stochasticity and check values are within valid bounds
+        Climate::UpdateWeather( time, dt, pRNG ); // call base-class UpdateWeather() to add stochasticity and check values are within valid bounds
     }
 
     ClimateByData::~ClimateByData()

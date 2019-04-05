@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -12,21 +12,24 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "EventCoordinator.h"
 #include "Configure.h"
 #include "DemographicRestrictions.h"
-#include "DurationDistribution.h"
 #include "Interventions.h"
 #include "EventTrigger.h"
 #include "NodeEventContext.h"
 #include "JsonConfigurableCollection.h"
+#include "EventTriggerNode.h"
+#include "EventTriggerCoordinator.h"
+#include "ReportStatsByIP.h"
+
 
 namespace Kernel
 {
     struct INodeEventContext;
     struct IIndividualHumanEventContext;
-    struct INodeTriggeredInterventionConsumer;
 
     ENUM_DEFINE( ThresholdType,
-        ENUM_VALUE_SPEC( COUNT,      1 )
-        ENUM_VALUE_SPEC( PERCENTAGE, 2 ) )
+        ENUM_VALUE_SPEC( COUNT,             1 )
+        ENUM_VALUE_SPEC( PERCENTAGE,        2 )
+        ENUM_VALUE_SPEC( PERCENTAGE_EVENTS, 3 ) )
 
     // ------------------------------------------------------------------------
     // --- Action
@@ -43,14 +46,26 @@ namespace Kernel
 
         // JsonConfigurable methods
         virtual bool Configure( const Configuration * inputJson ) override;
+        void CheckConfigurationTriggers();
+       
 
         // Other methods
         float GetThreshold() const;
-        const EventTrigger& GetEventToBroadcast() const;
+        const std::string& GetEventToBroadcast() const;
+        
+        EventType::Enum GetEventType() { return m_EventType; };
+        EventTriggerCoordinator& GetEventToBroadcastCooridnator() { return m_TriggerCoordinator; };
+        EventTriggerNode& GetEventToBroadcastNode() { return m_TriggerNode; };
+        EventTrigger& GetEventToBroadcastIndividual() { return m_TriggerIndividual; };
+
 
     private:
         float        m_Threshold;
-        EventTrigger m_EventToBroadcast;
+        std::string  m_EventToBroadcast;
+        EventType::Enum  m_EventType;
+        EventTriggerCoordinator m_TriggerCoordinator;
+        EventTriggerNode m_TriggerNode;
+        EventTrigger m_TriggerIndividual;
     };
 
     // ------------------------------------------------------------------------
@@ -84,20 +99,26 @@ namespace Kernel
 
         // JsonConfigurable methods
         virtual bool Configure( const Configuration * inputJson ) override;
+        virtual void CheckConfiguration( const Configuration * inputJson );
 
         // IVisitIndividual methods
         virtual bool visitIndividualCallback( IIndividualHumanEventContext *ihec, float & incrementalCostOut, ICampaignCostObserver * pICCO );
 
         // Other methods
-        void Distribute( const std::vector<INodeEventContext*>& nodes, uint32_t numIncidences, uint32_t qualifyingPopulation );
+        virtual bool Distribute( const std::vector<INodeEventContext*>& nodes, uint32_t numIncidences, uint32_t qualifyingPopulation );
+        void SetContextTo(ISimulationEventContext* sim, IEventCoordinatorEventContext *isec) { m_sim = sim; m_Parent = isec; };
 
-    private:
-        float CalculateIndidence( uint32_t numIncidences, uint32_t qualifyingPopulation ) const;
+        const Action* GetCurrentAction() const;
+
+    protected:
+        float CalculateIncidence( uint32_t numIncidences, uint32_t qualifyingPopulation ) const;
         Action* GetAction( float value );
 
         ThresholdType::Enum m_ThresholdType;
         ActionList m_ActionList;
         Action* m_pCurrentAction;
+        ISimulationEventContext* m_sim;
+        IEventCoordinatorEventContext* m_Parent;
     };
 
     // ------------------------------------------------------------------------
@@ -114,32 +135,38 @@ namespace Kernel
         virtual ~IncidenceCounter();
 
         virtual bool Configure( const Configuration * inputJson ) override;
+        virtual void ConfigureTriggers( const Configuration * inputJson );
+        virtual void CheckConfigurationTriggers();
+
+        uint32_t GetCount() const;
+        virtual uint32_t GetCountOfQualifyingPopulation( const std::vector<INodeEventContext*>& rNodes );
+        virtual void StartCounting();
+        virtual void Update( float dt );
+        virtual bool IsDoneCounting() const;
+        virtual void RegisterForEvents( ISimulationEventContext* pSEC );
+        virtual void UnregisterForEvents( ISimulationEventContext* pSEC );
+        virtual void RegisterForEvents( INodeEventContext* pNEC );
+        virtual void UnregisterForEvents( INodeEventContext* pNEC );
+        int32_t GetCountEventsForNumTimeSteps() const;
+
+        // for ReportStatsByIP
+        bool IsNodeQualified( INodeEventContext* pNEC );
+        individual_qualified_function_t GetIndividualQualifiedFunction();
 
         // IIndividualEventObserver methods
         virtual bool notifyOnEvent( IIndividualHumanEventContext *context,
-                                    const EventTrigger& StateChange ) override;
+            const EventTrigger& StateChange ) override;
 
-        // Other methods
-        uint32_t GetCount() const;
-        uint32_t GetCountOfQualifyingPopulation( const std::vector<INodeEventContext*>& rNodes );
-        void StartCounting();
-        void Update( float dt );
-        bool IsDoneCounting() const;
-        void RegisterForEvents( INodeEventContext* pNEC );
-        void UnregisterForEvents( INodeEventContext* pNEC );
-        int32_t GetCountEventsForNumTimeSteps() const;
+    protected:
+        uint32_t m_Count;
+        PropertyRestrictions<NPKey, NPKeyValue, NPKeyValueContainer> m_NodePropertyRestrictions;
+        DemographicRestrictions   m_DemographicRestrictions;
+        std::vector<EventTrigger> m_TriggerConditionListIndividual;
 
     private:
-        INodeTriggeredInterventionConsumer* GetNodeTriggeredConsumer( INodeEventContext* pNEC );
-
-        uint32_t m_Count;
         int32_t m_CountEventsForNumTimeSteps;
         int32_t m_NumTimeStepsCounted;
         bool m_IsDoneCounting;
-        DemographicRestrictions   m_DemographicRestrictions;
-        std::vector<EventTrigger> m_TriggerConditionList;
-        PropertyRestrictions<NPKey, NPKeyValue, NPKeyValueContainer> m_NodePropertyRestrictions;
-
     };
 
     // ------------------------------------------------------------------------
@@ -164,16 +191,23 @@ namespace Kernel
         virtual void CheckStartDay( float campaignStartDay ) const override { };
         virtual void AddNode( const suids::suid& suid ) override;
         virtual void Update( float dt ) override;
+        virtual void ConsiderResponding();
         virtual void UpdateNodes( float dt ) override;
         virtual bool IsFinished() override;
+        virtual IEventCoordinatorEventContext* GetEventContext() override { return nullptr; }
 
         // Other methods - for testing
         int GetNumTimeStepsInRep() const { return m_NumTimestepsInRep; }
         int GetNumReps() const { return m_NumReps; }
-        int GetEventCount() const { return m_IncidenceCounter.GetCount(); }
-        uint32_t GetQualifyingCount() { return m_IncidenceCounter.GetCountOfQualifyingPopulation( m_CachedNodes ); }
+        int GetEventCount() const { return m_pIncidenceCounter->GetCount(); }
+        uint32_t GetQualifyingCount() { return m_pIncidenceCounter->GetCountOfQualifyingPopulation( m_CachedNodes ); }
 
     protected:
+        virtual void ConfigureRepetitions( const Configuration * inputJson );
+        virtual void CheckConfigureRepetitions();
+
+        IncidenceEventCoordinator( IncidenceCounter* ic, Responder* pResponder );
+
         ISimulationEventContext*        m_Parent;
         std::vector<INodeEventContext*> m_CachedNodes;
         bool                            m_IsExpired;
@@ -181,8 +215,8 @@ namespace Kernel
         int32_t                         m_NumReps;
         int32_t                         m_NumTimestepsBetweenReps;
         int32_t                         m_NumTimestepsInRep;
-        IncidenceCounter                m_IncidenceCounter;
-        Responder                       m_Responder;
+        IncidenceCounter*               m_pIncidenceCounter;
+        Responder*                      m_pResponder;
     };
 }
 

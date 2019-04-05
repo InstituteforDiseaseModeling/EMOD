@@ -14,8 +14,6 @@ lib_report_dllSrcFiles = [ "$REPORT_DIR/Report_TBHIV_ByAge.cpp", "$REPORT_DIR/st
 lib_report_dllIncFiles = [ "$REPORT_DIR/Report_TBHIV_ByAge.h" ]
 lib_report_dllLocalInc = [ "$REPORT_DIR/stdafx.h" ]
 
-report_env.Append( CPPDEFINES=["ENABLE_TBHIV" ] )
-
 report_env.Append(LIBS=['baseReportLib'])
 report_env.Append(LIBS=['utils'])
 report_env.Append(LIBPATH=['$BUILD_DIR/baseReportLib'])

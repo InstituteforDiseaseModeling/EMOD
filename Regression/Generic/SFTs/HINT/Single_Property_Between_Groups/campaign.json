@@ -1,0 +1,50 @@
+{
+   "Campaign_Name": "Initial Seeding",
+   "Events": [
+      {
+         "Event_Coordinator_Config": {
+            "Demographic_Coverage": 1,
+            "Intervention_Config": {
+               "Antigen": 0,
+               "Genome": 0,
+               "Outbreak_Source": "PrevalenceIncrease",
+               "class": "OutbreakIndividual"
+            },
+            "Property_Restrictions": [
+               "QualityOfCare:Seed_1"
+            ],
+            "Target_Demographic": "Everyone",
+            "class": "StandardInterventionDistributionEventCoordinator"
+         },
+         "Event_Name": "Outbreak",
+         "Nodeset_Config": {
+            "class": "NodeSetAll"
+         },
+         "Start_Day": 0,
+         "class": "CampaignEvent"
+      },
+      {
+         "Event_Coordinator_Config": {
+            "Demographic_Coverage": 1,
+            "Intervention_Config": {
+               "Antigen": 0,
+               "Genome": 0,
+               "Outbreak_Source": "PrevalenceIncrease",
+               "class": "OutbreakIndividual"
+            },
+            "Property_Restrictions": [
+               "QualityOfCare:Seed_2"
+            ],
+            "Target_Demographic": "Everyone",
+            "class": "StandardInterventionDistributionEventCoordinator"
+         },
+         "Event_Name": "Outbreak",
+         "Nodeset_Config": {
+            "class": "NodeSetAll"
+         },
+         "Start_Day": 0,
+         "class": "CampaignEvent"
+      }
+   ],
+   "Use_Defaults": 1
+}

@@ -1,5 +1,5 @@
 
-import dtk_InfectivityScalingBoxcar_Support as isb_support
+import dtk_test.dtk_InfectivityScalingBoxcar_Support as isb_support
 
 def application(config_filename="config.json", debug = True):
     if debug:

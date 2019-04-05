@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -14,7 +14,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "RateTableFactory.h"
 #include "PairFormationStatsFactory.h"
 #include "FlowControllerFactory.h"
-#include "Contexts.h"   // for randgen
 #include "Relationship.h"
 #include "RelationshipParameters.h"
 #include "IIdGeneratorSTI.h"
@@ -93,7 +92,7 @@ namespace Kernel {
         return ret ;
     }
 
-    void SocietyImpl::SetParameters( IIdGeneratorSTI* pIdGen, const Configuration* config )
+    void SocietyImpl::SetParameters( RANDOMBASE* pRNG, IIdGeneratorSTI* pIdGen, const Configuration* config )
     {
         bool prev_use_defaults = JsonConfigurable::_useDefaults ;
         bool resetTrackMissing = JsonConfigurable::_track_missing;
@@ -130,16 +129,16 @@ namespace Kernel {
             RelationshipParameters* p_rel_params = new RelationshipParameters( rel_type );
             p_rel_params->Configure( config_rel );
 
-            RelationshipCreator rc = [this,pIdGen,p_rel_params](IIndividualHumanSTI*male,IIndividualHumanSTI*female) 
+            RelationshipCreator rc = [this,pRNG,pIdGen,p_rel_params](IIndividualHumanSTI*male,IIndividualHumanSTI*female) 
             { 
                 suids::suid rel_id = pIdGen->GetNextRelationshipSuid();
-                IRelationship* p_rel = RelationshipFactory::CreateRelationship( rel_id, relationship_manager, p_rel_params, male, female );
+                IRelationship* p_rel = RelationshipFactory::CreateRelationship( pRNG, rel_id, relationship_manager, p_rel_params, male, female );
                 relationship_manager->AddRelationship( p_rel, true );
             }; 
 
             rel_params[  irel ] = p_rel_params ;
             form_params[ irel ] = PairFormationParamsFactory::Create( rel_type, config_form );
-            pfa[         irel ] = PfaFactory::CreatePfa( config_form, form_params[ irel ], pfa_selection_threshold, randgen, rc );
+            pfa[         irel ] = PfaFactory::CreatePfa( config_form, form_params[ irel ], pfa_selection_threshold, pRNG, rc );
             rates[       irel ] = RateTableFactory::CreateRateTable( form_params[ irel ] );
             stats[       irel ] = PairFormationStatsFactory::CreateStatistician( form_params[ irel ] );
             controller[  irel ] = FlowControllerFactory::CreateController( pfa[ irel ], stats[ irel ], rates[ irel ], form_params[ irel ] );

@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -13,6 +13,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "InterventionFactory.h"
 #include "NodeEventContext.h"  // for INodeEventContext (ICampaignCostObserver)
 #include "TBContexts.h"
+#include "IIndividualHumanContext.h"
+#include "ISimulationContext.h"
+#include "RANDOM.h"
 
 SETUP_LOGGING( "DiagnosticTreatNeg" )
 
@@ -160,7 +163,7 @@ namespace Kernel
         m_gets_positive_test_intervention = false;
         LOG_DEBUG_F("Reset test result flag to %d \n", m_gets_positive_test_intervention);
 
-        if( !SMART_DRAW( getTreatmentFractionNegative() ) )
+        if( !parent->GetRng()->SmartDraw( getTreatmentFractionNegative() ) )
         {
             onPatientDefault();
             expired = true;         // this person doesn't get the negative intervention despite the negative test
@@ -222,15 +225,8 @@ namespace Kernel
 
         if( use_event_or_config == EventOrConfig::Event )
         {
-            INodeTriggeredInterventionConsumer* broadcaster = nullptr;
-
-            if (s_OK != parent->GetEventContext()->GetNodeEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster))
-
-            {
-
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()->GetNodeEventContext()", "INodeTriggeredInterventionConsumer", "INodeEventContext" );
-            }
-            broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), negative_diagnosis_event );
+            IIndividualEventBroadcaster* broadcaster = parent->GetEventContext()->GetNodeEventContext()->GetIndividualEventBroadcaster();
+            broadcaster->TriggerObservers( parent->GetEventContext(), negative_diagnosis_event );
         }
         else if( negative_diagnosis_config._json.Type() != ElementType::NULL_ELEMENT )
         {
@@ -281,15 +277,8 @@ namespace Kernel
 
         if( use_event_or_config == EventOrConfig::Event )
         {
-            INodeTriggeredInterventionConsumer* broadcaster = nullptr;
-
-            if (s_OK != parent->GetEventContext()->GetNodeEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster))
-
-            {
-
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()->GetNodeEventContext()", "INodeTriggeredInterventionConsumer", "INodeEventContext" );
-            }
-            broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), defaulters_event );
+            IIndividualEventBroadcaster* broadcaster = parent->GetEventContext()->GetNodeEventContext()->GetIndividualEventBroadcaster();
+            broadcaster->TriggerObservers( parent->GetEventContext(), defaulters_event );
         }
         else if( defaulters_config._json.Type() != ElementType::NULL_ELEMENT )
         {

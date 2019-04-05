@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -16,8 +16,12 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "EventTrigger.h"
 #include "NodeEventContext.h"
 #include "INodeContext.h"
+#include "SimulationEventContext.h"
 #include "IndividualEventContext.h"
 #include "IIndividualHuman.h"
+#include "IdmDateTime.h"
+#include "IDistribution.h"
+#include "DistributionFactory.h"
 
 SETUP_LOGGING( "CommunityHealthWorkerEventCoordinator" )
 
@@ -48,6 +52,7 @@ namespace Kernel
     , m_RemoveIndividualEventList()
     , m_MapTime(-1.0)
     , m_InQueueMap()
+    , m_pInitialAmount(nullptr)
     , m_CurrentStock(INT_MAX)
     , m_MaxStock(INT_MAX)
     , m_DaysBetweenShipments(FLT_MAX)
@@ -61,6 +66,7 @@ namespace Kernel
 
     CommunityHealthWorkerEventCoordinator::~CommunityHealthWorkerEventCoordinator()
     {
+        delete m_pInitialAmount;
     }
 
 
@@ -78,17 +84,14 @@ namespace Kernel
         initConfigTypeMap("Amount_In_Shipment",      &m_AmountInShipment,         CHW_Amount_In_Shipment_DESC_TEXT,      0,        INT_MAX, INT_MAX );
         initConfigTypeMap("Max_Stock",               &m_MaxStock,                 CHW_Max_Stock_DESC_TEXT,               0,        INT_MAX, INT_MAX );
 
-        DurationDistribution initial_amount;
-        initial_amount.SetTypeNameDesc( "Initial_Amount_Distribution_Type", CHW_Initial_Amount_Distribution_Type_DESC_TEXT );
-        initial_amount.AddSupportedType( DistributionFunction::FIXED_DURATION,       "Initial_Amount",      CHW_Initial_Amount_DESC_TEXT,      "", "" );
-        initial_amount.AddSupportedType( DistributionFunction::UNIFORM_DURATION,     "Initial_Amount_Min",  CHW_Initial_Amount_Min_DESC_TEXT,  "Initial_Amount_Max",     CHW_Initial_Amount_Max_DESC_TEXT );
-        initial_amount.AddSupportedType( DistributionFunction::GAUSSIAN_DURATION,    "Initial_Amount_Mean", CHW_Initial_Amount_Mean_DESC_TEXT, "Initial_Amount_Std_Dev", CHW_Initial_Amount_Std_Dev_DESC_TEXT );
-        initial_amount.AddSupportedType( DistributionFunction::EXPONENTIAL_DURATION, "Initial_Amount",      CHW_Initial_Amount_DESC_TEXT,      "", "" );
+        DistributionFunction::Enum initial_amount_function( DistributionFunction::CONSTANT_DISTRIBUTION );
+        initConfig( "Initial_Amount_Distribution", initial_amount_function, inputJson, MetadataDescriptor::Enum("Initial_Amount_Distribution_Type", CHW_Initial_Amount_Distribution_DESC_TEXT, MDD_ENUM_ARGS(DistributionFunction)) );
 
-        initial_amount.Configure( this, inputJson );
+        m_pInitialAmount = DistributionFactory::CreateDistribution( this, initial_amount_function, "Initial_Amount", inputJson );
+
         m_DemographicRestrictions.ConfigureRestrictions( this, inputJson );
 
-        initConfigTypeMap("Trigger_Condition_List", &m_TriggerConditionList, CHW_Trigger_Condition_List_DESC_TEXT );
+        initConfigTypeMap( "Trigger_Condition_List", &m_TriggerConditionList, CHW_Trigger_Condition_List_DESC_TEXT );
 
         initConfigComplexType( "Node_Property_Restrictions", &m_NodePropertyRestrictions, SEC_Node_Property_Restriction_DESC_TEXT );
 
@@ -96,7 +99,7 @@ namespace Kernel
 
         bool retValue = JsonConfigurable::Configure( inputJson );
 
-        if( retValue && !JsonConfigurable::_dryrun)
+        if( retValue && !JsonConfigurable::_dryrun )
         {
             // ------------------------------------------------------
             // --- Check that the intervention exists and initialize
@@ -150,22 +153,6 @@ namespace Kernel
             {
                 m_TriggerConditionList.push_back( event_name );
             }
-
-            // --------------------
-            // --- Initialize Stock
-            // --------------------
-            initial_amount.CheckConfiguration();
-            m_CurrentStock = int( initial_amount.CalculateDuration() + 0.5); // round up
-            if( m_CurrentStock > m_MaxStock )
-            {
-                m_CurrentStock = m_MaxStock;
-            }
-
-            m_DaysToNextShipment = int( float(m_CurrentStock) / float(m_MaxDistributedPerDay) );
-            if( m_DaysToNextShipment > m_DaysBetweenShipments )
-            {
-                m_DaysToNextShipment = m_DaysBetweenShipments;
-            }
         }
 
         return retValue;
@@ -182,6 +169,24 @@ namespace Kernel
         m_CachedNodes.push_back( pNEC );
 
         RegisterForEvents( pNEC );
+
+        // --------------------
+        // --- Initialize Stock
+        // --------------------
+        if( m_CurrentStock == INT_MAX )
+        {
+            m_CurrentStock = int( m_pInitialAmount->Calculate( pNEC->GetRng() ) + 0.5 ); // round up
+            if( m_CurrentStock > m_MaxStock )
+            {
+                m_CurrentStock = m_MaxStock;
+            }
+
+            m_DaysToNextShipment = int( float( m_CurrentStock ) / float( m_MaxDistributedPerDay ) );
+            if( m_DaysToNextShipment > m_DaysBetweenShipments )
+            {
+                m_DaysToNextShipment = m_DaysBetweenShipments;
+            }
+        }
     }
 
     template<typename T>
@@ -474,35 +479,22 @@ namespace Kernel
 
     void CommunityHealthWorkerEventCoordinator::RegisterForEvents( INodeEventContext* pNEC )
     {
-        INodeTriggeredInterventionConsumer* pNTIC = GetNodeTriggeredConsumer( pNEC );
+        IIndividualEventBroadcaster* broadcaster = pNEC->GetIndividualEventBroadcaster();
 
         for( auto& trigger : m_TriggerConditionList )
         {
-            pNTIC->RegisterNodeEventObserver( this, trigger );
+            broadcaster->RegisterObserver( this, trigger );
         }
     }
 
     void CommunityHealthWorkerEventCoordinator::UnregisterForEvents( INodeEventContext* pNEC )
     {
-        INodeTriggeredInterventionConsumer* pNTIC = GetNodeTriggeredConsumer( pNEC );
+        IIndividualEventBroadcaster* broadcaster = pNEC->GetIndividualEventBroadcaster();
 
         for( auto& trigger : m_TriggerConditionList )
         {
-            pNTIC->UnregisterNodeEventObserver( this, trigger );
+            broadcaster->UnregisterObserver( this, trigger );
         }
-    }
-
-    INodeTriggeredInterventionConsumer* CommunityHealthWorkerEventCoordinator::GetNodeTriggeredConsumer( INodeEventContext* pNEC )
-    {
-        release_assert( pNEC );
-        INodeTriggeredInterventionConsumer* pNTIC = nullptr;
-        if( pNEC->QueryInterface( GET_IID(INodeTriggeredInterventionConsumer), (void**)&pNTIC ) != s_OK )
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "pNEC", "INodeTriggeredInterventionConsumer", "INodeEventContext" );
-        }
-        release_assert( pNTIC );
-
-        return pNTIC ;
     }
 
     int CommunityHealthWorkerEventCoordinator::GetCurrentStock() const

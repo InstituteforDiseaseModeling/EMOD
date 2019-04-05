@@ -2,7 +2,7 @@
     "parameters": {
         "Base_Mortality": 0,
         "Config_Name": "4_Generic_MinimalConfig_EnableAging",
-        "Default_Config_Path": "defaults/minimum_default_config.json",
+        "Default_Config_Path": "../../defaults/minimum_default_config.json",
         "Enable_Aging": 1,
         "Enable_Birth": 0,
         "Enable_Natural_Mortality": 0,

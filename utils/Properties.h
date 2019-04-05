@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -186,23 +186,26 @@ namespace Kernel
 
     // Used to in HINT to define how disease is transmitted between people
     // with same/different properties.
-    class IDMAPI IPIntraNodeTransmissions
+    class IDMAPI IPIntraNodeTransmission
     {
     public:
-        IPIntraNodeTransmissions();
-        ~IPIntraNodeTransmissions();
+        IPIntraNodeTransmission();
+        ~IPIntraNodeTransmission();
 
         void Read( const std::string& rKeyStr, const JsonObjectDemog& rDemog, int numValues );
+        void ReadTxMatrix( const std::string& rKeyStr, const JsonObjectDemog& rDemog, int numValues );
 
         const std::string& GetRouteName() const;
         bool HasMatrix() const;
         const std::vector<std::vector<float>>& GetMatrix() const;
+        const std::map< std::string, std::vector<std::vector<float>>>& GetRouteToMatrixMap() const;
 
     private:
 #pragma warning( push )
 #pragma warning( disable: 4251 ) // See IdmApi.h for details
         std::string m_RouteName;
         std::vector<std::vector<float>> m_Matrix;
+        std::map< std::string, std::vector<std::vector<float>>> m_RouteToMatrixMap;
 #pragma warning( pop )
     };
 
@@ -217,7 +220,7 @@ namespace Kernel
         // Read the one Individual Property from demographics
         virtual void Read( int idx, uint32_t externalNodeId, const JsonObjectDemog& rDemog, bool isNotFirstNode );
 
-        const IPIntraNodeTransmissions& GetIntraNodeTransmissions( uint32_t externalNodeId ) const;
+        const IPIntraNodeTransmission& GetIntraNodeTransmission( uint32_t externalNodeId ) const;
 
     protected:
         friend class IPFactory;
@@ -243,7 +246,7 @@ namespace Kernel
 #pragma warning( push )
 #pragma warning( disable: 4251 ) // See IdmApi.h for details
         std::vector<IPTransition*> m_Transitions;
-        std::map<uint32_t,IPIntraNodeTransmissions*> m_IntraNodeTransmissionsMap;
+        std::map<uint32_t,IPIntraNodeTransmission*> m_IntraNodeTransmissionMap;
 #pragma warning( pop )
     };
 
@@ -289,8 +292,8 @@ namespace Kernel
         // Return true if the factory has at least one Individual Property
         bool HasIPs() const;
 
-        // Return the Individual Property of the whose key/name is given
-        IndividualProperty* GetIP( const std::string& rKey, 
+        // Return the Individual Property whose key/name is given
+        IndividualProperty* GetIP( const std::string& rKey,
                                    const std::string& rParameterName = std::string(""),
                                    bool throwOnNotFound = true );
 
@@ -301,6 +304,13 @@ namespace Kernel
         // The values are determined by the initial distribution parameters set in the demographics data.
         // The values will be set randomly.
         IPKeyValueContainer GetInitialValues( uint32_t externNodeId, RANDOMBASE* pRNG ) const;
+
+        // I'm really sure these must have local versions
+        // This is where I want this function but something weird happens when I do this. Have to push another
+        // version for now but not willing to give up completely on this yet.
+        //typedef std::map< std::string, std::string > tKeyValuePair; 
+        //typedef std::set< tKeyValuePair > tPermutations;
+        //static void GenerateAllPermutationsOnce( std::set< std::string > &keys, tKeyValuePair perm, tPermutations &perms );
 
     protected:
         friend class IPKeyValue;

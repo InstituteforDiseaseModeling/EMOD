@@ -1,4 +1,4 @@
-import dtk_ImportPressure_Support as ips
+import dtk_test.dtk_ImportPressure_Support as ips
 import numpy as np
 
 MAX_DURATION = 800

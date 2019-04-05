@@ -1,0 +1,8 @@
+Time,NodeID,NodeEventName,NumIndividuals,NumInfected,Geographic,Risk
+5,1,Node_Event_1,10,5,VULCAN,LOW
+15,3,Node_Event_2,30,12,EARTH,LOW
+15,2,Node_Event_2,20,12,ANDORIA,LOW
+25,4,Node_Event_3,40,4,ANDORIA,LOW
+25,3,Node_Event_3,30,2,EARTH,LOW
+25,2,Node_Event_3,20,4,ANDORIA,LOW
+25,1,Node_Event_3,10,2,VULCAN,LOW

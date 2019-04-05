@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -8,8 +8,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 ***************************************************************************************************/
 
 #include "stdafx.h"
-
-#ifdef ENABLE_TBHIV
 
 #include "Exceptions.h"
 #include "SimulationTBHIV.h"
@@ -83,15 +81,24 @@ namespace Kernel
         IndividualHumanCoInfection::InitializeStaticsCoInfection( config );
     }
 
-    void SimulationTBHIV::addNewNodeFromDemographics( suids::suid node_suid,
+    void SimulationTBHIV::addNewNodeFromDemographics( ExternalNodeId_t externalNodeId,
+                                                      suids::suid node_suid,
                                                       NodeDemographicsFactory *nodedemographics_factory,
                                                       ClimateFactory *climate_factory,
                                                       bool white_list_enabled )
     {
-        NodeTBHIV *node = NodeTBHIV::CreateNode(this, node_suid);
+        NodeTBHIV *node = NodeTBHIV::CreateNode(this, externalNodeId, node_suid);
         addNode_internal( node, nodedemographics_factory, climate_factory, white_list_enabled );
+    }
+
+
+    REGISTER_SERIALIZABLE(SimulationTBHIV);
+
+    void SimulationTBHIV::serialize(IArchive& ar, SimulationTBHIV* obj)
+    {
+        SimulationAirborne::serialize(ar, obj);
+        // Nothing to do here
     }
 
 }
 
-#endif // ENABLE_TBHIV

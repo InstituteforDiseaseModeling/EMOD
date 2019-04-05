@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -73,10 +73,7 @@ protected:
     static const std::string Report::_recovered_pop_label;
     static const std::string Report::_waning_pop_label;
     static const std::string Report::_immunized_pop_label;
-    static const std::string Report::_new_reported_infections_label;
-    static const std::string Report::_cum_reported_infections_label;
     static const std::string Report::_hum_infectious_res_label;
     static const std::string Report::_log_prev_label;
     static const std::string Report::_infection_rate_label;
-    //static const std::string Report::_aoi_label;
 };

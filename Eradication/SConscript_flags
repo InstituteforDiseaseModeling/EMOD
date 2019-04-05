@@ -16,7 +16,6 @@ if env['AllDlls'] or ( 'DiseaseDll' in env and env[ 'DiseaseDll' ] !="" ):
     eradenv.Append( CPPDEFINES=["_DLLS_" ] )
     eradenv.Append( CPPDEFINES=["BOOST_ALL_NO_LIB"] )
     eradenv.Append( CPPDEFINES=["ENABLE_PYTHON" ] )
-    #env.Append( CPPDEFINES=["ENABLE_TBHIV" ] )
     #env.Append( CPPDEFINES=["ENABLE_POLIO" ] )
     if env['DiseaseDll'] != "Vector" and env['DiseaseDll'] != "Malaria" and env['DiseaseDll'] != "Environmental":
         eradenv.Append( CPPDEFINES=["DISABLE_VECTOR"] )
@@ -28,8 +27,6 @@ if env['AllDlls'] or ( 'DiseaseDll' in env and env[ 'DiseaseDll' ] !="" ):
         eradenv.Append( CPPDEFINES=["ENABLE_POLIO"] )
     if env['DiseaseDll'] != "HIV" and env['DiseaseDll'] != "STI":
         eradenv.Append( CPPDEFINES=["DISABLE_HIV"] )
-    if env['DiseaseDll'] == "TB":
-        eradenv.Append( CPPDEFINES=["ENABLE_TBHIV"] )
 
 else:
 
@@ -44,17 +41,20 @@ else:
             env.Append( CPPDEFINES=["DISABLE_STI" ] )
             env.Append( CPPDEFINES=["DISABLE_VECTOR" ] )
             env.Append( CPPDEFINES=["DISABLE_MALARIA" ] )
+            env.Append( CPPDEFINES=["DISABLE_TBHIV" ] )
 
         if env["Disease"] == "Vector":
             env.Append( CPPDEFINES=["DISABLE_AIRBORNE" ] )
             env.Append( CPPDEFINES=["DISABLE_STI" ] )
             env.Append( CPPDEFINES=["DISABLE_HIV" ] )
             env.Append( CPPDEFINES=["DISABLE_MALARIA" ] )
+            env.Append( CPPDEFINES=["DISABLE_TBHIV" ] )
 
         if env["Disease"] ==  "Malaria":
             env.Append( CPPDEFINES=["DISABLE_AIRBORNE" ] )
             env.Append( CPPDEFINES=["DISABLE_STI" ] )
             env.Append( CPPDEFINES=["DISABLE_HIV" ] )
+            env.Append( CPPDEFINES=["DISABLE_TBHIV" ] )
 
         if env["Disease"] == "Dengue":
             env.Append( CPPDEFINES=["ENABLE_DENGUE" ] )
@@ -62,6 +62,7 @@ else:
             env.Append( CPPDEFINES=["DISABLE_AIRBORNE" ] )
             env.Append( CPPDEFINES=["DISABLE_STI" ] )
             env.Append( CPPDEFINES=["DISABLE_HIV" ] )
+            env.Append( CPPDEFINES=["DISABLE_TBHIV" ] )
 
         if env["Disease"] == "STI":
             env.Append( CPPDEFINES=["DISABLE_AIRBORNE" ] )
@@ -69,21 +70,25 @@ else:
             env.Append( CPPDEFINES=["DISABLE_MALARIA" ] )
             env.Append( CPPDEFINES=["DISABLE_CLIMATE" ] )
             env.Append( CPPDEFINES=["DISABLE_HIV" ] )
+            env.Append( CPPDEFINES=["DISABLE_TBHIV" ] )
 
         if env["Disease"] == "HIV":
             env.Append( CPPDEFINES=["DISABLE_AIRBORNE" ] )
             env.Append( CPPDEFINES=["DISABLE_VECTOR" ] )
             env.Append( CPPDEFINES=["DISABLE_MALARIA" ] )
             env.Append( CPPDEFINES=["DISABLE_CLIMATE" ] )
+            env.Append( CPPDEFINES=["DISABLE_TBHIV" ] )
 
         if env["Disease"] == "Polio":
             env.Append( CPPDEFINES=["DISABLE_AIRBORNE" ] )
             env.Append( CPPDEFINES=["DISABLE_VECTOR" ] )
             env.Append( CPPDEFINES=["DISABLE_MALARIA" ] )
+            env.Append( CPPDEFINES=["ENABLE_ENVIRONMENTAL" ] )
             env.Append( CPPDEFINES=["ENABLE_POLIO" ] )
             env.Append( CPPDEFINES=["DISABLE_STI" ] )
             env.Append( CPPDEFINES=["DISABLE_HIV" ] )
             env.Append( CPPDEFINES=["DISABLE_CLIMATE" ] )
+            env.Append( CPPDEFINES=["DISABLE_TBHIV" ] )
 
         if env["Disease"] == "Environmental":
             env.Append( CPPDEFINES=["ENABLE_ENVIRONMENTAL" ] )
@@ -92,6 +97,8 @@ else:
             env.Append( CPPDEFINES=["DISABLE_HIV" ] )
             env.Append( CPPDEFINES=["DISABLE_VECTOR" ] )
             env.Append( CPPDEFINES=["DISABLE_MALARIA" ] )
+            env.Append( CPPDEFINES=["DISABLE_TBHIV" ] )
+            env.Append( CPPDEFINES=["DISABLE_CLIMATE" ] )
 
         if env["Disease"] == "Typhoid":
             env.Append( CPPDEFINES=["DISABLE_AIRBORNE" ] )
@@ -102,17 +109,9 @@ else:
             env.Append( CPPDEFINES=["DISABLE_STI" ] )
             env.Append( CPPDEFINES=["DISABLE_HIV" ] )
             env.Append( CPPDEFINES=["DISABLE_CLIMATE" ] )
-
-        if env["Disease"] == "TB":
-            env.Append( CPPDEFINES=["ENABLE_TBHIV" ] )
-            env.Append( CPPDEFINES=["DISABLE_STI" ] )
-            env.Append( CPPDEFINES=["DISABLE_HIV" ] )
-            env.Append( CPPDEFINES=["DISABLE_VECTOR" ] )
-            env.Append( CPPDEFINES=["DISABLE_MALARIA" ] )
-            env.Append( CPPDEFINES=["DISABLE_CLIMATE" ] )
+            env.Append( CPPDEFINES=["DISABLE_TBHIV" ] )
 
         if env["Disease"] == "TBHIV":
-            env.Append( CPPDEFINES=["ENABLE_TBHIV" ] )
             env.Append( CPPDEFINES=["DISABLE_VECTOR" ] )
             env.Append( CPPDEFINES=["DISABLE_MALARIA" ] )
             env.Append( CPPDEFINES=["DISABLE_CLIMATE" ] )
@@ -125,8 +124,10 @@ else:
             env.Append( CPPDEFINES=["DISABLE_STI" ] )
             env.Append( CPPDEFINES=["DISABLE_VECTOR" ] )
             env.Append( CPPDEFINES=["DISABLE_MALARIA" ] )
+            env.Append( CPPDEFINES=["DISABLE_TBHIV" ] )
     else:
-        # env.Append( CPPDEFINES=["DISABLE_AIRBORNE" ] )
+        env.Append( CPPDEFINES=["ENABLE_ENVIRONMENTAL" ] )
+        env.Append( CPPDEFINES=["ENABLE_TYPHOID" ] )
+        # env.Append( CPPDEFINES=["ENABLE_POLIO" ] )
         env.Append( CPPDEFINES=["ENABLE_PYTHON_FEVER" ] )
-        env.Append( CPPDEFINES=["ENABLE_PYTHON" ] )
-        env.Append( CPPDEFINES=["ENABLE_TBHIV" ] )
+        # env.Append( CPPDEFINES=["ENABLE_DENGUE" ] )

@@ -8,7 +8,7 @@ Import('env')
 report_env = env.Clone()
 report_env[ "REPORT_DIR" ] = 'libvectorstats'
 
-lib_report_dllSrcFiles = [ "$REPORT_DIR/ReportVectorStatsEModule.cpp", "$REPORT_DIR/ReportVectorStats.cpp", "$REPORT_DIR/stdafx.cpp" ]
+lib_report_dllSrcFiles = [ "$REPORT_DIR/ReportVectorStatsEModule.cpp", "$REPORT_DIR/ReportVectorStats.cpp", "$REPORT_DIR/stdafx.cpp", "../Eradication/Infection.cpp" ]
 lib_report_dllIncFiles = [ "$REPORT_DIR/ReportVectorStats.h" ]
 lib_report_dllLocalInc = [ "$REPORT_DIR/stdafx.h" ]
 

@@ -1,34 +1,36 @@
 {
-    "Default_Config_Path": "./defaults/sti_default_config.json", 
+    "Default_Config_Path": "../.././defaults/sti_default_config.json",
     "parameters": {
-        ".logLevel_SocietyImpl" : "INFO",
+        ".logLevel_SocietyImpl": "INFO",
         "DEMOGRAPHICS": {
-            "Base_Population_Scale_Factor": 0.0001, 
+            "Demographics_Filenames": [
+                "../../HIV/input/SA_UN_demographics.json",
+                "../../HIV/input/PFA_overlay.json",
+                "PFA_overlay_transitory_only_64.json",
+                "PFA_Concurrency.json"
+            ],
             "Enable_Vital_Dynamics": 0,
-            "Demographics_Filenames": [ "../../HIV/input/SA_UN_demographics.json", "../../HIV/input/PFA_overlay.json", "PFA_overlay_transitory_only_64.json","PFA_Concurrency.json" ],
             "MORTALITY": {
-                "Base_Mortality": 0.01, 
+                "Base_Mortality": 0.01,
                 "Post_Infection_Mortality_Multiplier": 0.5
-            }
-        }, 
-        "DISEASE": {
-            "INFECTIOUSNESS": {
-                "Base_Infectivity": 10.0, 
-                "Infectious_Period_Mean": 120
-            }, 
-            "INCUBATION": {
-                "Base_Incubation_Period": 1
             },
-            "Enable_Disease_Mortality": 0
-        }, 
-
-        "Min_Days_Between_Adding_Relationships": 1, 
-
-
+            "x_Base_Population": 0.0001
+        },
+        "DISEASE": {
+            "Enable_Disease_Mortality": 0,
+            "INCUBATION": {
+                "Incubation_Period_Constant": 1
+            },
+            "INFECTIOUSNESS": {
+                "Base_Infectivity": 10.0,
+                "Infectious_Period_Gaussian_Mean": 120
+            }
+        },
+        "Min_Days_Between_Adding_Relationships": 1,
         "PRIMARY": {
-            "Simulation_Duration": 100, 
-            "Report_Relationship_Start": 1, 
-            "Config_Name": "64_STI_Transitory_Only_MaxRelationships"
+            "Config_Name": "64_STI_Transitory_Only_MaxRelationships",
+            "Report_Relationship_Start": 1,
+            "Simulation_Duration": 100
         }
     }
 }

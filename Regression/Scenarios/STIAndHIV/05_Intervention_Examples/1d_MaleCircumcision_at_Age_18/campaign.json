@@ -1,46 +1,40 @@
 {
     "Campaign_Name": "1d_MaleCircumcision_at_Age_18",
     "Default_Campaign_Path": "defaults/hiv_default_campaign.json",
-    "Use_Defaults": 1,
-    "Events":
-    [
+    "Events": [
         {
-            "BEGIN": "MALE CIRCUMCISION FOR 10% OF UNINFECTED ON THEIR 18TH BIRTHDAY, STARTING JAN 1, 2020", 
-            "class": "CampaignEventByYear", 
-            "Event_Name": "Select 10% of new born individuals to be eligible for male circumcision on their 18th birthday, starting Jan 1, 2002", 
-            "Start_Year": 2002, 
-            "Nodeset_Config":
-            {
-                "class": "NodeSetAll"
-            }, 
-            "Event_Coordinator_Config":
-            {
-                "class": "StandardInterventionDistributionEventCoordinator", 
-                "Target_Demographic": "Everyone", 
-                "Intervention_Config":
-                {
-                    "class": "BirthTriggeredIV", 
-                    "Demographic_Coverage": 0.1, 
-                    "Actual_IndividualIntervention_Config":
-                    {
-                        "class": "DelayedIntervention", 
-                        "Delay_Distribution": "FIXED_DURATION", 
-                        "Delay_Period": 6570, 
+            "BEGIN": "MALE CIRCUMCISION FOR 10% OF UNINFECTED ON THEIR 18TH BIRTHDAY, STARTING JAN 1, 2020",
+            "END": "MALE CIRCUMCISION FOR 10% OF UNINFECTED ON THEIR 18TH BIRTHDAY, STARTING JAN 1, 2020",
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "Actual_IndividualIntervention_Config": {
                         "Actual_IndividualIntervention_Configs": [
                             {
-                                "class": "HIVSimpleDiagnostic", 
+                                "Base_Sensitivity": 1,
+                                "Base_Specificity": 1,
+                                "Event_Or_Config": "Event",
+                                "Negative_Diagnosis_Event": "HIVNeedsMaleCircumcision",
                                 "New_Property_Value": "InterventionStatus:None",
-                                "Base_Specificity": 1, 
-                                "Base_Sensitivity": 1, 
-                                "Event_Or_Config": "Event", 
-                                "Positive_Diagnosis_Event": "NoTrigger", 
-                                "Negative_Diagnosis_Event": "HIVNeedsMaleCircumcision" 
+                                "Positive_Diagnosis_Event": "",
+                                "class": "HIVSimpleDiagnostic"
                             }
-                        ]
-                    }
-                }
-            }, 
-            "END": "MALE CIRCUMCISION FOR 10% OF UNINFECTED ON THEIR 18TH BIRTHDAY, STARTING JAN 1, 2020"
+                        ],
+                        "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                        "class": "DelayedIntervention",
+                        "Delay_Period_Constant": 6570
+                    },
+                    "Demographic_Coverage": 0.1,
+                    "class": "BirthTriggeredIV"
+                },
+                "Target_Demographic": "Everyone",
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "Select 10% of new born individuals to be eligible for male circumcision on their 18th birthday, starting Jan 1, 2002",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Year": 2002,
+            "class": "CampaignEventByYear"
         },
         {
             "Event_Coordinator_Config": {
@@ -203,34 +197,30 @@
             "class": "CampaignEventByYear"
         },
         {
-            "class": "CampaignEventByYear", 
-            "Event_Name": "Male circumcision at birth", 
-            "Start_Year": 1990, 
-            "Nodeset_Config":
-            {
-                "class": "NodeSetAll"
-            }, 
-            "Event_Coordinator_Config":
-            {
-                "class": "StandardInterventionDistributionEventCoordinator", 
-                "Intervention_Config":
-                {
-                    "class": "BirthTriggeredIV", 
-                    "Target_Demographic": "ExplicitGender", 
-                    "Target_Gender": "Male", 
-                    "Demographic_Coverage": 1, 
-                    "Actual_IndividualIntervention_Config":
-                    {
-                        "class": "HIVSigmoidByYearAndSexDiagnostic", 
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "Actual_IndividualIntervention_Config": {
                         "New_Property_Value": "InterventionStatus:None",
-                        "Ramp_Min": 0.0, 
-                        "Ramp_Max": 0.3, 
-                        "Ramp_MidYear": 2002.0, 
-                        "Ramp_Rate": 0.5, 
-                        "Positive_Diagnosis_Event": "HIVNeedsMaleCircumcision" 
-                    }
-                }
-            }
+                        "Positive_Diagnosis_Event": "HIVNeedsMaleCircumcision",
+                        "Ramp_Max": 0.3,
+                        "Ramp_MidYear": 2002.0,
+                        "Ramp_Min": 0.0,
+                        "Ramp_Rate": 0.5,
+                        "class": "HIVSigmoidByYearAndSexDiagnostic"
+                    },
+                    "Demographic_Coverage": 1,
+                    "Target_Demographic": "ExplicitGender",
+                    "Target_Gender": "Male",
+                    "class": "BirthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "Male circumcision at birth",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Year": 1990,
+            "class": "CampaignEventByYear"
         },
         {
             "END": "MALE CIRCUMCISION",
@@ -368,8 +358,8 @@
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
                         "Broadcast_Event": "HCTUptakePostDebut2",
-                        "Delay_Distribution": "EXPONENTIAL_DURATION",
-                        "Delay_Period": 365,
+                        "Delay_Period_Distribution": "EXPONENTIAL_DISTRIBUTION",
+                        "Delay_Period_Exponential": 365,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -453,9 +443,12 @@
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Choices": {
-                            "HCTUptakePostDebut0": 1
-                        },
+                        "Choice_Names": [
+                            "HCTUptakePostDebut0"
+                        ],
+                        "Choice_Probabilities": [
+                            1
+                        ],
                         "Disqualifying_Properties": [],
                         "NOTE": "No Invalid_Intervention_States so we can churn from deep in the cascade",
                         "New_Property_Value": "InterventionStatus:HCTUptakePostDebut",
@@ -482,8 +475,8 @@
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
                         "Broadcast_Event": "HCTTestingLoop1",
-                        "Delay_Distribution": "EXPONENTIAL_DURATION",
-                        "Delay_Period": 365,
+                        "Delay_Period_Distribution": "EXPONENTIAL_DISTRIBUTION",
+                        "Delay_Period_Exponential": 365,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -570,7 +563,7 @@
                         "class": "HIVSigmoidByYearAndSexDiagnostic"
                     },
                     "Trigger_Condition_List": [
-                        "HIVSymptomatic"
+                        "NewlySymptomatic"
                     ],
                     "class": "NodeLevelHealthTriggeredIV"
                 },
@@ -661,10 +654,14 @@
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Choices": {
-                            "ARTStaging1": 0.67,
-                            "NoTrigger": 0.33
-                        },
+                        "Choice_Names": [
+                            "ARTStaging1",
+                            "DummyTrigger"
+                        ],
+                        "Choice_Probabilities": [
+                            0.67,
+                            0.33
+                        ],
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -927,10 +924,14 @@
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Choices": {
-                            "ARTStaging2": 0.85,
-                            "HCTUptakePostDebut3": 0.15
-                        },
+                        "Choice_Names": [
+                            "ARTStaging2",
+                            "HCTUptakePostDebut3"
+                        ],
+                        "Choice_Probabilities": [
+                            0.85,
+                            0.15
+                        ],
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -960,8 +961,7 @@
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
                         "Broadcast_Event": "ARTStaging3",
-                        "Delay_Distribution": "FIXED_DURATION",
-                        "Delay_Period": 1,
+                        "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -972,7 +972,8 @@
                         "Max_Entries": 1,
                         "Muxer_Name": "ARTStaging",
                         "New_Property_Value": "InterventionStatus:ARTStaging",
-                        "class": "HIVMuxer"
+                        "class": "HIVMuxer",
+                        "Delay_Period_Constant": 1
                     },
                     "Trigger_Condition_List": [
                         "ARTStaging2"
@@ -1109,10 +1110,14 @@
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Choices": {
-                            "ARTStaging6": 0.85,
-                            "HCTUptakePostDebut9": 0.15
-                        },
+                        "Choice_Names": [
+                            "ARTStaging6",
+                            "HCTUptakePostDebut9"
+                        ],
+                        "Choice_Probabilities": [
+                            0.85,
+                            0.15
+                        ],
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -1243,8 +1248,7 @@
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
                         "Broadcast_Event": "OnPreART1",
-                        "Delay_Distribution": "FIXED_DURATION",
-                        "Delay_Period": 182,
+                        "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -1253,7 +1257,8 @@
                         "Max_Entries": 1,
                         "Muxer_Name": "PreART",
                         "New_Property_Value": "InterventionStatus:OnPreART",
-                        "class": "HIVMuxer"
+                        "class": "HIVMuxer",
+                        "Delay_Period_Constant": 182
                     },
                     "Trigger_Condition_List": [
                         "OnPreART0"
@@ -1273,10 +1278,14 @@
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Choices": {
-                            "HCTUptakePostDebut9": 0.25,
-                            "OnPreART2": 0.75
-                        },
+                        "Choice_Names": [
+                            "HCTUptakePostDebut9",
+                            "OnPreART2"
+                        ],
+                        "Choice_Probabilities": [
+                            0.25,
+                            0.75
+                        ],
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -1514,7 +1523,7 @@
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
                         "Broadcast_Event": "OnART1",
-                        "Delay_Distribution": "UNIFORM_DURATION",
+                        "Delay_Period_Distribution": "UNIFORM_DISTRIBUTION",
                         "Delay_Period_Max": 120,
                         "Delay_Period_Min": 1,
                         "Disqualifying_Properties": [
@@ -1564,8 +1573,8 @@
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
                         "Broadcast_Event": "OnART3",
-                        "Delay_Distribution": "EXPONENTIAL_DURATION",
-                        "Delay_Period": 7300,
+                        "Delay_Period_Distribution": "EXPONENTIAL_DISTRIBUTION",
+                        "Delay_Period_Exponential": 7300,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever"
                         ],
@@ -1613,10 +1622,14 @@
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Choices": {
-                            "HCTUptakePostDebut3": 0.75,
-                            "LostForever0": 0.25
-                        },
+                        "Choice_Names": [
+                            "HCTUptakePostDebut3",
+                            "LostForever0"
+                        ],
+                        "Choice_Probabilities": [
+                            0.75,
+                            0.25
+                        ],
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever"
                         ],
@@ -1675,5 +1688,6 @@
             "Start_Year": 1990,
             "class": "CampaignEventByYear"
         }
-    ]
+    ],
+    "Use_Defaults": 1
 }

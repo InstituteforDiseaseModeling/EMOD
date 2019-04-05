@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -17,6 +17,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "ReportUtilitiesSTI.h"
 #include "IndividualEventContext.h"
 #include "StrainIdentity.h"
+#include "INodeContext.h"
 
 SETUP_LOGGING( "StiTransmissionReporter" )
 
@@ -31,7 +32,7 @@ namespace Kernel
         : BaseTextReportEvents("TransmissionReport.csv")
         , report_data()
     {
-        eventTriggerList.push_back( "STINewInfection" );
+        eventTriggerList.push_back( EventTrigger::STINewInfection );
     }
 
     StiTransmissionReporter::~StiTransmissionReporter()

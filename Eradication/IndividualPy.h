@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -9,7 +9,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #pragma once
 
-#include "Contexts.h"
 #include "InfectionPy.h"
 #include "Individual.h"
 #include "PythonSupport.h"
@@ -33,7 +32,7 @@ namespace Kernel
         virtual ~IndividualHumanPy(void);
 
         virtual void CreateSusceptibility(float imm_mod = 1.0, float risk_mod = 1.0);
-        virtual void ExposeToInfectivity(float dt = 1.0, const TransmissionGroupMembership_t* transmissionGroupMembership = NULL);
+        virtual void ExposeToInfectivity(float dt, TransmissionGroupMembership_t transmissionGroupMembership);
 
     protected:
 
@@ -48,7 +47,7 @@ namespace Kernel
         virtual void UpdateInfectiousness(float dt);
         virtual void Update(float currenttime, float dt);
         virtual Infection* createInfection(suids::suid _suid);
-        virtual void AcquireNewInfection( const IStrainIdentity *infstrain = NULL, int incubation_period_override = -1);
+        virtual void AcquireNewInfection( const IStrainIdentity *infstrain = nullptr, int incubation_period_override = -1);
         virtual HumanStateChange GetStateChange() const;
 
         std::string processPrePatent( float dt );

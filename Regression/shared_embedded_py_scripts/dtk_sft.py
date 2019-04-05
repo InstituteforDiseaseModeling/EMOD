@@ -10,6 +10,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import warnings
+from scipy.stats import gaussian_kde
 
 """
 This module centralizes some small bits of functionality for SFT tests
@@ -24,12 +25,20 @@ DAYS_IN_MONTH = 30
 DAYS_IN_YEAR = 365
 MONTHS_IN_YEAR = 12
 
-def start_report_file(output_filename, config_name):
-    with open(output_filename, 'w') as outfile:
-        outfile.write("Beginning validation for {0} at time {1}.\n".format(
-            config_name,
-            time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-        ))
+def start_report_file(output_filename, config_name, already_started=False):
+    if already_started:
+        with open(output_filename, 'a') as outfile:
+            outfile.write("Beginning validation for {0} at time {1}.\n".format(
+                config_name,
+                time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+            ))
+    else:
+        with open(output_filename, 'w') as outfile:
+            outfile.write("Beginning validation for {0} at time {1}.\n".format(
+                config_name,
+                time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+            ))
+    
 
 
 def format_success_msg(success):
@@ -63,21 +72,20 @@ def test_binomial_95ci(num_success, num_trials, prob, report_file, category):
     lower_bound = mean - 2 * standard_deviation
     upper_bound = mean + 2 * standard_deviation
     success = True
+    result_message = f"For category {category}, the success cases is {num_success}," \
+                     f"expected 95% confidence interval ( {lower_bound}, {upper_bound}).\n"
     if mean < 5 or num_trials * (1 - prob) < 5:
         # The general rule of thumb for normal approximation method is that
         # the sample size n is "sufficiently large" if np >= 5 and n(1-p) >= 5
         # for cases that binomial confidence interval will not work
         success = False
-        report_file.write(
-            "There is not enough sample size in group {0}: mean = {1}, sample size - mean = {2}.\n".format(category,
-                                                                                                           mean,
-                                                                                                           num_trials * (
-                                                                                                           1 - prob)))
+        report_file.write(f"There is not enough sample size in group {category}:" \
+                          f"mean = {mean}, sample size - mean = {num_trials * (1 - prob)}.\n")
     elif num_success < lower_bound or num_success > upper_bound:
         success = False
-        report_file.write(
-            "BAD: For category {0}, the success cases is {1}, expected 95% confidence interval ( {2}, {3}).\n".format(
-                category, num_success, lower_bound, upper_bound))
+        report_file.write(f"BAD:  {result_message}")
+    else:
+        report_file.write(f"GOOD: {result_message}")
     return success
 
 
@@ -101,6 +109,8 @@ def test_binomial_99ci(num_success, num_trials, prob, report_file, category):
     lower_bound = mean - 3 * standard_deviation
     upper_bound = mean + 3 * standard_deviation
     success = True
+    result_message = f"BAD:  For category {category}, the success cases is {num_success}," \
+                     f"expected 99.75% confidence interval ( {lower_bound}, {upper_bound}).\n"
     if mean < 5 or num_trials * (1 - prob) < 5:
         # The general rule of thumb for normal approximation method is that
         # the sample size n is "sufficiently large" if np >= 5 and n(1-p) >= 5
@@ -112,9 +122,9 @@ def test_binomial_99ci(num_success, num_trials, prob, report_file, category):
                                                                                                            1 - prob)))
     elif num_success < lower_bound or num_success > upper_bound:
         success = False
-        report_file.write(
-            "BAD: For category {0}, the success cases is {1}, expected 99.75% confidence interval ( {2}, {3}).\n".format(
-                category, num_success, lower_bound, upper_bound))
+        report_file.write(f"BAD:  {result_message}")
+    else:
+        report_file.write(f"GOOD: {result_message}")
     return success
 
 
@@ -154,6 +164,8 @@ def calc_poisson_prob(mean, num_event):
 
 
 def plot_poisson_probability(rate, num, file, category='k vs. probability', xlabel='k', ylabel='probability',
+                             label1="expected Poisson distribution", label2="test data",
+                             title="Poisson Probability Mass Funciton",
                              show=True):
     """
     -----------------------------------------------------
@@ -202,9 +214,12 @@ def plot_poisson_probability(rate, num, file, category='k vs. probability', xlab
             d.pop(n)
     fig = plt.figure()
     plt.plot(x, y, 'r--', x, z, 'bs')
-    plt.title("{0}:rate = {1}, sample size = {2}".format(category, rate, len(num)))
+    plt.title(title)
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
+    red_patch = mpatches.Patch(color='red', label=label1)
+    blue_patch = mpatches.Patch(color='blue', label=label2)
+    plt.legend(handles=[red_patch, blue_patch])
     if show:
         plt.show()
     fig.savefig(str(category) + "_rate" + str(rate) + ".png")
@@ -439,14 +454,95 @@ def plot_data_sorted(dist1, dist2=None, label1="test data 1", label2="test data 
     if not check_for_plotting():
         show = False
 
-    plot_data(dist1=dist1, dist2=dist2, label1=label1, label2=label2, title=title,
-                  xlabel=xlabel, ylabel=ylabel, category=category, show=show, line=line,alpha=alpha, overlap=overlap, sort=True)
+    plot_data(dist1=dist1, dist2=dist2, label1=label1, label2=label2, title=title, xlabel=xlabel, ylabel=ylabel,
+              category=category, show=show, line=line,alpha=alpha, overlap=overlap, sort=True)
 
+
+def plot_scatter_fit_line(dist1, dist2=None, label1="test data 1", label2=None, title=None,
+                          xlabel=None, ylabel=None, xmin=None, xmax=None, ymin=None, ymax=None,
+                          category='plot_scatter_fit_line', show=True, line=False, marker='s',
+                          xticks=None, xtickslabel=None):
+    """
+    -----------------------------------------------------
+    This function plot the dist1 data with color based on the spatial density of nearby points. If dist2 is provided,
+    it plot dist2 data as fit data/line for dist1.
+    -----------------------------------------------------
+    """
+    from mpl_toolkits.axes_grid1 import make_axes_locatable
+
+    if not check_for_plotting():
+        show = False
+
+    fig, ax = plt.subplots()
+
+    if title:
+        ax.set_title(title)
+    if xlabel:
+        ax.set_xlabel(xlabel)
+    if ylabel:
+        ax.set_ylabel(ylabel)
+    if xmin and xmax:
+        ax.set_xlim(xmin, xmax)
+    else:
+        if xmax:
+            ax.set_xlim(xmax=xmax)
+        if xmin:
+            ax.set_xlim(xmin=xmin)
+    if ymin and ymax:
+        ax.set_ylim(ymin, ymax)
+    else:
+        if ymax:
+            ax.set_ylim(ymax=ymax)
+        if xmin:
+            ax.set_ylim(ymin=ymin)
+
+    color = 'k'+marker
+    if line:
+        color += '-'
+
+    # Generate data for scatter plot
+    y = dist1
+    x = np.arange(len(y))
+
+    # Calculate the point density
+    xy = np.vstack([x, y])
+    z = gaussian_kde(xy)(xy)
+
+    # Sort the points by density, so that the densest points are plotted last
+    idx = z.argsort()
+    x, y, z = x[idx], y[idx], z[idx]
+
+    # scatter = ax.scatter(x, y, c=z, s=20000 * z, edgecolor='', label=label1, cmap="rainbow", alpha=0.5)
+    scatter = ax.scatter(x, y, c=z, s=100, edgecolor='', label=label1, cmap="rainbow", alpha=0.5)
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes('right', size='5%', pad=0.05)
+    cax.set_ylabel("spatial density of nearby points")
+
+    fig.colorbar(scatter, cax=cax, orientation='vertical')
+
+
+    if dist2 is not None: # "if dist2:" will not work with numpy.ndarray
+        # use plot instead of scatter for more efficiency here.
+        ax.plot(dist2, color, label=label2, lw=0.5, markersize=3)
+    ax.legend(loc=0)
+
+    if xticks is not None:
+        ax.set_xticks(xticks)
+        if xtickslabel is not None:
+            ax.set_xticklabels(xtickslabel, fontsize=8, rotation=20, rotation_mode="anchor", ha='right')
+
+    fig.tight_layout()
+    fig.savefig(str(category) + '.png')
+    if show:
+        plt.show()
+    plt.close(fig)
+    return None
 
 
 def plot_data(dist1, dist2=None, label1="test data 1", label2=None, title=None,
-                       xlabel=None, ylabel=None, xmin=None, xmax=None, ymin=None, ymax=None,
-                       category ='plot_data', show=True, line=False,alpha=1, overlap=False, marker1='s', marker2='o', sort=False):
+              xlabel=None, ylabel=None, xmin=None, xmax=None, ymin=None, ymax=None,
+              category ='plot_data', show=True, line=False,alpha=1, overlap=False, marker1='s', marker2='o',
+              sort=False, xticks=None, xtickslabel=None):
     """
     -----------------------------------------------------
     This function plot the data of one\two distributions
@@ -467,7 +563,7 @@ def plot_data(dist1, dist2=None, label1="test data 1", label2=None, title=None,
             dist2 = sorted(dist2)
 
     fig = plt.figure()
-    ax= fig.add_axes([0.12,0.12,0.76,0.76])
+    ax= fig.add_axes([0.12,0.15,0.76,0.76])
     if title:
         ax.set_title(title)
     if xlabel:
@@ -501,6 +597,11 @@ def plot_data(dist1, dist2=None, label1="test data 1", label2=None, title=None,
     if dist2 is not None: # "if dist2:" will not work with numpy.ndarray
         plt.plot(dist2, color2, alpha=alpha, label=label2, lw=0.5, markersize=3)
     ax.legend(loc=0)
+
+    if xticks is not None:
+        ax.set_xticks(xticks)
+        if xtickslabel is not None:
+            ax.set_xticklabels(xtickslabel, fontsize=8, rotation=20, rotation_mode="anchor", ha='right')
 
     fig.savefig(str(category) + '.png')
     if show:
@@ -653,7 +754,7 @@ def test_poisson(trials, rate, report_file=None, route=None, normal_approximatio
         For rate < 10, I am testing it using the two-sample kstest since one-sample kstest test for poisson distribution has a bug
             previously, I am test it based on probability of events for a Possion distribution, this test is too sensitive and may not be a good fit in our case
         For rate >= 10, I am using Normal Approximation with continuity correction
-        If normal_approcimation = False, I am testing it using the two-sample kstest
+        If normal_approximation = False, I am testing it using the two-sample kstest
             :param trials: distribution to test, it contains values 0, 1, 2, ...
             :param rate: the average number of events per interval
             :param report_file:
@@ -674,14 +775,13 @@ def test_poisson(trials, rate, report_file=None, route=None, normal_approximatio
         s = get_p_s_from_ksresult(result)['s']
 
         critical_value_s = calc_ks_critical_value(size)
-        if p >= 5e-2 or s <= critical_value_s:
-            success = True
-        else:
-            if report_file is not None:
-                report_file.write(
-                    "BAD: Poisson two sample kstest result for {0} is: statistic={1}, pvalue={2}, expected s less than {3} and p larger than 0.05.\n".format(
-                        route, s, p, critical_value_s))
-            success = False
+        success = p >= 5e-2 or s <= critical_value_s
+        result_string = "GOOD" if success else "BAD"
+        if report_file is not None:
+            report_file.write(
+                "{0}: Poisson two sample kstest result for {1} is: statistic={2}, pvalue={3}, expected s less "
+                "than {4} or p larger than 0.05.\n".format(result_string, route, s, p, critical_value_s)
+            )
     else:
         # rate >= 10 is using Normal Approximation with continuity correction
         # stats.kstest(trials, 'norm', args=(loc, scale)) will fail since kstest is too sensitive for this approximation
@@ -698,13 +798,15 @@ def test_poisson(trials, rate, report_file=None, route=None, normal_approximatio
             scale = math.sqrt(rate)  # standard deviation
             p = stats.norm.cdf(key + 0.5, loc, scale)  # continuity correction
             actual_p = (count / float(size))  # calculate actual cumulative probability
-            if math.fabs(p - actual_p) > 0.02:
-                success = False
-                if report_file != None:
-                    report_file.write(
-                        "BAD: Poisson cumulative probability for {0} and {1} is {2}, expected {3}.\n".format(route, key,
-                                                                                                             actual_p,
-                                                                                                             p))
+            success = math.fabs(p - actual_p) <= 0.02
+            result_string = "GOOD" if success else "BAD"
+            if report_file is not None:
+                report_file.write(
+                    "{0}: Poisson cumulative probability for {1} and {2} is {3}, expected {4}.\n".format(result_string,
+                                                                                                         route,
+                                                                                                         key,
+                                                                                                         actual_p,
+                                                                                                         p)) 
     return success
 
 
@@ -1066,8 +1168,8 @@ def get_val(key, line):
         raise LookupError
 
 
-def wait_for_done():
-    with open("test.txt", "r") as test_file:
+def wait_for_done(filename=sft_test_filename):
+    with open(filename, "r") as test_file:
         while 1:
             where = test_file.tell()
             line = test_file.readline()
@@ -1076,9 +1178,9 @@ def wait_for_done():
                 test_file.seek(where)
             else:
                 if SFT_EOF in line:
-                    output_file_md5 = md5_hash_of_file("test.txt")
+                    output_file_md5 = md5_hash_of_file(filename)
                     with open("touchfile", "w") as touchfile:
-                        touchfile.write("Test.txt file completely written. Move on to read.\n")
+                        touchfile.write("{} file completely written. Move on to read.\n".format(filename))
                         touchfile.write(line)
                         touchfile.write(str(output_file_md5))
                         # print( "Last line read = " + line )

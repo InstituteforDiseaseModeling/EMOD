@@ -1,5 +1,5 @@
 {
-    "Default_Config_Path": "defaults/vector_default_config.json",
+    "Default_Config_Path": "../../defaults/vector_default_config.json",
     "parameters": {
         "CLIMATE": {
             "AIR": {
@@ -30,7 +30,7 @@
         },
         "VECTOR": {
             "EGGS": {
-                "Egg_Hatch_Delay_Distribution": "EXPONENTIAL_DURATION",
+                "Egg_Hatch_Delay_Distribution": "EXPONENTIAL_DISTRIBUTION",
                 "Egg_Saturation_At_Oviposition": "NO_SATURATION",
                 "Mean_Egg_Hatch_Delay": 2
             },

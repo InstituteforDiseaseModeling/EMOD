@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -18,12 +18,15 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "ISupports.h"
 #include "Configuration.h"
 #include "suids.hpp"
-#include "RANDOM.h"
-#include "IdmDateTime.h"
 #include "INodeContext.h"
+#include "BroadcasterObserver.h"
+#include "BroadcasterImpl.h"
 
 namespace Kernel
 {
+    struct IdmDateTime;
+    class EventTriggerCoordinator;
+    class EventTriggerCoordinatorFactory;
     struct INodeEventContext;
     struct IEventCoordinator;
     class CampaignEvent;
@@ -39,20 +42,23 @@ namespace Kernel
         // registration
         virtual void RegisterEventCoordinator(IEventCoordinator* iec) = 0;
 
+        virtual ICoordinatorEventBroadcaster* GetCoordinatorEventBroadcaster() = 0;
+        virtual INodeEventBroadcaster*        GetNodeEventBroadcaster() = 0;
+
         //////////////////////////////////////////////////////////////////////////
         // pass through from ISimulationContext
         // time services
-        virtual IdmDateTime GetSimulationTime() const = 0;
+        virtual const IdmDateTime& GetSimulationTime() const = 0;
         virtual int GetSimulationTimestep() const = 0;
-
-        // random number services
-        virtual RANDOMBASE* GetRng() =0;
     };
 
     class Simulation;
 
-    // The SimulationEventContextHost implements functionality properly belonging to the Simulation class but it split out manually to make development easier. like, you know, what partial class declarations are for.
-    class SimulationEventContextHost : public ISimulationEventContext
+    // The SimulationEventContextHost implements functionality properly belonging to the Simulation class
+    // but it split out manually to make development easier. like, you know, what partial class declarations are for.
+    class SimulationEventContextHost : public ISimulationEventContext, 
+                                       public ICoordinatorEventBroadcaster,
+                                       public INodeEventBroadcaster
     {
         DECLARE_QUERY_INTERFACE()
         IMPLEMENT_NO_REFERENCE_COUNTING() 
@@ -64,21 +70,32 @@ namespace Kernel
 
         //////////////////////////////////////////////////////////////////////////
         // ISimulationEventContext
-        virtual void VisitNodes(node_visit_function_t func);
-        virtual INodeEventContext* GetNodeEventContext(suids::suid node_id);
+        virtual void VisitNodes(node_visit_function_t func) override;
+        virtual INodeEventContext* GetNodeEventContext(suids::suid node_id) override;
 
         // registration
-        virtual void RegisterEventCoordinator(IEventCoordinator* iec);
+        virtual void RegisterEventCoordinator(IEventCoordinator* iec) override;
+
+        virtual ICoordinatorEventBroadcaster* GetCoordinatorEventBroadcaster() override;
+        virtual INodeEventBroadcaster*        GetNodeEventBroadcaster() override;
+
+        //////////////////////////////////////////////////////////////////////////
+        // ICoordinatorEventBroadcaster
+        virtual void RegisterObserver(   ICoordinatorEventObserver*     pObserver,    const EventTriggerCoordinator& trigger ) override;
+        virtual void UnregisterObserver( ICoordinatorEventObserver*     pObserver,    const EventTriggerCoordinator& trigger ) override;
+        virtual void TriggerObservers(   IEventCoordinatorEventContext* pCoordinator, const EventTriggerCoordinator& trigger ) override;
+
+        //////////////////////////////////////////////////////////////////////////
+        // INodeEventBroadcaster
+        virtual void RegisterObserver(   INodeEventObserver* pObserver,         const EventTriggerNode& trigger ) override;
+        virtual void UnregisterObserver( INodeEventObserver* pObserver,         const EventTriggerNode& trigger ) override;
+        virtual void TriggerObservers(   INodeEventContext*  pNodeEventContext, const EventTriggerNode& trigger ) override;
 
         //////////////////////////////////////////////////////////////////////////
         // pass through from ISimulationContext
         // time services
-        virtual IdmDateTime GetSimulationTime() const;
-        virtual int GetSimulationTimestep() const;
-
-        // random number services
-        virtual RANDOMBASE* GetRng();
-
+        virtual const IdmDateTime& GetSimulationTime() const override;
+        virtual int GetSimulationTimestep() const override;
         //////////////////////////////////////////////////////////////////////////
 
         // host implementation
@@ -87,8 +104,9 @@ namespace Kernel
         std::string campaign_filename;
 
     protected:
-        Simulation* sim;
+        void propagateContextToDependents();
 
+        Simulation* sim;
         std::list<IEventCoordinator*> event_coordinators;
 
         struct campaign_event_comparison
@@ -98,6 +116,7 @@ namespace Kernel
 
         std::priority_queue< CampaignEvent*, std::vector<CampaignEvent*>, campaign_event_comparison>  event_queue;
 
-        void propagateContextToDependents();
+        CoordinatorEventBroadcaster coordinator_broadcaster_impl;
+        NodeEventBroadcaster        node_broadcaster_impl;
     };
 }

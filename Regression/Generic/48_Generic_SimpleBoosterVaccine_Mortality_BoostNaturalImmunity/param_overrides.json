@@ -1,33 +1,35 @@
 {
-    "Default_Config_Path": "defaults/generic_default_config.json", 
+    "Default_Config_Path": "../../defaults/generic_default_config.json",
     "parameters": {
         "DEMOGRAPHICS": {
-            "Population_Scale_Type": "FIXED_SCALING", 
+            "Demographics_Filenames": [
+                "../00_Generic_Default/demographics.json"
+            ],
             "MORTALITY": {
-                "Base_Mortality": 0.5, 
-                "Enable_Disease_Mortality": 1, 
+                "Base_Mortality": 0.5,
+                "Enable_Disease_Mortality": 1,
                 "Post_Infection_Mortality_Multiplier": 0.8
-            }, 
-            "Demographics_Filenames": ["../00_Generic_Default/demographics.json"]
-        }, 
+            },
+            "Population_Scale_Type": "FIXED_SCALING"
+        },
         "DISEASE": {
-            "INFECTIOUSNESS": {
-                "Base_Infectivity": 1e-05, 
-                "Infectious_Period_Distribution": "FIXED_DURATION", 
-                "Base_Infectious_Period": 1
-            }, 
             "INCUBATION": {
-                "Base_Incubation_Period": 0
+                "Incubation_Period_Constant": 0
+            },
+            "INFECTIOUSNESS": {
+                "Base_Infectivity": 1e-05,
+                "Infectious_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                "Infectious_Period_Constant": 1
             }
-        }, 
-        "PRIMARY": {
-            "Run_Number": 1, 
-            "Simulation_Duration": 10, 
-            "Config_Name": "48_Generic_SimpleBoosterVaccine_Mortality_BoostNaturalImmunity", 
-            "Geography": "Namawala"
-        }, 
+        },
         "INTRANODE_TRANSMISSION": {
             "Enable_Heterogeneous_Intranode_Transmission": 1
+        },
+        "PRIMARY": {
+            "Config_Name": "48_Generic_SimpleBoosterVaccine_Mortality_BoostNaturalImmunity",
+            "Geography": "Namawala",
+            "Run_Number": 1,
+            "Simulation_Duration": 10
         }
     }
 }

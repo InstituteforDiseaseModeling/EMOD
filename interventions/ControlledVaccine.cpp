@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -11,6 +11,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "ControlledVaccine.h"
 #include "Interventions.h"
 #include "IndividualEventContext.h"
+#include "IIndividualHumanContext.h"
 #include "NodeEventContext.h"
 
 SETUP_LOGGING( "ControlledVaccine" )
@@ -84,15 +85,8 @@ namespace Kernel
 
         if( distribute && !m_DistributedEventTrigger.IsUninitialized() )
         {
-            INodeTriggeredInterventionConsumer* broadcaster = nullptr;
-            if (s_OK != context->GetParent()->GetEventContext()->GetNodeEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster))
-            {
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__,
-                    "context->GetParent()->GetEventContext()->GetNodeEventContext()", 
-                    "INodeTriggeredInterventionConsumer",
-                    "INodeEventContext" );
-            }
-            broadcaster->TriggerNodeEventObservers( context->GetParent()->GetEventContext(), m_DistributedEventTrigger );
+            IIndividualEventBroadcaster* broadcaster = context->GetParent()->GetEventContext()->GetNodeEventContext()->GetIndividualEventBroadcaster();
+            broadcaster->TriggerObservers( context->GetParent()->GetEventContext(), m_DistributedEventTrigger );
         }
 
         return distribute;
@@ -105,15 +99,8 @@ namespace Kernel
 
         if( expired && !m_ExpiredEventTrigger.IsUninitialized() )
         {
-            INodeTriggeredInterventionConsumer* broadcaster = nullptr;
-            if (s_OK != parent->GetEventContext()->GetNodeEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster))
-            {
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__,
-                    "parent->GetEventContext()->GetNodeEventContext()", 
-                    "INodeTriggeredInterventionConsumer",
-                    "INodeEventContext" );
-            }
-            broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), m_ExpiredEventTrigger );
+            IIndividualEventBroadcaster* broadcaster = parent->GetEventContext()->GetNodeEventContext()->GetIndividualEventBroadcaster();
+            broadcaster->TriggerObservers( parent->GetEventContext(), m_ExpiredEventTrigger );
         }
     }
 

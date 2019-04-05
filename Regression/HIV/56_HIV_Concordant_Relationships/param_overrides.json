@@ -1,0 +1,42 @@
+{
+    "Default_Config_Path": "../../defaults/hiv_default_config.json", 
+    "parameters": {
+
+        "____________SIMULATION___________": "",
+        "Config_Name": "56_HIV_Concordant_Relationships",
+        "Base_Year": 1990,
+        "Simulation_Duration": 730, 
+        "Simulation_Timestep": 1,
+        
+        "____________DEMOGRAPHICS___________": "",
+        "x_Base_Population": 1e-4,
+        "Enable_Birth": 0,
+        "Demographics_Filenames": [
+            "../input/SA_UN_demographics_extrapolated_WithProperties_Smoothed.json", 
+            "../input/PFA_overlay.json", 
+            "../input/InterventionStatus_overlay.json",
+            "../input/PFA_overlay_marital_10_only.json"
+        ], 
+
+        "____________REPORTING___________": "",
+        "Enable_Demographics_Reporting": 0,
+        "Report_HIV_Period": 30, 
+        "Report_HIV_ByAgeAndGender": 1,
+        "Report_HIV_ByAgeAndGender_Start_Year" : 1900,
+        "Report_HIV_ByAgeAndGender_Stop_Year" : 2100,
+        "Report_HIV_ByAgeAndGender_Collect_Gender_Data" : 1,
+        "Report_HIV_ByAgeAndGender_Collect_Age_Bins_Data" : [],
+        "Report_HIV_ByAgeAndGender_Collect_HIV_Data"             : 1,
+        "Report_HIV_ByAgeAndGender_Collect_On_Art_Data"          : 0,
+        "Report_HIV_ByAgeAndGender_Collect_Circumcision_Data"    : 0,
+        "Report_HIV_ByAgeAndGender_Collect_IP_Data"              : [],
+        "Report_HIV_ByAgeAndGender_Collect_Intervention_Data"    : [],
+        "Report_HIV_ByAgeAndGender_Add_Transmitters"             : 0,
+        "Report_HIV_ByAgeAndGender_Add_Relationships"            : 0,
+        "Report_HIV_ByAgeAndGender_Add_Concordant_Relationships" : 1,
+        "Report_HIV_ByAgeAndGender_Stratify_Infected_By_CD4"     : 0,
+        "Report_HIV_ByAgeAndGender_Has_Intervention_With_Name"   : "",
+        "Report_HIV_ByAgeAndGender_Event_Counter_List"           : []
+
+    }
+}

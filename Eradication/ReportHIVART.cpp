@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -15,12 +15,12 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Exceptions.h"
 #include "NodeEventContext.h"
 #include "IndividualEventContext.h"
-#include "Contexts.h"
 #include "FileSystem.h"
 #include "IIndividualHumanHIV.h"
 #include "SusceptibilityHIV.h"
 #include "IHIVInterventionsContainer.h"
 #include "SimulationEnums.h"
+#include "INodeContext.h"
 
 SETUP_LOGGING( "ReportHIVART" )
 

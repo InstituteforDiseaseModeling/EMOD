@@ -10,7 +10,7 @@
             "Event_Coordinator_Config": {
                 "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-					"Cost_To_Consumer":1,
+                    "Cost_To_Consumer":1,
                     "class": "HIVSimpleDiagnostic",
                     "Demographic_Coverage": 1.0,
                     "Disqualifying_Properties": [ "InterventionStatus:None" ],

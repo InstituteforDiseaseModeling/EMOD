@@ -2,7 +2,7 @@
 
 import json
 import os.path as path
-import dtk_sft
+import dtk_test.dtk_sft as sft
 import re
 import pandas as pd
 import os
@@ -72,7 +72,7 @@ def parse_output_file(output_filename="test.txt", simulation_timestep = 1, debug
     filtered_lines = []
     with open(output_filename) as logfile:
         for line in logfile:
-            if dtk_sft.has_match(line, matches):
+            if sft.has_match(line, matches):
                 filtered_lines.append(line)
     if debug:
         with open("filtered_lines.txt", "w") as outfile:
@@ -88,15 +88,15 @@ def parse_output_file(output_filename="test.txt", simulation_timestep = 1, debug
     index = 0
     for line in filtered_lines:
         if matches[0] in line:
-            infected = dtk_sft.get_val(matches[1], line)
-            statpop = dtk_sft.get_val(matches[3], line)
+            infected = sft.get_val(matches[1], line)
+            statpop = sft.get_val(matches[3], line)
             output_df.loc[index] = [time_step, infected, infectiousness, statpop]
             index += 1
             time_step += simulation_timestep
             infectiousness = 0
             continue
         if matches[2] in line:
-            infectiousness = dtk_sft.get_val(matches[2], line)
+            infectiousness = sft.get_val(matches[2], line)
             continue
     res_path = r'./infected_vs_infectiousness.csv'
     if not os.path.exists(os.path.dirname(res_path)):
@@ -116,7 +116,7 @@ def parse_json_report(output_folder="output", insetchart_name="InsetChart.json",
         icj = json.load(infile)["Channels"]
 
     new_infections = icj[KEY_NEW_INFECTIONS]["Data"]
-    cumulative_infections = icj[KEY_CUMULATIVE_INFECTIONS]["Data"]
+    cumulative_infections = np.cumsum(new_infections)
 
     report_dict = {KEY_NEW_INFECTIONS: new_infections, KEY_CUMULATIVE_INFECTIONS: cumulative_infections}
     report_df = pd.DataFrame(report_dict)
@@ -139,7 +139,7 @@ def calculate_infectiousness(new_infections, index, simulation_timestep, total_t
         else:
             infectiousness_ind[x] = base_infectivity * (1.0 - ((1.0 - baseline)* math.exp((delay -i)/rate)))
     if index == 1 or timestep == 1:
-        dtk_sft.plot_data(infectiousness_ind,
+        sft.plot_data(infectiousness_ind,
                                    title="infectiousness for new infections at time step {0}".format(timestep),
                                    xlabel="time step / simulation_timestep{0}".format(simulation_timestep),
                                    ylabel="Exponential_Delay: {0} days, Exponential_Rate: {1} ".format(delay, rate),
@@ -161,8 +161,8 @@ def create_report_file(param_obj, output_df, report_df, report_name, debug):
     infectiousness = output_df[KEY_INFECTIOUSNESS]
     statpop = output_df[KEY_STAT_POP]
     new_infections = report_df[KEY_NEW_INFECTIONS]
-    cumulative_infections = report_df[KEY_CUMULATIVE_INFECTIONS]
-    dtk_sft.plot_data(new_infections, cumulative_infections,
+    cumulative_infections = np.cumsum(new_infections)
+    sft.plot_data(new_infections, cumulative_infections,
                                label1="new infections", label2="cumulative infections",
                                title="Exponential_Delay: {0} days, Exponential_Rate: {1} ".format(delay, rate),
                                xlabel="time step / simulation_timestep{0}".format(simulation_timestep), ylabel=None,
@@ -200,11 +200,11 @@ def create_report_file(param_obj, output_df, report_df, report_name, debug):
                 for i in range(len(actual_infectiousness_all)):
                     file.write("Time Step: {0}, actual infectiousnes: {1},"
                                " expected_infectiousness: {2}.\n".format(i*simulation_timestep, actual_infectiousness_all[i], calc_infectiousness_all[i]))
-        dtk_sft.plot_data(actual_infectiousness_all, calc_infectiousness_all,
+        sft.plot_data(actual_infectiousness_all, calc_infectiousness_all,
                                    label1="actual infectiousness", label2="calc infectiousness",
                                    title="Exponential_Delay: {0} days, Exponential_Rate: {1} ".format(delay, rate),
                                    xlabel="time step / simulation_timestep{0}".format(simulation_timestep), ylabel="Infectiousness",
                                    category='Infectiousness',
                                    show=True, line = True)
-        outfile.write(dtk_sft.format_success_msg(success))
+        outfile.write(sft.format_success_msg(success))
         return success

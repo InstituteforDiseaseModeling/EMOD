@@ -2,7 +2,7 @@
 
 import json
 import os.path as path
-import dtk_sft
+import dtk_test.dtk_sft as sft
 import math
 
 # region outbreak support
@@ -172,7 +172,7 @@ def create_report_file( param_obj,
             success = False
             outfile.write("BAD: Total error is {0} for TB, error tolerance is {1}\n".format(total_error_tb, error_tolerance))
 
-        outfile.write(dtk_sft.format_success_msg(success))
+        outfile.write(sft.format_success_msg(success))
 # endregion
 
 # region TBDrug Support

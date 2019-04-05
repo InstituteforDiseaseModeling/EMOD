@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -13,7 +13,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "InterventionFactory.h"
 #include "NodeEventContext.h"  // for INodeEventContext (ICampaignCostObserver)
 #include "IIndividualHumanHIV.h"
-#include "SusceptibilityHIV.h"
+#include "IIndividualHumanContext.h"
+#include "ISusceptibilityHIV.h"
 
 SETUP_LOGGING( "CD4Diagnostic" )
 
@@ -193,13 +194,9 @@ namespace Kernel
             if( cd4count >= thresh.first && cd4count < thresh.second )
             {
                 // broadcast associated event
-                INodeTriggeredInterventionConsumer* broadcaster = nullptr;
-                if (s_OK != parent->GetEventContext()->GetNodeEventContext()->QueryInterface(GET_IID(INodeTriggeredInterventionConsumer), (void**)&broadcaster))
-                {
-                    throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()->GetNodeEventContext()", "INodeTriggeredInterventionConsumer", "INodeEventContext" );
-                }
+                IIndividualEventBroadcaster* broadcaster = parent->GetEventContext()->GetNodeEventContext()->GetIndividualEventBroadcaster();
                 LOG_DEBUG_F("SimpleHealthSeekingBehavior is broadcasting the actual intervention event to individual %d.\n", parent->GetSuid().data );
-                broadcaster->TriggerNodeEventObservers( parent->GetEventContext(), cd4_thresholds.thresh_events[ thresh_event_counter ] );
+                broadcaster->TriggerObservers( parent->GetEventContext(), cd4_thresholds.thresh_events[ thresh_event_counter ] );
                 test_pos = true;
             }
             thresh_event_counter++;

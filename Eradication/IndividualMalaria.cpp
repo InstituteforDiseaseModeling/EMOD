@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -24,13 +24,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "MalariaParameters.h"
 #include "EventTrigger.h"
 #include "Vector.h"
-
-#ifdef randgen
-#undef randgen
-#endif
 #include "RANDOM.h"
-#define randgen (parent->GetRng())
-
 #include "Exceptions.h"
 
 SETUP_LOGGING( "IndividualMalaria" )
@@ -219,12 +213,12 @@ namespace Kernel
     }
 
 
-    void IndividualHumanMalaria::ExposeToInfectivity(float dt, const TransmissionGroupMembership_t* transmissionGroupMembership)
+    void IndividualHumanMalaria::ExposeToInfectivity(float dt, TransmissionGroupMembership_t transmissionGroupMembership)
     {
         // Here we track exposure in the antibody_capacity to CSP.  This is not used at the moment to reduce bite probability of success, but it could in the future as knowledge improves
 
         // Is there any exposure at all from mosquitoes?
-        double infectivity = parent->GetTotalContagion(&NodeVector::vector_to_human_all);
+        double infectivity = parent->GetTotalContagion();
 
         // If so, mark its presence and provide a slow increase in antibodies to CSP over time and exposure.
         // This is just a proxy for exposure with an approximately 3-year time constant.
@@ -239,7 +233,8 @@ namespace Kernel
         }
 
         // Now decide whether the individual's exposure results in an infection
-        IndividualHumanVector::ExposeToInfectivity(dt, &NodeVector::vector_to_human_all);
+        TransmissionGroupMembership_t dummy( -1 );
+        IndividualHumanVector::ExposeToInfectivity( dt, dummy );
     }
 
     void IndividualHumanMalaria::ApplyTotalBitingExposure()
@@ -257,7 +252,7 @@ namespace Kernel
         {
             // If there is a non-zero number of initial infected hepatocytes,
             // choose a strain based on a weighted draw over values from all vector-to-human pools and acquire infection
-            float strain_cdf_draw = randgen->e() * m_total_exposure;
+            float strain_cdf_draw = GetRng()->e() * m_total_exposure;
             std::vector<strain_exposure_t>::iterator it = std::lower_bound( m_strain_exposure.begin(), m_strain_exposure.end(), strain_cdf_draw, compare_strain_exposure_float_less()); 
             IStrainIdentity * pSI = &(it->first);
             AcquireNewInfection( pSI );
@@ -266,7 +261,7 @@ namespace Kernel
 
     int IndividualHumanMalaria::CalculateInfectiousBites()
     {
-        return randgen->Poisson( m_total_exposure );
+        return GetRng()->Poisson( m_total_exposure );
     }
 
     bool IndividualHumanMalaria::ChallengeWithBites( int n_infectious_bites )
@@ -293,7 +288,7 @@ namespace Kernel
             sporozoite_survival_prob *= ( 1.0f - Sigmoid::variableWidthSigmoid( log10(anti_csp_concentration), log10(IndividualHumanMalariaConfig::antibody_csp_killing_threshold), IndividualHumanMalariaConfig::antibody_csp_killing_invwidth ) ); 
         }
 
-        m_initial_infected_hepatocytes = randgen->Poisson( n_sporozoites * sporozoite_survival_prob );
+        m_initial_infected_hepatocytes = GetRng()->Poisson( n_sporozoites * sporozoite_survival_prob );
         return ( m_initial_infected_hepatocytes > 0 ) ? true : false;
     }
 
@@ -428,7 +423,7 @@ namespace Kernel
                 if ( geneticID != gc2->first.GetGeneticID() ) 
                 {
                     // One outcrossing realization if genetic IDs are different
-                    geneticID = GenomeMarkers::FromOutcrossing( geneticID, gc2->first.GetGeneticID() );
+                    geneticID = GenomeMarkers::FromOutcrossing( GetRng(), geneticID, gc2->first.GetGeneticID() );
                     LOG_DEBUG_F("Crossing geneticID %d + %d --> %d\n", gc1->first.GetGeneticID(), gc2->first.GetGeneticID(), geneticID);
                 }
 
@@ -452,8 +447,8 @@ namespace Kernel
     void IndividualHumanMalaria::DepositFractionalContagionByStrain(float weight, IVectorInterventionsEffects* ivie, float antigenID, float geneticID)
     {
         StrainIdentity id = StrainIdentity(antigenID, geneticID);
-        parent->DepositFromIndividual( id, weight*ivie->GetblockIndoorVectorTransmit(), &NodeVector::human_to_vector_indoor );
-        parent->DepositFromIndividual( id, weight*ivie->GetblockOutdoorVectorTransmit(), &NodeVector::human_to_vector_outdoor );
+        parent->DepositFromIndividual( id, weight*ivie->GetblockIndoorVectorTransmit(),  NodeVector::human_indoor,  TransmissionRoute::TRANSMISSIONROUTE_HUMAN_TO_VECTOR_INDOOR );
+        parent->DepositFromIndividual( id, weight*ivie->GetblockOutdoorVectorTransmit(), NodeVector::human_outdoor, TransmissionRoute::TRANSMISSIONROUTE_HUMAN_TO_VECTOR_OUTDOOR );
     }
 
     void IndividualHumanMalaria::ResetClinicalSymptoms()
@@ -474,11 +469,11 @@ namespace Kernel
         // Trigger observers of new clinical and severe malaria episodes
         if ( symptom == ClinicalSymptomsEnum::CLINICAL_DISEASE )
         {
-            broadcaster->TriggerNodeEventObservers( GetEventContext(), EventTrigger::NewClinicalCase );
+            broadcaster->TriggerObservers( GetEventContext(), EventTrigger::NewClinicalCase );
         }
         else if ( symptom == ClinicalSymptomsEnum::SEVERE_DISEASE )
         {
-            broadcaster->TriggerNodeEventObservers( GetEventContext(), EventTrigger::NewSevereCase );
+            broadcaster->TriggerObservers( GetEventContext(), EventTrigger::NewSevereCase );
         }
     }
 
@@ -526,7 +521,7 @@ namespace Kernel
 
             // then gametocytes
             float gametocyte_density = (m_female_gametocytes + m_male_gametocytes) * m_inv_microliters_blood;
-            m_gametocytes_detected = float(1.0 / params()->malaria_params->parasiteSmearSensitivity * randgen->Poisson(params()->malaria_params->parasiteSmearSensitivity * gametocyte_density));
+            m_gametocytes_detected = float(1.0 / params()->malaria_params->parasiteSmearSensitivity * GetRng()->Poisson(params()->malaria_params->parasiteSmearSensitivity * gametocyte_density));
         }
         else if (test_type == MALARIA_TEST_NEW_DIAGNOSTIC)
         {
@@ -621,7 +616,6 @@ namespace Kernel
             m_CSP_antibody = malaria_susceptibility->RegisterAntibody(MalariaAntibodyType::CSP, 0);
         }
     }
-
 
     REGISTER_SERIALIZABLE(IndividualHumanMalaria);
 

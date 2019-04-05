@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -15,11 +15,11 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <functional>
 
 #include "suids.hpp"
-
-class RANDOMBASE;
+#include "RelationshipType.h"
 
 namespace Kernel
 {
+    class RANDOMBASE;
     struct IRelationshipManager;
     struct ISociety;
 
@@ -27,13 +27,6 @@ namespace Kernel
     typedef std::set< IIndividualHumanSTI* > tRelationshipMembers;
 
 #define MAX_SLOTS (63)
-
-    ENUM_DEFINE(RelationshipType,
-        ENUM_VALUE_SPEC( TRANSITORY    , 0)
-        ENUM_VALUE_SPEC( INFORMAL      , 1)
-        ENUM_VALUE_SPEC( MARITAL       , 2)
-        ENUM_VALUE_SPEC( COMMERCIAL    , 3)
-        ENUM_VALUE_SPEC( COUNT         , 4))
 
     ENUM_DEFINE(RelationshipState,
         ENUM_VALUE_SPEC( NORMAL      , 0)
@@ -67,7 +60,7 @@ namespace Kernel
         virtual void UpdatePaused() = 0;
 
         virtual bool Update( float dt ) = 0;
-        virtual void Consummate( float dt ) = 0;
+        virtual void Consummate( RANDOMBASE* pRNG, float dt ) = 0;
 
         virtual IIndividualHumanSTI* MalePartner() const = 0;
         virtual IIndividualHumanSTI* FemalePartner() const = 0;
@@ -100,4 +93,11 @@ namespace Kernel
     };
 
     typedef std::function<void(IIndividualHumanSTI*,IIndividualHumanSTI*)> RelationshipCreator;
+
+    struct IDMAPI RelationshipSetSorter
+    {
+        bool operator()( const IRelationship *rel1, const IRelationship *rel2 ) const;
+    };
+
+    typedef std::set<IRelationship*, RelationshipSetSorter> RelationshipSet_t;
 }

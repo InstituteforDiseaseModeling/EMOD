@@ -1,6 +1,6 @@
 /***************************************************************************************************
 
-Copyright (c) 2018 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
+Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
 
 EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
 To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
@@ -24,7 +24,7 @@ namespace Kernel
         DECLARE_QUERY_INTERFACE()
 
     public:
-        static NodeMalaria *CreateNode(ISimulationContext *simulation, suids::suid suid);
+        static NodeMalaria *CreateNode(ISimulationContext *simulation, ExternalNodeId_t externalNodeId, suids::suid suid);
         virtual ~NodeMalaria();
 
         virtual float GetParasitePositive()         const override { return m_Parasite_positive; }
@@ -86,7 +86,7 @@ namespace Kernel
         
     private:
         NodeMalaria();
-        NodeMalaria(ISimulationContext *simulation, suids::suid suid);
+        NodeMalaria(ISimulationContext *simulation, ExternalNodeId_t externalNodeId, suids::suid suid);
         virtual void Initialize() override;
 
         virtual INodeContext *getContextPointer() override { return static_cast<INodeContext*>(this); }

@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
-import dtk_sft
-import dtk_TBHIV_Reporter_Support as trs
+import dtk_test.dtk_sft as sft
+import dtk_test.dtk_TBHIV_Reporter_Support as trs
 
 """
 Reporter: HIVDeaths
@@ -25,7 +25,7 @@ matches = ["Update(): Time: ",
 
 def application( output_folder="output", stdout_filename="test.txt", reporter_filename="Report_TBHIV_ByAge.csv",
                  config_filename="config.json",
-                 report_name=dtk_sft.sft_output_filename,
+                 report_name=sft.sft_output_filename,
                  debug=False):
     if debug:
         print( "output_folder: " + output_folder )
@@ -36,7 +36,7 @@ def application( output_folder="output", stdout_filename="test.txt", reporter_fi
         print( "debug: " + str(debug) + "\n" )
 
 
-    dtk_sft.wait_for_done()
+    sft.wait_for_done()
     param_obj = trs.load_emod_parameters(config_filename, debug)
     output_dict = trs.parse_output_file(matches, ReportColumn.hivdeaths, stdout_filename,
                                         param_obj[trs.Config.simulation_timestep], debug)
@@ -55,7 +55,7 @@ if __name__ == "__main__":
     parser.add_argument('-s', '--stdout', default="test.txt", help="Name of stdoutfile to parse (test.txt")
     parser.add_argument('-j', '--reportername', default="Report_TBHIV_ByAge.csv", help="reporter to test(Report_TBHIV_ByAge.csv)")
     parser.add_argument('-c', '--config', default="config.json", help="Config name to load (config.json)")
-    parser.add_argument('-r', '--reportname', default=dtk_sft.sft_output_filename, help="Report file to generate")
+    parser.add_argument('-r', '--reportname', default=sft.sft_output_filename, help="Report file to generate")
     parser.add_argument('-d', '--debug', default=False, help="Debug = True or False")
     args = parser.parse_args()
 
