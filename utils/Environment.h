@@ -110,5 +110,6 @@ public:
 private:
     Environment();
 
-    static Environment * localEnv;
+    //static Environment * localEnv;
+    static Environment * & getInstanceAux();
 };

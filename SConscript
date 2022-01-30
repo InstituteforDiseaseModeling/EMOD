@@ -43,7 +43,7 @@ env.Append(LIBPATH = ["$BUILD_DIR/baseReportLib", "$BUILD_DIR/cajun", "$BUILD_DI
 print( "Link executable against cajun, campaign, snappy, and utils lib's." )
 env.Append(LIBS=["baseReportLib", "cajun", "campaign", "snappy", "lz4", "utils"])
 
-#print "builddir is " + env["BUILD_DIR"]
+print( "builddir is " + env["BUILD_DIR"])
 
 # First static libs
 SConscript( [ 'baseReportLib/SConscript',
@@ -210,7 +210,7 @@ disease = "ALL"
 if 'Disease' in env and len(env['Disease']) > 0:
     disease = env["Disease"]
 
-if os.sys.platform == 'win32':
+if os.sys.platform != 'win32':
     if disease != "Typhoid":
         OptionalScript('reporters/SConscript_Generic_AgeAtInfection')
         OptionalScript('reporters/SConscript_Generic_AgeAtInfectionHistogram')

@@ -28,7 +28,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "SusceptibilityTB.h"
 #include "INodeContext.h"
 #include "FactorySupport.h"
-#include "IdmDatetime.h"
+#include "IdmDateTime.h"
 
 // TODO: 
 // --> Start_Year

@@ -181,8 +181,10 @@ namespace Kernel
 
     Simulation::~Simulation()
     {
-/* maybe #ifdef _DEBUG?
-        LOG_DEBUG( "DTOR\n" );
+    // Himanshu Neema: Enabling memory clean up
+    if( true )
+    {
+        LOG_DEBUG( "Simulation::DTOR\n" );
         for (auto& entry : nodes)
         {
             delete entry.second;
@@ -203,7 +205,13 @@ namespace Kernel
             delete report;
         }
         reports.clear();
-*/        
+        
+        if ( m_pRngFactory )
+        {
+            delete m_pRngFactory;
+            m_pRngFactory = nullptr;
+        }
+    }
     }
 
     bool Simulation::Configure( const Configuration * inputJson )
@@ -597,13 +605,11 @@ namespace Kernel
 
         ReportInstantiatorMap report_instantiator_map ;
         SimType::Enum st_enum = m_simConfigObj->sim_type;
-#ifdef WIN32
         DllLoader dllLoader(SimType::pairs::lookup_key(st_enum));
         if( !dllLoader.LoadReportDlls( report_instantiator_map ) )
         {
             LOG_WARN_F("Failed to load reporter emodules for SimType: %s from path: %s\n" , SimType::pairs::lookup_key(st_enum), dllLoader.GetEModulePath(REPORTER_EMODULES).c_str());
         }
-#endif
         Reports_Instantiate( report_instantiator_map );
     }
 
@@ -1072,7 +1078,7 @@ namespace Kernel
         nodeRankMap.SetInitialLoadBalanceScheme( p_lbs );
 
         // Delete any existing transitions.json file
-        // Anyone could delete the file, but we’ll delegate to rank 0
+        // Anyone could delete the file, but we will delegate to rank 0
         if (EnvPtr->MPI.Rank == 0)
         {
             std::string transitions_file_path = FileSystem::Concat( Environment::getInstance()->OutputPath, std::string( IPFactory::transitions_dot_json_filename ) );

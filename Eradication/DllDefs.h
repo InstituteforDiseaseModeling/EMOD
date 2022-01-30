@@ -28,3 +28,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 // Maximum number of supported simulation types in DTK
 #define SIMTYPES_MAXNUM         25
+
+#ifndef WIN32
+    #define __cdecl
+#endif
+
+
