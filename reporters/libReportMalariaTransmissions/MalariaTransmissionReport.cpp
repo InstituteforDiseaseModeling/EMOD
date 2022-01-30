@@ -7,7 +7,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 ***************************************************************************************************/
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "MalariaTransmissionReport.h"
 
 #include <algorithm>

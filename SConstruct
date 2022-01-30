@@ -232,11 +232,12 @@ else:
     env['CC'] = "mpicxx"
     env['CXX'] = "mpicxx"
     env.Append( CCFLAGS=["-fpermissive"] )
-    env.Append( CCFLAGS=["--std=c++0x"] )
+    env.Append( CCFLAGS=["--std=c++14"] )
     env.Append( CCFLAGS=["-w"] )
     env.Append( CCFLAGS=["-ffloat-store"] )
     env.Append( CCFLAGS=["-Wno-unknown-pragmas"] )
     #env.Append( CCFLAGS=["-save-temps"] )
+    env.Append( CCFLAGS=["-fPIC"] )
     env.Append( EXTRACPPPATH=[
                           "#/Eradication",
                           "#/interventions",
@@ -244,8 +245,9 @@ else:
                           "#/baseReportLib",
                           "#/utils",
                           "#/libgeneric_static",
-                          "/usr/include/python3.6m",
-                          "/opt/python/python3.6.3/include/python3.6m",
+#                          "/usr/include/python3.6m",
+                          "/usr/local/include/python3.9",
+#                          "/opt/python/python3.6.3/include/python3.6m",
                           "#/cajun/include",
                           "#/rapidjson/include",
                           "#/rapidjson/modp",
@@ -303,7 +305,8 @@ if os.sys.platform.startswith("linux"):
         nixLibPrefix = "lib64"
         env.Append( EXTRALIBPATH=["/usr/lib64" , "/lib64" ] )
 
-    env.Append( LIBS=["pthread", "python3.6m", "dl" ] ) 
+#    env.Append( LIBS=["pthread", "python3.6m", "dl" ] ) 
+    env.Append( LIBS=["pthread", "python3.9", "util", "dl" ] ) 
     env.Append( EXTRALIBPATH=[ "/usr/local/lib", "/usr/lib64/mpich/lib", "/opt/python/python3.6.3/lib" ] )
 
     if static:

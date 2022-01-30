@@ -7,8 +7,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 ***************************************************************************************************/
 
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "ReportHelpers.h"
+#include "DllDefs.h"
 
 #include "Log.h"
 #include "MalariaContexts.h"

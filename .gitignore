@@ -272,3 +272,6 @@ config_new.xlsx
 *.VC.db
 *.VC.opendb
 
+# HN: Artifacts generated during initial C++ compiler check
+.sconf_temp
+

@@ -21,10 +21,10 @@ UNIT_TEST_INCLUDES=UnitTest++/src
 #MPI_INCLUDE=/usr/include/openmpi-i386/
 MPI_INCLUDE=
 ROOT = $(PWD)/..
-#CFLAGS = -Wall -g -fpermissive -I $(BOOST_INCLUDES) -I $(UNIT_TEST_INCLUDES) -I $(MPI_INCLUDE) -ffloat-store  -std=c++0x -Wno-unknown-pragmas
+#CFLAGS = -Wall -g -fpermissive -I $(BOOST_INCLUDES) -I $(UNIT_TEST_INCLUDES) -I $(MPI_INCLUDE) -ffloat-store  -std=c++14 -Wno-unknown-pragmas
 INCS= -I $(UNIT_TEST_INCLUDES) -I$(ROOT)/Eradication -I $(ROOT)/utils -I$(ROOT)/Eradication -I$(ROOT)/cajun/include -I$(ROOT)/campaign -I$(ROOT)/jsonspirit -I$(ROOT)/rapidjson/include
-CFLAGS = $(INCS) -w -O3 -fpermissive -ffloat-store  -std=c++0x -Wno-unknown-pragmas -I $(BOOST_PATH) -save-temps -DREVISION_NUMBER=$(SVN_REV) -DSVN_URL=$(SVN_URL)
-CFLAGS_DBG = $(INCS) -Wall -g -fpermissive -ffloat-store  -std=c++0x -Wno-unknown-pragmas -I $(BOOST_PATH) -DREVISION_NUMBER=$(SVN_REV) -DSVN_URL=$(SVN_URL)
+CFLAGS = $(INCS) -w -O3 -fpermissive -ffloat-store  -std=c++14 -Wno-unknown-pragmas -I $(BOOST_PATH) -save-temps -DREVISION_NUMBER=$(SVN_REV) -DSVN_URL=$(SVN_URL)
+CFLAGS_DBG = $(INCS) -Wall -g -fpermissive -ffloat-store  -std=c++14 -Wno-unknown-pragmas -I $(BOOST_PATH) -DREVISION_NUMBER=$(SVN_REV) -DSVN_URL=$(SVN_URL)
 COMPILE = $(CC) $(CFLAGS) -c -D_new_=new
 
 DBG_COMPILE = $(CC) $(CFLAGS_DBG) -c

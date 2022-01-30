@@ -34,9 +34,9 @@ namespace Kernel
         {
         };
 
-        char* GetEModuleVersion( char* sVer, const Environment* pEnv )
+        char* GetEModuleVersion( char* sVer, Environment* pEnv )
         {            
-            Environment::setInstance(const_cast<Environment*>(pEnv));
+            Environment::setInstance(pEnv);
             CreateRandomNumberGenerator( pEnv );
             ProgDllVersion pv;
             DLL_LOG( INFO, "%s: Version=%s  Branch=%s  SccsDate=%s  BuilderName=%s  BuildDate=%s\n",

@@ -18,10 +18,10 @@ UNIT_TEST_INCLUDES=UnitTest++/src
 #MPI_INCLUDE=/usr/include/openmpi-i386/
 MPI_INCLUDE=
 ROOT = $(PWD)/../
-#CFLAGS = -Wall -g -fpermissive -I $(BOOST_INCLUDES) -I $(UNIT_TEST_INCLUDES) -I $(MPI_INCLUDE) -ffloat-store  -std=c++0x -Wno-unknown-pragmas
+#CFLAGS = -Wall -g -fpermissive -I $(BOOST_INCLUDES) -I $(UNIT_TEST_INCLUDES) -I $(MPI_INCLUDE) -ffloat-store  -std=c++14 -Wno-unknown-pragmas
 INCS = -I $(UNIT_TEST_INCLUDES) -I$(ROOT) -I$(ROOT)/Eradication -I$(ROOT)/utils/ -I$(ROOT)/cajun/include -I$(ROOT)/campaign -I$(ROOT)/jsonspirit -I$(ROOT)/unittest/UnitTest++/src  -I $(BOOST_PATH)
-CFLAGS = -w -O3 -fpermissive $(INCS) -ffloat-store  -std=c++0x -Wno-unknown-pragmas -I $(BOOST_PATH) -save-temps -D_new_=new
-CFLAGS_DBG = -Wall -g -fpermissive -I $(UNIT_TEST_INCLUDES) -I $(MPI_INCLUDE) -ffloat-store  -std=c++0x -Wno-unknown-pragmas -I $(BOOST_PATH) -D_new_=new $(INCS)
+CFLAGS = -w -O3 -fpermissive $(INCS) -ffloat-store  -std=c++14 -Wno-unknown-pragmas -I $(BOOST_PATH) -save-temps -D_new_=new
+CFLAGS_DBG = -Wall -g -fpermissive -I $(UNIT_TEST_INCLUDES) -I $(MPI_INCLUDE) -ffloat-store  -std=c++14 -Wno-unknown-pragmas -I $(BOOST_PATH) -D_new_=new $(INCS)
 COMPILE = $(CC) $(CFLAGS) -c
 DBG_COMPILE = $(CC) $(CFLAGS_DBG) -c
 #LDFLAGS=-L/usr/local/lib -L/usr/local/lib -L/usr/lib/mpich2/lib/ -L /usr/lib/mpich2/lib/ -lmpichcxx -L$(BOOST_LIBS) -Wl,-R$(BOOST_LIBS) -L libs/ -ljson_spirit -lboost_program_options -lboost_mpi -lboost_serialization -lboost_filesystem -lboost_system #-lmpich #-lopa -lpthread -lrt -lstdc++ -pthreads

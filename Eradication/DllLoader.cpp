@@ -26,6 +26,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <dlfcn.h>
 #include <dirent.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 #endif
 
 typedef char* (*gver)(char*,const Environment * pEnv);
@@ -49,6 +50,16 @@ DllLoader::DllLoader(const char* sSimType)
         m_sSimType = new char[strlen(sSimType)+1];
         strcpy(m_sSimType, sSimType);
     }
+
+#ifdef WIN32
+    this->diseasePlugins = std::wstring(DISEASE_PLUGINS);
+    this->reporterPlugins = std::wstring(REPORTER_PLUGINS);
+    this->interventionPlugins = std::wstring(INTERVENTION_PLUGINS);
+#else
+    this->diseasePlugins = stringToWstring(DISEASE_PLUGINS);
+    this->reporterPlugins = stringToWstring(REPORTER_PLUGINS);
+    this->interventionPlugins = stringToWstring(INTERVENTION_PLUGINS);
+#endif
 }
 
 DllLoader::~DllLoader ()
@@ -123,127 +134,35 @@ DllLoader::LoadDiseaseDlls(
         LOG_ERR("LoadDiseaseDlls: EnvPtr not initialized. Returning.");
         return bRet;
     }
-    std::list< std::wstring > disease_dll_dirs;
 
+    std::list< std::wstring > disease_dll_dirs;
     ReadEmodulesJson( DISEASE_EMODULES, disease_dll_dirs );
 
 #if defined(WIN32)
-    std::wstring dllDir( L" " );
-    bool fully_qualified_dll_path = true;
-    if( disease_dll_dirs.size() == 0 )
+    std::vector< std::wstring> allMatchingDLLs = GetAllMatchingDllsInDirs( disease_dll_dirs, diseasePlugins, dllName );
+    for (std::wstring aMatchingDll : allMatchingDLLs)
     {
-        LOG_INFO( "Getting DISEASE_PLUGINS dir because no paths from emodules_map.json\n" );
-        dllDir = GetFullDllPath(std::wstring(DISEASE_PLUGINS));
-        std::wstring &dllDirStar = FileSystem::Concat( dllDir, std::wstring(L"*") );
-        disease_dll_dirs.push_back( dllDirStar );
-        fully_qualified_dll_path = false;
-    }
-    else
-    {
-        LOG_INFO( "Did not use --dll-path since emodules_map.json file was found.\n" );
-    }
-
-    for (auto& dllDirStar : disease_dll_dirs)
-    {
-        LOG_INFO_F("Searching disease plugin dir: %S\n", dllDirStar.c_str());
-
-        WIN32_FIND_DATA ffd;
-        HANDLE hFind = FindFirstFile(dllDirStar.c_str(), &ffd);
-        do
+        LOG_INFO_F("Calling LoadLibrary for %S\n", aMatchingDll.c_str());
+        HMODULE disDll = LoadLibrary( aMatchingDll.c_str() );
+        
+        if( CheckDynamicLibrary_Disease( disDll, wstringToString(aMatchingDll), createSimFuncPtrMap ) == true )
         {
-            LOG_INFO_F("fa=%d; fn=%S, fattr=%d, fadir=%d\n", ffd.dwFileAttributes, ffd.cFileName, ffd.dwFileAttributes, FILE_ATTRIBUTE_DIRECTORY);
-            if ( ffd.dwFileAttributes > 0 && ffd.cFileName[0] != '\0' && !(ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ) // ignore . and ..
-            {
-                std::wstring dllPath = dllDirStar;
-                if( fully_qualified_dll_path == false )
-                {
-                    LOG_INFO( "We are using reg-ex dll searching, append dir path to filename found.\n" );
-                    dllPath = FileSystem::Concat( dllDir, std::wstring(ffd.cFileName) );
-                }
-                LOG_DEBUG_F("Found dll: %S\n", dllPath.c_str());
-
-                // must end in .dll
-                if( dllPath.find( L".dll" ) == std::string::npos ||
-                    dllPath.find( L".dll" ) != dllPath.length()-4  ||
-                    (dllName && !StringEquals(ffd.cFileName, dllName)) )
-                {
-                    if (dllName)
-                        LOG_INFO_F( "%S is not a DLL or doesn't match %s\n", dllPath, dllName );
-                    else
-                        LOG_INFO_F( "%S is not a DLL\n", dllPath );
-                    continue;
-                }
-                LOG_INFO_F("Calling LoadLibrary for %S\n", dllPath.c_str());
-                HMODULE disDll = LoadLibrary( dllPath.c_str() );
-                if( disDll == nullptr )
-                {
-                    LOG_WARN_F("Failed to load dll %S\n", ffd.cFileName);
-                }
-                else
-                {
-                    LOG_INFO("Calling GetProcAddr for GetEModuleVersion\n");
-                    char emodVersion[64];
-                    if (!CheckEModuleVersion(disDll, emodVersion))
-                    {
-                        LOG_WARN_F("The version of EModule %S is lower than current application.\n", ffd.cFileName); // this message should be differentiable for GetProcAddr fail
-                        //continue;
-                    }
-
-                    LOG_INFO("Calling GetProcAddress for GetDiseaseType\n");
-                    typedef const char * (*gdt)();
-                    gdt _gdt = (gdt)GetProcAddress( disDll, "GetDiseaseType" );
-                    std::string diseaseType = std::string("");
-                    if( _gdt != nullptr )
-                    {
-                        diseaseType = (_gdt)();
-                    }
-                    else
-                    {
-                        LOG_WARN("GetProcAddr failed for GetDiseaseType.\n");
-                        continue;
-                    }
-
-                    dll2VersionStringMap[ diseaseType ] = std::string( emodVersion );
-
-                    LOG_INFO("Calling GetProcAddress for CreateSimulation\n");
-                    createSim _createSim = (createSim)GetProcAddress( disDll, "CreateSimulation" );
-                    if( _createSim != nullptr )
-                    {
-                        LOG_INFO_F("Caching create_sim function pointer for disease type: %s\n", diseaseType.c_str());
-                        createSimFuncPtrMap[diseaseType] = _createSim;
-                        bRet = true;
-                    }
-                    else
-                    {
-                        LOG_WARN("GetProcAddr failed for CreateSimulation.\n");
-                        continue;
-                    }
-
-                    LOG_INFO("Calling GetProcAddress for GetSchema\n");
-                    getSchema _getSchema = (getSchema)GetProcAddress( disDll, "GetSchema" );
-                    if( _getSchema != nullptr )
-                    {
-                        LOG_INFO_F("Caching get_schema function pointer for disease type: %s\n", diseaseType.c_str());
-                        getSchemaFuncPtrMap[diseaseType] = _getSchema;
-                        bRet = true;
-                    }
-                    else
-                    {
-                        LOG_WARN("GetProcAddr failed for GetSchema.\n");
-                        continue;
-                    }
-                }
-            }
-            else
-            {
-                LOG_INFO("That was a directory not an EModule or . or .. so ignore.\n");
-            }
+            bRet = true;
         }
-        while (FindNextFile(hFind, &ffd) != 0);
     }
-
 #else
-#warning "Linux shared library for disease not implemented yet at load."
+    std::vector<std::string> allMatchingSharedObjs = GetAllMatchingSharedObjectsInDirs( disease_dll_dirs, diseasePlugins, dllName );
+    void* disDll = nullptr;
+    for (std::string aMatchingSharedObject : allMatchingSharedObjs)
+    {
+        LOG_INFO_F("Loading Library: %S\n", aMatchingSharedObject.c_str());
+        disDll = dlopen( aMatchingSharedObject.c_str(), RTLD_NOW );
+        
+        if( CheckDynamicLibrary_Disease( disDll, aMatchingSharedObject, createSimFuncPtrMap ) == true )
+        {
+            bRet = true;
+        }
+    }
 #endif
 
     return bRet;
@@ -252,113 +171,49 @@ DllLoader::LoadDiseaseDlls(
 bool DllLoader::LoadReportDlls( std::unordered_map< std::string, Kernel::report_instantiator_function_t >& reportInstantiators,
                                 const char* dllName)
 {
+    LOG_DEBUG("Enter LoadReportDlls\n");
     bool bRet = false;
-    if (!EnvPtr) return bRet;
+    if (!EnvPtr)
+    {
+        LOG_ERR("LoadReportDlls: EnvPtr not initialized. Returning.");
+        return bRet;
+    }
 
     std::list< std::wstring > report_dll_dirs;
     ReadEmodulesJson( REPORTER_EMODULES, report_dll_dirs );
 
-#ifdef WIN32
 
-    std::wstring dllDir( L" " );
-    bool fully_qualified_dll_path = true;
-    if( report_dll_dirs.size() == 0 )
+#if defined(WIN32)
+    std::vector< std::wstring> allMatchingDLLs = GetAllMatchingDllsInDirs( report_dll_dirs, reporterPlugins, dllName );
+    for (std::wstring aMatchingDll : allMatchingDLLs)
     {
-        LOG_DEBUG( "Getting REPORTER_PLUGINS dir because no paths from emodules_map.json\n" );
-        dllDir = GetFullDllPath(std::wstring(REPORTER_PLUGINS)); 
-        std::wstring &dllDirStar = FileSystem::Concat( dllDir, std::wstring(L"*") );
-        report_dll_dirs.push_back( dllDirStar );
-        fully_qualified_dll_path = false;
-    }
-    else
-    {
-        LOG_DEBUG( "Did not use --dll-path since emodules_map.json file was found.\n" );
-    }
-
-    WIN32_FIND_DATA ffd;
-
-    for (auto& dllDirStar : report_dll_dirs)
-    {
-        LOG_DEBUG_F("Searching reporter plugin dir: %S\n", dllDirStar.c_str());
-
-        HANDLE hFind = FindFirstFile(dllDirStar.c_str(), &ffd);
-        do
+        LOG_INFO_F("Calling LoadLibrary for %S\n", aMatchingDll.c_str());
+        HMODULE disDll = LoadLibrary( aMatchingDll.c_str() );
+        
+        if( CheckDynamicLibrary_Reporter( disDll, wstringToString(aMatchingDll), reportInstantiators ) == true )
         {
-            if ( ffd.dwFileAttributes > 0 && ffd.cFileName[0] != '\0' && !(ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ) // ignore . and ..
-            {
-                std::wstring dllPath = dllDirStar;
-                LOG_DEBUG_F("Found dll: %S\n", dllPath.c_str());
-                if( fully_qualified_dll_path == false )
-                {
-                    LOG_DEBUG( "We are using reg-ex dll searching, append dir path to filename found.\n" );
-                    dllPath = FileSystem::Concat( dllDir, std::wstring(ffd.cFileName) );
-                }
-
-                if( dllPath.find( L".dll" ) == std::string::npos || // must end in .dll
-                    dllPath.find( L".dll" ) != dllPath.length()-4 ||
-                    (dllName && !StringEquals(ffd.cFileName, dllName)) )
-                {
-                    if (dllName)
-                        LOG_DEBUG_F( "%S is not a DLL or doesn't match %s\n", dllPath, dllName );
-                    else
-                        LOG_DEBUG_F( "%S is not a DLL\n", dllPath );
-                    continue;
-                }
-
-                LOG_INFO_F( "Calling LoadLibrary on reporter emodule %S\n", dllPath.c_str() );
-                HMODULE repDll = LoadLibrary( dllPath.c_str() );
-
-                if( repDll == nullptr )
-                {
-                    LOG_WARN_F( "Failed to load dll %S\n", ffd.cFileName );
-                }
-                else
-                {
-
-                    LOG_INFO("Calling GetProcAddr for GetEModuleVersion\n");
-                    char emodVersion[64];
-                    if (!CheckEModuleVersion(repDll, emodVersion))
-                    {
-                        LOG_WARN_F("The version of EModule %S is lower than current application!\n", ffd.cFileName);
-
-                        // For now, load report dll anyway
-                        //continue;
-                    }
-
-                    bool success = GetSimTypes( ffd.cFileName, repDll );
-                    if( !success ) continue ;
-
-                    Kernel::report_instantiator_function_t rif = nullptr ;
-                    success = GetReportInstantiator( ffd.cFileName, repDll, &rif );
-                    if( !success ) continue ;
-
-                    if( rif != nullptr )
-                    {
-                        std::string class_name ;
-                        success = GetType( ffd.cFileName, repDll, class_name );
-                        if( !success ) continue ;
-
-                        reportInstantiators[ class_name ] = rif ;
-                        bRet = true ;
-                    }
-                }
-            }
-            else
-            {
-                LOG_DEBUG("That was a directory not an EModule or . or .. so ignore.\n");
-            }
+            bRet = true;
         }
-        while (FindNextFile(hFind, &ffd) != 0);
     }
 #else
-#warning "Report plugin loading (dlopen/dlsym) not implemented on linux yet."
+    std::vector<std::string> allMatchingSharedObjs = GetAllMatchingSharedObjectsInDirs( report_dll_dirs, reporterPlugins, dllName );
+    void* disDll = nullptr;
+    for (std::string aMatchingSharedObject : allMatchingSharedObjs)
+    {
+        LOG_INFO_F("Loading Library: %S\n", aMatchingSharedObject.c_str());
+        disDll = dlopen( aMatchingSharedObject.c_str(), RTLD_NOW );
+        
+        if( CheckDynamicLibrary_Reporter( disDll, aMatchingSharedObject, reportInstantiators ) == true )
+        {
+            bRet = true;
+        }
+    }
 #endif
 
     return bRet;
 }
 
 
-#if defined(WIN32)
 bool DllLoader::GetSimTypes( const TCHAR* pFilename, HMODULE repDll )
 {
     bool success = true ;
@@ -377,7 +232,11 @@ bool DllLoader::GetSimTypes( const TCHAR* pFilename, HMODULE repDll )
     }
     else
     {
+#ifdef WIN32
         LOG_INFO_F ("GetProcAddress failed for GetSupportedSimTypes: %d.\n", GetLastError() );
+#else
+        LOG_INFO_F ("GetProcAddress failed for GetSupportedSimTypes: %d.\n", errno);
+#endif
         success = false;
     }
     return success ;
@@ -439,141 +298,44 @@ bool DllLoader::GetType( const TCHAR* pFilename,
     }
     return success ;
 }
-#endif
+
 
 bool DllLoader::LoadInterventionDlls(const char* dllName)
 {
+    LOG_DEBUG("Enter LoadInterventionDlls\n");
     bool bRet = false;
-    if (!EnvPtr) return bRet;
+    if (!EnvPtr)
+    {
+        LOG_ERR("LoadInterventionDlls: EnvPtr not initialized. Returning.");
+        return bRet;
+    }
 
     std::list< std::wstring > iv_dll_dirs;
     ReadEmodulesJson( INTERVENTION_EMODULES, iv_dll_dirs );
 
-#ifdef WIN32
-    std::wstring dllDir( L" " );
-    bool fully_qualified_dll_path = true;
-    if( iv_dll_dirs.size() == 0 )
+#if defined(WIN32)
+    std::vector< std::wstring> allMatchingDLLs = GetAllMatchingDllsInDirs( iv_dll_dirs, interventionPlugins, dllName );
+    for (std::wstring aMatchingDll : allMatchingDLLs)
     {
-        LOG_DEBUG( "Getting INTERVENTION_PLUGINS dir because no paths from emodules_map.json\n" );
-        dllDir = GetFullDllPath(std::wstring(INTERVENTION_PLUGINS)); 
-        LOG_DEBUG_F("Found intervention plugin dir: %S\n", dllDir.c_str()); // ???
-        std::wstring &dllDirStar = FileSystem::Concat( dllDir, std::wstring(L"*") );
-        iv_dll_dirs.push_back( dllDirStar );
-        fully_qualified_dll_path = false;
-    }
-    else
-    {
-        LOG_DEBUG( "Did not use --dll-path since emodules_map.json file was found.\n" );
-    }
-
-
-    for (auto& dllDirStar : iv_dll_dirs)
-    {
-        LOG_DEBUG_F("Searching intervention plugin dir: %S\n", dllDirStar.c_str());
-
-        WIN32_FIND_DATA ffd;
-        HANDLE hFind = FindFirstFile(dllDirStar.c_str(), &ffd);
-        do
+        LOG_INFO_F("Calling LoadLibrary for %S\n", aMatchingDll.c_str());
+        HMODULE disDll = LoadLibrary( aMatchingDll.c_str() );
+        
+        if( CheckDynamicLibrary_Intervention( disDll, wstringToString(aMatchingDll) ) == true )
         {
-            if (ffd.dwFileAttributes > 0 && ffd.cFileName[0] != '\0' && !(ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ) // ignore . and ..
-            {
-                std::wstring dllPath = dllDirStar;
-                if( fully_qualified_dll_path == false )
-                {
-                    LOG_DEBUG( "We are using reg-ex dll searching, append dir path to filename found.\n" );
-                    dllPath = FileSystem::Concat( dllDir,  std::wstring(ffd.cFileName) );
-                }
-                LOG_DEBUG_F("Found dll: %S\n", dllPath.c_str());
-
-                // must end in .dll
-                if( dllPath.find( L".dll" ) == std::string::npos ||
-                    dllPath.find( L".dll" ) != dllPath.length()-4 ||
-                    (dllName && !StringEquals(ffd.cFileName, dllName)) )
-                {
-                    if (dllName)
-                        LOG_DEBUG_F( "%S is not a DLL or doesn't match %s\n", dllPath, dllName );
-                    else
-                        LOG_DEBUG_F( "%S is not a DLL\n", dllPath );
-                    continue;
-                }
-
-                LOG_INFO_F("Calling LoadLibrary on interventions emodule %S\n", dllPath.c_str());
-                HMODULE intvenDll = LoadLibrary( dllPath.c_str() );
-                if( intvenDll == nullptr )
-                {
-                    LOG_WARN_F("Failed to load dll %S\n", ffd.cFileName);
-                }
-                else
-                {
-                    LOG_INFO("Calling GetProcAddr for GetEModuleVersion\n");
-                    char emodVersion[64];
-                    if (!CheckEModuleVersion(intvenDll, emodVersion))
-                    {
-                        LOG_WARN_F("The version of EModule %S is lower than current application!\n", ffd.cFileName);
-
-                        // For now, load report dll anyway
-                        //continue;
-                    }
-
-                    LOG_INFO("Calling GetProcAddress for RegisterWithFactory...\n");
-                    typedef int (*callProc)(Kernel::IInterventionFactory *);
-                    callProc _callProc = (callProc)GetProcAddress( intvenDll, "RegisterWithFactory" );
-                    if( _callProc != nullptr )
-                    {
-                        (_callProc)( Kernel::InterventionFactory::getInstance() );
-                        bRet = true;
-                    }
-                    else
-                    {
-                        LOG_WARN_F("GetProcAddr failed for RegisterWithFactory for filename %s.\n", std::wstring(ffd.cFileName).c_str());
-                    }
-                }
-            }
-            else
-            {
-                LOG_DEBUG("That was a directory not an EModule or . or .. so ignore.\n");
-            }
+            bRet = true;
         }
-        while (FindNextFile(hFind, &ffd) != 0);
     }
-
-#else // WIN32
-
-    // Scan for intervention dlls/shared libraries and Register them with us.
-    void * newSimDlHandle = nullptr;
-    int (*RegisterDotsoIntervention)( Kernel::InterventionFactory* );
-    DIR * dp;
-    struct dirent *dirp;
-    if( ( dp = opendir( "/var/opt/plugins/interventions" ) ) == nullptr )
+#else
+    std::vector<std::string> allMatchingSharedObjs = GetAllMatchingSharedObjectsInDirs( iv_dll_dirs, interventionPlugins, dllName );
+    void* disDll = nullptr;
+    for (std::string aMatchingSharedObject : allMatchingSharedObjs)
     {
-        LOG_WARN("Failed to open interventions plugin directory.\n");
-        return;
-    }
-    while( ( dirp = readdir( dp ) ) != nullptr )
-    {
-        if( std::string( dirp->d_name ) == "." ||
-            std::string( dirp->d_name ) == ".." )
+        LOG_INFO_F("Loading Library: %S\n", aMatchingSharedObject.c_str());
+        disDll = dlopen( aMatchingSharedObject.c_str(), RTLD_NOW );
+        
+        if( CheckDynamicLibrary_Intervention( disDll, aMatchingSharedObject ) == true )
         {
-            continue;
-        }
-        LOG_DEBUG_F("Considering %s\n", dirp->d_name);
-        std::string fullDllPath = FileSystem::Concat( std::string("/var/opt/plugins/interventions/"), std::string( dirp->d_name ) );
-        newSimDlHandle = dlopen( fullDllPath.c_str(), RTLD_LAZY );
-        if( newSimDlHandle )
-        {
-            RegisterDotsoIntervention = dlsym( newSimDlHandle, "RegisterWithFactory" );
-            if( RegisterDotsoIntervention )
-            {
-                //RegisterDotsoIntervention( this );
-            }
-            else
-            {
-                LOG_DEBUG("dlsym failed\n");
-            }
-        }
-        else
-        {
-            LOG_WARN_F("dlopen failed on %s with error %s\n", fullDllPath.c_str(), dlerror());
+            bRet = true;
         }
     }
 #endif
@@ -648,7 +410,6 @@ std::string DllLoader::GetEModulePath(const char* emoduleDir)
     return FileSystem::Concat( sDllRootPath, std::string(emoduleDir) );
 }
 
-
 bool DllLoader::GetEModulesVersion(const char* dllPath, list<string>& dllNames, list<string>& dllVersions)
 {
 
@@ -664,11 +425,16 @@ bool DllLoader::GetEModulesVersion(const char* dllPath, list<string>& dllNames, 
           && GetDllsVersion(dllPath, std::wstring( REPORTER_PLUGINS ), dllNames, dllVersions)
           && GetDllsVersion(dllPath, std::wstring( INTERVENTION_PLUGINS ), dllNames, dllVersions);
 #else
-#warning "Linux shared library for disease not implemented yet at load."
+   std::wstring diseasePluginsStr = stringToWstring( DISEASE_PLUGINS );
+   std::wstring reporterPluginsStr = stringToWstring( REPORTER_PLUGINS );
+   std::wstring interventionPluginsStr = stringToWstring( INTERVENTION_PLUGINS );
+   return GetDllsVersion(dllPath, diseasePluginsStr, dllNames, dllVersions)
+          && GetDllsVersion(dllPath, reporterPluginsStr, dllNames, dllVersions)
+          && GetDllsVersion(dllPath, interventionPluginsStr, dllNames, dllVersions);
 #endif
+
 }
 
-#if defined(WIN32)
 bool DllLoader::StringEquals(const std::wstring& wStr, const char* cStr) 
 { 
     std::string str(cStr); 
@@ -691,6 +457,7 @@ std::wstring DllLoader::GetFullDllPath(std::wstring& pluginDir, const char* dllP
 {
     LOG_DEBUG( "GetFullDllPath\n" );
     std::string sDllRootPath = "";
+
     if (dllPath)
     {
         LOG_DEBUG( "dllPath passed in\n" );
@@ -712,87 +479,107 @@ std::wstring DllLoader::GetFullDllPath(std::wstring& pluginDir, const char* dllP
 bool DllLoader::CheckEModuleVersion(HMODULE hEMod, char* emodVer)
 {
     bool bRet = false;
+    char* erro;
+    if (!EnvPtr)
+    {
+        LOG_ERR("CheckEModuleVersion: EnvPtr not initialized. Returning.\n");
+        return false;
+    }
+
     gver _gver = (gver)GetProcAddress( hEMod, "GetEModuleVersion" );
-    if( _gver != nullptr )
+    char* error = dlerror();
+    if ( error != NULL)
+    {
+        LOG_WARN_F("CheckEModuleVersion: Got error while trying to GetProcAddress of function GetEModuleVersion(): %S.\n", error);
+    }
+    if( _gver != nullptr)
     {
         char emodVersion[64];
-        (_gver)(emodVersion,EnvPtr);
-        bRet = IsValidVersion(emodVersion);
+        char* emodVersion1 = new char[64];
+        for(int i=0; i<63; i++) emodVersion1[i] = ' ';
+        emodVersion1[63] = '\0';
+        try{
+        (*_gver)(emodVersion1,EnvPtr);
+        } catch (const char* strException) {
+            cerr << "Error: " << strException << endl;
+        } catch (...) {
+            cout << "Unknown exception" << endl;
+        }
+        bRet = IsValidVersion(emodVersion1);
         if (emodVer)
         {
-            strcpy(emodVer, emodVersion);
+            strcpy(emodVer, emodVersion1);
         }
     }
     else
     {
         LOG_WARN("GetProcAddr failed for GetEModuleVersion.\n");
     }
+    LOG_INFO_F("CheckEModuleVersion: Success in calling GetEModuleVersion(), got version as: %S.\n", emodVer);
     return bRet;
 }
 
 bool DllLoader::GetDllsVersion(const char* dllPath, std::wstring& wsPluginDir,list<string>& dllNames, list<string>& dllVersions)
 {    
+    // Look through disease dll directory, do LoadLibrary on each .dll, do GetProcAddress for get
+    std::wstring dllDir = GetFullDllPath(wsPluginDir, dllPath);
 
-    // Look through disease dll directory, do LoadLibrary on each .dll,
-    // do GetProcAddress for get
-    bool bRet = true;
-
-    std::wstring dllDir = GetFullDllPath(wsPluginDir, dllPath); 
+#ifdef WIN32
     std::wstring dllDirStar = FileSystem::Concat( dllDir, std::wstring(L"*") );
-    
-    WIN32_FIND_DATA ffd;
-    HANDLE hFind = FindFirstFile(dllDirStar.c_str(), &ffd);
-    do
-    {
-        if ( ffd.dwFileAttributes > 0 && ffd.cFileName[0] != '\0' && !(ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ) // ignore . and ..
+    std::list<std::wstring> dll_dirs;
+    dll_dirs.push_back(dllDirStar);
+    std::vector<std::wstring> matchingDlls = GetAllMatchingDllsInDirs(dll_dirs);
+    for(std::wstring dllPath : matchingDlls) {
+        LOG_DEBUG_F("Calling LoadLibrary for %S\n", dllPath.c_str());
+        HMODULE ecDll = LoadLibrary( dllPath.c_str() );
+        if( ecDll == nullptr )
         {
-            std::wstring dllPath = FileSystem::Concat( dllDir, std::wstring(ffd.cFileName) );
-                
-            // must end in .dll
-            if( dllPath.find( L".dll" ) == std::string::npos ||
-                dllPath.find( L".dll" ) != dllPath.length()-4 )
-            {
-                LOG_DEBUG_F("Not a dll ( %S) \n", ffd.cFileName);
-                continue;
-            }
-                
-
-            LOG_DEBUG_F("Calling LoadLibrary for %S\n", dllPath.c_str());
-            HMODULE ecDll = LoadLibrary( dllPath.c_str() );
-            if( ecDll == nullptr )
-            {
-                LOG_WARN_F("Failed to load dll %S\n",ffd.cFileName);
-            }
-            else
-            {
-
-                LOG_DEBUG("Calling GetProcAddress for GetEModuleVersion\n");
-                char emodVersion[64];
-                if (!CheckEModuleVersion(ecDll, emodVersion))
-                {
-                    LOG_WARN_F("The version of EModule %S is lower than current application\n", ffd.cFileName);
-                }
-                dllVersions.push_back(emodVersion);
-                                   
-                // Convert to a char*
-                size_t wcsize = wcslen(ffd.cFileName) + 1;
-                const size_t newsize = 256;
-                size_t convertedChars = 0;
-                char namestring[newsize];
-                wcstombs_s(&convertedChars, namestring, wcsize, ffd.cFileName, _TRUNCATE);
-                dllNames.push_back(namestring);
-
-            }
+            LOG_WARN_F("Failed to load dll %S\n",dllPath);
         }
         else
         {
-            LOG_DEBUG("That was a directory not an EModule or . or .. so ignore.\n");
+
+            LOG_DEBUG("Calling GetProcAddress for GetEModuleVersion\n");
+            char emodVersion[64];
+            if (!CheckEModuleVersion(ecDll, emodVersion))
+            {
+                LOG_WARN_F("The version of EModule %S is lower than current application\n", dllPath);
+            }
+            dllVersions.push_back(emodVersion);
+            
+            std::string dllName = WstringToString(dllPath);
+            dllNames.push_back(dllName);
         }
     }
-    while (FindNextFile(hFind, &ffd) != 0);
-
-    return bRet;
-
+#else
+    std::wstring &dllDirStar = dllDir;
+    std::string starStr("/*");
+    dllDirStar.append( stringToWstring(starStr) );
+    std::list<std::wstring> dll_dirs;
+    dll_dirs.push_back( dllDirStar );
+    std::vector<std::string> matchingSharedObjects = GetAllMatchingSharedObjectsInDirs(dll_dirs);
+    for(std::string dllPath : matchingSharedObjects) {
+        LOG_INFO_F("Loading Library: %S\n", dllPath.c_str());
+        void* disDll = dlopen( dllPath.c_str(), RTLD_NOW );
+        if( disDll == nullptr )
+        {
+            LOG_WARN_F("Failed to load library %S\n", dllPath);
+        }
+        else
+        {
+            LOG_INFO("Calling GetProcAddr for GetEModuleVersion\n");
+            char emodVersion[64];
+            if (!CheckEModuleVersion(disDll, emodVersion))
+            {
+                LOG_WARN_F("The version of EModule %S is lower than current application!\n", dllPath);
+            }
+            dllVersions.push_back(emodVersion);
+            dllNames.push_back(dllPath);
+        }
+    }
+#endif
+    
+    return true;
 }
 
 json::Object
@@ -822,9 +609,294 @@ DllLoader::GetDiseaseDllSchemas()
     json::Writer::Write( configSchemaAllJson, configSchemaAllString );
     return configSchemaAllJson;
 }
-#else
-json::Object
-DllLoader::GetDiseaseDllSchemas()
+
+#ifdef WIN32
+std::vector<std::wstring> DllLoader::GetAllMatchingDllsInDirs(std::list< std::wstring > dirsToSearch, const char* dllName)
 {
+    std::vector<std::wstring> allMatchingDLLs;
+    for (auto& dllDirStar : dirsToSearch)
+    {
+        LOG_INFO_F("Searching disease plugin dir: %S\n", dllDirStar.c_str());
+
+        WIN32_FIND_DATA ffd;
+        HANDLE hFind = FindFirstFile(dllDirStar.c_str(), &ffd);
+        do
+        {
+            LOG_INFO_F("fa=%d; fn=%S, fattr=%d, fadir=%d\n", ffd.dwFileAttributes, ffd.cFileName, ffd.dwFileAttributes, FILE_ATTRIBUTE_DIRECTORY);
+            if ( ffd.dwFileAttributes > 0 && ffd.cFileName[0] != '\0' && !(ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ) // ignore . and ..
+            {
+                std::wstring dllPath = dllDirStar;
+                if( fully_qualified_dll_path == false )
+                {
+                    LOG_INFO( "We are using reg-ex dll searching, append dir path to filename found.\n" );
+                    dllPath = FileSystem::Concat( dllDir, std::wstring(ffd.cFileName) );
+                }
+                LOG_DEBUG_F("Found dll: %S\n", dllPath.c_str());
+
+                // must end in .dll
+                if( dllPath.find( L".dll" ) == std::string::npos ||
+                    dllPath.find( L".dll" ) != dllPath.length()-4  ||
+                    (dllName && !StringEquals(ffd.cFileName, dllName)) )
+                {
+                    if (dllName)
+                        LOG_INFO_F( "%S is not a DLL or doesn't match %s\n", dllPath, dllName );
+                    else
+                        LOG_INFO_F( "%S is not a DLL\n", dllPath );
+                    continue;
+                }
+                
+                allMatchingDLLs.push_back(dllPath);
+
+            }
+            else
+            {
+                LOG_INFO("That was a directory not an EModule or . or .. so ignore.\n");
+            }
+        }
+        while (FindNextFile(hFind, &ffd) != 0);
+    }
+
+    return allMatchingDLLs;
 }
-#endif // End of WIN32
+
+std::vector<std::wstring> DllLoader::GetAllMatchingDllsInDirs(std::list< std::wstring > dll_dirs, std::wstring driPlugins, const char* dllName)
+{
+    std::wstring dllDir( L" " );
+    if( dll_dirs.size() == 0 )
+    {
+        LOG_INFO( "Getting PLUGINS dir because no paths from emodules_map.json\n" );
+        dllDir = GetFullDllPath(driplugins);
+        std::wstring &dllDirStar = FileSystem::Concat( dllDir, std::wstring(L"*") );
+        dll_dirs.push_back( dllDirStar );
+    }
+    else
+    {
+        LOG_INFO( "Did not use --dll-path since emodules_map.json file was found.\n" );
+    }
+    
+    return GetAllMatchingDllsInDirs(dll_dirs, dllName);
+}
+
+#else
+std::vector<std::string> DllLoader::GetAllMatchingSharedObjectsInDirs(std::list< std::wstring > dirsToSearch, const char* dllName)
+{
+    std::vector<std::string> allMatchingSoFiles;
+    for (auto& dllDirStar : dirsToSearch) {
+        LOG_INFO_F("Searching disease plugin dir: %S\n", dllDirStar.c_str());
+        DIR *dp;
+        struct dirent *dirp;
+        std::string dllDirStarStr = WstringToString(dllDirStar);
+        
+        struct stat s;
+        if ( stat(dllDirStarStr.c_str(), &s) == 0 )
+        {
+            if (S_ISREG(s.st_mode))
+            {
+                if( dllDirStarStr.find( ".so" ) == std::string::npos ||
+                     dllDirStarStr.find( ".so" ) != dllDirStarStr.length()-3  ||
+                     ( dllName && dllDirStarStr.compare(dllName) != 0 ) )
+                {
+                    if (dllName)
+                        LOG_INFO_F( "%S is not a .SO or doesn't match %s\n", dllDirStarStr, dllName );
+                    else
+                        LOG_INFO_F( "%S is not a .SO\n", dllDirStarStr );
+                    continue;
+                }
+
+                allMatchingSoFiles.push_back(dllDirStarStr);
+                LOG_INFO_F("Found shared object file: %S\n", dllDirStar.c_str());
+            }
+            else
+            {
+                 LOG_INFO("That was a file .. so ignore.\n");
+            }
+        }
+    }
+
+    return allMatchingSoFiles;
+}
+
+std::vector<std::string> DllLoader::GetAllMatchingSharedObjectsInDirs(std::list< std::wstring > dll_dirs, std::wstring driplugins, const char* dllName)
+{
+    if( dll_dirs.size() == 0 )
+    {
+        LOG_INFO( "Getting PLUGINS dir because no paths from emodules_map.json\n" );
+        std::wstring dllDir = GetFullDllPath(driplugins);
+        std::wstring dllDirStar = dllDir;
+        std::string starStr("/*");
+        dllDirStar.append( stringToWstring(starStr) );
+        dll_dirs.push_back( dllDirStar );
+    }
+    else
+    {
+        LOG_INFO( "Did not use --dll-path since emodules_map.json file was found.\n" );
+    }
+
+    return GetAllMatchingSharedObjectsInDirs(dll_dirs, dllName);
+}
+#endif
+
+std::wstring DllLoader::stringToWstring(std::string t_str)
+{
+    typedef std::codecvt_utf8<wchar_t> convert_type;
+    std::wstring_convert<convert_type, wchar_t> converter;
+    std::wstring converted_str = converter.from_bytes(t_str);
+    return converted_str;
+}
+
+std::string DllLoader::WstringToString(std::wstring w_str)
+{
+    typedef std::codecvt_utf8<wchar_t> convert_type;
+    std::wstring_convert<convert_type, wchar_t> converter;
+    std::string converted_str = converter.to_bytes( w_str );
+    return converted_str;
+}
+
+bool DllLoader::checkFileExists(const std::string& name)
+{
+  struct stat buffer;
+  return (stat (name.c_str(), &buffer) == 0);
+}
+
+bool DllLoader::CheckDynamicLibrary_Disease(void* disDll, std::string aMatchingLibrary, std::map< std::string, createSim>& createSimFuncPtrMap)
+{
+    if( disDll == nullptr )
+    {
+        LOG_WARN_F("Failed to load library %S\n", aMatchingLibrary);
+        return false;
+    }
+    else
+    {
+        LOG_INFO("Calling GetProcAddr for GetEModuleVersion\n");
+        char emodVersion[64];
+        if (!CheckEModuleVersion(disDll, emodVersion))
+        {
+            LOG_WARN_F("The version of EModule %S is lower than current application.\n", aMatchingLibrary); // this message should be differentiable for GetProcAddr fail
+            //return false;
+        }
+
+        LOG_INFO("Calling GetProcAddress for GetDiseaseType\n");
+        typedef const char * (*gdt)();
+        gdt _gdt = (gdt)GetProcAddress( disDll, "GetDiseaseType" );
+        std::string diseaseType = std::string("");
+        if( _gdt != nullptr )
+        {
+            diseaseType = (_gdt)();
+        }
+        else
+        {
+            LOG_WARN("GetProcAddr failed for GetDiseaseType.\n");
+            return false;
+        }
+
+        dll2VersionStringMap[ diseaseType ] = std::string( emodVersion );
+
+        LOG_INFO("Calling GetProcAddress for CreateSimulation\n");
+        createSim _createSim = (createSim)GetProcAddress( disDll, "CreateSimulation" );
+        if( _createSim != nullptr )
+        {
+            LOG_INFO_F("Caching create_sim function pointer for disease type: %s\n", diseaseType.c_str());
+            createSimFuncPtrMap[diseaseType] = _createSim;
+        }
+        else
+        {
+            LOG_WARN("GetProcAddr failed for CreateSimulation.\n");
+            return false;
+        }
+
+        LOG_INFO("Calling GetProcAddress for GetSchema\n");
+        getSchema _getSchema = (getSchema)GetProcAddress( disDll, "GetSchema" );
+        if( _getSchema != nullptr )
+        {
+            LOG_INFO_F("Caching get_schema function pointer for disease type: %s\n", diseaseType.c_str());
+            getSchemaFuncPtrMap[diseaseType] = _getSchema;
+        }
+        else
+        {
+            LOG_WARN("GetProcAddr failed for GetSchema.\n");
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+bool DllLoader::CheckDynamicLibrary_Reporter(void* disDll, std::string aMatchingLibrary, std::unordered_map< std::string, Kernel::report_instantiator_function_t >& reportInstantiators)
+{
+    if( disDll == nullptr )
+    {
+        LOG_WARN_F("Failed to load library %S\n", aMatchingLibrary);
+        return false;
+    }
+    else
+    {
+
+        LOG_INFO("Calling GetProcAddr for GetEModuleVersion\n");
+        char emodVersion[64];
+        if (!CheckEModuleVersion(disDll, emodVersion))
+        {
+            LOG_WARN_F("The version of EModule %S is lower than current application!\n", aMatchingLibrary);
+            // For now, load report dll anyway
+            //continue;
+        }
+        
+        const TCHAR* tc_MatchingLibrary = stringToWstring(aMatchingLibrary).c_str();
+
+        LOG_INFO("Calling GetSimTypes\n");
+        if ( GetSimTypes( tc_MatchingLibrary, disDll ) == false)
+        {
+            return false;
+        }
+
+        Kernel::report_instantiator_function_t rif = nullptr ;
+        if ( GetReportInstantiator( tc_MatchingLibrary, disDll, &rif ) == false ) {
+            return false;
+        }
+        if( rif != nullptr )
+        {
+            std::string class_name ;
+            if ( GetType( tc_MatchingLibrary, disDll, class_name ) == false )
+            {
+            return false;
+            }
+
+            reportInstantiators[ class_name ] = rif ;
+        }
+    }
+    return true;
+}
+
+bool DllLoader::CheckDynamicLibrary_Intervention(void* disDll, std::string aMatchingLibrary)
+{
+    if( disDll == nullptr )
+    {
+        LOG_WARN_F("Failed to load library %S\n", aMatchingLibrary);
+        return false;
+    }
+    else
+    {
+
+        LOG_INFO("Calling GetProcAddr for GetEModuleVersion\n");
+        char emodVersion[64];
+        if (!CheckEModuleVersion(disDll, emodVersion))
+        {
+            LOG_WARN_F("The version of EModule %S is lower than current application!\n", aMatchingLibrary);
+            // For now, load report dll anyway
+            //return false;
+        }
+        
+        LOG_INFO("Calling GetProcAddress for RegisterWithFactory...\n");
+        typedef int (*callProc)(Kernel::IInterventionFactory *);
+        callProc _callProc = (callProc)GetProcAddress( disDll, "RegisterWithFactory" );
+        if( _callProc != nullptr )
+        {
+    	    (_callProc)( Kernel::InterventionFactory::getInstance() );
+        }
+        else
+        {
+            LOG_WARN_F("GetProcAddr failed for RegisterWithFactory for filename %s.\n", aMatchingLibrary);
+            return false;
+        }
+    }
+    return true;
+}

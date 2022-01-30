@@ -176,6 +176,10 @@ int main(int argc, char* argv[])
     _CrtMemDumpAllObjectsSince(&initial_state);
 #endif
 */
+
+    // HN: Focibly exiting as memory freeing after main returns is seg-faulting.
+    _exit(0);
+
     return ret;
 }
 

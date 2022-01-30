@@ -32,7 +32,7 @@ SETUP_LOGGING( "Environment" )
 
 #pragma warning(disable: 4996) // for suppressing strcpy caused security warnings
 
-Environment* Environment::localEnv = nullptr;
+static Environment* envrt = Environment::getInstance();
 
 Environment::Environment()
 : MPI()
@@ -64,6 +64,7 @@ bool Environment::Initialize(
     bool get_schema)
 {
     release_assert( pMpi );
+    Environment* localEnv = Environment::getInstance();
     if( localEnv == nullptr )
     {
         throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "Environment has not been created." );
@@ -183,6 +184,7 @@ Environment::~Environment()
 
 void Environment::Finalize()
 {
+    Environment* localEnv = Environment::getInstance();
     delete localEnv;
     localEnv = nullptr;
 }
@@ -194,12 +196,12 @@ std::string Environment::FindFileOnPath( const std::string& rFilename )
         return "";
     }
 
-    if( localEnv == nullptr )
+    if( Environment::getInstance() == nullptr )
     {
         throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "Environment has not been created." );
     }
     std::string error = "";
-    for( auto path : localEnv->InputPaths )
+    for( auto path : Environment::getInstance()->InputPaths )
     {
         std::string filepath = FileSystem::Concat( path, rFilename );
         error += filepath;
@@ -218,11 +220,11 @@ std::string Environment::FindFileOnPath( const std::string& rFilename )
 
 const Configuration* Environment::getConfiguration()
 { 
-    if( localEnv == nullptr )
+    if( Environment::getInstance() == nullptr )
     {
         throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "Environment has not been created." );
     }
-    return getInstance()->Config ;
+    return Environment::getInstance()->Config ;
 }
 
 
@@ -236,6 +238,12 @@ Configuration* Environment::LoadConfigurationFile( const std::string& rFileName 
     return Configuration::Load( rFileName );
 }
 
+Environment * &Environment::getInstanceAux() {
+    static Environment* localEnv = new Environment();
+    return localEnv;
+}
+
+/*
 Environment* Environment::getInstance()
 { 
     if( localEnv == nullptr )
@@ -244,14 +252,26 @@ Environment* Environment::getInstance()
     }
     return localEnv;
 }
+*/
+Environment* Environment::getInstance()
+{
+    return Environment::getInstanceAux();
+}
 
 void Environment::setInstance(Environment * env)
 {
-    if( localEnv != nullptr )
+/*
+    if( localEnv != nullptr)
     {
         delete localEnv ;
     }
     localEnv = env ;
+*/
+    Environment* localEnv = Environment::getInstance();
+    if (localEnv != env) {
+        delete localEnv; 
+        localEnv = env;
+    }
 
     // The factory can be null when getting just the version information of the DLL
     if( localEnv->getEventTriggerFactory(Kernel::EventType::INDIVIDUAL) != nullptr )
@@ -264,58 +284,58 @@ void Environment::setInstance(Environment * env)
 
 void Environment::setLogger(SimpleLogger* log)
 { 
-    getInstance()->Log = log; 
+    Environment::getInstance()->Log = log; 
 }
 
 void Environment::setSimulationConfig(void* SimConfig)
 { 
-    getInstance()->SimConfig = SimConfig;
+    Environment::getInstance()->SimConfig = SimConfig;
 }
 
 const void* Environment::getSimulationConfig()
 { 
-    if( localEnv == nullptr )
+    if( Environment::getInstance() == nullptr )
     {
         throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "Environment has not been created." );
     }
-    return localEnv->SimConfig;
+    return Environment::getInstance()->SimConfig;
 }
 
 StatusReporter * Environment::getStatusReporter() 
 { 
-    if( localEnv == nullptr )
+    if( Environment::getInstance() == nullptr )
     {
         throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "Environment has not been created." );
     }
-    return localEnv->Status_Reporter ;
+    return Environment::getInstance()->Status_Reporter ;
 }
 
 void Environment::setIPFactory( void* pipf )
 { 
-    getInstance()->pIPFactory = pipf; 
+    Environment::getInstance()->pIPFactory = pipf; 
 }
 
 void* Environment::getIPFactory()
 {
-    if (localEnv == nullptr)
+    if (Environment::getInstance() == nullptr)
     {
         throw Kernel::IllegalOperationException(__FILE__, __LINE__, __FUNCTION__, "Environment has not been created.");
     }
-    return localEnv->pIPFactory;
+    return Environment::getInstance()->pIPFactory;
 }
 
 void Environment::setNPFactory( void* pnpf )
 {
-    getInstance()->pNPFactory = pnpf;
+    Environment::getInstance()->pNPFactory = pnpf;
 }
 
 void* Environment::getNPFactory()
 {
-    if( localEnv == nullptr )
+    if( Environment::getInstance() == nullptr )
     {
         throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "Environment has not been created." );
     }
-    return localEnv->pNPFactory;
+    return Environment::getInstance()->pNPFactory;
 }
 
 const void* Environment::getEventTriggerFactory( int event_type )
@@ -325,6 +345,6 @@ const void* Environment::getEventTriggerFactory( int event_type )
 
 void Environment::setEventTriggerFactory( int event_type, void* pFactory )
 {
-    release_assert( localEnv );
-    localEnv->event_trigger_factories[ event_type ] = pFactory;
+    release_assert( Environment::getInstance() );
+    Environment::getInstance()->event_trigger_factories[ event_type ] = pFactory;
 }
