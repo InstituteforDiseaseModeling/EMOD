@@ -250,14 +250,13 @@ time.txt
 status.txt
 Transitions.json
 
-.hg
-Regression/reports/
-componentTests/testdata/NodeDemographicsTest/output/DefaultDemographics.json
-componentTests/invalid.json
-componentTests/testdata/NodeDemographicsTest/DefaultDemographics.json
+.idea/
+.hg/
+.vs/
+.vscode/
+.sconf_temp/
 .sconsign.dblite
-.sconf_temp/conftest_0.cpp
-Regression/Scenarios/InputFiles
+
 testing
 .config_from_excel.json
 .campaign_from_excel.json
@@ -272,3 +271,10 @@ config_new.xlsx
 *.VC.db
 *.VC.opendb
 
+
+componentTests/testdata/NodeDemographicsTest/output/DefaultDemographics.json
+componentTests/invalid.json
+componentTests/testdata/NodeDemographicsTest/DefaultDemographics.json
+
+Regression/reports/
+Regression/Scenarios/InputFiles

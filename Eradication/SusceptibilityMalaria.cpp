@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
@@ -19,13 +11,16 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "MalariaAntibody.h" // for CreateAntibody etc.
 #include "Sigmoid.h"   // for Sigmoid::basic_sigmoid
 #include "NodeDemographics.h"
-#include "SimulationConfig.h"
 #include "MalariaContexts.h"
 #include "NodeEventContext.h"
-#include "MalariaParameters.h"
 #include "Infection.h" // for InfectionConfig::vital_disease_mortality 
 #include "RANDOM.h"
 #include "INodeContext.h"
+#include "DistributionFactory.h"
+#include "IdmDateTime.h"
+#include "Individual.h"
+#include "JsonFullWriter.h"
+#include "JsonFullReader.h"
 
 #include "Common.h"
 #include "Malaria.h"
@@ -35,7 +30,6 @@ SETUP_LOGGING( "SusceptibilityMalaria" )
 
 namespace Kernel
 {
-    bool   SusceptibilityMalariaConfig::sexual_combination                = false;
     bool   SusceptibilityMalariaConfig::enable_maternal_antibodies_transmission  = false;
     InnateImmuneVariationType::Enum SusceptibilityMalariaConfig::innate_immune_variation_type = InnateImmuneVariationType::NONE;
     float  SusceptibilityMalariaConfig::base_gametocyte_mosquito_survival = 1.0f;
@@ -69,59 +63,25 @@ namespace Kernel
     float  SusceptibilityMalariaConfig::erythropoiesis_anemia_effect      = 0.0f;
     float  SusceptibilityMalariaConfig::pyrogenic_threshold               = 0.0f;
     float  SusceptibilityMalariaConfig::fever_IRBC_killrate               = 0.0f;
+    float  SusceptibilityMalariaConfig::PfHRP2_boost_rate                 = 0.0f;
+    float  SusceptibilityMalariaConfig::PfHRP2_decay_rate                 = 0.0f;
+
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // !!! These values are configured in SimulationMalaria so that they are configured
+    // !!! before ParasiteGenetics.  They are initialized to -1 so that SimulationMalaria
+    // !!! can tell if these parameters have been configured by serialization.
+    // !!! If they have been, then we don't want to change them because serialized
+    // !!! m_XXX_antibodies parameters are all expected to be dimensioned
+    // !!! with these parameters.
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    int    SusceptibilityMalariaConfig::falciparumMSPVars                 = -1;
+    int    SusceptibilityMalariaConfig::falciparumNonSpecTypes            = -1;
+    int    SusceptibilityMalariaConfig::falciparumPfEMP1Vars              = -1;
+
 
     GET_SCHEMA_STATIC_WRAPPER_IMPL(Malaria.Susceptibility,SusceptibilityMalariaConfig)
     BEGIN_QUERY_INTERFACE_BODY(SusceptibilityMalariaConfig)
     END_QUERY_INTERFACE_BODY(SusceptibilityMalariaConfig)
-
-    // QI stuff in case we want to use it more extensively
-    BEGIN_QUERY_INTERFACE_DERIVED(SusceptibilityMalaria, SusceptibilityVector)
-        HANDLE_INTERFACE(IMalariaSusceptibility)
-    END_QUERY_INTERFACE_DERIVED(SusceptibilityMalaria, SusceptibilityVector)
-
-    SusceptibilityMalaria::SusceptibilityMalaria() : SusceptibilityVector(),
-        m_antigenic_flag(0),
-        m_maternal_antibody_strength(0),
-        m_RBC(0),
-        m_RBCcapacity(0),
-        m_RBCproduction(0),
-        m_cytokines(0.0f),
-        m_ind_pyrogenic_threshold(0.0f),
-        m_ind_fever_kill_rate(0.0f),
-        m_cytokine_stimulation(0.0f),
-        m_parasite_density(0.0f),
-        m_antibodies_to_n_variations(MalariaAntibodyType::N_MALARIA_ANTIBODY_TYPES),
-        m_max_fever_in_tstep(0.0f),
-        m_max_parasite_density_in_tstep(0.0f),
-        severetype(SevereCaseTypesEnum::NONE),
-        cumulative_days_of_clinical_incident(0.0f),
-        cumulative_days_of_severe_incident(0.0f),
-        cumulative_days_of_severe_anemia_incident(0.0f),
-        days_between_incidents(0.0f)
-    {
-    }
-
-    SusceptibilityMalaria::SusceptibilityMalaria(IIndividualHumanContext *context) : Kernel::SusceptibilityVector(context),
-        m_antigenic_flag(0),
-        m_maternal_antibody_strength(0),
-        m_RBC(0),
-        m_RBCcapacity(0),
-        m_RBCproduction(0),
-        m_cytokines(0.0f),
-        m_ind_pyrogenic_threshold(0.0f),
-        m_ind_fever_kill_rate(0.0f),
-        m_cytokine_stimulation(0.0f),
-        m_parasite_density(0.0f),
-        m_antibodies_to_n_variations(MalariaAntibodyType::N_MALARIA_ANTIBODY_TYPES),
-        m_max_fever_in_tstep(0.0f),
-        m_max_parasite_density_in_tstep(0.0f),
-        severetype(SevereCaseTypesEnum::NONE),
-        cumulative_days_of_clinical_incident(0.0f),
-        cumulative_days_of_severe_incident(0.0f),
-        cumulative_days_of_severe_anemia_incident(0.0f),
-        days_between_incidents(0.0f)
-    {
-    }
 
     bool
     SusceptibilityMalariaConfig::Configure(
@@ -131,7 +91,6 @@ namespace Kernel
         initConfigTypeMap( "Anemia_Mortality_Threshold",              &anemiaMortalityLevel,              Anemia_Mortality_Threshold_DESC_TEXT,              0.0, 100.0f,      DEFAULT_ANEMIA_MORTALITY_LEVEL );
         initConfigTypeMap( "Parasite_Mortality_Threshold",            &parasiteMortalityLevel,            Parasite_Mortality_Threshold_DESC_TEXT,            0.0, FLT_MAX,     DEFAULT_PARASITE_MORTALITY_LEVEL );
         initConfigTypeMap( "Fever_Mortality_Threshold",               &feverMortalityLevel,               Fever_Mortality_Threshold_DESC_TEXT,               0.0, 1000.0,      DEFAULT_FEVER_MORTALITY_LEVEL );
-        initConfigTypeMap( "Enable_Sexual_Combination",               &sexual_combination,                Enable_Sexual_Combination_DESC_TEXT,                                 false );
         initConfigTypeMap( "Base_Gametocyte_Mosquito_Survival_Rate",  &base_gametocyte_mosquito_survival, Base_Gametocyte_Mosquito_Survival_Rate_DESC_TEXT,  0.0f, 1.0f,       DEFAULT_BASE_GAMETOCYTE_MOSQUITO_SURVIVAL );
         initConfigTypeMap( "Cytokine_Gametocyte_Inactivation",        &cytokine_gametocyte_inactivation,  Cytokine_Gametocyte_Inactivation_DESC_TEXT,        0.0f, 1.0f,       DEFAULT_CYTOKINE_GAMETOCYTE_INACTIVATION );
         initConfigTypeMap( "Anemia_Mortality_Inverse_Width",          &anemiaMortalityInvWidth,           Anemia_Mortality_Inverse_Width_DESC_TEXT,          0.1f, 1000000.0f, DEFAULT_ANEMIA_MORTALITY_INV_WIDTH );
@@ -154,6 +113,8 @@ namespace Kernel
         initConfigTypeMap( "Nonspecific_Antibody_Growth_Rate_Factor", &non_specific_growth,               Nonspecific_Antibody_Growth_Rate_Factor_DESC_TEXT, 0.0f, 1000.0f,    0.5f );
         initConfigTypeMap( "Antibody_CSP_Decay_Days",                 &antibody_csp_decay_days,           Antibody_CSP_Decay_Days_DESC_TEXT,                 1.0f, FLT_MAX,    DEFAULT_ANTIBODY_CSP_DECAY_DAYS );
         initConfigTypeMap( "Erythropoiesis_Anemia_Effect",            &erythropoiesis_anemia_effect,      Erythropoiesis_Anemia_Effect_DESC_TEXT,            0.0f, 1000.0f,    3.5f );
+        initConfigTypeMap( "PfHRP2_Boost_Rate",                       &PfHRP2_boost_rate,                 PfHRP2_Boost_Rate_DESC_TEXT,                       0.0f, 1000.0f,    0.07f );
+        initConfigTypeMap( "PfHRP2_Decay_Rate",                       &PfHRP2_decay_rate,                 PfHRP2_Decay_Rate_DESC_TEXT,                       0.0f, 1.0f,       0.172f );
 
         initConfigTypeMap("Enable_Maternal_Antibodies_Transmission", &enable_maternal_antibodies_transmission, Enable_Maternal_Antibodies_Transmission_DESC_TEXT, false, "Simulation_Type","MALARIA_SIM");
         initConfig( "Maternal_Antibodies_Type", maternal_antibodies_type, config, MetadataDescriptor::Enum("maternal_antibodies_type", Maternal_Antibodies_Type_DESC_TEXT, MDD_ENUM_ARGS(MaternalAntibodiesType)), "Enable_Maternal_Antibodies_Transmission" );
@@ -166,18 +127,95 @@ namespace Kernel
 
         bool configured = JsonConfigurable::Configure( config );
 
-        // JPS: can we just change the max specified above, and remove this check?
-        // This corrects for a memory level being set too high.  Since the hyperimmunity decay time is set based on memory level below
-        // memory level is set to have 0.35 be the maximum to keep 0.4-memory_level from getting too close to zero
-        //if (memory_level > 0.35f)
-        //{
-        //    memory_level = 0.35f;
-        //}
-
-        hyperimmune_decay_rate = -log((0.4f - memory_level) / (1.0f - memory_level)) / 120.0f;  // This sets the decay rate towards memory level so that the decay from antibody levels of 1 to levels of 0.4 is consistent
-        // this is part of the new intrahost model explained in the Intrahost paper by Eckhoff
+        if( configured )
+        {
+            // JPS: Since the hyperimmunity decay time is set based on memory level,
+            // memory level has a max of 0.35 to keep 0.4-memory_level from getting too close to zero
+            // This sets the decay rate towards memory level so that the decay from antibody levels of 1 to levels of 0.4 is consistent
+            hyperimmune_decay_rate = -log((0.4f - memory_level) / (1.0f - memory_level)) / 120.0f;
+            // this is part of the new intrahost model explained in the Intrahost paper by Eckhoff
+        }
 
         return configured;
+    }
+
+    // QI stuff in case we want to use it more extensively
+    BEGIN_QUERY_INTERFACE_DERIVED(SusceptibilityMalaria, SusceptibilityVector)
+        HANDLE_INTERFACE(IMalariaSusceptibility)
+    END_QUERY_INTERFACE_DERIVED(SusceptibilityMalaria, SusceptibilityVector)
+
+    SusceptibilityMalaria::SusceptibilityMalaria()
+        : SusceptibilityVector(),
+        m_antigenic_flag(false),
+        m_maternal_antibody_strength(0),
+        m_CSP_antibody( MalariaAntibody::CreateAntibody( MalariaAntibodyType::CSP, 0 ) ),
+        m_MSP_antibodies(),
+        m_PfEMP1_minor_antibodies(),
+        m_PfEMP1_major_antibodies(),
+        m_active_MSP_antibodies(),
+        m_active_PfEMP1_minor_antibodies(),
+        m_active_PfEMP1_major_antibodies(),
+        m_RBC(0),
+        m_RBCcapacity(0),
+        m_RBCproduction(0),
+        m_inv_microliters_blood(0),
+        m_TotalIRBC(0),
+        m_TotalIRBCWithHRP(0),
+        m_cytokines(0.0f),
+        m_ind_pyrogenic_threshold(0.0f),
+        m_ind_fever_kill_rate(0.0f),
+        m_cytokine_stimulation(0.0f),
+        m_parasite_density(0.0f),
+        m_PfHRP2_pg( 0 ),
+        m_antibodies_to_n_variations( MalariaAntibodyType::N_MALARIA_ANTIBODY_TYPES ),
+        m_max_fever_in_tstep(0.0f),
+        m_max_parasite_density_in_tstep(0.0f),
+        severetype(SevereCaseTypesEnum::NONE),
+        cumulative_days_of_clinical_incident(0.0f),
+        cumulative_days_of_severe_incident(0.0f),
+        cumulative_days_of_severe_anemia_incident(0.0f),
+        days_between_incidents(0.0f)
+    {
+        m_MSP_antibodies.reserve(          SusceptibilityMalariaConfig::falciparumMSPVars );
+        m_PfEMP1_minor_antibodies.reserve( SusceptibilityMalariaConfig::falciparumNonSpecTypes * MINOR_EPITOPE_VARS_PER_SET );
+        m_PfEMP1_major_antibodies.reserve( SusceptibilityMalariaConfig::falciparumPfEMP1Vars );
+    }
+
+    SusceptibilityMalaria::SusceptibilityMalaria(IIndividualHumanContext *context)
+        : SusceptibilityVector(context),
+        m_antigenic_flag(false),
+        m_maternal_antibody_strength(0),
+        m_CSP_antibody( MalariaAntibody::CreateAntibody( MalariaAntibodyType::CSP, 0 ) ),
+        m_MSP_antibodies(),
+        m_PfEMP1_minor_antibodies(),
+        m_PfEMP1_major_antibodies(),
+        m_active_MSP_antibodies(),
+        m_active_PfEMP1_minor_antibodies(),
+        m_active_PfEMP1_major_antibodies(),
+        m_RBC(0),
+        m_RBCcapacity(0),
+        m_RBCproduction(0),
+        m_inv_microliters_blood(0),
+        m_TotalIRBC(0),
+        m_TotalIRBCWithHRP(0),
+        m_cytokines(0.0f),
+        m_ind_pyrogenic_threshold(0.0f),
+        m_ind_fever_kill_rate(0.0f),
+        m_cytokine_stimulation(0.0f),
+        m_parasite_density(0.0f),
+        m_PfHRP2_pg( 0 ),
+        m_antibodies_to_n_variations(MalariaAntibodyType::N_MALARIA_ANTIBODY_TYPES),
+        m_max_fever_in_tstep(0.0f),
+        m_max_parasite_density_in_tstep(0.0f),
+        severetype(SevereCaseTypesEnum::NONE),
+        cumulative_days_of_clinical_incident(0.0f),
+        cumulative_days_of_severe_incident(0.0f),
+        cumulative_days_of_severe_anemia_incident(0.0f),
+        days_between_incidents(0.0f)
+    {
+        m_MSP_antibodies.reserve(          SusceptibilityMalariaConfig::falciparumMSPVars );
+        m_PfEMP1_minor_antibodies.reserve( SusceptibilityMalariaConfig::falciparumNonSpecTypes * MINOR_EPITOPE_VARS_PER_SET );
+        m_PfEMP1_major_antibodies.reserve( SusceptibilityMalariaConfig::falciparumPfEMP1Vars );
     }
 
     void SusceptibilityMalaria::Initialize(float _age, float immmod, float riskmod)
@@ -210,19 +248,40 @@ namespace Kernel
         m_ind_pyrogenic_threshold = SusceptibilityMalariaConfig::pyrogenic_threshold;
         m_ind_fever_kill_rate = SusceptibilityMalariaConfig::fever_IRBC_killrate;
 
-        switch(SusceptibilityMalariaConfig::innate_immune_variation_type)
+        float variation_modifier = 1.0;
+        if( (SusceptibilityMalariaConfig::innate_immune_variation_type == InnateImmuneVariationType::CYTOKINE_KILLING) ||
+            (SusceptibilityMalariaConfig::innate_immune_variation_type == InnateImmuneVariationType::PYROGENIC_THRESHOLD) )
+        {
+            // ------------------------------------------------------------------------------------
+            // --- NOTE:  This is not very performant, but it is nice that all of the code for this
+            // --- feature is located in spot.
+            // ------------------------------------------------------------------------------------
+            const NodeDemographics& r_demographics = parent->GetEventContext()->GetNodeEventContext()->GetDemographics();
+
+            DistributionFunction::Enum innate_immune_dist_type = DistributionFunction::Enum( r_demographics[ "IndividualAttributes" ][ "InnateImmuneDistributionFlag" ].AsInt() );
+            float innate_immune_dist1 = float( r_demographics[ "IndividualAttributes" ][ "InnateImmuneDistribution1" ].AsDouble() );
+            float innate_immune_dist2 = float( r_demographics[ "IndividualAttributes" ][ "InnateImmuneDistribution2" ].AsDouble() );
+
+            std::unique_ptr<IDistribution> distribution( DistributionFactory::CreateDistribution( innate_immune_dist_type ) );
+            distribution->SetParameters( innate_immune_dist1, innate_immune_dist2, 0.0 );
+
+            variation_modifier = distribution->Calculate( parent->GetRng() );
+        }
+
+        switch( SusceptibilityMalariaConfig::innate_immune_variation_type )
         {
             case InnateImmuneVariationType::NONE:
                 // no additional variation
                 break;
 
             case InnateImmuneVariationType::PYROGENIC_THRESHOLD:
-                m_ind_pyrogenic_threshold *= immmod;
+                m_ind_pyrogenic_threshold *= variation_modifier;
                 break;
 
             case InnateImmuneVariationType::CYTOKINE_KILLING:
-                m_ind_fever_kill_rate *= immmod;
+                m_ind_fever_kill_rate *= variation_modifier;
                 break;
+
             case InnateImmuneVariationType::PYROGENIC_THRESHOLD_VS_AGE:
                 // Roucher et al., Changing Malaria Epidemiology and Diagnostic Criteria for Plasmodium falciparum Clinical Malaria, PLoS One, 2012; 7(9): e46188
                 // KM:10/15/2013 - TODO: Promote these function parameters to config variables: 
@@ -238,40 +297,15 @@ namespace Kernel
                 break;
 
             default:
-                throw BadEnumInSwitchStatementException(__FILE__, __LINE__, __FUNCTION__, "innate_immune_variation_type", SusceptibilityMalariaConfig::innate_immune_variation_type, InnateImmuneVariationType::pairs::lookup_key(SusceptibilityMalariaConfig::innate_immune_variation_type));
-         }
- 
+                throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__,
+                                                         "innate_immune_variation_type", SusceptibilityMalariaConfig::innate_immune_variation_type,
+                                                         InnateImmuneVariationType::pairs::lookup_key( SusceptibilityMalariaConfig::innate_immune_variation_type ) );
+        }
+
         LOG_DEBUG_F("Individual pyrogenic threshold = %0.2f\n", m_ind_pyrogenic_threshold);
         LOG_DEBUG_F("Individual maximum fever killing rate = %0.2f\n", m_ind_fever_kill_rate);
 
-        m_CSP_antibody = MalariaAntibodyCSP::CreateAntibody(0);
-
-        // Only need to do immunity initialization of initial population.
-        // New births during the simulation can stop here.
-        if (_age == 0) return;
-
-        if(SusceptibilityConfig::susceptibility_initialization_distribution_type == DistributionType::DISTRIBUTION_COMPLEX )
-        {
-            INodeMalaria* p_node_malaria = nullptr;
-            if (parent->GetEventContext()->GetNodeEventContext()->GetNodeContext()->QueryInterface( GET_IID( INodeMalaria ), (void**)&p_node_malaria ) != s_OK)
-            {
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetEventContext()->GetNodeEventContext()->GetNodeContext()", "INodeMalaria", "INodeContext" );
-            }
-
-            float rand = parent->GetRng()->eGauss();
-            // -- MSP --
-            float msp_mean_antibody_fraction     = p_node_malaria->GetMSP_mean_antibody_distribution()->DrawResultValue(age);
-            float msp_variance_antibody_fraction = p_node_malaria->GetMSP_variance_antibody_distribution()->DrawResultValue(age);
-            InitializeAntibodyVariants(MalariaAntibodyType::MSP1, msp_mean_antibody_fraction + rand*msp_variance_antibody_fraction);
-            // -- non-spec PfEMP-1 minor epitopes --
-            float nonspec_mean_antibody_fraction     = p_node_malaria->GetNonspec_mean_antibody_distribution()->DrawResultValue(age);
-            float nonspec_variance_antibody_fraction = p_node_malaria->GetNonspec_variance_antibody_distribution()->DrawResultValue(age);
-            InitializeAntibodyVariants(MalariaAntibodyType::PfEMP1_minor, nonspec_mean_antibody_fraction + rand*nonspec_variance_antibody_fraction);
-            // -- major PfEMP-1 epitopes
-            float pfemp1_mean_antibody_fraction     = p_node_malaria->GetPfEMP1_mean_antibody_distribution()->DrawResultValue(age);
-            float pfemp1_variance_antibody_fraction = p_node_malaria->GetPfEMP1_variance_antibody_distribution()->DrawResultValue(age);
-            InitializeAntibodyVariants(MalariaAntibodyType::PfEMP1_major, pfemp1_mean_antibody_fraction + rand*pfemp1_variance_antibody_fraction);
-        }
+        m_CSP_antibody = MalariaAntibody::CreateAntibody( MalariaAntibodyType::CSP, 0 );
     }
 
     SusceptibilityMalaria *SusceptibilityMalaria::CreateSusceptibility(IIndividualHumanContext *context, float _age, float immmod, float riskmod)
@@ -285,22 +319,6 @@ namespace Kernel
 
     SusceptibilityMalaria::~SusceptibilityMalaria()
     {
-        if(m_CSP_antibody) delete m_CSP_antibody;
-
-        for (auto antibody : m_active_MSP_antibodies)
-        {
-            if(antibody) delete antibody;
-        }
-
-        for (auto antibody : m_active_PfEMP1_minor_antibodies)
-        {
-            if(antibody) delete antibody;
-        }
-
-        for (auto antibody : m_active_PfEMP1_major_antibodies)
-        {
-            if(antibody) delete antibody;
-        }
     }
 
     void SusceptibilityMalaria::Update(float dt)
@@ -348,12 +366,7 @@ namespace Kernel
         countAntibodyVariations();
 
         // now all other antigens
-        if ( !m_antigenic_flag )
-        {
-            // NO ANTIGENS.  All antibodies decay to zero and all antibody_capacities decay towards 0.3
-            decayAllAntibodies(dt);
-        }
-        else
+        if ( m_antigenic_flag )
         {
             // Update antigen-antibody reactions for MSP and PfEMP1 minor/major epitopes, including cytokine stimulation
             float temp_cytokine_stimulation = 0; // used to track total stimulation of cytokines due to rupturing schizonts
@@ -376,27 +389,64 @@ namespace Kernel
             LOG_VALID_F( "m_cytokines: %0.9f\n", m_cytokines );
 
             // reset antigenic presence and IRBC counters
-            m_antigenic_flag = 0;
-            for (auto antibody : m_active_MSP_antibodies)
+            m_antigenic_flag = false;
+            for( auto p_antibody : m_active_MSP_antibodies )
             {
-                antibody->ResetCounters();
+                p_antibody->ResetCounters();
             }
 
-            for (auto antibody : m_active_PfEMP1_minor_antibodies)
+            for( auto p_antibody : m_active_PfEMP1_minor_antibodies )
             {
-                antibody->ResetCounters();
+                p_antibody->ResetCounters();
             }
 
-            for (auto antibody : m_active_PfEMP1_major_antibodies)
+            for( auto p_antibody : m_active_PfEMP1_major_antibodies )
             {
-                antibody->ResetCounters();
+                p_antibody->ResetCounters();
             }
         }
+
+        UpdateDiagnosticVariables( dt, m_TotalIRBC, m_TotalIRBCWithHRP );
 
         // Determine the disease state (symptomatic, severe, or fatal) of current clinical incident
         updateClinicalStates(dt);
 
+        m_TotalIRBC = 0; // clear so can be updated when the infections are
+        m_TotalIRBCWithHRP = 0;
+
+        m_active_MSP_antibodies.clear();
+        m_active_PfEMP1_major_antibodies.clear();
+        m_active_PfEMP1_minor_antibodies.clear();
+
         LOG_VALID( "END Update\n" );
+    }
+
+    void SusceptibilityMalaria::UpdateDiagnosticVariables( float dt, int64_t totalIRBC, int64_t totalIRBCWithHRP )
+    {
+        // --------------------------------------------------------------------------------------
+        // --- "Modelling the dynamics of Plasmodium falciparum histidine-rich protein 2
+        // --- in human malaria to better understand malaria rapid diagnostic test performance"
+        // --- by Louise Marquart, Alice Butterworth, James S McCarthy and Michelle L Gatton
+        // --- https://malariajournal.biomedcentral.com/articles/10.1186/1475-2875-11-74
+        // ---
+        // --- NOTE: We are approximating the decay as linear.
+        // --------------------------------------------------------------------------------------
+        m_PfHRP2_pg -= m_PfHRP2_pg*SusceptibilityMalariaConfig::PfHRP2_decay_rate*dt;
+        m_PfHRP2_pg += SusceptibilityMalariaConfig::PfHRP2_boost_rate * float( totalIRBCWithHRP ) * dt;
+
+        // Calculcate parasite density
+        m_parasite_density = float( totalIRBC ) * m_inv_microliters_blood;
+    }
+
+    void SusceptibilityMalaria::UpdateIRBC( int64_t irbcFromInfection, int64_t irbcFromInfectionWithHRP )
+    {
+        m_TotalIRBC += irbcFromInfection;
+        m_TotalIRBCWithHRP += irbcFromInfectionWithHRP;
+    }
+
+    float SusceptibilityMalaria::GetPfHRP2() const
+    {
+        return m_PfHRP2_pg;
     }
 
     void SusceptibilityMalaria::UpdateInfectionCleared()
@@ -406,19 +456,16 @@ namespace Kernel
 
     void SusceptibilityMalaria::updateImmunityCSP( float dt )
     {
-        if ( !m_CSP_antibody->GetAntigenicPresence() )
+        if( m_CSP_antibody.GetAntigenicPresence() )
         {
-            m_CSP_antibody->Decay( dt );
-            return;
-        }
-
-        // Hyper-immune response (could potentially keep this as part of the update in ExposeToInfectivity)
-        if (m_CSP_antibody->GetAntibodyCapacity() > 0.4)
-        { 
-            m_CSP_antibody->UpdateAntibodyCapacityByRate( dt, 0.33f );
-        }
-
-        m_CSP_antibody->UpdateAntibodyConcentration( dt );
+	        // Hyper-immune response (could potentially keep this as part of the update in ExposeToInfectivity)
+	        if (m_CSP_antibody.GetAntibodyCapacity() > 0.4)
+	        { 
+	            m_CSP_antibody.UpdateAntibodyCapacityByRate( dt, 0.33f );
+	        }
+	
+	        m_CSP_antibody.UpdateAntibodyConcentration( dt );
+	    }
     }
 
     void SusceptibilityMalaria::updateImmunityMSP( float dt, float& temp_cytokine_stimulation )
@@ -429,23 +476,17 @@ namespace Kernel
         //  red cell invasion and is the target of invasion-inhibiting antibodies." 
         // J Exp Med 172(1): 379-382.
 
-        for (auto antibody : m_active_MSP_antibodies)
+        for (auto p_antibody : m_active_MSP_antibodies)
         {
-            if ( !antibody->GetAntigenicPresence() )
-            {
-                antibody->Decay( dt );
-                continue;
-            }
-
-            LOG_VALID_F( "\tMSP (before): capacity = %0.9f, Ab = %0.9f,  antigen = %lld\n", antibody->GetAntibodyCapacity(), antibody->GetAntibodyConcentration(), antibody->GetAntigenCount() );
+            LOG_VALID_F( "\tMSP (before): capacity = %0.9f, Ab = %0.9f,  antigen = %lld\n", p_antibody->GetAntibodyCapacity(), p_antibody->GetAntibodyConcentration(), p_antibody->GetAntigenCount() );
 
             // Temporary cytokines stimulated by spikes in MSP antigenic presence after schizont bursts
-            temp_cytokine_stimulation += antibody->StimulateCytokines( dt, m_inv_microliters_blood );
+            temp_cytokine_stimulation += p_antibody->StimulateCytokines( dt, m_inv_microliters_blood );
 
-            antibody->UpdateAntibodyCapacity( dt, m_inv_microliters_blood );
-            antibody->UpdateAntibodyConcentration( dt );
+            p_antibody->UpdateAntibodyCapacity( dt, m_inv_microliters_blood );
+            p_antibody->UpdateAntibodyConcentration( dt );
 
-            LOG_VALID_F( "\t    (after): capacity = %0.9f, Ab = %0.9f,  antigen = %lld\n", antibody->GetAntibodyCapacity(), antibody->GetAntibodyConcentration(), antibody->GetAntigenCount() );
+            LOG_VALID_F( "\t    (after): capacity = %0.9f, Ab = %0.9f,  antigen = %lld\n", p_antibody->GetAntibodyCapacity(), p_antibody->GetAntibodyConcentration(), p_antibody->GetAntigenCount() );
         }
     }
 
@@ -456,74 +497,67 @@ namespace Kernel
         // "Transient cross-reactive immune responses can orchestrate antigenic variation in malaria." 
         // Nature 429(6991): 555-558.
 
-        for (auto antibody : m_active_PfEMP1_minor_antibodies)
+        for (auto p_antibody : m_active_PfEMP1_minor_antibodies)
         {
-            if ( !antibody->GetAntigenicPresence() )
-            {
-                antibody->Decay( dt );
-                continue;
-            }
+            LOG_VALID_F( "\tPfEMP1 minor (before): capacity = %0.9f, Ab = %0.9f,  antigen = %lld\n", p_antibody->GetAntibodyCapacity(), p_antibody->GetAntibodyConcentration(), p_antibody->GetAntigenCount() );
 
-            LOG_VALID_F( "\tPfEMP1 minor (before): capacity = %0.9f, Ab = %0.9f,  antigen = %lld\n", antibody->GetAntibodyCapacity(), antibody->GetAntibodyConcentration(), antibody->GetAntigenCount() );
+            p_antibody->UpdateAntibodyCapacity( dt, m_inv_microliters_blood );
+            p_antibody->UpdateAntibodyConcentration( dt );
 
-            antibody->UpdateAntibodyCapacity( dt, m_inv_microliters_blood );
-            antibody->UpdateAntibodyConcentration( dt );
-
-            // Accumulate parasite density
-            m_parasite_density += float(antibody->GetAntigenCount()) * m_inv_microliters_blood;
-            
-            LOG_VALID_F( "\t    (after): capacity = %0.9f, Ab = %0.9f,  antigen = %lld\n", antibody->GetAntibodyCapacity(), antibody->GetAntibodyConcentration(), antibody->GetAntigenCount() );
+            LOG_VALID_F( "\t    (after): capacity = %0.9f, Ab = %0.9f,  antigen = %lld\n", p_antibody->GetAntibodyCapacity(), p_antibody->GetAntibodyConcentration(), p_antibody->GetAntigenCount() );
         }
     }
 
     void SusceptibilityMalaria::updateImmunityPfEMP1Major( float dt )
     {
-        for (auto antibody : m_active_PfEMP1_major_antibodies)
+        for (auto p_antibody : m_active_PfEMP1_major_antibodies)
         {
-            if ( !antibody->GetAntigenicPresence() )
-            {
-                antibody->Decay( dt );
-                continue;
-            }
-
-            LOG_VALID_F( "\tPfEMP1 major (before): capacity = %0.9f, Ab = %0.9f,  antigen = %lld\n", antibody->GetAntibodyCapacity(), antibody->GetAntibodyConcentration(), antibody->GetAntigenCount() );
+            LOG_VALID_F( "\tPfEMP1 major (before): capacity = %0.9f, Ab = %0.9f,  antigen = %lld\n", p_antibody->GetAntibodyCapacity(), p_antibody->GetAntibodyConcentration(), p_antibody->GetAntigenCount() );
 
             // Cytokines released at low antibody concentration (if capacity hasn't switched into high proliferation rate yet)
-            if ( antibody->GetAntibodyCapacity() <= 0.4 )
+            if( p_antibody->GetAntibodyCapacity() <= 0.4 )
             {
-                m_cytokine_stimulation += antibody->StimulateCytokines( dt, m_inv_microliters_blood );
+                m_cytokine_stimulation += p_antibody->StimulateCytokines( dt, m_inv_microliters_blood );
             }
 
-            antibody->UpdateAntibodyCapacity( dt, m_inv_microliters_blood );
-            antibody->UpdateAntibodyConcentration( dt );
-
-            LOG_VALID_F( "\t    (after): capacity = %0.9f, Ab = %0.9f,  antigen = %lld\n", antibody->GetAntibodyCapacity(), antibody->GetAntibodyConcentration(), antibody->GetAntigenCount() );
+            p_antibody->UpdateAntibodyCapacity( dt, m_inv_microliters_blood );
+            p_antibody->UpdateAntibodyConcentration( dt );
+            LOG_VALID_F( "\t    (after): capacity = %0.9f, Ab = %0.9f,  antigen = %lld\n", p_antibody->GetAntibodyCapacity(), p_antibody->GetAntibodyConcentration(), p_antibody->GetAntigenCount() );
         }
     }
 
-    void SusceptibilityMalaria::decayAllAntibodies( float dt )
+    void AddAntibody( std::vector<MalariaAntibody*>& antibody_collection, MalariaAntibody* pAntibody )
     {
-        // CSP handled outside check for any active infection
-
-        for (auto antibody : m_active_MSP_antibodies)
+        if( pAntibody->GetActiveIndex() < 0 )
         {
-            antibody->Decay( dt );
-        }
-
-        for (auto antibody : m_active_PfEMP1_minor_antibodies)
-        {
-            antibody->Decay( dt );
-        }
-
-        for (auto antibody : m_active_PfEMP1_major_antibodies)
-        {
-            antibody->Decay( dt );
+            antibody_collection.push_back( pAntibody );
+            pAntibody->SetActiveIndex( antibody_collection.size() - 1 );
         }
     }
 
-    void SusceptibilityMalaria::SetAntigenPresent()
+    void SusceptibilityMalaria::SetActiveAntibody( MalariaAntibody* pAntibody )
     {
-        m_antigenic_flag = 1;
+        switch( pAntibody->GetAntibodyType() )
+        {
+            case MalariaAntibodyType::MSP1:
+                AddAntibody( m_active_MSP_antibodies, pAntibody );
+                break;
+
+            case MalariaAntibodyType::PfEMP1_major:
+                AddAntibody( m_active_PfEMP1_major_antibodies, pAntibody );
+                break;
+
+            case MalariaAntibodyType::PfEMP1_minor:
+                AddAntibody( m_active_PfEMP1_minor_antibodies, pAntibody );
+                break;
+
+            default:
+                throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__,
+                                                         "pAntibody->GetAntibodyType()",
+                                                         int(pAntibody->GetAntibodyType()),
+                                                         MalariaAntibodyType::pairs::lookup_key(pAntibody->GetAntibodyType()) );
+        }
+        m_antigenic_flag = true;
     }
 
     void SusceptibilityMalaria::recalculateBloodCapacity( float _age )
@@ -555,10 +589,10 @@ namespace Kernel
 
     void SusceptibilityMalaria::countAntibodyVariations()
     {
-        m_antibodies_to_n_variations[MalariaAntibodyType::CSP]          = ( m_CSP_antibody->GetAntibodyCapacity() > 0 ) ? 1 : 0;
-        m_antibodies_to_n_variations[MalariaAntibodyType::MSP1]         = m_active_MSP_antibodies.size();
-        m_antibodies_to_n_variations[MalariaAntibodyType::PfEMP1_minor] = m_active_PfEMP1_minor_antibodies.size();
-        m_antibodies_to_n_variations[MalariaAntibodyType::PfEMP1_major] = m_active_PfEMP1_major_antibodies.size();
+        m_antibodies_to_n_variations[MalariaAntibodyType::CSP]          = ( m_CSP_antibody.GetAntibodyCapacity() > 0 ) ? 1 : 0;
+        m_antibodies_to_n_variations[MalariaAntibodyType::MSP1]         = m_MSP_antibodies.size();
+        m_antibodies_to_n_variations[MalariaAntibodyType::PfEMP1_minor] = m_PfEMP1_minor_antibodies.size();
+        m_antibodies_to_n_variations[MalariaAntibodyType::PfEMP1_major] = m_PfEMP1_major_antibodies.size();
     }
 
     void SusceptibilityMalaria::updateClinicalStates( float dt )
@@ -581,7 +615,7 @@ namespace Kernel
         float prob_fatal    = get_fatal_disease_probability(dt, anemiaFatalFraction, parasiteFatalFraction, feverFatalFraction);
 
         // sanity check on inconsistently specified sigmoids
-        if ( prob_fatal > prob_severe )
+        if( InfectionConfig::enable_disease_mortality && (prob_fatal > prob_severe) )
         {
             LOG_WARN_F( "Probability of mortality (%f) exceeds probability of severe disease (%f)!\n", prob_fatal, prob_severe);
         }
@@ -591,14 +625,17 @@ namespace Kernel
             // reset unique-incident counter
             days_between_incidents = float(SusceptibilityMalariaConfig::minDaysBetweenClinicalIncidents);
 
-            // TODO: this function is getting big enough that we might break out the three inner bits (i.e. UpdateSymptomaticCases, UpdateSevereCases, UpdateFatalCases)
+            bool is_new_clinical =  (current_fever > SusceptibilityMalariaConfig::clinicalFeverThreshold_high)
+                                 && (cumulative_days_of_clinical_incident == 0);
+            bool continuing_symptoms_clinical = (cumulative_days_of_clinical_incident > 0);
+            if( is_new_clinical || continuing_symptoms_clinical )
+            {
+                ReportClinicalCase( ClinicalSymptomsEnum::CLINICAL_DISEASE, is_new_clinical );
+            }
+
             // check for new symptomatic case and accumulate days with fever
             if ( current_fever > SusceptibilityMalariaConfig::clinicalFeverThreshold_high )
             {
-                if ( cumulative_days_of_clinical_incident == 0 ) 
-                { 
-                    ReportClinicalCase(ClinicalSymptomsEnum::CLINICAL_DISEASE);
-                }
                 cumulative_days_of_clinical_incident += dt;
             }
             else if ( prob_fatal < 0.01 * dt ) // is it possible to have severe disease or die without fever?  should this be enforced explicitly?
@@ -610,13 +647,19 @@ namespace Kernel
             // use a single random number draw for how unlucky this individual is this time step.
             float rand = parent->GetRng()->e();
 
+            bool is_new_severe =  (rand < prob_severe)
+                               && (cumulative_days_of_severe_incident == 0);
+            bool continuing_symptoms_severe = (cumulative_days_of_severe_incident > 0);
+            if( is_new_severe || continuing_symptoms_severe )
+            {
+                ReportClinicalCase( ClinicalSymptomsEnum::SEVERE_DISEASE, is_new_severe );
+            }
+
             // check for new severe case and accumulate days in this state
             if ( rand < prob_severe )
             {
                 if ( cumulative_days_of_severe_incident == 0 ) 
                 { 
-                    ReportClinicalCase(ClinicalSymptomsEnum::SEVERE_DISEASE);
-                    
                     // Here is where we can use the partial fractions to do some logging of severe cases by cause:
                     if      ( rand < ( prob_severe * anemiaSevereFraction ) ) { severetype = SevereCaseTypesEnum::ANEMIA; }
                     else if ( rand < ( prob_severe * ( anemiaSevereFraction + parasiteSevereFraction ) ) ) { severetype = SevereCaseTypesEnum::PARASITES; }
@@ -628,27 +671,33 @@ namespace Kernel
                 cumulative_days_of_severe_incident += dt;
             }
 
+            bool is_new_anemia =  (GetHemoglobin() < 5)
+                               && (cumulative_days_of_severe_anemia_incident == 0);
+            bool continuing_symptoms_anemia = (cumulative_days_of_severe_anemia_incident > 0);
+            if( is_new_anemia || continuing_symptoms_anemia )
+            {
+                ReportClinicalCase( ClinicalSymptomsEnum::SEVERE_ANEMIA, is_new_anemia );
+            }
+
             // check for severe anemia case
             if ( GetHemoglobin() < 5 ) 
             {
-                if ( cumulative_days_of_severe_anemia_incident == 0 ) 
-                { 
-                    ReportClinicalCase(ClinicalSymptomsEnum::SEVERE_ANEMIA);
-                }
                 cumulative_days_of_severe_anemia_incident += dt;
             }
 
-            // check for fatal case (even if disease mortality is off just for logging purposes)
-            // To query for mortality-reducing effects of drugs or vaccines
-            IDrugVaccineInterventionEffects* idvie = nullptr;
-            if ( s_OK != parent->GetInterventionsContext()->QueryInterface(GET_IID(IDrugVaccineInterventionEffects), (void**)&idvie) )
+            if( InfectionConfig::enable_disease_mortality )
             {
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetInterventionsContext()", "IDrugVaccineInterventionEffects", "IIndividualHumanInterventionsContext" );
-            }
-            if ( rand < prob_fatal * idvie->GetInterventionReducedMortality() )
-            {
-                if ( InfectionConfig::enable_disease_mortality )
-                { 
+                // To query for mortality-reducing effects of drugs or vaccines
+                IDrugVaccineInterventionEffects* idvie = nullptr;
+                if ( s_OK != parent->GetInterventionsContext()->QueryInterface(GET_IID(IDrugVaccineInterventionEffects), (void**)&idvie) )
+                {
+                    throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, 
+                                                   "parent->GetInterventionsContext()",
+                                                   "IDrugVaccineInterventionEffects",
+                                                   "IIndividualHumanInterventionsContext" );
+                }
+                if ( rand < prob_fatal * idvie->GetInterventionReducedMortality() )
+                {
                     parent->GetEventContext()->Die( HumanStateChange::KilledByInfection ); // set the individual's HumanStateChange to KilledByInfection
 
                     // Here is where we can use the partial fractions to do some logging of deaths by cause, for example:
@@ -677,7 +726,7 @@ namespace Kernel
         }
     }
 
-    void  SusceptibilityMalaria::ReportClinicalCase( ClinicalSymptomsEnum::Enum symptom )
+    void  SusceptibilityMalaria::ReportClinicalCase( ClinicalSymptomsEnum::Enum symptom, bool isNew )
     {
         // for reporting symptoms (clinical, severe, anemia, etc.)
         IMalariaHumanContext *imhc = nullptr;
@@ -685,7 +734,7 @@ namespace Kernel
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "IMalariaHumanContext", "IIndividualHumanContext" );
         }
-        imhc->AddClinicalSymptom( symptom );
+        imhc->AddClinicalSymptom( symptom, isNew );
     }
 
     float SusceptibilityMalaria::get_severe_disease_probability( float dt, float& anemiaSevereFraction, float& parasiteSevereFraction, float& feverSevereFraction )
@@ -712,122 +761,13 @@ namespace Kernel
         return total_fatal_prob;
     }
 
-    bool SusceptibilityMalaria::CheckForParasitesWithTest(int test_type) const
-    {
-        if (test_type == MALARIA_TEST_BLOOD_SMEAR)
-        {
-            // perform a typical blood smear (default
-            // take parasiteSmearSensitivity microliters of blood and see if any parasites
-            // number of parasites will be Poisson distributed with mean=parasite_density*parasiteSmearSensitivity (default 0.1)
-            // probability of more than one parasite is (1-exp(-mean))
-            float prob = EXPCDF( -(m_parasite_density)*params()->malaria_params->parasiteSmearSensitivity );
-            if( parent->GetRng()->SmartDraw( prob ) )
-                return true; 
-            else 
-                return false; 
-        }
-        else if (test_type == MALARIA_TEST_NEW_DIAGNOSTIC)
-        {
-            float prob = EXPCDF( -(m_parasite_density)*params()->malaria_params->newDiagnosticSensitivity );
-            if( parent->GetRng()->SmartDraw( prob ) )
-                return true; 
-            else 
-                return false; 
-        }
-
-        return false;
-    }
-
-    float SusceptibilityMalaria::CheckParasiteCountWithTest(int test_type) const
-    {
-        if (test_type == MALARIA_TEST_BLOOD_SMEAR)
-        {
-            float measured_count = 0;
-
-            // perform a typical blood smear (default
-            // take .1 microliters of blood and count parasites
-            // 10xPoisson distributed with mean .1xparasite_density
-            if (params()->malaria_params->parasiteSmearSensitivity > 0)
-            {
-                measured_count = float(1.0 / params()->malaria_params->parasiteSmearSensitivity * parent->GetRng()->Poisson(params()->malaria_params->parasiteSmearSensitivity * m_parasite_density));
-            }
-
-            return measured_count;
-        }
-
-        return m_parasite_density;
-    }
-
-    void SusceptibilityMalaria::InitializeAntibodyVariants(MalariaAntibodyType::Enum type, float frac_variants)
-    {
-        // fraction is bounded between zero and one
-        frac_variants = (frac_variants > 1) ? 1 : frac_variants;
-        frac_variants = (frac_variants < 0) ? 0 : frac_variants;
-
-        int n_total = 0;
-        std::vector<int> variants;
-        switch( type )
-        {
-        case MalariaAntibodyType::MSP1:
-            n_total = params()->malaria_params->falciparumMSPVars;
-            break;
-
-        case MalariaAntibodyType::PfEMP1_minor:
-            n_total = params()->malaria_params->falciparumNonSpecTypes * MINOR_EPITOPE_VARS_PER_SET;
-            break;
-
-        case MalariaAntibodyType::PfEMP1_major:
-            n_total = params()->malaria_params->falciparumPfEMP1Vars;
-            break;
-
-        default:
-            throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "Only implemented InitializeAntibodyVariants functionality MSP1 and PfEMP1 major/minor so far" );
-            //throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "type", (int)type, MalariaAntibodyType::pairs::lookup_key(type) );
-        }
-
-        variants = InitialVariants( int(n_total*frac_variants), n_total );
-        for (int variant : variants)
-        {
-            RegisterAntibody(type, variant, SusceptibilityMalariaConfig::memory_level);
-        }
-    }
-
-    // NOTE: this implementation of the Knuth algorithm can probably be moved to a common class
-    std::vector<int> SusceptibilityMalaria::InitialVariants(int n_choose, int n_total)
-    {
-        std::vector<int> variants;
-        int itotal  = 0; 
-        int ichosen = 0;
-
-        while ( itotal < n_total && ichosen < n_choose )
-        {
-            int remain_total  = n_total  - itotal;
-            int remain_chosen = n_choose - ichosen;
-
-            if ( (parent->GetRng()->e() * remain_total) < remain_chosen )
-            {
-                variants.push_back(itotal);
-                ichosen++;
-            }
-
-            itotal++;
-        }
-
-        if ( ichosen != n_choose )
-        {
-            throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "Number of variants selected does not match the number requested." );
-        }
-
-        return variants;
-    }
-
     void SusceptibilityMalaria::BoostAntibody( MalariaAntibodyType::Enum type, int variant, float boosted_antibody_concentration )
     {
         switch( type )
         {
         case MalariaAntibodyType::CSP:
-            m_CSP_antibody->SetAntibodyConcentration( boosted_antibody_concentration );
-            m_CSP_antibody->SetAntibodyCapacity(1);
+            m_CSP_antibody.SetAntibodyConcentration( boosted_antibody_concentration );
+            m_CSP_antibody.SetAntibodyCapacity(1);
             break;
             
         default:
@@ -835,50 +775,47 @@ namespace Kernel
         }
     }
 
-    IMalariaAntibody* SusceptibilityMalaria::RegisterAntibody(MalariaAntibodyType::Enum type, int variant, float capacity)
+    MalariaAntibody* SusceptibilityMalaria::RegisterAntibody(MalariaAntibodyType::Enum type, int variant, float capacity)
     {
-        std::vector<IMalariaAntibody*> *variant_vector;
-        IMalariaAntibody* (*typed_create_antibody)(int,float);
+        std::vector<MalariaAntibody> *variant_vector;
 
         switch( type )
         {
         case MalariaAntibodyType::CSP:
-            return m_CSP_antibody; // only one CSP variant, so ignore second argument for now.
+            return &m_CSP_antibody; // only one CSP variant, so ignore second argument for now 
 
         case MalariaAntibodyType::MSP1:
-            variant_vector = &m_active_MSP_antibodies;
-            typed_create_antibody = MalariaAntibodyMSP::CreateAntibody;
+            variant_vector = &m_MSP_antibodies;
             break;
 
         case MalariaAntibodyType::PfEMP1_minor:
-            variant_vector = &m_active_PfEMP1_minor_antibodies;
-            typed_create_antibody = MalariaAntibodyPfEMP1Minor::CreateAntibody;
+            variant_vector = &m_PfEMP1_minor_antibodies;
             break;
 
         case MalariaAntibodyType::PfEMP1_major:
-            variant_vector = &m_active_PfEMP1_major_antibodies;
-            typed_create_antibody = MalariaAntibodyPfEMP1Major::CreateAntibody;
+            variant_vector = &m_PfEMP1_major_antibodies;
             break;
 
         default:
-            //throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "Only implemented IMalariaAntibody query for CSP, MSP1, PfEMP1 major/minor so far" );
             throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "type", int(type), MalariaAntibodyType::pairs::lookup_key(type) );
         }
         
-        IMalariaAntibody* antibody = nullptr;
-        for (auto tmp_antibody : *variant_vector)
+        MalariaAntibody* antibody = nullptr;
+        for( int i = 0; i < variant_vector->size(); ++i )
         {
-            if ( tmp_antibody->GetAntibodyVariant() == variant )
+            if ( (*variant_vector)[i].GetAntibodyVariant() == variant )
             {
-                antibody = tmp_antibody;
+                antibody = &(*variant_vector)[i];
                 break;
             }
         }
 
         if (antibody == nullptr) // make a new antibody if it hasn't been created yet
         {
-            antibody = typed_create_antibody(variant, capacity);
-            variant_vector->push_back(antibody);
+            MalariaAntibody tmp_antibody = MalariaAntibody::CreateAntibody( type, variant, capacity );
+
+            variant_vector->push_back(tmp_antibody);
+            antibody = &((*variant_vector)[ variant_vector->size() - 1 ]);
         }
 
         return antibody;
@@ -907,15 +844,15 @@ namespace Kernel
             break;
             
         case MalariaAntibodyType::MSP1:
-            fraction = float(m_antibodies_to_n_variations[MalariaAntibodyType::MSP1]) / params()->malaria_params->falciparumMSPVars;
+            fraction = float(m_antibodies_to_n_variations[MalariaAntibodyType::MSP1]) / SusceptibilityMalariaConfig::falciparumMSPVars;
             break;
 
         case MalariaAntibodyType::PfEMP1_minor:
-            fraction = float(m_antibodies_to_n_variations[MalariaAntibodyType::PfEMP1_minor]) / (MINOR_EPITOPE_VARS_PER_SET*params()->malaria_params->falciparumNonSpecTypes); // five minor epitopes for each non-spec type
+            fraction = float(m_antibodies_to_n_variations[MalariaAntibodyType::PfEMP1_minor]) / (MINOR_EPITOPE_VARS_PER_SET*SusceptibilityMalariaConfig::falciparumNonSpecTypes); // five minor epitopes for each non-spec type
             break;
 
         case MalariaAntibodyType::PfEMP1_major:
-            fraction = float(m_antibodies_to_n_variations[MalariaAntibodyType::PfEMP1_major]) / params()->malaria_params->falciparumPfEMP1Vars;
+            fraction = float(m_antibodies_to_n_variations[MalariaAntibodyType::PfEMP1_major]) / SusceptibilityMalariaConfig::falciparumPfEMP1Vars;
             break;
 
         default:
@@ -925,7 +862,7 @@ namespace Kernel
         return fraction;
     }
 
-    float SusceptibilityMalaria::get_combined_probability ( 
+    float SusceptibilityMalaria::get_combined_probability (
             float dt, 
             float anemiaThreshold, float anemiaInvWidth,
             float parasiteThreshold, float parasiteInvWidth,
@@ -937,7 +874,7 @@ namespace Kernel
         float prob_parasite = dt *          Sigmoid::variableWidthSigmoid( m_parasite_density,  parasiteThreshold,  parasiteInvWidth );
         float prob_fever    = dt *          Sigmoid::variableWidthSigmoid( get_fever(),         feverThreshold,     feverInvWidth );
 
-        // total probability of something happening is one minus the product of each event not occuring
+        // total probability of something happening is one minus the product of each event not occurring
         float total_prob = 1.0f - ( (1.0f - prob_anemia) * (1.0f - prob_parasite) * (1.0f - prob_fever) );
 
         // adjust partial probabilities passed in by reference
@@ -959,8 +896,6 @@ namespace Kernel
         return total_prob;
     }
 
-
-    const SimulationConfig * SusceptibilityMalaria::params() const { return GET_CONFIGURABLE(SimulationConfig); }
 
     // Fever tracks the level of cytokines
     // This changes a limited cytokine range to more closely match the range of fevers experienced by patients
@@ -1020,8 +955,7 @@ namespace Kernel
     {
         // update maximum fever (is zero if undetectable through whole time step)
         float fever_ = get_fever();
-        if ( fever_ > params()->malaria_params->feverDetectionThreshold && 
-             fever_ > m_max_fever_in_tstep )
+        if( fever_ > m_max_fever_in_tstep )
         {
             m_max_fever_in_tstep = fever_;
         }
@@ -1046,7 +980,7 @@ namespace Kernel
         return severetype;
     }
 
-    long long SusceptibilityMalaria::get_RBC_count() const          { return m_RBC; }
+    int64_t SusceptibilityMalaria::get_RBC_count() const          { return m_RBC; }
 
     // TODO: use this to calculate parasite density?  trigger end of asexual cycle update timing?
     void SusceptibilityMalaria::remove_RBCs(int64_t infectedAsexual, int64_t infectedGametocytes, double RBC_destruction_multiplier)
@@ -1061,14 +995,55 @@ namespace Kernel
 
     void SusceptibilityMalaria::serialize(IArchive& ar, SusceptibilityMalaria* obj)
     {
+        if( ar.IsWriter() && (obj->GetParent() != nullptr) )
+        {
+            // Checking the type of writer so we only decay when serializing
+            // to file versus for another core
+            JsonFullWriter* p_jfw = dynamic_cast<JsonFullWriter*>(&ar);
+            if( p_jfw != nullptr )
+            {
+                // ----------------------------------------------------------------------------
+                // --- Ensure that all inactive antibodies have decayed up to the current time.
+                // --- IncreaseAntigenCount() does the decay if needed.
+                // ----------------------------------------------------------------------------
+                float current_time = obj->GetParent()->GetEventContext()->GetNodeEventContext()->GetTime().time;
+                float dt = IndividualHumanConfig::infection_timestep;
+
+                // CPS works differently than the other antibodies so don't decay it
+                //obj->m_CSP_antibody.IncreaseAntigenCount( 0, current_time, dt );
+
+                for( int i = 0; i < obj->m_MSP_antibodies.size(); ++i )
+                {
+                    obj->m_MSP_antibodies[ i ].IncreaseAntigenCount( 0, current_time, dt );
+                }
+                for( int i = 0; i < obj->m_PfEMP1_major_antibodies.size(); ++i )
+                {
+                    obj->m_PfEMP1_major_antibodies[ i ].IncreaseAntigenCount( 0, current_time, dt );
+                }
+                for( int i = 0; i < obj->m_PfEMP1_minor_antibodies.size(); ++i )
+                {
+                    obj->m_PfEMP1_minor_antibodies[ i ].IncreaseAntigenCount( 0, current_time, dt );
+                }
+            }
+        }
+
         SusceptibilityVector::serialize(ar, obj);
         SusceptibilityMalaria& susceptibility = *obj;
+
 // Boost serialiation didn't include this member.            ar.labelElement("m_antigenic_flag") & susceptibility.m_antigenic_flag;
         ar.labelElement("m_maternal_antibody_strength") & susceptibility.m_maternal_antibody_strength;
         ar.labelElement("m_CSP_antibody") & susceptibility.m_CSP_antibody;
-        ar.labelElement("m_active_MSP_antibodies") & susceptibility.m_active_MSP_antibodies;
-        ar.labelElement("m_active_PfEMP1_minor_antibodies") & susceptibility.m_active_PfEMP1_minor_antibodies;
-        ar.labelElement("m_active_PfEMP1_major_antibodies") & susceptibility.m_active_PfEMP1_major_antibodies;
+        ar.labelElement("m_MSP_antibodies") & susceptibility.m_MSP_antibodies;
+        ar.labelElement("m_PfEMP1_minor_antibodies") & susceptibility.m_PfEMP1_minor_antibodies;
+        ar.labelElement("m_PfEMP1_major_antibodies") & susceptibility.m_PfEMP1_major_antibodies;
+
+        // These are cleared after each Update() so they do not need to be serialized.
+        //m_TotalIRBC
+        //m_TotalIRBCWithHRP
+        //m_active_MSP_antibodies.clear();
+        //m_active_PfEMP1_major_antibodies.clear();
+        //m_active_PfEMP1_minor_antibodies.clear();
+
         ar.labelElement("m_RBC") & susceptibility.m_RBC;
         ar.labelElement("m_RBCcapacity") & susceptibility.m_RBCcapacity;
         ar.labelElement("m_RBCproduction") & susceptibility.m_RBCproduction;
@@ -1078,6 +1053,7 @@ namespace Kernel
         ar.labelElement("m_ind_fever_kill_rate") & susceptibility.m_ind_fever_kill_rate;
         ar.labelElement("m_cytokine_stimulation") & susceptibility.m_cytokine_stimulation;
         ar.labelElement("m_parasite_density") & susceptibility.m_parasite_density;
+        ar.labelElement("m_PfHRP2_pg") & susceptibility.m_PfHRP2_pg;
         ar.labelElement("m_antibodies_to_n_variations") & susceptibility.m_antibodies_to_n_variations;
         ar.labelElement("m_max_fever_in_tstep") & susceptibility.m_max_fever_in_tstep;
         ar.labelElement("m_max_parasite_density_in_tstep") & susceptibility.m_max_parasite_density_in_tstep;
@@ -1086,5 +1062,44 @@ namespace Kernel
         ar.labelElement("cumulative_days_of_severe_incident") & susceptibility.cumulative_days_of_severe_incident;
         ar.labelElement("cumulative_days_of_severe_anemia_incident") & susceptibility.cumulative_days_of_severe_anemia_incident;
         ar.labelElement("days_between_incidents") & susceptibility.days_between_incidents;
+
+        if( ar.IsReader() )
+        {
+            // Checking the type of reader so we only reset the time last actived when
+            // deserializing from file versus for another core
+            JsonFullReader* p_jfr = dynamic_cast<JsonFullReader*>(&ar);
+            if( p_jfr != nullptr )
+            {
+                // ---------------------------------------------------------------------------
+                // --- Assume that the antibodies have all decayed appropriately to the time
+                // --- that they were serialized.  Since they have been decayed, we can call
+                // --- that the time the antibody was last active. We need to set it here
+                // --- because the day of the serialized file might be different than the
+                // --- start time of the simulation that is reading the file.
+                // ---------------------------------------------------------------------------
+                release_assert( EnvPtr->Config != nullptr );
+                if( !EnvPtr->Config->Exist( "Start_Time" ) )
+                {
+                    throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "'Start_Time' must be defined in the config file." );
+                }
+                float start_time = (*EnvPtr->Config)["Start_Time"].As<Number>();
+
+                // CPS is handled differently so we don't set the time
+                //obj->m_CSP_antibody.SetTimeLastActive( start_time );
+
+                for( int i = 0; i < obj->m_MSP_antibodies.size(); ++i )
+                {
+                    obj->m_MSP_antibodies[ i ].SetTimeLastActive( start_time );
+                }
+                for( int i = 0; i < obj->m_PfEMP1_major_antibodies.size(); ++i )
+                {
+                    obj->m_PfEMP1_major_antibodies[ i ].SetTimeLastActive( start_time );
+                }
+                for( int i = 0; i < obj->m_PfEMP1_minor_antibodies.size(); ++i )
+                {
+                    obj->m_PfEMP1_minor_antibodies[ i ].SetTimeLastActive( start_time );
+                }
+            }
+        }
     }
 }

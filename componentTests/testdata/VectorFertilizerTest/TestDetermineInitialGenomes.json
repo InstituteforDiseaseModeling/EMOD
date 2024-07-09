@@ -1,0 +1,65 @@
+{
+    "Genes" : [
+        {
+            "Is_Gender_Gene": 1,
+            "Alleles": [
+                {
+                    "Name": "X",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.8
+                },
+                {
+                    "Name": "Y",
+                    "Is_Y_Chromosome" : 1,
+                    "Initial_Allele_Frequency": 0.2
+                }
+            ],
+            "Mutations": []
+        },
+        {
+            "Is_Gender_Gene": 0,
+            "Alleles": [
+                {
+                    "Name": "a1",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.4
+                },
+                {
+                    "Name": "a2",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.3
+                },
+                {
+                    "Name": "a3",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.2
+                },
+                {
+                    "Name": "a4",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.06
+                },
+                {
+                    "Name": "a5",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.04
+                }
+            ],
+            "Mutations": []
+        }
+    ],
+    "Gene_To_Trait_Modifiers" : [
+        {
+            "Allele_Combinations" : [
+                [ "X", "Y" ],
+                [ "a1", "a1" ]
+            ],
+            "Trait_Modifiers" : [
+                {
+                    "Trait" : "FECUNDITY",
+                    "Modifier": 0.9
+                }
+            ]
+        }
+    ]
+}

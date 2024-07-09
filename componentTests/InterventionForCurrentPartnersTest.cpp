@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include <iostream>
@@ -88,12 +80,13 @@ SUITE( InterventionForCurrentPartnersTest )
             CHECK( false );
         }
 
-        pFixture->Register( &rListener, EventTrigger::TBActivation );
+        pFixture->Register( &rListener, EventTrigger::NewMalariaInfectionObject );
 
         IndividualHumanContextFake* p_self = SetupFixture( pFixture );
 
         ifcp.SetContextTo( p_self );
         ifcp.Update( 1.0 );
+        pFixture->GetNodeContext()->PostUpdate();
     }
 
     TEST_FIXTURE( PfaFixture, TestNoPrioritization )
@@ -158,15 +151,15 @@ SUITE( InterventionForCurrentPartnersTest )
         RunBaseTest( this, filename, listener );
 
         CHECK_EQUAL( 9, listener.selected_ids.size() );
-        CHECK_EQUAL( 9, listener.selected_ids[ 0 ] );
-        CHECK_EQUAL( 8, listener.selected_ids[ 1 ] );
-        CHECK_EQUAL( 7, listener.selected_ids[ 2 ] );
-        CHECK_EQUAL( 6, listener.selected_ids[ 3 ] );
+        CHECK_EQUAL( 1, listener.selected_ids[ 0 ] );
+        CHECK_EQUAL( 2, listener.selected_ids[ 1 ] );
+        CHECK_EQUAL( 3, listener.selected_ids[ 2 ] );
+        CHECK_EQUAL( 4, listener.selected_ids[ 3 ] );
         CHECK_EQUAL( 5, listener.selected_ids[ 4 ] );
-        CHECK_EQUAL( 4, listener.selected_ids[ 5 ] );
-        CHECK_EQUAL( 3, listener.selected_ids[ 6 ] );
-        CHECK_EQUAL( 2, listener.selected_ids[ 7 ] );
-        CHECK_EQUAL( 1, listener.selected_ids[ 8 ] );
+        CHECK_EQUAL( 6, listener.selected_ids[ 5 ] );
+        CHECK_EQUAL( 7, listener.selected_ids[ 6 ] );
+        CHECK_EQUAL( 8, listener.selected_ids[ 7 ] );
+        CHECK_EQUAL( 9, listener.selected_ids[ 8 ] );
     }
 
     TEST_FIXTURE( PfaFixture, TestShorterTime )
@@ -177,39 +170,20 @@ SUITE( InterventionForCurrentPartnersTest )
         RunBaseTest( this, filename, listener );
 
         CHECK_EQUAL( 9, listener.selected_ids.size() );
-        CHECK_EQUAL( 1, listener.selected_ids[ 0 ] );
-        CHECK_EQUAL( 2, listener.selected_ids[ 1 ] );
-        CHECK_EQUAL( 3, listener.selected_ids[ 2 ] );
-        CHECK_EQUAL( 4, listener.selected_ids[ 3 ] );
+        CHECK_EQUAL( 9, listener.selected_ids[ 0 ] );
+        CHECK_EQUAL( 8, listener.selected_ids[ 1 ] );
+        CHECK_EQUAL( 7, listener.selected_ids[ 2 ] );
+        CHECK_EQUAL( 6, listener.selected_ids[ 3 ] );
         CHECK_EQUAL( 5, listener.selected_ids[ 4 ] );
-        CHECK_EQUAL( 6, listener.selected_ids[ 5 ] );
-        CHECK_EQUAL( 7, listener.selected_ids[ 6 ] );
-        CHECK_EQUAL( 8, listener.selected_ids[ 7 ] );
-        CHECK_EQUAL( 9, listener.selected_ids[ 8 ] );
+        CHECK_EQUAL( 4, listener.selected_ids[ 5 ] );
+        CHECK_EQUAL( 3, listener.selected_ids[ 6 ] );
+        CHECK_EQUAL( 2, listener.selected_ids[ 7 ] );
+        CHECK_EQUAL( 1, listener.selected_ids[ 8 ] );
     }
 
     TEST_FIXTURE( PfaFixture, TestOlder )
     {
         std::string filename = "testdata/InterventionForCurrentPartnersTest/TestOlder.json";
-
-        EventListener listener;
-        RunBaseTest( this, filename, listener );
-
-        CHECK_EQUAL( 9, listener.selected_ids.size() );
-        CHECK_EQUAL( 1, listener.selected_ids[ 0 ] );
-        CHECK_EQUAL( 2, listener.selected_ids[ 1 ] );
-        CHECK_EQUAL( 3, listener.selected_ids[ 2 ] );
-        CHECK_EQUAL( 4, listener.selected_ids[ 3 ] );
-        CHECK_EQUAL( 5, listener.selected_ids[ 4 ] );
-        CHECK_EQUAL( 6, listener.selected_ids[ 5 ] );
-        CHECK_EQUAL( 7, listener.selected_ids[ 6 ] );
-        CHECK_EQUAL( 8, listener.selected_ids[ 7 ] );
-        CHECK_EQUAL( 9, listener.selected_ids[ 8 ] );
-    }
-
-    TEST_FIXTURE( PfaFixture, TestYounger )
-    {
-        std::string filename = "testdata/InterventionForCurrentPartnersTest/TestYounger.json";
 
         EventListener listener;
         RunBaseTest( this, filename, listener );
@@ -224,6 +198,25 @@ SUITE( InterventionForCurrentPartnersTest )
         CHECK_EQUAL( 3, listener.selected_ids[ 6 ] );
         CHECK_EQUAL( 2, listener.selected_ids[ 7 ] );
         CHECK_EQUAL( 1, listener.selected_ids[ 8 ] );
+    }
+
+    TEST_FIXTURE( PfaFixture, TestYounger )
+    {
+        std::string filename = "testdata/InterventionForCurrentPartnersTest/TestYounger.json";
+
+        EventListener listener;
+        RunBaseTest( this, filename, listener );
+
+        CHECK_EQUAL( 9, listener.selected_ids.size() );
+        CHECK_EQUAL( 1, listener.selected_ids[ 0 ] );
+        CHECK_EQUAL( 2, listener.selected_ids[ 1 ] );
+        CHECK_EQUAL( 3, listener.selected_ids[ 2 ] );
+        CHECK_EQUAL( 4, listener.selected_ids[ 3 ] );
+        CHECK_EQUAL( 5, listener.selected_ids[ 4 ] );
+        CHECK_EQUAL( 6, listener.selected_ids[ 5 ] );
+        CHECK_EQUAL( 7, listener.selected_ids[ 6 ] );
+        CHECK_EQUAL( 8, listener.selected_ids[ 7 ] );
+        CHECK_EQUAL( 9, listener.selected_ids[ 8 ] );
     }
 
     TEST_FIXTURE( PfaFixture, TestRelationshipType )
@@ -251,10 +244,10 @@ SUITE( InterventionForCurrentPartnersTest )
         RunBaseTest( this, filename, listener );
 
         CHECK_EQUAL( 5, listener.selected_ids.size() );
-        CHECK_EQUAL( 9, listener.selected_ids[ 0 ] );
-        CHECK_EQUAL( 8, listener.selected_ids[ 1 ] );
-        CHECK_EQUAL( 7, listener.selected_ids[ 2 ] );
-        CHECK_EQUAL( 6, listener.selected_ids[ 3 ] );
+        CHECK_EQUAL( 1, listener.selected_ids[ 0 ] );
+        CHECK_EQUAL( 2, listener.selected_ids[ 1 ] );
+        CHECK_EQUAL( 3, listener.selected_ids[ 2 ] );
+        CHECK_EQUAL( 4, listener.selected_ids[ 3 ] );
         CHECK_EQUAL( 5, listener.selected_ids[ 4 ] );
     }
 

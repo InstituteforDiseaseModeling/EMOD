@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -15,7 +7,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <string>
 #include <vector>
 #include "JsonObjectDemog.h"
-#include "IdmApi.h"
 #include "ISerializable.h"
 #include "IArchive.h"
 #include "Types.h"
@@ -73,6 +64,12 @@ namespace Kernel
             return m_pIP;
         }
 
+        // see BaseKeyValue::GetUniqueID() for more info
+        inline int GetUniqueID() const
+        {
+            return m_UniqueID;
+        }
+
     protected:
         friend class BaseProperty;
         friend class IndividualProperty;
@@ -81,19 +78,21 @@ namespace Kernel
         KeyValueInternal( BaseProperty* pip,
                           const std::string& rValue,
                           uint32_t externalNodeId,
-                          const ProbabilityNumber& rInitialDist );
+                          const ProbabilityNumber& rInitialDist,
+                          int uniqueID );
 
         BaseProperty* m_pIP;
         std::string m_KeyValueString;
         std::string m_Value;
         std::map<uint32_t,float> m_InitialDistributions;
+        int m_UniqueID;
     };
 
     // An BaseKey is the key or name of the Property (i.e. Risk).
     // Instances of BaseKey are ensured to be valid keys/names to Properties
     // or not valid/null because they have not been set to a valid entry.
     // If the validity of the variable is in question, one should use the IsValid() method.
-    class IDMAPI BaseKey
+    class BaseKey
     {
     public:
         // Return the key/name of the property as a string
@@ -101,12 +100,6 @@ namespace Kernel
 
         // Return true if this is a valid key
         bool IsValid() const;
-
-        // Return the external name associated with this key
-        const std::string& GetParameterName() const;
-
-        // Set the parameter name associated with this key.  The name is used in error reporting.
-        void SetParameterName( const std::string& rParameterName );
 
     protected:
         template<class Key, class KeyValue, class Iterator> friend class BaseKeyValueContainer;
@@ -125,11 +118,7 @@ namespace Kernel
         typedef std::function<void( BaseKey* pkv, const std::string& rKeyStr )> k_assignment_function_t;
         static void serialize( IArchive& ar, BaseKey& obj, k_assignment_function_t assign_func );
 
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         const BaseProperty* m_pIP;
-        std::string m_ParameterName;
-#pragma warning( pop )
     };
 
     // An BaseKeyValue represents a Property key and value pair
@@ -137,7 +126,7 @@ namespace Kernel
     // Instances of BaseKeyValue are ensured to be valid entry or are not valid
     // because the have not been set.  One uses the IsValid() method to check
     // if the instance has been set to a valid entry.
-    class IDMAPI BaseKeyValue
+    class BaseKeyValue
     {
     public:
         // Return the "key:value" as a string
@@ -145,12 +134,6 @@ namespace Kernel
 
         // Return true if this is a valid key-value object
         bool IsValid() const;
-
-        // Return the external name associated with this key-value pair
-        const std::string& GetParameterName() const;
-
-        // Set the parameter name associated with this key-value pair.  The name is used in error reporting.
-        void SetParameterName( const std::string& rParameterName );
 
         // Return the key associated with this key-value pair.
         template<class Key>
@@ -161,6 +144,14 @@ namespace Kernel
 
         // Return the value associated with this key-value pair
         const std::string& GetValueAsString() const;
+
+        // Return an integer that is a unique for this key:value pair.
+        // Each key:value should have a unique number.  On multicore, each process
+        // should read the IPs from the demographics in the same order so they
+        // can have simplie integer IDs.  These IDs can then be used in a database.
+        // Unfortunnately, it does NOT give the key:value pair a unique ID across
+        // different scenarios.  If this is needed it could be changed to a hash.
+        int GetUniqueID() const;
 
         void UpdateInitialDistribution( uint32_t externalNodeId, double value );
 
@@ -181,16 +172,12 @@ namespace Kernel
         bool operator==( const BaseKeyValue& rThat ) const;
         bool operator!=( const BaseKeyValue& rThat ) const;
 
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         KeyValueInternal* m_pInternal;
-        std::string m_ParameterName;
-#pragma warning( pop )
     };
 
     // An iterator class used for traversing the elements in BaseKeyValueContainer.
     template<class KeyValue>
-    class IDMAPI BaseIterator
+    class BaseIterator
     {
     public:
         const KeyValue& operator*();
@@ -205,11 +192,8 @@ namespace Kernel
         bool operator!=( const BaseIterator<KeyValue>& rThat ) const;
         BaseIterator& operator++(); //prefix
 
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         std::vector<KeyValueInternal*>::const_iterator m_Iterator;
         KeyValue m_KeyValue; //reused to reduce lots of object creation
-#pragma warning( pop )
     };
 
 
@@ -217,7 +201,7 @@ namespace Kernel
     // For example, an Individual has an IPKeyValueContainer to manage the properties 
     // specific to that individual.
     template<class Key, class KeyValue,class Iterator_t>
-    class IDMAPI BaseKeyValueContainer
+    class BaseKeyValueContainer
     {
     public:
         // Return an iterator to the first element in the list
@@ -279,15 +263,12 @@ namespace Kernel
 
         KeyValueInternal* FindFirst( const BaseKeyValueContainer& rContainer ) const;
 
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         std::vector<KeyValueInternal*> m_Vector;
-#pragma warning( pop )
     };
 
     // The BaseProperty object represents a single Property.  It contains everything 
     // that relates to a single property: name, values, transitions, and transmissions.
-    class IDMAPI BaseProperty
+    class BaseProperty
     {
     public:
         BaseProperty();
@@ -351,11 +332,8 @@ namespace Kernel
                               const std::string& rKey,
                               const std::string& rNewValue );
 
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         std::string  m_Key;
         std::vector<KeyValueInternal*> m_Values;
-#pragma warning( pop )
     };
 
 
@@ -365,7 +343,7 @@ namespace Kernel
     // DLL's will have access to the singleton.
     // This design assumes that there is only one valid set of Properties
     // for all Nodes.
-    class IDMAPI BaseFactory
+    class BaseFactory
     {
     public:
 
@@ -407,12 +385,7 @@ namespace Kernel
                          const char* ip_name_key_str,
                          read_function_t read_func,
                          uint32_t node_id,
-                         const JsonObjectDemog& rDemog, 
-                         bool isWhitelistEnabled );
-
-        // If the White List is enabled, this will throw an exception if the given key
-        // is not one of the approved keys/properties.
-        void CheckIpKeyInWhitelist( const char* ip_key, const std::string& rKey, int numValues );
+                         const JsonObjectDemog& rDemog );
 
         // Add this new/unique Key-Value pair to the possible set
         // It throws an exception if the "key:value" already exists.
@@ -435,17 +408,19 @@ namespace Kernel
                                                const std::map<std::string, float>& rValues ) > ip_construct_function_t;
 
         // Add a new Property using the key and set of values
-        void AddIP( uint32_t externalNodeId, 
-                    const std::string& rKey, 
-                    const std::map<std::string, float>& rValues,
-                    ip_construct_function_t create_ip );
+        BaseProperty* AddIP( uint32_t externalNodeId, 
+                             const std::string& rKey, 
+                             const std::map<std::string, float>& rValues,
+                             ip_construct_function_t create_ip,
+                             bool haveFactoryMaintain );
 
         void CheckForDuplicateKey( const std::string& rKeyStr );
 
+        int GetNextUniqueKeyValueID();
+
         uint32_t m_ExternalNodeIdOfFirst;
-        bool m_WhiteListEnabled;
         std::vector<BaseProperty*> m_IPList;
         std::map<std::string,KeyValueInternal*> m_KeyValueMap; // should contain all of the KeyValueInternal objects for properties
-        std::set<std::string> m_KeyWhiteList;
+        int m_NextUniqueKeyValueID;
     };
 }

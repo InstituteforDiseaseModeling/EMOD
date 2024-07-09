@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include <memory> // unique_ptr
@@ -26,11 +18,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 using namespace std; 
 using namespace Kernel; 
-
-// maybe these shouldn't be protected in Simulation.h
-typedef boost::bimap<ExternalNodeId_t, suids::suid> nodeid_suid_map_t;
-typedef nodeid_suid_map_t::value_type nodeid_suid_pair;
-
 
 SUITE(AssortivityTest)
 {
@@ -675,13 +662,13 @@ SUITE(AssortivityTest)
     TEST_FIXTURE(AssortivityFixture, TestBadMatrixValue)
     {
         TestHelper_ConfigureException( __LINE__, "testdata/AssortivityTest/TestBadMatrixValue.json",
-            "Configuration variable Weighting_Matrix_RowMale_ColumnFemale with value 9999 out of range: greater than 1.\nWas reading values for TRANSITORY." );
+            "Configuration variable 'Weighting_Matrix_RowMale_ColumnFemale' with value 9999 out of range: greater than 1.\nWas reading values for TRANSITORY." );
     }
 
     TEST_FIXTURE(AssortivityFixture, TestBadStartYear)
     {
         TestHelper_ConfigureException( __LINE__, "testdata/AssortivityTest/TestBadStartYear.json",
-            "Configuration variable Start_Year with value 9999 out of range: greater than 2200.\nWas reading values for TRANSITORY." );
+            "Configuration variable 'Start_Year' with value 9999 out of range: greater than 2200.\nWas reading values for TRANSITORY." );
     }
 
     TEST_FIXTURE(AssortivityFixture, TestMissingStartYear)
@@ -693,7 +680,7 @@ SUITE(AssortivityTest)
     TEST_FIXTURE(AssortivityFixture, TestMissingGroup)
     {
         TestHelper_ConfigureException( __LINE__, "testdata/AssortivityTest/TestMissingGroup.json",
-            "While trying to parse json data for param/key >>> Group <<< in otherwise valid json segment" );
+            "Parameter 'Group of AssortivityHIV' not found in input file" );
     }
 
     TEST_FIXTURE(AssortivityFixture, TestMatrixRowAllZeros)

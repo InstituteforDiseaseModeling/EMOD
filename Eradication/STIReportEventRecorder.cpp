@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
@@ -13,12 +5,14 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "STIReportEventRecorder.h"
 #include "IdmDateTime.h"
 #include "NodeEventContext.h"
+#include "SimulationEventContext.h"
+#include "IdmDateTime.h"
 
 SETUP_LOGGING( "STIReportEventRecorder" )
 
 namespace Kernel
 {
-    GET_SCHEMA_STATIC_WRAPPER_IMPL( STIReportEventRecorder, STIReportEventRecorder )
+    GET_SCHEMA_STATIC_WRAPPER_IMPL(STIReportEventRecorder,STIReportEventRecorder)
 
     IReport* STIReportEventRecorder::CreateReport()
     {
@@ -26,7 +20,7 @@ namespace Kernel
     }
 
     STIReportEventRecorder::STIReportEventRecorder()
-        : ReportEventRecorder()
+        : ReportEventRecorder(true)
     {
     }
 
@@ -36,11 +30,15 @@ namespace Kernel
 
     std::string STIReportEventRecorder::GetTimeHeader() const
     {
-        return "Year";
+        std::stringstream ss;
+        ss << ReportEventRecorder::GetTimeHeader() << ",Year";
+        return ss.str();
     }
 
-    float STIReportEventRecorder::GetTime( IIndividualHumanEventContext* pEntity ) const
+    std::string STIReportEventRecorder::GetTime( IIndividualHumanEventContext* pEntity ) const
     {
-        return pEntity->GetNodeEventContext()->GetTime().Year();
+        std::stringstream ss;
+        ss << ReportEventRecorder::GetTime( pEntity ) << "," << pEntity->GetNodeEventContext()->GetTime().Year();
+        return ss.str();
     }
 }

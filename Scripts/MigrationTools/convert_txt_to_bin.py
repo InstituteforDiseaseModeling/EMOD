@@ -89,7 +89,8 @@ if __name__ == "__main__":
         for i in range(len(net[ID])):
             ID_write[i]=net[ID][i]
             ID_rate_write[i]=net_rate[ID][i]
-        s_write=struct.pack('L'*len(ID_write), *ID_write)
+        #The type needs to be 'I' because Linux handles 'L' differently than Windows.
+        s_write=struct.pack('I'*len(ID_write), *ID_write)
         s_rate_write=struct.pack('d'*len(ID_rate_write),*ID_rate_write)
         fout.write(s_write)
         fout.write(s_rate_write)
@@ -114,7 +115,12 @@ if __name__ == "__main__":
     # -------------------
     migjson = collections.OrderedDict([])
     migjson['Metadata'] = {}
-    migjson['Metadata']['Author'         ] = os.environ['USERNAME']
+    
+    if os.name == "nt":
+        migjson['Metadata']['Author'] = os.environ['USERNAME']
+    else:
+        migjson['Metadata']['Author'] = os.environ['USER']
+        
     migjson['Metadata']['NodeCount'      ] = len(node_id_list)
     migjson['Metadata']['IdReference'    ] = id_ref
     migjson['Metadata']['DateCreated'    ] = datetime.datetime.now().ctime()

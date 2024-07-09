@@ -1,18 +1,9 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
 #include "IdmApi.h"
 #include <set>
 #include <map>
-#include "BoostLibWrapper.h"
 
 #include "suids.hpp"
 #include "Configure.h"
@@ -112,15 +103,12 @@ namespace Kernel
         std::string GetFailedToInterpretMessage( const char* pExpType ) const ;
 
     private:
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         JsonObjectDemog jsonValue;
         std::map<std::string,std::string> * string_table;
         INodeContext * parent;
         ExternalNodeId_t nodeID ; // external ID of the node
         std::string valueKey ; // The key/string used in the demographics file for this value/object
         std::string parentKey ; // The key/string used in the demographics file for the parent i.e. demographics[ parentKey ][ valueKey ]
-#pragma warning( pop )
 
         friend struct NodeDemographicsDistribution;
     };
@@ -175,8 +163,6 @@ namespace Kernel
         static std::vector<std::string> GetDemographicsFileList() { return demographics_filenames_list; };
 
     private:
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         static const std::string default_node_demographics_str;
 
         boost::bimap<ExternalNodeId_t, suids::suid> * nodeid_suid_map;
@@ -205,8 +191,6 @@ namespace Kernel
         bool allow_nodeid_zero;
 
         static std::vector<std::string> demographics_filenames_list;
-
-#pragma warning( pop )
 
         NodeDemographicsFactory() : nodeid_suid_map(), nodeIDs(), idreference(), full_string_table( nullptr ), demographics_filenames(), layer_defaults(), layer_string_sub_tables(), layer_string_value2key_tables(), nodedata_maps() { };
         NodeDemographicsFactory(boost::bimap<ExternalNodeId_t, suids::suid> * nodeid_suid_map)
@@ -341,13 +325,10 @@ namespace Kernel
 
         int num_axes;
 
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         std::vector<int> num_pop_groups;
         std::vector< std::vector<double> > pop_groups;
 
         std::vector<double> result_values;
         std::vector< std::vector<double> > dist_values;
-#pragma warning( pop )
     };
 }

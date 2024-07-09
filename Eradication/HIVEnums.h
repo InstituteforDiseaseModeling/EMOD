@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -17,12 +9,11 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 namespace Kernel
 {
     ENUM_DEFINE(HIVInfectionStage, 
-        ENUM_VALUE_SPEC(INITIATED                   , 0)
+        ENUM_VALUE_SPEC(NOT_INFECTED                , 0)
         ENUM_VALUE_SPEC(ACUTE                       , 1)
         ENUM_VALUE_SPEC(LATENT                      , 2)
         ENUM_VALUE_SPEC(AIDS                        , 3)
-        ENUM_VALUE_SPEC(ON_ART                      , 4)
-        ENUM_VALUE_SPEC(INFECTIONSTAGE_COUNT        , 5))
+        ENUM_VALUE_SPEC(ON_ART                      , 4))
 
     ENUM_DEFINE(CD4_Model, 
         ENUM_VALUE_SPEC(CD4_MODEL_LINEAR            , 0)

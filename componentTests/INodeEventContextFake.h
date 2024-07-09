@@ -1,17 +1,11 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
 #include "ISimulationContext.h"
 #include "NodeEventContext.h"
+#include "VectorContexts.h"
 #include "IIndividualHuman.h"
+#include "IMosquitoReleaseConsumer.h"
 #include "IIndividualHumanContext.h"
 #include "EventTrigger.h"
 #include "RANDOM.h"
@@ -21,7 +15,9 @@ using namespace Kernel;
 class INodeEventContextFake : public INodeEventContext,
                               public IIndividualEventBroadcaster,
                               public INodeInterventionConsumer,
-                              public ICampaignCostObserver
+                              public ICampaignCostObserver,
+                              public IMosquitoReleaseConsumer,
+                              public INodeVectorInterventionEffects
 {
 public:
     INodeEventContextFake()
@@ -32,6 +28,10 @@ public:
         , m_IdmDateTime()
         , m_HumanList()
         , m_ObserversMap()
+        , m_ReleasedSpecies()
+        , m_ReleasedIsFraction(false)
+        , m_ReleasedNumber(0)
+        , m_ReleasedFraction(0.0f)
         , m_Rng()
     {
     }
@@ -69,6 +69,10 @@ public:
             *ppvObject = static_cast<ICampaignCostObserver*>(this);
         else if ( iid == GET_IID(INodeInterventionConsumer)) 
             *ppvObject = static_cast<INodeInterventionConsumer*>(this);
+        else if( iid == GET_IID( IMosquitoReleaseConsumer ) )
+            *ppvObject = static_cast<IMosquitoReleaseConsumer*>(this);
+        else if( iid == GET_IID( INodeVectorInterventionEffects ) )
+            *ppvObject = static_cast<INodeVectorInterventionEffects*>(this);
 
         if( *ppvObject != nullptr )
         {
@@ -110,6 +114,15 @@ public:
         }
     }
 
+    virtual uint64_t GetNumTriggeredEvents()
+    {
+        return 0;
+    }
+
+    virtual uint64_t GetNumObservedEvents()
+    {
+        return 0;
+    }
 
     // ------------------------------
     // --- INodeEventContext Methods
@@ -177,11 +190,13 @@ public:
     virtual void RegisterTravelDistributionSource(  ITravelLinkedDistributionSource *tles, TravelEventType type) { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual void UnregisterTravelDistributionSource(ITravelLinkedDistributionSource *tles, TravelEventType type) { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
 
-    virtual void PurgeExisting( const std::string& iv_name )
+    virtual void PurgeExisting( const std::string& iv_name ) override
     {
     }
+    virtual const std::list<INodeDistributableIntervention*>& GetNodeInterventions() const override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." ); }
 
-    virtual std::list<INodeDistributableIntervention*> GetInterventionsByType(const std::string& type_name)         { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+    virtual std::list<INodeDistributableIntervention*> GetInterventionsByType(const std::string& type_name) { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+    virtual bool ContainsExistingByName( const InterventionName& iv_name ) { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
        
     virtual bool IsInPolygon(float* vertex_coords, int numcoords) { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual bool IsInPolygon( const json::Array &poly )           { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
@@ -203,9 +218,34 @@ public:
         return true;
     }
 
+    // ------------------------------
+    // --- IMosquitoReleaseConsumer
+    // ------------------------------
+
+    virtual void ReleaseMosquitoes( const std::string& releasedSpecies,
+                                    const VectorGenome& rGenome,
+                                    const VectorGenome& rMateGenome,
+                                    bool isFraction,
+                                    uint32_t releasedNumber,
+                                    float releasedFraction,
+                                    float releasedInfected )
+    {
+        m_ReleasedSpecies    = releasedSpecies;
+        m_ReleasedIsFraction = isFraction;
+        m_ReleasedNumber     = releasedNumber;
+        m_ReleasedFraction   = releasedFraction;
+        m_ReleasedInfected   = releasedInfected;
+    }
+
     // -----------------
     // --- Other Methods
     // -----------------
+    const std::string& GetMosquitoReleasedSpecies()      const { return m_ReleasedSpecies; }
+    bool               GetMosquitoReleasedIsFraction()   const { return m_ReleasedIsFraction; }
+    uint32_t           GetMosquitoReleasedNumber()       const { return m_ReleasedNumber; }
+    float              GetMosquitoReleasedFraction()     const { return m_ReleasedFraction; }
+    float              GetMosquitoReleasedInfected()     const { return m_ReleasedInfected; }
+
     EventTrigger GetTriggeredEvent() const { return m_TriggeredEvent ; }
     void ClearTriggeredEvent() { m_TriggeredEvent = EventTrigger(); }
 
@@ -226,6 +266,23 @@ public:
         return nullptr;
     }
 
+    // ----------------------------------
+    // --- INodeVectorInterventionEffects
+    // ----------------------------------
+    virtual const GeneticProbability& GetLarvalKilling( VectorHabitatType::Enum ) const override { return m_Junk; }
+    virtual float GetLarvalHabitatReduction( VectorHabitatType::Enum, const std::string& species ) override  { return 0.0; }
+    virtual const GeneticProbability& GetVillageSpatialRepellent() override  { return m_Junk; }
+    virtual float GetADIVAttraction() override  { return 0.0; }
+    virtual float GetADOVAttraction() override  { return 0.0; }
+    virtual const GeneticProbability& GetOutdoorKilling() override  { return m_Junk; }
+    virtual float GetOviTrapKilling( VectorHabitatType::Enum ) override { return 0.0; }
+    virtual const GeneticProbability& GetAnimalFeedKilling() override  { return m_Junk; }
+    virtual const GeneticProbability& GetOutdoorRestKilling() override  { return m_Junk; }
+    virtual bool  IsUsingIndoorKilling() const override { return false; }
+    virtual const GeneticProbability& GetIndoorKilling() override  { return m_Junk; }
+    virtual bool  IsUsingSugarTrap() const override { return false; }
+    virtual const GeneticProbability& GetSugarFeedKilling() const override { return m_Junk; }
+
 private:
     INodeContext* m_NodeContext;
     suids::suid m_ID;
@@ -233,5 +290,11 @@ private:
     IdmDateTime m_IdmDateTime ;
     std::vector<IIndividualHumanContext*> m_HumanList;
     std::vector<std::vector<IIndividualEventObserver*> > m_ObserversMap;
+    std::string m_ReleasedSpecies;
+    bool m_ReleasedIsFraction;
+    uint32_t m_ReleasedNumber;
+    float m_ReleasedFraction;
+    float m_ReleasedInfected;
     PSEUDO_DES m_Rng;
+    GeneticProbability m_Junk;
 };

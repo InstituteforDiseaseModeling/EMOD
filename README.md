@@ -1,242 +1,98 @@
-## V2.20
+EMOD - V2.22
+============
+Epidemiological MODeling software (EMOD), is an agent-based model (ABM) that simulates the simultaneous interactions of agents in an effort to recreate complex phenomena. Each agent (such as a human or vector) can be assigned a variety of “properties” (for example, age, gender, etc.), and their behavior and interactions with one another are determined by using decision rules. These models have strong predictive power and are able to leverage spatial and temporal dynamics.
 
-The EMOD v2.20 release includes support for typhoid disease modeling, including new campaign classes: **EnvironmentalDiagnostic**, **TyphoidCarrierDiagnostic**, **TyphoidVaccine**, and **TyphoidWASH**. 
+EMOD is also stochastic, meaning that there is randomness built into the model. Infection and recovery processes are represented as probabilistic Bernoulli random draws. In other words, when a susceptible person comes into contact with a pathogen, they are not guaranteed to become infected. Instead, you can imagine flipping a coin that has a λ chance of coming up tails S(t) times, and for every person who gets a “head” you say they are infected. This randomness better approximates what happens in reality. It also means that you must run many simulations to determine the probability of particular outcomes.
 
-**ImmunityBloodTest** was added for identifying whether an individual’s immunity meets a specified threshold and then broadcasts an event based on the results. This new campaign class can be used with all supported disease modeling sim types. 
+As of V2.22, EMOD will only support malaria and HIV and will no longer support diseases such as TB and Typhoid.
 
-**InterventionForCurrentPartners** can be used with STI and HIV sim types and provides a mechanism for the partners of individuals in the care system to also seek care. 
+History & Publication Samples
+-----------------------------
+EMOD development was started by Philip Welkoff in 2010 to model malaria.  Since that time, EMOD has been used in numerous studies and policy decisions.  Below is short sample of papers about EMOD and that used EMOD:
 
-**OutbreakIndividualTBorHIV** extends **OutbreakIndividual** and allows for specifying HIV or a specific strain of infection for TB. 
+**A malaria transmission-directed model of mosquito life cycle and ecology**
+Philip A Eckhoff
+Malaria Journal, 2011
+https://malariajournal.biomedcentral.com/articles/10.1186/1475-2875-10-303
 
-In addition, configuration and campaign parameters that set the type of distribution (uniform, Gaussian, etc.) of infectiousness, incubation period, and delivery of interventions have been refactored. The number of distributions available and naming conventions used are now consistent across the configuration and campaign files. This change does not affect the distributions used in the demographics files.
+**Description of the EMOD-HIV Model v0.7**
+Anna Bershteyn, Daniel J. Klein, Edward Wenger, and Philip A. Eckhoff
+arXiv.org, 2012
+https://arxiv.org/pdf/1206.3720
 
-A beta release of new campaign classes (not yet fully tested) are included to support surveillance of events, where events are listened to, detected, and broadcast when a threshold has been met. These classes include: **BroadcastCoordinatorEvent**, **BroadcastNodeEvent**, **DelayEventCoordinator**,  **SurveillanceEventCoordinator**, and **TriggeredEventCoordinator**.
+**Effectiveness of reactive case detection for malaria elimination in three archetypical transmission settings: a modelling study**
+Jaline Gerardin,Caitlin A. Bever, Daniel Bridenbecker, Busiku Hamainza, Kafula Silumbe, John M. Miller, Thomas P. Eisele, Philip A. Eckoff, and Edward A. Wenger
+Malaria Journal, 2017
+https://malariajournal.biomedcentral.com/articles/10.1186/s12936-017-1903-z
 
+**Implementation and applications of EMOD, an individual-based multi-disease modeling platform**
+Anna Bershteyn, Jaline Gerardin, Daniel Bridenbecker, Christopher W Lorton, Jonathan Bloedow, Robert S Baker, Guillaume Chabot-Couture, Ye Chen, Thomas Fischle, Kurt Frey, Jillian S Gauld, Hao Hu, Amanda S Izzo, Daniel J Klein, Dejan Lukacevic, Kevin A McCarthy, Joel C Miller, Andre Lin Ouedraogo, T Alex Perkins, Jeffrey Steinkraus, Tony Ting, Quirine A ten Bosch, Hung-Fu Ting, Svetlana Titova, Bradley G Wagner, Philip A Welkhoff, Edward A Wenger, Christian N Wiswell
+Pathogens and Disease, 2018
+https://academic.oup.com/femspd/article/76/5/fty059/5050059?login=false
 
-### New configuration parameters
+**Vector genetics, insecticide resistance and gene drives: an agent-based modeling approach to evaluate malaria transmission and elimination**
+Prashanth Selvaraj, Edward A. Wenger, Daniel Bridenbecker, Nikolai Windbichler, Jonathan R. Russell , Jaline Gerardin, Caitlin A. Bever, Milen Nikolov
+BioRxiv, 2020
+https://www.biorxiv.org/content/10.1101/2020.01.27.920421v1.full
 
-For the generic simulation type, the following new configuration parameters are available:
+**The effect of 90-90-90 on HIV-1 incidence and mortality in eSwatini: a mathematical modelling study**
+Adam Akullian , Michelle Morrison, Geoffrey P Garnett, Zandile Mnisi, Nomthandazo Lukhele, Daniel Bridenbecker, Anna Bershteyn
+The Lancet HIV, 2020
+https://www.thelancet.com/action/showPdf?pii=S2352-3018%2819%2930436-9
 
-+ **Enable_Infectivity_Reservoir**: Controls whether or not an exogeneous reservoir of infectivity will be included in the simulation and allows for the infectivity in a node to be increased additively. When set to 1 (true), the demographics parameter **InfectivityReservoirSize** is expected in **NodeAtttributes** for each node.
-+ **Minimum_End_Time**: The minimum time step the simulation must reach before checking for early termination conditions. **Enable_Abort_Zero_Infectivity** must be set to 1 (true).
-+ **Enable_Abort_Zero_Infectivity**: Controls whether or not the simulation should be ended when total infectivity falls to zero. Supported only in single-node simulations.
-+ **Random_Number_Generator_Policy**: The policy that determines if random numbers are generated for objects in a simulation on a per-core or per-node basis.
-+ **Enable_Random_Generator_From_Serialized_Population**: The type of random number generator to use for objects in a simulation. Must set the RNG seed in **Run_Number**.
+Running EMOD
+------------
+Since EMOD is a stochastic model, you must run numerous realizations of each scenario in order to collect proper statistics.  You will likely need a high performance computing (HPC) platform to run these simulations.  As of July 2024, we only support a SLURM-based HPC.
 
+To make running EMOD easier, we have created some python packages that simplify configuring, running, and plotting the results.  As of July 2024, we are working to make these packages more user friendly and will have updates coming in Q4 of 2024.
 
-### New configuration parameters (Distribution)
+Directory structure
+-------------------
 
-Note: These configuration parameters are part of the refactoring of distribution parameters.
+- `baseReportLib` - A library of commonly used report components and base classes.
+- `cajun` - A C++ API for JSON
+- `campaign` - A library of commonly used intervention components and base classes.
+- `componentTests` - A collection of unit tests that verify that the EMOD pieces do the right thing.
+- `Dependencies` - Microsoft Cluster Pack
+- `Eradication` - The core components of EMOD including human intra-host, relationship, and vector models.
+- `interventions` - A collection of interventions that can be used with EMOD.
+- `libsqlite` - The SQLite source code for reading and creating SQLite databases.
+- `lz4` - A fast compression engine used to read and write serialized populations.
+- `rapidjson` - A fast JSON parser/generator for C++ with box SAX/DOM style API
+- `Regression` - A collection of scripts, input data, and output data used to verify that EMOD models things correctly.
+- `reporters` - A collection of data extraction, or report, classes used to collect data during a simulation.
+- `Scripts` - A collection of support scripts
+- `snappy` - A fast compression engine used to read and write serialized populations. 
+- `UnitTest++` - A C++ unit test framework used by the componentTests
+- `untils` - A collection of utility classes to do things like help with configuring and generating pseudo random numbers.
 
-For the generic simulation type, the following new configuration parameters are available:
+If wanting to navigate through the code, the place to start is Eradication\Eradication.cpp.
 
-+ **Incubation_Period_Distribution**: The distribution type to use for assigning the incubation period to each individual in the population. Each individual’s value is a random draw from the distribution.
-+ **Infectious_Period_Distribution**: The distribution type to use for assigning the infectious period to each individual in the population. Each individual’s value is a random draw from the distribution.
-+ **Incubation_Period_Mean_1**: The mean of the first exponential distribution when **Incubation_Period_Distribution** is set to DUAL_EXPONENTIAL_DISTRIBUTION.
-+ **Incubation_Period_Mean_2**: The mean of the second exponential distribution when **Incubation_Period_Distribution** is set to DUAL_EXPONENTIAL_DISTRIBUTION.
-+ **Incubation_Period_Proportion_1**: The proportion of individuals in the first exponential distribution when **Incubation_Period_Distribution** is set to DUAL_EXPONENTIAL_DISTRIBUTION.
-+ **Infectious_Period_Mean_1**: The mean of the first exponential distribution when **Infectious_Period_Distribution** is set to DUAL_EXPONENTIAL_DISTRIBUTION.
-+ **Infectious_Period_Proportion_1**: The proportion of individuals in the first exponential distribution when **Infectious_Period_Distribution** is set to DUAL_EXPONENTIAL_DISTRIBUTION.
-+ **Infectious_Period_Mean_2**: The mean of the second exponential distribution when Infectious_Period_Distribution is set to DUAL_EXPONENTIAL_DISTRIBUTION.
-+ **Incubation_Period_Constant**: The incubation period to use for all individuals.
-+ **Infectious_Period_Constant**: The infectious period to use for all individuals.
-+ **Incubation_Period_Exponential**: The mean incubation period when **Incubation_Period_Distribution** is set to EXPONENTIAL_DISTRIBUTION.
-+ **Infectious_Period_Exponential**: The mean infectious period when **Infectious_Period_Distribution** is set to EXPONENTIAL_DISTRIBUTION.
-+ **Incubation_Period_Gaussian_Mean**: The mean of the incubation period when **Incubation_Period_Distribution** is set to GAUSSIAN_DISTRIBUTION.
-+ **Incubation_Period_Gaussian_Std_Dev**: The standard deviation of the incubation period when **Incubation_Period_Distribution** is set to GAUSSIAN_DISTRIBUTION.
-+ **Infectious_Period_Gaussian_Mean**: The mean of the infectious period when **Infectious_Period_Distribution** is set to GAUSSIAN_DISTRIBUTION.
-+ **Incubation_Period_Lambda**: The scale value for the incubation period when **Incubation_Period_Distribution** is set to WEIBULL_DISTRIBUTION.
-+ **Infectious_Period_Max**: The maximum infectious period when **Infectious_Period_Distribution** is set to UNIFORM_DISTRIBUTION.
-+ **Infectious_Period_Min**: The minimum infectious period when **Infectious_Period_Distribution** is set to UNIFORM_DISTRIBUTION.
-+ **Incubation_Period_Proportion_0**: The proportion of individuals to assign a value of zero days incubation when **Incubation_Period_Distribution** is set to DUAL_CONSTANT_DISTRIBUTION.
-+ **Incubation_Period_Peak_2_Value**: The incubation period value to assign to the remaining individuals when **Incubation_Period_Distribution** is set to DUAL_CONSTANT_DISTRIBUTION.
-+ **Infectious_Period_Proportion_0**: The proportion of individuals to assign a value of zero days infectiousness when **Infectious_Period_Distribution** is set to DUAL_CONSTANT_DISTRIBUTION.
-+ **Infectious_Period_Peak_2_Value**: The infectious period value to assign to the remaining individuals when **Infectious_Period_Distribution** is set to DUAL_CONSTANT_DISTRIBUTION.
-+ **Infectious_Period_Gaussian_Std_Dev**: The standard deviation of the infectious period when **Infectious_Period_Distribution** is set to GAUSSIAN_DISTRIBUTION.
-+ **Infectious_Period_Lambda**: The scale value for the infectious period when **Infectious_Period_Distribution** is set to WEIBULL_DISTRIBUTION.
-+ **Incubation_Period_Log_Normal_Width**: The width of the incubation period when **Incubation_Period_Distribution** is set to LOG_NORMAL_DISTRIBUTION.
-+ **Infectious_Period_Log_Normal_Width**: The width of the infectious period when **Infectious_Period_Distribution** is set to LOG_NORMAL_DISTRIBUTION.
-+ **Incubation_Period_Max**: The maximum incubation period when **Incubation_Period_Distribution** is set to UNIFORM_DISTRIBUTION.
-+ **Incubation_Period_Min**: The minimum incubation period when **Incubation_Period_Distribution** is set to UNIFORM_DISTRIBUTION.
-+ **Incubation_Period_Poisson_Mean**: The mean of the incubation period when **Incubation_Period_Distribution** is set to POISSON_DISTRIBUTION.
-+ **Infectious_Period_Poisson_Mean**: The mean of the infectious period with **Infectious_Period_Distribution** is set to POISSON_DISTRIBUTION.
-+ **Incubation_Period_Kappa**: The shape value for the incubation period when **Incubation_Period_Distribution** is set to WEIBULL_DISTRIBUTION.
-+ **Infectious_Period_Kappa**: The shape value for the infectious period when **Infectious_Period_Distribution** is set to WEIBULL_DISTRIBUTION.
-+ **Incubation_Period_Log_Normal_Mean**: The mean of the incubation period when **Incubation_Period_Distribution** is set to LOG_NORMAL_DISTRIBUTION.
-+ **Infectious_Period_Log_Normal_Mean**: The mean of the infectious period when **Infectious_Period_Distribution** is set to LOG_NORMAL_DISTRIBUTION.
+More information on the EMOD Architecture can be found at:
 
+https://docs.idmod.org/projects/emod-malaria/en/latest/dev-architecture-overview.html
 
-### New configuration parameters (Beta)
 
-Note: These configuration parameters are currently in beta release and have not yet been fully tested.
+Source Code Installation for Development
+----------------------------------------
+The following link provides instructions for installing the prerequisites required to build and run EMOD.  This intended for code development and not doing research.
 
-For the generic simulation type, the following new configuration parameters are available:
+https://docs.idmod.org/projects/emod-malaria/en/latest/dev-install-overview.html
 
-+ **Report_Surveillance_Event_Recorder**: Enables or disables the ReportSurveillanceEventRecorder.csv output report. When enabled (set to 1) reports will be generated for the broadcasted valid coordinator events, as specified in **Report_Surveillance_Event_Recorder_Events**.
-+ **Report_Coordinator_Event_Recorder_Events**: The list of events to include or exclude in the ReportCoordinatorEventRecorder.csv output report, based on how **Report_Coordinator_Event_Recorder_Ignore_Events_In_List** is set. This list must not be empty and is dependent upon **Report_Coordinator_Event_Recorder** being enabled. In addition, the events must be defined in **Customer_Coordinator_Events**.
-+ **Report_Surveillance_Event_Recorder_Events**: The list of events to include or exclude in the ReportSurveillanceEventRecorder.csv output report, based on how **Report_Surveillance_Event_Recorder_Ignore_Events_In_List** is set. This list must not be empty and is dependent upon **Report_Surveillance_Event_Recorder** being enabled.
-+ **Report_Coordinator_Event_Recorder**: Enables or disables the ReportCoordinatorEventRecorder.csv output report for coordinator events. When enabled (set to 1) reports will be generated for the broadcasted valid coordinator events, as specified in **Report_Coordinator_Event_Recorder_Events**.
-+ **Report_Surveillance_Event_Recorder_Stats_By_IPs**: Specifies an array of (optional) individual property keys, as defined in **IndividualProperties** in the demographics file, to be added to the ReportSurveillanceEventRecorder.csv output report. For each key:value pair there will be two additional columns (Key:Value:NumIndividuals, Key:Value:NumInfected) added to the report. For example, with a Risk property key assigned the values of LOW and HIGH there would then be four additional columns (Risk:LOW:NumIndividuals, Risk:LOW:NumInfected, Risk:HIGH:NumIndividuals, Risk:HIGH:NumInfected). An empty array equals no additional columns added.
-+ **Report_Surveillance_Event_Recorder_Ignore_Events_In_List**: If set to false (0), only the events listed in the **Report_Surveillance_Event_Recorder_Events** array will be included in the ReportSurveillanceEventRecorder.csv output report. If set to true (1), only the events listed in the array will be excluded, and all other events will be included. If you want to return all events from the simulation, leave the events array empty.
-+ **Report_Coordinator_Event_Recorder_Ignore_Events_In_List**: If set to false (0), only the events listed in the **Report_Coordinator_Event_Recorder_Events** array will be included in the ReportCoordinatorEventRecorder.csv output report. If set to true (1), only the events listed in the array will be excluded, and all other events will be included. If you want to return all events from the simulation, leave the events array empty.
-+ **Report_Node_Event_Recorder_Events**: The list of node events to include or exclude in the ReportNodeEventRecorder.csv output report, based on how **Report_Node_Event_Recorder_Ignore_Events_In_List** is set.
-+ **Report_Node_Event_Recorder_Node_Properties**: Specifies an array of (optional) node property keys, as defined in **NodeProperties** in the demographics file, to be added as additional columns to the ReportNodeEventRecorder.csv output report.
-+ **Report_Node_Event_Recorder**: Enables or disables the ReportNodeEventRecorder.csv output report. When enabled (set to 1) reports will be generated for the broadcasted valid node events, as specified in **Report_Node_Event_Recorder_Events**.
-+ **Report_Node_Event_Recorder_Stats_By_IPs**: Specifies an array of (optional) individual property keys, as defined in **IndividualProperties** in the demographics file, to be added to the ReportNodeEventRecorder.csv output report. For each key:value pair there will be two additional columns (Key:Value:NumIndividuals, Key:Value:NumInfected) added to the report. For example, with a Risk property key assigned the values of LOW and HIGH there would then be four additional columns (Risk:LOW:NumIndividuals, Risk:LOW:NumInfected, Risk:HIGH:NumIndividuals, Risk:HIGH:NumInfected). An empty array equals no additional columns added.
-+ **Report_Node_Event_Recorder_Ignore_Events_In_List**: If set to false (0), only the node events listed in the **Report_Node_Event_Recorder_Events** array will be included in the ReportNodeEventRecorder.csv output report. If set to true (1), only the node events listed in the array will be excluded, and all other node events will be included. If you want to return all node events from the simulation, leave the node events array empty.
 
+Contributing
+------------
+Questions or comments can be directed to `support@idmod.org <mailto:support@idmod.org>`.
 
-### New demographics parameters
+Full information about EMOD is provided in the `documentation <https://docs.idmod.org>`.
 
-+ **InfectivityReservoirEndTime**: The ending of the exogeneous reservoir of infectivity. This parameter is conditional upon the configuration parameter, **Enable_Infectivity_Reservoir**, being enabled (set to 1).
-+ **InfectivityReservoirSize**: The quantity-per-timestep added to the total infectivity present in a node; it is equivalent to the expected number of additional infections in a node, per timestep. For example, if timestep is equal to a day, then setting **InfectivityReservoirSize** to a value of 0.1 would introduce an infection every 10 days from the exogenous reservoir. This parameter is conditional upon the configuration parameter, **Enable_Infectivity_Reservoir**, being enabled (set to 1).
-+ **InfectivityReservoirStartTime**: The beginning of the exogeneous reservoir of infectivity. This parameter is conditional upon the configuration parameter, **Enable_Infectivity_Reservoir**, being enabled (set to 1).
 
+Disclaimer
+----------
+The code in this repository was developed by IDM and other collaborators to support our joint research on flexible agent-based modeling.
+ We've made it publicly available under the MIT License to provide others with a better understanding of our research and an opportunity to build upon it for 
+ their own work. We make no representations that the code works as intended or that we will provide support, address issues that are found, or accept pull requests.
+ You are welcome to create your own fork and modify the code to suit your own modeling needs as permitted under the MIT License.
 
-### New campaign parameters
 
-The following campaign classes are new and can be used in the (specified) models:
-
-### ImmunityBloodTest (generic)
-
-The **ImmunityBloodTest** intervention class identifies whether an individual’s immunity meets a specified threshold (as set with the **Positive_Threshold_AcquisitionImmunity** campaign parameter) and then broadcasts an event based on the results; positive has immunity while negative does not.
-
-### InterventionForCurrentPartners (HIV, STI)
-
-The **InterventionForCurrentPartners** intervention class provides a mechanism for the partners of individuals in the care system to also seek care. Partners do not need to seek testing at the same time; a delay may occur between the initial test and the partner’s test. If a relationship has been paused, such as when a partner migrates to a different node, the partner will not be contacted.
-
-### OutbreakIndividualTBorHIV (tuberculosis)
-
-The **OutbreakIndividualTBorHIV** class extends **OutbreakIndividual** class and allows for specifying HIV or a specific strain of infection for TB.
-
-### EnvironmentalDiagnostic (typhoid)
-
-The **EnvironmentalDiagnostic** intervention class identifies contaminated locations by sampling the environment, comparing the value to a threshold, and broadcasting either a positive or negative node event.
-
-### TyphoidCarrierDiagnostic (typhoid)
-
-The **TyphoidCarrierDiagnostic** class extends **SimpleDiagnostic** class and allows for positive test diagnostic when an individual is a chronic typhoid carrier.
-
-### TyphoidVaccine (typhoid)
-
-The **TyphoidVaccine** intervention class identifies contaminated locations by sampling the environment, comparing the value to a threshold, and broadcasting either a positive or negative node event.
-
-### TyphoidWASH (typhoid)
-
-The **TyphoidWASH** intervention class acts on exposure through either the contact contagion population or the environmental contagion population in the simulation. The intervention can be configured to reduce either exposure dose or exposure frequency for each route, simulating effects of water, sanitation, and hygiene (WASH) interventions.
-
-
-### New campaign parameters (Beta)
-
-Note: These campaign classes and associated parameters are currently in beta release and have not yet been fully tested.
-
-The following Beta campaign classes are new and can be used in the (specified) models:
-
-### BroadcastCoordinatorEvent (generic)
-
-The **BroadcastCoordinatorEvent** coordinator class broadcasts the event you specify. This can be used with the campaign class, **SurveillanceEventCoordinator**, that can monitor and listen for events received from **BroadcastCoordinatorEvent** and then perform an action based on the broadcasted event. You can also use this for the reporting of the broadcasted events by setting the configuration parameters, **Report_Node_Event_Recorder** and **Report_Surveillance_Event_Recorder**, which listen to events to be recorded.
-
-### BroadcastNodeEvent (generic)
-
-The **BroadcastNodeEvent** coordinator class broadcasts node events. This can be used with the campaign class, **SurveillanceEventCoordinator**, that can monitor and listen for events received from **BroadcastNodeEvent** and then perform an action based on the broadcasted event. You can also use this for the reporting of the broadcasted events by setting the configuration parameters, **Report_Node_Event_Recorder** and **Report_Surveillance_Event_Recorder**, which listen to events to be recorded.
-
-### DelayEventCoordinator (generic)
-
-The **DelayEventCoordinator** coordinator class insert delays into coordinator event chains. This campaign event is typically used with **BroadcastCoordinatorEvent** to broadcast events after the delays.
-
-### SurveillanceEventCoordinator (generic)
-
-The **SurveillanceEventCoordinator** coordinator class listens for and detects events happening and then responds with broadcasted events when a threshold has been met. This campaign event is typically used with other classes, such as **BroadcastCoordinatorEvent**, **TriggeredEventCoordinator**, and **DelayEventCoordinator**.
-
-### TriggeredEventCoordinator (generic)
-
-The **TriggeredEventCoordinator** coordinator class listens for trigger events, begins a series of repetitions of intervention distributions, and then broadcasts an event upon completion. This campaign event is typically used with other classes that broadcast and distribute events, such as **BroadcastCoordinatorEvent**, **DelayEventCoordinator**, and **SurveillanceEventCoordinator**.
-
-
-### Deprecated configuration parameters
-
-**Base_Population_Scale_Factor** has been renamed to **x_Base_Population**, which is grouped together with the other scale factor parameters beginning with x_. The functional remains the same. **Enable_Demographics_Gender** has been deprecated. **Animal_Reservoir_Type** has been replaced with **Enable_Infectivity_Reservoir**.
-
-The following configuration parameters have been deprecated as a result of the refactoring of distribution parameters for better consistency across the configuration and campaign files.
-
-+ **Incubation_Period_Log_Mean**
-+ **Incubation_Period_Log_Width**
-+ **Infectious_Period_Mean**
-+ **Infectious_Period_Std_Dev**
-
-
-### Deprecated campaign parameters
-
-The following campaign parameters have been deprecated as a result of the refactoring of distribution parameters for better consistency across the configuration and campaign files.
-
-+ **BitingRisk Constant**
-+ **BitingRisk Risk_Distribution_Type**
-+ **BitingRisk Exponential_Mean**
-+ **BitingRisk Gaussian_Mean**
-+ **BitingRisk Gaussian_Std_Dev**
-+ **BitingRisk Uniform_Max**
-+ **BitingRisk Uniform_Min**
-+ **CommunityHealthWorkerEventCoordinator Initial_Amount**
-+ **CommunityHealthWorkerEventCoordinator Initial_Amount_Distribution_Type**
-+ **CommunityHealthWorkerEventCoordinator Initial_Amount_Mean**
-+ **CommunityHealthWorkerEventCoordinator Initial_Amount_Std_Dev**
-+ **DelayedIntervention Delay_Distribution**
-+ **DelayedIntervention Delay_Period**
-+ **DelayedIntervention Delay_Period_Mean**
-+ **DelayedIntervention Delay_Period_Scale**
-+ **DelayedIntervention Delay_Period_Shape**
-+ **DelayedIntervention Delay_Period_Std_Dev**
-+ **DelayEventCoordinator Delay_Distribution**
-+ **DelayEventCoordinator Delay_Period**
-+ **DelayEventCoordinator Delay_Period_Mean**
-+ **DelayEventCoordinator Delay_Period_StdDev**
-+ **HIVDelayedIntervention Delay_Distribution**
-+ **HIVDelayedIntervention Delay_Period**
-+ **HIVDelayedIntervention Delay_Period_Mean**
-+ **HIVDelayedIntervention Delay_Period_Scale**
-+ **HIVDelayedIntervention Delay_Period_Shape**
-+ **HIVDelayedIntervention Delay_Period_Std_Dev**
-+ **HIVMuxer Delay_Distribution**
-+ **HIVMuxer Delay_Period**
-+ **HIVMuxer Delay_Period_Mean**
-+ **HIVMuxer Delay_Period_Scale**
-+ **HIVMuxer Delay_Period_Shape**
-+ **HIVMuxer Delay_Period_Std_Dev**
-+ **MigrateFamily Duration_At_Node_Distribution_Type**
-+ **MigrateFamily Duration_At_Node_Exponential_Period**
-+ **MigrateFamily Duration_At_Node_Fixed**
-+ **MigrateFamily Duration_At_Node_Gausian_Mean**
-+ **MigrateFamily Duration_At_Node_Gausian_StdDev**
-+ **MigrateFamily Duration_At_Node_Uniform_Max**
-+ **MigrateFamily Duration_At_Node_Uniform_Min**
-+ **MigrateFamily Duration_Before_Leaving_Distribution_Type**
-+ **MigrateFamily Duration_Before_Leaving_Exponential_Period**
-+ **MigrateFamily Duration_Before_Leaving_Fixed**
-+ **MigrateFamily Duration_Before_Leaving_Gausian_Mean**
-+ **MigrateFamily Duration_Before_Leaving_Gausian_StdDev**
-+ **MigrateFamily Duration_Before_Leaving_Uniform_Max**
-+ **MigrateFamily Duration_Before_Leaving_Uniform_Min**
-+ **MigrateIndividuals Duration_At_Node_Distribution_Type**
-+ **MigrateIndividuals Duration_At_Node_Exponential_Period**
-+ **MigrateIndividuals Duration_At_Node_Fixed**
-+ **MigrateIndividuals Duration_At_Node_Gausian_Mean**
-+ **MigrateIndividuals Duration_At_Node_Gausian_StdDev**
-+ **MigrateIndividuals Duration_Before_Leaving_Distribution_Type**
-+ **MigrateIndividuals Duration_Before_Leaving_Exponential_Period**
-+ **MigrateIndividuals Duration_Before_Leaving_Fixed**
-+ **MigrateIndividuals Duration_Before_Leaving_Gausian_Mean**
-+ **MigrateIndividuals Duration_Before_Leaving_Gausian_StdDev**
-+ **MigrateIndividuals Duration_Before_Leaving_Uniform_Max**
-+ **MigrateIndividuals Duration_Before_Leaving_Uniform_Min**
-+ **MigrateIndividuals Duration_At_Node_Uniform_Max**
-+ **MigrateIndividuals Duration_At_Node_Uniform_Min**
-+ **UsageDependentBednet Expiration_Distribution_Type**
-+ **UsageDependentBednet Expiration_Percentage_Period_1**
-+ **UsageDependentBednet Expiration_Period**
-+ **UsageDependentBednet Expiration_Period_1**
-+ **UsageDependentBednet Expiration_Period_2**
-+ **UsageDependentBednet Expiration_Period_Mean**
-+ **UsageDependentBednet Expiration_Period_Std_Dev**
-
-
-For more information, see the complete [EMOD documentation](http://idmod.org/documentation).
+For more information, see the complete [EMOD documentation](https://docs.idmod.org/models.html#emod).

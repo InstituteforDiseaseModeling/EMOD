@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 #include "Simulation.h"
@@ -17,6 +9,7 @@ namespace Kernel
 {
     class IndividualHumanSTI;
     struct IRelationship;
+    struct INodeSTI;
 
     class SimulationSTI : public Simulation, public IIdGeneratorSTI, public ISTISimulationContext
     {
@@ -36,6 +29,8 @@ namespace Kernel
         // methods of ISTISimulationContext
         virtual void AddTerminatedRelationship( const suids::suid& nodeSuid, const suids::suid& relId ) override;
         virtual bool WasRelationshipTerminatedLastTimestep( const suids::suid& relId ) const override;
+        virtual suids::suid GetNextCoitalActSuid() override;
+        virtual void AddEmigratingRelationship( IRelationship* pRel ) override;
 
         // INodeInfoFactory
         virtual INodeInfo* CreateNodeInfo() override;
@@ -47,6 +42,8 @@ namespace Kernel
         virtual void Initialize(const ::Configuration *config) override;
         virtual bool Configure( const ::Configuration *json );
         virtual void Reports_CreateBuiltIn();
+        virtual void resolveMigration() override;
+        virtual void setupMigrationQueues() override;
 
         static bool ValidateConfiguration(const ::Configuration *config);
 
@@ -54,14 +51,18 @@ namespace Kernel
         virtual void addNewNodeFromDemographics( ExternalNodeId_t externalNodeId,
                                                  suids::suid node_suid,
                                                  NodeDemographicsFactory *nodedemographics_factory,
-                                                 ClimateFactory *climate_factory,
-                                                 bool white_list_enabled ) override;
+                                                 ClimateFactory *climate_factory ) override;
+        virtual int populateFromDemographics( const char* campaignfilename, const char* loadbalancefilename ) override;
 
         suids::distributed_generator relationshipSuidGenerator;
+        suids::distributed_generator coitalActSuidGenerator;
 
         bool report_relationship_start;
         bool report_relationship_end;
         bool report_relationship_consummated;
         bool report_transmission;
+        std::map< suids::suid, INodeSTI* > nodes_sti;
+        std::vector<std::vector<IRelationship*>> migrating_relationships;
+        std::vector<std::map<suids::suid, IRelationship*>> migrating_relationships_vecmap;
     };
 }

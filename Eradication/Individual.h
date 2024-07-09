@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -13,7 +5,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <map>
 #include <string>
 
-#include "BoostLibWrapper.h"
 #include "Common.h"
 #include "Configure.h"
 #include "IIndividualHumanContext.h"
@@ -48,14 +39,18 @@ namespace Kernel
         GET_SCHEMA_STATIC_WRAPPER(IndividualHumanConfig)
         friend class Simulation;
         friend class IndividualHuman;
-        friend class IndividualHumanTyphoid;
         friend class Node;
         friend class IndividualHumanMalariaConfig;
-        friend class IndividualHumanPolioConfig;
 
     public:
         static bool IsAdultAge( float years );
         static bool CanSupportFamilyTrips( IMigrationInfoFactory* pmi );
+        virtual bool Configure( const Configuration* config ) override; // public for pymod
+
+        static int max_ind_inf;
+        static bool superinfection;
+        static MigrationPattern::Enum migration_pattern;
+        static float infection_timestep;
 
     protected:
 
@@ -64,7 +59,6 @@ namespace Kernel
 
         // migration parameters
         static int roundtrip_waypoints;
-        static MigrationPattern::Enum migration_pattern;
         static float local_roundtrip_prob;
         static float air_roundtrip_prob;
         static float region_roundtrip_prob;
@@ -80,15 +74,12 @@ namespace Kernel
 
         static int infection_updates_per_tstep;
         static bool enable_immunity;
-        static int max_ind_inf;
-        static bool superinfection;
         
         // From SimConfig
         static MigrationStructure::Enum                             migration_structure;                              // MIGRATION_STRUCTURE
 
         static bool  enable_skipping;
 
-        virtual bool Configure( const Configuration* config ) override;
         void PrintConfigs() const;
 
         void RegisterRandomWalkDiffusionParameters();
@@ -133,6 +124,7 @@ namespace Kernel
         virtual const Kernel::NodeDemographics*     GetDemographics() const override;
 
         // IIndividualHumanEventContext methods
+        virtual const IIndividualHuman* GetIndividualHumanConst() const override { return this; };
         virtual bool   IsPregnant()           const override { return is_pregnant; };
         virtual double GetAge()               const override { return m_age; }
         virtual float GetImmuneFailage()      const override;
@@ -145,10 +137,9 @@ namespace Kernel
         virtual HumanStateChange GetStateChange() const override { return StateChange; }
         virtual void Die( HumanStateChange ) override;
         virtual INodeEventContext   * GetNodeEventContext() override; // for campaign cost reporting in e.g. HealthSeekingBehavior
-        virtual IPKeyValueContainer* GetProperties() override;
-        virtual const std::string& GetPropertyReportString() const override { return m_PropertyReportString; }
-        virtual void SetPropertyReportString( const std::string& str ) override { m_PropertyReportString = str; }
+        virtual IPKeyValueContainerFull* GetProperties() override;
         virtual bool AtHome() const override;
+        virtual void SetHome( const suids::suid& rHomeNodeID ) override;
 
         virtual bool IsAdult() const override;
         virtual bool IsDead() const override;
@@ -184,9 +175,10 @@ namespace Kernel
         // Infections
         virtual void ExposeToInfectivity(float dt, TransmissionGroupMembership_t transmissionGroupMembership);
         virtual void Expose( const IContagionPopulation* cp, float dt, TransmissionRoute::Enum transmission_route = TransmissionRoute::TRANSMISSIONROUTE_CONTACT ) override;
-        virtual void AcquireNewInfection( const IStrainIdentity *infstrain = nullptr, int incubation_period_override = -1) override;
+        virtual void AcquireNewInfection( const IStrainIdentity *infstrain, int incubation_period_override = -1) override;
 
         virtual const infection_list_t &GetInfections() const override;
+        virtual IInfection* GetNewInfection() const override;
         virtual bool IsSymptomatic() const override;
         virtual bool IsNewlySymptomatic() const override;
         virtual void UpdateInfectiousness(float dt) override;
@@ -201,9 +193,13 @@ namespace Kernel
         // Births and deaths
         virtual bool UpdatePregnancy(float dt=1) override; // returns true if birth happens this time step and resets is_pregnant to false
         virtual void InitiatePregnancy(float duration = (DAYSPERWEEK * WEEKS_FOR_GESTATION)) override;
+        virtual float GetBirthRateMod() const override;
         virtual void CheckVitalDynamics(float currenttime, float dt=1.0); // non-disease mortality
         // update and set dynamic MC weight
         virtual void UpdateMCSamplingRate(float current_sampling_rate) override;
+
+        //Broadcast event
+        void BroadcastEvent( const EventTrigger& event_trigger ) override;
 
         // Assorted getters and setters
         virtual void SetContextTo(INodeContext* context) override;
@@ -243,6 +239,7 @@ namespace Kernel
         float infectiousness;   // infectiousness calculated over all Infections and passed back to Node
         float Inf_Sample_Rate;  // EAW: unused currently
         int   cumulativeInfs;   // counter of total infections over individual's history
+        IInfection* m_pNewInfection; //only non-null during the timestep of the infection occurred
 
         NewInfectionState::_enum  m_new_infection_state; // to flag various types of infection state changes
         HumanStateChange          StateChange;           // to flag that the individual has migrated or died
@@ -271,8 +268,7 @@ namespace Kernel
 
         suids::suid home_node_id ;
 
-        IPKeyValueContainer Properties;
-        std::string m_PropertyReportString;
+        IPKeyValueContainerFull Properties;
 
         INodeContext* parent;   // Access back to node/simulation methods
 
@@ -281,7 +277,6 @@ namespace Kernel
 
         virtual IInfection* createInfection(suids::suid _suid); // factory method (overridden in derived classes)
         virtual void setupInterventionsContainer();            // derived classes can customize the container, and hence the interventions supported, by overriding this method
-        virtual void applyNewInterventionEffects(float dt);    // overriden when interventions (e.g. polio vaccine) updates individual properties (e.g. immunity)
         virtual void UpdateAge( float dt );
 
         float GetRoundTripDurationRate( MigrationType::Enum trip_type );
@@ -291,6 +286,7 @@ namespace Kernel
         virtual void ReportInfectionState();
 
         virtual void PropagateContextToDependents();
+        virtual bool ImmunityEnabled() const;
         IIndividualEventBroadcaster* broadcaster;
 
     private:

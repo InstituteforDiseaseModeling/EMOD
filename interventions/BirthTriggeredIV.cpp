@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "BirthTriggeredIV.h"
@@ -35,14 +27,32 @@ namespace Kernel
     IMPLEMENT_FACTORY_REGISTERED(BirthTriggeredIV)
 
     BirthTriggeredIV::BirthTriggeredIV()
-        : duration(0)
+        : BaseNodeIntervention()
+        , duration(0)
         , max_duration(0)
         , demographic_restrictions(false,TargetDemographicType::Everyone)
-        , actual_intervention_config()
+        , m_di( nullptr )
     {
     }
 
-    BirthTriggeredIV::~BirthTriggeredIV() { }
+    BirthTriggeredIV::BirthTriggeredIV( const BirthTriggeredIV& rMaster )
+        : BaseNodeIntervention( rMaster )
+        , duration( rMaster.duration )
+        , max_duration( rMaster.max_duration )
+        , demographic_restrictions( rMaster.demographic_restrictions )
+        , m_di( nullptr )
+    {
+        if( rMaster.m_di != nullptr )
+        {
+            m_di = rMaster.m_di->Clone();
+        }
+    }
+
+    BirthTriggeredIV::~BirthTriggeredIV()
+    {
+        delete m_di;
+    }
+
     int BirthTriggeredIV::AddRef() { return BaseNodeIntervention::AddRef(); }
     int BirthTriggeredIV::Release() { return BaseNodeIntervention::Release(); }
 
@@ -51,19 +61,20 @@ namespace Kernel
         const Configuration * inputJson
     )
     {
-        initConfigComplexType("Actual_IndividualIntervention_Config", &actual_intervention_config, BT_Actual_IndividualIntervention_Config_DESC_TEXT);
+        IndividualInterventionConfig actual_intervention_config;
+        initConfigComplexType("Actual_IndividualIntervention_Config", &actual_intervention_config, Actual_IndividualIntervention_Config_DESC_TEXT);
         initConfigTypeMap("Duration", &max_duration, BT_Duration_DESC_TEXT, -1.0f, FLT_MAX, -1.0f ); // -1 is a convention for indefinite duration
 
         demographic_restrictions.ConfigureRestrictions( this, inputJson );
 
         bool ret = BaseNodeIntervention::Configure( inputJson );
-        if( ret )
+        if( ret & !JsonConfigurable::_dryrun )
         {
             demographic_restrictions.CheckConfiguration();
-            InterventionValidator::ValidateIntervention( GetTypeName(), 
-                                                         InterventionTypeValidation::INDIVIDUAL,
-                                                         actual_intervention_config._json,
-                                                         inputJson->GetDataLocation() );
+            m_di = InterventionFactory::getInstance()->CreateIntervention( actual_intervention_config._json,
+                                                                           inputJson->GetDataLocation(),
+                                                                           "Actual_IndividualIntervention_Config",
+                                                                           true ); 
         }
         return ret ;
     }
@@ -117,34 +128,13 @@ namespace Kernel
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "ICampaignCostObserver", "INodeEventContext" );
         }
 
-        // Important: Use the instance method to obtain the intervention factory obj instead of static method to cross the DLL boundary
-        //const IInterventionFactory* ifobj = dynamic_cast<NodeEventContextHost *>(parent)->GetInterventionFactoryObj();
-        IGlobalContext *pGC = nullptr;
-        const IInterventionFactory* ifobj = nullptr;
-        if (s_OK == parent->QueryInterface(GET_IID(IGlobalContext), (void**)&pGC))
-        {
-            ifobj = pGC->GetInterventionFactory();
-        }
-        if (!ifobj)
-        {
-            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, "The pointer to IInterventionFactory object is not valid (could be DLL specific)" );
-        }
+        IDistributableIntervention *di = m_di->Clone();
+        di->AddRef();
+        di->Distribute( pIndiv->GetInterventionsContext(), iCCO );
+        di->Release();
 
-        auto tmp_config = Configuration::CopyFromElement( actual_intervention_config._json, "campaign" );
-        IDistributableIntervention *di = const_cast<IInterventionFactory*>(ifobj)->CreateIntervention( tmp_config ); 
-        delete tmp_config;
-        tmp_config = nullptr;
-        if( di )
-        {
-            di->Distribute( pIndiv->GetInterventionsContext(), iCCO );
-
-            LOG_DEBUG("A birth-triggered intervention was successfully distributed\n");
-            // It's not at all clear to me that we would incur cost at this point, but we could.
-            //iCCO->notifyCampaignExpenseIncurred( interventionCost, pIndiv );
-            return true;
-        }
-
-        return false;
+        LOG_DEBUG("A birth-triggered intervention was successfully distributed\n");
+        return true;
     }
 
     void BirthTriggeredIV::Unregister()

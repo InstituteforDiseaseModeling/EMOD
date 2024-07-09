@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
@@ -29,6 +21,28 @@ SETUP_LOGGING( "InterventionsContainer" )
 
 namespace Kernel
 {
+    InterventionsContainer::InterventionsContainer()
+        : drugVaccineReducedAcquire(1.0f)
+        , drugVaccineReducedTransmit(1.0f)
+        , drugVaccineReducedMortality(1.0f)
+        , birth_rate_mod(1.0f)
+        , non_disease_death_rate_mod(1.0f)
+        , interventions()
+        , intervention_names()
+        , numAdded(0)
+        , parent(nullptr)
+        , m_LastIPChange()
+    {
+    }
+
+    InterventionsContainer::~InterventionsContainer()
+    {
+        for (auto intervention : interventions)
+        {
+            delete intervention;
+        }
+    }
+
     QueryResult
     InterventionsContainer::QueryInterface( iid_t iid, void** ppinstance )
     {
@@ -49,6 +63,10 @@ namespace Kernel
             foundInterface = static_cast<IVaccineConsumer*>(this);
         else if (iid == GET_IID(IDrugVaccineInterventionEffects))
             foundInterface = static_cast<IDrugVaccineInterventionEffects*>(this);
+        else if (iid == GET_IID(IBirthRateModifier))
+            foundInterface = static_cast<IBirthRateModifier*>(this);
+        else if (iid == GET_IID(INonDiseaseDeathRateModifier))
+            foundInterface = static_cast<INonDiseaseDeathRateModifier*>(this);
         else
             foundInterface = nullptr;
 
@@ -66,14 +84,6 @@ namespace Kernel
 
         *ppinstance = foundInterface;
         return status;
-    }
-
-    InterventionsContainer::~InterventionsContainer()
-    {
-        for (auto intervention : interventions)
-        {
-            delete intervention;
-        }
     }
 
     void InterventionsContainer::PropagateContextToDependents()
@@ -110,15 +120,15 @@ namespace Kernel
         return interventions_of_type;
     }
 
-    std::list<IDistributableIntervention*> InterventionsContainer::GetInterventionsByName(const std::string &intervention_name)
+    std::list<IDistributableIntervention*> InterventionsContainer::GetInterventionsByName(const InterventionName& intervention_name)
     {
         std::list<IDistributableIntervention*> interventions_list;
         LOG_DEBUG_F( "Looking for interventions with name %s\n", intervention_name.c_str() );
-        for (auto intervention : interventions)
+        for( int i =0; i < intervention_names.size(); ++i )
         {
-            if( intervention->GetName() == intervention_name )
+            if( intervention_names[ i ] == intervention_name )
             {
-                interventions_list.push_back( intervention );
+                interventions_list.push_back( interventions[ i ] );
             }
         }
 
@@ -153,16 +163,33 @@ namespace Kernel
         return nullptr ;
     }
 
+    void InterventionsContainer::Remove( int index )
+    {
+        IDistributableIntervention* p_intervention = interventions[ index ];
+
+        interventions[ index ] = interventions.back();
+        interventions.pop_back();
+
+        intervention_names[ index ] = intervention_names.back();
+        intervention_names.pop_back();
+
+        delete p_intervention;
+    }
+
     void InterventionsContainer::PurgeExisting(
         const std::string &iv_name
     )
     {
-        IDistributableIntervention* p_intervention = GetIntervention( iv_name );
-        if( p_intervention != nullptr )
+        for( int i = 0; i < interventions.size(); ++i )
         {
-            LOG_DEBUG_F("Found an existing intervention by that name (%s) which we are purging\n", iv_name.c_str());
-            interventions.remove( p_intervention );
-            delete p_intervention;
+            IDistributableIntervention* p_intervention = interventions[ i ];
+            std::string cur_iv_type_name = typeid( *p_intervention ).name();
+            if( cur_iv_type_name == iv_name )
+            {
+                LOG_DEBUG_F("Found an existing intervention by that name (%s) which we are purging\n", iv_name.c_str());
+                Remove( i );
+                break;
+            }
         }
     }
 
@@ -172,16 +199,21 @@ namespace Kernel
         return (p_intervention != nullptr);
     }
 
-    bool InterventionsContainer::ContainsExistingByName( const std::string& name )
+    bool InterventionsContainer::ContainsExistingByName( const InterventionName& rInputName )
     {
-        for( auto intervention : interventions )
+        for( auto& name : intervention_names )
         {
-            if( intervention->GetName() == name )
+            if( name == rInputName )
             {
                 return true;
             }
         }
         return false;
+    }
+
+    const std::vector<IDistributableIntervention*>& InterventionsContainer::GetInterventions() const
+    {
+        return interventions;
     }
 
     void InterventionsContainer::InfectiousLoopUpdate( float dt )
@@ -195,6 +227,8 @@ namespace Kernel
         drugVaccineReducedAcquire   = 1.0;
         drugVaccineReducedTransmit  = 1.0;
         drugVaccineReducedMortality = 1.0;
+        birth_rate_mod              = 1.0;
+        non_disease_death_rate_mod  = 1.0;
 
         for( auto intervention : interventions )
         {
@@ -215,56 +249,41 @@ namespace Kernel
             // --- We need to update both types of new interventions.
             // -----------------------------------------------------------------------
             int orig_num = interventions.size();
-            int i = 0;
-            for( auto intervention : interventions )
+            for( int i = 0; i < interventions.size(); ++i )
             {
-                if( !intervention->NeedsInfectiousLoopUpdate() || (i >= orig_num) )
+                if( !interventions[i]->NeedsInfectiousLoopUpdate() || (i >= orig_num) )
                 {
-                    intervention->Update( dt );
+                    interventions[i]->Update( dt );
                 }
-                ++i;
             }
 
-            // TODO: appears that it might be more efficient to remove on the fly
-            std::vector<IDistributableIntervention*> dead_ivs;
-            for( auto intervention : interventions )
+            for( int i = 0; i < interventions.size(); )
             {
                 // ------------------------------------------------------------------------------
                 // --- BEWARE: Some interventions distribute other interventions or fire events
                 // --- (which can cause interventions to be added) during the call to Expired().
                 // ------------------------------------------------------------------------------
-                if( intervention->Expired() )
+                if( interventions[i]->Expired() )
                 {
                     LOG_DEBUG("Found an expired intervention\n");
-                    dead_ivs.push_back( intervention );
+                    Remove( i );
+                    // don't increment the index because another intervention could be at this index
+                }
+                else
+                {
+                    ++i;
                 }
             }
-
-            // Remove any expired interventions (e.g., calendars). Don't want these things accumulating forever.
-            for (auto intervention : dead_ivs)
-            {
-                LOG_DEBUG("Destroying an expired intervention.\n");
-                interventions.remove( intervention );
-                //pIV->Release(); // is refcounting implemented on interventions?
-                delete intervention;
-            }
         }
-    }
-
-    InterventionsContainer::InterventionsContainer()
-        : drugVaccineReducedAcquire(1.0f)
-        , drugVaccineReducedTransmit(1.0f)
-        , drugVaccineReducedMortality(1.0f)
-        , interventions()
-        , parent(nullptr)
-    {
     }
 
     bool InterventionsContainer::GiveIntervention(
         IDistributableIntervention* iv
     )
     {
+        ++numAdded;
         interventions.push_back( iv );
+        intervention_names.push_back( iv->GetName() );
         // We need to increase the reference counter here to represent fact that interventions container
         // is keeping a pointer to the intervention. (Otherwise when event coordinator calls Release,
         // and ref counter is decremented, the intervention object will delete itself.)
@@ -350,6 +369,16 @@ namespace Kernel
         }
     }
 
+    void InterventionsContainer::UpdateBirthRateMod( float mod )
+    {
+        birth_rate_mod *= mod;
+    }
+
+    void InterventionsContainer::UpdateNonDiseaseDeathRateMod( float mod )
+    {
+        non_disease_death_rate_mod *= mod;
+    }
+
     void InterventionsContainer::ChangeProperty(
         const char * property,
         const char * new_value
@@ -383,17 +412,36 @@ namespace Kernel
         {
             IPKeyValue old_kv = pProps->Get( key );
             LOG_DEBUG_F( "Moving individual (%lu) property %s from %s to %s\n", parent->GetSuid().data, property, old_kv.GetValueAsString().c_str(), new_value );
-            parent->UpdateGroupPopulation(-1.0f);
             pProps->Set( new_kv );
             parent->UpdateGroupMembership();
-            parent->UpdateGroupPopulation(1.0f);
-            parent->SetPropertyReportString("");
+            m_LastIPChange = new_kv;
 
             //broadcast that the individual changed properties
             IIndividualEventBroadcaster* broadcaster = parent->GetEventContext()->GetNodeEventContext()->GetIndividualEventBroadcaster();
             LOG_DEBUG_F( "Individual %d changed property, broadcasting PropertyChange \n", parent->GetSuid().data );
             broadcaster->TriggerObservers( parent->GetEventContext(), EventTrigger::PropertyChange );
         }
+    }
+
+    uint32_t InterventionsContainer::GetNumInterventions() const
+    {
+        return interventions.size();
+    }
+
+    uint32_t InterventionsContainer::GetNumInterventionsAdded()
+    {
+        // ------------------------------------------------------------------------------------------
+        // --- By clearing the value after getting it, we are attempting to ensure we include
+        // --- the interventions that are added outside Update() like from StandardEventCoordinator.
+        // ------------------------------------------------------------------------------------------
+        int ret = numAdded;
+        numAdded = 0;
+        return ret;
+    }
+
+    const IPKeyValue& InterventionsContainer::GetLastIPChange() const
+    {
+        return m_LastIPChange;
     }
 
     void
@@ -417,15 +465,30 @@ namespace Kernel
     float InterventionsContainer::GetInterventionReducedAcquire()   const { return drugVaccineReducedAcquire;   }
     float InterventionsContainer::GetInterventionReducedTransmit()  const { return drugVaccineReducedTransmit;  }
     float InterventionsContainer::GetInterventionReducedMortality() const { return drugVaccineReducedMortality; }
+    float InterventionsContainer::GetBirthRateMod()                 const { return birth_rate_mod;              }
+    float InterventionsContainer::GetNonDiseaseDeathRateMod()       const { return non_disease_death_rate_mod;  }
 
     REGISTER_SERIALIZABLE(InterventionsContainer);
 
     void InterventionsContainer::serialize(IArchive& ar, InterventionsContainer* obj)
     {
         InterventionsContainer& container = *obj;
-        ar.labelElement("drugVaccineReducedAcquire") & container.drugVaccineReducedAcquire;
-        ar.labelElement("drugVaccineReducedTransmit") & container.drugVaccineReducedTransmit;
-        ar.labelElement("drugVaccineReducedMortality") & container.drugVaccineReducedMortality;
-        ar.labelElement("interventions") & container.interventions;
+        ar.labelElement( "drugVaccineReducedAcquire"   ) & container.drugVaccineReducedAcquire;
+        ar.labelElement( "drugVaccineReducedTransmit"  ) & container.drugVaccineReducedTransmit;
+        ar.labelElement( "drugVaccineReducedMortality" ) & container.drugVaccineReducedMortality;
+        ar.labelElement( "birth_rate_mod"              ) & container.birth_rate_mod;
+        ar.labelElement( "non_disease_death_rate_mod"  ) & container.non_disease_death_rate_mod;
+        ar.labelElement( "interventions"               ) & container.interventions;
+        ar.labelElement( "m_LastIPChange"              ) & container.m_LastIPChange;
+
+        if( ar.IsReader() )
+        {
+            container.intervention_names.clear();
+            for( auto intervention : container.interventions )
+            {
+                container.intervention_names.push_back( intervention->GetName() );
+            }
+        }
     }
+
 }

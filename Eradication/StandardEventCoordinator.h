@@ -1,19 +1,9 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
 #include <string>
 #include <list>
 #include <vector>
-
-#include "BoostLibWrapper.h"
 
 #include "EventCoordinator.h"
 #include "Configure.h"
@@ -22,6 +12,10 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 namespace Kernel
 {
+    ENUM_DEFINE( IndividualSelectionType,
+                 ENUM_VALUE_SPEC( DEMOGRAPHIC_COVERAGE, 0 )
+                 ENUM_VALUE_SPEC( TARGET_NUM_INDIVIDUALS, 1 ))
+
     struct ICampaignCostObserver; // TODO - Nasty fwd declaration because I'm scared to include NodeEventContext.h! :)
 
     // Standard distribution ec that just gives out the intervention once to the fraction of people specified by the coverage parameter
@@ -35,7 +29,7 @@ namespace Kernel
         DECLARE_QUERY_INTERFACE()
 
         StandardInterventionDistributionEventCoordinator( bool useDemographicCoverage = true );
-        virtual ~StandardInterventionDistributionEventCoordinator() { }
+        virtual ~StandardInterventionDistributionEventCoordinator();
 
         // IEventCoordinator
         virtual void SetContextTo(ISimulationEventContext *isec);
@@ -65,9 +59,8 @@ namespace Kernel
     protected:
         virtual float getDemographicCoverageForIndividual( const IIndividualHumanEventContext *pInd ) const;
         virtual void preDistribute(); 
-        virtual void ExtractInterventionNameForLogging();
-        virtual void InitializeInterventions();
         virtual void InitializeRepetitions( const Configuration* inputJson );
+        virtual void InitializeIndividualSelectionType( const Configuration* inputJson );
         virtual void CheckRepetitionConfiguration();
         virtual void UpdateRepetitions();
         virtual bool IsTimeToUpdate( float dt );
@@ -76,6 +69,13 @@ namespace Kernel
         virtual bool DistributeInterventionsToIndividual( IIndividualHumanEventContext *ihec,
                                                           float & incrementalCostOut,
                                                           ICampaignCostObserver * pICCO );
+        void LogNumInterventionsDistributed( int totalIndivGivenIntervention, INodeEventContext* event_context );
+        void FindQualifyingIndividuals( INodeEventContext* pNEC,
+                                        std::vector<IIndividualHumanEventContext*>& r_qualified_individuals );
+        std::vector<IIndividualHumanEventContext*> SelectIndividuals( const std::vector<IIndividualHumanEventContext*>& r_qualified_individuals );
+        // helpers
+        void regenerateCachedNodeContextPointers();
+        virtual bool TargetedIndividualIsCovered(IIndividualHumanEventContext *ihec);
 
         ISimulationEventContext  *parent;
         bool distribution_complete;
@@ -85,22 +85,17 @@ namespace Kernel
         //bool include_emigrants;
         //bool include_immigrants;
         int intervention_activated;
-        InterventionConfig intervention_config;
         std::vector<INodeEventContext*> cached_nodes;
         std::vector<suids::suid> node_suids; // to help with serialization
-        IDistributableIntervention *_di;
         DemographicRestrictions demographic_restrictions;
         float demographic_coverage;
         PropertyRestrictions<NPKey, NPKeyValue, NPKeyValueContainer> node_property_restrictions;
-
-        std::ostringstream log_intervention_name;
-
-        // helpers
-        void regenerateCachedNodeContextPointers();
-        void formatInterventionClassNames( std::ostringstream&, json::QuickInterpreter*);
-        virtual bool TargetedIndividualIsCovered(IIndividualHumanEventContext *ihec);
+        bool use_demographic_coverage;
+        IndividualSelectionType::Enum individual_selection_type;
+        int target_num_individuals;
+        std::string log_intervention_name;
         bool avoid_duplicates;
-        bool has_node_level_intervention;
-
+        IDistributableIntervention* m_pInterventionIndividual;
+        INodeDistributableIntervention* m_pInterventionNode;
     };
 }

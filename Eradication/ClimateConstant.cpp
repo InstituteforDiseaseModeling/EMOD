@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include <cstdlib>
@@ -32,7 +24,7 @@ namespace Kernel {
         new_climate->Configure( EnvPtr->Config );
 
         // initialize climate values
-        new_climate->UpdateWeather( start_time, 1.0f, pRNG );
+        new_climate->UpdateWeather( start_time, 1.0f, pRNG, true );
 
         return new_climate;
     }
@@ -82,23 +74,13 @@ namespace Kernel {
         return true;
     }
 
-    void ClimateConstant::UpdateWeather( float time, float dt, RANDOMBASE* pRNG )
+    void ClimateConstant::UpdateWeather( float time, float dt, RANDOMBASE* pRNG, bool initialization )
     {
         m_airtemperature = (float)base_airtemperature;
         m_landtemperature = (float)base_landtemperature;
         m_accumulated_rainfall = (float)base_rainfall * dt;
         m_humidity = (float)base_humidity;
 
-        Climate::UpdateWeather( time, dt, pRNG ); // call base-class UpdateWeather() to add stochasticity and check values are within valid bounds
+        Climate::UpdateWeather( time, dt, pRNG, initialization ); // call base-class UpdateWeather() to add stochasticity and check values are within valid bounds
     }
 }
-
-#if 0
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive & ar, ClimateConstant& climate, const unsigned int file_version)
-    {
-        ar & boost::serialization::base_object<Kernel::Climate>(climate);
-    }
-}
-#endif

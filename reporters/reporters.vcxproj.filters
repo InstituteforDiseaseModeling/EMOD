@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FE}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFA}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD00}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\Vector">
+      <UniqueIdentifier>{bcb65fd1-7efc-4d50-b59b-a97cf3f9fc68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\STI">
+      <UniqueIdentifier>{ab4adc97-28b8-417a-8e0d-59459a53c40e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Generic">
+      <UniqueIdentifier>{c534ef5a-5152-4790-a54f-7fe1409cf6eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Malaria">
+      <UniqueIdentifier>{48573fcc-6fee-42c5-8d53-bef22f115a64}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ReportHumanMigrationTracking.cpp">
+      <Filter>Source Files\Generic</Filter>
+    </ClCompile>
+    <ClCompile Include="ReportEventCounter.cpp">
+      <Filter>Source Files\Generic</Filter>
+    </ClCompile>
+    <ClCompile Include="ReportNodeDemographics.cpp">
+      <Filter>Source Files\Generic</Filter>
+    </ClCompile>
+    <ClCompile Include="ReportPluginAgeAtInfection.cpp">
+      <Filter>Source Files\Generic</Filter>
+    </ClCompile>
+    <ClCompile Include="ReportPluginAgeAtInfectionHistogram.cpp">
+      <Filter>Source Files\Generic</Filter>
+    </ClCompile>
+    <ClCompile Include="ReportVectorGenetics.cpp">
+      <Filter>Source Files\Vector</Filter>
+    </ClCompile>
+    <ClCompile Include="VectorHabitatReport.cpp">
+      <Filter>Source Files\Vector</Filter>
+    </ClCompile>
+    <ClCompile Include="ReportVectorMigration.cpp">
+      <Filter>Source Files\Vector</Filter>
+    </ClCompile>
+    <ClCompile Include="ReportVectorStats.cpp">
+      <Filter>Source Files\Vector</Filter>
+    </ClCompile>
+    <ClCompile Include="SpatialReportMalariaFiltered.cpp">
+      <Filter>Source Files\Malaria</Filter>
+    </ClCompile>
+    <ClCompile Include="ReportNodeDemographicsMalaria.cpp">
+      <Filter>Source Files\Malaria</Filter>
+    </ClCompile>
+    <ClCompile Include="MalariaSurveyJSONAnalyzer.cpp">
+      <Filter>Source Files\Malaria</Filter>
+    </ClCompile>
+    <ClCompile Include="MalariaSummaryReport.cpp">
+      <Filter>Source Files\Malaria</Filter>
+    </ClCompile>
+    <ClCompile Include="MalariaPatientJSONReport.cpp">
+      <Filter>Source Files\Malaria</Filter>
+    </ClCompile>
+    <ClCompile Include="MalariaImmunityReport.cpp">
+      <Filter>Source Files\Malaria</Filter>
+    </ClCompile>
+    <ClCompile Include="ReportRelationshipCensus.cpp">
+      <Filter>Source Files\STI</Filter>
+    </ClCompile>
+    <ClCompile Include="ReportRelationshipMigrationTracking.cpp">
+      <Filter>Source Files\STI</Filter>
+    </ClCompile>
+    <ClCompile Include="ReportDrugStatus.cpp">
+      <Filter>Source Files\Generic</Filter>
+    </ClCompile>
+    <ClCompile Include="ReportSimpleMalariaTransmission.cpp">
+      <Filter>Source Files\Malaria</Filter>
+    </ClCompile>
+    <ClCompile Include="ReportVectorStatsMalariaGenetics.cpp">
+      <Filter>Source Files\Malaria</Filter>
+    </ClCompile>
+    <ClCompile Include="ReportNodeDemographicsMalariaGenetics.cpp">
+      <Filter>Source Files\Malaria</Filter>
+    </ClCompile>
+    <ClCompile Include="ReportInfectionDuration.cpp">
+      <Filter>Source Files\Generic</Filter>
+    </ClCompile>
+    <ClCompile Include="ReportInfectionStatsMalaria.cpp">
+      <Filter>Source Files\Malaria</Filter>
+    </ClCompile>
+    <ClCompile Include="ReportMalariaFiltered.cpp">
+      <Filter>Source Files\Malaria</Filter>
+    </ClCompile>
+    <ClCompile Include="ReportMalariaFilteredIntraHost.cpp">
+      <Filter>Source Files\Malaria</Filter>
+    </ClCompile>
+    <ClCompile Include="ReportInterventionPopAvg.cpp">
+      <Filter>Source Files\Malaria</Filter>
+    </ClCompile>
+    <ClCompile Include="ReportSimulationStats.cpp">
+      <Filter>Source Files\Generic</Filter>
+    </ClCompile>
+    <ClCompile Include="ReportFpgOutputForObservationalModel.cpp">
+      <Filter>Source Files\Malaria</Filter>
+    </ClCompile>
+    <ClCompile Include="SqlReport.cpp">
+      <Filter>Source Files\Generic</Filter>
+    </ClCompile>
+    <ClCompile Include="SqlReportMalaria.cpp">
+      <Filter>Source Files\Malaria</Filter>
+    </ClCompile>
+    <ClCompile Include="SqlReportMalariaGenetics.cpp">
+      <Filter>Source Files\Malaria</Filter>
+    </ClCompile>
+    <ClCompile Include="ReportMicrosporidia.cpp">
+      <Filter>Source Files\Vector</Filter>
+    </ClCompile>
+    <ClCompile Include="ReportPfaQueues.cpp">
+      <Filter>Source Files\STI</Filter>
+    </ClCompile>
+    <ClCompile Include="ReportVectorGeneticsMalariaGenetics.cpp">
+      <Filter>Source Files\Malaria</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ReportHumanMigrationTracking.h">
+      <Filter>Source Files\Generic</Filter>
+    </ClInclude>
+    <ClInclude Include="ReportEventCounter.h">
+      <Filter>Source Files\Generic</Filter>
+    </ClInclude>
+    <ClInclude Include="ReportNodeDemographics.h">
+      <Filter>Source Files\Generic</Filter>
+    </ClInclude>
+    <ClInclude Include="ReportPluginAgeAtInfection.h">
+      <Filter>Source Files\Generic</Filter>
+    </ClInclude>
+    <ClInclude Include="ReportPluginAgeAtInfectionHistogram.h">
+      <Filter>Source Files\Generic</Filter>
+    </ClInclude>
+    <ClInclude Include="ReportVectorGenetics.h">
+      <Filter>Source Files\Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="VectorHabitatReport.h">
+      <Filter>Source Files\Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="ReportVectorMigration.h">
+      <Filter>Source Files\Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="ReportVectorStats.h">
+      <Filter>Source Files\Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="SpatialReportMalariaFiltered.h">
+      <Filter>Source Files\Malaria</Filter>
+    </ClInclude>
+    <ClInclude Include="ReportNodeDemographicsMalaria.h">
+      <Filter>Source Files\Malaria</Filter>
+    </ClInclude>
+    <ClInclude Include="MalariaSurveyJSONAnalyzer.h">
+      <Filter>Source Files\Malaria</Filter>
+    </ClInclude>
+    <ClInclude Include="MalariaSummaryReport.h">
+      <Filter>Source Files\Malaria</Filter>
+    </ClInclude>
+    <ClInclude Include="MalariaPatientJSONReport.h">
+      <Filter>Source Files\Malaria</Filter>
+    </ClInclude>
+    <ClInclude Include="MalariaImmunityReport.h">
+      <Filter>Source Files\Malaria</Filter>
+    </ClInclude>
+    <ClInclude Include="ReportRelationshipCensus.h">
+      <Filter>Source Files\STI</Filter>
+    </ClInclude>
+    <ClInclude Include="ReportRelationshipMigrationTracking.h">
+      <Filter>Source Files\STI</Filter>
+    </ClInclude>
+    <ClInclude Include="ReportDrugStatus.h">
+      <Filter>Source Files\Generic</Filter>
+    </ClInclude>
+    <ClInclude Include="ReportSimpleMalariaTransmission.h">
+      <Filter>Source Files\Malaria</Filter>
+    </ClInclude>
+    <ClInclude Include="ReportVectorStatsMalariaGenetics.h">
+      <Filter>Source Files\Malaria</Filter>
+    </ClInclude>
+    <ClInclude Include="ReportNodeDemographicsMalariaGenetics.h">
+      <Filter>Source Files\Malaria</Filter>
+    </ClInclude>
+    <ClInclude Include="ReportInfectionDuration.h">
+      <Filter>Source Files\Generic</Filter>
+    </ClInclude>
+    <ClInclude Include="ReportInfectionStatsMalaria.h">
+      <Filter>Source Files\Malaria</Filter>
+    </ClInclude>
+    <ClInclude Include="ReportMalariaFiltered.h">
+      <Filter>Source Files\Malaria</Filter>
+    </ClInclude>
+    <ClInclude Include="ReportMalariaFilteredIntraHost.h">
+      <Filter>Source Files\Malaria</Filter>
+    </ClInclude>
+    <ClInclude Include="ReportInterventionPopAvg.h">
+      <Filter>Source Files\Malaria</Filter>
+    </ClInclude>
+    <ClInclude Include="ReportSimulationStats.h">
+      <Filter>Source Files\Generic</Filter>
+    </ClInclude>
+    <ClInclude Include="ReportFpgOutputForObservationalModel.h">
+      <Filter>Source Files\Malaria</Filter>
+    </ClInclude>
+    <ClInclude Include="SqlReport.h">
+      <Filter>Source Files\Generic</Filter>
+    </ClInclude>
+    <ClInclude Include="SqlReportMalaria.h">
+      <Filter>Source Files\Malaria</Filter>
+    </ClInclude>
+    <ClInclude Include="SqlReportMalariaGenetics.h">
+      <Filter>Source Files\Malaria</Filter>
+    </ClInclude>
+    <ClInclude Include="ReportMicrosporidia.h">
+      <Filter>Source Files\Vector</Filter>
+    </ClInclude>
+    <ClInclude Include="ReportPfaQueues.h">
+      <Filter>Source Files\STI</Filter>
+    </ClInclude>
+    <ClInclude Include="ReportVectorGeneticsMalariaGenetics.h">
+      <Filter>Source Files\Malaria</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

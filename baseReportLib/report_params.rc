@@ -1,0 +1,2 @@
+// This is for the report parameters defined in custom_reports.json
+#include "missing_report_params.rc"

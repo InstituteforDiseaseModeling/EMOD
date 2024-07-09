@@ -1,0 +1,11 @@
+{
+    "class": "SugarTrap",
+    "Cost_To_Consumer": 3.75, 
+    "Expiration_Distribution" : "CONSTANT_DISTRIBUTION",
+    "Expiration_Constant" : 1000,
+    "Killing_Config" : {
+        "Decay_Time_Constant": 2190, 
+        "Initial_Effect": 0.1, 
+        "class": "WaningEffectExponential"
+    }
+}

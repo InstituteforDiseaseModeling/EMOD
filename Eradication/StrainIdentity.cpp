@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "StrainIdentity.h"
@@ -15,7 +7,10 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 SETUP_LOGGING( "StrainIdentity" )
 
-namespace Kernel {
+namespace Kernel
+{
+    BEGIN_QUERY_INTERFACE_BODY( StrainIdentity )
+    END_QUERY_INTERFACE_BODY( StrainIdentity )
 
     StrainIdentity::StrainIdentity(void)
         : antigenID(0)
@@ -53,15 +48,21 @@ namespace Kernel {
         }
     }
 
-    StrainIdentity::StrainIdentity( const IStrainIdentity *copy )
-        : antigenID( copy->GetAntigenID() )
-        , geneticID( copy->GetGeneticID() )
+    StrainIdentity::StrainIdentity( const StrainIdentity& rMaster )
+        : antigenID( rMaster.GetAntigenID() )
+        , geneticID( rMaster.GetGeneticID() )
     {
         LOG_DEBUG_F( "New infection with antigen id %d and genetic id %d\n", antigenID, geneticID );
     }
 
     StrainIdentity::~StrainIdentity(void)
     {
+    }
+
+    IStrainIdentity* StrainIdentity::Clone() const
+    {
+        IStrainIdentity* p_clone = new StrainIdentity( *this );
+        return p_clone;
     }
 
     int StrainIdentity::GetAntigenID(void) const
@@ -84,24 +85,13 @@ namespace Kernel {
         geneticID = in_geneticID;
     }
 
-    void StrainIdentity::ResolveInfectingStrain( IStrainIdentity* strainId ) const
+    REGISTER_SERIALIZABLE(StrainIdentity);
+
+    void StrainIdentity::serialize(IArchive& ar, StrainIdentity* obj)
     {
-        strainId->SetAntigenID(antigenID);
-        strainId->SetGeneticID(geneticID);
-    }
-
-    IArchive& StrainIdentity::serialize(IArchive& ar, StrainIdentity*& ptr)
-    {
-        if (!ar.IsWriter())
-        {
-            ptr = new StrainIdentity();
-        }
-
-        StrainIdentity& strain = *ptr;
-
-        serialize( ar, strain );
-
-        return ar;
+        StrainIdentity& strain = *obj;
+        ar.labelElement("antigenID") & strain.antigenID;
+        ar.labelElement("geneticID") & strain.geneticID;
     }
 
     IArchive& StrainIdentity::serialize(IArchive& ar, StrainIdentity& strain)

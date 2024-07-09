@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -14,7 +6,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 namespace Kernel 
 {
-    class IDMAPI RelationshipParameters : public IRelationshipParameters, public JsonConfigurable
+    class RelationshipParameters : public JsonConfigurable
+                                 , public IRelationshipParameters
     {
     public:
         RelationshipParameters( RelationshipType::Enum type );
@@ -24,19 +17,21 @@ namespace Kernel
         virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) { return e_NOINTERFACE; }
         virtual bool Configure( const Configuration* config );
 
-        RelationshipType::Enum GetType() const { return m_Type; }
+        RelationshipType::Enum GetType() const;
 
-        virtual float GetCoitalActRate()                const { return m_CoitalActRate;                }
-        virtual float GetDurationWeibullHeterogeneity() const { return m_DurationWeibullHeterogeneity; }
-        virtual float GetDurationWeibullScale()         const { return m_DurationWeibullScale;         }
-        virtual const Sigmoid& GetCondomUsage()         const { return m_CondomUsage;                  }
+        virtual float GetCoitalActRate()                const;
+        virtual float GetDurationWeibullHeterogeneity() const;
+        virtual float GetDurationWeibullScale()         const;
+        virtual const Sigmoid& GetCondomUsage()         const;
 
-        virtual const std::vector<RelationshipMigrationAction::Enum>& GetMigrationActions() const { return m_MigrationActions; }
-        virtual const std::vector<float>& GetMigrationActionsCDF() const { return m_MigrationActionsCDF; }
+        virtual const std::vector<RelationshipMigrationAction::Enum>& GetMigrationActions() const;
+        virtual const std::vector<float>& GetMigrationActionsCDF() const;
+
+        virtual void SetOverrideCoitalActRate( float overrideRate ) override;
+        virtual void SetOverrideCondomUsageProbability( const Sigmoid* pOverride ) override;
+        virtual void SetOverrideRelationshipDuration( float heterogeniety, float scale ) override;
 
     private:
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         RelationshipType::Enum m_Type;
         float m_CoitalActRate;
         float m_DurationWeibullHeterogeneity;
@@ -44,6 +39,10 @@ namespace Kernel
         Sigmoid m_CondomUsage;
         std::vector<RelationshipMigrationAction::Enum> m_MigrationActions;
         std::vector<float> m_MigrationActionsCDF;
-#pragma warning( pop )
+
+        float m_OverrideCoitalActRate;
+        const Sigmoid* m_pOverrideCondomUsage;
+        float m_OverrideDurationWeibullHeterogeneity;
+        float m_OverrideDurationWeibullScale;
     };
 }

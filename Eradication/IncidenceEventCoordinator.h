@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -106,7 +98,7 @@ namespace Kernel
 
         // Other methods
         virtual bool Distribute( const std::vector<INodeEventContext*>& nodes, uint32_t numIncidences, uint32_t qualifyingPopulation );
-        void SetContextTo(ISimulationEventContext* sim, IEventCoordinatorEventContext *isec) { m_sim = sim; m_Parent = isec; };
+        void SetContextTo(ISimulationEventContext* sim, IEventCoordinatorEventContext *isec);
 
         const Action* GetCurrentAction() const;
 
@@ -173,7 +165,9 @@ namespace Kernel
     // --- IncidenceEventCoordinator
     // ------------------------------------------------------------------------
 
-    class IncidenceEventCoordinator : public IEventCoordinator, public JsonConfigurable
+    class IncidenceEventCoordinator : public JsonConfigurable
+                                    , public IEventCoordinator
+                                    , public IEventCoordinatorEventContext
     {
         DECLARE_FACTORY_REGISTERED_EXPORT( EventCoordinatorFactory, IncidenceEventCoordinator, IEventCoordinator )
     public:
@@ -194,7 +188,12 @@ namespace Kernel
         virtual void ConsiderResponding();
         virtual void UpdateNodes( float dt ) override;
         virtual bool IsFinished() override;
-        virtual IEventCoordinatorEventContext* GetEventContext() override { return nullptr; }
+        virtual IEventCoordinatorEventContext* GetEventContext() override;
+
+        // IEventCoordinatorEventContext methods
+        virtual const std::string& GetName() const override;
+        virtual const IdmDateTime& GetTime() const override;
+        virtual IEventCoordinator* GetEventCoordinator() override;
 
         // Other methods - for testing
         int GetNumTimeStepsInRep() const { return m_NumTimestepsInRep; }
@@ -208,6 +207,7 @@ namespace Kernel
 
         IncidenceEventCoordinator( IncidenceCounter* ic, Responder* pResponder );
 
+        std::string                     m_CoordinatorName;
         ISimulationEventContext*        m_Parent;
         std::vector<INodeEventContext*> m_CachedNodes;
         bool                            m_IsExpired;

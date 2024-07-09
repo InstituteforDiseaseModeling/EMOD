@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -96,15 +88,12 @@ namespace Kernel
                                       tGetValueFunc getValueFunc );
 
     private:
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         std::vector<float> m_RawMigrationRate;
         suids::suid m_ThisNodeId;
         ModiferEquationType::Enum m_ModifierEquation;
         float m_ModifierHabitat;
         float m_ModifierFood;
         float m_ModifierStayPut;
-#pragma warning( pop )
     };
 
 
@@ -137,15 +126,12 @@ namespace Kernel
         virtual void InitializeInfoFileList( const Configuration* config ) override;
 
     private:
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         std::vector<MigrationInfoFile*> m_InfoFileListVector;
         bool m_IsVectorMigrationEnabled;
         ModiferEquationType::Enum m_ModifierEquation;
         float m_ModifierHabitat;
         float m_ModifierFood;
         float m_ModifierStayPut;
-#pragma warning( pop )
     };
 
     // ----------------------------------

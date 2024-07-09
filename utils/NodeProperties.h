@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -51,6 +43,30 @@ namespace Kernel
         explicit NPKey( const BaseProperty* pnp );
     };
 
+    // An NPKeyParameter is used to get configuration data from the user.
+    // JsonConfigurable will use the SetParameterName() when configuring.  This
+    // will then be used in the error message when verifying the input value is valid.
+    // This class was created so that NPKey would not have the m_ParameterName
+    // variable and could stay super light.
+    class NPKeyParameter : public NPKey
+    {
+    public:
+        NPKeyParameter();
+        ~NPKeyParameter();
+
+        // Set this object equal to the given one
+        NPKeyParameter& operator=( const std::string& rKeyStr );
+
+        // Return the external name associated with this key-value pair
+        const std::string& GetParameterName() const;
+
+        // Set the parameter name associated with this key-value pair.  The name is used in error reporting.
+        void SetParameterName( const std::string& rParameterName );
+
+    protected:
+        std::string m_ParameterName;
+    };
+
     // An NPKeyValue represents a Node Property key and value 
     // where the value is one of the possible values for the given key.
     class IDMAPI NPKeyValue : public BaseKeyValue
@@ -89,6 +105,30 @@ namespace Kernel
         template<class Key, class KeyValue, class Iterator_t> friend class BaseKeyValueContainer;
 
         NPKeyValue( KeyValueInternal* pkvi );
+    };
+
+    // An NPKeyValueParameter is used to get configuration data from the user.
+    // JsonConfigurable will use the SetParameterName() when configuring.  This
+    // will then be used in the error message when verifying the input value is valid.
+    // This class was created so that NPKeyValue would not have the m_ParameterName
+    // variable and could stay super light.
+    class NPKeyValueParameter : public NPKeyValue
+    {
+    public:
+        NPKeyValueParameter();
+        ~NPKeyValueParameter();
+
+        // Set this object equal to the given one
+        NPKeyValueParameter& operator=( const std::string& rKeyValueStr );
+
+        // Return the external name associated with this key-value pair
+        const std::string& GetParameterName() const;
+
+        // Set the parameter name associated with this key-value pair.  The name is used in error reporting.
+        void SetParameterName( const std::string& rParameterName );
+
+    protected:
+        std::string m_ParameterName;
     };
 
     // An iterator class used for traversing the elements in NPKeyValueContainer
@@ -182,7 +222,7 @@ namespace Kernel
         static NPFactory* GetInstance();
 
         // Initializes / reads the Node Property information from the demographics.
-        void Initialize( const JsonObjectDemog& rDemog, bool isWhitelistEnabled );
+        void Initialize( const JsonObjectDemog& rDemog );
 
         // This method returns the list of Node Properties defined in the simulation.
         std::vector<NodeProperty*> GetNPList() const;
@@ -196,9 +236,12 @@ namespace Kernel
         NodeProperty* GetNP( const std::string& rKey, const std::string& rParameterName=std::string(""), bool throwOnNotFound=true );
 
         // Add a new NP using the key and set of values
-        void AddNP( const std::string& rKey, const std::map<std::string,float>& rValues );
+        NodeProperty* AddNP( const std::string& rKey,
+                             const std::map<std::string,float>& rValues,
+                             bool haveFactoryMaintain=true );
 
     protected:
+        friend class NPKeyValueParameter;
         friend class NPKeyValue;
         friend class NodeProperty;
 

@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "Vaccine.h"
@@ -22,6 +14,7 @@ namespace Kernel
     BEGIN_QUERY_INTERFACE_BODY(SimpleVaccine)
         HANDLE_INTERFACE(IConfigurable)
         HANDLE_INTERFACE(IDistributableIntervention)
+        HANDLE_INTERFACE( IReportInterventionDataAccess )
         HANDLE_INTERFACE(IVaccine)
         HANDLE_INTERFACE(IBaseIntervention)
         HANDLE_ISUPPORTS_VIA(IDistributableIntervention)
@@ -42,12 +35,14 @@ namespace Kernel
         initConfig( "Vaccine_Type", vaccine_type, inputJson, MetadataDescriptor::Enum("Vaccine_Type", SV_Vaccine_Type_DESC_TEXT, MDD_ENUM_ARGS(SimpleVaccineType)));
         initConfigTypeMap("Efficacy_Is_Multiplicative", &efficacy_is_multiplicative, SV_Efficacy_Is_Multiplicative_DESC_TEXT, true );
 
-        initConfigComplexType("Waning_Config",  &waning_config, IVM_Killing_Config_DESC_TEXT );
+        initConfigComplexType("Waning_Config",  &waning_config, SV_Waning_Config_DESC_TEXT );
 
         bool configured = BaseIntervention::Configure( inputJson );
         if( !JsonConfigurable::_dryrun )
         {
-            waning_effect = WaningEffectFactory::CreateInstance( waning_config );
+            waning_effect = WaningEffectFactory::getInstance()->CreateInstance( waning_config._json,
+                                                                                inputJson->GetDataLocation(),
+                                                                                "Waning_Config" );
         }
         LOG_DEBUG_F( "Vaccine configured with type %d and take %f.\n", vaccine_type, vaccine_take );
         return configured;
@@ -119,6 +114,8 @@ namespace Kernel
 
     void SimpleVaccine::Update( float dt )
     {
+        if( !BaseIntervention::UpdateIndividualsInterventionStatus() ) return;
+
         // -----------------------------------------------------------------
         // --- Still update waning_effect even if the vaccine did not take.
         // --- This allows it to expire on schedule.
@@ -162,6 +159,32 @@ namespace Kernel
         {
             expired = waning_effect->Expired();
         }
+    }
+
+    ReportInterventionData SimpleVaccine::GetReportInterventionData() const
+    {
+        ReportInterventionData data = BaseIntervention::GetReportInterventionData();
+
+        if( vaccine_took )
+        {
+            if( (vaccine_type == SimpleVaccineType::AcquisitionBlocking) ||
+                (vaccine_type == SimpleVaccineType::Generic) )
+            {
+                data.efficacy_acq = waning_effect->Current();
+            }
+            if( (vaccine_type == SimpleVaccineType::TransmissionBlocking) ||
+                (vaccine_type == SimpleVaccineType::Generic) )
+            {
+                data.efficacy_tran = waning_effect->Current();
+            }
+            if( (vaccine_type == SimpleVaccineType::MortalityBlocking) ||
+                (vaccine_type == SimpleVaccineType::Generic) )
+            {
+                data.efficacy_mort = waning_effect->Current();
+            }
+        }
+
+        return data;
     }
 
     bool SimpleVaccine::ApplyVaccineTake( IIndividualHumanContext* pihc )

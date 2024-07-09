@@ -1,13 +1,9 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "HIVEnums.h"
+
+#define NUM_WHO_STAGES (4)
+#define MIN_WHO_HIV_STAGE (1) // sometimes 1 is a magic number
+#define MAX_WHO_HIV_STAGE (NUM_WHO_STAGES+1)
 
 namespace Kernel
 {
@@ -20,7 +16,7 @@ namespace Kernel
         virtual float GetTimeInfected() const = 0;
         virtual float GetDaysTillDeath() const = 0;
         virtual const HIVInfectionStage::Enum& GetStage() const = 0;
-        virtual void SetupSuppressedDiseaseTimers() = 0;
+        virtual void SetupSuppressedDiseaseTimers( float durationFromEnrollmentToArtAidsDeath ) = 0;
         virtual void ApplySuppressionDropout() = 0;
         virtual void ApplySuppressionFailure() = 0;
     };

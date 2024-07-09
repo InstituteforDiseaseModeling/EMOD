@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "UnitTest++.h"
@@ -21,10 +13,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "ICampaignCostObserverFake.h"
 #include "Configuration.h"
 #include "Simulation.h"
-#include "SimulationConfig.h"
-#include "MalariaParameters.h"
 #include "MalariaDrugTypeParameters.h"
-#include "GenomeMarkers.h"
 #include "StrainIdentity.h"
 
 using namespace Kernel;
@@ -38,8 +27,6 @@ SUITE( AdherentDrugTest )
         IndividualHumanInterventionsContextFake m_InterventionsContext;
         IndividualHumanContextFake              m_Human;
         AdherentDrug                            m_Drug;
-        SimulationConfig*                       m_pSimulationConfig;
-        GenomeMarkers                           m_GenomeMarkers;
 
         AdherentDrugFixture()
             : m_NC()
@@ -47,21 +34,13 @@ SUITE( AdherentDrugTest )
             , m_InterventionsContext()
             , m_Human( &m_InterventionsContext, &m_NC, &m_NEC, nullptr )
             , m_Drug()
-            , m_pSimulationConfig( new SimulationConfig() )
         {
             Environment::Finalize();
             Environment::setLogger( new SimpleLogger( Logger::tLevel::WARNING ) );
-            Environment::setSimulationConfig( m_pSimulationConfig );
 
-            std::unique_ptr<Configuration> p_drug_config( Configuration_Load( "testdata/AdherentDrugTest/Drug.json" ) );
-            MalariaDrugTypeParameters* pmd = MalariaDrugTypeParameters::CreateMalariaDrugTypeParameters( p_drug_config.get(), "TestDrug", m_GenomeMarkers );
-            m_pSimulationConfig->malaria_params->MalariaDrugMap[ "TestDrug" ] = pmd;
-
-            // --------------------------------------------------------------------------
-            // --- We need CONCENTRATION_VERSUS_TIME so we can see efficacy degrade and
-            // --- get increase as different doses are taken
-            // --------------------------------------------------------------------------
-            m_pSimulationConfig->malaria_params->PKPD_model = PKPDModel::CONCENTRATION_VERSUS_TIME;
+            EnvPtr->Config = Configuration_Load( "testdata/AdherentDrugTest/Drug.json" );
+            MalariaDrugTypeCollection::GetInstanceNonConst()->ConfigureFromJsonAndKey( EnvPtr->Config, "Malaria_Drug_Params" );
+            MalariaDrugTypeCollection::GetInstanceNonConst()->CheckConfiguration();
 
             m_InterventionsContext.SetContextTo( &m_Human );
 
@@ -77,7 +56,7 @@ SUITE( AdherentDrugTest )
 
         ~AdherentDrugFixture()
         {
-            delete m_pSimulationConfig;
+            MalariaDrugTypeCollection::DeleteInstance();
             Environment::setSimulationConfig( nullptr );
             Environment::Finalize();
         }
@@ -110,19 +89,19 @@ SUITE( AdherentDrugTest )
     TEST_FIXTURE( AdherentDrugFixture, TestCountAndEntryMismatch )
     {
         TestHelper_ConfigureException( __LINE__, "testdata/AdherentDrugTest/TestCountAndEntryMismatch.json",
-                                       "'Adherence_Config' is not configured correctly.\n'Drug_Type'=TestDrug is configured for 3 dose(s)\nbut the IWaningEffectCount does not support that number of doses.\nThere should probably be one entry for each dose." );
+                                       "'Adherence_Config' is not configured correctly.\nAdherentDrug is configured for 3 dose(s)\nbut the IWaningEffectCount does not support that number of doses.\nThere should probably be one entry for each dose." );
     }
 
     TEST_FIXTURE( AdherentDrugFixture, TestCountAndNumDoseMismatch )
     {
         TestHelper_ConfigureException( __LINE__, "testdata/AdherentDrugTest/TestCountAndNumDoseMismatch.json",
-                                       "'Adherence_Config' is not configured correctly.\n'Drug_Type'=TestDrug is configured for 3 dose(s)\nbut the IWaningEffectCount does not support that number of doses.\nThere should probably be one entry for each dose." );
+                                       "'Adherence_Config' is not configured correctly.\nAdherentDrug is configured for 3 dose(s)\nbut the IWaningEffectCount does not support that number of doses.\nThere should probably be one entry for each dose." );
     }
 
     TEST_FIXTURE( AdherentDrugFixture, TestMissingDrugType )
     {
         TestHelper_ConfigureException( __LINE__, "testdata/AdherentDrugTest/TestMissingDrugType.json",
-                                       "'Drug_Type' was not defined and it is a required parameter." );
+                                       "'Doses' was not defined and it is a required parameter." );
     }
 
     TEST_FIXTURE( AdherentDrugFixture, TestEmptyAdherenceConfig )
@@ -824,12 +803,19 @@ SUITE( AdherentDrugTest )
         StrainIdentity strain;
 
         std::unique_ptr<Configuration> p_drug_config( Configuration_Load( "testdata/AdherentDrugTest/10_Dose_Drug.json" ) );
-        MalariaDrugTypeParameters* pmd = MalariaDrugTypeParameters::CreateMalariaDrugTypeParameters( p_drug_config.get(), "10_Dose_Drug", m_GenomeMarkers );
-        m_pSimulationConfig->malaria_params->MalariaDrugMap[ "10_Dose_Drug" ] = pmd;
+        MalariaDrugTypeCollection::GetInstanceNonConst()->ConfigureFromJsonAndKey( p_drug_config.get(), "Malaria_Drug_Params" );
+        MalariaDrugTypeCollection::GetInstanceNonConst()->CheckConfiguration();
 
-
-        std::unique_ptr<Configuration> p_config( Configuration_Load( "testdata/AdherentDrugTest/TestOptionSelection.json" ) );
-        m_Drug.Configure( p_config.get() );
+        try
+        {
+            std::unique_ptr<Configuration> p_config( Configuration_Load( "testdata/AdherentDrugTest/TestOptionSelection.json" ) );
+            m_Drug.Configure( p_config.get() );
+        }
+        catch( DetailedException& re )
+        {
+            PrintDebug( re.GetMsg() );
+            CHECK( false );
+        }
 
         CHECK( !m_Drug.Expired() );
         CHECK( !m_InterventionsContext.HasDrugEffects() );

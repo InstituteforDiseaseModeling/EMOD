@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
@@ -23,6 +15,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "ISTISimulationContext.h"
 #include "ISimulationContext.h"
 #include "EventTrigger.h"
+#include "NodeSTIEventContext.h"
 
 SETUP_LOGGING( "NodeSTI" )
 
@@ -65,7 +58,10 @@ namespace Kernel
         : Node(_parent_sim, externalNodeId, node_suid)
         , relMan(nullptr)
         , society(nullptr)
+        , pRelationshipGroups( nullptr )
         , pfa_burnin_duration( 15 * DAYSPERYEAR )
+        , staged_interventions()
+        , staged_events()
     {
         relMan = RelationshipManagerFactory::CreateManager( this );
         society = SocietyFactory::CreateSociety( relMan );
@@ -75,7 +71,10 @@ namespace Kernel
         : Node()
         , relMan(nullptr)
         , society(nullptr)
+        , pRelationshipGroups( nullptr )
         , pfa_burnin_duration( 15 * DAYSPERYEAR )
+        , staged_interventions()
+        , staged_events()
     {
         relMan = RelationshipManagerFactory::CreateManager( this );
         society = SocietyFactory::CreateSociety( relMan );
@@ -85,6 +84,7 @@ namespace Kernel
     {
         delete society ;
         delete relMan ;
+        // pRelationshipGroups - don't delete because it is beign deleted via transmissionGroups
     }
 
     NodeSTI *NodeSTI::CreateNode(ISimulationContext *_parent_sim, ExternalNodeId_t externalNodeId, suids::suid node_suid)
@@ -100,9 +100,14 @@ namespace Kernel
         Node::Initialize();
     }
 
-    void NodeSTI::SetParameters( NodeDemographicsFactory *demographics_factory, ClimateFactory *climate_factory, bool white_list_enabled )
+    void NodeSTI::SetupEventContextHost()
     {
-        Node::SetParameters( demographics_factory, climate_factory, white_list_enabled );
+        event_context_host = _new_ NodeSTIEventContextHost(this);
+    }
+
+    void NodeSTI::SetParameters( NodeDemographicsFactory *demographics_factory, ClimateFactory *climate_factory )
+    {
+        Node::SetParameters( demographics_factory, climate_factory );
 
         const std::string SOCIETY_KEY( "Society" );
         if( !demographics.Contains( SOCIETY_KEY ) )
@@ -123,28 +128,34 @@ namespace Kernel
     void NodeSTI::SetupIntranodeTransmission()
     {
         //RelationshipGroups * relNodePools = dynamic_cast<RelationshipGroups*>(TransmissionGroupsFactory::CreateNodeGroups(TransmissionGroupType::RelationshipGroups));
-        RelationshipGroups * relNodePools = _new_ RelationshipGroups( GetRng() );
-        relNodePools->SetParent( this );
-        transmissionGroups = relNodePools;
+        pRelationshipGroups = _new_ RelationshipGroups();
+        pRelationshipGroups->SetParent( this );
+        transmissionGroups = pRelationshipGroups;
         routes.push_back(string("contact"));
         transmissionGroups->Build(1.0f, 1, 1);
+    }
+
+    void NodeSTI::DepositFromIndividual( const IStrainIdentity& rStrain, const CoitalAct& rCoitalAct )
+    {
+        pRelationshipGroups->DepositContagion( rStrain, rCoitalAct );
+    }
+
+    RANDOMBASE* NodeSTI::GetRng()
+    {
+        return Node::GetRng();
     }
 
     void NodeSTI::Update( float dt )
     {
         // Update relationships (dissolution only, at this point)
-        list<IIndividualHuman*> population;  //not used by RelationshipManager
-        relMan->Update( population, transmissionGroups, dt );
+        relMan->Update( dt );
 
         society->BeginUpdate();
 
         for (auto& person : individualHumans)
         {
-            IIndividualHumanSTI* sti_person = nullptr;
-            if (person->QueryInterface(GET_IID(IIndividualHumanSTI), (void**)&sti_person) != s_OK)
-            {
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "person", "IIndividualHumanSTI", "IIndividualHuman" );
-            }
+            // switched from QI to static_cast for performance
+            IndividualHumanSTI* sti_person = static_cast<IndividualHumanSTI*>(person);
             sti_person->UpdateEligibility();        // DJK: Could be slow to do this on every update.  Could check for relationship status changes. <ERAD-1869>
             sti_person->UpdateHistory( GetTime(), dt );
         }
@@ -157,12 +168,11 @@ namespace Kernel
 
         for (auto& person : individualHumans)
         {
-            IIndividualHumanSTI* sti_person = nullptr;
-            if (person->QueryInterface(GET_IID(IIndividualHumanSTI), (void**)&sti_person) != s_OK)
-            {
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "person", "IIndividualHumanSTI", "IIndividualHuman" );
-            }
+            // switched from QI to static_cast for performance
+            IndividualHumanSTI* sti_person = static_cast<IndividualHumanSTI*>(person);
             sti_person->ConsiderRelationships(dt);
+
+            sti_person->StartNonPfaRelationships();
         }
 
         society->UpdatePairFormationAgents( GetTime(), dt );
@@ -173,18 +183,44 @@ namespace Kernel
 
         for( auto& person : individualHumans )
         {
-            IIndividualHumanSTI* sti_person = nullptr;
-            if( person->QueryInterface( GET_IID( IIndividualHumanSTI ), (void**)&sti_person ) != s_OK )
-            {
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "person", "IIndividualHumanSTI", "IIndividualHuman" );
-            }
+            // switched from QI to static_cast for performance
+            IndividualHumanSTI* sti_person = static_cast<IndividualHumanSTI*>(person);
             sti_person->UpdatePausedRelationships( GetTime(), dt );
         }
+
+        NodeSTIEventContextHost* p_NSECH = static_cast<NodeSTIEventContextHost*>(event_context_host);
+        p_NSECH->ApplyStagedInterventions();
     }
 
-    act_prob_vec_t NodeSTI::DiscreteGetTotalContagion( void )
+    void NodeSTI::PostUpdate()
     {
-        return transmissionGroups->DiscreteGetTotalContagion();
+        // Broadcast the events that were staged until all of the individuals have been updated.
+        IIndividualEventBroadcaster* broadcaster = GetEventContext()->GetIndividualEventBroadcaster();
+        for( auto event_pair : staged_events )
+        {
+            broadcaster->TriggerObservers( event_pair.first, event_pair.second );
+        }
+        staged_events.clear();
+
+        // Distribute the interventions that were staged until all of the individuals have been updated.
+        ICampaignCostObserver* pICCO;
+        if( GetEventContext()->QueryInterface( GET_IID( ICampaignCostObserver ), (void**)&pICCO ) != s_OK )
+        {
+            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__,
+                                           "GetEventContext()",
+                                           "ICampaignCostObserver",
+                                           "INodeEventContext" );
+        }
+        for( auto intervention_pair : staged_interventions )
+        {
+            IIndividualHumanEventContext* p_human = intervention_pair.first;
+            IDistributableIntervention* p_intervention = intervention_pair.second;
+
+            p_intervention->AddRef();
+            p_intervention->Distribute( p_human->GetInterventionsContext(), pICCO );
+            p_intervention->Release();
+        }
+        staged_interventions.clear();
     }
 
     /*const?*/ IRelationshipManager*
@@ -199,13 +235,26 @@ namespace Kernel
         return society;
     }
 
+    IActionStager* NodeSTI::GetActionStager()
+    {
+        return this;
+    }
+
+    void NodeSTI::StageIntervention( IIndividualHumanEventContext* pHuman, IDistributableIntervention* pIntervention )
+    {
+        staged_interventions.push_back( std::make_pair( pHuman, pIntervention ) );
+    }
+
+    void NodeSTI::StageEvent( IIndividualHumanEventContext* pHuman, const EventTrigger& rTrigger )
+    {
+        staged_events.push_back( std::make_pair( pHuman, rTrigger ) );
+    }
+
     void
     NodeSTI::processEmigratingIndividual(
         IIndividualHuman* individual
     )
     {
-        event_context_host->TriggerObservers( individual->GetEventContext(), EventTrigger::STIPreEmigrating );
-
         IIndividualHumanSTI* sti_individual=nullptr;
         if (individual->QueryInterface(GET_IID(IIndividualHumanSTI), (void**)&sti_individual) != s_OK)
         {
@@ -241,25 +290,6 @@ namespace Kernel
         event_context_host->TriggerObservers( retVal->GetEventContext(), EventTrigger::STIPostImmigrating );
 
         return retVal;
-    }
-
-    void NodeSTI::GetGroupMembershipForIndividual_STI(
-        const std::map<std::string, uint32_t>& properties,
-        std::map< int, TransmissionGroupMembership_t> &membershipOut
-    )
-    {
-        RelationshipGroups* p_rg = static_cast<RelationshipGroups*>(transmissionGroups);
-        p_rg->GetGroupMembershipForProperties( properties, membershipOut );
-    }
-
-    void NodeSTI::UpdateTransmissionGroupPopulation(
-        const tProperties& properties,
-        float size_changes,
-        float mc_weight
-    )
-    {
-        //TransmissionGroupMembership_t membership;
-        //transmissionGroups->UpdatePopulationSize( membership, 0, 0 );
     }
 
     REGISTER_SERIALIZABLE(NodeSTI);

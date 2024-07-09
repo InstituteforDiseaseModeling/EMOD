@@ -1,0 +1,93 @@
+{
+    "Genes" :
+    [
+        {
+            "Is_Gender_Gene": 1,
+            "Alleles": [
+                {
+                    "Name": "Xm",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.0
+                },
+                {
+                    "Name": "Xm2",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.0
+                },
+                {
+                    "Name": "Xw",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.75
+                },
+                {
+                    "Name": "Yw",
+                    "Is_Y_Chromosome" : 1,
+                    "Initial_Allele_Frequency": 0.25
+                }
+            ],
+            "Mutations": []
+        },
+        {
+            "Is_Gender_Gene": 0,
+            "Alleles": [
+                {
+                    "Name": "Ad",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0
+                },
+                {
+                    "Name": "Am",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0
+                },
+                {
+                    "Name": "Aw",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 1
+                }
+            ],
+            "Mutations": []
+        }
+    ],
+    "Gene_To_Trait_Modifiers" : [
+        {
+            "Allele_Combinations" : [
+                [  "Xm",  "*" ]
+            ],
+            "Trait_Modifiers" : [
+                {
+                    "Trait" : "ADJUST_FERTILE_EGGS",
+                    "Modifier": 0.0
+                }
+            ]
+        }
+    ],
+    "Drivers" : [
+        {
+            "Driver_Type" : "X_SHRED",
+            "Driving_Allele" : "Ad",
+            "Driving_Allele_Params" : {
+                "Allele_To_Copy"    : "Ad",
+                "Allele_To_Replace" : "Aw",
+                "Copy_To_Likelihood" : [
+                    {
+                        "Copy_To_Allele" : "Ad",
+                        "Likelihood" : 1.0
+                    },
+                    {
+                        "Copy_To_Allele" : "Aw",
+                        "Likelihood" : 0.0
+                    }
+                ]
+            },
+            "COMMENT": "Allele_Required not a YChromosome",
+            "Shredding_Alleles" : {
+                "Allele_Required"    : "Xw",
+                "Allele_To_Shred"    : "Xm2",
+                "Allele_To_Shred_To" : "Xm",
+                "Allele_Shredding_Fraction": 1.0,
+                "Allele_To_Shred_To_Surviving_Fraction" : 0.0
+            }
+        }
+    ]
+}

@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
@@ -25,24 +17,38 @@ using namespace Kernel;
 
 namespace ReportUtilitiesSTI
 {
-    IIndividualHumanSTI* GetTransmittingPartner( IIndividualHumanEventContext* pRecipientContext )
+    std::string GetRelationshipTypeColumnHeader()
     {
-        IIndividualHuman* p_recipient = nullptr;
-        if (pRecipientContext->QueryInterface(GET_IID(IIndividualHuman), (void**)&p_recipient) != s_OK)
+        std::stringstream ss;
+        ss << "Rel_type (";
+        for( int i = 0; i < RelationshipType::COUNT; ++i )
         {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "pRecipientContext", "IIndividualHuman", "IIndividualHumanEventContext" );
+            ss << i << " = " << RelationshipType::pairs::get_keys()[ i ];
+            if( (i + 1) < RelationshipType::COUNT )
+            {
+                ss << "; ";
+            }
         }
+        ss << ")";
+
+        return ss.str();
+    }
+
+    IRelationship* GetTransmittingRelationship( IIndividualHumanEventContext* pRecipientContext )
+    {
+        const IIndividualHuman* p_recipient = pRecipientContext->GetIndividualHumanConst();
 
         IIndividualHumanSTI* p_recipient_sti = nullptr;
-        if (p_recipient->QueryInterface(GET_IID(IIndividualHumanSTI), (void**)&p_recipient_sti) != s_OK)
+        if (pRecipientContext->QueryInterface(GET_IID(IIndividualHumanSTI), (void**)&p_recipient_sti) != s_OK)
         {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "p_recipient", "IIndividualHumanSTI", "IIndividualHuman" );
+            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__,
+                                           "pRecipientContext", "IIndividualHumanSTI", "IIndividualHuman" );
         }
 
         // Let's figure out who the Infector was. This info is stored in the HIVInfection's strainidentity object
         //auto infections = dynamic_cast<IInfectable*>(individual)->GetInfections();
         IInfectable* p_infectable = nullptr;
-        if (p_recipient->QueryInterface(GET_IID(IInfectable), (void**)&p_infectable) != s_OK)
+        if (pRecipientContext->QueryInterface(GET_IID(IInfectable), (void**)&p_infectable) != s_OK)
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "p_recipient", "IInfectable", "IIndividualHuman" );
         }
@@ -54,8 +60,8 @@ namespace ReportUtilitiesSTI
         }
 
         auto infection = infections.front(); // Assuming no super-infections here obviously.
-        StrainIdentity si;
-        infection->GetInfectiousStrainID(&si);
+
+        const IStrainIdentity& si = infection->GetInfectiousStrainID();
 
         // NOTE: Right now we re-use the Generic StrainIdentity object and store 
         // the InfectorID as the AntigenID (which is really just the arbitrary 
@@ -69,13 +75,23 @@ namespace ReportUtilitiesSTI
             return nullptr;
         }
 
-        auto& relationships = p_recipient_sti->GetRelationships();
-        if( (p_recipient->GetStateChange() == HumanStateChange::DiedFromNaturalCauses) ||
-            (p_recipient->GetStateChange() == HumanStateChange::KilledByCoinfection  ) ||
-            (p_recipient->GetStateChange() == HumanStateChange::KilledByInfection    ) )
+        IRelationship* p_migration_rel =  p_recipient_sti->GetMigratingRelationship();
+        if( p_migration_rel != nullptr )
         {
-            relationships = p_recipient_sti->GetRelationshipsAtDeath();
+            release_assert( p_migration_rel->GetState() == RelationshipState::MIGRATING );
+
+            IIndividualHumanSTI* p_transmitter_sti = p_migration_rel->GetPartner( p_recipient_sti );
+            release_assert( p_transmitter_sti != nullptr );
+            if (p_transmitter_sti->GetSuid().data == infector )
+            {
+                return p_migration_rel;
+            }
         }
+
+        std::vector<IRelationship*> relationships = p_recipient_sti->GetRelationships();
+        const std::vector<IRelationship*>& r_rels = p_recipient_sti->GetRelationshipsTerminated();
+        relationships.insert( relationships.end(), r_rels.begin(), r_rels.end() );
+
         if( relationships.size() == 0 )
         {
             std::stringstream ss;
@@ -98,17 +114,17 @@ namespace ReportUtilitiesSTI
                 //GH-611 if( relationship->GetPartnerId( p_recipient_sti->GetSuid() ).data == infector )
                 if (p_transmitter_sti->GetSuid().data == infector )
                 {
-                    return p_transmitter_sti;
+                    return relationship;
                 }
             }
             else
             {
-                // if the partner is null, then the relationship had better be paused.
-                release_assert( relationship->GetState() == RelationshipState::PAUSED );
+                // if the partner is null, then the relationship had better be paused or terminated
+                release_assert( (relationship->GetState() == RelationshipState::PAUSED) || (relationship->GetState() == RelationshipState::TERMINATED) );
             }
         }
         std::stringstream ss;
-        ss << "Could not find transmitting parter (" << infector << "( for infected partner (" << p_recipient->GetSuid().data << ").";
+        ss << "Could not find transmitting parter (" << infector << ") for infected partner (" << p_recipient->GetSuid().data << ").";
         throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
     }
 }

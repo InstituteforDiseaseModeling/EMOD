@@ -1,20 +1,17 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
 #include "HIVSimpleDiagnostic.h"
 #include "IHIVInterventionsContainer.h"
+#include "InterpolatedValueMap.h"
 
 namespace Kernel
 {
     struct IHIVMedicalHistory;
+
+    ENUM_DEFINE( SensitivityType,
+                 ENUM_VALUE_SPEC( SINGLE_VALUE, 1 )
+                 ENUM_VALUE_SPEC( VERSUS_TIME,  2 ) )
 
     class HIVRapidHIVDiagnostic : public HIVSimpleDiagnostic
     {
@@ -27,13 +24,17 @@ namespace Kernel
 
         // IDistributingDistributableIntervention
         virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) override;
+        virtual bool Configure( const Configuration* inputJson ) override;
 
     protected:
+        virtual bool positiveTestResult() override;
         virtual void onNegativeTestResult() override;
         virtual void positiveTestDistribute() override;
         virtual void onReceivedResult( IHIVMedicalHistory* pMedHistory, bool resultIsHivPositive );
 
         float m_ProbReceivedResults;
+        SensitivityType::Enum m_SensitivityType;
+        InterpolatedValueMap m_SensitivityVersusTime;
 
         DECLARE_SERIALIZABLE(HIVRapidHIVDiagnostic);
     };

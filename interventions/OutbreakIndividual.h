@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -17,12 +9,11 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Configuration.h"
 #include "InterventionFactory.h"
 #include "InterventionEnums.h"
-#include "EventCoordinator.h"
 #include "Configure.h"
 
 namespace Kernel
 {
-    class StrainIdentity;
+    struct IStrainIdentity;
     struct IIndividualHumanContext;
 
     struct IOutbreakIndividual : public ISupports
@@ -57,7 +48,7 @@ namespace Kernel
         virtual void ConfigureGenome( const Configuration * inputJson );
 
     protected:
-        const StrainIdentity* GetNewStrainIdentity(INodeEventContext *context, IIndividualHumanContext* pIndiv);
+        virtual IStrainIdentity* GetNewStrainIdentity( INodeEventContext *context, IIndividualHumanContext* pIndiv );
 
         int antigen;
         int genome;

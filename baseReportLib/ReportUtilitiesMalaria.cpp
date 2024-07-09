@@ -1,17 +1,11 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
 #include "RANDOM.h"
 #include "Log.h"
 #include "ReportUtilitiesMalaria.h"
+#include "IIndividualHuman.h"
+#include "MalariaContexts.h"
 
 SETUP_LOGGING("ReportUtilitiesMalaria")
 
@@ -102,7 +96,7 @@ float ReportUtilitiesMalaria::BinomialInfectiousness( RANDOMBASE * rng, float in
     }
 
     float n_draws = 40.0;
-    float infec_smeared = rng->binomial_approx2(n_draws, infec);
+    float infec_smeared = rng->binomial_approx(n_draws, infec);
 
     if (infec_smeared / n_draws < 1e-4)
     {
@@ -111,3 +105,54 @@ float ReportUtilitiesMalaria::BinomialInfectiousness( RANDOMBASE * rng, float in
 
     return infec_smeared / n_draws;
 }
+
+
+void ReportUtilitiesMalaria::LogIndividualMalariaInfectionAssessment( IIndividualHuman *individual,
+                                                                      const std::vector<float>& rDetectionThresholds,
+                                                                      std::vector<float>& rDetected,
+                                                                      float& rMeanParasitemia )
+{
+    // Get individual weight and bin variables
+    float mc_weight = float( individual->GetMonteCarloWeight() );
+
+    IMalariaHumanContext* pMalariaHuman = nullptr;
+    if( individual->QueryInterface( GET_IID( IMalariaHumanContext ), (void**)&pMalariaHuman ) != Kernel::s_OK )
+    {
+        throw Kernel::QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "individual", "IMalariaHumanContext", "IIndividualHuman" );
+    }
+
+    // ----------------------------------------------------------------------------
+    // --- Do NOT check IsInfected().  PfHRP2 can be detected in the person after
+    // --- the parasites have cleared (i.e. no more infection objects,
+    // --- but positive HRP2).
+    // ----------------------------------------------------------------------------
+    for( int i = 0; i < MalariaDiagnosticType::pairs::count(); ++i )
+    {
+        MalariaDiagnosticType::Enum md_type = MalariaDiagnosticType::Enum( MalariaDiagnosticType::pairs::get_values()[ i ] );
+        float measurement = pMalariaHuman->GetDiagnosticMeasurementForReports( md_type );
+        if( measurement > rDetectionThresholds[ i ] )
+        {
+            rDetected[ i ] += mc_weight;
+
+            if( (md_type == MalariaDiagnosticType::BLOOD_SMEAR_PARASITES) && (measurement > 0.0f) )
+            {
+                rMeanParasitemia += mc_weight * logf( measurement );
+            }
+        }
+    }
+}
+
+void ReportUtilitiesMalaria::CountPositiveSlideFields( RANDOMBASE * rng,
+                                                       float density,
+                                                       int nfields,
+                                                       float uL_per_field,
+                                                       int& positive_fields )
+{
+    float prob_per_field = EXPCDF( -density * uL_per_field );
+
+    // binomial random draw (or poisson/normal approximations thereof)
+    positive_fields = rng->binomial_approx( nfields, prob_per_field );
+}
+
+
+

@@ -1,40 +1,42 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
 #include "BinnedReport.h"
+#include "IReportMalariaDiagnostics.h"
 
 namespace Kernel {
 
-class BinnedReportMalaria : public BinnedReport
+class BinnedReportMalaria : public BinnedReport, public IReportMalariaDiagnostics
 {
+public:
+    // needed for IReportMalariaDiagnostics
+    DECLARE_QUERY_INTERFACE()
+    IMPLEMENT_NO_REFERENCE_COUNTING()
+
 public:
     static IReport* CreateReport();
     virtual ~BinnedReportMalaria();
 
-    virtual void LogIndividualData( IIndividualHuman* individual );
-    virtual void EndTimestep( float currentTime, float dt );
+    // BinnedReport
+    virtual void LogIndividualData( IIndividualHuman* individual ) override;
+    virtual void EndTimestep( float currentTime, float dt ) override;
+    virtual void postProcessAccumulatedData() override;
 
-    virtual void postProcessAccumulatedData();
+    // IReportMalariaDiagnostics
+    virtual void SetDetectionThresholds( const std::vector<float>& rDetectionThresholds ) override;
 
 protected:
     BinnedReportMalaria();
 
-    virtual void initChannelBins();
+    virtual void initChannelBins() override;
     void clearChannelsBins();
 
+    std::vector<float> m_DetectionThresholds;
+
     // channels specific to this particular report-type
-    float *parasite_positive_bins;
-    float *fever_positive_bins;
+    std::vector<std::pair<std::string,float*>> infection_detected_bins;
+
     float *mean_parasitemia_bins;
-    float *new_diagnostic_prev_bins;
     float *new_clinical_cases_bins;
     float *new_severe_cases_bins;
 

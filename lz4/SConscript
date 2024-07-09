@@ -11,16 +11,3 @@ lz4IncFiles = ['lib/lz4.h']
 
 lz4Lib = env.StaticLibrary('lz4', lz4SrcFiles)
 
-msvc = GetOption( "MSVC" )
-if msvc is not None and msvc != False and msvc != "":
-
-    bvar = env['BUILD_VARIANT'] + '|x64'
-    print( "lz4: Generating MSVS" + env['MSVS_VERSION'] + " project files for '%s'" % bvar )
-    
-    env.MSVSProject(target = 'SnappyScons' + env['MSVSPROJECTSUFFIX'],
-		srcs = lz4SrcFiles,
-		incs = lz4IncFiles,
-		localincs = "",
-		buildtarget = lz4Lib,
-                auto_build_solution = 0,
-                variant = bvar)

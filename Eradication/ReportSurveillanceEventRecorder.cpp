@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
@@ -60,7 +52,7 @@ namespace Kernel
     bool ReportSurveillanceEventRecorder::Configure( const Configuration* inputJson )
     {
         m_StatsByIpKeyNames.value_source = IPKey::GetConstrainedStringConstraintKey();
-        initConfigTypeMap( STATS_BY_IP_PARAMETER_NAME.c_str(), &m_StatsByIpKeyNames, Report_Surveillance_Event_Recorder_Stats_By_IPs_DESC_TEXT, ENABLE_PARAMETER_NAME.c_str() );
+        initConfigTypeMap( STATS_BY_IP_PARAMETER_NAME.c_str(), &m_StatsByIpKeyNames, Report_Surveillance_Event_Recorder_Stats_By_IPs_DESC_TEXT, SURV_ENABLE_PARAMETER_NAME.c_str() );
 
         return ReportEventRecorderCoordinator::Configure( inputJson );
     }

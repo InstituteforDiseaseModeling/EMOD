@@ -1,22 +1,12 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
-#include "BoostLibWrapper.h"
-
 #include "IndividualVector.h"
-#include "IMalariaAntibody.h"
 #include "MalariaContexts.h"
 
 namespace Kernel
 {
+    class MalariaAntibody;
     struct IIndividualHumanEventContext;
     struct IIndividualHumanInterventionsContext;
     struct IIndividualHumanEventContext;
@@ -34,11 +24,12 @@ namespace Kernel
         static float base_sporozoite_survival_fraction;
         static float antibody_csp_killing_threshold;
         static float antibody_csp_killing_invwidth;
-        static MalariaModel::Enum malaria_model;
+        static std::vector<float> measurement_sensitivity;
     };
 
-    // TBD: Make separate IndividualHumanMalariaConfig class!?!?!?!
-    class IndividualHumanMalaria : public IndividualHumanVector, public IMalariaHumanContext, public IMalariaHumanInfectable
+    class IndividualHumanMalaria : public IndividualHumanVector,
+                                   public IMalariaHumanContext,
+                                   public IMalariaHumanInfectable
     {
         friend class SimulationMalaria;
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING();
@@ -48,18 +39,22 @@ namespace Kernel
         static IndividualHumanMalaria *CreateHuman(INodeContext *context, suids::suid _suid, double monte_carlo_weight = 1.0f, double initial_age = 0.0f, int gender = 0);
         virtual ~IndividualHumanMalaria();
 
+        virtual void Update( float currenttime, float dt ) override;
+
         // IMalariaHumanContext methods
-        virtual void  PerformMalariaTest(int test_type) override;
-        virtual void  CountPositiveSlideFields(RANDOMBASE* rng, int nfields, float uL_per_field, int& positive_asexual_fields, int& positive_gametocyte_fields) const override;
-        virtual bool  CheckForParasitesWithTest(int test_type) const override;
-        virtual float CheckParasiteCountWithTest(int test_type) const override;
-        virtual float CheckGametocyteCountWithTest(int test_type) const override; // the value with sensitivity and variability of a blood test
+        virtual float GetParasiteDensity() const override;                        // the exact value in the model
         virtual float GetGametocyteDensity() const override;                      // the exact value in the model
-        virtual bool  HasFever() const override;
-        virtual void  AddClinicalSymptom(ClinicalSymptomsEnum::Enum symptom) override;
-        virtual bool  HasClinicalSymptom(ClinicalSymptomsEnum::Enum symptom) const override;
+        virtual void  AddClinicalSymptom( ClinicalSymptomsEnum::Enum symptom, bool isNew ) override;
+        virtual bool  HasClinicalSymptomNew(        ClinicalSymptomsEnum::Enum symptom ) const override;
+        virtual bool  HasClinicalSymptomContinuing( ClinicalSymptomsEnum::Enum symptom ) const override;
         virtual IMalariaSusceptibility* GetMalariaSusceptibilityContext() const override; // TBD: Get rid of this and use QueryInterface instead
         virtual std::vector< std::pair<int,int> > GetInfectingStrainIds() const override;
+        virtual float MakeDiagnosticMeasurement( MalariaDiagnosticType::Enum mdType,
+                                                 float measurementSensitivity ) override;
+        virtual float GetDiagnosticMeasurementForReports( MalariaDiagnosticType::Enum mdType ) const override;
+        virtual bool HasMaxInfections() const override;
+        virtual float GetMaxInfectionDuration() const override;
+
 
         // IMalariaHumanInfectable methods
         virtual bool ChallengeWithBites( int n_infectious_bites ) override;
@@ -72,16 +67,10 @@ namespace Kernel
         virtual void ExposeToInfectivity(float dt, TransmissionGroupMembership_t transmissionGroupMembership) override;
         virtual void UpdateInfectiousness(float dt) override;
 
-        virtual void SetContextTo(INodeContext* context);
-
-        // infectivity debugging
-        virtual void Drug_Report();
-        // void malaria_infectivity_report();
-
-        IMalariaSusceptibility* malaria_susceptibility; // now the Individual could have a full pointer to Suscept and Inf, but let's try using limited interface for now
+        virtual void SetContextTo( INodeContext* context ) override;
 
     protected:
-        double  m_inv_microliters_blood;   // 1/current blood volume (microliters) based on age
+        IMalariaSusceptibility* malaria_susceptibility; // now the Individual could have a full pointer to Suscept and Inf, but let's try using limited interface for now
 
         // mature male and female gametocytes (total)
         int64_t m_male_gametocytes;
@@ -92,19 +81,24 @@ namespace Kernel
         typedef gametocytes_strain_map_t::value_type  gametocytes_strain_t;
         gametocytes_strain_map_t m_female_gametocytes_by_strain;
 
-        float m_parasites_detected_by_blood_smear;
-        float m_parasites_detected_by_new_diagnostic;
         float m_gametocytes_detected;
-        bool  m_clinical_symptoms[ClinicalSymptomsEnum::CLINICAL_SYMPTOMS_COUNT]; // ...or we could store in a bitmask to be even lighter
+        bool  m_clinical_symptoms_new[ ClinicalSymptomsEnum::CLINICAL_SYMPTOMS_COUNT ];
+        bool  m_clinical_symptoms_continuing[ ClinicalSymptomsEnum::CLINICAL_SYMPTOMS_COUNT ];
 
-        IMalariaAntibody* m_CSP_antibody;
         int m_initial_infected_hepatocytes;
+        std::vector<float> m_DiagnosticMeasurement;
+        MalariaAntibody* m_CSP_antibody;
+        float m_MaxedInfDuration;
+
+        virtual void ReportInfectionState() override;
+
+        void CalculateDiagnosticMeasurementsForReports();
+        int GetInitialHepatocytes();
 
         virtual void setupInterventionsContainer() override;
         virtual IInfection* createInfection(suids::suid _suid) override;
 
-        virtual void ApplyTotalBitingExposure() override;
-        int  CalculateInfectiousBites();
+        virtual bool DidReceiveInfectiousBite() override;
 
         /* clorton virtual */ const SimulationConfig *params() const /* clorton override */;
         virtual void PropagateContextToDependents() override;
@@ -112,7 +106,6 @@ namespace Kernel
         DECLARE_SERIALIZABLE(IndividualHumanMalaria);
         friend void serialize(IArchive&, gametocytes_strain_map_t&);
 
-    private:
         static void InitializeStaticsMalaria( const Configuration* config );
 
         IndividualHumanMalaria(suids::suid id = suids::nil_suid(), double monte_carlo_weight = 1.0, double initial_age = 0.0, int gender = 0);
@@ -120,7 +113,12 @@ namespace Kernel
         virtual IIndividualHumanContext* GetContextPointer() override { return (IIndividualHumanContext*)this; }
         void ResetClinicalSymptoms();
         void UpdateGametocyteCounts(float dt);
-        void DepositInfectiousnessFromGametocytes();
+        virtual void DepositInfectiousnessFromGametocytes();
+        float CalculateInfectiousness() const;
+        float GetWeightedInfectiousness();
         void DepositFractionalContagionByStrain(float weight, IVectorInterventionsEffects* ivie, float antigenID, float geneticID);
+        virtual void StoreGametocyteCounts( const IStrainIdentity& rStrain,
+                                            int64_t femaleMatureGametocytes,
+                                            int64_t maleMatureGametocytes );
     };
 }

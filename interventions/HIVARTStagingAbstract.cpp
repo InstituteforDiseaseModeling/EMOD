@@ -1,22 +1,11 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "HIVARTStagingAbstract.h"
 
-#include "InfectionHIV.h"
 #include "IIndividualHumanHIV.h"
 #include "InterventionEnums.h"
-#include "InterventionFactory.h"
 #include "NodeEventContext.h"  // for INodeEventContext (ICampaignCostObserver)
 #include "IHIVInterventionsContainer.h" // for time-date util function and access into IHIVMedicalHistory
-#include "Relationship.h"   // for discordant checking
 #include "IIndividualHumanContext.h"
 #include "IdmDateTime.h"
 
@@ -26,17 +15,18 @@ SETUP_LOGGING( "HIVARTStagingAbstract" )
 
 namespace Kernel
 {
-    BEGIN_QUERY_INTERFACE_DERIVED(HIVARTStagingAbstract, HIVSimpleDiagnostic)
-    END_QUERY_INTERFACE_DERIVED(HIVARTStagingAbstract, HIVSimpleDiagnostic)
+    BEGIN_QUERY_INTERFACE_DERIVED(HIVARTStagingAbstract, AbstractDecision )
+    END_QUERY_INTERFACE_DERIVED(HIVARTStagingAbstract, AbstractDecision )
 
     HIVARTStagingAbstract::HIVARTStagingAbstract()
-    : HIVSimpleDiagnostic()
+    : AbstractDecision( true )
     , ip_tb_value_expected()
     {
+        initSimTypes( 1, "HIV_SIM" );
     }
 
     HIVARTStagingAbstract::HIVARTStagingAbstract( const HIVARTStagingAbstract& master )
-        : HIVSimpleDiagnostic( master )
+        : AbstractDecision( master )
         , ip_tb_value_expected( master.ip_tb_value_expected )
     {
     }
@@ -47,7 +37,8 @@ namespace Kernel
         std::string ip_value_str = DEFAULT_STRING ;
         initConfigTypeMap( "Individual_Property_Active_TB_Key", &ip_key_str, HIV_Staging_Individual_Property_Active_TB_Key_DESC_TEXT, DEFAULT_STRING );
         initConfigTypeMap( "Individual_Property_Active_TB_Value", &ip_value_str, HIV_Staging_Individual_Property_Active_TB_Value_DESC_TEXT, DEFAULT_STRING );
-        bool ret = HIVSimpleDiagnostic::Configure(inputJson);
+
+        bool ret = AbstractDecision::Configure(inputJson);
         if( ret && !JsonConfigurable::_dryrun )
         {
             if( ((ip_key_str != DEFAULT_STRING) && (ip_value_str == DEFAULT_STRING)) ||
@@ -68,7 +59,7 @@ namespace Kernel
     }
 
     // staged for ART via CD4 agnostic testing?
-    bool HIVARTStagingAbstract::positiveTestResult()
+    bool HIVARTStagingAbstract::MakeDecision( float dt )
     {
         IIndividualHumanHIV * hiv_parent = nullptr;
         if (parent->QueryInterface(GET_IID(IIndividualHumanHIV), (void**)&hiv_parent) != s_OK)
@@ -76,11 +67,7 @@ namespace Kernel
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "IIndividualHumanHIV", "IIndividualHumanContext" );
         }
         
-        IHIVMedicalHistory * med_parent = nullptr;
-        if (parent->GetInterventionsContext()->QueryInterface(GET_IID(IHIVMedicalHistory), (void**)&med_parent) != s_OK)
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "IHIVMedicalChart", "IIndividualHumanContext" );
-        }
+        IHIVMedicalHistory * med_parent = hiv_parent->GetMedicalHistory();;
 
         bool has_active_tb = false;
         if( ip_tb_value_expected.IsValid() )
@@ -92,12 +79,12 @@ namespace Kernel
         float CD4count     = med_parent->LowestRecordedCD4();
         bool is_pregnant   = parent->GetEventContext()->IsPregnant() ;
 
-        bool result = positiveTestResult( hiv_parent, year, CD4count, has_active_tb, is_pregnant );
-        return result;
+        bool is_positive_decision = MakeDecision( hiv_parent, year, CD4count, has_active_tb, is_pregnant );
+        return is_positive_decision;
     }
 
     // runs on a positive test when in positive treatment fraction
-    void HIVARTStagingAbstract::positiveTestDistribute()
+    void HIVARTStagingAbstract::DistributeResultPositive()
     {
         IHIVMedicalHistory * hiv_parent = nullptr;
         if( parent->GetInterventionsContext()->QueryInterface( GET_IID(IHIVMedicalHistory), (void**)&hiv_parent ) != s_OK )
@@ -108,11 +95,11 @@ namespace Kernel
         UpdateMedicalHistory( hiv_parent, true );
 
         // distribute the intervention
-        HIVSimpleDiagnostic::positiveTestDistribute();
+        AbstractDecision::DistributeResultPositive();
     }
 
     // runs on a negative test when in negative treatment fraction
-    void HIVARTStagingAbstract::onNegativeTestResult()
+    void HIVARTStagingAbstract::DistributeResultNegative()
     {
         IHIVMedicalHistory * hiv_parent = nullptr;
         if( parent->GetInterventionsContext()->QueryInterface( GET_IID(IHIVMedicalHistory), (void**)&hiv_parent ) != s_OK )
@@ -123,7 +110,7 @@ namespace Kernel
         UpdateMedicalHistory( hiv_parent, false );
 
         // distribute the intervention
-        HIVSimpleDiagnostic::onNegativeTestResult();
+        AbstractDecision::DistributeResultNegative();
     }
 
     void HIVARTStagingAbstract::UpdateMedicalHistory( IHIVMedicalHistory *pMedHistory, bool isPositiveTestResult )
@@ -134,7 +121,7 @@ namespace Kernel
 
     void HIVARTStagingAbstract::serialize(IArchive& ar, HIVARTStagingAbstract* obj)
     {
-        HIVSimpleDiagnostic::serialize( ar, obj );
+        AbstractDecision::serialize( ar, obj );
         HIVARTStagingAbstract& art = *obj;
 
         std::string key_value;

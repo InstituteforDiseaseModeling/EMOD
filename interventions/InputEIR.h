@@ -1,13 +1,7 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
+
+#include <vector>
 
 #include "Interventions.h"
 #include "Configuration.h"
@@ -21,21 +15,11 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 namespace Kernel
 {
-    class InputEIRConfig : public JsonConfigurable, 
-                           public IComplexJsonConfigurable, 
-                           public std::vector<float>
-    {
-        IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
-        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) { return e_NOINTERFACE; }
+    ENUM_DEFINE( EIRType,
+                 ENUM_VALUE_SPEC( MONTHLY, 0 )
+                 ENUM_VALUE_SPEC( DAILY, 1 ) )
 
-        public:
-            InputEIRConfig() : std::vector<float>(MONTHSPERYEAR) {}
-            virtual void ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key );
-            virtual json::QuickBuilder GetSchema();
-            virtual bool  HasValidDefault() const override { return false; }
-    };
-
-    class InputEIR : public BaseNodeIntervention
+        class InputEIR : public BaseNodeIntervention
     {
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
         DECLARE_CONFIGURED(Outbreak)
@@ -48,15 +32,18 @@ namespace Kernel
 
         // INodeDistributableIntervention
         virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) override;
+        virtual bool Distribute( INodeEventContext *pNodeContext, IEventCoordinator2 *pEC ) override;
         virtual void Update(float dt) override;
 
         // IBaseIntervention
         virtual float GetCostPerUnit() const override;
     protected:
         AgeDependentBitingRisk::Enum age_dependence;
-        InputEIRConfig monthly_EIR; // 12 values of EIR by month
+        EIRType::Enum eir_type;
+        std::vector<float> monthly_EIR; // 12 values of EIR by month
+        std::vector<float> daily_EIR;
+        float scaling_factor;
         float today;
-        float daily_EIR;
         tAgeBitingFunction risk_function;
     };
 }

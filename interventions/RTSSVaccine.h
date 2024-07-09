@@ -1,19 +1,9 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
 #include <string>
 #include <list>
 #include <vector>
-
-#include "BoostLibWrapper.h"
 
 #include "Interventions.h"
 #include "Configuration.h"
@@ -37,7 +27,6 @@ namespace Kernel
         virtual bool Configure( const Configuration * config ) override;
 
         // IDistributableIntervention
-        virtual bool Distribute(IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pCCO ) override;
         virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) override;
         virtual void Update(float dt) override;
 

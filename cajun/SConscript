@@ -18,19 +18,5 @@ cajunLocalInc = ["stdafx.h"]
 
 cajunLib = env.StaticLibrary('cajun', cajunSrcFiles)
 
-msvc = GetOption( "MSVC" )
-if msvc is not None and msvc != False and msvc != "":
-
-    bvar = env['BUILD_VARIANT'] + '|x64'
-    print( "Cajun: Generating MSVS" + env['MSVS_VERSION'] + " project files for '%s'" % bvar )
-    
-    env.MSVSProject(target = 'CajunScons' + env['MSVSPROJECTSUFFIX'],
-		srcs = cajunSrcFiles,
-		incs = cajunIncFiles,
-		localincs = cajunLocalInc,
-		buildtarget = cajunLib,
-                auto_build_solution = 0,
-                variant = bvar)
-
 
 

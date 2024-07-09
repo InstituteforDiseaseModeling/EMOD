@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
@@ -28,10 +20,6 @@ namespace Kernel
     void SusceptibilitySTI::Initialize(float _age, float _immmod, float _riskmod)
     {
         Susceptibility::Initialize(_age, _immmod, _riskmod);
-
-        // TODO: what are we doing here? 
-        // initialize members of airborne susceptibility below
-        demographic_risk = _riskmod; 
     }
 
     REGISTER_SERIALIZABLE(SusceptibilitySTI);
@@ -40,6 +28,5 @@ namespace Kernel
     {
         Susceptibility::serialize( ar, obj );
         SusceptibilitySTI& suscep = *obj;
-        ar.labelElement("demographic_risk") & suscep.demographic_risk;
     }
 }

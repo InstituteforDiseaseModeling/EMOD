@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -26,7 +18,6 @@ namespace Kernel
         // IDistributingDistributableIntervention
         virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) override;
         virtual void Update(float dt) override;
-        virtual bool Configure(const Configuration* inputJson) override;
         virtual bool Distribute( IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pICCO ) override;
 
         // SimpleDiagnostic
@@ -34,14 +25,16 @@ namespace Kernel
         virtual bool positiveTestResult() override;
 
     protected:
+        virtual void ConfigureOther( const Configuration* inputJson ) override;
+        virtual void ConfigurePositiveConfig( const Configuration * inputJson ) override;
+        virtual void ConfigureEventsConfigs( const Configuration * inputJson ) override;
+        virtual void CheckEventsConfigs( const Configuration * inputJson ) override;
+        virtual EventOrConfig::Enum getEventOrConfig( const Configuration* ) override;
 
         virtual void Callback( float dt );
-        virtual bool UpdateIndividualsInterventionStatus() override;
+        virtual bool UpdateIndividualsInterventionStatus(bool checkDisqualifyingProperties=true) override;
         virtual void ActOnResultsIfTime();
-        virtual EventOrConfig::Enum getEventOrConfig( const Configuration* );
 
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         bool firstUpdate;
         bool result_of_positive_test;
         float original_days_to_diagnosis;
@@ -49,6 +42,5 @@ namespace Kernel
         EventTrigger negative_diagnosis_event;
 
         DECLARE_SERIALIZABLE(HIVSimpleDiagnostic);
-#pragma warning( pop )
     };
 }

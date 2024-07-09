@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -31,50 +23,12 @@ const int cumMoDay[MONTHSPERYEAR] = { 31,  59,  90, 120, 151, 181,
 #define NO_MORE_THAN( x, y ) { if ( x > y ) { x = y; } }
 #define BOUND_RANGE( x, y, z ) { NO_LESS_THAN(x, y); NO_MORE_THAN(x, z); }
 
-struct AffectedPopulation {
-    enum _enum {
-        Minimum                 = 1,
-        Everyone                = 1,
-        ChildrenUnderFive       = 2,
-        PossibleMothers         = 3,
-        Infants                 = 4,    // <18 months
-        ArrivingAirTravellers   = 5,
-        DepartingAirTravellers  = 6,
-        ArrivingRoadTravellers  = 7,
-        DepartingRoadTravellers = 8,
-        AllArrivingTravellers   = 9,
-        AllDepartingTravellers  = 10,
-        Maximum                 = 10
-    };
-};
-
 struct InfectionStateChange {
     enum _enum {
         None            = 0,
         Cleared         = 1,
         Fatal           = 2,
-        New             = 3,
-
-        // polio only
-        PolioParalysis_WPV1  = 4,
-        PolioParalysis_WPV2  = 5,
-        PolioParalysis_WPV3  = 6,
-        PolioParalysis_VDPV1 = 7,
-        PolioParalysis_VDPV2 = 8,
-        PolioParalysis_VDPV3 = 9,
-
-        // tb only
-        TBLatent        = 10,
-        TBActivation    = 11,
-        TBInactivation  = 12,
-        TBActivationSmearPos = 13,
-        TBActivationSmearNeg = 14,
-        TBActivationExtrapulm = 15,
-        ClearedPendingRelapse = 16,
-        TBActivationPresymptomatic = 17,
-
-        DengueIncubated = 20,
-        DengueReportable = 21
+        New             = 3
     };
 };
 
@@ -93,12 +47,7 @@ struct NewInfectionState {
         Invalid        = 0,
         NewInfection   = 1,
         NewlyDetected  = 2,
-        NewAndDetected = 3,
-
-        // tb only
-        NewlyActive    = 7,
-        NewlyInactive  = 8,
-        NewlyCleared   = 9
+        NewAndDetected = 3
     };
 };
 
@@ -155,23 +104,11 @@ struct SpatialCoverageType {
 
 #include "Environment.h"
 
-#ifdef VALIDATION
-#define LOG(_val)    EnvPtr->Report.Validation->Log(boost::format("%1% <= %2%") % _name % (_t)(_val))
-#error boost::format is no longer supported. If you want validation, fix this #define.
-#else
-#define LOG(_val)
-#endif
-
 template<class _t>
 class Property
 {
 protected:
     _t data;
-#ifdef VALIDATION
-    char *_name;
-    Property<_t>() {}
-    Property<_t>(_t init) : data(init) {}
-#endif
 
 public:
     operator _t() { return data; }
@@ -233,84 +170,3 @@ public:
     }
 };
 
-#ifdef VALIDATION
-
-#error boost::format is no longer supported. If you want validation, fix this #define.
-#define PROPERTY(_t, _v) \
-class _##_v \
-{ \
-protected: \
-    _t data; \
-    char *name; \
-    boost::format fmt; \
-public: \
-    _##_v() : fmt("%1% <= %2%") { name = #_v; } \
-    _##_v(_t init) : fmt("%1% <= %2%") \
-    { \
-        name = #_v; \
-        EnvPtr->Report.Validation->Log(boost::format("%1% <= %2%") % name % init); \
-        data = init; \
-    } \
-public: \
-    operator _t () { return data; } \
-    template <class V> \
-    _t & operator =(const V value) \
-    { \
-        EnvPtr->Report.Validation->Log(boost::format("%1% <= %2%") % name % (_t)(value)); \
-        data = value; \
-        return data; \
-    } \
-    template <class V> \
-    _t & operator +=(V value) \
-    { \
-        EnvPtr->Report.Validation->Log(boost::format("%1% <= %2%") % name % (_t)(data + value)); \
-        data += value; \
-        return data; \
-    } \
-    template <class V> \
-    _t & operator -=(V value) \
-    { \
-        EnvPtr->Report.Validation->Log(boost::format("%1% <= %2%") % name % (_t)(data - value)); \
-        data -= value; \
-        return data; \
-    } \
-    template <class V> \
-    _t & operator *=(V value) \
-    { \
-        EnvPtr->Report.Validation->Log(boost::format("%1% <= %2%") % name % (_t)(data * value)); \
-        data *= value; \
-        return data; \
-    } \
-    _t & operator ++() \
-    { \
-        ++data; \
-        EnvPtr->Report.Validation->Log(boost::format("%1% <= %2%") % name % data); \
-        return data; \
-    } \
-    _t operator ++(int) \
-    { \
-        _t temp = data++; \
-        EnvPtr->Report.Validation->Log(boost::format("%1% <= %2%") % name % data); \
-        return temp; \
-    } \
-    _t & operator --() \
-    { \
-        --data; \
-        EnvPtr->Report.Validation->Log(boost::format("%1% <= %2%") % name % data); \
-        return data; \
-    } \
-    _t operator --(int) \
-    { \
-        _t temp = data--; \
-        EnvPtr->Report.Validation->Log(boost::format("%1% <= %2%") % name % data); \
-        return temp; \
-    } \
-    template <class Archive> \
-    void serialize(Archive &ar, const unsigned int version) { ar & data; } \
-} _v
-
-#else
-
-#define PROPERTY(_t, _v) _t _v
-
-#endif

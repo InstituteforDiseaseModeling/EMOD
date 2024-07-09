@@ -1,0 +1,244 @@
+{
+    "Genes" : [
+        {
+            "Is_Gender_Gene": 1,
+            "Alleles": [
+                {
+                    "Name": "X",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.5
+                },
+                {
+                    "Name": "X2",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.0
+                },
+                {
+                    "Name": "Y",
+                    "Is_Y_Chromosome" : 1,
+                    "Initial_Allele_Frequency": 0.5
+                }
+            ],
+            "Mutations": []
+        },
+        {
+            "Is_Gender_Gene": 0,
+            "Alleles": [
+                {
+                    "Name": "a1",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 1.0
+                },
+                {
+                    "Name": "a2",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.0
+                },
+                {
+                    "Name": "a3",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.0
+                }
+            ],
+            "Mutations": [
+                {
+                    "Mutate_From": "a1",
+                    "Mutate_To": "a3",
+                    "Probability_Of_Mutation": 0.01
+                }
+            ]
+        },
+        {
+            "Is_Gender_Gene": 0,
+            "Alleles": [
+                {
+                    "Name": "b1",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.4
+                },
+                {
+                    "Name": "b2",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.3
+                },
+                {
+                    "Name": "b3",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.2
+                },
+                {
+                    "Name": "b4",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.1
+                },
+                {
+                    "Name": "b5",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.0
+                },
+                {
+                    "Name": "b6",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.0
+                }
+            ],
+            "Mutations": [
+                {
+                    "Mutate_From": "b2",
+                    "Mutate_To": "b4",
+                    "Probability_Of_Mutation": 0.01
+                },
+                {
+                    "Mutate_From": "b2",
+                    "Mutate_To": "b5",
+                    "Probability_Of_Mutation": 0.02
+                },
+                {
+                    "Mutate_From": "b3",
+                    "Mutate_To": "b6",
+                    "Probability_Of_Mutation": 0.03
+                }
+            ]
+        },
+        {
+            "Is_Gender_Gene": 0,
+            "Alleles": [
+                {
+                    "Name": "c1",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.5
+                },
+                {
+                    "Name": "c2",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.5
+                },
+                {
+                    "Name": "c3",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.0
+                },
+                {
+                    "Name": "c4",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.0
+                }
+            ],
+            "Mutations": [
+                {
+                    "Mutate_From": "c2",
+                    "Mutate_To": "c3",
+                    "Probability_Of_Mutation": 0.001
+                }
+            ]
+        },
+        {
+            "Is_Gender_Gene": 0,
+            "Alleles": [
+                {
+                    "Name": "d1",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.5
+                },
+                {
+                    "Name": "d2",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.5
+                },
+                {
+                    "Name": "d3",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.0
+                }
+            ],
+            "Mutations": []
+        },
+        {
+            "Is_Gender_Gene": 0,
+            "Alleles": [
+                {
+                    "Name": "e1",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.5
+                },
+                {
+                    "Name": "e2",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.5
+                }
+            ],
+            "Mutations": []
+        }
+    ],
+    "Gene_To_Trait_Modifiers" : [
+        {
+            "Allele_Combinations" : [ [ "b4", "*" ] ],
+            "Trait_Modifiers" : [
+                {
+                    "Trait" : "TRANSMISSION_TO_HUMAN",
+                    "Modifier": 0.7
+                }
+            ]
+        },
+        {
+            "Allele_Combinations" : [ [ "X2", "*" ] ],
+            "Trait_Modifiers" : [
+                {
+                    "Trait" : "FEMALE_EGG_RATIO",
+                    "Modifier": 0.4
+                }
+            ]
+        },
+        {
+            "Allele_Combinations" : [
+                [ "b1", "b1" ],
+                [ "c2", "c2" ],
+                [ "d1", "*" ]
+            ],
+            "Trait_Modifiers" : [
+                {
+                    "Trait" : "INFECTED_BY_HUMAN",
+                    "Modifier": 1.5
+                },
+                {
+                    "Trait" : "FECUNDITY",
+                    "Modifier": 0.9
+                },
+                {
+                    "Trait" : "STERILITY",
+                    "Modifier": 0.2
+                }
+            ]
+        },
+        {
+            "Allele_Combinations" : [
+                [ "c2", "c3" ],
+                [ "e1", "e2" ]
+            ],
+            "Trait_Modifiers" : [
+                {
+                    "Trait" : "FEMALE_EGG_RATIO",
+                    "Modifier": 0.5
+                }
+            ]
+        },
+        {
+            "Allele_Combinations" : [ [ "b1", "b5" ] ],
+            "Trait_Modifiers" : [
+                {
+                    "Trait" : "STERILITY",
+                    "Modifier": 0.0
+                }
+            ]
+        },
+        {
+            "Allele_Combinations" : [ [ "b6", "b6" ] ],
+            "Trait_Modifiers" : [
+                {
+                    "Trait" : "ADJUST_FERTILE_EGGS",
+                    "Modifier": 0.5
+                }
+            ]
+        }
+    ]
+}

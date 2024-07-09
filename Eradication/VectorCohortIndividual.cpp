@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
@@ -18,7 +10,6 @@ SETUP_LOGGING( "VectorCohortIndividual" )
 
 namespace Kernel
 {
-    static uint64_t VCI_COUNTER = 1 ; //TODO - need to make multi-core
 
     // QI stuff
     BEGIN_QUERY_INTERFACE_DERIVED(VectorCohortIndividual, VectorCohortAbstract )
@@ -27,29 +18,41 @@ namespace Kernel
 
     VectorCohortIndividual::VectorCohortIndividual() 
     : VectorCohortAbstract()
-    , m_ID( VCI_COUNTER++ )
     , additional_mortality(0.0f)
     , oviposition_timer(-0.1f)
     , parity(0)
-    , neweggs(0)
-    , m_strain(0, 0)
+    , num_gestating(0)
+    , m_pStrain( nullptr )
     {
     }
 
-    VectorCohortIndividual::VectorCohortIndividual( VectorStateEnum::Enum _state, 
+    VectorCohortIndividual::VectorCohortIndividual( uint32_t vectorID,
+                                                    VectorStateEnum::Enum _state, 
                                                     float _age,
                                                     float _progress,
+                                                    float microsporidiaDuration,
                                                     uint32_t _initial_population,
-                                                    const VectorMatingStructure& _vector_genetics,
-                                                    const std::string* _vector_species_name )
-    : VectorCohortAbstract( _state, _age, _progress, _initial_population, _vector_genetics, _vector_species_name )
-    , m_ID( VCI_COUNTER++ )
+                                                    const VectorGenome& rGenome,
+                                                    int speciesIndex )
+    : VectorCohortAbstract( vectorID,
+                            _state,
+                            _age,
+                            _progress,
+                            microsporidiaDuration,
+                            _initial_population,
+                            rGenome,
+                            speciesIndex )
     , additional_mortality(0.0f)
     , oviposition_timer(-0.1f) // newly-mated mosquitoes feed on first cycle
     , parity(0)
-    , neweggs(0)
-    , m_strain(0, 0)
+    , num_gestating(0)
+    , m_pStrain( nullptr )
     {
+    }
+
+    VectorCohortIndividual::~VectorCohortIndividual()
+    {
+        delete m_pStrain;
     }
 
     void VectorCohortIndividual::Initialize()
@@ -57,24 +60,40 @@ namespace Kernel
         VectorCohortAbstract::Initialize();
     }
 
-    VectorCohortIndividual *VectorCohortIndividual::CreateCohort( VectorStateEnum::Enum _state,
+    VectorCohortIndividual *VectorCohortIndividual::CreateCohort( uint32_t vectorID,
+                                                                  VectorStateEnum::Enum _state,
                                                                   float _age,
                                                                   float _progress,
+                                                                  float microsporidiaDuration,
                                                                   uint32_t _initial_population,
-                                                                  const VectorMatingStructure& _vector_genetics,
-                                                                  const std::string* _vector_species_name )
+                                                                  const VectorGenome& rGenome,
+                                                                  int speciesIndex )
     {
         VectorCohortIndividual *newqueue;
         
         if (!_supply || (_supply->size() == 0))
         {
-            newqueue = _new_ VectorCohortIndividual( _state, _age, _progress, _initial_population, _vector_genetics, _vector_species_name);
+            newqueue = _new_ VectorCohortIndividual( vectorID,
+                                                     _state,
+                                                     _age,
+                                                     _progress,
+                                                     microsporidiaDuration,
+                                                     _initial_population,
+                                                     rGenome,
+                                                     speciesIndex );
         }
         else
         {
             VectorCohortIndividual* ptr = _supply->back();
             _supply->pop_back();
-            newqueue = new(ptr) VectorCohortIndividual( _state, _age, _progress, _initial_population, _vector_genetics, _vector_species_name);
+            newqueue = new(ptr) VectorCohortIndividual( vectorID,
+                                                        _state,
+                                                        _age,
+                                                        _progress,
+                                                        microsporidiaDuration,
+                                                        _initial_population,
+                                                        rGenome,
+                                                        speciesIndex );
         }
         newqueue->Initialize();
 
@@ -85,23 +104,33 @@ namespace Kernel
     {
         if ( state != VectorStateEnum::STATE_ADULT )
         {
-            // removing this as a mosquito can be exposed to multiple contagion populations (one for each antigen each time step) throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "Error trying to infect an already infected mosquito." );
+            // A mosquito can be exposed to multiple contagion populations (one for each antigen each time step) but
+            // we don't model the vector having multiple infections.
+            throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "Error trying to infect an already infected mosquito." );
         }
         else
         {
             progress = 0;
             state    = VectorStateEnum::STATE_INFECTED;
-            m_strain = StrainIdentity( infstrain );
+            m_pStrain = infstrain->Clone();
         }
     }
 
-    const IStrainIdentity& VectorCohortIndividual::GetStrainIdentity() const
+    const IStrainIdentity* VectorCohortIndividual::GetStrainIdentity() const
     {
-        return m_strain;
+        return m_pStrain;
     }
 
-    VectorCohortIndividual::~VectorCohortIndividual()
+    bool VectorCohortIndividual::HasStrain( const IStrainIdentity& rStrain ) const
     {
+        if( m_pStrain == nullptr )
+        {
+            return false;
+        }
+        else
+        {
+            return (m_pStrain->GetGeneticID() == rStrain.GetGeneticID());
+        }
     }
 
     std::vector<VectorCohortIndividual*>* VectorCohortIndividual::_supply = nullptr;
@@ -114,6 +143,8 @@ namespace Kernel
             _supply->reserve(65535);
         }
         VectorCohortIndividual* vci = static_cast<VectorCohortIndividual*>(ivci);
+        // Remember that this is a virtual method like other virtual methods.
+        // A subclass' destructor method will be called.
         vci->~VectorCohortIndividual();
         _supply->push_back(vci);
     }
@@ -125,16 +156,8 @@ namespace Kernel
     }
 
     void
-    VectorCohortIndividual::ReduceOvipositionTimer(
-        float delta
-    )
-    {
-        oviposition_timer -= delta;
-    }
-
-    void
     VectorCohortIndividual::SetOvipositionTimer(
-        float new_opt
+        int new_opt
     )
     {
         oviposition_timer = new_opt;
@@ -151,7 +174,7 @@ namespace Kernel
         return false;
     }
 
-    float VectorCohortIndividual::GetOvipositionTimer()
+    int VectorCohortIndividual::GetOvipositionTimer() const
     {
         return oviposition_timer;
     }
@@ -166,32 +189,89 @@ namespace Kernel
         throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "Individuals should not merge" );
     }
 
-    IVectorCohort* VectorCohortIndividual::Split( uint32_t numLeaving )
+    IVectorCohort* VectorCohortIndividual::SplitPercent( RANDOMBASE* pRNG, uint32_t newVectorID, float percentLeaving )
     {
         throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "Individuals should not Split" );
     }
 
-    void VectorCohortIndividual::AddNewEggs( uint32_t daysToGestate, uint32_t new_eggs )
+    IVectorCohort* VectorCohortIndividual::SplitNumber( RANDOMBASE* pRNG, uint32_t newVectorID, uint32_t numLeaving )
     {
-        neweggs = new_eggs;
-
-        // Make sure that floating-point precision doesn't delay things by an extra day!
-        oviposition_timer = float(daysToGestate) - 0.01f;
+        throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "Individuals should not Split" );
     }
 
-    uint32_t VectorCohortIndividual::GetGestatedEggs()
+    uint32_t VectorCohortIndividual::GetNumLookingToFeed() const
     {
-        return neweggs;
+        return (population - num_gestating);
     }
 
-    void VectorCohortIndividual::AdjustEggsForDeath( uint32_t numDied )
+    void VectorCohortIndividual::AddNewGestating( uint32_t daysToGestate, uint32_t newGestating )
+    {
+        num_gestating = newGestating;
+        if( num_gestating > 0 )
+        {
+            oviposition_timer = int(daysToGestate);
+        }
+        else
+        {
+            oviposition_timer = -1; // ensure timer is expired
+        }
+    }
+
+    uint32_t VectorCohortIndividual::GetNumGestating() const
+    {
+        return num_gestating;
+    }
+
+    uint32_t VectorCohortIndividual::RemoveNumDoneGestating()
+    {
+        uint32_t num = num_gestating;
+        num_gestating = 0;
+        return num;
+    }
+
+    uint32_t VectorCohortIndividual::AdjustGestatingForDeath( RANDOMBASE* pRNG, float percentDied, bool killGestatingOnly )
     {
         throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "Should not be called for individuals" );
     }
 
-    const std::vector<uint32_t>& VectorCohortIndividual::GetNewEggs() const
+    const std::vector<uint32_t>& VectorCohortIndividual::GetGestatingQueue() const
     {
         throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "Should not be called for individuals" );
+    }
+
+    void VectorCohortIndividual::ReportOnGestatingQueue( std::vector<uint32_t>& rNumGestatingQueue ) const
+    {
+        if( num_gestating > 0 )
+        {
+            release_assert( oviposition_timer >= 0 );
+            uint32_t day = oviposition_timer;
+            if( day < 1 )
+            {
+                day = 1;
+            }
+
+            uint32_t index = day - 1;
+            while( index >= rNumGestatingQueue.size() )
+            {
+                rNumGestatingQueue.push_back( 0 );
+            }
+            rNumGestatingQueue[ index ] += num_gestating;
+        }
+    }
+
+    VectorHabitatType::Enum VectorCohortIndividual::GetHabitatType()
+    {
+        throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "should not be called on individual vectors" );
+    }
+
+    IVectorHabitat* VectorCohortIndividual::GetHabitat()
+    {
+        throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "should not be called on individual vectors" );
+    }
+
+    void VectorCohortIndividual::SetHabitat( IVectorHabitat* new_habitat )
+    {
+        throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "should not be called on individual vectors" );
     }
 
     REGISTER_SERIALIZABLE(VectorCohortIndividual);
@@ -200,21 +280,10 @@ namespace Kernel
     {
         VectorCohortAbstract::serialize(ar, obj);
         VectorCohortIndividual& cohort = *obj;
-        //ar.labelElement("m_ID"                 ) & cohort.m_ID;
         ar.labelElement("additional_mortality" ) & cohort.additional_mortality;
         ar.labelElement("oviposition_timer"    ) & cohort.oviposition_timer;
         ar.labelElement("parity"               ) & cohort.parity;
-        ar.labelElement("neweggs"              ) & cohort.neweggs;
-
-        /* TODO - this 'has_strain' stuff is left over from when m_strain could be a nullptr. */
-        bool has_strain = true;
-        ar.labelElement("__has_strain__");
-        ar & has_strain;
-        // clorton TODO - perhaps the cohort should always have a non-null m_strain, just use a dummy StrainIdentity when there's no infection.
-        if (has_strain)
-        {
-            ar.labelElement("m_strain");
-            StrainIdentity::serialize(ar, cohort.m_strain);
-        }
+        ar.labelElement("num_gestating"        ) & cohort.num_gestating;
+        ar.labelElement("m_pStrain"            ) & cohort.m_pStrain;
     }
 }

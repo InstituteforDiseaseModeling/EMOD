@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "HIVDrawBlood.h"
@@ -22,39 +14,23 @@ SETUP_LOGGING( "HIVDrawBlood" )
 
 namespace Kernel
 {
-    BEGIN_QUERY_INTERFACE_DERIVED(HIVDrawBlood, HIVSimpleDiagnostic)
-    END_QUERY_INTERFACE_DERIVED(HIVDrawBlood, HIVSimpleDiagnostic)
+    BEGIN_QUERY_INTERFACE_DERIVED(HIVDrawBlood, AbstractDecision )
+    END_QUERY_INTERFACE_DERIVED(HIVDrawBlood, AbstractDecision )
 
     IMPLEMENT_FACTORY_REGISTERED(HIVDrawBlood)
 
     HIVDrawBlood::HIVDrawBlood()
-    : HIVSimpleDiagnostic()
+    : AbstractDecision( false )
     {
         initSimTypes(1, "HIV_SIM" ); // just limiting this to HIV for release
     }
 
     HIVDrawBlood::HIVDrawBlood( const HIVDrawBlood& master )
-    : HIVSimpleDiagnostic( master )
+    : AbstractDecision( master )
     {
     }
 
-    bool HIVDrawBlood::Configure(const Configuration* inputJson)
-    {
-        bool ret = HIVSimpleDiagnostic::Configure( inputJson );
-        if( !negative_diagnosis_event.IsUninitialized() )
-        {
-            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, "HIVDrawBlood can't have a Negative_Diagnosis_Event." );
-        }
-
-        return ret;
-    }
-
-    bool HIVDrawBlood::positiveTestResult()
-    {
-        return true;
-    }
-
-    void HIVDrawBlood::positiveTestDistribute()
+    bool HIVDrawBlood::MakeDecision( float dt )
     {
         LOG_DEBUG_F( "HIVDrawBlood: %s\n", __FUNCTION__ );
         IIndividualHumanHIV * hiv_parent = nullptr;
@@ -62,25 +38,19 @@ namespace Kernel
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "IIndividualHumanHIV", "IIndividualHumanContext" );
         }
-        IHIVMedicalHistory * med_parent = nullptr;
-        if (parent->GetInterventionsContext()->QueryInterface(GET_IID(IHIVMedicalHistory), (void**)&med_parent) != s_OK)
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "IHIVMedicalHistory", "IIndividualHumanContext" );
-        }
+        IHIVMedicalHistory * med_parent = hiv_parent->GetMedicalHistory();
 
         float cd4count = hiv_parent->GetHIVSusceptibility()->GetCD4count();
         med_parent->OnTestCD4(cd4count);
 
-        expired = true;
-
-        HIVSimpleDiagnostic::positiveTestDistribute();
+        return true;
     }
 
     REGISTER_SERIALIZABLE(HIVDrawBlood);
 
     void HIVDrawBlood::serialize(IArchive& ar, HIVDrawBlood* obj)
     {
-        HIVSimpleDiagnostic::serialize( ar, obj );
+        AbstractDecision::serialize( ar, obj );
         HIVDrawBlood& blood = *obj;
 
         //ar.labelElement("xxx") & delayed.xxx;

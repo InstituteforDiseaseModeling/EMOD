@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -28,33 +20,11 @@ namespace Kernel
     public:
         static const EventTrigger& Births;
         static const EventTrigger& EveryUpdate;
-        static const EventTrigger& EveryTimeStep;
         static const EventTrigger& NewInfectionEvent;
-        static const EventTrigger& TBActivation;
         static const EventTrigger& NewClinicalCase;
         static const EventTrigger& NewSevereCase;
         static const EventTrigger& DiseaseDeaths;
-        static const EventTrigger& OpportunisticInfectionDeath;
         static const EventTrigger& NonDiseaseDeaths;
-        static const EventTrigger& TBActivationSmearPos;
-        static const EventTrigger& TBActivationSmearNeg;
-        static const EventTrigger& TBActivationExtrapulm;
-        static const EventTrigger& TBActivationPostRelapse;
-        static const EventTrigger& TBPendingRelapse;
-        static const EventTrigger& TBActivationPresymptomatic;
-        static const EventTrigger& TestPositiveOnSmear;
-        static const EventTrigger& ProviderOrdersTBTest;
-        static const EventTrigger& TBTestPositive;
-        static const EventTrigger& TBTestNegative;
-        static const EventTrigger& TBTestDefault;
-        static const EventTrigger& TBRestartHSB;
-        static const EventTrigger& TBMDRTestPositive;
-        static const EventTrigger& TBMDRTestNegative;
-        static const EventTrigger& TBMDRTestDefault;
-        static const EventTrigger& TBFailedDrugRegimen;
-        static const EventTrigger& TBRelapseAfterDrugRegimen;
-        static const EventTrigger& TBStartDrugRegimen;
-        static const EventTrigger& TBStopDrugRegimen;
         static const EventTrigger& PropertyChange;
         static const EventTrigger& STIDebut;
         static const EventTrigger& StartedART;
@@ -76,13 +46,29 @@ namespace Kernel
         static const EventTrigger& STIPreEmigrating;
         static const EventTrigger& STIPostImmigrating;
         static const EventTrigger& STINewInfection;
-        static const EventTrigger& NewExternalHIVInfection;
+        static const EventTrigger& STIExposed;
         static const EventTrigger& NodePropertyChange;
         static const EventTrigger& HappyBirthday;
         static const EventTrigger& EnteredRelationship;
         static const EventTrigger& ExitedRelationship;
         static const EventTrigger& FirstCoitalAct;
         static const EventTrigger& ExposureComplete;
+        static const EventTrigger& VectorToHumanTransmission;
+        static const EventTrigger& HumanToVectorTransmission;
+        static const EventTrigger& ReceivedInfectiousBites;
+        static const EventTrigger& InfectionCleared;
+        static const EventTrigger& WouldHaveDied;
+        static const EventTrigger& WouldHaveHadAIDS;
+        static const EventTrigger& WouldHaveEnteredLatentStage;
+        static const EventTrigger& HIVInfectionStageEnteredLatent;
+        static const EventTrigger& HIVInfectionStageEnteredAIDS;
+        static const EventTrigger& HIVInfectionStageEnteredOnART;
+        static const EventTrigger& NewMalariaInfectionObject;
+        static const EventTrigger& PFA_Entered;
+        static const EventTrigger& PFA_Exited;
+        static const EventTrigger& PFA_SeekingPartner;
+        static const EventTrigger& PFA_FoundPartner;
+        static const EventTrigger& PFA_NoPartnerFound;
 
     public:
         EventTrigger();
@@ -98,10 +84,10 @@ namespace Kernel
 
     class EventTriggerFactory : public BaseEventTriggerFactory<EventTrigger, EventTriggerFactory>
     {
-    public:
         GET_SCHEMA_STATIC_WRAPPER( EventTriggerFactory )
+    public:
 
-        ~EventTriggerFactory();
+        virtual ~EventTriggerFactory();
 
     private:
         template<class Trigger, class Factory> friend class Kernel::BaseEventTriggerFactory;

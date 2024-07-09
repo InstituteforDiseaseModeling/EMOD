@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -18,7 +10,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Configuration.h"
 #include "InterventionEnums.h"
 #include "Configure.h"
-#include "IWaningEffect.h"
+#include "InsecticideWaningEffect.h"
 
 namespace Kernel
 {
@@ -26,7 +18,6 @@ namespace Kernel
 
     class SimpleIndividualRepellent : public BaseIntervention
     {
-        IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
         DECLARE_FACTORY_REGISTERED(InterventionFactory, SimpleIndividualRepellent, IDistributableIntervention)
 
     public:
@@ -42,9 +33,12 @@ namespace Kernel
         virtual void SetContextTo(IIndividualHumanContext *context) override;
         virtual void Update(float dt);
 
+        // IReportInterventionData
+        virtual ReportInterventionData GetReportInterventionData() const override;
+
     protected:
-        IWaningEffect* blocking_effect;
-        IIndividualRepellentConsumer *ihmc; // aka individual or individual vector interventions container
+        IInsecticideWaningEffect* m_pInsecticideWaningEffect;
+        IIndividualRepellentConsumer *m_pIRC; // aka individual or individual vector interventions container
 
         DECLARE_SERIALIZABLE(SimpleIndividualRepellent);
     };

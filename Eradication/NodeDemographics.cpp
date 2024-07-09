@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include <ctime>
@@ -397,19 +389,6 @@ bool NodeDemographicsFactory::Configure(const Configuration* config)
     // -------------------------------------------------------------------------------------
     // --- Allow_NodeID_Zero is an undocumented control that allows users to have
     // --- demographics files with nodeID = 0.  This was created for backward compatibility.
-    // -------------------------------------------------------------------------------------
-    allow_nodeid_zero = false;
-    if( !JsonConfigurable::_dryrun && (config != nullptr) )
-    {
-        if( config->Exist( "Allow_NodeID_Zero" ) )
-        {
-            allow_nodeid_zero = ((*config)[ "Allow_NodeID_Zero" ].As<json::Number>() == 1);
-        }
-    }
-
-    // -------------------------------------------------------------------------------------
-    // --- Allow_NodeID_Zero is an undocumented control that allows users to have
-    // --- demographics files with nodeID = 0.  This was created for backward compatability.
     // -------------------------------------------------------------------------------------
     allow_nodeid_zero = false;
     if( !JsonConfigurable::_dryrun && (config != nullptr) )
@@ -1347,7 +1326,7 @@ NodeDemographicsDistribution* NodeDemographicsDistribution::CreateDistribution( 
     catch(std::exception &e)
     {
         std::stringstream s ;
-        s << "An exception occured while parsing '" << demographics.GetJsonKey() << "'. Error: " << e.what() ;
+        s << "An exception occurred while parsing '" << demographics.GetJsonKey() << "'. Error: " << e.what() ;
         throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, s.str().c_str() );
     }
 }
@@ -1604,79 +1583,3 @@ bool NodeDemographicsDistribution::operator!=( const NodeDemographicsDistributio
 
 
 }
-
-#if 0
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive & ar, DemographicsContext& dc, const unsigned int /* file_version */)
-    {
-        ar & dc.stringTable;
-    }
-
-    template<class Archive>
-    void serialize(Archive & ar, Kernel::NodeDemographics &nd, const unsigned int /* file_version */)
-    {
-        std::string s;
-        if (typename Archive::is_loading())
-        {
-            ar & s;
-            json_spirit::read(s, nd.value);
-        }
-        else if(typename Archive::is_saving())
-        {
-            s = json_spirit::write(nd.value);
-            ar & s;
-        }
-    }
-
-    template<class Archive>
-    void serialize(Archive & ar, NodeDemographicsDistribution &ndd, const unsigned int /* file_version */)
-    {
-        std::string s_num_pop_groups;
-        std::string s_pop_groups;
-        std::string s_result_values;
-        std::string s_dist_values;
-        json_spirit::Value v_num_pop_groups;
-        json_spirit::Value v_pop_groups;
-        json_spirit::Value v_result_values;
-
-        // There's got to be a better way :(
-        if (typename Archive::is_loading())
-        {
-            ar & s_num_pop_groups;
-            json_spirit::read(s_num_pop_groups, v_num_pop_groups);
-            ndd.num_pop_groups = v_num_pop_groups.get_array();
-
-            ar & s_pop_groups;
-            json_spirit::read(s_pop_groups, v_pop_groups);
-            ndd.pop_groups = v_pop_groups.get_array();
-
-            ar & s_result_values;
-            json_spirit::read(s_result_values, v_result_values);
-            ndd.result_values = v_result_values.get_array();
-
-            ar & s_dist_values;
-            json_spirit::read(s_dist_values, ndd.dist_values);
-        }
-        else if(typename Archive::is_saving())
-        {
-            s_num_pop_groups = json_spirit::write(json_spirit::Value(ndd.num_pop_groups));
-            ar & s_num_pop_groups;
-
-            s_pop_groups = json_spirit::write(json_spirit::Value(ndd.pop_groups));
-            ar & s_pop_groups;
-
-            s_result_values = json_spirit::write(json_spirit::Value(ndd.result_values));
-            ar & s_result_values;
-
-            s_dist_values = json_spirit::write(ndd.dist_values);
-            ar & s_dist_values;
-        }
-
-        ar & ndd.num_axes;
-
-        // Serialize base class
-        ar & boost::serialization::base_object<NodeDemographics>(ndd);
-    }
-}
-#endif

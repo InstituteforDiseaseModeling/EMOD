@@ -1,134 +1,238 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
-#ifdef WIN32
-#include "windows.h" // why oh why do I suddenly have to include this???
-#else
-#include <dirent.h>
-#include <dlfcn.h>
-#endif
-#include "Sugar.h"
-
 #include "InterventionFactory.h"
 #include "Interventions.h"
 #include "Log.h"
+#include "ObjectFactoryTemplates.h"
 
 SETUP_LOGGING( "InterventionFactory" )
 
-json::Object Kernel::InterventionFactory::campaignSchema;
-
 namespace Kernel
 {
-    bool InterventionFactory::useDefaults = false; // stores value from campaign.json
-    // Technically this should be in its own file, BaseIntervention.cpp, but I couldn't bring myself to 
-    // create such a miniscule file, so I talked myself into putting it here. :)
-    IInterventionFactory* InterventionFactory::_instance = nullptr;
+    InterventionFactory* InterventionFactory::_instance = nullptr;
 
-    // ctor
+    template InterventionFactory* ObjectFactory<IDistributableIntervention, InterventionFactory>::getInstance();
+
     InterventionFactory::InterventionFactory()
+        : ObjectFactory<IDistributableIntervention, InterventionFactory>()
+        , m_UseDefaults( false )
     {
-        if( _instance != nullptr )
-        {
-            throw std::runtime_error( "Second InterventionFactory being created." );
-        }
     }
 
-    void InterventionFactory::LoadDynamicLibraries()
+    void InterventionFactory::Register( const char *classname, instantiator_function_t _if )
     {
+        ObjectFactory<IDistributableIntervention, InterventionFactory>::Register( classname, _if );
     }
 
     // new, configurable method
-    IDistributableIntervention* InterventionFactory::CreateIntervention( const Configuration *config )
+    IDistributableIntervention* InterventionFactory::CreateIntervention( const json::Element& rJsonElement,
+                                                                         const std::string& rDataLocation,
+                                                                         const char* parameterName,
+                                                                         bool throwIfNull )
     {
         // Keeping this simple. But bear in mind CreateInstanceFromSpecs can throw exception
         // and JC::_useDefaults will not be restored. But we won't keep running in that case.
         bool reset = JsonConfigurable::_useDefaults;
-        JsonConfigurable::_useDefaults = useDefaults;
-        IDistributableIntervention* ret = CreateInstanceFromSpecs<IDistributableIntervention>(config, getRegisteredClasses(), true);
+        JsonConfigurable::_useDefaults = m_UseDefaults;
+
+        Configuration* p_config = Configuration::CopyFromElement( rJsonElement, rDataLocation );
+        CheckElement( p_config, parameterName, false );
+
+        IDistributableIntervention* p_di = CreateInstanceFromSpecs<IDistributableIntervention>( p_config, m_RegisteredClasses, true );
+
+        if( p_di != nullptr )
+        {
+            CheckSimType( p_di );
+        }
+        else if( throwIfNull )
+        {
+            // if we get here it should mean that we are expecting an individual-level
+            // intervention, but the user provided a node-level intervention
+            std::string class_name = std::string((*p_config)[ "class" ].As<json::String>());
+
+            std::stringstream ss;
+            ss << "Error loading '" << class_name << "' via "
+                << "'" << GetFactoryName() << "' for '" << parameterName << "' in <" << rDataLocation << ">.\n"
+                << "This parameter only takes individual-level interventions.";
+            throw FactoryCreateFromJsonException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+        }
+
+        delete p_config;
         JsonConfigurable::_useDefaults = reset;
-        return ret;
+
+        return p_di;
     }
 
-    INodeDistributableIntervention* InterventionFactory::CreateNDIIntervention( const Configuration *config )
+    void InterventionFactory::CreateInterventionList( const json::Element& rJsonElement,
+                                                      const std::string& rDataLocation,
+                                                      const char* parameterName,
+                                                      std::vector<IDistributableIntervention*>& interventionsList )
+    {
+        if( rJsonElement.Type() == json::NULL_ELEMENT )
+        {
+            std::stringstream ss;
+            ss << "'" << GetFactoryName()<< "' found the element to be NULL for '" << parameterName << "' in <" << rDataLocation << ">.";
+            throw FactoryCreateFromJsonException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+        }
+
+        if( rJsonElement.Type() != json::ARRAY_ELEMENT )
+        {
+            std::stringstream ss;
+            ss << "'" << GetFactoryName() << "' found the element specified by '" << parameterName << "'\n"
+               << "to NOT be a JSON ARRAY in <" << rDataLocation << ">.";
+            throw FactoryCreateFromJsonException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+        }
+        const json::Array & interventions_array = json::QuickInterpreter(rJsonElement).As<json::Array>();
+
+        if( interventions_array.Size() == 0 )
+        {
+            std::stringstream ss;
+            ss << "'" << GetFactoryName() << "' found zero elements in JSON for '" << parameterName << "' in <" << rDataLocation << ">.";
+            throw FactoryCreateFromJsonException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+        }
+
+        for( int idx = 0; idx < interventions_array.Size(); ++idx )
+        {
+            std::stringstream param_name;
+            param_name << parameterName << "[" << idx << "]";
+
+            const json::Element& r_array_element = interventions_array[ idx ];
+            if( r_array_element.Type() != json::OBJECT_ELEMENT )
+            {
+                std::stringstream ss;
+                ss << "'" << GetFactoryName() << "' found the element specified by '" << param_name.str() << "'\n"
+                   << "to NOT be a JSON OBJECT in <" << rDataLocation << ">.";
+                throw FactoryCreateFromJsonException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+            }
+
+            const json::Object& json_obj = json_cast<const json::Object&>(interventions_array[idx]);
+
+            // Instantiate and distribute interventions
+            IDistributableIntervention *di = InterventionFactory::getInstance()->CreateIntervention( json_obj,
+                                                                                                     rDataLocation,
+                                                                                                     param_name.str().c_str(),
+                                                                                                     true );
+            interventionsList.push_back( di );
+        }
+    }
+
+    INodeDistributableIntervention* InterventionFactory::CreateNDIIntervention( const json::Element& rJsonElement,
+                                                                                const std::string& rDataLocation,
+                                                                                const char* parameterName,
+                                                                                bool throwIfNull )
     {
         bool reset = JsonConfigurable::_useDefaults;
-        JsonConfigurable::_useDefaults = useDefaults;
-        INodeDistributableIntervention* ret = CreateInstanceFromSpecs<INodeDistributableIntervention>(config, getRegisteredClasses(), true);
+        JsonConfigurable::_useDefaults = m_UseDefaults;
+
+        Configuration* p_config = Configuration::CopyFromElement( rJsonElement, rDataLocation );
+        CheckElement( p_config, parameterName, false );
+
+        INodeDistributableIntervention* p_ndi = CreateInstanceFromSpecs<INodeDistributableIntervention>( p_config, m_RegisteredClasses, true );
+
+        if( p_ndi != nullptr )
+        {
+            CheckSimType( p_ndi );
+        }
+        else if( throwIfNull )
+        {
+            // if we get here it should mean that we are expecting an individual-level
+            // intervention, but the user provided a node-level intervention
+            std::string class_name = std::string((*p_config)[ "class" ].As<json::String>());
+
+            std::stringstream ss;
+            ss << "Error loading '" << class_name << "' via "
+                << "'" << GetFactoryName() << "' for '" << parameterName << "' in <" << rDataLocation << ">.\n"
+                << "This parameter only takes node-level interventions.";
+            throw FactoryCreateFromJsonException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+        }
+
+        delete p_config;
         JsonConfigurable::_useDefaults = reset;
-        return ret;
+
+        return p_ndi;
     }
 
-    json::QuickBuilder
-    InterventionFactory::GetSchema()
+    void InterventionFactory::CreateNDIInterventionList( const json::Element& rJsonElement,
+                                                         const std::string& rDataLocation,
+                                                         const char* parameterName,
+                                                         std::vector<INodeDistributableIntervention*>& interventionsList )
     {
-        // Iterate over all registrangs, instantiate using function pointer (or functor?), call Configure
-        // but with special 'don't error out' mode.
-        //json::Object returnVal;
-        //campaignSchema["hello"] = json::String( "world" );
-        support_spec_map_t& registrants = getRegisteredClasses();
-#ifdef WIN32
-        JsonConfigurable::_dryrun = true;
-#else
-        setenv( "DRYRUN", "1", 1 );
-#endif
-        for (auto& entry : registrants)
+        if( rJsonElement.Type() == json::NULL_ELEMENT )
         {
-            const std::string& class_name = entry.first;
-            LOG_DEBUG_F("class_name = %s\n", class_name.c_str());
-            json::Object fakeJson;
-            fakeJson["class"] = json::String(class_name);
-            Configuration * fakeConfig = Configuration::CopyFromElement( fakeJson );
-            instantiator_function_t creator = entry.second;
-            try
-            {
-                // TBD: Handle Node-targeted interventions
-                ISupports * pCampaignForSchema = CreateIntervention((const Configuration*)fakeConfig);
-                if( pCampaignForSchema )
-                {
-                    assert( pCampaignForSchema );
-                    json::QuickBuilder* schema = &dynamic_cast<JsonConfigurable*>(pCampaignForSchema)->GetSchema();
-                    (*schema)[std::string("iv_type")] = json::String("IndividualTargeted");
-                    (*schema)[std::string("class")] = json::String(class_name);
-                    campaignSchema[ class_name ] = *schema;
-                }
-                else // Try Node-targeted
-                {
-                    ISupports * pCampaignForSchema = CreateNDIIntervention((const Configuration*)fakeConfig);
-                    json::QuickBuilder* schema = &dynamic_cast<JsonConfigurable*>(pCampaignForSchema)->GetSchema();
-                    (*schema)[std::string("iv_type")] = json::String("NodeTargeted");
-                    (*schema)[std::string("class")] = json::String(class_name);
-                    campaignSchema[ class_name ] = *schema;
-                }
-            }
-            catch( DetailedException &e )
-            {
-                std::ostringstream msg;
-                msg << "ConfigException creating intervention for GetSchema: " 
-                    << e.what()
-                    << std::endl;
-                LOG_INFO( msg.str().c_str() );
-            }
-            catch( const json::Exception &e )
-            {
-                std::ostringstream msg;
-                msg << "json Exception creating intervention for GetSchema: "
-                    << e.what()
-                    << std::endl;
-                LOG_INFO( msg.str().c_str() );
-            }
-            LOG_DEBUG( "Done with that class....\n" );
-            delete fakeConfig;
-            fakeConfig = nullptr;
+            std::stringstream ss;
+            ss << "'" << GetFactoryName()<< "' found the element to be NULL for '" << parameterName << "' in <" << rDataLocation << ">.";
+            throw FactoryCreateFromJsonException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
         }
-        LOG_DEBUG( "Returning from GetSchema.\n" );
-        json::QuickBuilder retSchema = json::QuickBuilder(campaignSchema);
-        return retSchema;
+
+        if( rJsonElement.Type() != json::ARRAY_ELEMENT )
+        {
+            std::stringstream ss;
+            ss << "'" << GetFactoryName() << "' found the element specified by '" << parameterName << "'\n"
+               << "to NOT be a JSON ARRAY in <" << rDataLocation << ">.";
+            throw FactoryCreateFromJsonException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+        }
+        const json::Array & interventions_array = json::QuickInterpreter(rJsonElement).As<json::Array>();
+
+        if( interventions_array.Size() == 0 )
+        {
+            std::stringstream ss;
+            ss << "'" << GetFactoryName() << "' found zero elements in JSON for '" << parameterName << "' in <" << rDataLocation << ">.";
+            throw FactoryCreateFromJsonException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+        }
+
+        for( int idx = 0; idx < interventions_array.Size(); ++idx )
+        {
+            std::stringstream param_name;
+            param_name << parameterName << "[" << idx << "]";
+
+            const json::Element& r_array_element = interventions_array[ idx ];
+            if( r_array_element.Type() != json::OBJECT_ELEMENT )
+            {
+                std::stringstream ss;
+                ss << "'" << GetFactoryName() << "' found the element specified by '" << param_name.str() << "'\n"
+                   << "to NOT be a JSON OBJECT in <" << rDataLocation << ">.";
+                throw FactoryCreateFromJsonException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+            }
+
+            const json::Object& json_obj = json_cast<const json::Object&>(interventions_array[idx]);
+
+            // Instantiate and distribute interventions
+            INodeDistributableIntervention *di = InterventionFactory::getInstance()->CreateNDIIntervention( json_obj,
+                                                                                                            rDataLocation,
+                                                                                                            param_name.str().c_str(),
+                                                                                                            true );
+            interventionsList.push_back( di );
+        }
+    }
+
+    void InterventionFactory::SetUseDefaults( bool useDefaults )
+    {
+        m_UseDefaults = useDefaults;
+    }
+
+    bool InterventionFactory::IsUsingDefaults() const
+    {
+        return m_UseDefaults;
+    }
+
+    void InterventionFactory::ModifySchema( json::QuickBuilder& rSchema, ISupports*pObject )
+    {
+        std::string type_string;
+        IDistributableIntervention* p_intervention_individual = nullptr;
+        INodeDistributableIntervention* p_intervention_node = nullptr;
+        if( pObject->QueryInterface( GET_IID(IDistributableIntervention), (void**)&p_intervention_individual ) == s_OK )
+        {
+            type_string = "IndividualTargeted";
+        }
+        else if( pObject->QueryInterface( GET_IID(INodeDistributableIntervention), (void**)&p_intervention_node ) == s_OK )
+        {
+            type_string = "NodeTargeted";
+        }
+        else
+        {
+            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__,
+                                                 "Intervention class is not 'IDistributableIntervention' or 'INodeDistributableIntervention'." );
+        }
+        rSchema[std::string("iv_type")] = json::String(type_string);
     }
 }

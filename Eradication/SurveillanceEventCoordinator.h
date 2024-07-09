@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 
 #pragma once
@@ -45,7 +37,6 @@ namespace Kernel
 
     class SurveillanceEventCoordinator : public IncidenceEventCoordinator
                                        , public ICoordinatorEventObserver
-                                       , public IEventCoordinatorEventContext
                                        , public ISurveillanceReporting
     {
         DECLARE_FACTORY_REGISTERED_EXPORT(EventCoordinatorFactory, SurveillanceEventCoordinator, IEventCoordinator)
@@ -63,14 +54,9 @@ namespace Kernel
         virtual void SetContextTo( ISimulationEventContext *isec ) override;
         virtual void Update(float dt) override;
 
-        // IEventCoordinatorEventContext
-        virtual const std::string& GetName() const override;
-        virtual const IdmDateTime& GetTime() const override;
-        virtual IEventCoordinator* GetEventCoordinator() override { return this; };
-        virtual IEventCoordinatorEventContext* GetEventContext() override { return this; }
-
         virtual bool IsFinished() override;
         virtual void ConsiderResponding();
+        virtual void AddNode( const suids::suid& suid ) override;
         virtual void UpdateNodes( float dt ) override;
         ISimulationEventContext* GetSimulationContext() { return m_Parent; };
 
@@ -94,7 +80,6 @@ namespace Kernel
         float m_Duration;
         float m_CounterPeriod;
         bool m_DurationExpired;
-        std::string m_CoordinatorName;
         EventTriggerCoordinator m_RespondedEvent;
     };
 

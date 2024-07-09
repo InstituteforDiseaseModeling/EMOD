@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "BroadcastEvent.h"
@@ -39,8 +31,8 @@ namespace Kernel
         if( !JsonConfigurable::_dryrun && broadcast_event.IsUninitialized() )
         {
             std::stringstream ss;
-            ss << "BroadcastEvent was configured with empty (or uninitialized) Broadcast_Event.\n";
-            throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+            ss << "Intervention 'BroadcastEvent' was configured with empty (or uninitialized) parameter 'Broadcast_Event' in <" << inputJson->GetDataLocation() << ">.\n";
+            throw JsonTypeConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Broadcast_Event", *inputJson, ss.str().c_str() );
         }
         return ret;
     }

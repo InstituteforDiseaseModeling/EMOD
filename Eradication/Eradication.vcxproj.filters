@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <ItemGroup>
     <Filter Include="Source Files">
@@ -32,9 +32,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\utils\BoostLibWrapper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\interventions\stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -62,6 +59,9 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Eradication.rc" />
+    <ResourceCompile Include="..\baseReportLib\missing_report_params.rc" />
+    <ResourceCompile Include="..\baseReportLib\report_params.rc" />
+    <ResourceCompile Include="..\utils\demographic_params.rc" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\cajun\include\cast.inl">
@@ -69,6 +69,7 @@
     </None>
     <None Include="..\utils\iv_params.rc" />
     <None Include="..\utils\config_params.rc" />
-    <None Include="..\utils\polio_params.rc" />
+    <None Include="..\utils\missing_config_params.rc" />
+    <None Include="..\utils\missing_iv_params.rc" />
   </ItemGroup>
 </Project>

@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include <stdafx.h>
 
@@ -23,10 +15,6 @@ namespace Kernel
         , m_Mid(0.0)
         , m_Rate(1.0)
     {
-        initConfigTypeMap( "Min",  &m_Min,  Sigmoid_Min_DESC_TEXT,     0.0,     1.0,    1.0 );
-        initConfigTypeMap( "Max",  &m_Max,  Sigmoid_Max_DESC_TEXT,     0.0,     1.0,    1.0 );
-        initConfigTypeMap( "Mid",  &m_Mid,  Sigmoid_Mid_DESC_TEXT,     0.0, FLT_MAX, 2000.0 );
-        initConfigTypeMap( "Rate", &m_Rate, Sigmoid_Rate_DESC_TEXT, -100.0,   100.0,    1.0 );
     }
 
     Sigmoid::Sigmoid( float min, float max, float mid, float rate )
@@ -40,6 +28,16 @@ namespace Kernel
 
     Sigmoid::~Sigmoid()
     {
+    }
+
+    bool Sigmoid::Configure( const Configuration* config )
+    {
+        initConfigTypeMap( "Min",  &m_Min,  Sigmoid_Min_DESC_TEXT,     0.0,     1.0,    1.0 );
+        initConfigTypeMap( "Max",  &m_Max,  Sigmoid_Max_DESC_TEXT,     0.0,     1.0,    1.0 );
+        initConfigTypeMap( "Mid",  &m_Mid,  Sigmoid_Mid_DESC_TEXT,     0.0, FLT_MAX, 2000.0 );
+        initConfigTypeMap( "Rate", &m_Rate, Sigmoid_Rate_DESC_TEXT, -100.0,   100.0,    1.0 );
+
+        return JsonConfigurable::Configure( config );
     }
 
     float Sigmoid::variableWidthAndHeightSigmoid( float variable ) const

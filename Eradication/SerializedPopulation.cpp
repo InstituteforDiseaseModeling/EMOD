@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "SerializedPopulation.h"
@@ -25,38 +17,86 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Node.h"
 #include <snappy.h>
 #include "Sugar.h"  // EnvPtr
-#include "Simulation.h"
+
+// Version info for created file
+#include "ProgVersion.h"
+
+
+/********************************************************************************************************
+Header versions
+
+    Version 1 
+    schema:
+        { "metadata": {
+            "version": 1,
+            "date": "Day Mon day HH:MM:SS year",
+            "compressed": true|false,
+            "bytecount": #
+        }
+
+    Version 2|3 
+    schema:
+        { "metadata": {
+            "version": 2|3,
+            "date": "Day Mon day HH:MM:SS year",
+            "compressed": true|false,
+            "engine": NONE|LZ4|SNAPPY,
+            "bytecount": #,
+            "chunkcount": #,
+            "chunksizes": [ #, #, #, ..., # ]
+        }
+
+    Version 4 
+    schema:
+        {
+            "version": 4,
+            "date": "Day Mon day HH:MM:SS year",
+            "compression": NONE|LZ4|SNAPPY,
+            "bytecount": #,
+            "chunkcount": #,
+            "chunksizes": [ #, #, #, ..., # ]
+        }
+
+    Version 5 
+    Added emod_info to header. emod_info contains version information.
+    schema:
+        {
+            "version": 5,
+            "date": "Day Mon day HH:MM:SS year",
+            "compression": NONE|LZ4|SNAPPY,
+            "emod_info": {},
+            "bytecount": #,
+            "chunkcount": #,
+            "chunksizes": [ #, #, #, ..., # ]
+        }
+
+*/
+
+
 
 SETUP_LOGGING( "SerializedPopulation" )
 
 namespace SerializedState {
-    enum Scheme
-    {
-        NONE = 0,
-        SNAPPY = 1,
-        LZ4 = 2,
-    };
 
-    #define SERIAL_POP_VERSION  (4)
+    Header::Header() :
+        version( 0 ),
+        date(), 
+        compressed( false ),
+        byte_count( 0 ),
+        compression(),
+        chunk_count( 0 ),
+        chunk_sizes(),
+        emod_info()
+    {};
 
-    struct Header
-    {
-        uint32_t version;
-        string date;
-        bool compressed;
-        size_t byte_count;
-        string compression;
-        uint32_t chunk_count;
-        vector<size_t> chunk_sizes;
-
-        Header() {}
-        Header(const string& engine, const vector<size_t>& chunk_sizes)
+    Header::Header(const string& engine, const vector<size_t>& chunk_sizes)
             : version(SERIAL_POP_VERSION)
             , compressed(engine != "NONE")
             , byte_count(std::accumulate(chunk_sizes.begin(), chunk_sizes.end(), size_t(0)))
             , compression(engine)
             , chunk_count(chunk_sizes.size())
             , chunk_sizes(chunk_sizes)
+            , emod_info()
         {
             std::time_t now = std::time(nullptr);
             struct tm gmt;
@@ -66,80 +106,72 @@ namespace SerializedState {
             date = asc_time;
         }
 
-        string ToString() const {
-            std::ostringstream temp_stream;
-            temp_stream << '{'
-                << "\"version\":" << version << ','
-                << "\"author\":\"IDM\","
-                << "\"tool\":\"DTK\","
-                << "\"date\":" << '"' << date.c_str() << "\","
-                << "\"compression\":\"" << compression.c_str() << "\","
-                << "\"bytecount\":" << byte_count << ','
-                << "\"chunkcount\":" << chunk_count << ','
-                << "\"chunksizes\":[";
-            temp_stream << chunk_sizes[0];
-            for (size_t i = 1; i < chunk_sizes.size(); ++i)
-            {
-                temp_stream << ',' << chunk_sizes[i];
-            }
-            temp_stream << ']'  // chunksizes
-                << '}';         // root
+    std::string Header::ToString() const
+    {
+        std::stringstream os;
+        json::Writer::Write( ToJson(), os );
+        return os.str();
+    }
 
-            return temp_stream.str();
-        }
-
-        void Validate() const
+    json::Object Header::ToJson() const
+    {
+        json::Object header;
+        header["version"] = json::Uint64( version ); 
+        header["author"] = json::String("IDM");
+        header["tool"] = json::String( "DTK" );
+        header["date"] = json::String( date );
+        header["compression"] = json::String( compression );
+        header["emod_info"] = json::Object( emod_info.toJson() );
+        header["bytecount"] = json::Uint64( byte_count );
+        header["chunkcount"] = json::Uint64( chunk_count );
+        
+        json::Array chunk_size_array;
+        for(size_t i = 0; i < chunk_sizes.size(); ++i)
         {
-            switch (version)
-            {
-                case 1:
-                case 2:
-                case 3:
-                case 4:
-                    // Check specified compression engine
-                    if ( (compression != "NONE") && (compression != "LZ4") && (compression != "SNAPPY"))
-                    {
-                        ostringstream msg;
-                        msg << "Unknown compression scheme, '" << compression.c_str() << "', specified in header." << std::endl;
-                        throw Kernel::SerializationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
-                    }
+            chunk_size_array.Insert( json::Uint64(chunk_sizes[i]) );
+        }
+        header["chunksizes"] = chunk_size_array;
 
-                    // Check chunk_count matches number of chunk_sizes
-                    if ( chunk_sizes.size() != chunk_count )
-                    {
-                        ostringstream msg;
-                        msg << "Chunk count, " << chunk_count << ", does not match size of chunksizes array, " << chunk_sizes.size() << ", specified in header." << std::endl;
-                        throw Kernel::SerializationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
-                    }
-                break;
+        return header;
+    }
 
-                default:
+    void Header::Validate() const
+    {
+        switch (version)
+        {
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+                // Check specified compression engine
+                if ( (compression != "NONE") && (compression != "LZ4") && (compression != "SNAPPY"))
                 {
                     ostringstream msg;
-                    msg << "Unexpected version found in header: " << version << std::endl;
+                    msg << "Unknown compression scheme, '" << compression.c_str() << "', specified in header." << std::endl;
                     throw Kernel::SerializationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
                 }
+
+                // Check chunk_count matches number of chunk_sizes
+                if ( chunk_sizes.size() != chunk_count )
+                {
+                    ostringstream msg;
+                    msg << "Chunk count, " << chunk_count << ", does not match size of chunksizes array, " << chunk_sizes.size() << ", specified in header." << std::endl;
+                    throw Kernel::SerializationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+                }
+            break;
+
+            default:
+            {
+                ostringstream msg;
+                msg << "Unexpected version found in header: " << version << std::endl;
+                throw Kernel::SerializationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
             }
         }
-    };
+    }
 
-    void GenerateFilename(uint32_t time_step, string& filename_with_path);
-    FILE* OpenFileForWriting(const string& filename);
-    void PrepareSimulationData(Kernel::ISimulation* sim, vector<Kernel::IArchive*>& writers, vector<const char*>& json_texts, vector<size_t>& json_sizes);
-    void PrepareNodeData(Kernel::Simulation::NodeMap_t& nodes, vector<Kernel::IArchive*>& writers, vector<const char*>& json_texts, vector<size_t>& json_sizes);
-    void SetCompressionScheme(bool compress, const vector<size_t>& json_sizes, Scheme& compression_scheme, string& scheme_name);
-    void PrepareChunkContents(const vector<const char*>& json, Scheme compression_scheme, const vector<size_t>& json_sizes, size_t& total, vector<size_t>& chunk_sizes, vector<string*>& compressed_data);
-    void ConstructHeaderSize(const Header& header, string& size_string);
-    void WriteMagicNumber(FILE* f);
-    void WriteHeaderSize(const string& size_string, FILE* f);
-    void WriteHeader(const Header& header, FILE* f);
-    void WriteChunks(Scheme compression_scheme, const vector<const char*>& json_texts, const vector<size_t>& chunk_sizes, const vector<string*>& compressed_data, FILE* f);
-    void FreeMemory(vector<string*>& compressed_data, vector<Kernel::IArchive*>& writers);
 
-    void WriteIdtkFileWrapper(Kernel::ISimulation* sim, uint32_t time_step, bool compress);
-    void WriteIdtkFile(const char* data, size_t length, uint32_t time_step, bool compress);
-
-    void SaveSerializedSimulation(Kernel::Simulation* sim, uint32_t time_step, bool compress)
+    void SaveSerializedSimulation(Kernel::Simulation* sim, uint32_t time_step, bool compress, bool use_full_precision )
     {
         string filename;
         GenerateFilename(time_step, filename);
@@ -152,8 +184,7 @@ namespace SerializedState {
             vector<const char*> json_texts;
             vector<size_t> json_sizes;
 
-            PrepareSimulationData(sim, writers, json_texts, json_sizes);
-            PrepareNodeData(sim->nodes, writers, json_texts, json_sizes);
+            PrepareSimulationData(sim, writers, json_texts, json_sizes, use_full_precision );
 
             Scheme scheme = LZ4;
             string scheme_name("LZ4");
@@ -228,23 +259,29 @@ namespace SerializedState {
         return f;
     }
 
-    void PrepareSimulationData(Kernel::ISimulation* sim, vector<Kernel::IArchive*>& writers, vector<const char*>& json_texts, vector<size_t>& json_sizes)
+    Kernel::NodeMap_t& GetNodes( Kernel::Simulation* sim )
     {
-        Kernel::IArchive* writer = static_cast<Kernel::IArchive*>(new Kernel::JsonFullWriter(false));
+        return sim->nodes;
+    }
+
+    void PrepareSimulationData( Kernel::Simulation* sim,
+                                vector<Kernel::IArchive*>& writers,
+                                vector<const char*>& json_texts,
+                                vector<size_t>& json_sizes,
+                                bool use_full_precision )
+    {
+        Kernel::IArchive* writer = static_cast<Kernel::IArchive*>(new Kernel::JsonFullWriter( false, use_full_precision ));
         (*writer) & sim;
 
         writers.push_back(writer);
         json_texts.push_back(writer->GetBuffer());
         json_sizes.push_back(writer->GetBufferSize());
-    }
 
-    void PrepareNodeData(Kernel::Simulation::NodeMap_t& nodes, vector<Kernel::IArchive*>& writers, vector<const char*>& json_texts, vector<size_t>& json_sizes)
-    {
-        for (auto& entry : nodes)
+        for (auto& entry : GetNodes(sim))
         {
             // entry.first is const which doesn't play well with IArchive operator '&'
             Kernel::suids::suid suid(entry.first);
-            Kernel::IArchive* writer = static_cast<Kernel::IArchive*>(new Kernel::JsonFullWriter(false));
+            Kernel::IArchive* writer = static_cast<Kernel::IArchive*>(new Kernel::JsonFullWriter( false, use_full_precision ));
             (*writer) & entry.second;
 
             writers.push_back(writer);
@@ -341,7 +378,7 @@ namespace SerializedState {
         }
     }
 
-    void ConstructHeaderSize(const Header& header, string& size_string)
+    void ConstructHeaderSize( const Header& header, string& size_string )
     {
         std::ostringstream temp;
         uint32_t header_size = header.ToString().size();
@@ -411,12 +448,6 @@ namespace SerializedState {
     /*************************************************************************************************/
 
 
-    FILE* OpenFileForReading(const char* filename);
-    void CheckMagicNumber(FILE* f, const char* filename);
-    void ReadHeader(FILE* f, const char* filename, Header& header);
-    // Kernel::ISimulation* ReadDtkVersion2(FILE* f, Header& header);   // Forward declared in SerializedPopulation.h
-
-
     Kernel::ISimulation* LoadSerializedSimulation(const char* filename)
     {
         Kernel::ISimulation* newsim = nullptr;
@@ -428,30 +459,43 @@ namespace SerializedState {
             CheckMagicNumber(f, filename);
             Header header;
             ReadHeader(f, filename, header);
+            ostringstream msg;
 
             switch (header.version)
             {
             case 1:
-                // ReadHeader() will fill in values so ReadDtkVersion2() will work correctly.
-                // See comment in ReadHeader() below for differences between version 1 and version 2.
             case 2:
-                newsim = ReadDtkVersion2(f, filename, header);
-                break;
-
-            case 3:
+            case 3:                
+                msg << "The serialized population you are trying to load has a a header versions < 4. "
+                    << "Serialized populations with a header version < 4 aren't supported anymore. "
+                    << "Please use an older version of EMOD to load the population or recreate the population." << std::endl;
+                throw Kernel::SerializationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
             case 4:
+                header.emod_info = ProgDllVersion::getEmodInfoVersion4();
+                header.emod_info.checkSerializationVersion( filename );
+                newsim = ReadDtkVersion34(f, filename, header);
+                break;
+            case 5:            
+                header.emod_info.checkSerializationVersion(filename);
                 newsim = ReadDtkVersion34(f, filename, header);
                 break;
 
             default:
                 {
-                    ostringstream msg;
                     msg << "Unrecognized version in serialized population file header: " << header.version << std::endl;
                     throw Kernel::SerializationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
                 }
             }
 
             fclose( f );
+        }
+        catch(SerializationException se)
+        {
+            fclose( f );
+            ostringstream msg;
+            msg << "An error while reading serialized population file, '" << filename << "' occured." << std::endl << std::endl;
+            msg << se.GetMsg() << std::endl;
+            throw Kernel::SerializationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
         }
         catch (...)
         {
@@ -547,41 +591,6 @@ namespace SerializedState {
 
     void ReadHeader(FILE* f, const char* filename, Header& header)
     {
-        /*
-        Version 1 schema:
-
-            { "metadata": {
-                "version": 1,
-                "date": "Day Mon day HH:MM:SS year",
-                "compressed": true|false,
-                "bytecount": #
-            }
-
-        Version 2|3 schema:
-
-            { "metadata": {
-                "version": 2|3,
-                "date": "Day Mon day HH:MM:SS year",
-                "compressed": true|false,
-                "engine": NONE|LZ4|SNAPPY,
-                "bytecount": #,
-                "chunkcount": #,
-                "chunksizes": [ #, #, #, ..., # ]
-            }
-
-        Version 4 schema:
-
-            {
-                "version": 4,
-                "date": "Day Mon day HH:MM:SS year",
-                "compression": NONE|LZ4|SNAPPY,
-                "bytecount": #,
-                "chunkcount": #,
-                "chunksizes": [ #, #, #, ..., # ]
-            }
-
-        */
-
         uint32_t count = ReadHeaderSize(f, filename);
         CheckHeaderSize(count);
         string header_text;
@@ -603,38 +612,32 @@ namespace SerializedState {
         header.date = file_info.GetString("date");
         header.byte_count = file_info.GetUInt64("bytecount");
 
-        switch (header.version)
+        if (header.version == 1)
         {
-            case 1:
+            // Fill in V2 values for a V1 header.
+            header.compressed = file_info.GetBool("compressed");
+            header.compression = header.compressed ? "SNAPPY" : "NONE";
+            header.chunk_count = 1;
+            header.chunk_sizes.push_back(header.byte_count);
+        }
+        else // header.version >= 2
+        {
+            header.compression = file_info.GetString((header.version < 4) ? "engine" : "compression");
+            header.compressed = (header.compression != "NONE");
+            header.chunk_count = file_info.GetUint("chunkcount");
+            auto& chunk_sizes = *(file_info.GetJsonArray("chunksizes"));
+            for (size_t i = 0; i < chunk_sizes.GetSize(); ++i)
             {
-                // Fill in V2 values for a V1 header.
-                header.compressed = file_info.GetBool("compressed");
-                header.compression = header.compressed ? "SNAPPY" : "NONE";
-                header.chunk_count = 1;
-                header.chunk_sizes.push_back(header.byte_count);
+                auto& item = *(chunk_sizes[Kernel::IndexType(i)]);
+                size_t chunk_size = item.AsUint64();
+                header.chunk_sizes.push_back(chunk_size);
             }
-            break;
-
-            case 2:
-            case 3:
-            case 4:
-            {
-                header.compression = file_info.GetString((header.version < 4) ? "engine" : "compression");
-                header.compressed = (header.compression != "NONE");
-                header.chunk_count = file_info.GetUint("chunkcount");
-                auto& chunk_sizes = *(file_info.GetJsonArray("chunksizes"));
-                for (size_t i = 0; i < chunk_sizes.GetSize(); ++i)
-                {
-                    auto& item = *(chunk_sizes[Kernel::IndexType(i)]);
-                    size_t chunk_size = item.AsUint64();
-                    header.chunk_sizes.push_back(chunk_size);
-                }
-            }
-            break;
-
-            default:
-                // Do nothing as header.Validate() below will catch this case.
-                break;
+        }
+        if (header.version == 5)
+        {
+            // Version 5 contains information about emod version
+            IJsonObjectAdapter* emod_info_temp = file_info.GetJsonObject( "emod_info" );
+            header.emod_info = ProgDllVersion( emod_info_temp );
         }
 
         header.Validate();
@@ -727,7 +730,7 @@ namespace SerializedState {
             delete reader;
 
             // Add node to simulation.nodes
-            simulation->nodes[suid] = static_cast<Kernel::Node*>(obj);
+            GetNodes(simulation)[suid] = static_cast<Kernel::Node*>(obj);
         }
 
         return newsim;
@@ -767,7 +770,7 @@ namespace SerializedState {
 
             // Add node to simulation.nodes
             Kernel::Node* node = static_cast<Kernel::Node*>(obj);
-            simulation->nodes[node->GetSuid()] = node;
+            GetNodes(simulation)[node->GetSuid()] = node;
         }
 
         return newsim;

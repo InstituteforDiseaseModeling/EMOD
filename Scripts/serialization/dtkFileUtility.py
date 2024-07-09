@@ -24,7 +24,7 @@ def __do_read__(args):
     dtk_file = dft.read(args.filename)
 
     if args.header:
-        with open(args.header, 'wb') as handle:
+        with open(args.header, 'w') as handle:
             json.dump(dtk_file.header, handle, indent=2, separators=(',', ':'))
 
     print('File header: {0}'.format(dtk_file.header))
@@ -47,8 +47,12 @@ def __do_read__(args):
         else:
             output_filename = '.'.join([prefix, 'node-{:0>5}'.format(index), extension])
 
-        with open(output_filename, 'wt', encoding='utf-8') as handle:
-            handle.write(output)
+        if args.raw:
+            with open(output_filename, 'wb') as handle:
+                handle.write(output)
+        else:
+            with open(output_filename, 'wt', encoding='utf-8') as handle:
+                handle.write(output)
 
     return
 

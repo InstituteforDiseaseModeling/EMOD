@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include <memory> // unique_ptr
@@ -58,6 +50,23 @@ SUITE( ReportUtilitiesTest )
             vec.push_back( std::vector<std::vector<double>>() );
             InitVector( size2, size3, vec[ i ] );
         }
+    }
+
+    TEST_FIXTURE( ReportUtilitiesFixture, TestGetAgeBin )
+    {
+        std::vector<float> ages = { 10.0, 20.0, 30.0, 40.0, 50.0 };
+
+        CHECK_EQUAL( 0, ReportUtilities::GetAgeBin(  5.0*365.0, ages ) );
+        CHECK_EQUAL( 0, ReportUtilities::GetAgeBin( 10.0*365.0, ages ) );
+        CHECK_EQUAL( 1, ReportUtilities::GetAgeBin( 15.0*365.0, ages ) );
+        CHECK_EQUAL( 1, ReportUtilities::GetAgeBin( 20.0*365.0, ages ) );
+        CHECK_EQUAL( 2, ReportUtilities::GetAgeBin( 25.0*365.0, ages ) );
+        CHECK_EQUAL( 2, ReportUtilities::GetAgeBin( 30.0*365.0, ages ) );
+        CHECK_EQUAL( 3, ReportUtilities::GetAgeBin( 35.0*365.0, ages ) );
+        CHECK_EQUAL( 3, ReportUtilities::GetAgeBin( 40.0*365.0, ages ) );
+        CHECK_EQUAL( 4, ReportUtilities::GetAgeBin( 45.0*365.0, ages ) );
+        CHECK_EQUAL( 4, ReportUtilities::GetAgeBin( 50.0*365.0, ages ) );
+        CHECK_EQUAL( 4, ReportUtilities::GetAgeBin( 55.0*365.0, ages ) );
     }
 
     TEST_FIXTURE( ReportUtilitiesFixture, TestSerializeDeserialize )

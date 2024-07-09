@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "Individual.h"
@@ -51,7 +43,8 @@ namespace Kernel
     float IndividualHumanConfig::region_roundtrip_duration_rate = 0.0f;
     float IndividualHumanConfig::sea_roundtrip_duration_rate = 0.0f;
     float IndividualHumanConfig::family_roundtrip_duration_rate = 0.0f;
-    int IndividualHumanConfig::infection_updates_per_tstep = 0.0f;
+    int IndividualHumanConfig::infection_updates_per_tstep = 1;
+    float IndividualHumanConfig::infection_timestep = 1.0f;
     MigrationPattern::Enum IndividualHumanConfig::migration_pattern = MigrationPattern::RANDOM_WALK_DIFFUSION;
     bool IndividualHumanConfig::enable_immunity = false;
     int IndividualHumanConfig::roundtrip_waypoints = 0;
@@ -118,20 +111,16 @@ namespace Kernel
     {
         LOG_DEBUG( "Configure\n" );
         initConfigTypeMap( "Enable_Aging", &aging, Enable_Aging_DESC_TEXT, true, "Enable_Vital_Dynamics" );
-        initConfigTypeMap( "Infection_Updates_Per_Timestep", &infection_updates_per_tstep, Infection_Updates_Per_Timestep_DESC_TEXT, 0, 144, 1 );
-        initConfigTypeMap( "Enable_Immunity", &enable_immunity, Enable_Immunity_DESC_TEXT, true, "Simulation_Type", "GENERIC_SIM,VECTOR_SIM,STI_SIM,ENVIRONMENTAL_SIM,TBHIV_SIM,PY_SIM");
-        initConfigTypeMap( "Enable_Superinfection", &superinfection, Enable_Superinfection_DESC_TEXT, false, "Simulation_Type", "VECTOR_SIM,STI_SIM,ENVIRONMENTAL_SIM,MALARIA_SIM");
+        initConfigTypeMap( "Infection_Updates_Per_Timestep", &infection_updates_per_tstep, Infection_Updates_Per_Timestep_DESC_TEXT, 1, 144, 1 );
+        initConfigTypeMap( "Enable_Immunity", &enable_immunity, Enable_Immunity_DESC_TEXT, true, "Simulation_Type", "GENERIC_SIM,VECTOR_SIM,STI_SIM");
+        initConfigTypeMap( "Enable_Superinfection", &superinfection, Enable_Superinfection_DESC_TEXT, false, "Simulation_Type", "STI_SIM,VECTOR_SIM,MALARIA_SIM");
         initConfigTypeMap( "Max_Individual_Infections", &max_ind_inf, Max_Individual_Infections_DESC_TEXT, 0, 1000, 1, "Enable_Superinfection" );
         initConfigTypeMap( "Minimum_Adult_Age_Years", &min_adult_age_years, Minimum_Adult_Age_Years_DESC_TEXT, 0.0f, FLT_MAX, 15.0f, "Individual_Sampling_Type", "ADAPTED_SAMPLING_BY_AGE_GROUP" );
         // Don't really like this; could put the conditional in the initConfigTypeMap but we already have a conditional and our API
         // can only handle 1 conditional parameter key. 
         if( JsonConfigurable::_dryrun ||
-            ( GET_CONFIGURABLE( SimulationConfig ) &&
-                (
-                  GET_CONFIGURABLE( SimulationConfig )->sim_type == SimType::GENERIC_SIM ||
-                  GET_CONFIGURABLE( SimulationConfig )->sim_type == SimType::TYPHOID_SIM ||
-                  GET_CONFIGURABLE( SimulationConfig )->sim_type == SimType::TBHIV_SIM
-                )
+            ( GET_CONFIGURABLE( SimulationConfig ) && 
+              (GET_CONFIGURABLE( SimulationConfig )->sim_type == SimType::GENERIC_SIM)
             )
           )
         {
@@ -188,32 +177,49 @@ namespace Kernel
         }
 
         bool bRet = JsonConfigurable::Configure( config );
-        PrintConfigs();
+        if( bRet && !JsonConfigurable::_dryrun )
+        {
+            PrintConfigs();
 
-        if( local_roundtrip_duration_rate != 0 )
-        {
-             local_roundtrip_duration_rate = 1.0f/local_roundtrip_duration_rate;
-        }
-        if( region_roundtrip_duration_rate != 0 )
-        {
-             region_roundtrip_duration_rate = 1.0f/region_roundtrip_duration_rate;
-        }
-        if( air_roundtrip_duration_rate != 0 )
-        {
-             air_roundtrip_duration_rate = 1.0f/air_roundtrip_duration_rate;
-        }
-        if( sea_roundtrip_duration_rate != 0 )
-        {
-             sea_roundtrip_duration_rate = 1.0f/sea_roundtrip_duration_rate;
-        }
-        if( family_roundtrip_duration_rate != 0 )
-        {
-             family_roundtrip_duration_rate = 1.0f/family_roundtrip_duration_rate;
-        }
+            if( local_roundtrip_duration_rate != 0 )
+            {
+                 local_roundtrip_duration_rate = 1.0f/local_roundtrip_duration_rate;
+            }
+            if( region_roundtrip_duration_rate != 0 )
+            {
+                 region_roundtrip_duration_rate = 1.0f/region_roundtrip_duration_rate;
+            }
+            if( air_roundtrip_duration_rate != 0 )
+            {
+                 air_roundtrip_duration_rate = 1.0f/air_roundtrip_duration_rate;
+            }
+            if( sea_roundtrip_duration_rate != 0 )
+            {
+                 sea_roundtrip_duration_rate = 1.0f/sea_roundtrip_duration_rate;
+            }
+            if( family_roundtrip_duration_rate != 0 )
+            {
+                 family_roundtrip_duration_rate = 1.0f/family_roundtrip_duration_rate;
+            }
 
-        if (superinfection && (max_ind_inf < 2))
-        {
-            throw IncoherentConfigurationException(__FILE__, __LINE__, __FUNCTION__, "Max_Individual_Infections", max_ind_inf, "Enable_Superinfection", superinfection);
+            if (superinfection && (max_ind_inf < 2))
+            {
+                throw IncoherentConfigurationException(__FILE__, __LINE__, __FUNCTION__, "Max_Individual_Infections", max_ind_inf, "Enable_Superinfection", superinfection);
+            }
+
+            if( GET_CONFIGURABLE(SimulationConfig) != nullptr )
+            {
+                float dt = GET_CONFIGURABLE(SimulationConfig)->Sim_Tstep;
+                infection_timestep = dt;
+
+                // Adjust time step for infections as specified by infection_updates_per_tstep.
+                // There is no special meaning of 1 being hourly.  For hourly infection updates
+                // with a tstep of one day, one must now specify 24.
+                if( infection_updates_per_tstep > 1 )
+                {
+                    infection_timestep = dt / float(infection_updates_per_tstep);
+                }
+            }
         }
 
         // Check for Enable_Skipping incompatibilities
@@ -227,8 +233,15 @@ namespace Kernel
 
         InfectionConfig fakeInfection;
         fakeInfection.Configure( config );
-        SusceptibilityConfig fakeImmunity;
-        fakeImmunity.Configure( config );
+        if( JsonConfigurable::_dryrun ||
+            ( GET_CONFIGURABLE( SimulationConfig ) &&
+              ( GET_CONFIGURABLE( SimulationConfig )->sim_type != SimType::MALARIA_SIM )
+            )
+          )
+        {
+            SusceptibilityConfig fakeImmunity;
+            fakeImmunity.Configure( config );
+        }
 
         return bRet;
     }
@@ -275,6 +288,7 @@ namespace Kernel
         , infectiousness(0.0f)
         , Inf_Sample_Rate(0)
         , cumulativeInfs(0)
+        , m_pNewInfection(nullptr)
         , m_new_infection_state(NewInfectionState::Invalid)
         , StateChange(HumanStateChange::None)
         , migration_mod(0)
@@ -298,7 +312,6 @@ namespace Kernel
         , family_migration_is_destination_new_home(false)
         , home_node_id(suids::nil_suid())
         , Properties()
-        , m_PropertyReportString()
         , parent(nullptr)
         , broadcaster(nullptr)
         , m_newly_symptomatic(false)
@@ -321,6 +334,7 @@ namespace Kernel
         , infectiousness(0.0f)
         , Inf_Sample_Rate(0)
         , cumulativeInfs(0)
+        , m_pNewInfection(nullptr)
         , m_new_infection_state(NewInfectionState::Invalid)
         , StateChange(HumanStateChange::None)
         , migration_mod(0)
@@ -344,7 +358,6 @@ namespace Kernel
         , family_migration_is_destination_new_home(false)
         , home_node_id(suids::nil_suid())
         , Properties()
-        , m_PropertyReportString()
         , parent(nullptr)
         , broadcaster(nullptr)
         , m_newly_symptomatic( false )
@@ -388,8 +401,6 @@ namespace Kernel
             foundInterface = static_cast<IMigrate*>(this);
         else if ( iid == GET_IID(ISupports) )
             foundInterface = static_cast<ISupports*>(static_cast<IIndividualHumanContext*>(this));
-        else if (iid == GET_IID(IGlobalContext))
-            parent->QueryInterface(iid, reinterpret_cast<void**>(&foundInterface));
         else
             foundInterface = nullptr;
 
@@ -423,8 +434,6 @@ namespace Kernel
 
     void IndividualHuman::InitializeHuman()
     {
-        release_assert( parent );
-        home_node_id = parent->GetSuid() ;
     }
 
     bool IndividualHuman::IsAdult() const
@@ -558,9 +567,10 @@ namespace Kernel
     {
         if (init_infs)
         {
+            StrainIdentity strain; // all initial infections have the same simple "strain"
             for (int i = 0; i < init_infs; i++)
             {
-                AcquireNewInfection();
+                AcquireNewInfection( &strain );
             }
         }
     }
@@ -572,9 +582,7 @@ namespace Kernel
             LOG_DEBUG_F("ratio = %f\n", m_mc_weight / desired_mc_weight);
             if (GetRng()->e() < m_mc_weight / desired_mc_weight)
             {
-                UpdateGroupPopulation(-1.0f);
                 m_mc_weight = desired_mc_weight;
-                UpdateGroupPopulation(1.0f);
                 LOG_DEBUG_F( "Changed mc_weight to %f for individual %d\n.", m_mc_weight, GetSuid().data );
             }
             else // TODO: It's possible to downsample the immune subpopulation (which could be entire node or hint group population) to 0. Add safeguards to prevent this.
@@ -611,8 +619,8 @@ namespace Kernel
     void IndividualHuman::Update(float currenttime, float dt)
     {
         LOG_VALID_F( "%s\n", __FUNCTION__ );
-        float infection_timestep = dt;
-        int numsteps = 1;
+        float infection_timestep =  IndividualHumanConfig::infection_timestep;
+        int numsteps =  IndividualHumanConfig::infection_updates_per_tstep;
 
         // eventually need to correct for time step in case of individuals moving among communities with different adapted time steps
 
@@ -622,16 +630,6 @@ namespace Kernel
         if (IndividualHumanConfig::aging)
         {
             UpdateAge( dt );
-        }
-
-        // Adjust time step for infections as specified by infection_updates_per_tstep.  A value of 0 reverts to a single update per time step for backward compatibility.
-        // There is no special meaning of 1 being hourly.  For hourly infection updates with a tstep of one day, one must now specify 24.
-        if ( IndividualHumanConfig::infection_updates_per_tstep > 1 )
-        {
-            // infection_updates_per_tstep is now an integer > 1, so set numsteps equal to it,
-            // allowing the subdivision dt into smaller infection_timestep
-            numsteps = IndividualHumanConfig::infection_updates_per_tstep;
-            infection_timestep = dt / numsteps;
         }
 
         // Process list of infections
@@ -645,13 +643,14 @@ namespace Kernel
         }
         else
         {
+            float infection_time = currenttime;
             for (int i = 0; i < numsteps; i++)
             {
                 bool prev_symptomatic = IsSymptomatic();
                 for (auto it = infections.begin(); it != infections.end();)
                 {
                     // Update infection
-                    (*it)->Update(infection_timestep, susceptibility);
+                    (*it)->Update( infection_time, infection_timestep, susceptibility );
                     // Note that the newly calculated infestiousness from the Update above won't get used (shed) until the next timestep
                     // Node::updateInfectivity is called before Individual::Update (this function)
 
@@ -664,8 +663,14 @@ namespace Kernel
                         // Notify susceptibility of cleared infection and remove from list
                         if ( inf_state_change == InfectionStateChange::Cleared )
                         {
-                            LOG_DEBUG_F( "Individual %d's infection cleared.\n", GetSuid().data );
-                            if ( IndividualHumanConfig::enable_immunity )
+                            LOG_DEBUG_F( "Individual %d's infection %u cleared.\n", GetSuid().data,(*it)->GetSuid() );
+                            // --------------------------------------------
+                            // --- the following makes sense but it changes
+                            // --- results unexpectedly.
+                            // --------------------------------------------
+                            //ClearNewInfectionState(); // Seems to break things
+                            // --------------------------------------------
+                            if( ImmunityEnabled() )
                             {
                                 susceptibility->UpdateInfectionCleared();
                             } //Immunity update: survived infection
@@ -685,34 +690,35 @@ namespace Kernel
                     ++it;
                 }
 
+                if( ImmunityEnabled() )
+                {
+                    susceptibility->Update(infection_timestep);      // Immunity update: mainly decay of immunity
+                }
+
                 m_newly_symptomatic = !prev_symptomatic && IsSymptomatic();
-                if( m_newly_symptomatic )
+                if( m_newly_symptomatic && broadcaster )
                 {
                     broadcaster->TriggerObservers( GetEventContext(), EventTrigger::NewlySymptomatic );
                 }
 
-                if( prev_symptomatic && !IsSymptomatic() ) //no longer symptomatic 
+                if( prev_symptomatic && broadcaster && !IsSymptomatic() ) //no longer symptomatic 
                 {
                     broadcaster->TriggerObservers( GetEventContext(), EventTrigger::SymptomaticCleared );
                 }
 
-                if ( IndividualHumanConfig::enable_immunity )
-                {
-                    susceptibility->Update(infection_timestep);      // Immunity update: mainly decay of immunity
-                }
                 if (StateChange == HumanStateChange::KilledByInfection)
                 {
                     break; // If individual died, no need to keep simulating infections.
                 }
                 interventions->InfectiousLoopUpdate( infection_timestep );
+
+                infection_time += infection_timestep;
             }
             if( StateChange != HumanStateChange::KilledByInfection )
             {
                 interventions->Update( dt );
             }
         }
-
-        applyNewInterventionEffects(dt);
 
         // Trigger "every-update" event observers 
         if( broadcaster )
@@ -739,6 +745,30 @@ namespace Kernel
         {
             CheckForMigration(currenttime, dt);
         }
+
+        if( (m_new_infection_state == NewInfectionState::NewInfection) ||
+            (m_new_infection_state == NewInfectionState::NewAndDetected) )
+        {
+            if( broadcaster )
+            {
+                broadcaster->TriggerObservers( GetEventContext(), EventTrigger::NewInfectionEvent );
+                if( EnvPtr->Log->SimpleLogger::IsLoggingEnabled( Logger::VALIDATION, _module, _log_level_enabled_array ) )
+                {
+                    std::string propertyString;
+                    IPKeyValueContainer* p_props = GetProperties();
+                    for( auto kv : *p_props )
+                    {
+                        const std::string& key = kv.GetKeyAsString();
+                        const std::string& value = kv.GetValueAsString();
+                        propertyString += key + ":" + value + " ";
+                    }
+                    LOG_VALID_F( "NodeID = %d human of age %f got new infection %s .\n",
+                                 int( GetNodeEventContext()->GetExternalId() ),
+                                 float( GetAge() / 365.0 ),
+                                 propertyString.c_str() );
+                }
+            }
+        }
     }
 
     void IndividualHuman::UpdateAge( float dt )
@@ -764,17 +794,13 @@ namespace Kernel
             m_daily_mortality_rate = parent->GetNonDiseaseMortalityRateByAgeAndSex( m_age, Gender::Enum( GetGender() ) );
         }
 
-        float adjusted_rate = m_daily_mortality_rate * dt;
+        float adjusted_rate = m_daily_mortality_rate * dt * interventions->GetNonDiseaseDeathRateMod();
         
         if( (GetRng()!= nullptr) && GetRng()->SmartDraw( adjusted_rate ) )
         {
             // LOG_DEBUG_F("%s died of natural causes at age %f with daily_mortality_rate = %f\n", (GetGender() == Gender::FEMALE ? "Female" : "Male"), GetAge() / DAYSPERYEAR, m_daily_mortality_rate);
             Die( HumanStateChange::DiedFromNaturalCauses );
         }
-    }
-
-    void IndividualHuman::applyNewInterventionEffects(float dt)
-    {
     }
 
     float IndividualHuman::GetImmunityReducedAcquire() const
@@ -805,9 +831,8 @@ namespace Kernel
                 birth_this_timestep = true;
 
                 // Broadcast GaveBirth
-                if( GetNodeEventContext() != nullptr )
-                {
-                    IIndividualEventBroadcaster* broadcaster = GetNodeEventContext()->GetIndividualEventBroadcaster();
+                if( broadcaster )
+                {                    
                     broadcaster->TriggerObservers( GetEventContext(), EventTrigger::GaveBirth );
                 }
             }
@@ -824,12 +849,16 @@ namespace Kernel
             pregnancy_timer = duration; 
 
             // Broadcast Pregnant
-            if( GetNodeEventContext() != nullptr )
-            {
-                IIndividualEventBroadcaster* broadcaster = GetNodeEventContext()->GetIndividualEventBroadcaster();
+            if( broadcaster )
+            {                
                 broadcaster->TriggerObservers( GetEventContext(), EventTrigger::Pregnant );
             }
         }
+    }
+
+    float IndividualHuman::GetBirthRateMod() const
+    {
+        return interventions->GetBirthRateMod();
     }
 
     //------------------------------------------------------------------
@@ -1022,15 +1051,19 @@ namespace Kernel
 
     void IndividualHuman::UpdateGroupMembership()
     {
-        tProperties properties = GetProperties()->GetOldVersion();
         const RouteList_t& routes = parent->GetTransmissionRoutes();
 
-        parent->GetGroupMembershipForIndividual( routes, properties, transmissionGroupMembership );
+        parent->GetGroupMembershipForIndividual( routes, *GetProperties(), transmissionGroupMembership);
     }
 
     void IndividualHuman::UpdateGroupPopulation(float size_changes)
     {
-        parent->UpdateTransmissionGroupPopulation( GetProperties()->GetOldVersion(), size_changes, this->GetMonteCarloWeight() );
+        parent->UpdateTransmissionGroupPopulation( *GetProperties(), size_changes, this->GetMonteCarloWeight() );
+    }
+
+    void IndividualHuman::SetHome( const suids::suid& rHomeNodeID )
+    {
+        home_node_id = rHomeNodeID;
     }
 
     bool IndividualHuman::AtHome() const
@@ -1157,18 +1190,14 @@ namespace Kernel
         if( acquire ) 
         {
             LOG_VALID_F( "Individual %d is acquiring a new infection on route %s.\n", GetSuid().data, TransmissionRoute::pairs::lookup_key( transmission_route ) );
-            AcquireNewInfection( (IStrainIdentity*)cp );
+            StrainIdentity strain;
+            cp->ResolveInfectingStrain( &strain );
+            AcquireNewInfection( &strain );
         }
     }
 
-    void IndividualHuman::AcquireNewInfection( const IStrainIdentity *cp, int incubation_period_override )
+    void IndividualHuman::AcquireNewInfection( const IStrainIdentity *pStrain, int incubation_period_override )
     {
-        StrainIdentity newStrainId;
-        if( cp != nullptr )
-        {
-            cp->ResolveInfectingStrain( &newStrainId ); // get the substrain ID
-        }
-
         //LOG_DEBUG_F( "AcquireNewInfection: id=%lu, group_id=%d\n", GetSuid().data, ( transmissionGroupMembership.size() ? transmissionGroupMembership.at(0) : nullptr ) );
         int numInfs = int(infections.size());
         if ( (IndividualHumanConfig::superinfection && (numInfs < IndividualHumanConfig::max_ind_inf)) || (numInfs == 0) )
@@ -1177,21 +1206,14 @@ namespace Kernel
             m_is_infected = true;
 
             IInfection *newinf = createInfection( parent->GetNextInfectionSuid() );
-            newinf->SetParameters(&newStrainId, incubation_period_override);
+            newinf->SetParameters( pStrain, incubation_period_override );
             newinf->InitInfectionImmunology(susceptibility);
 
             LOG_DEBUG( "Adding infection to infections list.\n" );
-            infections.push_front(newinf);
+            infections.push_back(newinf);
+            m_pNewInfection = newinf;
             infectiousness += newinf->GetInfectiousness();
             ReportInfectionState(); // can specify different reporting in derived classes
-#if 0
-            // Trigger new infection event observers
-            IIndividualTriggeredInterventionConsumer * pITIC = nullptr;
-            if (s_OK == GetInterventionsContext()->QueryInterface(GET_IID(IIndividualTriggeredInterventionConsumer), (void**)&pITIC) )
-            {
-                pITIC->TriggerObservers( GetEventContext(), EventTrigger::NewInfectionEvent );
-            }
-#endif
         }
     }
 
@@ -1206,13 +1228,12 @@ namespace Kernel
         {
             infectiousness += infection->GetInfectiousness();
             float tmp_infectiousness =  m_mc_weight * infection->GetInfectiousness() * susceptibility->getModTransmit() * interventions->GetInterventionReducedTransmit();
-            StrainIdentity tmp_strainIDs;
-            infection->GetInfectiousStrainID(&tmp_strainIDs);
+            const IStrainIdentity& r_strain_id = infection->GetInfectiousStrainID();
             // tmp_strainIDs.SetGeneticID( GetSuid().data ); // this little gem can't go in master but I want to leave it here commented out -- useful on some branches
             if( tmp_infectiousness )
             {
                 LOG_DEBUG_F( "Individual %d depositing contagion into transmission group.\n", GetSuid().data );
-                parent->DepositFromIndividual( tmp_strainIDs, tmp_infectiousness, transmissionGroupMembership );
+                parent->DepositFromIndividual( r_strain_id, tmp_infectiousness, transmissionGroupMembership );
             }
         }
         float raw_inf = infectiousness;
@@ -1253,6 +1274,7 @@ namespace Kernel
     void IndividualHuman::ClearNewInfectionState()
     {
         m_new_infection_state = NewInfectionState::Invalid;
+        m_pNewInfection = nullptr;
     }
 
     //------------------------------------------------------------------
@@ -1288,12 +1310,6 @@ namespace Kernel
     void IndividualHuman::Die( HumanStateChange newState )
     {
         StateChange = newState;
-
-        IIndividualEventBroadcaster* broadcaster = nullptr;
-        if( GetNodeEventContext() != nullptr )
-        {
-            broadcaster = GetNodeEventContext()->GetIndividualEventBroadcaster();
-        }
 
         switch (newState)
         {
@@ -1349,7 +1365,7 @@ namespace Kernel
     }
 
 
-    IPKeyValueContainer* IndividualHuman::GetProperties()
+    IPKeyValueContainerFull* IndividualHuman::GetProperties()
     {
         return &Properties;
     }
@@ -1357,6 +1373,11 @@ namespace Kernel
     const infection_list_t& IndividualHuman::GetInfections() const
     {
         return infections;
+    }
+
+    IInfection* IndividualHuman::GetNewInfection() const
+    {
+        return m_pNewInfection;
     }
 
     bool  IndividualHuman::IsSymptomatic() const
@@ -1377,6 +1398,21 @@ namespace Kernel
     ProbabilityNumber IndividualHuman::getProbMaternalTransmission() const
     {
         return parent->GetProbMaternalTransmission();
+    }
+
+    bool 
+    IndividualHuman::ImmunityEnabled()
+    const
+    {
+        return IndividualHumanConfig::enable_immunity;
+    }
+
+    void IndividualHuman::BroadcastEvent( const EventTrigger& event_trigger )
+    {
+        if( broadcaster )
+        {
+            broadcaster->TriggerObservers( GetEventContext(), event_trigger);
+        }
     }
 
 /* clorton

@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -100,8 +92,6 @@ namespace Kernel
 
         static std::string Assortivity::ValuesToString( const std::vector<std::string>& rList ) ;
 
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         RelationshipType::Enum          m_RelType ;
         RANDOMBASE*                     m_pRNG ;
         AssortivityGroup::Enum          m_Group ;
@@ -112,6 +102,5 @@ namespace Kernel
         bool                            m_StartUsing; // value is based on start year versus current year
 
         DECLARE_SERIALIZABLE(Assortivity);
-#pragma warning( pop )
     };
 }

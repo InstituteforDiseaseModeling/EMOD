@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "MultiEffectVaccine.h"
@@ -43,9 +35,9 @@ namespace Kernel
         bool configured = BaseIntervention::Configure( inputJson );
         if( configured && !JsonConfigurable::_dryrun )
         {
-            acquire_effect   = WaningEffectFactory::CreateInstance( acquire_config   );
-            transmit_effect  = WaningEffectFactory::CreateInstance( transmit_config  );
-            mortality_effect = WaningEffectFactory::CreateInstance( mortality_config );
+            acquire_effect   = WaningEffectFactory::getInstance()->CreateInstance( acquire_config._json,   inputJson->GetDataLocation(), "Acquire_Config"   );
+            transmit_effect  = WaningEffectFactory::getInstance()->CreateInstance( transmit_config._json,  inputJson->GetDataLocation(), "Transmit_Config"  );
+            mortality_effect = WaningEffectFactory::getInstance()->CreateInstance( mortality_config._json, inputJson->GetDataLocation(), "Mortality_Config" );
         }
         LOG_DEBUG_F( "Vaccine configured with type %d and take %f.\n", vaccine_type, vaccine_take );
         return configured;

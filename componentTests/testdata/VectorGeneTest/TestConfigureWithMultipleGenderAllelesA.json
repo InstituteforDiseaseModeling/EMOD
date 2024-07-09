@@ -1,0 +1,78 @@
+{
+    "Genes" : [
+        {
+            "Is_Gender_Gene": 1,
+            "Alleles": [
+                {
+                    "Name": "X",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.4
+                },
+                {
+                    "Name": "X#",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.1
+                },
+                {
+                    "Name": "Y",
+                    "Is_Y_Chromosome" : 1,
+                    "Initial_Allele_Frequency": 0.3
+                },
+                {
+                    "Name": "Y1",
+                    "Is_Y_Chromosome" : 1,
+                    "Initial_Allele_Frequency": 0.15
+                },
+                {
+                    "Name": "Y2",
+                    "Is_Y_Chromosome" : 1,
+                    "Initial_Allele_Frequency": 0.05
+                }
+            ],
+            "Mutations": [
+                {
+                    "Mutate_From": "X#",
+                    "Mutate_To": "X",
+                    "Probability_Of_Mutation": 0.01
+                },
+                {
+                    "Mutate_From": "Y",
+                    "Mutate_To": "Y1",
+                    "Probability_Of_Mutation": 0.02
+                },
+                {
+                    "Mutate_From": "Y",
+                    "Mutate_To": "Y2",
+                    "Probability_Of_Mutation": 0.03
+                },
+                {
+                    "Mutate_From": "Y1",
+                    "Mutate_To": "Y",
+                    "Probability_Of_Mutation": 0.04
+                }
+            ]
+        },
+        {
+            "Is_Gender_Gene": 0,
+            "Alleles": [
+                {
+                    "Name": "a1",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 1.0
+                },
+                {
+                    "Name": "a2",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.0
+                },
+                {
+                    "Name": "a3",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.0
+                }
+            ],
+            "Mutations": [
+            ]
+        }
+    ]
+}

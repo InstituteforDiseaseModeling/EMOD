@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 // put all contexts in one place to reduce clutter in includes
 #pragma once
@@ -41,8 +33,5 @@ namespace Kernel
 
         virtual void UpdateGroupMembership() = 0;
         virtual void UpdateGroupPopulation( float size_changes ) = 0;
-
-        virtual const std::string& GetPropertyReportString() const = 0;
-        virtual void SetPropertyReportString( const std::string& str ) = 0;
     };
 }

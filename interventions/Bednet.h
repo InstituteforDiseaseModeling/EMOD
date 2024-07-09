@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -20,10 +12,12 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Configure.h"
 #include "IWaningEffect.h"
 #include "EventTrigger.h"
+#include "Insecticides.h"
+#include "InsecticideWaningEffect.h"
 
 namespace Kernel
 {
-
+    class Insecticide;
     struct IBednetConsumer;
 
     class AbstractBednet : public BaseIntervention
@@ -41,6 +35,9 @@ namespace Kernel
         virtual QueryResult QueryInterface( iid_t iid, void **ppvObject ) override;
         virtual void Update( float dt ) override;
 
+        // IReportInterventionData
+        virtual ReportInterventionData GetReportInterventionData() const override;
+
     protected:
         virtual bool ConfigureBlockingAndKilling( const Configuration* config );     // calls BaseIntervention::Configure()
         virtual bool ConfigureUsage(  const Configuration* config ) = 0;             // should call JsonConfigurable::Configure()
@@ -53,15 +50,15 @@ namespace Kernel
 
         virtual void UseBednet();
 
-        virtual float GetEffectKilling() const;
-        virtual float GetEffectBlocking() const;
+        virtual GeneticProbability GetEffectKilling() const;
+        virtual GeneticProbability GetEffectBlocking() const;
+        virtual GeneticProbability GetEffectRepelling() const;
         virtual float GetEffectUsage() const = 0;
 
         void BroadcastEvent( const EventTrigger& trigger ) const;
 
-        IWaningEffect* m_pEffectKilling;
-        IWaningEffect* m_pEffectBlocking;
-        IBednetConsumer *m_pConsumer;
+        IInsecticideWaningEffect* m_pInsecticideWaningEffect;
+        IBednetConsumer* m_pConsumer;
 
         static void serialize( IArchive& ar, AbstractBednet* obj );
     };
@@ -85,8 +82,9 @@ namespace Kernel
         virtual bool IsUsingBednet() const override;
         virtual bool CheckExpiration( float dt ) override;
 
-        virtual float GetEffectKilling() const override;
-        virtual float GetEffectBlocking() const override;
+        virtual GeneticProbability GetEffectKilling() const override;
+        virtual GeneticProbability GetEffectBlocking() const override;
+        virtual GeneticProbability GetEffectRepelling() const override;
         virtual float GetEffectUsage() const override;
 
         IWaningEffect* m_pEffectUsage;

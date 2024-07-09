@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -26,5 +18,9 @@ namespace Kernel
         // the size of these vectors should be equal with a one-to-one corespondence between the action and the probability.
         virtual const std::vector<RelationshipMigrationAction::Enum>& GetMigrationActions() const = 0;
         virtual const std::vector<float>& GetMigrationActionsCDF() const = 0;
+
+        virtual void SetOverrideCoitalActRate( float overrideRate ) = 0;
+        virtual void SetOverrideCondomUsageProbability( const Sigmoid* pOverride ) = 0;
+        virtual void SetOverrideRelationshipDuration( float heterogeniety, float scale ) = 0;
     };
 }

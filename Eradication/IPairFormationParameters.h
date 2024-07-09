@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -51,6 +43,8 @@ namespace Kernel
 
         virtual float FormationRate( const IdmDateTime& rCurrentTime, float dt ) const = 0;
         virtual float UpdatePeriod() const = 0;
+
+        virtual void SetOverrideRelationshipFormationRate( float rate ) = 0;
 
         virtual ~IPairFormationParameters() {}
     };

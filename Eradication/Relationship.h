@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -19,7 +11,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 namespace Kernel 
 {
-    class IDMAPI Relationship : public IRelationship
+    class Relationship : public IRelationship
     {
         public:
             friend class IndividualHumanSTI;
@@ -31,15 +23,16 @@ namespace Kernel
             virtual ~Relationship();
 
             // public non-const
-            virtual void Pause( IIndividualHumanSTI* departee ) override;
+            virtual IRelationship* Pause( IIndividualHumanSTI* departee, const suids::suid& rMigrationDestination ) override;
             virtual void Terminate( RelationshipTerminationReason::Enum terminationReason ) override;
-            virtual void Migrate() override;
-            virtual void Resume( IRelationshipManager* pRelMan, ISociety* pSociety, IIndividualHumanSTI* returnee ) override;
+            virtual void Migrate( const suids::suid& rMigrationDestination ) override;
+            virtual void Resume( ISociety* pSociety, IIndividualHumanSTI* returnee ) override;
             virtual void UpdatePaused() override;
             virtual bool Update( float dt ) override;
-            virtual void Consummate( RANDOMBASE* pRNG, float dt ) override;
+            virtual void Consummate( RANDOMBASE* pRNG, float dt, IRelationshipManager * relMan ) override;
 
             // public const
+            virtual bool IsOutsidePFA() const override;
             virtual RelationshipState::Enum GetState() const override;
             virtual RelationshipState::Enum GetPreviousState() const override;
             virtual RelationshipMigrationAction::Enum GetMigrationAction( RANDOMBASE* prng ) const override;
@@ -48,8 +41,6 @@ namespace Kernel
             virtual IIndividualHumanSTI* FemalePartner() const override;
             virtual IIndividualHumanSTI* GetPartner( IIndividualHumanSTI* pIndiv ) const override;
             virtual const suids::suid& GetSuid() const override;
-            virtual const std::string& GetPropertyKey() override;
-            virtual const std::string& GetPropertyName() const override;
             virtual unsigned int GetSlotNumberForPartner( bool forPartnerB ) const override;
             virtual const tRelationshipMembers GetMembers() const override;
             virtual bool IsDiscordant() const override;
@@ -57,7 +48,6 @@ namespace Kernel
             virtual float GetDuration() const override;
             virtual float GetStartTime() const override;
             virtual float GetScheduledEndTime() const override;
-            virtual bool GetUsingCondom() const override;
             virtual RelationshipType::Enum GetType() const override;
             virtual suids::suid GetPartnerId( const suids::suid& myID ) const override;
             virtual suids::suid GetMalePartnerId() const override;
@@ -68,25 +58,33 @@ namespace Kernel
 
             virtual float GetCoitalRate() const override;
             virtual ProbabilityNumber getProbabilityUsingCondomThisAct() const override;
+            virtual unsigned int GetTotalCoitalActs() const override;
             virtual unsigned int GetNumCoitalActs() const override;
+            virtual unsigned int GetNumCoitalActsUsingCondoms() const override;
             virtual bool HasMigrated() const override;
+            virtual suids::suid GetMigrationDestination() const override;
 
         protected:
+            friend class RelationshipFactory;
+
             Relationship();
+            Relationship( const Relationship& rMaster );
             Relationship( RANDOMBASE* pRNG,
                           const suids::suid& rRelId,
-                          IRelationshipManager* pRelMan,
                           IRelationshipParameters* pParams, 
                           IIndividualHumanSTI* male_partner, 
-                          IIndividualHumanSTI* female_partner );
+                          IIndividualHumanSTI* female_partner,
+                          bool isOutsidePFA,
+                          Sigmoid* pCondomUsage );
 
-            void SetManager( IRelationshipManager* pRelMan, ISociety* pSociety );
+            void SetParameters( ISociety* pSociety );
 
-            virtual Relationship* Clone() = 0;
+            virtual Relationship* Clone();
 
-            static void serialize( IArchive& ar, Relationship* obj );
+            DECLARE_SERIALIZABLE(Relationship);
 
             suids::suid _suid;
+            bool is_outside_pfa;
             RelationshipState::Enum state;
             RelationshipState::Enum previous_state;
             RelationshipType::Enum relationship_type;
@@ -100,132 +98,27 @@ namespace Kernel
             float rel_duration;
             float start_time;
             float scheduled_end_time;
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
-            std::string propertyKey;
-            std::string propertyName;
             ExternalNodeId_t original_node_id;
             act_prob_vec_t act_prob_vec;
-            bool using_condom;  // For notifying coital act observers
-            IRelationshipManager * relMan;
             unsigned int total_coital_acts;
+            unsigned int coital_acts_this_dt;
+            unsigned int coital_acts_this_dt_using_condoms;
             bool has_migrated;
-#pragma warning( pop )
-
-    private:
-        static void LogRelationship( unsigned int _id, suids::suid _male_partner, suids::suid _female_partner, RelationshipType::Enum _type );
-        struct LogEntry {
-            unsigned int id;
-            suids::suid male_partner;
-            suids::suid female_partner;
-            RelationshipType::Enum type;
-        };
-#define REL_LOG_COUNT    0x100000   // 2^20 entries
-        static unsigned int _head;
-        static unsigned int _tail;
-        static LogEntry _log[REL_LOG_COUNT];
+            suids::suid migration_destination;
+            unsigned int male_slot_number;
+            unsigned int female_slot_number;
+            Sigmoid* p_condom_usage;
     };
 
-    class IDMAPI RelationshipFactory
+    class RelationshipFactory
     {
     public:
         static IRelationship* CreateRelationship( RANDOMBASE* pRNG,
                                                   const suids::suid& rRelId,
-                                                  IRelationshipManager* pRelMan,
                                                   IRelationshipParameters* pParams, 
                                                   IIndividualHumanSTI* male_partner, 
-                                                  IIndividualHumanSTI* female_partner );
-    };
-
-    class IDMAPI TransitoryRelationship : public Relationship
-    {
-        public:
-            friend class RelationshipFactory;
-            DECLARE_QUERY_INTERFACE()
-
-        protected:
-            TransitoryRelationship();
-            TransitoryRelationship( RANDOMBASE* pRNG,
-                                    const suids::suid& rRelId,
-                                    IRelationshipManager* pRelMan,
-                                    IRelationshipParameters* pParams,
-                                    IIndividualHumanSTI* male_partner, 
-                                    IIndividualHumanSTI* female_partner );
-
-            virtual Relationship* Clone() override;
-
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
-            DECLARE_SERIALIZABLE(TransitoryRelationship);
-#pragma warning( pop )
-    };
-
-    class InformalRelationship : public Relationship
-    {
-        public:
-            friend class RelationshipFactory;
-            DECLARE_QUERY_INTERFACE()
-
-        protected:
-            InformalRelationship();
-            InformalRelationship( RANDOMBASE* pRNG,
-                                  const suids::suid& rRelId,
-                                  IRelationshipManager* pRelMan,
-                                  IRelationshipParameters* pParams, 
-                                  IIndividualHumanSTI* male_partner, 
-                                  IIndividualHumanSTI* female_partner );
-
-            virtual Relationship* Clone() override;
-
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
-            DECLARE_SERIALIZABLE(InformalRelationship);
-#pragma warning( pop )
-    };
-
-    class MarriageRelationship : public Relationship
-    {
-        public:
-            friend class RelationshipFactory;
-            DECLARE_QUERY_INTERFACE()
-
-        protected:
-            MarriageRelationship();
-            MarriageRelationship( RANDOMBASE* pRNG,
-                                  const suids::suid& rRelId,
-                                  IRelationshipManager* pRelMan,
-                                  IRelationshipParameters* pParams, 
-                                  IIndividualHumanSTI* male_partner, 
-                                  IIndividualHumanSTI* female_partner );
-
-            virtual Relationship* Clone() override;
-
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
-            DECLARE_SERIALIZABLE(MarriageRelationship);
-#pragma warning( pop )
-    };
-
-    class CommercialRelationship : public Relationship
-    {
-        public:
-            friend class RelationshipFactory;
-            DECLARE_QUERY_INTERFACE()
-
-        protected:
-            CommercialRelationship();
-            CommercialRelationship( RANDOMBASE* pRNG,
-                                    const suids::suid& rRelId,
-                                    IRelationshipManager* pRelMan,
-                                    IRelationshipParameters* pParams, 
-                                    IIndividualHumanSTI* male_partner, 
-                                    IIndividualHumanSTI* female_partner );
-
-            virtual Relationship* Clone() override;
-
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
-            DECLARE_SERIALIZABLE(CommercialRelationship);
-#pragma warning( pop )
+                                                  IIndividualHumanSTI* female_partner,
+                                                  bool isOutsidePFA,
+                                                  Sigmoid* pCondomUsage );
     };
 }

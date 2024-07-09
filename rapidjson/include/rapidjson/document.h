@@ -745,7 +745,7 @@ public:
         return ParseStream<parseFlags>(s);
     }
 
-    //! Whether a parse error was occured in the last parsing.
+    //! Whether a parse error was occurred in the last parsing.
     bool HasParseError() const { return parseError_ != 0; }
 
     //! Get the message of parsing error.

@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #ifdef WIN32
 #include <stdafx.h>
@@ -20,6 +12,7 @@ inline void onAssert__( const char * filename, int lineNum, const char * variabl
 {
     // Only permissible use of std::cerr
     std::cout << "Assertion failure, (" << variable << "), is false in file " << filename << " at line " << lineNum << std::endl;
+    std::cerr << "Assertion failure, (" << variable << "), is false in file " << filename << " at line " << lineNum << std::endl;
     abort();
 }
 

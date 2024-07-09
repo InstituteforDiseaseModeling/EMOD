@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -16,6 +8,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Configuration.h"
 #include "Configure.h"
 #include "FactorySupport.h"
+#include "ObjectFactory.h"
 
 namespace Kernel
 {
@@ -50,35 +43,8 @@ namespace Kernel
 
     typedef std::map<std::string, IWaningEffect*> waning_effects_t;
 
-    class IWaningEffectFactory
-    {
-    public:
-        virtual void Register(string classname, instantiator_function_t _if) = 0;
-        virtual json::QuickBuilder GetSchema() = 0;
-    };
-
     // --------------------------- WaningEffectFactory ---------------------------
-    class WaningEffectFactory : public IWaningEffectFactory
+    class WaningEffectFactory : public ObjectFactory<IWaningEffect,WaningEffectFactory>
     {
-    public:
-        static IWaningEffectFactory * getInstance() { return _instance ? _instance : _instance = new WaningEffectFactory(); }
-
-        static IWaningEffect* CreateInstance( const WaningConfig& rWaningConfig )
-        {
-            auto p_config = Configuration::CopyFromElement( rWaningConfig._json, "campaign" );
-            IWaningEffect* p_effect = CreateInstanceFromSpecs<IWaningEffect>( p_config, getRegisteredClasses(), true);
-            delete p_config;
-            return p_effect;
-        }
-
-        void Register(string classname, instantiator_function_t _if)  {  getRegisteredClasses()[classname] = _if;  }
-        json::QuickBuilder GetSchema();
-
-    protected:
-        static json::Object campaignSchema;
-        static support_spec_map_t& getRegisteredClasses() { static support_spec_map_t registered_classes; return registered_classes; }
-
-    private:
-        static IWaningEffectFactory * _instance;
     };
 }

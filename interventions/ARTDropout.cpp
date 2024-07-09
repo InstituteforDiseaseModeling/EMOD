@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
@@ -33,7 +25,7 @@ namespace Kernel
     ARTDropout::ARTDropout()
     : BaseIntervention()
     {
-        initSimTypes( 2, "HIV_SIM", "TBHIV_SIM" );
+        initSimTypes( 1, "HIV_SIM" );
     }
 
     ARTDropout::~ARTDropout()
@@ -72,7 +64,14 @@ namespace Kernel
 
     void ARTDropout::Update( float dt )
     {
-        Expired();
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // !!! Don't disqualify because the action was in the Distribute() method.
+        // !!! When we move the action (GoOffART) to the Update() method, we want to
+        // !!! check the Disqualifying_Properties, but not now.
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        if( !BaseIntervention::UpdateIndividualsInterventionStatus( false ) ) return;
+
+        SetExpired( true );
     }
 
     REGISTER_SERIALIZABLE(ARTDropout);

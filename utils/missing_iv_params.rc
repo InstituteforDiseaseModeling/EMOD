@@ -1,0 +1,256 @@
+#define MPCDrug_Doses_DESC_TEXT "This is a two dimensional array of the drug names defined in the <config.Malaria_Drug_Params>.  Each inner array defines the drugs to be taken for a single 'dose'.  The number of doses is determined by the number of inner arrays.  An empty dose is allowed."
+#define MPCDrug_DoseInterval_DESC_TEXT "This is the number days to wait between the doses defined in the 'Doses' parameter."
+
+#define SugarTrap_Expiration_Distribution_Type_DESC_TEXT "This defines a distribution from which a duration will be selected for when the trap expires.  If the trap is distributed on day 1 and has a duration of 10, it will expire on day 10 - 10 days of efficacy including the day of distribution.  If the duration is zero, the trap is still distributed but is not applied and expires that day."
+
+#define MD_Measurement_Sensitvity_DESC_TEXT "The number of microliters of blood tested to find single parasites/gameotcytes in a traditional smear (corresponds to inverse parasites/microliters sensitivity).  This is similar to 'Report_Parasite_Smear_Sensitivity' and 'Report_Gametocyte_Smear_Sensitivity' in the config used for reports, but this is for this instance of the diagnostic."
+
+#define StdDiag_Negative_Diagnosis_Event_DESC_TEXT "If 'Event_Or_Config' is set to 'Event', this parameter defines the event to be broadcasted on a negative test result."
+#define StdDiag_Negative_Diagnosis_Config_DESC_TEXT "If 'Event_Or_Config' is set to 'Config', this parameter defines a new intervention to be given to the person on a negative test result."
+#define StdDiag_Days_To_Diagnosis_DESC_TEXT "The number of days from diagnosis (which is done when the intervention is distributed) until a positive response is performed. The response to a negative diagnosis is done immediately when the diagnosis is made (at distribution of the intervention)."
+
+#define MR_Released_Genome_DESC_TEXT "This defines the alleles of the genome of the vectors to be released.  It must define all of the alleles including the gender 'gene'.  '*' is not allowed."
+
+#define INT_Insecticide_Name_DESC_TEXT "The name of the insecticide defined in <config.Insecticides> for this intervention.  If insecticides are being used, then this must be defined as one of those values.  If they are not being used, then this does not needed to be specified or can be empty string.  It cannot have a value if <config.Insecticides> does not define anything."
+
+#define HM_MIRS_Insecticides_DESC_TEXT     "An array of insecticide definitions where the user can specify the blocking and killing WaningEffects of each insecticide."
+#define MI_UDBednet_Insecticides_DESC_TEXT "An array of insecticide definitions where the user can specify the repelling, blocking and killing WaningEffects of each insecticide."
+#define MIISS_Insecticides_DESC_TEXT       "An array of insecticide definitions where the user can specify the killing WaningEffect of each insecticide."
+#define MISS_Insecticides_DESC_TEXT        "An array of insecticide definitions where the user can specify the killing WaningEffect of each insecticide."
+
+#define SIR_Repelling_Config_DESC_TEXT   "Define a WaningEffect that determines the probability that a vector will be repelled due to the intervention."
+#define SR_Repelling_Config_DESC_TEXT    "Define a WaningEffect that determines the probability that a vector will be repelled due to the intervention."
+#define HM_Repelling_Config_DESC_TEXT    "Define a WaningEffect that determines the probability that a vector will be repelled due to the intervention."
+#define SB_Repelling_Config_DESC_TEXT    "Define a WaningEffect that determines the probability that a vector will be repelled due to the intervention.  A vector is repelled before any blocking or killing can occur."
+
+#define SB_Blocking_Config_DESC_TEXT "Configures the rate of blocking for indoor mosquito feeds on individuals with an ITN - conditional on the mosquito NOT being repelled.  It can be configured to decay over time."
+
+#define IWE_Larval_Killing_Config_DESC_TEXT "Define a WaningEffect that determines the probability that a larva will die due to the intervention."
+#define IWE_Repelling_Config_DESC_TEXT      "Define a WaningEffect that determines the probability that a vector will be repelled due to the intervention."
+#define IWE_Blocking_Config_DESC_TEXT       "Define a WaningEffect that determines the probability that a vector will be blocked due to the intervention."
+#define IWE_Killing_Config_DESC_TEXT        "Define a WaningEffect that determines the probability that a vector will be killed due to the intervention."
+
+#define LV_Larval_Killing_Config_DESC_TEXT "Define a WaningEffect that determines the probability that a larva will die in the targeted habitat ('Habitat_Target') due to the intervention."
+#define VCN_Killing_Config_DESC_TEXT       "Define a WaningEffect that determines the probability that a vector will be killed due to the intervention."
+
+#define SS_Spray_Coverage_DESC_TEXT  "The portion of the node that has been sprayed.  This value is multiplied by the current efficacy of the WaningEffect."
+#define LV_Spray_Coverage_DESC_TEXT  "The portion of the node that has been sprayed.  This value is multiplied by the current efficacy of the WaningEffect"
+#define ISS_Spray_Coverage_DESC_TEXT "The portion of the node that has been sprayed.  This value is multiplied by the current efficacy of the WaningEffect"
+#define SR_Spray_Coverage_DESC_TEXT  "The portion of the node that has been sprayed.  This value is multiplied by the current efficacy of the WaningEffect"
+
+#define Individual_Selection_Type_DESC_TEXT "This defines how the people that pass all of the other target restrictions are selected.  The default option is DEMOGRAPHIC_COVERAGE and when set to this value the parameter 'Demographic_Coverage' is used to randomly select a certain percentage of the targeted group.  The other option is TARGET_NUM_INDIVIDUALS and when set to this value the parameter 'Target_Num_Individuals' is used to select exactly that number of people out of the targeted group."
+#define Target_Num_Individuals_DESC_TEXT "The exact number of people to select out of the targeted group.  'Individual_Selection_Type' must be set to TARGET_NUM_INDIVIDUALS."
+
+#define SEC_Percentage_Events_To_Count_DESC_TEXT "The list of events to be counted."
+
+#define Coverage_By_Node_DESC_TEXT "An array of (NodeId, Coverage) pairs defining different demographic coverages per node.  If a node is defined in the CampaignEvent's 'Nodeset_Config' but not in this list, then coverage is assumed to be zero."
+#define CBNEC_NodeId_DESC_TEXT "The ID of the node specified in the demographics to which this coverage applies."
+#define CBNEC_Coverage_DESC_TEXT "The percentage of people in the node that should be randomly selected to receive the intervention.  The value must be a float between 0 and 1."
+
+#define MR_Released_Type_DESC_TEXT "If 'FRACTION', the 'Released_Fraction' parameter is used to specify the fraction of the current population to release.  If 'FIXED_NUMBER', then 'Released_Number' is used to specify an exact count of mosquitos to release."
+#define MR_Released_Fraction_DESC_TEXT "The fraction of the current poulation of mosquitoes to release.  The 'population' will depend on the gender of the mosquitos being released and it will be the population from the previous time step."
+
+#define OIMG_Create_Nucleotide_Sequence_From_DESC_TEXT "An enum that indicates how the genome will be created."
+#define OIMG_Barcode_String_DESC_TEXT "A series of nucleotide base letters (A, C, G, T) that represent the barcode values at locations in the genome."
+#define OIMG_Drug_Resistant_String_DESC_TEXT "A series of nucleotide base letters (A, C, G, T) that represent the drug resistant values at locations in the genome.  There must be one character for each location defined in <config>.Parasite_Genetics.Drug_Resistant_Genome_Locations."
+#define OIMG_HRP_String_DESC_TEXT "A series of nucleotide base letters (A, C, G, T) that represent the HRP values at locations in the genome.  There must be one character for each location defined in <config>.Parasite_Genetics.HRP_Genome_Locations. 'A' means HRP marker is not present and a non-'A' means it is."
+#define OIMG_PfEMP1_Variants_Values_DESC_TEXT "The PfEMP1 Variant values / major epitopes that are used to define how the antiboies will recognize the infected red blood cells."
+#define OIMG_MSP_Variant_Value_DESC_TEXT "The Merozoite Surface Protein value that is used to determine how the antibodies will recognize the merzoites."
+#define OIMG_Barcode_Allele_Frequencies_Per_Genome_Location_DESC_TEXT "The fractions of allele occurrences for each location in the barcode.  This 2D array should have one array for each location/character in the barcode.  For each location, there should be four values between 0 and 1 indicating the probability that specific character will appear.  The possible letters are'A'=0, 'C'=1, 'G'=2, 'T'=3."
+#define OIMG_Drug_Resistant_Allele_Frequencies_Per_Genome_Location_DESC_TEXT "The fractions of allele occurrences for each location in the drug resistant markers.  This 2D array should have one array for each drug resistant location.  For each location, there should be four values between 0 and 1 indicating the probability that specific character will appear.  The possible letters are'A'=0, 'C'=1, 'G'=2, 'T'=3."
+#define OIMG_HRP_Allele_Frequencies_Per_Genome_Location_DESC_TEXT "The fractions of allele occurrences for each location in the HRP markers.  This 2D array should have one array for each HRP location.  For each location, there should be four values between 0 and 1 indicating the probability that specific character will appear.  The possible letters are'A'=0, 'C'=1, 'G'=2, 'T'=3."
+
+#define OIMVG_MSP_Type_DESC_TEXT "The Merozoite Surface Protien variant value of this infection.  Min value = 0, Max value = 'Falciparum_MSP_Variants'."
+#define OIMVG_IRBC_Type_DESC_TEXT "The array PfEMP1 Major epitope variant values.  There must be exactly 50 values. Min value = 0, Max value = 'Falciparum_PfEMP1_Variants'."
+#define OIMVG_Minor_Epitope_Type_DESC_TEXT "The array PfEMP1 Minor epitope variant values.  There must be exactly 50 values. Min value = 0, Max value = 'Falciparum_PfEMP1_Variants'."
+
+#define MR_Released_Infectious_DESC_TEXT "The fraction of vectors released that are to be infectious.  One can only use this feature when 'Malaria_Model'!='MALARIA_MECHANISTIC_MODEL_WITH_PARASITE_GENETICS'."
+#define MR_Released_Microsporidia_Strain_DESC_TEXT "A string indicating the name of the microsporidia strain for the indicated specie.  An empty string indicates no microsporidia infection."
+
+#define Distribution_Constant_DESC_TEXT "Each instance will receive this constant/fixed value."
+
+#define SD_Enable_Is_Symptomatic_DESC_TEXT "If true, requires an infection to be symptomatic to return a positive test."
+#define SD_Days_To_Diagnosis_DESC_TEXT "The number of days from diagnosis (which is done when the intervention is distributed) until a positive response is performed."
+
+#define IBT_Positive_Threshold_Acquisition_Immunity_DESC_TEXT "Specifies the threshold for acquired immunity, where 1 equals 100% immunity and 0 equals 100% susceptible."
+
+#define CAL_Age_DESC_TEXT "As a parameter of a Calendar object, this parameter determines the age (in days) that the individual must be in order to receive the list of actual interventions."
+#define CAL_Probability_DESC_TEXT "As a parameter of a Calendar object, this parameter determines the probability of an individual receiving the list of actual interventions at the corresponding age."
+#define CAL_Calendar_DESC_TEXT "An array of JSON objects where each object specifies the age and probability of receiving the interventions.  The parameters of the Calendar objects are Age and Probability."
+
+#define MD_Detection_Threshold_DESC_TEXT "The measurement made by the diagnostic must be greater than the detection threshold for a positive diagnosis.  The units of the threshold depend on the selected diagnostic - i.e. the value of Diagnostic_Type."
+
+#define RV_Boosted_Antibody_Concentration_DESC_TEXT "The boosted antibody concentration where 0 implies do nothing and higher numbers kill more sporozoites before they can infect hepatocytes."
+
+#define IE_EIR_Type_DESC_TEXT "Choose whether you want the EIR read in to be monthly or daily."
+#define IE_Daily_EIR_DESC_TEXT "An array of 365 values where each value is the mean number of infectious bites experienced by an individual for that day of the year."
+#define IE_Scaling_Factor_DESC_TEXT "A modifier that is multiplied by the EIR determined for the current day."
+
+#define AD_Adherence_Config_DESC_TEXT "A WaningEffect used to determine if the person is going to take the next dose.  WaningEffectMapCount can be used to set the probability for a particular dose.  WaningEffectMapLinearAge can be used to set the probability that a dose is take based on a person's age.  WaningEffectCombo can be used to combine them."
+
+#define SV_Waning_Config_DESC_TEXT "The configuration of the vaccine's efficacy and waning over time."
+
+#define Property_Restrictions_Within_Node_DESC_TEXT           "A list of JSON objects where each object has Individual Property (IP) Keys as JSON keys and IP Values as JSON values (like 'Risk' : 'HIGH').  The values in the object are AND'd together while the objects are OR'd together.  An individual's IP values must meet the logic in order to receive the intervention."
+
+#define MR_Released_Mate_Genome_DESC_TEXT  "This defines the alleles of the genome of the vectors to be released. The Released_Mate_Genome must be male, and Released_Genome must be female. It must define all of the alleles including the gender 'gene'.  '*' is not allowed. When this parameter is defined, the released female vectors will be fully gestated and ready to lay eggs, which will be the product of Released_Genome and Released_Mate_Genome."
+
+
+// Removed
+//#define SS_Reduction_Config_DESC_TEXT "The configuration of larval habitat reduction and waning for space spraying."
+//#define LV_Blocking_Config_DESC_TEXT "The configuration of larval habitat reduction and waning for targeted stage."
+//#define LV_Killing_Config_DESC_TEXT "The configuration of larval killing efficacy and waning for targeted stage."
+//#define AFK_Killing_DESC_TEXT "The configuration of killing efficacy of the targeted stage. Use a waning effect class to specify how this effect decays over time."
+//#define VCN_Killing_DESC_TEXT "The configuration for the effects of killing of the targeted stage. Use a waning effect class to specify how this effect decays over time."
+//#define SS_Killing_Config_DESC_TEXT "The configuration of killing efficacy and waning for space spaying."
+//#define SR_Repellency_Config_DESC_TEXT "The configuration of efficacy and waning for spatial repellent."
+//#define SIR_Blocking_Config_DESC_TEXT "The configuration of efficacy and waning for individual repellent."
+//#define SS_Habitat_Target_DESC_TEXT "The larval habitat type targeted for habitat reduction."
+//#define SS_Kill_Target_DESC_TEXT "The gender kill-target of vector control interventions."
+//#define DTN_Negative_Diagnosis_Config_Event_DESC_TEXT "Specifies what state transition event will occur if an individual tests negative."
+//#define DTN_Negative_Diagnosis_Config_DESC_TEXT "The intervention distributed to individuals, if they test negative. This is only valid if Event_Or_Config is set to Config."
+//#define MR_Released_HEGs_DESC_TEXT "HEG characteristics of released mosquitoes."
+//#define MR_Mated_Genetics_DESC_TEXT "The genetic properties of the mate if released mosquitoes have mated, e.g. HEG and pesticide resistance."
+//#define MR_Released_Pesticide_Resistance_DESC_TEXT "The pesticide resistance characteristics of released mosquitoes."
+//#define MR_Released_Gender_DESC_TEXT "The gender of released mosquitoes."
+//#define MR_Released_Genetics_DESC_TEXT "The genetic properties of the released mosquito, e.g. HEG and pesticide resistance."
+//#define MR_Released_Sterility_DESC_TEXT "The sterility of released mosquitoes."
+//#define IBT_Negative_Diagnosis_Config_Event_DESC_TEXT "If an individual tests negative (does not have immunity), then an individual type event is broadcast. This may trigger another intervention when the event occurs. Only used when **Event_Or_Config** is set to Event."
+//#define IKF_Killing_Config_DESC_TEXT       "Define a WaningEffect that determines the probability that a vector will be killed due to the intervention.  InsectKillingFence has two chances to kill a vector: 1) when the vector is inbound to bite a person and 2) when the vector is outbound after biting a person."
+//#define HIV_ASBCD_Enable_IsSymptomatic_DESC_TEXT "If true, requires an infection to be symptomatic to return a positive test."
+//#define STI_IPD_Enable_IsSymptomatic_DESC_TEXT "If true, requires an infection to be symptomatic to return a positive test."
+//#define Enable_IsSymptomatic_DESC_TEXT "If true, requires an infection to be symptomatic to return a positive test."
+//#define HIV_Enable_IsSymptomatic_DESC_TEXT "If true, requires an infection to be symptomatic to return a positive test."
+//#define DTN_Enable_IsSymptomatic_DESC_TEXT "If true, requires an infection to be symptomatic to return a positive test."
+//#define IBT_Enable_IsSymptomatic_DESC_TEXT "If true, requires an infection to be symptomatic to return a positive test."
+//#define HIV_RHD_Enable_IsSymptomatic_DESC_TEXT "If true, requires an infection to be symptomatic to return a positive test."
+//#define MDR_Enable_IsSymptomatic_DESC_TEXT "If true, requires an infection to be symptomatic to return a positive test."
+//#define HIV_PBYASD_Enable_IsSymptomatic_DESC_TEXT "If true, requires an infection to be symptomatic to return a positive test."
+//#define MD_Enable_IsSymptomatic_DESC_TEXT "If true, requires an infection to be symptomatic to return a positive test."
+//#define HIV_AgeDiagnostic_Enable_IsSymptomatic_DESC_TEXT "If true, requires an infection to be symptomatic to return a positive test."
+//#define STI_Enable_IsSymptomatic_DESC_TEXT "If true, requires an infection to be symptomatic to return a positive test."
+//#define HIV_CD4Diagnostic_Enable_IsSymptomatic_DESC_TEXT "If true, requires an infection to be symptomatic to return a positive test."
+//#define AMDRUG_Dosing_Type_DESC_TEXT "The type of anti-malarial dosing to distribute in a drug intervention."
+//#define HM_Blocking_Config_DESC_TEXT "The configuration of pre-feed mosquito repellency and waning for housing modification."
+//#define Days_To_Diagnosis_DESC_TEXT "The number of days from test until diagnosis."
+//#define IBT_Days_To_Diagnosis_DESC_TEXT "The number of days from test until diagnosis."
+//#define OIM_Create_Random_Genome_DESC_TEXT "If set to true (1), then a random genome is created for the infection and the Genome_Markers parameter is not used. If set to false (0), then you must define the  Genome_Markers parameter which allows you to then specify genetic components in a strain of infection."
+//#define OIM_Genome_Markers_DESC_TEXT "A list of the names of genome marker(s) that represent the genetic components in a strain of an infection."
+
+// AntiretroviralTherapy
+#define ART_Days_To_Achieve_Viral_Suppression_DESC_TEXT "The number of days after ART initiation over which infectiousness declines linearly until the ART_Multiplier_On_Transmission_Prob_Per_Act takes full effect."
+#define ART_Is_Active_Against_Mortality_And_Transmission_DESC_TEXT "If set to true (1), ART will suppress viral load and extend prognosis."
+#define ART_Multiplier_On_Transmission_Prob_Per_Act_DESC_TEXT "Multiplier acting on Base_Infectivity to determine the per-act transmission probability of a virally suppressed HIV+ individual."
+#define ART_Survival_Baseline_Hazard_Weibull_Shape_DESC_TEXT "Shape parameter for a Weibull distribution of survival time in years for a male < 40 with WHO stage of 1 or 2 starting ART (base case)."
+#define ART_Survival_Baseline_Hazard_Weibull_Scale_DESC_TEXT "Scale parameter for a Weibull distribution of survival time in years for a male < 40 with WHO stage of 1 or 2 starting ART (base case)."
+#define ART_Survival_Hazard_Ratio_Female_DESC_TEXT "The hazard ratio comparing survival female to male survival for those starting ART."
+#define ART_Survival_Hazard_Ratio_Age_Over_40Yr_DESC_TEXT "The hazard ratio comparing the survival time of those starting ART over 40 years of age compared to those starting ART <40 years."
+#define ART_Survival_WHO_Stage_Threshold_For_Cox_DESC_TEXT "If the person receiving ART has a WHO Stage greater than or equal to this threshold, then use the hazard ratio determined by the parameter ART_Survival_Hazard_Ratio_WHO_Stage_3Plus."
+#define ART_Survival_Hazard_Ratio_WHO_Stage_3Plus_DESC_TEXT "The hazard ratio comparing those starting ART in WHO stage >= 3 to those in WHO stage < 3."
+#define ART_Survival_Hazard_Ratio_CD4_Slope_DESC_TEXT "The slope value to sue when calculating the hazard for for the person based on their CD4 count: multiplier = exp(cd4_slope * cd4 + cd4_intercept)"
+#define ART_Survival_Hazard_Ratio_CD4_Intercept_DESC_TEXT "The Y-intercept to use when calculating the hazard ratio for the person based on their CD4 count: multiplier = exp(cd4_slope * cd4 + cd4_intercept)"
+#define ART_Survival_Hazard_Ratio_Body_Weight_Kg_Slope_DESC_TEXT "The slope to use when calculating the hazard ratio for the person’s body weight. The body weight is determined by WHO stage:\nWHO Stage 0 = 65.0 kg\nWHO Stage 1-2 = 62.1 kg\nWHO Stage 2-3 = 57.0 kg\nWHO Stage 3-4 = 50.0 kg\nWHO Stage 4+ = 40.1 kg\nmultiplier = exp(weight_slope * weight + weight_intercept)"
+#define ART_Survival_Hazard_Ratio_Body_Weight_Kg_Intercept_DESC_TEXT "The Y-intercept to use when calculating the hazard ratio for the person’s body weight.  The body weight is determined by WHO stage:\nWHO Stage 0 = 65.0 kg\nWHO Stage 1-2 = 62.1 kg\nWHO Stage 2-3 = 57.0 kg\nWHO Stage 3-4 = 50.0 kg\nWHO Stage 4+ = 40.1 kg\nmultiplier = exp(weight_slope * weight + weight_intercept)"
+
+#define CARF_Acquisition_Multiplier_DESC_TEXT "Multiplier for STI acquisition probability per coital act."
+#define CARF_Transmission_Multiplier_DESC_TEXT "Multiplier for STI transmission probability per coital act."
+#define CARF_Expiration_Distribution_DESC_TEXT "The distribution type to use for setting the expiration of the intervention. Each assigned value is a random draw from the distribution. Possible values are:\nNOT_INITIALIZED\nCONSTANT_DISTRIBUTION\nUNIFORM_DISTRIBUTION\nGAUSSIAN_DISTRIBUTION\nEXPONENTIAL_DISTRIBUTION\nPOISSON_DISTRIBUTION\nLOG_NORMAL_DISTRIBUTION\nDUAL_CONSTANT_DISTRIBUTION\nWEIBULL_DISTRIBUTION\nDUAL_EXPONENTIAL_DISTRIBUTION"
+#define CARF_Expiration_Event_Trigger_DESC_TEXT "When the intervention expires, this event will be broadcasted. See Event list for possible built-in values, or create custom values using Custom_Individual_Events."
+
+// ARTMortalityTable
+#define ART_Duration_Days_Bins_DESC_TEXT "An array of bins representing the person’s duration on ART, in days (greater than or equal to the value of the bin, but less than the value of the next bin). Each value represents the outer dimension of the MortalityTable."
+#define ART_Age_Years_Bins_DESC_TEXT "An array of bins representing the age of the person, in years, at the time they received the intervention (greater than or equal to the value of the bin, but less than the value of the next bin). If they are new to ART, then it is the age that they started ART. If they are changing their adherence, then it is the age at that time. This bin is used to select the second dimension of the MortalityTable."
+#define ART_CD4_Count_Bins_DESC_TEXT "An array of bins representing a person’s CD4 count at the time they received the intervention (started ART or changed adherence). For each value in the array, there will be one value in the associated row in the MortalityTable. A mortality rate will be selected from the table as follows:\nPerson’s CD4 is less than first value in array: Use first mortality rate\nPerson’s CD4 is greater than the last value in the array: Use the last mortality rate\nPerson’s CD4 is between two values: Use linear interpolation to find the mortality rate associated with the person’s CD4"
+#define ART_Mortality_Table_DESC_TEXT "Three-dimensional array of mortality rates used to determine the number of days until AIDS death. Dimensioned by the values specified in ART_Duration_Days_Bins, Age_Years_Bins, and CD4_Count_Bins."
+
+#define Targeting_Config_DESC_TEXT "Be more selective of individuals by using the Targeting_Config classes."
+
+#define AR_Is_Equal_To_DESC_TEXT "This is used to determine if the individual is selected based on the result of the value of the question. Set to 1 for true and 0 for false."
+#define AR_More_Or_Less_DESC_TEXT "This is used to determine if the check should be less than or greater than. Possible values are ‘MORE’ or ‘LESS’."
+#define AR_Num_Months_DESC_TEXT "This is the number of months that will be used in the test. The individual’s duration on ART must be more or less than this value. NOTE: 1500 months is about 12 months / year * 125 years of max age"
+#define AR_Num_Months_Type_DESC_TEXT "This parameter allows the user to set the maximum number of months from the current day to consider if the individual had multiple relationships. Possible values are ‘THREE_MONTHS’, ‘SIX_MONTHS’, ‘NINE_MONTHS’, or ‘TWELVE_MONTHS’."
+#define AR_Relationship_Type_DESC_TEXT "If the user sets this value to one of the four specific types (TRANSITORY, INFORMAL, MARITAL, COMMERCIAL), then the individual must have more or less relationships of this type. When the value is set to ‘NA’ (default), then it will count the relationships regardless of type."
+#define AR_IP_Key_Value_DESC_TEXT "An IndividualProperties Key:Value pair where the key/property name and one of its values is separated by a colon (‘:’)."
+#define AR_Num_Partners_DESC_TEXT "This parameter allows the user to set the number of active partners/relationships that the individual must have more or less of."
+#define AR_Intervention_Name_DESC_TEXT "The name of the intervention the person should have. This cannot be an empty string but should be either the name of the class or the name given to the intervention of interest using the parameter Intervention_Name. EMOD does not verify that this name exists."
+#define AR_And_Has_Ever_Been_Tested_DESC_TEXT "If the user sets this Enum to ‘YES’, then the individual’s true infection status must equal Is_Equal_To and the person must have been tested at least once. Notice that this only tells if the person has been tested, NOT that they tested positive. If set to ‘NA’ (default), then do not include this as part of the check. Possible values are ‘YES’, ‘NO’, and ‘NA’."
+#define AR_And_Has_Ever_Tested_Positive_DESC_TEXT "If the user sets this Enum to ‘YES’, then the individual’s true infection status must equal Is_Equal_To and the person must have tested POSITIVE at least once. Notice that this is different than just having been tested. However, it does not say the person received the results. If set to ‘NA’ (default), then do not include this as part of the check. Possible values are ‘YES’, ‘NO’, and ‘NA’."
+#define AR_And_Has_Received_Positive_Results_DESC_TEXT "If the user sets this Enum to ‘YES’, then the individual’s true infection status must equal Is_Equal_To and the last test result received was positive. Possible values are ‘YES’, ‘NO’, and ‘NA’ (default)."
+#define AR_Min_CD4_DESC_TEXT "The minimum value of the test range. The individual’s CD4 can be equal to this value to be considered ‘between’."
+#define AR_Max_CD4_DESC_TEXT "The maximum value of the test range. The individual’s CD4 must be strictly less than this value to be considered ‘between’."
+#define AR_That_Recently_DESC_TEXT "This parameter is used if the relationship being considered must have recently been started or ended. Possible values are:\nNA (Default)\nDo no consider That_Recently in the selection process.\nSTARTED\nOnly consider relationships that have started within one time-step. One should note that the relationships you see will depend on whether you are using NodeLevelHealthTriggeredIV (NLHTIV) or an event coordinator. NLHTIV and the individuals will be updated after new relationships have been created so with this feature, NLHTIV will see relationships in the previous time step as well as the current time step. An event coordinator executes BEFORE new relationships are formed so it will only see the relationships created in the previous time step.\nENDED\nCheck the status of the relationship that just ended. Note: This can only be used with NodeLevelHealthTriggeredIV listening for the ‘ExitedRelationship’ event."
+#define AR_That_Recently_Ended_Due_To_DESC_TEXT "If That_Recently is set to ‘ENDED’, this is used to look at the reason the relationship ended. Possible values are:\nNA (Default)\nThe relationship has not been terminated.\nBROKEUP\nThe relationship ended due to the duration settings.\nSELF_MIGRATING\nOne of the partners in the relationship has decided to migrate and so the relationship is terminated. Note: the user can control what happens to a relationship when there is migration; it does not have to terminate.\nPARTNER_MIGRATING\nThe relationship is being terminated because one of the partners has another partner that is migrating. For example, a married couple is moving because the wife got a new job. The husband must terminate his other relationships with ‘PARTNER_MIGRATING’.\nPARTNER_DIED\nOne of the partners died so the relationship was terminated.\nPARTNER_TERMINATED\nThis happens when the couple is separated due to migration and one of the partners decides to terminate the relationship."
+#define AR_With_Partner_Who_DESC_TEXT "Given that the parameters about the relationship are true, this parameter is used to look at the partner of the relationship. It is a Targeting_Config so one uses the same classes to query the partner. For example, to find out if person has a partner with HIV, you could use IsHivPositive."
+#define AR_Logic_DESC_TEXT "This is a two-dimensional array of JSON objects. The elements of the inner array will be AND’d together while the arrays themselves will be OR’d. This is similar to Property_Restrictions_Within_Node. This array and the inner arrays cannot be empty."
+
+#define Male_Circumcision_Cost_To_Consumer_DESC_TEXT "The cost for one male circumcision.  If it is distributed to a man, the value will be added to the Campaign Cost."
+
+#define ARTFull_Time_On_ART_Distribution_DESC_TEXT "The type of distribution to use when determine how long a person will be on ART."
+#define ARTFull_Stop_ART_Event_DESC_TEXT "This event is broadcasted when the person drops off ART.  This could happen either via the timer running out or the intervention detected a disqualifying property."
+
+#define AD_Positive_Diagnosis_Event_DESC_TEXT "If an individual tests positive, this specifies an event that may trigger another intervention when the event occurs."
+#define AD_Negative_Diagnosis_Event_DESC_TEXT "If an individual tests negative, this specifies an event that may trigger another intervention when the event occurs."
+
+#define HIV_Random_Choise_Cost_To_Consumer_DESC_TEXT "The unit 'cost' assigned to the intervention. Setting Cost_To_Consumer to zero for all other interventions, and to a non-zero amount for one intervention, provides a convenient way to track the number of times the intervention has been applied in a simulation."
+
+#define HIV_RHD_Sensitivity_Type_DESC_TEXT "Set to SINGLE_VALUE (default) to use the single value of Base_Sensitivity or VERSUS_TIME to have sensitivity be based on the duration since the person became infected, Sensitivity_Versus_Time."
+#define HIV_RHD_Sensitivity_Versus_Time_DESC_TEXT "The 'Times' values are the duration from when the person became infected.  'Values' is the sensitivity of the diagnostic for the given age of the infection."
+
+#define Number_Repetitions_DESC_TEXT "The number of times an intervention is given, used with Timesteps_Between_Repetitions.  A value of -1 implies an infinite number of repetitions."
+
+#define RTEC_Tracking_Config_DESC_TEXT "Use the Tracking_Config objects to define the attribute to be tracked.  The number of people that have this attribute is the numerator while the other targeting parameters define the denominator of the coverage.  People without this attribute will be given the intervention."
+
+#define FC_Waning_Config_DESC_TEXT "A WaningEffect object used to control the efficacy of the contraceptive, typically over time."
+#define FC_Cost_To_Consumer_DESC_TEXT "The cost of getting the contraceptive each time it is distributed."
+#define FC_Usage_Duration_Distribution_DESC_TEXT "For the distribution of each contraceptive, a randomly selected duration from this distribution will determine when the woman stops using the contracpetive.  This is independent of how long the contraceptive is effective."
+#define FC_Usage_Expiration_Event_DESC_TEXT "When the person stops using the contraceptive, this event will be broadcasted."
+
+#define INDDRM_Duration_To_Modifier_DESC_TEXT "Using linear interpolation, a modifier is determined based on the duration since the person received the intervention.  If the duration exceeds the max time, then last modifier value will be used."
+#define INDDRM_Cost_To_Consumer_DESC_TEXT "The cost of getting the non-disease death modifier each time it is distributed."
+#define INDDRM_Expiration_Duration_Distribution_DESC_TEXT "For the distribution of each intervention, a randomly selected duration from this distribution will determine when the person stops using the intervention.  This is independent of how long the intervention is effective."
+#define INDDRM_Expiration_Event_DESC_TEXT "When the person stops using the intervention, this event will be broadcasted."
+
+#define SNR_Relationship_Type_DESC_TEXT "The type of the relationship to start for this person."
+#define SNR_Partner_Has_IP_DESC_TEXT "The Individual Property Key:Value pair that the potential partner must have.  Empty string implies no filtering."
+#define SNR_Relationship_Created_DESC_TEXT "The event trigger to broadcast when a new relationship is created due to the intervention."
+#define SNR_Condoum_Usage_Parameters_Type_DESC_TEXT "Indicates if the relationship should use the condom usage parameters associated with the relationship type (default) or specify usage sigmoid parameters for this specific relationship."
+#define SNR_Condom_Usage_Sigmoid_DESC_TEXT "The parameters defining a sigmoid where the calendar year is used to determine the probability that the man will condoms during coital acts."
+
+#define WEM_Expire_At_Durability_Map_End_DESC_TEXT "Set to 1 to have efficacy go to zero and let the intervention expire when the end of the map is reached.  Only vaccines and bednet usage currently support this expiration feature."
+
+#define STI_Barrier_Usage_Duration_Distribution_DESC_TEXT "For the distribution of each STIBarrier, a randomly selected duration from this distribution will determine when the man stops using the intervention and revert back to condom usage based on the relationship type."
+#define STI_Barrier_Usage_Expiration_Event_DESC_TEXT "When the person stops using the STIBarrier, this event will be broadcasted."
+
+#define WEM_Reference_Time_DESC_TEXT "Used by TyphoidVaccine and TyphoidWASH only.  Timestamp at which linear/piecewise-map should be anchored.  We want to 'fast-forward' the time-since-start for birth-triggered individuals so the map catches up to what it would have been if they'd been alive."
+
+#define FNWNPEC_Node_ID_DESC_TEXT "The ID of the node found in the demographics to check if it has the give node property."
+#define FNWNPEC_Coordinator_Event_To_Broadcast_DESC_TEXT "The coordinator event to broadcast when the node is selected (i.e. is the first one found with the NP key:value)."
+#define FNWNPEC_Start_Trigger_Condition_List_DESC_TEXT "If one of the coordinator events in this list is heard, the coordinator will start and attempt to send an event based on the selection of a node."
+#define FNWNPEC_Not_Found_Coordinator_Event_DESC_TEXT "Coordinator event to broadcast when a node with the given Node Property key:value is not found."
+#define FNWNPEC_Node_ID_To_Coordinator_Event_List_DESC_TEXT "The list of Node ID & Coordinator Event pairs to find the first node id that has the given Node Property."
+#define FNWNPEC_Node_Property_Key_Value_To_Have_DESC_TEXT "The Node Property key:value that the node must have to get its event broadcasted. "
+
+#define BCEFN_Broadcast_Event_DESC_TEXT "The Coordinator Event to be broacasted by this individual.  An EventCoordinator like TriggeredEventCoordinator could be activated from this event."
+
+
+#define ASOI_Relationship_Type_DESC_TEXT "Change the behavior of the relationships for this type of relationship in this node."
+#define RFRC_Overriding_Formation_Rate_DESC_TEXT "The constant formation rate to start using for the relationships in the node of the selected type.  Assumes node is configured for constant formation rate."
+#define CARC_Overriding_Coital_Act_Rate_DESC_TEXT "The new coital act rate to use in the node for this relationship type."
+#define CUPC_Overriding_Condom_Usage_Probability_DESC_TEXT "The new sigmoid to use when determining the probability that a condom is used during a coital act."
+#define RDC_Overriding_Duration_Weibull_Heterogeneity_DESC_TEXT "Override the Duration_Weibull_Heterogeneity parameter for this relationship type.  The heterogeneity parameter is the inverse of the Weibull shape (1/kappa) parameter of relationship duration in years."
+#define RDC_Overriding_Duration_Weibull_Scale_DESC_TEXT "Override the Duration_Weibull_Scale parameter for this relationship type.  The heterogeneity parameter is the Weibull scale parameter of relationship duration in years."
+
+#define Sexual_Debut_Age_Setting_Type_DESC_TEXT "Use Weibull distribution to initialize sexual debut age or an intervention."
+#define Set_Sexual_Debut_Age_Distributed_Event_Trigger_DESC_TEXT "Trigger to set sexual debut age was distributed."
+
+#define VC_Update_Period_DESC_TEXT  "The number of days between the sampling of the mosquito population. If the mosquitoes are sampled on day 1 and the period is 30, then the next sample will be taken on day 31."
+#define VC_Species_DESC_TEXT "The name of the species to sample the mosquitoes from. This string must be defined by the Name parameter in the config.Vector_Species_Param parameters."
+#define VC_Count_Type_DESC_TEXT "The attribute to count in the mosquitoes being sampled. The statistic returned by the Vector_Counter will be with respect to how this attribute relates to the mosquitos sampled. Possible values are 'ALLELE_FREQ' - Calculates the frequency of every allele in the sampled population. NOTE: This will be account the occurrences of the allele where there can be two per vector(i.e.you can get 0, 1, or 2 from each vector); GENOME_FRACTION - Calculates the fraction of each (grouped by similar) genome in the sampled population."
+#define VC_Gender_DESC_TEXT "The sex of the vectors we are sampling. Options are VECTOR_MALE, VECTOR_FEMALE, VECTOR_BOTH_GENDERS."
+#define VC_Sample_Size_Distribution_DESC_TEXT "The distribution dictionary to use for determining the number of vectors in the sample for each sampling. If the population is less than this number, then the entire population will be selected."
+
+#define VSEC_Counter_DESC_TEXT "Configuration dictionary of the sampling parameters."
+#define VSEC_Responder_DESC_TEXT "Contains optional Responded_Event, which is sent out every time VectorSurveillanceEventCoordinator runs."
+#define VSEC_Start_Trigger_Condition_List_DESC_TEXT "List of Coordinator-level events that will trigger VectorSurveillanceEventCoordinator to run sampling every Update_Period, starting at the time trigger is received."
+#define VSEC_Stop_Trigger_Condition_List_DESC_TEXT "Optional list of Coordinator-level events that will trigger VectorSurveillanceEventCoordinator to stop sampling."
+#define VSEC_Duration_DESC_TEXT "Number of timesteps for which, after being distributed, VectorSurveillanceEventCoordinator will exist and wait for Start/Stop triggers."
+#define VSEC_Survey_Completed_Event_DESC_TEXT "Optional Coordinator-level event that will be sent out every time VectorSurveillanceEventCoordinator surveys the vector population."

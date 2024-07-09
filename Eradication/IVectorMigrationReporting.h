@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -15,10 +7,10 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 namespace Kernel
 {
     struct IVectorCohort;
-    struct ISimulationContext ;
+    struct ISimulationContext;
 
     // Allows reports to get data on vector migration
-    struct IVectorMigrationReporting// : ISupports
+    struct IVectorMigrationReporting : ISupports
     {
         virtual ~IVectorMigrationReporting() {};
 

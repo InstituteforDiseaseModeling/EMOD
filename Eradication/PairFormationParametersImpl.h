@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -60,6 +52,8 @@ namespace Kernel {
         virtual float FormationRate( const IdmDateTime& rCurrentTime, float dt ) const override;
         virtual float UpdatePeriod() const override;
 
+        virtual void SetOverrideRelationshipFormationRate( float rate ) override;
+
         // ---------------------
         // --- ISupport Methods
         // ---------------------
@@ -92,8 +86,6 @@ namespace Kernel {
         float initial_female_age;
         float female_age_increment;
 
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         float rate_ratio[Gender::COUNT];
 
         map<int, vector<float>> age_bins;
@@ -108,8 +100,8 @@ namespace Kernel {
         float                   formation_rate_constant;
         InterpolatedValueMap    formation_rate_value_map;
         Sigmoid                 formation_rate_sigmoid;
+        float                   override_formation_rate_constant;
 
         DECLARE_SERIALIZABLE(PairFormationParametersImpl);
-#pragma warning( pop )
     };
 }

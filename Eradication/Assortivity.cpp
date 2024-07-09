@@ -1,14 +1,7 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "Assortivity.h"
+#include "demographic_params.rc"
 #include "Exceptions.h"
 #include "RANDOM.h"
 #include "IndividualEventContext.h"
@@ -67,33 +60,37 @@ namespace Kernel
         try
         {
 
-            initConfig( "Group", m_Group, config, MetadataDescriptor::Enum("m_Group", "TBD", MDD_ENUM_ARGS(AssortivityGroup)) ); 
+            initConfig( "Group", m_Group, config, MetadataDescriptor::Enum("m_Group", Group_DESC_TEXT, MDD_ENUM_ARGS(AssortivityGroup)) ); 
 
+            IPKeyParameter ip_key;
             if( JsonConfigurable::_dryrun || (m_Group != AssortivityGroup::NO_GROUP) )
             {
-                initConfigTypeMap( "Axes", &m_Axes, "TBD - The axes (row/columns) of the weighting matrix." );
+                initConfigTypeMap( "Axes", &m_Axes, Axes_DESC_TEXT );
 
-                initConfigTypeMap( "Weighting_Matrix_RowMale_ColumnFemale", &m_WeightingMatrix, "TBD - Values to assign a possible pairing.  Rows are indexed by the male attribute and columns by the female attribute.", 0.0f, 1.0f, 0.0f );
+                initConfigTypeMap( "Weighting_Matrix_RowMale_ColumnFemale", &m_WeightingMatrix, Weighting_Matrix_RowMale_ColumnFemale_DESC_TEXT, 0.0f, 1.0f );
 
                 if( JsonConfigurable::_dryrun || (m_Group == AssortivityGroup::INDIVIDUAL_PROPERTY) )
                 {
                     std::string rel_type_str = RelationshipType::pairs::lookup_key( m_RelType ) ;
                     std::string param_name = rel_type_str + std::string(":Property_Name") ;
-                    m_PropertyKey.SetParameterName( param_name );
-                    initConfigTypeMap( "Property_Name", &m_PropertyKey, "TBD - The name of the property to base the assortivity on." );
+                    ip_key.SetParameterName( param_name );
+                    initConfigTypeMap( "Property_Name", &ip_key, Property_Name_DESC_TEXT );
                 }
             }
 
-            initConfigTypeMap( "Start_Year", &m_StartYear, "TBD - The year to start using the assortivity preference.", MIN_YEAR, MAX_YEAR, MIN_YEAR, "Group", "STI_COINFECTION_STATUS,HIV_INFECTION_STATUS,HIV_TESTED_POSITIVE_STATUS,HIV_RECEIVED_RESULTS_STATUS");
+            initConfigTypeMap( "Start_Year", &m_StartYear, Assortivity_Start_Year_DESC_TEXT, MIN_YEAR, MAX_YEAR, MIN_YEAR, "Group", "STI_COINFECTION_STATUS,HIV_INFECTION_STATUS,HIV_TESTED_POSITIVE_STATUS,HIV_RECEIVED_RESULTS_STATUS");
             AddConfigurationParameters( m_Group, config );
 
             ret = JsonConfigurable::Configure( config );
-
-            if (ret && !JsonConfigurable::_dryrun && 
-                UsesStartYear() && m_StartYear < Simulation::base_year)
+            if( ret && !JsonConfigurable::_dryrun )
+            {
+                m_PropertyKey = ip_key;
+                if( UsesStartYear() && m_StartYear < Simulation::base_year )
                 {
-                    LOG_WARN_F("Start_Year (%f) specified before Base_Year (%f), for relationship type %s\n", m_StartYear, Simulation::base_year, RelationshipType::pairs::lookup_key(m_RelType));
+                    LOG_WARN_F("Start_Year (%f) specified before Base_Year (%f), for relationship type %s\n",
+                                m_StartYear, Simulation::base_year, RelationshipType::pairs::lookup_key(m_RelType));
                 }
+            }
 
             JsonConfigurable::_useDefaults = prev_use_defaults ;
             JsonConfigurable::_track_missing = resetTrackMissing;

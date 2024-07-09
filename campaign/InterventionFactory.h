@@ -1,73 +1,53 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
 #include <functional>
 #include "FactorySupport.h"
 #include "Interventions.h"
+#include "ObjectFactory.h"
 
 namespace Kernel
 {
-    //struct IDistributableIntervention;
-
-    // You can create 3 kinds of interventions:
-    // 1) 'Regular' Individual-Targeted Interventions: IDistributableIntervention.
-    // 2) 'Regular' Node-Targeted Interventions: INodeDistributableIntervention.
-    // 3) 'Distributing' Individual-Targeted Interventions, e.g., Health-Seeking 
-    // or Health-Targeted, which themselves actually distribute 1 or more actual 
-    // interventions: IDistributingDistributableIntervention.
-    class IInterventionFactory
+    struct IInterventionFactory
     {
-    public:
-        virtual void Register(const char * classname, instantiator_function_t _if) = 0;
-        virtual IDistributableIntervention* CreateIntervention(const Configuration *config) = 0; // returns NULL if could not create a distributable intervention with the specified definition
-        virtual INodeDistributableIntervention* CreateNDIIntervention(const Configuration *config) = 0; // returns NULL if could not create a node distributable intervention with the specified definition
-        virtual json::QuickBuilder GetSchema() = 0;
+        virtual void Register( const char *classname, instantiator_function_t _if ) = 0;
     };
-            
-    class InterventionFactory : public IInterventionFactory
+
+    class InterventionFactory : public ObjectFactory<IDistributableIntervention,InterventionFactory>
+                              , public IInterventionFactory
     {
     public:
+        virtual void Register( const char *classname, instantiator_function_t _if ) override;
 
-        static IInterventionFactory * getInstance()
-        {
-            return _instance ? _instance : _instance = new InterventionFactory();
-        }
+        // returns NULL if could not create a distributable intervention with the specified definition
+        IDistributableIntervention* CreateIntervention( const json::Element& rJsonElement,
+                                                        const std::string& rDataLocation,
+                                                        const char* parameterName,
+                                                        bool throwIfNull=false );
+        void CreateInterventionList( const json::Element& rJsonElement,
+                                     const std::string& rDataLocation,
+                                     const char* parameterName,
+                                     std::vector<IDistributableIntervention*>& interventionsList );
 
-        IDistributableIntervention* CreateIntervention(const Configuration *config); // returns NULL if could not create a distributable intervention with the specified definition
-        INodeDistributableIntervention* CreateNDIIntervention(const Configuration *config); // returns NULL if could not create a node distributable intervention with the specified definition
+        // returns NULL if could not create a node distributable intervention with the specified definition
+        INodeDistributableIntervention* CreateNDIIntervention( const json::Element& rJsonElement,
+                                                               const std::string& rDataLocation,
+                                                               const char* parameterName,
+                                                               bool throwIfNull=false );
+        void CreateNDIInterventionList( const json::Element& rJsonElement,
+                                        const std::string& rDataLocation,
+                                        const char* parameterName,
+                                        std::vector<INodeDistributableIntervention*>& interventionsList );
 
-        // use static classes that call this registration method on init to get started           
-        /*static*/ void Register(const char *classname, instantiator_function_t _if)
-        {
-            string classnameString(classname);
-            getRegisteredClasses()[classnameString] = _if;
-        }
-
-        virtual json::QuickBuilder GetSchema();
-
-        static bool useDefaults;
+        void SetUseDefaults( bool useDefaults );
+        bool IsUsingDefaults() const;
 
     protected:
-        
-        static support_spec_map_t& getRegisteredClasses()
-        {
-            static support_spec_map_t registered_classes;
-            return registered_classes;
-        }
+        template<class IObject, class Factory> friend class Kernel::ObjectFactory;
 
-        static json::Object campaignSchema;
-
-    private:
-        static IInterventionFactory * _instance;
         InterventionFactory();
-        void LoadDynamicLibraries();
+        virtual void ModifySchema( json::QuickBuilder& rSchema, ISupports*pObject );
+
+        bool m_UseDefaults;
     };
 }

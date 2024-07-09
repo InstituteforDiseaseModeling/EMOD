@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "ImportPressure.h"
@@ -45,8 +37,8 @@ namespace Kernel
     {
         LOG_DEBUG_F( "%s\n", __FUNCTION__ );
         // TODO: specification for rate, seasonality, and age-biting function
-        initConfigTypeMap( "Durations",              &durations,              IP_Durations_DESC_TEXT,               0, INT_MAX, 1 );
-        initConfigTypeMap( "Daily_Import_Pressures", &daily_import_pressures, IP_Daily_Import_Pressures_DESC_TEXT , 0, FLT_MAX, 0 );
+        initConfigTypeMap( "Durations",              &durations,              IP_Durations_DESC_TEXT,               0, INT_MAX );
+        initConfigTypeMap( "Daily_Import_Pressures", &daily_import_pressures, IP_Daily_Import_Pressures_DESC_TEXT , 0, FLT_MAX );
 
         bool configured = Outbreak::Configure( inputJson );
 
@@ -65,6 +57,10 @@ namespace Kernel
             ConstructDistributionCalendar();
         }
         return configured;
+    }
+
+    void ImportPressure::ExtraConfiguration()
+    {
     }
 
     bool ImportPressure::Distribute(INodeEventContext *context, IEventCoordinator2* pEC)
@@ -132,7 +128,7 @@ namespace Kernel
         else
         {       
             LOG_DEBUG_F("Duration counter = %f, Total duration = %f, import_cases = %d\n", (float) duration_counter, (float) durations_and_pressures.back().first, (int) num_imports);
-            StrainIdentity* strain_identity = GetNewStrainIdentity(parent);
+            IStrainIdentity* strain_identity = GetNewStrainIdentity( parent );
 
             IOutbreakConsumer *ioc;
             if (s_OK == parent->QueryInterface(GET_IID(IOutbreakConsumer), (void**)&ioc))

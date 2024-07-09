@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
@@ -78,6 +70,52 @@ namespace ReportUtilities
         }
     }
 
+    void InternalDeserializeVector( IJsonObjectAdapter* p_json_array, bool isSettingValuesInVector, std::vector<uint32_t>& rData )
+    {
+        if( isSettingValuesInVector && (rData.size() != p_json_array->GetSize()) )
+        {
+            std::stringstream ss;
+            ss << "Cannot deserialize json into 1D-array because they are not the same size.  vector.size=" << rData.size() << "  json_size=" << p_json_array->GetSize();
+            throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+        }
+
+        for( unsigned int i = 0; i < p_json_array->GetSize(); ++i )
+        {
+            uint32_t value = (*p_json_array)[ IndexType( i ) ]->AsInt();
+            if( isSettingValuesInVector )
+            {
+                rData[ i ] = value;
+            }
+            else
+            {
+                rData.push_back( value );
+            }
+        }
+    }
+
+    void InternalDeserializeVector( IJsonObjectAdapter* p_json_array, bool isSettingValuesInVector, std::vector<float>& rData )
+    {
+        if( isSettingValuesInVector && (rData.size() != p_json_array->GetSize()) )
+        {
+            std::stringstream ss;
+            ss << "Cannot deserialize json into 1D-array because they are not the same size.  vector.size=" << rData.size() << "  json_size=" << p_json_array->GetSize();
+            throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+        }
+
+        for( unsigned int i = 0; i < p_json_array->GetSize(); ++i )
+        {
+            float value = (*p_json_array)[ IndexType( i ) ]->AsFloat();
+            if( isSettingValuesInVector )
+            {
+                rData[ i ] = value;
+            }
+            else
+            {
+                rData.push_back( value );
+            }
+        }
+    }
+
     void InternalDeserializeVector( IJsonObjectAdapter* p_json_array, bool isSettingValuesInVector, std::vector<std::vector<double>>& rData )
     {
         if( isSettingValuesInVector && (rData.size() != p_json_array->GetSize()) )
@@ -126,9 +164,13 @@ namespace ReportUtilities
     // ---------------------
     // --- Public namespace
     // ---------------------
-    int GetBinIndex( float val, std::vector<float>& rValues )
+    int GetBinIndex( float val, const std::vector<float>& rValues )
     {
-        if( val > rValues.back() )
+        if( rValues.size() == 0 )
+        {
+            return 0;
+        }
+        else if( val > rValues.back() )
         {
             return rValues.size() - 1;
         }
@@ -145,6 +187,25 @@ namespace ReportUtilities
     {
         float age_years = age / DAYSPERYEAR ;
         return GetBinIndex( age_years, rAges );
+    }
+
+    void SendHasData( bool hasData )
+    {
+        uint32_t has_data = hasData;
+        IdmMpi::Request has_data_request;
+        EnvPtr->MPI.p_idm_mpi->SendIntegers( &has_data, 1, 0, &has_data_request );
+
+        IdmMpi::RequestList request_list;
+        request_list.Add( has_data_request );
+
+        EnvPtr->MPI.p_idm_mpi->WaitAll( request_list );
+    }
+
+    bool GetHasData( int fromRank )
+    {
+        int32_t has_data_int = 0;
+        EnvPtr->MPI.p_idm_mpi->ReceiveIntegers( &has_data_int, 1, fromRank );
+        return (has_data_int != 0);
     }
 
     void SendData( const std::string& rToSend )
@@ -232,6 +293,24 @@ namespace ReportUtilities
     }
 
     void DeserializeVector( IJsonObjectAdapter& root, bool isSettingValuesInVector, const char* pName, std::vector<double>& rData )
+    {
+        IJsonObjectAdapter* p_json_array = root.GetJsonArray( pName );
+
+        InternalDeserializeVector( p_json_array, isSettingValuesInVector, rData );
+
+        delete p_json_array;
+    }
+
+    void DeserializeVector( IJsonObjectAdapter& root, bool isSettingValuesInVector, const char* pName, std::vector<uint32_t>& rData )
+    {
+        IJsonObjectAdapter* p_json_array = root.GetJsonArray( pName );
+
+        InternalDeserializeVector( p_json_array, isSettingValuesInVector, rData );
+
+        delete p_json_array;
+    }
+
+    void DeserializeVector( IJsonObjectAdapter& root, bool isSettingValuesInVector, const char* pName, std::vector<float>& rData )
     {
         IJsonObjectAdapter* p_json_array = root.GetJsonArray( pName );
 

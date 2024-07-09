@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -102,6 +94,8 @@ namespace Kernel
         virtual void IncrementNextNumTargets();
 
         virtual int GetNumTargeted() const;
+
+        virtual void ClearQualifyingIndividuals();
 
         virtual void FindQualifyingIndividuals( INodeEventContext* pNEC, 
                                                 const DiseaseQualifications& rDisease,
@@ -260,15 +254,11 @@ namespace Kernel
         virtual IEventCoordinatorEventContext* GetEventContext() override { return nullptr; }
 
     protected:
-
-        virtual void UpdateInterventionToBeDistributed( const IdmDateTime& rDateTime, float dt );
-
         ISimulationEventContext*        m_Parent;
         NChooserObjectFactory*          m_pObjectFactory;
         std::vector<INodeEventContext*> m_CachedNodes;
         std::string                     m_InterventionName;
         IDistributableIntervention*     m_pIntervention;
-        InterventionConfig              m_InterventionConfig;
         TargetedDistributionList        m_TargetedDistributionList;
         uint32_t                        m_DistributionIndex;
         bool                            m_IsFinished;

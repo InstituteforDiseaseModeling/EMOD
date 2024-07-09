@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "AdherentDrug.h"
@@ -24,13 +16,13 @@ SETUP_LOGGING( "AdherentDrug" )
 
 namespace Kernel
 {
-    BEGIN_QUERY_INTERFACE_DERIVED( AdherentDrug, AntimalarialDrug )
-    END_QUERY_INTERFACE_DERIVED( AdherentDrug, AntimalarialDrug )
+    BEGIN_QUERY_INTERFACE_DERIVED( AdherentDrug, MultiPackComboDrug )
+    END_QUERY_INTERFACE_DERIVED( AdherentDrug, MultiPackComboDrug )
 
     IMPLEMENT_FACTORY_REGISTERED( AdherentDrug )
 
     AdherentDrug::AdherentDrug()
-        : AntimalarialDrug()
+        : MultiPackComboDrug()
         , m_pAdherenceEffect(nullptr)
         , m_NonAdherenceOptions()
         , m_NonAdherenceCdf()
@@ -42,7 +34,7 @@ namespace Kernel
     }
 
     AdherentDrug::AdherentDrug( const AdherentDrug& rOrig )
-        : AntimalarialDrug( rOrig )
+        : MultiPackComboDrug( rOrig )
         , m_pAdherenceEffect( rOrig.m_pAdherenceEffect->Clone() )
         , m_NonAdherenceOptions( rOrig.m_NonAdherenceOptions )
         , m_NonAdherenceCdf( rOrig.m_NonAdherenceCdf )
@@ -67,12 +59,12 @@ namespace Kernel
                           inputJson,
                           MetadataDescriptor::VectorOfEnum("Non_Adherence_Options", AD_Non_Adherence_Options_DESC_TEXT, MDD_ENUM_ARGS( NonAdherenceOptionsType )));
 
-        initConfigTypeMap(     "Non_Adherence_Distribution",      &non_adherence_probability, AD_Non_Adherence_Distribution_DESC_TEXT, 0.0f, 1.0f, 0.0f ); 
+        initConfigTypeMap(     "Non_Adherence_Distribution",      &non_adherence_probability, AD_Non_Adherence_Distribution_DESC_TEXT, 0.0f, 1.0f ); 
         initConfigTypeMap(     "Max_Dose_Consideration_Duration", &m_MaxDuration,             AD_Max_Dose_Consideration_Duration_DESC_TEXT, (1.0f/24.0f), FLT_MAX, FLT_MAX ); // 1-hour=1/24
         initConfigTypeMap(     "Took_Dose_Event",                 &m_TookDoseEvent,           AD_Took_Dose_Event_DESC_TEXT );
         initConfigComplexType( "Adherence_Config",                &adherence_config,          AD_Adherence_Config_DESC_TEXT );
 
-        bool ret = AntimalarialDrug::Configure( inputJson );
+        bool ret = MultiPackComboDrug::Configure( inputJson );
         if( ret && !JsonConfigurable::_dryrun )
         {
             // ---------------------------------------------
@@ -81,9 +73,12 @@ namespace Kernel
             if( (adherence_config._json.Type() == json::ElementType::NULL_ELEMENT) ||
                 !json::QuickInterpreter( adherence_config._json ).Exist( "class") )
             {
-                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, "The Adherence_Config must be defined with a valid WaningEffect.");
+                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__,
+                                                     "The Adherence_Config must be defined with a valid WaningEffect.");
             }
-            m_pAdherenceEffect = WaningEffectFactory::CreateInstance( adherence_config );
+            m_pAdherenceEffect = WaningEffectFactory::getInstance()->CreateInstance( adherence_config._json,
+                                                                                     inputJson->GetDataLocation(),
+                                                                                     "Adherence_Config" );
 
             // --------------------------------------------------------------
             // --- Check to see if IWaningEffectCount type is being used.
@@ -98,7 +93,7 @@ namespace Kernel
                 {
                     std::stringstream ss;
                     ss << "'Adherence_Config' is not configured correctly." << std::endl;
-                    ss << "'Drug_Type'=" << drug_name << " is configured for " << num_doses << " dose(s)" << std::endl;
+                    ss << "AdherentDrug is configured for " << num_doses << " dose(s)" << std::endl;
                     ss << "but the IWaningEffectCount does not support that number of doses." << std::endl;
                     ss << "There should probably be one entry for each dose.";
                     throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
@@ -194,7 +189,7 @@ namespace Kernel
 
     void AdherentDrug::ConfigureDrugTreatment( IIndividualHumanInterventionsContext * ivc )
     {
-        AntimalarialDrug::ConfigureDrugTreatment( ivc );
+        MultiPackComboDrug::ConfigureDrugTreatment( ivc );
         m_TotalDoses = remaining_doses;
         if( m_TotalDoses == 0 )
         {
@@ -216,7 +211,7 @@ namespace Kernel
     void AdherentDrug::SetContextTo( IIndividualHumanContext *context )
     {
         m_pAdherenceEffect->SetContextTo( context );
-        AntimalarialDrug::SetContextTo( context );
+        MultiPackComboDrug::SetContextTo( context );
     }
 
     void AdherentDrug::Update( float dt )
@@ -226,17 +221,15 @@ namespace Kernel
         IWaningEffectCount* p_count_effect = nullptr;
         if( s_OK == m_pAdherenceEffect->QueryInterface( GET_IID( IWaningEffectCount ), (void**)&p_count_effect ) )
         {
-            int current_dose = 1; // m_TotalDoses = -1 implies infinte doses so always the first dose
-            if( m_TotalDoses > 0 )
-            {
-                current_dose = m_TotalDoses - remaining_doses + 1;
-            }
+            int current_dose = m_CurrentDoseIndex;
+            current_dose += 1; // because index starts at zero and this value should start at 1
+            current_dose += 1; // because we are thinking about the next dose
             p_count_effect->SetCount( current_dose );
         }
 
         m_CurrentDuration += dt;
 
-        AntimalarialDrug::Update( dt );
+        MultiPackComboDrug::Update( dt );
     }
 
     bool AdherentDrug::IsTakingDose( float dt )
@@ -251,7 +244,6 @@ namespace Kernel
         if( m_CurrentDuration <= m_MaxDuration )
         {
             float current = m_pAdherenceEffect->Current();
-            float ran = -1.0;
             is_taking_dose = parent->GetRng()->SmartDraw( current );
         }
 
@@ -341,7 +333,7 @@ namespace Kernel
 
     void AdherentDrug::serialize( IArchive& ar, AdherentDrug* obj )
     {
-        AntimalarialDrug::serialize( ar, obj );
+        MultiPackComboDrug::serialize( ar, obj );
         AdherentDrug& drug = *obj;
         ar.labelElement( "m_pAdherenceEffect"    ) & drug.m_pAdherenceEffect;
         ar.labelElement( "m_NonAdherenceOptions" ); 

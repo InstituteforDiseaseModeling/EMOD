@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -14,7 +6,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <vector>
 #include <queue>
 #include <functional>
-#include "BoostLibWrapper.h"
+
 #include "ISupports.h"
 #include "Configuration.h"
 #include "suids.hpp"
@@ -84,12 +76,17 @@ namespace Kernel
         virtual void RegisterObserver(   ICoordinatorEventObserver*     pObserver,    const EventTriggerCoordinator& trigger ) override;
         virtual void UnregisterObserver( ICoordinatorEventObserver*     pObserver,    const EventTriggerCoordinator& trigger ) override;
         virtual void TriggerObservers(   IEventCoordinatorEventContext* pCoordinator, const EventTriggerCoordinator& trigger ) override;
+        uint64_t GetNumTriggeredEvents( void ) override;
+        uint64_t GetNumObservedEvents( void ) override;
 
         //////////////////////////////////////////////////////////////////////////
         // INodeEventBroadcaster
         virtual void RegisterObserver(   INodeEventObserver* pObserver,         const EventTriggerNode& trigger ) override;
         virtual void UnregisterObserver( INodeEventObserver* pObserver,         const EventTriggerNode& trigger ) override;
         virtual void TriggerObservers(   INodeEventContext*  pNodeEventContext, const EventTriggerNode& trigger ) override;
+        // This broadcaster should have its own methods - maybe shouldn't be implementing both interfaces.
+        //uint64_t GetNumTriggeredEvents( void ) override;
+        //uint64_t GetNumObservedEvents( void ) override;
 
         //////////////////////////////////////////////////////////////////////////
         // pass through from ISimulationContext

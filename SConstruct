@@ -183,7 +183,7 @@ env = Environment( BUILD_DIR=buildDir,
                    TARGET_ARCH=msarch ,
                    PYSYSPLATFORM=pi,
                    MSVSPROJECTSUFFIX='.vcxproj' ,
-                   MSVC_VERSION='14.0'
+                   MSVC_VERSION='14.3'
                    )
 
 if not(Dbg) and not(Rel):
@@ -202,6 +202,9 @@ env['BUILD_VARIANT'] = bvar
 #libdeps.setup_environment( env )
 
 env['EXTRACPPPATH'] = []
+env["LIBPATH"] = []
+env['EXTRALIBPATH'] = []
+
 if os.sys.platform == 'win32':
     if Dbg:
         print( "----------------------------------------------------" )
@@ -211,60 +214,61 @@ if os.sys.platform == 'win32':
         Exit(-1)
 
     env['OS_FAMILY'] = 'win'
-    env.Append( EXTRACPPPATH=[
-                          "#/Eradication",
-                          "#/interventions",
-                          "#/campaign",
-                          "#/baseReportLib",
-                          "#/utils",
-                          "#/libgeneric_static",
-                          os.environ['IDM_BOOST_PATH'],
-                          os.environ['IDM_PYTHON3_PATH']+"/include",
-                          "#/Dependencies/ComputeClusterPack/Include",
-                          "#/cajun/include",
-                          "#/rapidjson/include",
-                          "#/rapidjson/modp",
-                          "#/snappy",
-                          "#/lz4/lib"])
+    
+    # Boost
+    env.Append( EXTRACPPPATH=[ os.environ['IDM_BOOST_PATH'] ] )
+
+    env.Append( EXTRACPPPATH=[ os.environ['IDM_PYTHON3X_PATH']+"/include" ] )
+    env.Append( EXTRALIBPATH=[ os.environ['IDM_PYTHON3X_PATH']+"/libs" ] )
+    env.Append( LIBS=["python3.lib"] )
+    # There is still a python setting in Eradication\SConsript & componentTests\SConscript to delay the loading of the DLL
+    
+    # MPI
+    env.Append( EXTRACPPPATH=[ "#/Dependencies/ComputeClusterPack/include" ] )
+    env.Append( EXTRALIBPATH=[ "#/Dependencies/ComputeClusterPack/Lib/amd64" ] )
+    env.Append( LIBS=["msmpi.lib"] )
+    
 else:
     env['ENV']['PATH'] = path
     env['OS_FAMILY'] = 'posix'
-    env['CC'] = "mpicxx"
+    env['CC'] = "mpicc"
     env['CXX'] = "mpicxx"
     env.Append( CCFLAGS=["-fpermissive"] )
     env.Append( CCFLAGS=["--std=c++0x"] )
     env.Append( CCFLAGS=["-w"] )
     env.Append( CCFLAGS=["-ffloat-store"] )
     env.Append( CCFLAGS=["-Wno-unknown-pragmas"] )
+    env.Append( CCFLAGS=["-mavx2"] )
     #env.Append( CCFLAGS=["-save-temps"] )
-    env.Append( EXTRACPPPATH=[
-                          "#/Eradication",
-                          "#/interventions",
-                          "#/campaign",
-                          "#/baseReportLib",
-                          "#/utils",
-                          "#/libgeneric_static",
-                          "/usr/include/python3.6m",
-                          "/opt/python/python3.6.3/include/python3.6m",
-                          "#/cajun/include",
-                          "#/rapidjson/include",
-                          "#/rapidjson/modp",
-                          "#/snappy",
-                          "#/lz4/lib"])
 
-#if has_option( "cxx" ):
-#    env["CC"] = get_option( "cxx" )
-#    env["CXX"] = get_option( "cxx" )
-#if has_option( "cc" ):
-#    env["CC"] = get_option( "cc" )
+    # Boost
+    # we don't need a special path for boost on linux
+    
+    # Python
+    if(sys.version_info.major == 2):  # Bamboo linux build still uses python 2
+        env.Append( LIBS=["python3.6m"] )
+        env.Append( EXTRACPPPATH=["/opt/python/python3.6.3/include/python3.6m"] )
+        env.Append( EXTRALIBPATH=["/opt/python/python3.6.3/lib"] )
+    elif(sys.version_info.minor == 6):
+        env.Append( LIBS=["python3.6m"] )
+        env.Append( EXTRACPPPATH=["/usr/include/python3.6m"] )
+    elif(sys.version_info.minor == 7):
+        env.Append( LIBS=["python3.7m"] )
+        env.Append( EXTRACPPPATH=["/usr/include/python3.7m"] )
+    elif(sys.version_info.minor == 8):
+        env.Append( LIBS=["python3.8"] )
+        env.Append( EXTRACPPPATH=["/usr/include/python3.8"] )
+    elif(sys.version_info.minor == 9):
+        env.Append( LIBS=["python3.9"] )
+        env.Append( EXTRACPPPATH=["/usr/include/python3.9"] )
+    else:
+        raise RuntimeError("Only supports python 3.6, 3.7, 3.8, and 3.9")
 
-env["LIBPATH"] = []
-#
-#if has_option( "libpath" ):
-#    env["LIBPATH"] = [get_option( "libpath" )]
-
-env['EXTRALIBPATH'] = []
-
+    #
+    # MPICH
+    #
+    env.Append( EXTRALIBPATH=[ "/usr/lib64/mpich/lib" ] )
+        
 
 # ---- other build setup -----
 
@@ -296,25 +300,23 @@ if os.sys.platform.startswith("linux"):
     static = True
     platform = "linux"
 
-    env.Append( LIBS=['m'] )
-
     if os.uname()[4] == "x86_64":
         linux64 = True
         nixLibPrefix = "lib64"
         env.Append( EXTRALIBPATH=["/usr/lib64" , "/lib64" ] )
 
-    env.Append( LIBS=["pthread", "python3.6m", "dl" ] ) 
-    env.Append( EXTRALIBPATH=[ "/usr/local/lib", "/usr/lib64/mpich/lib", "/opt/python/python3.6.3/lib" ] )
+    env.Append( LIBS=["pthread", "dl", "m" ] )
+    env.Append( EXTRALIBPATH=[ "/usr/local/lib" ] )
 
     if static:
         #env.Append( LINKFLAGS=" -static " )
         env.Append( LINKFLAGS=" -rdynamic " )
     if Dbg:
-        env.Append( CCFLAGS=["-O0", "-g"] )
+        env.Append( CCFLAGS=["-O0", "-g", "-fPIC"] )
         env.Append( CPPDEFINES=["_DEBUG"] )
     else:
-        env.Append( CCFLAGS=["-O3"] )
-        
+        env.Append( CCFLAGS=["-O3", "-fPIC"] )
+
     # enable AES support or get [wmmintrin.h:34:3: error: #error "AES/PCLMUL instructions not enabled"]
     env.Append( CCFLAGS=["-maes"] )
 
@@ -337,20 +339,10 @@ elif "win32" == os.sys.platform:
     env.Append( CPPDEFINES=[ "UNICODE" ] )
     env.Append( CPPDEFINES=[ "WIN32" ] )
 
-    # this is for MSVC <= 10.0
-    #winSDKHome = findVersion( [ "C:/Program Files/Microsoft SDKs/Windows/", "C:/Program Files (x86)/Microsoft SDKs/Windows/" ] , [ "v7.0A", "v7.0"] )
-    #env.Append( EXTRACPPPATH=[ winSDKHome + "/Include" ] )
-    #env.Append( EXTRALIBPATH=[ winSDKHome + "/Lib/x64" ] )
-
     # this is for MSVC >= 11.0
-    winSDKHome = "C:/Program Files (x86)/Windows Kits/8.0/"
-    env.Append( EXTRACPPPATH=[ winSDKHome + "/Include/um" ] )
-    env.Append( EXTRALIBPATH=[ winSDKHome + "Lib/win8/um/x64" ] )
-
-    print( "Windows SDK Root '" + winSDKHome + "'" )
-
-    #print( "Windows MSVC Root '" + winVCHome + "'" )
-    #env.Append( EXTRACPPPATH=[ winVCHome + "/Include" ] )
+    #winSDKHome = "C:/Program Files (x86)/Windows Kits/8.0/"
+    #env.Append( EXTRACPPPATH=[ winSDKHome + "/Include/um" ] )
+    #env.Append( EXTRALIBPATH=[ winSDKHome + "Lib/win8/um/x64" ] )
 
     # some warnings we don't like:
     # c4355
@@ -436,14 +428,6 @@ elif "win32" == os.sys.platform:
     winLibString += ""
     env.Append( LIBS=Split(winLibString) )
 
-    env.Append( EXTRALIBPATH=[ os.environ['IDM_PYTHON3_PATH']+"/libs" ] )   # Go with user specified path first
-    env.Append( EXTRALIBPATH=[ "C:/Python36/libs" ] )                       # Fall back to c:\python36
-    env.Append( EXTRALIBPATH=[ "C:/ProgramData/Anaconda3/libs" ] )          # Maybe they used Anaconda 3
-    env.Append( LIBS=["python36.lib"] )
-
-    env.Append( EXTRALIBPATH=[ "#/Dependencies/ComputeClusterPack/Lib/amd64" ] )
-    env.Append( LIBS=["msmpi.lib"] )
-
 else:
     print( "No special config for [" + os.sys.platform + "] which probably means it won't work" )
 
@@ -470,8 +454,8 @@ def doConfigure(myenv):
 
 def setEnvAttrs(myenv):
 
-    diseasedlls = ['Generic', 'Vector', 'Malaria', 'Environmental', 'STI', 'HIV' ]
-    diseases = ['Generic', 'Vector', 'Malaria', 'Environmental', 'STI', 'HIV', 'TBHIV', 'Typhoid', 'Py' ]
+    diseasedlls = ['Generic', 'Vector', 'Malaria', 'STI', 'HIV' ]
+    diseases = ['Generic', 'Vector', 'Malaria', 'STI', 'HIV' ]
     reportdlls = ['Spatial', 'Binned']
     campaigndlls = ['Bednet', 'IRSHousing']
 
@@ -551,11 +535,6 @@ setEnvAttrs( env )
 # Export the following symbols for them to be used in subordinate SConscript files.
 Export("env")
 
-
 # pass the build_dir as the variant directory
 env.SConscript( 'SConscript', variant_dir='$BUILD_DIR', duplicate=False )
-
-env.SConscript( 'MSVCSConscript', duplicate=False )
-
-#env.SConscript( 'unittest/SConscript', variant_dir='$BUILD_DIR/unittest', duplicate=False )
 

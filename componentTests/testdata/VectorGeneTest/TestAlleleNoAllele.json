@@ -1,0 +1,11 @@
+{
+    "Genes" : [
+        {
+            "COMMENT" : "You have to define something",
+            "Is_Gender_Gene": 0,
+            "Alleles" : [
+            ],
+            "Mutations" : []
+        }
+    ]
+}

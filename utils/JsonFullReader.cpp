@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "JsonFullReader.h"
@@ -23,6 +15,14 @@ namespace Kernel
         , m_value_stack()
     {
         m_document->Parse<0>(data);
+
+        if( m_document->HasParseError() )
+        {
+            std::stringstream ss;
+            ss << "Error while reading/parsing JSON data, error=" << m_document->GetParseError();
+            throw SerializationException( __FILE__, __LINE__, __FUNCTION__,ss.str().c_str());
+        }
+
         // TODO - set isObject here based on current m_json?
     }
 

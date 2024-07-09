@@ -1,15 +1,7 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
-#include "Report.h"
+#include "BaseChannelReport.h"
 
 /*
 Flexible aggregator for simulation-wide numeric values. Intended to serve as the mechanism for reporting inset charts.
@@ -25,32 +17,28 @@ To finalize the accumulation across distributed MPI processes, call Reduce(); da
 */
 namespace Kernel {
     class IndividualHuman; // fwd declaration
-    class PropertyReport : public Report
+    class PropertyReport : public BaseChannelReport
     {
     public:
         static IReport* CreateReport();
         virtual ~PropertyReport() { }
 
+        virtual void Initialize(unsigned int nrmSize) override;
         virtual void EndTimestep( float currentTime, float dt ) override;
         virtual bool IsCollectingIndividualData( float currentTime, float dt ) const override { return true; };
         virtual void LogIndividualData( Kernel::IIndividualHuman* individual ) override;
         virtual void LogNodeData( Kernel::INodeContext * pNC ) override;
 
-        // new functions and members exclusive to this class
-        typedef std::map< std::string, std::string > tKeyValuePairs; // pairs?
-        typedef std::set< tKeyValuePairs > tPermutations;
-        static void GenerateAllPermutationsOnce( std::set< std::string > keys, tKeyValuePairs perm, tPermutations &permutationsSet );
     protected:
         PropertyReport( const std::string& rReportName );
 
         std::vector<std::string> permutationsList;
-        tPermutations permutationsSet;
 
         virtual void postProcessAccumulatedData() override;
+        virtual void populateSummaryDataUnitsMap( std::map<std::string, std::string> &units_map ) override;
 
         // counters
         std::map< std::string, float > new_infections;
-        std::map< std::string, float > new_reported_infections;
         std::map< std::string, float > disease_deaths;
         std::map< std::string, float > infected;
         std::map< std::string, float > statPop;

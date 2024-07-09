@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "HIVARTStagingByCD4Diagnostic.h"
@@ -42,18 +34,34 @@ namespace Kernel
 
     bool HIVARTStagingByCD4Diagnostic::Configure( const Configuration* inputJson )
     {
-        initConfigComplexType("Threshold",    &threshold,  HIV_ASBCD_Threshold_DESC_TEXT    );
-        initConfigComplexType("If_Active_TB", &ifActiveTB, HIV_ASBCD_If_Active_TB_DESC_TEXT );
-        initConfigComplexType("If_Pregnant",  &ifPregnant, HIV_ASBCD_If_Pregnant_DESC_TEXT  );
+        // This used to be available.  I saw it used in test but never by researchers
+        // This is just a double check
+        if( inputJson->Exist( "Days_To_Diagnosis" ) )
+        {
+            std::stringstream ss;
+            ss << "'Days_To_Diagnosis' is no longer supported.\n";
+            throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+        }
+
+        if( inputJson->Exist( "Event_Or_Config" ) )
+        {
+            std::stringstream ss;
+            ss << "'Event_Or_Config' is no longer needed.  Only events are supported.";
+            throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+        }
+
+        initConfigTypeMap("Threshold",    &threshold,  HIV_ASBCD_Threshold_DESC_TEXT    );
+        initConfigTypeMap("If_Active_TB", &ifActiveTB, HIV_ASBCD_If_Active_TB_DESC_TEXT );
+        initConfigTypeMap("If_Pregnant",  &ifPregnant, HIV_ASBCD_If_Pregnant_DESC_TEXT  );
 
         return HIVARTStagingAbstract::Configure( inputJson );
     }
 
-    bool HIVARTStagingByCD4Diagnostic::positiveTestResult( IIndividualHumanHIV *pHIV, 
-                                                           float year, 
-                                                           float CD4count, 
-                                                           bool hasActiveTB, 
-                                                           bool isPregnant )
+    bool HIVARTStagingByCD4Diagnostic::MakeDecision( IIndividualHumanHIV *pHIV, 
+                                                     float year, 
+                                                     float CD4count, 
+                                                     bool hasActiveTB, 
+                                                     bool isPregnant )
     {
         if( !pHIV->HasHIV() ) {
             return false;

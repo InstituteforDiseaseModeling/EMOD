@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
@@ -50,6 +42,7 @@ namespace Kernel
     : TargetedDistributionSTI(pObjectFactory)
     , m_Vector2dStringDiseaseStates()
     , m_DiseaseStates()
+    , m_HasInterventionNameString()
     , m_HasInterventionName()
     {
     }
@@ -63,11 +56,15 @@ namespace Kernel
         m_AllowedStates = TargetedDistributionHIV::GetAllowedTargetDiseaseStates();
 
         initConfigTypeMap("Target_Disease_State",                       &m_Vector2dStringDiseaseStates, NC_HIV_TD_Target_Disease_State_DESC_TEXT, nullptr, m_AllowedStates );
-        initConfigTypeMap("Target_Disease_State_Has_Intervention_Name", &m_HasInterventionName,         NC_HIV_TD_Has_Intervention_Name_DESC_TEXT, "" );
+        initConfigTypeMap("Target_Disease_State_Has_Intervention_Name", &m_HasInterventionNameString,   NC_HIV_TD_Has_Intervention_Name_DESC_TEXT, "" );
      }
 
     void TargetedDistributionHIV::CheckDiseaseConfiguration()
     {
+        if( !m_HasInterventionNameString.empty() )
+        {
+            m_HasInterventionName = m_HasInterventionNameString;
+        }
         m_DiseaseStates = TargetedDistributionHIV::ConvertStringsToDiseaseState( m_Vector2dStringDiseaseStates );
 
         for( auto& inner : m_DiseaseStates )
@@ -76,7 +73,7 @@ namespace Kernel
             {
                 if( ( (state == TargetedDiseaseState::Has_Intervention     ) || 
                       (state == TargetedDiseaseState::Not_Have_Intervention)  ) &&
-                    (m_HasInterventionName == "") )
+                    m_HasInterventionName.empty() )
                 {
                     const char* state_name = TargetedDiseaseState::pairs::lookup_key( state );
                     throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, 
@@ -129,7 +126,7 @@ namespace Kernel
     }
 
     bool TargetedDistributionHIV::HasDiseaseState( TargetedDiseaseState::Enum state,
-                                                   const std::string& rHasInterventionName,
+                                                   const InterventionName& rHasInterventionName,
                                                    IIndividualHumanEventContext *pHEC,
                                                    IIndividualHumanSTI* pSTI,
                                                    IIndividualHumanHIV *pHIV,
@@ -174,23 +171,14 @@ namespace Kernel
             return true;
         }
 
-        IIndividualHumanSTI* p_ind_sti = NULL;
-        if( pHEC->QueryInterface( GET_IID( IIndividualHumanSTI ), (void**)&p_ind_sti ) != s_OK )
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "ihec", "IIndividualSTI", "IIndividualHumanEventContext" );
-        }
-
         IIndividualHumanHIV * p_ind_hiv = nullptr;
         if( pHEC->QueryInterface(GET_IID(IIndividualHumanHIV), (void**)&p_ind_hiv) != s_OK )
         {
             throw QueryInterfaceException(__FILE__, __LINE__, __FUNCTION__, "ihec", "IIndividualHumanHIV", "IIndividualHumanEventContext");
         }
+        IIndividualHumanSTI* p_ind_sti = p_ind_hiv->GetIndividualHumanSTI();;
 
-        IHIVMedicalHistory * p_med_history = nullptr;
-        if( p_ind_hiv->GetHIVInterventionsContainer()->QueryInterface(GET_IID(IHIVMedicalHistory), (void**)&p_med_history) != s_OK )
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "p_ind_hiv", "IHIVMedicalHistory", "IHIVInterventionsContainer" );
-        }
+        IHIVMedicalHistory * p_med_history = p_ind_hiv->GetMedicalHistory();
 
         for( auto& states_to_and : m_DiseaseStates )
         {

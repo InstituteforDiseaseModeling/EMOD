@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -53,5 +45,21 @@ namespace Kernel
         bool m_TimerHasExpired;
 
         DECLARE_SERIALIZABLE( UsageDependentBednet );
+    };
+
+    class MultiInsecticideUsageDependentBednet : public UsageDependentBednet
+    {
+        DECLARE_FACTORY_REGISTERED(InterventionFactory, MultiInsecticideUsageDependentBednet, IDistributableIntervention)
+    public:
+        MultiInsecticideUsageDependentBednet();
+        MultiInsecticideUsageDependentBednet( const MultiInsecticideUsageDependentBednet& rMaster );
+        virtual ~MultiInsecticideUsageDependentBednet();
+
+        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) override;
+
+    protected:
+        virtual bool ConfigureBlockingAndKilling( const Configuration* config ) override;
+
+        DECLARE_SERIALIZABLE( MultiInsecticideUsageDependentBednet );
     };
 }

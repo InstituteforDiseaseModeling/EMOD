@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include <iostream>
@@ -13,6 +5,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "UnitTest++.h"
 #include "FileSystem.h"
 #include "Exceptions.h"
+#include "componentTests.h"
 
 using namespace std; 
 
@@ -216,5 +209,30 @@ SUITE(FileSystemTest)
         success = FileSystem::RemoveDirectory( new_dir );
 
         CHECK( !success );
+    }
+
+    TEST(TestFileExistErrorMessage)
+    {
+        std::string exp_msg;
+        exp_msg  = "Could not find file ./testdata/FileSystemTest/NoFile.txt.\n";
+        exp_msg += "Received system error 'No such file or directory'";
+        try
+        {
+            std::string filename = "./testdata/FileSystemTest/NoFile.txt";
+            ifstream infile;
+            FileSystem::OpenFileForReading( infile, filename.c_str(), false );
+            infile.close();
+            CHECK( false ); // exception should be thrown
+        }
+        catch( Kernel::FileNotFoundException &re )
+        {
+            std::string msg = re.GetMsg();
+            if( msg.find( exp_msg ) == string::npos )
+            {
+                PrintDebug( exp_msg );
+                PrintDebug( msg );
+                CHECK( false );
+            }
+        }
     }
 }

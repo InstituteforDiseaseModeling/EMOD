@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -13,13 +5,12 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "suids.hpp"
 #include "IMigrate.h"
 #include "Vector.h"
-#include "VectorMatingStructure.h"
 #include "ISerializable.h"
 #include "IVectorCohort.h"
+#include "VectorGenome.h"
 
 namespace Kernel
 {
-    struct IStrainIdentity;    
     struct INodeContext;
 
     class VectorCohortAbstract : public IVectorCohort, public IMigrate
@@ -30,11 +21,9 @@ namespace Kernel
         DECLARE_QUERY_INTERFACE()
 
     public:
-        static std::string _gambiae;
+        static uint32_t I_MAX_AGE;
 
         virtual ~VectorCohortAbstract();
-
-        virtual const IStrainIdentity& GetStrainIdentity() const override;
 
         // IMigrate interfaces
         virtual void ImmigrateTo(INodeContext* destination_node) override;
@@ -46,40 +35,61 @@ namespace Kernel
         virtual const suids::suid & GetMigrationDestination() override;
         virtual MigrationType::Enum GetMigrationType() const  override;
 
+        virtual uint32_t GetID() const override { return m_ID; }
+        virtual int GetSpeciesIndex() const override;
+        virtual const VectorGenome& GetGenome() const override;
+        virtual void SetMateGenome( const VectorGenome& rGenomeMate ) override;
+        virtual const VectorGenome& GetMateGenome() const override;
+        virtual bool HasMated() const override;
         virtual VectorStateEnum::Enum GetState() const override;
         virtual void SetState( VectorStateEnum::Enum _state ) override;
         virtual const std::string &GetSpecies() override;
+        virtual VectorWolbachia::Enum GetWolbachia() const override;
         virtual uint32_t GetPopulation() const override; // used by VPI
         virtual void SetPopulation( uint32_t new_pop ) override; // used by VPI (1x besides ClearPop)
         virtual float GetProgress() const override; // NOT used by VPI
         virtual void ClearProgress() override; // NOT used by VPI, implicit
-        virtual void IncreaseProgress( float delta ) override; // used by VPI (2x)
-        virtual VectorMatingStructure& GetVectorGenetics() override; // used by VPI
-        virtual void SetVectorGenetics( const VectorMatingStructure& new_value ) override;
         virtual IMigrate* GetIMigrate() override;
         virtual float GetAge() const override;
         virtual void SetAge( float ageDays ) override;
         virtual void IncreaseAge( float dt ) override;
+        virtual void Update( RANDOMBASE* pRNG,
+                             float dt,
+                             const VectorTraitModifiers& rTraitModifiers,
+                             float progressThisTimestep,
+                             bool hadMicrosporidiaPreviously ) override;
+        virtual bool HasWolbachia() const override;
+        virtual bool HasMicrosporidia() const override;
+        virtual void InfectWithMicrosporidia( int strainIndex ) override;
+        virtual float GetDurationOfMicrosporidia() const override;
 
     protected:
         VectorCohortAbstract();
         VectorCohortAbstract( const VectorCohortAbstract& rThat );
-        VectorCohortAbstract( VectorStateEnum::Enum state,
-                      float age,
-                      float progress,
-                      uint32_t population, 
-                      const VectorMatingStructure& _vector_genetics,
-                      const std::string* vector_species_name );
+        VectorCohortAbstract( uint32_t vectorID,
+                              VectorStateEnum::Enum state,
+                              float age,
+                              float progress,
+                              float microsporidiaDuration,
+                              uint32_t population, 
+                              const VectorGenome& rGenome,
+                              int speciesIndex );
         virtual void Initialize();
 
-        VectorMatingStructure vector_genetics;
+        void IncreaseProgress( float delta );
+        void SetProgress( float newProgress );
+
+        uint32_t m_ID;
+        int species_index;
+        VectorGenome genome_self;
+        VectorGenome genome_mate;
         VectorStateEnum::Enum state;
         float progress;
         uint32_t population;
         float age;
         MigrationType::Enum migration_type;
         suids::suid migration_destination;
-        const std::string* pSpecies;
+        float microsporidia_infection_duration;
 
         static void serialize( IArchive& ar, VectorCohortAbstract* obj );
     };
@@ -89,33 +99,62 @@ namespace Kernel
     public:
         DECLARE_QUERY_INTERFACE()
 
-        static VectorCohort *CreateCohort( VectorStateEnum::Enum state,
+        static VectorCohort *CreateCohort( uint32_t vectorID,
+                                           VectorStateEnum::Enum state,
                                            float age,
                                            float progress,
+                                           float microsporidiaDuration,
                                            uint32_t population,
-                                           const VectorMatingStructure& vms,
-                                           const std::string* vector_species_name );
+                                           const VectorGenome& rGenome,
+                                           int speciesIndex );
+        static VectorCohort *CreateCohort( IVectorHabitat* _habitat,
+                                           uint32_t vectorID,
+                                           VectorStateEnum::Enum state,
+                                           float progress,
+                                           float microsporidiaDuration,
+                                           uint32_t initial_population,
+                                           const VectorGenome& rGenome,
+                                           int speciesIndex );
         virtual ~VectorCohort();
 
+        virtual void SetPopulation( uint32_t newPop ) override;
         virtual void Merge( IVectorCohort* pCohortToAdd ) override;
-        virtual IVectorCohort* Split( uint32_t numLeaving ) override;
-        virtual void AddNewEggs( uint32_t daysToGestate, uint32_t new_eggs ) override;
-        virtual uint32_t GetGestatedEggs() override;
-        virtual void AdjustEggsForDeath( uint32_t numDied ) override;
-        virtual const std::vector<uint32_t>& GetNewEggs() const override;
+        virtual IVectorCohort* SplitPercent( RANDOMBASE* pRNG, uint32_t newVectorID, float percentLeaving ) override;
+        virtual IVectorCohort* SplitNumber(  RANDOMBASE* pRNG, uint32_t newVectorID, uint32_t numLeaving  ) override;
+        virtual uint32_t GetNumLookingToFeed() const override;
+        virtual void AddNewGestating( uint32_t daysToGestate, uint32_t newFed ) override;
+        virtual uint32_t GetNumGestating() const override;
+        virtual uint32_t RemoveNumDoneGestating() override;
+        virtual uint32_t AdjustGestatingForDeath( RANDOMBASE* pRNG, float percentDied, bool killGestatingOnly ) override;
+        virtual const std::vector<uint32_t>& GetGestatingQueue() const override;
+        virtual void ReportOnGestatingQueue( std::vector<uint32_t>& rNumGestatingQueue ) const override;
+
+        virtual VectorHabitatType::Enum GetHabitatType() override;
+        virtual IVectorHabitat* GetHabitat() override;
+        virtual void SetHabitat( IVectorHabitat* ) override;
+
 
     protected:
         VectorCohort();
-        VectorCohort( const VectorCohort& rThat );
-        VectorCohort( VectorStateEnum::Enum state,
+        VectorCohort( IVectorHabitat* _habitat,
+                      uint32_t vectorID,
+                      VectorStateEnum::Enum state,
                       float age,
                       float progress,
+                      float microsporidiaDuration,
                       uint32_t population,
-                      const VectorMatingStructure& _vector_genetics,
-                      const std::string* vector_species_name );
+                      const VectorGenome& rGenome,
+                      int speciesIndex );
 
-        std::vector<uint32_t> neweggs;
+        std::vector<uint32_t> gestating_queue;
+        uint32_t total_gestating;
+        VectorHabitatType::Enum habitat_type;
+        IVectorHabitat* habitat;
 
         DECLARE_SERIALIZABLE(VectorCohort);
+
+    private:
+        // keep private so it can only be used in Split()
+        VectorCohort( const VectorCohort& rThat );
     };
 }

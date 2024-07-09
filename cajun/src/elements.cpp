@@ -293,7 +293,7 @@ public:
    void Clear() { m_Members.clear(); }
 
 private:
-   class Finder : public std::unary_function<Object::Member, bool>
+   class Finder
    {
    public:
       Finder(const std::string& name) : m_name(name) {}
@@ -421,6 +421,7 @@ TrivialType_T<DataTypeT, TYPE>::operator DataTypeT&() {
 
 // explicit template instantiations
 template class TrivialType_T<double, NUMBER_ELEMENT>;
+template class TrivialType_T<uint64_t, UINT64_ELEMENT>;
 template class TrivialType_T<bool, BOOLEAN_ELEMENT>;
 template class TrivialType_T<std::string, STRING_ELEMENT>;
 //template class ElementImp_T<ObjectImp>;
@@ -432,4 +433,5 @@ template class Element_T<ArrayImp>;
 template class json::Element_T<json::TrivialImpType_T<std::basic_string<char, std::char_traits<char>, std::allocator<char> >, (json::ElementType)3> >;
 template class json::Element_T<json::NullImp>;
 template class json::Element_T<json::TrivialImpType_T<bool, (json::ElementType)4> >;
+template class json::Element_T<json::TrivialImpType_T<uint64_t, (json::ElementType)6> >;
 } // End namespace

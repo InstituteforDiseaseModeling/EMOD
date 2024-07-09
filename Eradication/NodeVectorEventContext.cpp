@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -22,21 +14,24 @@ namespace Kernel
 {
     NodeVectorEventContextHost::NodeVectorEventContextHost(Node* _node) 
     : NodeEventContextHost(_node)
+    , larval_killing_target( VectorHabitatType::NONE )
+    , larval_reduction_target( VectorHabitatType::NONE )
+    , ovitrap_killing_target( VectorHabitatType::NONE )
     , larval_reduction( false, -FLT_MAX, FLT_MAX, 0.0f )
     , pLarvalKilling(0)
     , pLarvalHabitatReduction(0)
     , pVillageSpatialRepellent(0)
     , pADIVAttraction(0)
     , pADOVAttraction(0)
-    , pPFVKill(0)
     , pOutdoorKilling(0)
-    , pOutdoorKillingMale(0)
-    , pSugarFeedKilling(0)
     , pOviTrapKilling(0)
     , pAnimalFeedKilling(0)
     , pOutdoorRestKilling(0)
+    , isUsingIndoorKilling(false)
     , pIndoorKilling( 0.0f )
-    { 
+    , isUsingSugarTrap(false)
+    , pSugarFeedKilling()
+    {
     }
 
     NodeVectorEventContextHost::~NodeVectorEventContextHost()
@@ -79,13 +74,33 @@ namespace Kernel
         return status;
     }
 
+    void NodeVectorEventContextHost::UpdateInterventions(float dt)
+    {
+        larval_reduction.Initialize();
+        pLarvalKilling = GeneticProbability( 0.0f );
+        pLarvalHabitatReduction = 0.0;
+        pVillageSpatialRepellent = GeneticProbability( 0.0f );
+        pADIVAttraction = 0.0;
+        pADOVAttraction = 0.0;
+        pOutdoorKilling = GeneticProbability( 0.0f );
+        pOviTrapKilling = 0.0;
+        pAnimalFeedKilling = GeneticProbability( 0.0f );
+        pOutdoorRestKilling = GeneticProbability( 0.0f );
+        isUsingIndoorKilling = false;
+        pIndoorKilling = GeneticProbability( 0.0f );
+        isUsingSugarTrap = false;
+        pSugarFeedKilling = GeneticProbability( 0.0f );
+
+        NodeEventContextHost::UpdateInterventions(dt);
+    }
+
     //
     // INodeVectorInterventionEffects; (The Getters)
     // 
     void
     NodeVectorEventContextHost::UpdateLarvalKilling(
         VectorHabitatType::Enum habitat,
-        float killing
+        const GeneticProbability& killing
     )
     {
         larval_killing_target = habitat;
@@ -99,20 +114,18 @@ namespace Kernel
     )
     {
         larval_reduction_target = target;
-        larval_reduction.Initialize();
         larval_reduction.SetMultiplier( target, reduction );
     }
 
     void
     NodeVectorEventContextHost::UpdateLarvalHabitatReduction( const LarvalHabitatMultiplier& lhm )
     {
-        larval_reduction.Initialize();
         larval_reduction.SetAsReduction( lhm );
     }
 
     void
     NodeVectorEventContextHost::UpdateOutdoorKilling(
-        float killing
+        const GeneticProbability& killing
     )
     {
         pOutdoorKilling = killing;
@@ -120,9 +133,10 @@ namespace Kernel
 
     void
     NodeVectorEventContextHost::UpdateVillageSpatialRepellent(
-        float reduction)
+        const GeneticProbability& repelling
+    )
     {
-        pVillageSpatialRepellent = reduction;
+        pVillageSpatialRepellent = repelling;
     }
 
     void
@@ -142,26 +156,11 @@ namespace Kernel
     }
 
     void
-    NodeVectorEventContextHost::UpdatePFVKill(
-        float killing
-    )
-    {
-        pPFVKill = killing;
-    }
-
-    void
-    NodeVectorEventContextHost::UpdateOutdoorKillingMale(
-        float killing
-    )
-    {
-        pOutdoorKillingMale = killing;
-    }
-
-    void
     NodeVectorEventContextHost::UpdateSugarFeedKilling(
-        float killing
+        const GeneticProbability& killing
     )
     {
+        isUsingSugarTrap = true;
         pSugarFeedKilling = killing;
     }
 
@@ -177,7 +176,7 @@ namespace Kernel
 
     void
     NodeVectorEventContextHost::UpdateAnimalFeedKilling(
-        float killing
+        const GeneticProbability& killing
     )
     {
         pAnimalFeedKilling = killing;
@@ -185,23 +184,22 @@ namespace Kernel
 
     void
     NodeVectorEventContextHost::UpdateOutdoorRestKilling(
-        float killing
+        const GeneticProbability& killing
     )
     {
         pOutdoorRestKilling = killing;
     }
 
-    void NodeVectorEventContextHost::UpdateIndoorKilling( float killing )
+    void NodeVectorEventContextHost::UpdateIndoorKilling( const GeneticProbability& killing )
     {
+        isUsingIndoorKilling = true;
         pIndoorKilling = killing;
     }
 
     //
     // INodeVectorInterventionEffects; (The Getters)
     // 
-    float NodeVectorEventContextHost::GetLarvalKilling(
-        VectorHabitatType::Enum habitat_query 
-    )
+    const GeneticProbability& NodeVectorEventContextHost::GetLarvalKilling( VectorHabitatType::Enum habitat_query ) const
     {
         if( larval_killing_target == VectorHabitatType::ALL_HABITATS ||
             habitat_query == larval_killing_target )
@@ -210,7 +208,8 @@ namespace Kernel
         }
         else
         {
-            return 0;
+            static GeneticProbability tmp( 0.0 );
+            return tmp;
         }
     }
 
@@ -234,7 +233,7 @@ namespace Kernel
         return ret;
     }
 
-    float NodeVectorEventContextHost::GetVillageSpatialRepellent()
+    const GeneticProbability& NodeVectorEventContextHost::GetVillageSpatialRepellent()
     {
         return pVillageSpatialRepellent;
     }
@@ -249,22 +248,17 @@ namespace Kernel
         return pADOVAttraction;
     }
 
-    float NodeVectorEventContextHost::GetPFVKill()
-    {
-        return pPFVKill;
-    }
-
-    float NodeVectorEventContextHost::GetOutdoorKilling()
+    const GeneticProbability& NodeVectorEventContextHost::GetOutdoorKilling()
     {
         return pOutdoorKilling;
     }
 
-    float NodeVectorEventContextHost::GetOutdoorKillingMale()
+    bool NodeVectorEventContextHost::IsUsingSugarTrap() const
     {
-        return pOutdoorKillingMale;
+        return isUsingSugarTrap;
     }
 
-    float NodeVectorEventContextHost::GetSugarFeedKilling()
+    const GeneticProbability& NodeVectorEventContextHost::GetSugarFeedKilling() const
     {
         return pSugarFeedKilling;
     }
@@ -283,76 +277,41 @@ namespace Kernel
             return 0;
         }
     }
-    float NodeVectorEventContextHost::GetAnimalFeedKilling()
+
+    const GeneticProbability& NodeVectorEventContextHost::GetAnimalFeedKilling()
     {
         return pAnimalFeedKilling;
     }
-    float NodeVectorEventContextHost::GetOutdoorRestKilling()
+
+    const GeneticProbability& NodeVectorEventContextHost::GetOutdoorRestKilling()
     {
         return pOutdoorRestKilling;
     }
 
-    float NodeVectorEventContextHost::GetIndoorKilling()
+    bool NodeVectorEventContextHost::IsUsingIndoorKilling() const
+    {
+        return isUsingIndoorKilling;
+    }
+
+    const GeneticProbability& NodeVectorEventContextHost::GetIndoorKilling()
     {
         return pIndoorKilling;
     }
 
-    void NodeVectorEventContextHost::ReleaseMosquitoes(
-        NonNegativeFloat cost,
-        const std::string& species,
-        const VectorMatingStructure& genetics,
-        uint32_t number
-    )
+    void NodeVectorEventContextHost::ReleaseMosquitoes( const std::string& releasedSpecies,
+                                                        const VectorGenome& rGenome,
+                                                        const VectorGenome& rMateGenome,
+                                                        bool isFraction,
+                                                        uint32_t releasedNumber,
+                                                        float releasedFraction,
+                                                        float releasedInfectious )
     {
-        IncrementCampaignCost( cost );
         INodeVector * pNV = nullptr;
         if( node->QueryInterface( GET_IID( INodeVector ), (void**)&pNV ) != s_OK )
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "node", "Node", "INodeVector" );
         }
-        pNV->AddVectors( species, genetics, number );
-        return;
+        pNV->AddVectors( releasedSpecies, rGenome, rMateGenome, isFraction, releasedNumber, releasedFraction, releasedInfectious );
     }
 }
 
-#if 0
-namespace Kernel
-{
-    template<class Archive>
-    void serialize(Archive &ar, NodeVectorEventContextHost &context, const unsigned int v)
-    {
-        // Serialize base class
-        ar & context.pLarvalKilling; // by habitat???
-        ar & context.pLarvalHabitatReduction; // by habitat???
-        ar & context.pVillageSpatialRepellent;
-        ar & context.pADIVAttraction;
-        ar & context.pADOVAttraction;
-        ar & context.pPFVKill;
-        ar & context.pOutdoorKilling;
-        ar & context.pOutdoorKillingMale;
-        ar & context.pSugarFeedKilling;
-        ar & context.pOviTrapKilling; // by habitat???
-        ar & context.pAnimalFeedKilling;
-        ar & context.pOutdoorRestKilling;
-        ar & context.larval_killing_target;
-        ar & context.larval_reduction_target;
-        ar & context.ovitrap_killing_target;
-        //ar & context.larval_reduction;
-
-        ar & context.pLarvalKilling; // by habitat???
-        ar & context.pLarvalHabitatReduction; // by habitat???
-        ar & context.pVillageSpatialRepellent;
-        ar & context.pADIVAttraction;
-        ar & context.pADOVAttraction;
-        ar & context.pPFVKill;
-        ar & context.pOutdoorKilling;
-        ar & context.pOutdoorKillingMale;
-        ar & context.pSugarFeedKilling;
-        ar & context.pOviTrapKilling; // by habitat???
-        ar & context.pAnimalFeedKilling;
-        ar & context.pOutdoorRestKilling;
-
-        ar & boost::serialization::base_object<Kernel::NodeEventContextHost>(context);
-    }
-}
-#endif

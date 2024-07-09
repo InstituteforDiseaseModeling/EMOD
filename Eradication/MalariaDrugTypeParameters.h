@@ -1,118 +1,112 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
 #include "Configure.h"
+#include "JsonConfigurableCollection.h"
+#include "ParasiteGenome.h"
 
 namespace Kernel 
 {
+    class ParasiteGenome;
     struct IStrainIdentity;
-    struct IGenomeMarkers;
 
-    ENUM_DEFINE(MalariaDrugType,
-        ENUM_VALUE_SPEC(Artemisinin             , 1)
-        ENUM_VALUE_SPEC(Chloroquine             , 2)
-        ENUM_VALUE_SPEC(Quinine                 , 3)
-        ENUM_VALUE_SPEC(SP                      , 4)
-        ENUM_VALUE_SPEC(Primaquine              , 5)
-        ENUM_VALUE_SPEC(Artemether_Lumefantrine , 6)
-        ENUM_VALUE_SPEC(GenTransBlocking        , 7)
-        ENUM_VALUE_SPEC(GenPreerythrocytic      , 8)
-        ENUM_VALUE_SPEC(Tafenoquine             , 9))
+    // ENUM defs for PKPD_MODEL
+    ENUM_DEFINE( PKPDModel,
+        ENUM_VALUE_SPEC( FIXED_DURATION_CONSTANT_EFFECT, 0 )
+        ENUM_VALUE_SPEC( CONCENTRATION_VERSUS_TIME,      1 ) )
 
-    class DoseMap : public JsonConfigurable, public IComplexJsonConfigurable
+
+    class DoseFractionByAge : public JsonConfigurable
     {
-        // We need the following two lines because we inherit from JsonConfigurable
-        // which provides a little more functionality than is needed by these little
-        // "class types".
+        IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
+        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) { return e_NOINTERFACE; }
+    public:
+        DoseFractionByAge();
+        virtual ~DoseFractionByAge();
+
+        // JsonConfigurable methods
+        virtual bool Configure( const Configuration * inputJson ) override;
+
+        float GetAgeDays() const;
+        float GetDoseFraction() const;
+
+    protected:
+        float m_AgeDays;
+        float m_DoseFraction;
+    };
+
+    class DoseMap : public JsonConfigurableCollection<DoseFractionByAge>
+    {
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
         virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) { return e_NOINTERFACE; }
 
-        public:
-            DoseMap() {}
-            typedef std::map<float,float> dose_map_t;
-            dose_map_t fractional_dose_by_upper_age;
-            virtual void ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key ) override;
-            virtual json::QuickBuilder GetSchema() override;
-            virtual bool  HasValidDefault() const override { return false; }
+    public:
+        DoseMap();
+        virtual ~DoseMap();
+
+        virtual void CheckConfiguration() override;
+
+        float GetFractionalDose( float ageInDays ) const;
+
+    protected:
+        virtual DoseFractionByAge* CreateObject() override;
     };
 
-    class GenomeMarkerModifiers : public JsonConfigurable
+    class DrugModifier : public JsonConfigurable
     {
     public:
+        DrugModifier();
+        virtual ~DrugModifier();
+
         IMPLEMENT_NO_REFERENCE_COUNTING()
         virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) { return e_NOINTERFACE; }
 
-        GenomeMarkerModifiers( const std::string& rMarkerName = "", uint32_t genomeBitMask = 0 );
-        virtual ~GenomeMarkerModifiers();
 
         // JsonConfigurable methods
         virtual bool Configure( const Configuration * inputJson ) override;
 
         // other methods
-        inline const std::string& GetMarkerName() const { return m_MarkerName; }
-        inline float              GetC50()        const { return m_C50; }
-        inline float              GetMaxKilling() const { return m_MaxKilling; }
+        const std::string& GetDrugResistantString() const;
+        float GetC50()        const;
+        float GetMaxKilling() const;
 
-        inline bool HasGenomeBit( uint32_t genomeBits ) const
-        { 
-            return ((genomeBits & m_GenomeBitMask) != 0);
-        }
+        bool IsResistant( const ParasiteGenome& rGenome ) const;
 
     private:
-        std::string m_MarkerName;
+        std::string m_DrugString;
         float m_C50;
         float m_MaxKilling;
-        uint32_t m_GenomeBitMask;
+        ParasiteGenomeAlleleCollection m_DrugMarkers;
     };
 
-    class DrugResistantModifiers : public JsonConfigurable, public IComplexJsonConfigurable
+    class DrugResistanceModifierCollection : public JsonConfigurableCollection<DrugModifier>
     {
     public:
         IMPLEMENT_NO_REFERENCE_COUNTING()
         virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) { return e_NOINTERFACE; }
 
-        DrugResistantModifiers( const IGenomeMarkers& rGenomeMarkers );
-        virtual ~DrugResistantModifiers();
+        DrugResistanceModifierCollection();
+        virtual ~DrugResistanceModifierCollection();
 
-        // IComplexJsonConfigurable methods
-        virtual bool  HasValidDefault() const override { return false; }
-        virtual json::QuickBuilder GetSchema() override;
-        virtual void ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key ) override;
-
-        // Other methods
-        int Size() const;
-        const GenomeMarkerModifiers& operator[]( int index ) const;
+        virtual void CheckConfiguration() override;
 
         float GetC50( const IStrainIdentity& rStrain ) const;
         float GetMaxKilling( const IStrainIdentity& rStrain ) const;
 
-    private:
-        std::vector<GenomeMarkerModifiers> m_ModifierCollection;
+    protected:
+        virtual DrugModifier* CreateObject() override;
     };
 
     class MalariaDrugTypeParameters : public JsonConfigurable
     {
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
-
     public:
-        static MalariaDrugTypeParameters* CreateMalariaDrugTypeParameters( const Configuration* inputJson, 
-                                                                           const std::string& drugType,
-                                                                           const IGenomeMarkers& rGenomeMarkers );
-
         virtual ~MalariaDrugTypeParameters();
         virtual bool Configure( const ::Configuration *json );
-        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject);
+        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) { return e_NOINTERFACE; }
 
-        typedef map< std::string, MalariaDrugTypeParameters* > tMDTPMap;
-
+        const std::string& GetName()    const;
+        PKPDModel::Enum GetPKPDModel()  const;
         float GetMaxDrugIRBCKill()      const;
         float GetKillRateHepatocyte()   const;
         float GetKillRateGametocyte02() const;
@@ -128,12 +122,14 @@ namespace Kernel
         float GetBodyWeightExponent()   const;
 
         const DoseMap& GetDoseMap() const;
-        const DrugResistantModifiers& GetResistantModifiers() const;
+        const DrugResistanceModifierCollection& GetResistantModifiers() const;
 
     protected:
-        MalariaDrugTypeParameters( const std::string& drugType, const IGenomeMarkers& rGenomeMarkers );
-        void Initialize(const std::string& drugType);
+        friend class MalariaDrugTypeCollection;
+        MalariaDrugTypeParameters();
 
+        std::string drug_name;
+        PKPDModel::Enum PKPD_model;
         float max_drug_IRBC_kill;
         float drug_hepatocyte_killrate;
         float drug_gametocyte02_killrate;
@@ -146,13 +142,33 @@ namespace Kernel
         float drug_decay_T2;
         int   drug_fulltreatment_doses;
         float drug_dose_interval;
-
         float bodyweight_exponent;
         DoseMap dose_map;
-
-        DrugResistantModifiers m_Modifiers;
-
-    private:
-        std::string _drugType;
+        
+        DrugResistanceModifierCollection m_Modifiers;
     };
+
+    class MalariaDrugTypeCollection : public JsonConfigurableCollection<MalariaDrugTypeParameters>
+    {
+    public:
+        static MalariaDrugTypeCollection* GetInstanceNonConst();
+        static const MalariaDrugTypeCollection* GetInstance();
+        static void DeleteInstance();
+
+        virtual ~MalariaDrugTypeCollection();
+
+        virtual void CheckConfiguration() override;
+        const jsonConfigurable::tDynamicStringSet& GetDrugNames() const;
+        const MalariaDrugTypeParameters& GetDrug( const std::string& rName ) const;
+
+    protected:
+        static MalariaDrugTypeCollection* m_pInstance;
+
+        MalariaDrugTypeCollection();
+
+        virtual MalariaDrugTypeParameters* CreateObject() override;
+
+        jsonConfigurable::tDynamicStringSet m_DrugNames;
+    };
+
 }

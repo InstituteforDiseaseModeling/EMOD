@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "TriggeredEventCoordinator.h"
@@ -20,7 +12,7 @@ namespace Kernel
     IMPL_QUERY_INTERFACE2( TriggeredEventCoordinator, IEventCoordinator, IConfigurable )
 
     TriggeredEventCoordinator::TriggeredEventCoordinator()
-        : StandardInterventionDistributionEventCoordinator( false )//false=don't use standard demographic coverage
+        : StandardInterventionDistributionEventCoordinator( true )
         , m_IsActive( false )
         , m_IsStarting( false )
         , m_IsStopping( false )
@@ -42,7 +34,7 @@ namespace Kernel
         initConfigTypeMap( "Start_Trigger_Condition_List", &m_StartTriggerConditionList, TEC_Start_Trigger_Condition_List_DESC_TEXT );
         initConfigTypeMap( "Stop_Trigger_Condition_List", &m_StopTriggerConditionList, TEC_Stop_Trigger_Condition_List_DESC_TEXT );
         initConfigTypeMap( "Completion_Event", &m_CompletionEvent, TEC_Completion_Event_DESC_TEXT );
-        initConfigTypeMap( "Coordinator_Name", &m_CoordinatorName, TEC_Coordinator_Name_DESC_TEXT, "TriggeredEventCoordinator" );
+        initConfigTypeMap( "Coordinator_Name", &m_CoordinatorName, Coordinator_Name_DESC_TEXT, "TriggeredEventCoordinator" );
         initConfigTypeMap( "Duration", &m_Duration, TEC_Duration_DESC_TEXT, -1.0f, FLT_MAX, -1.0f );
 
         bool retValue = StandardInterventionDistributionEventCoordinator::Configure( inputJson );
@@ -144,7 +136,7 @@ namespace Kernel
 
     bool TriggeredEventCoordinator::notifyOnEvent( IEventCoordinatorEventContext *pEntity, const EventTriggerCoordinator& trigger )
     {
-        LOG_INFO_F( "%s: notifyOnEvent received: %s\n", m_CoordinatorName.c_str(), trigger.ToString().c_str());
+        LOG_DEBUG_F( "%s: notifyOnEvent received: %s\n", m_CoordinatorName.c_str(), trigger.ToString().c_str());
         auto it_start = find( m_StartTriggerConditionList.begin(), m_StartTriggerConditionList.end(), trigger );
         if( it_start != m_StartTriggerConditionList.end() )
         {

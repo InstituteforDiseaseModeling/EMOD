@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include <memory> // unique_ptr
@@ -13,150 +5,203 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "componentTests.h"
 
 #include "MalariaDrugTypeParameters.h"
-#include "GenomeMarkers.h"
-#include "StrainIdentity.h"
+#include "StrainIdentityMalariaGenetics.h"
+#include "ParasiteGenetics.h"
+#include "ParasiteGenome.h"
+#include "RANDOM.h"
 
 using namespace std;
 using namespace Kernel;
 
 SUITE( MalariaDrugTypeParametersTest )
 {
-    TEST( TestInitialize )
+    struct DrugFixture
     {
-        std::vector<std::string> names;
-        names.push_back( "Pfcrt" );
-        names.push_back( "Pfdhps" );
-        names.push_back( "Kelch13" );
+        DrugFixture()
+        {
+            Environment::Finalize();
+            Environment::setLogger( new SimpleLogger( Logger::tLevel::WARNING ) );
+            JsonConfigurable::missing_parameters_set.clear();
+            ParasiteGenome::ClearStatics();
+        }
 
-        GenomeMarkers gm;
-        gm.Initialize( names );
+        ~DrugFixture()
+        {
+            ParasiteGenetics::CreateInstance()->ReduceGenomeMap();
 
-        unique_ptr<Configuration> p_config( Environment::LoadConfigurationFile( "testdata/MalariaDrugTypeParametersTest/TestInitialize.json" ) );
+            MalariaDrugTypeCollection::DeleteInstance();
+            Environment::Finalize();
 
-        unique_ptr<MalariaDrugTypeParameters> p_drug( MalariaDrugTypeParameters::CreateMalariaDrugTypeParameters( p_config.get(), "Chloroquine", gm ) );
+            ParasiteGenetics::DeleteInstance();
+            ParasiteGenome::ClearStatics();
+            JsonConfigurable::missing_parameters_set.clear();
+        }
+    };
 
-        CHECK_EQUAL(  1.0f, p_drug->GetBodyWeightExponent() );
-        CHECK_EQUAL(  2.0f, p_drug->GetCMax() );
-        CHECK_EQUAL(  3.0f, p_drug->GetDecayT1() );
-        CHECK_EQUAL(  4.0f, p_drug->GetDecayT2() );
-        CHECK_EQUAL(  5.0f, p_drug->GetDoseInterval() );
-        CHECK_EQUAL(  6,    p_drug->GetFullTreatmentDoses() );
-        CHECK_EQUAL(  7.0f, p_drug->GetKillRateGametocyte02() );
-        CHECK_EQUAL(  8.0f, p_drug->GetKillRateGametocyte34() );
-        CHECK_EQUAL(  9.0f, p_drug->GetKillRateGametocyteM() );
-        CHECK_EQUAL( 10.0f, p_drug->GetKillRateHepatocyte() );
-        CHECK_EQUAL( 11.0f, p_drug->GetPkpdC50() );
-        CHECK_EQUAL( 12.0f, p_drug->GetVd() );
-        CHECK_EQUAL( 13.0f, p_drug->GetMaxDrugIRBCKill() );
+    TEST_FIXTURE( DrugFixture, TestInitialize )
+    {
+        EnvPtr->Config = Environment::LoadConfigurationFile( "testdata/MalariaDrugTypeParametersTest/TestInitialize.json" );
 
-        CHECK_EQUAL( std::string( "Kelch13" ), p_drug->GetResistantModifiers()[ 0 ].GetMarkerName() );
-        CHECK_EQUAL( 0.5f, p_drug->GetResistantModifiers()[ 0 ].GetC50() );
-        CHECK_EQUAL( 0.6f, p_drug->GetResistantModifiers()[ 0 ].GetMaxKilling() );
+        unique_ptr<Configuration> pg_config( Configuration::CopyFromElement( (*EnvPtr->Config)[ "Parasite_Genetics" ], EnvPtr->Config->GetDataLocation() ) );
+        ParasiteGenetics::CreateInstance()->Configure( pg_config.get() );
 
-        CHECK_EQUAL( std::string( "Pfcrt"   ), p_drug->GetResistantModifiers()[ 1 ].GetMarkerName() );
-        CHECK_EQUAL(  0.1f, p_drug->GetResistantModifiers()[ 1 ].GetC50() );
-        CHECK_EQUAL(  0.2f, p_drug->GetResistantModifiers()[ 1 ].GetMaxKilling() );
+        MalariaDrugTypeCollection::GetInstanceNonConst()->ConfigureFromJsonAndKey( EnvPtr->Config, "Malaria_Drug_Params" );
+        MalariaDrugTypeCollection::GetInstanceNonConst()->CheckConfiguration();
 
-        CHECK_EQUAL( std::string( "Pfdhps" ), p_drug->GetResistantModifiers()[ 2 ].GetMarkerName() );
-        CHECK_EQUAL(  0.3f, p_drug->GetResistantModifiers()[ 2 ].GetC50() );
-        CHECK_EQUAL(  0.4f, p_drug->GetResistantModifiers()[ 2 ].GetMaxKilling() );
+        const MalariaDrugTypeParameters& r_drug = MalariaDrugTypeCollection::GetInstance()->GetDrug( "Chloroquine" );
 
-        StrainIdentity strain;
+        CHECK_EQUAL(  1.0f, r_drug.GetBodyWeightExponent() );
+        CHECK_EQUAL(  2.0f, r_drug.GetCMax() );
+        CHECK_EQUAL(  3.0f, r_drug.GetDecayT1() );
+        CHECK_EQUAL(  4.0f, r_drug.GetDecayT2() );
+        CHECK_EQUAL(  5.0f, r_drug.GetDoseInterval() );
+        CHECK_EQUAL(  6,    r_drug.GetFullTreatmentDoses() );
+        CHECK_EQUAL(  7.0f, r_drug.GetKillRateGametocyte02() );
+        CHECK_EQUAL(  8.0f, r_drug.GetKillRateGametocyte34() );
+        CHECK_EQUAL(  9.0f, r_drug.GetKillRateGametocyteM() );
+        CHECK_EQUAL( 10.0f, r_drug.GetKillRateHepatocyte() );
+        CHECK_EQUAL( 11.0f, r_drug.GetPkpdC50() );
+        CHECK_EQUAL( 12.0f, r_drug.GetVd() );
+        CHECK_EQUAL( 13.0f, r_drug.GetMaxDrugIRBCKill() );
 
-        std::vector<std::string> markers;
-        markers.push_back( "Pfcrt" );
-        uint32_t genome = gm.CreateBits( markers );
-        CHECK_EQUAL( 1, genome );
-        strain.SetGeneticID( genome );
-        CHECK_CLOSE( 0.1f, p_drug->GetResistantModifiers().GetC50(        strain ), 0.00001 );
-        CHECK_CLOSE( 0.2f, p_drug->GetResistantModifiers().GetMaxKilling( strain ), 0.00001 );
+        // -----------------------------------------------------------------------------------
+        // --- Test that the parasite is resistant when it has one of three different alleles
+        // -----------------------------------------------------------------------------------
+        CHECK_EQUAL( 3, r_drug.GetResistantModifiers().Size() );
 
-        markers.clear();
+        // Pfcrt
+        CHECK_EQUAL( std::string( "T***" ), r_drug.GetResistantModifiers()[ 0 ]->GetDrugResistantString() );
+        CHECK_EQUAL( 0.1f, r_drug.GetResistantModifiers()[ 0 ]->GetC50() );
+        CHECK_EQUAL( 0.2f, r_drug.GetResistantModifiers()[ 0 ]->GetMaxKilling() );
 
-        markers.push_back( "Pfdhps" );
-        genome = gm.CreateBits( markers );
-        CHECK_EQUAL( 2, genome );
-        strain.SetGeneticID( genome );
-        CHECK_CLOSE( 0.3f, p_drug->GetResistantModifiers().GetC50(        strain ), 0.00001 );
-        CHECK_CLOSE( 0.4f, p_drug->GetResistantModifiers().GetMaxKilling( strain ), 0.00001 );
+        // Pfdhps
+        CHECK_EQUAL( std::string( "*T**" ), r_drug.GetResistantModifiers()[ 1 ]->GetDrugResistantString() );
+        CHECK_EQUAL(  0.3f, r_drug.GetResistantModifiers()[ 1 ]->GetC50() );
+        CHECK_EQUAL(  0.4f, r_drug.GetResistantModifiers()[ 1 ]->GetMaxKilling() );
 
-        markers.clear();
+        // Kelch13
+        CHECK_EQUAL( std::string( "**TT" ), r_drug.GetResistantModifiers()[ 2 ]->GetDrugResistantString() );
+        CHECK_EQUAL(  0.5f, r_drug.GetResistantModifiers()[ 2 ]->GetC50() );
+        CHECK_EQUAL(  0.6f, r_drug.GetResistantModifiers()[ 2 ]->GetMaxKilling() );
 
-        markers.push_back( "Kelch13" );
-        genome = gm.CreateBits( markers );
-        CHECK_EQUAL( 4, genome );
-        strain.SetGeneticID( genome );
-        CHECK_CLOSE( 0.5f, p_drug->GetResistantModifiers().GetC50(        strain ), 0.00001 );
-        CHECK_CLOSE( 0.6f, p_drug->GetResistantModifiers().GetMaxKilling( strain ), 0.00001 );
+        // --------------------------------------------------------------------------
+        // --- Create some genomes for testing that the right modifier is created
+        // --------------------------------------------------------------------------
+        PSEUDO_DES rng( 42 );
 
-        markers.clear();
+        std::string barcode = "AAA";
+        std::string hrp     = "";
 
-        markers.push_back( "Pfcrt" );
-        markers.push_back( "Pfdhps" );
-        genome = gm.CreateBits( markers );
-        CHECK_EQUAL( 3, genome );
-        strain.SetGeneticID( genome );
-        CHECK_CLOSE( 0.03f, p_drug->GetResistantModifiers().GetC50(        strain ), 0.00001 );
-        CHECK_CLOSE( 0.08f, p_drug->GetResistantModifiers().GetMaxKilling( strain ), 0.00001 );
+        std::string drug_aaaa = "AAAA";
+        ParasiteGenome pg_tmp_aaaa = ParasiteGenetics::GetInstance()->CreateGenomeFromBarcode( &rng, barcode, drug_aaaa, hrp );
+        ParasiteGenome pg_aaaa = ParasiteGenetics::GetInstance()->CreateGenome( pg_tmp_aaaa, 1 );
 
-        markers.clear();
+        std::string drug_taaa = "TAAA"; // Pfcrt
+        ParasiteGenome pg_tmp_taaa = ParasiteGenetics::GetInstance()->CreateGenomeFromBarcode( &rng, barcode, drug_taaa, hrp );
+        ParasiteGenome pg_taaa = ParasiteGenetics::GetInstance()->CreateGenome( pg_tmp_taaa, 1 );
 
-        markers.push_back( "Pfcrt" );
-        markers.push_back( "Kelch13" );
-        genome = gm.CreateBits( markers );
-        CHECK_EQUAL( 5, genome );
-        strain.SetGeneticID( genome );
-        CHECK_CLOSE( 0.05f, p_drug->GetResistantModifiers().GetC50(        strain ), 0.00001 );
-        CHECK_CLOSE( 0.12f, p_drug->GetResistantModifiers().GetMaxKilling( strain ), 0.00001 );
+        std::string drug_ataa = "ATAA"; // Pfdhps
+        ParasiteGenome pg_tmp_ataa = ParasiteGenetics::GetInstance()->CreateGenomeFromBarcode( &rng, barcode, drug_ataa, hrp );
+        ParasiteGenome pg_ataa = ParasiteGenetics::GetInstance()->CreateGenome( pg_tmp_ataa, 1 );
 
-        markers.clear();
+        std::string drug_aata = "AATA";
+        ParasiteGenome pg_tmp_aata = ParasiteGenetics::GetInstance()->CreateGenomeFromBarcode( &rng, barcode, drug_aata, hrp );
+        ParasiteGenome pg_aata = ParasiteGenetics::GetInstance()->CreateGenome( pg_tmp_aata, 1 );
 
-        markers.push_back( "Pfdhps" );
-        markers.push_back( "Kelch13" );
-        genome = gm.CreateBits( markers );
-        CHECK_EQUAL( 6, genome );
-        strain.SetGeneticID( genome );
-        CHECK_CLOSE( 0.15f, p_drug->GetResistantModifiers().GetC50(        strain ), 0.00001 );
-        CHECK_CLOSE( 0.24f, p_drug->GetResistantModifiers().GetMaxKilling( strain ), 0.00001 );
+        std::string drug_aatt = "AATT"; // Kelch13
+        ParasiteGenome pg_tmp_aatt = ParasiteGenetics::GetInstance()->CreateGenomeFromBarcode( &rng, barcode, drug_aatt, hrp );
+        ParasiteGenome pg_aatt = ParasiteGenetics::GetInstance()->CreateGenome( pg_tmp_aatt, 1 );
 
-        markers.clear();
+        std::string drug_cctt = "CCTT"; // Kelch13
+        ParasiteGenome pg_tmp_cctt = ParasiteGenetics::GetInstance()->CreateGenomeFromBarcode( &rng, barcode, drug_cctt, hrp );
+        ParasiteGenome pg_cctt = ParasiteGenetics::GetInstance()->CreateGenome( pg_tmp_cctt, 1 );
 
-        markers.push_back( "Pfcrt" );
-        markers.push_back( "Pfdhps" );
-        markers.push_back( "Kelch13" );
-        genome = gm.CreateBits( markers );
-        CHECK_EQUAL( 7, genome );
-        strain.SetGeneticID( genome );
-        CHECK_CLOSE( 0.015f, p_drug->GetResistantModifiers().GetC50(        strain ), 0.00001 );
-        CHECK_CLOSE( 0.048f, p_drug->GetResistantModifiers().GetMaxKilling( strain ), 0.00001 );
+        std::string drug_tatt = "TATT"; // Pfcrt & Kelch13
+        ParasiteGenome pg_tmp_tatt = ParasiteGenetics::GetInstance()->CreateGenomeFromBarcode( &rng, barcode, drug_tatt, hrp );
+        ParasiteGenome pg_tatt = ParasiteGenetics::GetInstance()->CreateGenome( pg_tmp_tatt, 1 );
 
-        markers.clear();
+        std::string drug_tttt = "TTTT"; // Pfcrt & Pfdhps & Kelch13
+        ParasiteGenome pg_tmp_tttt = ParasiteGenetics::GetInstance()->CreateGenomeFromBarcode( &rng, barcode, drug_tttt, hrp );
+        ParasiteGenome pg_tttt = ParasiteGenetics::GetInstance()->CreateGenome( pg_tmp_tttt, 1 );
 
-        markers.push_back( "Kelch13" );
-        markers.push_back( "Pfdhps" );
-        markers.push_back( "Pfcrt" );
-        genome = gm.CreateBits( markers );
-        CHECK_EQUAL( 7, genome );
-        strain.SetGeneticID( genome );
-        CHECK_CLOSE( 0.015f, p_drug->GetResistantModifiers().GetC50(        strain ), 0.00001 );
-        CHECK_CLOSE( 0.048f, p_drug->GetResistantModifiers().GetMaxKilling( strain ), 0.00001 );
+        CHECK_EQUAL( barcode, pg_aaaa.GetBarcode() );
+        CHECK_EQUAL( barcode, pg_taaa.GetBarcode() );
+        CHECK_EQUAL( barcode, pg_ataa.GetBarcode() );
+        CHECK_EQUAL( barcode, pg_aata.GetBarcode() );
+        CHECK_EQUAL( barcode, pg_aatt.GetBarcode() );
+        CHECK_EQUAL( barcode, pg_cctt.GetBarcode() );
+        CHECK_EQUAL( barcode, pg_tatt.GetBarcode() );
+        CHECK_EQUAL( barcode, pg_tttt.GetBarcode() );
+
+        CHECK_EQUAL( drug_aaaa, pg_aaaa.GetDrugResistantString() );
+        CHECK_EQUAL( drug_taaa, pg_taaa.GetDrugResistantString() );
+        CHECK_EQUAL( drug_ataa, pg_ataa.GetDrugResistantString() );
+        CHECK_EQUAL( drug_aata, pg_aata.GetDrugResistantString() );
+        CHECK_EQUAL( drug_aatt, pg_aatt.GetDrugResistantString() );
+        CHECK_EQUAL( drug_cctt, pg_cctt.GetDrugResistantString() );
+        CHECK_EQUAL( drug_tatt, pg_tatt.GetDrugResistantString() );
+        CHECK_EQUAL( drug_tttt, pg_tttt.GetDrugResistantString() );
+
+        // ------------------------------------------------------------------------------
+        // --- Test that the correct modification is created depending on the particular
+        // --- set of resistant markers that are set.
+        // ------------------------------------------------------------------------------
+        StrainIdentityMalariaGenetics strain( pg_aaaa );
+
+        CHECK_CLOSE( 1.0f, r_drug.GetResistantModifiers().GetC50(        strain ), 0.00001 );
+        CHECK_CLOSE( 1.0f, r_drug.GetResistantModifiers().GetMaxKilling( strain ), 0.00001 );
+
+        strain.SetGenome( pg_taaa );
+
+        CHECK_CLOSE( 0.1f, r_drug.GetResistantModifiers().GetC50(        strain ), 0.00001 );
+        CHECK_CLOSE( 0.2f, r_drug.GetResistantModifiers().GetMaxKilling( strain ), 0.00001 );
+
+        strain.SetGenome( pg_ataa );
+
+        CHECK_CLOSE( 0.3f, r_drug.GetResistantModifiers().GetC50(        strain ), 0.00001 );
+        CHECK_CLOSE( 0.4f, r_drug.GetResistantModifiers().GetMaxKilling( strain ), 0.00001 );
+
+        strain.SetGenome( pg_aata );
+
+        CHECK_CLOSE( 1.0f, r_drug.GetResistantModifiers().GetC50(        strain ), 0.00001 );
+        CHECK_CLOSE( 1.0f, r_drug.GetResistantModifiers().GetMaxKilling( strain ), 0.00001 );
+
+        strain.SetGenome( pg_aatt );
+
+        CHECK_CLOSE( 0.5f, r_drug.GetResistantModifiers().GetC50(        strain ), 0.00001 );
+        CHECK_CLOSE( 0.6f, r_drug.GetResistantModifiers().GetMaxKilling( strain ), 0.00001 );
+
+        strain.SetGenome( pg_cctt );
+
+        CHECK_CLOSE( 0.5f, r_drug.GetResistantModifiers().GetC50(        strain ), 0.00001 );
+        CHECK_CLOSE( 0.6f, r_drug.GetResistantModifiers().GetMaxKilling( strain ), 0.00001 );
+
+        strain.SetGenome( pg_tatt );
+
+        CHECK_CLOSE( 0.05f, r_drug.GetResistantModifiers().GetC50(        strain ), 0.00001 ); // 0.1 * 0.5
+        CHECK_CLOSE( 0.12f, r_drug.GetResistantModifiers().GetMaxKilling( strain ), 0.00001 ); // 0.2 * 0.6
+
+        strain.SetGenome( pg_tttt );
+
+        CHECK_CLOSE( 0.015f, r_drug.GetResistantModifiers().GetC50(        strain ), 0.00001 ); // 0.1 * 0.3 * 0.5
+        CHECK_CLOSE( 0.048f, r_drug.GetResistantModifiers().GetMaxKilling( strain ), 0.00001 ); // 0.2 * 0.4 * 0.6
     }
 
     void TestHelper_InitializeException( int lineNumber, const std::string& rFilename, const std::string& rExpMsg )
     {
+        JsonConfigurable::_useDefaults = false;
+        JsonConfigurable::_track_missing = false;
         try
         {
-            std::vector<std::string> names;
-            names.push_back( "Pfcrt" );
-            names.push_back( "Pfdhps" );
-            names.push_back( "Kelch13" );
+            EnvPtr->Config = Environment::LoadConfigurationFile( rFilename );
 
-            GenomeMarkers gm;
-            gm.Initialize( names );
+            unique_ptr<Configuration> pg_config( Configuration::CopyFromElement( (*EnvPtr->Config)[ "Parasite_Genetics" ], EnvPtr->Config->GetDataLocation() ) );
+            ParasiteGenetics::CreateInstance()->Configure( pg_config.get() );
 
-            unique_ptr<Configuration> p_config( Environment::LoadConfigurationFile( rFilename ) );
+            MalariaDrugTypeCollection::GetInstanceNonConst()->ConfigureFromJsonAndKey( EnvPtr->Config, "Malaria_Drug_Params" );
+            MalariaDrugTypeCollection::GetInstanceNonConst()->CheckConfiguration();
 
-            unique_ptr<MalariaDrugTypeParameters> p_drug( MalariaDrugTypeParameters::CreateMalariaDrugTypeParameters( p_config.get(), "Chloroquine", gm ) );
+            const MalariaDrugTypeParameters& r_drug = MalariaDrugTypeCollection::GetInstance()->GetDrug( "Chloroquine" );
 
             CHECK_LN( false, lineNumber ); // should not get here
         }
@@ -165,6 +210,7 @@ SUITE( MalariaDrugTypeParametersTest )
             std::string msg = re.GetMsg();
             if( msg.find( rExpMsg ) == string::npos )
             {
+                PrintDebug(           std::string( "\n" ) );
                 PrintDebug( rExpMsg + std::string( "\n" ) );
                 PrintDebug( msg     + std::string( "\n" ) );
                 CHECK_LN( false, lineNumber );
@@ -172,57 +218,86 @@ SUITE( MalariaDrugTypeParametersTest )
         }
     }
 
-    TEST( TestBadJsonDoseMapAge )
+    TEST_FIXTURE( DrugFixture, TestBadJsonDoseMapAge )
     {
         TestHelper_InitializeException( __LINE__, "testdata/MalariaDrugTypeParametersTest/TestBadJsonDoseMapAge.json",
-                                        "While trying to parse json data for param/key >>> Upper_Age_In_Years <<< in otherwise valid json segment.." );
+                                        "Parameter 'Upper_Age_In_Years of DoseFractionByAge' not found in input file 'testdata/MalariaDrugTypeParametersTest/TestBadJsonDoseMapAge.json'." );
     }
 
-    TEST( TestBadJsonDoseMapFraction )
+    TEST_FIXTURE( DrugFixture, TestBadJsonDoseMapFraction )
     {
         TestHelper_InitializeException( __LINE__, "testdata/MalariaDrugTypeParametersTest/TestBadJsonDoseMapFraction.json",
-                                        "While trying to parse json data for param/key >>> Fraction_Of_Adult_Dose <<< in otherwise valid json segment.." );
+                                        "Parameter 'Fraction_Of_Adult_Dose of DoseFractionByAge' not found in input file 'testdata/MalariaDrugTypeParametersTest/TestBadJsonDoseMapFraction.json'." );
     }
 
-    TEST( TestOutOfRangeAgeLow )
+    TEST_FIXTURE( DrugFixture, TestOutOfRangeAgeLow )
     {
         TestHelper_InitializeException( __LINE__, "testdata/MalariaDrugTypeParametersTest/TestOutOfRangeAgeLow.json",
-                                        "Variable Upper_Age_In_Years had value -16 which was inconsistent with range limit 0" );
+                                        "Configuration variable 'Upper_Age_In_Years' with value -16 out of range: less than 0." );
     }
 
-    TEST( TestOutOfRangeAgeHigh )
+    TEST_FIXTURE( DrugFixture, TestOutOfRangeAgeHigh )
     {
         TestHelper_InitializeException( __LINE__, "testdata/MalariaDrugTypeParametersTest/TestOutOfRangeAgeHigh.json",
-                                        "Variable Upper_Age_In_Years had value 999 which was inconsistent with range limit 125" );
+                                        "Configuration variable 'Upper_Age_In_Years' with value 999 out of range: greater than 125." );
     }
 
-    TEST( TestOutOfRangeFractionLow )
+    TEST_FIXTURE( DrugFixture, TestOutOfRangeFractionLow )
     {
         TestHelper_InitializeException( __LINE__, "testdata/MalariaDrugTypeParametersTest/TestOutOfRangeFractionLow.json",
-                                        "Variable Fraction_Of_Adult_Dose had value -1 which was inconsistent with range limit 0" );
+                                        "Configuration variable 'Fraction_Of_Adult_Dose' with value -1 out of range: less than 0." );
     }
 
-    TEST( TestOutOfRangeFractionHigh )
+    TEST_FIXTURE( DrugFixture, TestOutOfRangeFractionHigh )
     {
         TestHelper_InitializeException( __LINE__, "testdata/MalariaDrugTypeParametersTest/TestOutOfRangeFractionHigh.json",
-                                        "Variable Fraction_Of_Adult_Dose had value 77 which was inconsistent with range limit 1" );
+                                        "Configuration variable 'Fraction_Of_Adult_Dose' with value 77 out of range: greater than 1." );
     }
 
-    TEST( TestMissingResistanceMarker )
+    TEST_FIXTURE( DrugFixture, TestBadDrugResistantStringA )
     {
-        TestHelper_InitializeException( __LINE__, "testdata/MalariaDrugTypeParametersTest/TestMissingResistanceMarker.json",
-                                        "Cannot find GenomeMarkerModifiers for genome marker = Pfdhps" );
+        TestHelper_InitializeException( __LINE__, "testdata/MalariaDrugTypeParametersTest/TestBadDrugResistantStringA.json",
+                                        "The 'Drug_Resistant_String' = 'T' is invalid.\nIt has 1 characters and 'Drug_Resistant_Genome_Locations' says you must have 4." );
     }
 
-    TEST( TestBadDoseInterval )
+    TEST_FIXTURE( DrugFixture, TestBadDrugResistantStringB )
     {
-        TestHelper_InitializeException( __LINE__, "testdata/MalariaDrugTypeParametersTest/TestBadDoseInterval.json",
-                                        "time_between_doses (5) is less than dt (8)" );
+        TestHelper_InitializeException( __LINE__, "testdata/MalariaDrugTypeParametersTest/TestBadDrugResistantStringB.json",
+                                        "The character 'Z' in the parameter 'Drug_Resistant_String' is invalid.\nValid values are: 'A', 'C', 'G', 'T'" );
     }
 
-    TEST( TestMissingDrug )
+    TEST_FIXTURE( DrugFixture, TestBadDrugResistantStringC )
+    {
+        TestHelper_InitializeException( __LINE__, "testdata/MalariaDrugTypeParametersTest/TestBadDrugResistantStringC.json",
+                                        "The 'Drug_Resistant_String' = 'AAATTT' is invalid.\nIt has 6 characters and 'Drug_Resistant_Genome_Locations' says you must have 4." );
+    }
+
+    TEST_FIXTURE( DrugFixture, TestBadDrugResistantStringD )
+    {
+        TestHelper_InitializeException( __LINE__, "testdata/MalariaDrugTypeParametersTest/TestBadDrugResistantStringD.json",
+                                        "Invalid parameter 'Drug_Resistant_String' = '****'\nThe string must define at least one value.  It cannot be all wild cards ('*').\nValid values are: 'A', 'C', 'G', 'T'" );
+    }
+
+    TEST_FIXTURE( DrugFixture, TestBadDrugResistantStringE )
+    {
+        TestHelper_InitializeException( __LINE__, "testdata/MalariaDrugTypeParametersTest/TestBadDrugResistantStringE.json",
+                                        "Invalid parameter 'Drug_Resistant_String' = '' and 'Drug_Resistant_Genome_Locations' with zero locations.\nYou must define some drug resistant locations in the genome before you can use drug resistance." );
+    }
+
+    TEST_FIXTURE( DrugFixture, TestBadDoseInterval )
+    {
+        std::string exp_msg;
+        exp_msg += "Invalid 'Drug_Dose_Interval' in drug 'Chloroquine'.\n";
+        exp_msg += "'Drug_Dose_Interval'(=5) is less than the drug update period.\n";
+        exp_msg += "The drug update period = 'Simulation_Timestep'(=8) / 'Infection_Updates_Per_Timestep'(=1) = 8.\n";
+        exp_msg += "Please change these parameters so that 'Drug_Dose_Interval' >= the drug update period.";
+
+        TestHelper_InitializeException( __LINE__, "testdata/MalariaDrugTypeParametersTest/TestBadDoseInterval.json", exp_msg );
+    }
+
+    TEST_FIXTURE( DrugFixture, TestMissingDrug )
     {
         TestHelper_InitializeException( __LINE__, "testdata/MalariaDrugTypeParametersTest/TestMissingDrug.json",
-                                        "Object name not found: Chloroquine" );
+                                        "'Chloroquine' is an unknown drug.\nValid drug names are:\nBAD" );
     }
 }

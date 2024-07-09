@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "InfectionMalaria.h"
@@ -18,7 +10,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Exceptions.h"
 #include "Log.h"
 #include "MalariaEnums.h"
-#include "MalariaParameters.h"
 
 #include "Sigmoid.h"
 #include "SusceptibilityMalaria.h"
@@ -28,7 +19,10 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IIndividualHumanContext.h"
 #include "MalariaInterventionsContainerContexts.h"
 #include "StrainIdentity.h"
+#include "StrainIdentityMalariaVarGenes.h"
 #include "RANDOM.h"
+#include "NodeEventContext.h"
+#include "EventTrigger.h"
 
 SETUP_LOGGING( "InfectionMalaria" )
 
@@ -54,6 +48,9 @@ namespace Kernel
     BEGIN_QUERY_INTERFACE_BODY(InfectionMalariaConfig)
     END_QUERY_INTERFACE_BODY(InfectionMalariaConfig)
 
+    // 120 primes
+    const std::vector<uint32_t> InfectionMalaria::STRIDE_LENGTHS = {73,79,83,89,97,101,103,107,109,113,127,131,137,139,149,151,157,163,167,173,179,181,191,193,197,199,211,223,227,229,233,239,241,251,257,263,269,271,277,281,283,293,307,311,313,317,331,337,347,349,353,359,367,373,379,383,389,397,401,409,419,421,431,433,439,443,449,457,461,463,467,479,487,491,499,503,509,521,523,541,547,557,563,569,571,577,587,593,599,601,607,613,617,619,631,641,643,647,653,659,661,673,677,683,691,701,709,719,727,733,739,743,751,757,761,769,773,787,797,809};
+
     BEGIN_QUERY_INTERFACE_BODY(InfectionMalaria)
         HANDLE_INTERFACE(IInfectionMalaria)
     END_QUERY_INTERFACE_BODY(InfectionMalaria)
@@ -75,8 +72,9 @@ namespace Kernel
         m_temp_duration(0),
         m_max_parasites(0),
         m_inv_microliters_blood(INV_MICROLITERS_BLOOD_ADULT),
-        drugResistanceFlag(0),
-        m_pMDE(nullptr)
+        m_pMDE( nullptr ),
+        m_CurrentInfectionStage( MalariaInfectionStage::HEPATOCYTE ),
+        m_TimeSinceInfectionStageChange( 0.0f )
     {
     }
 
@@ -97,9 +95,15 @@ namespace Kernel
         m_temp_duration(0),
         m_max_parasites(0),
         m_inv_microliters_blood(INV_MICROLITERS_BLOOD_ADULT),
-        drugResistanceFlag(0),
-        m_pMDE( nullptr )
+        m_pMDE( nullptr ),
+        m_CurrentInfectionStage( MalariaInfectionStage::HEPATOCYTE ),
+        m_TimeSinceInfectionStageChange( 0.0f )
     {
+    }
+
+    void InfectionMalariaConfig::ConfigureMalariaStrainModel( const Configuration* config )
+    {
+        initConfig( "Malaria_Strain_Model", malaria_strains, config, MetadataDescriptor::Enum("malaria_strains", Malaria_Strain_Model_DESC_TEXT, MDD_ENUM_ARGS(MalariaStrains)) ); // 'global'
     }
 
     bool
@@ -107,7 +111,12 @@ namespace Kernel
         const Configuration * config
     )
     {
-        initConfig( "Malaria_Strain_Model", malaria_strains, config, MetadataDescriptor::Enum("malaria_strains", Malaria_Strain_Model_DESC_TEXT, MDD_ENUM_ARGS(MalariaStrains)) ); // 'global'
+        // number_substrains is not configured from the JSON like the other diseases
+        // TBD: Would really like to not do it this way, setting node variable from here. TBD revisit.
+        InfectionConfig::number_substrains = 1;
+
+        ConfigureMalariaStrainModel( config );
+
         initConfig( "Parasite_Switch_Type", parasite_switch_type, config, MetadataDescriptor::Enum("parasite_switch_type", Parasite_Switch_Type_DESC_TEXT, MDD_ENUM_ARGS(ParasiteSwitchType)) ); // infection (malaria) only 
 
         initConfigTypeMap( "Antibody_IRBC_Kill_Rate", &antibody_IRBC_killrate, Antibody_IRBC_Kill_Rate_DESC_TEXT, 0.0f, 1000.0f, DEFAULT_ANTIBODY_IRBC_KILLRATE ); // malaria
@@ -148,6 +157,8 @@ namespace Kernel
 
         ZERO_ARRAY(m_IRBCtype);
         ZERO_ARRAY(m_minor_epitope_type);
+
+        incubation_timer = InfectionConfig::incubation_distribution->Calculate( parent->GetRng() );
     }
 
     InfectionMalaria *InfectionMalaria::CreateInfection(IIndividualHumanContext *context, suids::suid suid, int initial_hepatocytes)
@@ -162,12 +173,10 @@ namespace Kernel
     {
     }
 
-    void InfectionMalaria::SetParameters( IStrainIdentity *_infstrain, int incubation_period_override )
+    void InfectionMalaria::SetParameters( const IStrainIdentity *_infstrain, int incubation_period_override )
     {
         // Set up infection strain
         CreateInfectionStrain(_infstrain);
-        // AntigenID carries drug resistance information
-        drugResistanceFlag = infection_strain->GetAntigenID();
 
         // Here we set the antigenic repertoire of the infection
         // Can be completely distinct strains, or partially overlapping repertoires of antigens
@@ -178,8 +187,6 @@ namespace Kernel
         // Variables for strain generator
         // In the future replace this with the specific strain ID
         unsigned int tempstrainID = 0;
-        // 120 primes
-        unsigned int stridelengths[] = {73,79,83,89,97,101,103,107,109,113,127,131,137,139,149,151,157,163,167,173,179,181,191,193,197,199,211,223,227,229,233,239,241,251,257,263,269,271,277,281,283,293,307,311,313,317,331,337,347,349,353,359,367,373,379,383,389,397,401,409,419,421,431,433,439,443,449,457,461,463,467,479,487,491,499,503,509,521,523,541,547,557,563,569,571,577,587,593,599,601,607,613,617,619,631,641,643,647,653,659,661,673,677,683,691,701,709,719,727,733,739,743,751,757,761,769,773,787,797,809};
         unsigned int tempStridePosition = 0;
         unsigned int tempStrideLength = 0;
 
@@ -189,7 +196,7 @@ namespace Kernel
                 m_MSPtype = 0;
                 m_nonspectype = 0;
 
-#pragma loop(hint_parallel(8))
+                #pragma loop(hint_parallel(8))
                 for (int i = 0; i < CLONAL_PfEMP1_VARIANTS; i++)
                 {
                     m_IRBCtype[i] = i;
@@ -203,23 +210,21 @@ namespace Kernel
                 m_nonspectype = 0;
 
                 #pragma loop(hint_parallel(8))
-
                 for (int i = 0; i < CLONAL_PfEMP1_VARIANTS; i++)
                 {
-                    m_IRBCtype[i] = parent->GetRng()->uniformZeroToN16(CLONAL_PfEMP1_VARIANTS);
+                    m_IRBCtype[i]           = parent->GetRng()->uniformZeroToN16(CLONAL_PfEMP1_VARIANTS);
                     m_minor_epitope_type[i] = parent->GetRng()->uniformZeroToN16(MINOR_EPITOPE_VARS_PER_SET) + MINOR_EPITOPE_VARS_PER_SET * m_nonspectype;
                 }
                 break;
 
             case MalariaStrains::FALCIPARUM_RANDOM_STRAIN:
-                m_MSPtype = parent->GetRng()->uniformZeroToN16(params()->malaria_params->falciparumMSPVars);
-                m_nonspectype = parent->GetRng()->uniformZeroToN16(params()->malaria_params->falciparumNonSpecTypes);
+                m_MSPtype     = parent->GetRng()->uniformZeroToN16( SusceptibilityMalariaConfig::falciparumMSPVars      );
+                m_nonspectype = parent->GetRng()->uniformZeroToN16( SusceptibilityMalariaConfig::falciparumNonSpecTypes );
 
                 #pragma loop(hint_parallel(8))
-
                 for (int i = 0; i < CLONAL_PfEMP1_VARIANTS; i++)
                 {
-                    m_IRBCtype[i] = parent->GetRng()->uniformZeroToN16(params()->malaria_params->falciparumPfEMP1Vars);
+                    m_IRBCtype[i] = parent->GetRng()->uniformZeroToN16( SusceptibilityMalariaConfig::falciparumPfEMP1Vars );
                     m_minor_epitope_type[i] = parent->GetRng()->uniformZeroToN16(MINOR_EPITOPE_VARS_PER_SET) + MINOR_EPITOPE_VARS_PER_SET * m_nonspectype;
                 }
                 break;
@@ -228,19 +233,52 @@ namespace Kernel
                 // in the future replace this with the specific strain ID
                 tempstrainID = infection_strain->GetGeneticID();
 
-                m_MSPtype = tempstrainID%params()->malaria_params->falciparumMSPVars;
-                m_nonspectype = (tempstrainID/params()->malaria_params->falciparumMSPVars)%params()->malaria_params->falciparumNonSpecTypes;
-                tempStridePosition = tempstrainID%params()->malaria_params->falciparumPfEMP1Vars;
-                tempStrideLength = stridelengths[(tempstrainID/params()->malaria_params->falciparumPfEMP1Vars)%120];// in case it goes over limit of primes
-               #pragma loop(hint_parallel(8))
+                m_MSPtype          =  tempstrainID%SusceptibilityMalariaConfig::falciparumMSPVars;
+                m_nonspectype      = (tempstrainID/SusceptibilityMalariaConfig::falciparumMSPVars)%SusceptibilityMalariaConfig::falciparumNonSpecTypes;
+                tempStridePosition =  tempstrainID%SusceptibilityMalariaConfig::falciparumPfEMP1Vars;
+                tempStrideLength = InfectionMalaria::STRIDE_LENGTHS[(tempstrainID/SusceptibilityMalariaConfig::falciparumPfEMP1Vars)%InfectionMalaria::STRIDE_LENGTHS.size()];// in case it goes over limit of primes
 
+                #pragma loop(hint_parallel(8))
                 for (int i = 0; i < CLONAL_PfEMP1_VARIANTS; i++)
                 {
                     m_IRBCtype[i] = tempStridePosition; 
-                    tempStridePosition = (tempStridePosition + tempStrideLength)% params()->malaria_params->falciparumPfEMP1Vars;
+                    tempStridePosition = (tempStridePosition + tempStrideLength)% SusceptibilityMalariaConfig::falciparumPfEMP1Vars;
                     m_minor_epitope_type[i] = parent->GetRng()->uniformZeroToN16(MINOR_EPITOPE_VARS_PER_SET) + MINOR_EPITOPE_VARS_PER_SET * m_nonspectype;
                 }
                 break;
+
+            case MalariaStrains::FALCIPARUM_FIXED_STRAIN:
+            {
+                static std::map<int, StrainIdentityMalariaVarGenes> gen_id_to_sivg;
+
+                StrainIdentityMalariaVarGenes* p_sivp = dynamic_cast<StrainIdentityMalariaVarGenes*>(infection_strain);
+
+                if( (p_sivp != nullptr) && (gen_id_to_sivg.count( infection_strain->GetGeneticID() ) == 0) )
+                {
+                    gen_id_to_sivg[ p_sivp->GetGeneticID() ] = *p_sivp;
+                }
+                else if( p_sivp == nullptr )
+                {
+                    release_assert( gen_id_to_sivg.count( infection_strain->GetGeneticID() ) != 0 );
+
+                    p_sivp = new StrainIdentityMalariaVarGenes( gen_id_to_sivg[ infection_strain->GetGeneticID() ] );
+                    delete infection_strain;
+                    infection_strain = p_sivp;
+                }
+
+                m_MSPtype     = p_sivp->GetMSPType();
+                m_nonspectype = 0; // not needed since minor epitopes are provided
+
+                release_assert( p_sivp->GetIRBCType().size()         == CLONAL_PfEMP1_VARIANTS );
+                release_assert( p_sivp->GetMinorEpitopeType().size() == CLONAL_PfEMP1_VARIANTS );
+
+                for (int i = 0; i < CLONAL_PfEMP1_VARIANTS; i++)
+                {
+                    m_IRBCtype[ i ] = p_sivp->GetIRBCType()[ i ];
+                    m_minor_epitope_type[ i ] = p_sivp->GetMinorEpitopeType()[ i ];
+                }
+                break;
+            }
 
             // default is falciparum single strain, with only a single minor epitope for all PfEMP-1 variants
             default:
@@ -248,7 +286,6 @@ namespace Kernel
                 m_nonspectype = 0;
 
                 #pragma loop(hint_parallel(8))
-
                 for (int i = 0; i < CLONAL_PfEMP1_VARIANTS; i++)
                 {
                     m_IRBCtype[i] = i;
@@ -260,10 +297,8 @@ namespace Kernel
         #pragma loop(hint_parallel(8))
         for (int i = 0; i < CLONAL_PfEMP1_VARIANTS; i++)
         {
-            if ((m_IRBCtype[i] > params()->malaria_params->falciparumPfEMP1Vars) || (m_IRBCtype[i] < 0))
+            if ((m_IRBCtype[i] > SusceptibilityMalariaConfig::falciparumPfEMP1Vars) || (m_IRBCtype[i] < 0))
             {
-                m_IRBCtype[i] = 0;
-                // ERROR: ("Error in IRBCtype!\n");
                 throw CalculatedValueOutOfRangeException( __FILE__, __LINE__, __FUNCTION__, "m_IRBCtype[i]", m_IRBCtype[i], 0.0f );
             }
         }
@@ -301,7 +336,7 @@ namespace Kernel
     }
 
 
-    void InfectionMalaria::Update(float dt, ISusceptibilityContext* _immunity)
+    void InfectionMalaria::Update( float currentTime, float dt, ISusceptibilityContext* _immunity )
     {
         LOG_VALID("\n--------------------------------------------------\n\n");
 
@@ -342,7 +377,7 @@ namespace Kernel
             // process end of asexual cycle events if appropriate
             if (m_IRBCtimer <= 0)
             {
-                processEndOfAsexualCycle(immunity);
+                processEndOfAsexualCycle( currentTime, dt, immunity );
             }
 
             // check for death due to death of all RBCs
@@ -355,7 +390,7 @@ namespace Kernel
             // Immune Interaction
             // Infection Effect on Immune System--
             // in Susceptibility object update, antibody capacities increase and antibodies produced in response to antigenic-specific parasite load, tolerance--lack of inflamatory response-- develops
-            malariaImmuneStimulation(dt, immunity);
+            malariaImmuneStimulation( currentTime, dt, immunity );
 
             // Immune and Drug Effects on Infection
             malariaImmunityIRBCKill(dt, immunity);
@@ -365,20 +400,26 @@ namespace Kernel
 
             //make sure MSP type generates antibodies during an ongoing infection, not just during the short time of IRBC rupturing, since the stimulation may persist
             // TODO: could just SetAntigenPresent instead?
-            m_MSP_antibody->IncreaseAntigenCount(1);
-            immunity->SetAntigenPresent(); // NOTE: this has an interesting behavior in that it continues to update MSP capacity AFTER there are no IRBC (only gametocytes)
+            m_MSP_antibody->IncreaseAntigenCount( 1, currentTime, dt );
+
+            immunity->SetActiveAntibody( m_MSP_antibody ); // NOTE: this has an interesting behavior in that it continues to update MSP capacity AFTER there are no IRBC (only gametocytes)
         }
 
         // check for death, clearance, and take care of end-of-timestep bookkeeping
         malariaCheckInfectionStatus(dt, immunity);
+
+        // Tell immunity how many of infected red blood cells are due to this infection
+        int64_t total_IRBC = CalculateTotalIRBC();
+        int64_t total_IRBC_with_HRP = CalculateTotalIRBCWithHRP( total_IRBC );
+        immunity->UpdateIRBC( total_IRBC, total_IRBC_with_HRP );
     }
 
-    int InfectionMalaria::getDrugResistanceFlag()
+    int64_t InfectionMalaria::CalculateTotalIRBCWithHRP( int64_t totalIRBC ) const
     {
-        return drugResistanceFlag;
+        return totalIRBC;
     }
 
-    void InfectionMalaria::processEndOfAsexualCycle(IMalariaSusceptibility* immunity)
+    void InfectionMalaria::processEndOfAsexualCycle( float currentTime, float dt, IMalariaSusceptibility* immunity )
     {
         // Merozoite-specific antibodies can limit merozoite success--Blackman, M. J., H. G. Heidrich, et al. (1990).
         // "A single fragment of a malaria merozoite surface protein remains on the parasite during red cell invasion
@@ -392,9 +433,11 @@ namespace Kernel
         LOG_VALID_F("RBCavailability = %0.9f  merozoitesurvival = %0.9f\n", RBCavailability, merozoitesurvival);
 
         // How many rupture for this infection handed to suscept object for total stimulation calculations
-        int64_t totalIRBC = 0;
-        totalIRBC = std::accumulate( m_IRBC_count.begin(), m_IRBC_count.end(), totalIRBC );
-        m_MSP_antibody->IncreaseAntigenCount( totalIRBC );
+        int64_t totalIRBC = CalculateTotalIRBC();
+        if( totalIRBC > 0 )
+        {
+            m_MSP_antibody->IncreaseAntigenCount( totalIRBC, currentTime, dt );
+        }
 
         // Move immature gametocytes forward a stage and create initial stage gametocytes from previous merozoites
         // This is the last function to use m_IRBC_count from the previous cycle
@@ -405,7 +448,6 @@ namespace Kernel
         malariaIRBCAntigenSwitch(merozoitesurvival);
 
         totalIRBC = 0;
-        //std::accumulate( m_IRBC_count.begin(), m_IRBC_count.end(), totalIRBC );
         #pragma loop(hint_parallel(8))
         for ( int j = 0; j < CLONAL_PfEMP1_VARIANTS; j++ )
         {
@@ -434,11 +476,11 @@ namespace Kernel
     // All end of time step bookkeeping, basically
     void InfectionMalaria::malariaCheckInfectionStatus(float dt, IMalariaSusceptibility *immunity)
     {
-        int64_t totalgametocytes = 0;
-
         // check for valid inputs
         if (immunity)
         {
+            int64_t totalgametocytes = 0;
+
             // total the gametocytes and IRBCs
             #pragma loop(hint_parallel(8))
             for (int i = 0; i < GametocyteStages::Mature; i++)
@@ -446,8 +488,7 @@ namespace Kernel
                 totalgametocytes += m_malegametocytes[i] + m_femalegametocytes[i];
             }
 
-            int64_t totalIRBC = 0;
-            totalIRBC = std::accumulate( m_IRBC_count.begin(), m_IRBC_count.end(), totalIRBC );
+            int64_t totalIRBC = CalculateTotalIRBC();
             if (totalIRBC > m_max_parasites)
             {
                 m_max_parasites = totalIRBC;
@@ -477,6 +518,30 @@ namespace Kernel
             {
                 LOG_VALID("CLEARED infection\n");
                 StateChange = InfectionStateChange::Cleared;
+                auto broadcaster = parent->GetEventContext()->GetNodeEventContext()->GetIndividualEventBroadcaster();
+                broadcaster->TriggerObservers( parent->GetEventContext(), EventTrigger::InfectionCleared );
+            }
+
+            MalariaInfectionStage::Enum prev_stage = m_CurrentInfectionStage;
+            if( m_hepatocytes > 0 )
+            {
+                m_CurrentInfectionStage = MalariaInfectionStage::HEPATOCYTE;
+            }
+            else if( totalIRBC > 0 )
+            {
+                m_CurrentInfectionStage = MalariaInfectionStage::ASEXUAL;
+            }
+            else
+            {
+                m_CurrentInfectionStage = MalariaInfectionStage::GAMETOCYTE_ONLY;
+            }
+            if( prev_stage != m_CurrentInfectionStage )
+            {
+                m_TimeSinceInfectionStageChange = 0.0;
+            }
+            else
+            {
+                m_TimeSinceInfectionStageChange += dt;
             }
         }
     }
@@ -507,18 +572,27 @@ namespace Kernel
             if( m_pMDE != nullptr )
             {
                 drug_killrate = m_pMDE->get_drug_IRBC_killrate( *infection_strain );
-                // crude preliminary version of drug resistance
-                if(getDrugResistanceFlag() > 0){drug_killrate = 0;}
             }
+
+            RANDOMBASE* p_rng = parent->GetRng();
+            double fever_plus_drug = fever_cytokine_killrate + drug_killrate;
+
+            float maternal_antibodies = immunity->get_maternal_antibodies();
+
             #pragma loop(hint_parallel(8))
             for (int i = 0; i < CLONAL_PfEMP1_VARIANTS; i++)
             {
                 if ( m_IRBC_count[i] == 0 ) continue; // don't need to estimate killing if there are no IRBC of this variant to kill!
 
                 //LOG_VALID_F( "Ab concentration for variant %d: %0.9f (major) %0.9f (minor)\n", i, m_PfEMP1_antibodies[i].major->GetAntibodyConcentration(), m_PfEMP1_antibodies[i].minor->GetAntibodyConcentration() );
-
                 // total = antibodies (major, minor, maternal) + fever + drug
-                double pkill = EXPCDF(-dt * ( (m_PfEMP1_antibodies[i].major->GetAntibodyConcentration() + InfectionMalariaConfig::non_specific_antigenicity * m_PfEMP1_antibodies[i].minor->GetAntibodyConcentration() + immunity->get_maternal_antibodies() ) * InfectionMalariaConfig::antibody_IRBC_killrate + fever_cytokine_killrate + drug_killrate));
+                double pkill = EXPCDF( -dt * ( (   m_PfEMP1_antibodies[i].major->GetAntibodyConcentration()
+                                                 + m_PfEMP1_antibodies[i].minor->GetAntibodyConcentration() * InfectionMalariaConfig::non_specific_antigenicity
+                                                 + maternal_antibodies
+                                               ) * InfectionMalariaConfig::antibody_IRBC_killrate
+                                               + fever_plus_drug
+                                             )
+                                     );
                 
                 // Now here there is an interesting issue: to save massive amounts of computational time, can use a Gaussian approximation for the true binomial, but this returns a float
                 // This is fine for large numbers of killed IRBC's, but an issue arises for small numbers
@@ -528,7 +602,7 @@ namespace Kernel
 
                 double tempval1 = m_IRBC_count[i] * pkill;
                 if ( tempval1 > 0 ) // don't need to smear the killing by a random number if it is going to be zero
-                    tempval1 = parent->GetRng()->eGauss() * sqrt(tempval1 * (1.0 - pkill)) + tempval1;
+                    tempval1 = p_rng->eGauss() * sqrt(tempval1 * (1.0 - pkill)) + tempval1;
 
                 if (tempval1 < 0.5)
                     tempval1 = 0;
@@ -545,7 +619,7 @@ namespace Kernel
     }
 
     // Calculates stimulation of immune system by malaria infection
-    void InfectionMalaria::malariaImmuneStimulation(float dt, IMalariaSusceptibility *immunity)
+    void InfectionMalaria::malariaImmuneStimulation( float currentTime, float dt, IMalariaSusceptibility *immunity )
     {
         // check for valid inputs
         if ( dt <= 0 || immunity == nullptr )
@@ -560,25 +634,25 @@ namespace Kernel
         #pragma loop(hint_parallel(8))
         for (int i = 0; i < CLONAL_PfEMP1_VARIANTS; i++)
         {
-            if (m_IRBC_count[i] < 0)
-            {
-                m_IRBC_count[i] = 0;
-                LOG_WARN_F( "malariaImmuneStimulation() IRBC count at index %d should not be negative\n", i );
-            }
-
             // only update if there are actually IRBCs
             if (m_IRBC_count[i] > 0)
             {
                 //LOG_VALID_F("Increasing IRBC count by %lld for variant %d:  ( %d, %d )\n", m_IRBC_count[i], i, m_PfEMP1_antibodies[i].minor->GetAntibodyVariant(), m_PfEMP1_antibodies[i].major->GetAntibodyVariant());
 
                 // PfEMP-1 major epitopes
-                m_PfEMP1_antibodies[i].major->IncreaseAntigenCount(m_IRBC_count[i]);
+                m_PfEMP1_antibodies[i].major->IncreaseAntigenCount( m_IRBC_count[i], currentTime, dt );
 
                 // PfEMP-1 minor epitopes
-                m_PfEMP1_antibodies[i].minor->IncreaseAntigenCount(m_IRBC_count[i]);
+                m_PfEMP1_antibodies[i].minor->IncreaseAntigenCount( m_IRBC_count[i], currentTime, dt );
 
-                // Notify susceptibility that there is antigen present (TODO: this can be deprecated when a better way of listing "active" antibodies in the susceptibility is used)
-                immunity->SetAntigenPresent();
+                // Tell susceptibility which antibodies are in use/active
+                immunity->SetActiveAntibody( m_PfEMP1_antibodies[i].major );
+                immunity->SetActiveAntibody( m_PfEMP1_antibodies[i].minor );
+            }
+            else if (m_IRBC_count[i] < 0)
+            {
+                m_IRBC_count[i] = 0;
+                LOG_WARN_F( "malariaImmuneStimulation() IRBC count at index %d should not be negative\n", i );
             }
         }
     }
@@ -843,8 +917,7 @@ namespace Kernel
             // --- development of parasitologic and clinical immunity during primary infection." Am J Trop Med Hyg 61(1 Suppl): 4-19.
             // --- process start of asexual phase if the incubation period is over and there are still hepatocytes
             // ----------------------------------------------------------------------------------------------------------------------
-            float incubation_period = InfectionConfig::incubation_distribution->GetParam1();
-            if (m_asexual_phase == AsexualCycleStatus::NoAsexualCycle && duration >= incubation_period)
+            if (m_asexual_phase == AsexualCycleStatus::NoAsexualCycle && duration >= incubation_timer )
             {
                 m_IRBC_count.assign(CLONAL_PfEMP1_VARIANTS, 0);
 
@@ -891,12 +964,6 @@ namespace Kernel
 
     }
 
-    const SimulationConfig *
-    InfectionMalaria::params()
-    {
-        return GET_CONFIGURABLE(SimulationConfig);
-    }
-
     int64_t InfectionMalaria::get_MaleGametocytes(int stage) const
     { 
         return m_malegametocytes[stage]; 
@@ -924,8 +991,7 @@ namespace Kernel
 
     float InfectionMalaria::get_asexual_density() const
     { 
-        int64_t totalIRBC = 0;
-        totalIRBC = std::accumulate(m_IRBC_count.begin(), m_IRBC_count.end(), totalIRBC);
+        int64_t totalIRBC = CalculateTotalIRBC();
         return totalIRBC * m_inv_microliters_blood;
     }
 
@@ -935,6 +1001,26 @@ namespace Kernel
         return mature_female_gametocytes * m_inv_microliters_blood;
     }
 
+    int64_t InfectionMalaria::get_irbc() const
+    {
+        return CalculateTotalIRBC();
+    }
+
+    MalariaInfectionStage::Enum InfectionMalaria::get_InfectionStage() const
+    {
+        return m_CurrentInfectionStage;
+    }
+
+    bool InfectionMalaria::did_InfectionStageChangeToday() const
+    {
+        // assume that timestep is 1
+        return (m_TimeSinceInfectionStageChange <= 1.0);
+    }
+
+    int64_t InfectionMalaria::CalculateTotalIRBC() const
+    {
+        return std::accumulate( m_IRBC_count.begin(), m_IRBC_count.end(), int64_t(0) );
+    }
 
     REGISTER_SERIALIZABLE(InfectionMalaria);
 
@@ -950,7 +1036,7 @@ namespace Kernel
         ar.labelElement("m_nonspectype") & infection.m_nonspectype;
         ar.labelElement("m_minor_epitope_type"); ar.serialize(infection.m_minor_epitope_type, CLONAL_PfEMP1_VARIANTS);
         ar.labelElement("m_IRBCtype"); ar.serialize(infection.m_IRBCtype, CLONAL_PfEMP1_VARIANTS);
-// shared pointer        ar.labelElement("m_MSP_antibody"); Kernel::serialize<IMalariaAntibody>(ar, infection.m_MSP_antibody);
+// shared pointer        ar.labelElement("m_MSP_antibody"); Kernel::serialize<MalariaAntibody>(ar, infection.m_MSP_antibody);
 // recreated in SetContextTo         ar.labelElement("m_PfEMP1_antibodies") & infection.m_PfEMP1_antibodies;
         ar.labelElement("m_IRBC_count") & infection.m_IRBC_count;
         ar.labelElement("m_malegametocytes"); ar.serialize(infection.m_malegametocytes, GametocyteStages::Count);
@@ -962,6 +1048,5 @@ namespace Kernel
         ar.labelElement("m_temp_duration") & infection.m_temp_duration;
         ar.labelElement("m_max_parasites") & infection.m_max_parasites;
         ar.labelElement("m_inv_microliters_blood") & infection.m_inv_microliters_blood;
-        ar.labelElement("drugResistanceFlag") & infection.drugResistanceFlag;
     }
 }

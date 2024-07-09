@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -16,7 +8,7 @@ namespace Kernel
 {
     struct IControlledVaccine : ISupports
     {
-        virtual const std::string& GetInterventionName() const = 0;
+        virtual const InterventionName& GetInterventionName() const = 0;
         virtual bool AllowRevaccination( const IControlledVaccine& rNewVaccine ) const = 0;
     };
 
@@ -38,7 +30,7 @@ namespace Kernel
         virtual void Update(float dt) override;
 
     protected:
-        virtual const std::string& GetInterventionName() const override;
+        virtual const InterventionName& GetInterventionName() const override;
         virtual bool AllowRevaccination( const IControlledVaccine& rNewVaccine ) const override;
 
         float        m_DurationToWaitBeforeRevaccination;

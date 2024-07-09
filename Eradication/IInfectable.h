@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -23,6 +15,7 @@ namespace Kernel
         virtual void Expose( const IContagionPopulation* cp, float dt, TransmissionRoute::Enum transmission_route = TransmissionRoute::TRANSMISSIONROUTE_CONTACT ) = 0;
         virtual const infection_list_t& GetInfections() const = 0;
         virtual float GetInterventionReducedAcquire() const = 0;
+        virtual suids::suid GetSuid() const = 0;
 
         virtual ~IInfectable() {}
     };
@@ -30,7 +23,7 @@ namespace Kernel
     class StrainIdentity;
     struct IInfectionAcquirable : ISupports
     {
-        virtual void AcquireNewInfection( const IStrainIdentity *infstrain = nullptr, int incubation_period_override = -1) = 0;
+        virtual void AcquireNewInfection( const IStrainIdentity *infstrain, int incubation_period_override = -1) = 0;
 
         virtual ~IInfectionAcquirable() {}
     };

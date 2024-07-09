@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include <math.h>
@@ -27,7 +19,7 @@ namespace Kernel
     bool SusceptibilityVectorConfig::Configure( const Configuration* config )
     {
         initConfig( "Age_Dependent_Biting_Risk_Type", age_dependent_biting_risk_type, config, MetadataDescriptor::Enum("age_dependent_biting_risk_type", Age_Dependent_Biting_Risk_Type_DESC_TEXT, MDD_ENUM_ARGS(AgeDependentBitingRisk)) );
-        initConfigTypeMap( "Newborn_Biting_Risk_Multiplier", &m_newborn_biting_risk, Newborn_Biting_Risk_Multiplier_DESC_TEXT, 0.0f, 1.0f, 0.2f, "Age_Dependent_Biting_Risk_Type", "AgeDependentBitingRisk::LINEAR" );
+        initConfigTypeMap( "Newborn_Biting_Risk_Multiplier", &m_newborn_biting_risk, Newborn_Biting_Risk_Multiplier_DESC_TEXT, 0.0f, 1.0f, 0.2f, "Age_Dependent_Biting_Risk_Type", "LINEAR" );
         return JsonConfigurable::Configure( config );
     }
 

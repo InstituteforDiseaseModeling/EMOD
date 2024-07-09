@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -32,6 +24,15 @@ namespace Kernel
         // --- so it needs to start with a refcount of 1.
         // ------------------------------------------------------------------------------------------------
         AddRef();
+    }
+
+    template<class Broadcaster, class Observer, class Entity, class Trigger>
+    BaseTextReportEventsTemplate<Broadcaster, Observer, Entity, Trigger>::BaseTextReportEventsTemplate( const BaseTextReportEventsTemplate& rThat )
+        : BaseTextReport( rThat )
+        , eventTriggerList( rThat.eventTriggerList )
+        , broadcaster_list()
+        , is_registered( rThat.is_registered )
+    {
     }
 
     template<class Broadcaster, class Observer, class Entity, class Trigger>

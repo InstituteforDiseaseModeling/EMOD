@@ -1,0 +1,15 @@
+{
+    "LarvalHabitatMultiplier" : 
+    [
+        {
+            "Habitat" : "TEMPORARY_RAINFALL",
+            "Species" : "gambiae",
+            "Factor" : 2.0
+        },
+        {
+            "Habitat" : "HUMAN_POPULATION",
+            "Species" : "SillySkeeter",
+            "Factor" : 3.0
+        }
+    ]
+}

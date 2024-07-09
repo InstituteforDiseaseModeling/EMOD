@@ -1,108 +1,209 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "VectorSpeciesParameters.h"
 #include "VectorParameters.h"
+#include "VectorHabitat.h"
 #include "Exceptions.h"
 
 SETUP_LOGGING( "VectorSpeciesParameters" )
 
 namespace Kernel
 {
-    void
-    LarvalHabitatParams::ConfigureFromJsonAndKey(
-        const Configuration* inputJson,
-        const std::string& key
-    )
-    {
-        LOG_DEBUG_F( "Configuring larval habitats from config.json\n" );
-        // we have a map of enum keys to floats
-        try {
-            const auto& tvcs_jo = json_cast<const json::Object&>( (*inputJson)[key] );
-            for( auto data = tvcs_jo.Begin();
-                    data != tvcs_jo.End();
-                    ++data )
-            {
-                auto tvcs = inputJson->As< json::Object >()[ key ];
+    // ------------------------------------------------------------------------
+    // --- LarvalHabitatParams
+    // ------------------------------------------------------------------------
 
-                auto habitat_type_string = data->name;
-                VectorHabitatType::Enum habitat_type = (VectorHabitatType::Enum) VectorHabitatType::pairs::lookup_value( habitat_type_string.c_str() );
-                if( habitat_type == -1 )
-                {
-                    std::stringstream msg;
-                    msg << habitat_type_string 
-                        << " is not a valid VectorHabitatType.";
-                    throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
-                }
-                Configuration* json_copy = Configuration::CopyFromElement( tvcs, inputJson->GetDataLocation() );
-                habitat_map.insert( std::make_pair( habitat_type, json_copy ) );
-            }
-            LOG_DEBUG_F( "Found %d larval habitats\n", habitat_map.size() );
-        }
-        catch( const json::Exception & )
+    LarvalHabitatParams::LarvalHabitatParams()
+        : JsonConfigurable()
+        , m_Habitats()
+    {
+    }
+
+    LarvalHabitatParams::~LarvalHabitatParams()
+    {
+        for( auto p_habitat : m_Habitats )
         {
-            throw Kernel::JsonTypeConfigurationException( __FILE__, __LINE__, __FUNCTION__, key.c_str(), (*inputJson), "Expected OBJECT" );
+            delete p_habitat;
         }
+    }
+
+    void LarvalHabitatParams::ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key )
+    {
+        // Exist(key) should have been called before calling this
+        Configuration* p_config = Configuration::CopyFromElement( (*inputJson)[ key ], inputJson->GetDataLocation() );
+
+        if( p_config->operator const json::Element &().Type() != json::ARRAY_ELEMENT )
+        {
+            throw Kernel::JsonTypeConfigurationException( __FILE__, __LINE__, __FUNCTION__,
+                                                            key.c_str(), (*inputJson)[key], "Expected ARRAY of OBJECTs" );
+        }
+
+        int i = 0;
+        const auto& json_array = json_cast<const json::Array&>(*p_config);
+        for( auto data = json_array.Begin(); data != json_array.End(); ++data )
+        {
+            Configuration* p_object_config = Configuration::CopyFromElement( *data, inputJson->GetDataLocation() );
+
+            if( p_object_config->operator const json::Element &().Type() != json::OBJECT_ELEMENT )
+            {
+                std::stringstream param_name;
+                param_name << key << "[" << i << "]";
+                throw Kernel::JsonTypeConfigurationException( __FILE__, __LINE__, __FUNCTION__,
+                                                                param_name.str().c_str(), (*inputJson)[key], "Expected ARRAY of OBJECTs" );
+            }
+
+            json::Object json_obj = p_object_config->As<json::Object>();
+
+            if( json_obj.Size() == 0 )
+            {
+                std::stringstream ss;
+                ss << "Found zero elements in JSON for '" << key << "[" << i << "]' in <" << inputJson->GetDataLocation() << ">.";
+                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+            }
+        
+            if( !p_object_config->Exist( "Habitat_Type" ) )
+            {
+                std::stringstream json_text;
+                json::Writer::Write( *p_object_config, json_text );
+
+                std::stringstream ss;
+                ss << "'Habitat_Type' does not exist in '" << key << "[" << i << "]'.\n"
+                    << "It has the following JSON:\n"
+                    << json_text.str();
+                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+            }
+
+            VectorHabitatType::Enum habitat_type = VectorHabitatType::ALL_HABITATS;
+            initConfig( "Habitat_Type",
+                        habitat_type,
+                        p_object_config,
+                        MetadataDescriptor::Enum( "Habitat_Type",
+                                                  VH_Habitat_Type_DESC_TEXT,
+                                                  MDD_ENUM_ARGS( VectorHabitatType ) ) );
+            if( (habitat_type == VectorHabitatType::NONE        ) ||
+                (habitat_type == VectorHabitatType::ALL_HABITATS) )
+            {
+                std::string name = VectorHabitatType::pairs::lookup_key( habitat_type );
+                std::string location = inputJson->GetDataLocation();
+
+                std::stringstream ss;
+                ss << "Invalid 'Habitat_Type' = '" << name << "' in '" << key << "[" << i << "]' in <" << location << ">.\n";
+                ss << "Please select one of the following types:\n";
+                // start at 1 to skip NONE, subtract 1 from count to skip ALL_HABITATS
+                for( int i = 1; i < int(VectorHabitatType::pairs::count()) - 1; ++i )
+                {
+                    ss << VectorHabitatType::pairs::get_keys()[ i ] << "\n";
+                }
+                throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+            }
+            IVectorHabitat* p_habitat = VectorHabitat::CreateHabitat( habitat_type, p_object_config );
+
+            m_Habitats.push_back( p_habitat );
+
+            delete p_object_config;
+            ++i;
+        }
+
+        // check for duplicate habitat types
+        for( int i = 0; i < int(m_Habitats.size())-1; ++i )
+        {
+            VectorHabitatType::Enum type_i = m_Habitats[ i ]->GetVectorHabitatType();
+            for( int j = i+1; j < m_Habitats.size(); ++j )
+            {
+                VectorHabitatType::Enum type_j = m_Habitats[ j ]->GetVectorHabitatType();
+                if( type_i == type_j )
+                {
+                    std::stringstream ss;
+                    ss << "Duplicate 'Habitat_Type' = '" << VectorHabitatType::pairs::lookup_key( type_i ) << "'.\n"
+                       << "Only one habitat type per species is allowed.";
+                    throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+                }
+            }
+        }
+        delete p_config;
     }
 
     json::QuickBuilder
     LarvalHabitatParams::GetSchema()
     {
+        LinearSplineHabitat ls_habitat;
+        if( JsonConfigurable::_dryrun )
+        {
+            ls_habitat.Configure( nullptr );
+        }
+
+        std::string object_schema_name = "VectorHabitat";
+        std::string idm_type_schema = "idmType:" + object_schema_name;
+
         json::QuickBuilder schema( GetSchemaBase() );
         auto tn = JsonConfigurable::_typename_label();
         auto ts = JsonConfigurable::_typeschema_label();
-        schema[ tn ] = json::String( "idmType:LarvalHabitats" );
-#if 0
-        schema[ts] = json::Array();
-        schema[ts][0] = json::Object();
-        schema[ts][0]["Low"] = json::Object();
-        schema[ts][0]["Low"][ "type" ] = json::String( "float" );
-        schema[ts][0]["Low"][ "min" ] = json::Number( 0 );
-        schema[ts][0]["Low"][ "max" ] = json::Number( 1000.0 );
-        schema[ts][0]["Low"][ "description" ] = json::String( HIV_Age_Diagnostic_Low_DESC_TEXT );
-        schema[ts][0]["High"] = json::Object();
-        schema[ts][0]["High"][ "type" ] = json::String( "float" );
-        schema[ts][0]["High"][ "min" ] = json::Number( 0 );
-        schema[ts][0]["High"][ "max" ] = json::Number( 1000.0 );
-        schema[ts][0]["High"][ "description" ] = json::String( HIV_Age_Diagnostic_High_DESC_TEXT );
-        schema[ts][0]["Event"] = json::Object();
-        schema[ts][0]["Event"][ "type" ] = json::String( "String" );
-        schema[ts][0]["Event"][ "description" ] = json::String( HIV_Age_Diagnostic_Event_Name_DESC_TEXT );
-#endif
+        schema[ tn ] = json::String( idm_type_schema );
+        schema[ "item_type" ] = json::String( object_schema_name );
+
+        // Add the schema for the objects to be retrieved by JsonConfigurable::Configure()
+        // Also add the "class" parameter so the python classes will be generated
+        schema[ ts ] = ls_habitat.GetSchema();
+        schema[ ts ][ "class" ] = json::String( object_schema_name );
+
         return schema;
     }
 
-    VectorSpeciesParameters::VectorSpeciesParameters() :
-        aquaticarrhenius1(DEFAULT_AQUATIC_ARRHENIUS1),
-        aquaticarrhenius2(DEFAULT_AQUATIC_ARRHENIUS2),
-        infectedarrhenius1(DEFAULT_INFECTED_ARRHENIUS1),
-        infectedarrhenius2(DEFAULT_INFECTED_ARRHENIUS2),
-        cyclearrhenius1(DEFAULT_CYCLE_ARRHENIUS1),
-        cyclearrhenius2(DEFAULT_CYCLE_ARRHENIUS2),
-        cyclearrheniusreductionfactor(1.0),
-        immatureduration(DEFAULT_IMMATURE_DURATION),
-        daysbetweenfeeds(DEFAULT_DAYS_BETWEEN_FEEDS),
-        anthropophily(DEFAULT_ANTHROPOPHILY),
-        eggbatchsize(DEFAULT_EGGBATCH_SIZE),
-        infectedeggbatchmod(DEFAULT_INFECTED_EGGBATCH_MODIFIER),
-        eggsurvivalrate(DEFAULT_EGG_SURVIVAL_RATE),
-        infectiousmortalitymod(DEFAULT_INFECTIOUS_MORTALITY_MODIFIER),
-        aquaticmortalityrate(DEFAULT_AQUATIC_MORTALITY_RATE),
-        adultlifeexpectancy(DEFAULT_ADULT_LIFE_EXPECTANCY),
-        transmissionmod(DEFAULT_TRANSMISSION_MODIFIER),
-        acquiremod(DEFAULT_ACQUIRE_MODIFIER),
-        infectioushfmortmod(DEFAULT_INFECTIOUS_HUMAN_FEEDING_MORTALITY_MODIFIER),
-        indoor_feeding(1.0),
-        nighttime_feeding(1.0),
-        adultmortality(0.0),
-        immaturerate(0.0)
+    const std::vector<IVectorHabitat*>&LarvalHabitatParams::GetHabitats() const
+    {
+        return m_Habitats;
+    }
+
+    bool LarvalHabitatParams::HasHabitatType( VectorHabitatType::Enum habitatType ) const
+    {
+        // The number of habitats should be less than 5 so this should be good enough.
+        for( auto p_habitat : m_Habitats )
+        {
+            if( p_habitat->GetVectorHabitatType() == habitatType )
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    // ------------------------------------------------------------------------
+    // --- VectorSpeciesParameters
+    // ------------------------------------------------------------------------
+
+    VectorSpeciesParameters::VectorSpeciesParameters( int _index )
+        : JsonConfigurable()
+        , name("")
+        , index( _index )
+        , habitat_params()
+        , vector_sugar_feeding( VectorSugarFeeding::VECTOR_SUGAR_FEEDING_NONE )
+        , temperature_dependent_feeding_cycle( TemperatureDependentFeedingCycle::NO_TEMPERATURE_DEPENDENCE )
+        , aquaticarrhenius1(DEFAULT_AQUATIC_ARRHENIUS1)
+        , aquaticarrhenius2(DEFAULT_AQUATIC_ARRHENIUS2)
+        , infectedarrhenius1(DEFAULT_INFECTED_ARRHENIUS1)
+        , infectedarrhenius2(DEFAULT_INFECTED_ARRHENIUS2)
+        , cyclearrhenius1(DEFAULT_CYCLE_ARRHENIUS1)
+        , cyclearrhenius2(DEFAULT_CYCLE_ARRHENIUS2)
+        , cyclearrheniusreductionfactor(1.0)
+        , daysbetweenfeeds(DEFAULT_DAYS_BETWEEN_FEEDS)
+        , anthropophily(DEFAULT_ANTHROPOPHILY)
+        , eggbatchsize(DEFAULT_EGGBATCH_SIZE)
+        , infectedeggbatchmod(DEFAULT_INFECTED_EGGBATCH_MODIFIER)
+        , eggsurvivalrate(DEFAULT_EGG_SURVIVAL_RATE)
+        , infectiousmortalitymod(DEFAULT_INFECTIOUS_MORTALITY_MODIFIER)
+        , aquaticmortalityrate(DEFAULT_AQUATIC_MORTALITY_RATE)
+        , transmissionmod(DEFAULT_TRANSMISSION_MODIFIER)
+        , acquiremod(DEFAULT_ACQUIRE_MODIFIER)
+        , infectioushfmortmod(DEFAULT_INFECTIOUS_HUMAN_FEEDING_MORTALITY_MODIFIER)
+        , indoor_feeding(1.0)
+        , microsporidia_strains()
+        , adultmortality( 0.0 )
+        , malemortality( 0.0 )
+        , immaturerate(0.0)
+        , genes()
+        , trait_modifiers( &genes )
+        , gene_drivers( &genes, &trait_modifiers )
     {
     }
 
@@ -110,47 +211,39 @@ namespace Kernel
     {
     }
 
-    VectorSpeciesParameters* VectorSpeciesParameters::CreateVectorSpeciesParameters( const Configuration* inputJson, 
-                                                                                     const std::string& vector_species_name )
+    bool VectorSpeciesParameters::Configure( const ::Configuration *config )
     {
-        LOG_DEBUG( "CreateVectorSpeciesParameters\n" );
+        float adultlifeexpectancy = 10.0f;
+        float malelifeexpectancy = 10.0f;
+        float immatureduration = 2.0f;
 
-        // ------------------------------------------------------------------------------------------------------------
-        // --- We have to pass this VectorParameter value in because we can't access it quite yet via SimulationConfig
-        // --- We are dependent upon an outside variable so we are passing it in.  We make it static
-        // --- so that we don't create a new instance of the variable for every instance of VSP.
-        // ------------------------------------------------------------------------------------------------------------
+        initConfigTypeMap( "Name", &name, VSP_Name_DESC_TEXT );
+        initConfigComplexCollectionType( "Habitats", &habitat_params,  Habitats_DESC_TEXT );
 
-        VectorSpeciesParameters* params = _new_ VectorSpeciesParameters();
-        params->Initialize(vector_species_name);
-        if( !JsonConfigurable::_dryrun )
-        {
-            auto tmp_config = Configuration::CopyFromElement( (*inputJson)["Vector_Species_Params"][vector_species_name.c_str()], inputJson->GetDataLocation() );
-            params->Configure( tmp_config );
-            delete tmp_config;
-            tmp_config = nullptr;
-        }
-        LOG_DEBUG( "END CreateVectorSpeciesParameters\n" );
-        return params;
-    }
+        initConfig( "Vector_Sugar_Feeding_Frequency",
+                    vector_sugar_feeding,
+                    config,
+                    MetadataDescriptor::Enum( "Vector_Sugar_Feeding_Frequency",
+                                              Vector_Sugar_Feeding_Frequency_DESC_TEXT,
+                                              MDD_ENUM_ARGS( VectorSugarFeeding ) ) );
 
-    bool
-    VectorSpeciesParameters::Configure(
-        const ::Configuration *config
-    )
-    {
-        LOG_DEBUG( "Configure\n" );
-        initConfigComplexType( "Larval_Habitat_Types", &habitat_params,  Larval_Habitat_Types_DESC_TEXT );
         initConfigTypeMap( ( "Aquatic_Arrhenius_1" ), &aquaticarrhenius1, Aquatic_Arrhenius_1_DESC_TEXT, 0.0f, 1E15f, 8.42E10f );
         initConfigTypeMap( ( "Aquatic_Arrhenius_2" ), &aquaticarrhenius2, Aquatic_Arrhenius_2_DESC_TEXT, 0.0f, 1E15f, 8328 );
         initConfigTypeMap( ( "Infected_Arrhenius_1" ), &infectedarrhenius1, Infected_Arrhenius_1_DESC_TEXT, 0.0f, 1E15f, 1.17E11f );
         initConfigTypeMap( ( "Infected_Arrhenius_2" ), &infectedarrhenius2, Infected_Arrhenius_2_DESC_TEXT, 0.0f, 1E15f, 8.34E3f );
         
+        initConfig( "Temperature_Dependent_Feeding_Cycle",
+                    temperature_dependent_feeding_cycle,
+                    config,
+                    MetadataDescriptor::Enum( "Temperature_Dependent_Feeding_Cycle",
+                                              Temperature_Dependent_Feeding_Cycle_DESC_TEXT,
+                                              MDD_ENUM_ARGS( TemperatureDependentFeedingCycle ) ) );
+
         initConfigTypeMap( ("Cycle_Arrhenius_1"               ), &cyclearrhenius1,               Cycle_Arrhenius_1_DESC_TEXT,                0.0f, 1E15f, 4.09E10f, "Temperature_Dependent_Feeding_Cycle", "ARRHENIUS_DEPENDENCE" );
         initConfigTypeMap( ("Cycle_Arrhenius_2"               ), &cyclearrhenius2,               Cycle_Arrhenius_2_DESC_TEXT,                0.0f, 1E15f, 7.74E3f,  "Temperature_Dependent_Feeding_Cycle", "ARRHENIUS_DEPENDENCE" );
         initConfigTypeMap( ("Cycle_Arrhenius_Reduction_Factor"), &cyclearrheniusreductionfactor, Cycle_Arrhenius_Reduction_Factor_DESC_TEXT, 0.0f, 1.0f, 1.0f,      "Temperature_Dependent_Feeding_Cycle", "ARRHENIUS_DEPENDENCE" );
 
-        initConfigTypeMap( ( "Immature_Duration" ), &immatureduration, Immature_Duration_DESC_TEXT, 0.0f, 730.0f, 2.0f );
+        initConfigTypeMap( ( "Immature_Duration" ), &immatureduration, Immature_Duration_DESC_TEXT, 1.0f, 730.0f, 2.0f );
         initConfigTypeMap( ( "Days_Between_Feeds" ), &daysbetweenfeeds, Days_Between_Feeds_DESC_TEXT, 1.0f, 730.0f, 3.0f, "Temperature_Dependent_Feeding_Cycle", "NO_TEMPERATURE_DEPENDENCE,BOUNDED_DEPENDENCE" );
         initConfigTypeMap( ( "Anthropophily" ), &anthropophily, Anthropophily_DESC_TEXT, 0.0f, 1.0f, 1.0f );
         initConfigTypeMap( ( "Egg_Batch_Size" ), &eggbatchsize, Egg_Batch_Size_DESC_TEXT, 0.0f, 10000.0f, 100.0f );
@@ -158,25 +251,69 @@ namespace Kernel
         // Below is not used yet. Not going to add param to all vector configs until it's used.
         //initConfigTypeMap( ( "Egg_Survival_Rate" ), &eggsurvivalrate, Egg_Survival_Rate_DESC_TEXT, 0.0f, 1.0f, 0.99f );
         initConfigTypeMap( ( "Aquatic_Mortality_Rate" ), &aquaticmortalityrate, Aquatic_Mortality_Rate_DESC_TEXT, 0.0f, 1.0f, 0.1f );
-        initConfigTypeMap( ( "Adult_Life_Expectancy" ), &adultlifeexpectancy, Adult_Life_Expectancy_DESC_TEXT, 0.0f, 730.0f, 10.0f );
+        initConfigTypeMap( ("Adult_Life_Expectancy"), &adultlifeexpectancy, Adult_Life_Expectancy_DESC_TEXT, 1.0f, 730.0f, 10.0f );
+        initConfigTypeMap( ("Male_Life_Expectancy"), &malelifeexpectancy, Male_Life_Expectancy_DESC_TEXT, 1.0f, 730.0f, 10.0f );
         initConfigTypeMap( ( "Transmission_Rate" ), &transmissionmod, Transmission_Rate_DESC_TEXT, 0.0f, 1.0f, 0.5f );
         initConfigTypeMap( ( "Acquire_Modifier" ), &acquiremod, Acquire_Modifier_DESC_TEXT, 0.0f, 1.0f, 1.0f );
         initConfigTypeMap( ( "Infectious_Human_Feed_Mortality_Factor" ), &infectioushfmortmod, Infectious_Human_Feed_Mortality_Factor_DESC_TEXT, 0.0f, 1000.0f, 1.5f );
         initConfigTypeMap( ( "Indoor_Feeding_Fraction" ), &indoor_feeding, Indoor_Feeding_Fraction_DESC_TEXT, 0.0f, 1.0f, 1.0f );
-        initConfigTypeMap( ( "Nighttime_Feeding_Fraction" ), &nighttime_feeding, Nighttime_Feeding_Fraction_DESC_TEXT, 0.0f, 1.0f, 1.0f );
 
-        bool ret = false;
-        try {
-            ret =  JsonConfigurable::Configure( config );
-        }
-        catch( DetailedException& exc )
+        initConfigComplexCollectionType( "Microsporidia", &microsporidia_strains, VSP_Microsporidia_DESC_TEXT );
+
+        if( JsonConfigurable::_dryrun || config->Exist("Genes") )
         {
-            LOG_WARN_F( "Please note that the specification of larval habitats in the config.json recently changed. Up to now you had to input matching Habitat_Type and Required_Habitat_Factor (per vector species). Now they are input together in a single Larval_Habitat_Types parameter.\n" );
-            throw exc;
+            initConfigComplexCollectionType( ("Genes"), &genes, Genes_DESC_TEXT );
         }
 
-        adultmortality = 1.0f / adultlifeexpectancy;
-        immaturerate   = 1.0f / immatureduration;
+        bool ret = JsonConfigurable::Configure( config );  
+        if( ret && !JsonConfigurable::_dryrun )
+        {
+            if( name.empty() )
+            {
+                throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, "The 'Name' of the vector species must be defined and cannot be empty." );
+            }
+
+            if( habitat_params.GetHabitats().size() == 0 )
+            {
+                std::stringstream ss;
+                ss << "'Habitats' for vector species = '" << name << "' cannot be empty.\n";
+                ss << "Please define at least one habitat.";
+                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+            }
+
+            microsporidia_strains.CheckConfiguration();
+
+            genes.CheckConfiguration();
+
+            adultmortality = 1.0f / adultlifeexpectancy;
+            malemortality  = 1.0f / malelifeexpectancy;
+            immaturerate   = 1.0f / immatureduration;
+        }
+
+        bool other_parameters_exist = false;
+        if( JsonConfigurable::_dryrun || config->Exist("Gene_To_Trait_Modifiers") )
+        {
+            // Genes needs to be read in first
+            initConfigComplexCollectionType( ("Gene_To_Trait_Modifiers"), &trait_modifiers, Gene_To_Trait_Modifiers_DESC_TEXT );
+            other_parameters_exist = true;
+        }
+
+        if( JsonConfigurable::_dryrun || config->Exist("Drivers") )
+        {
+            // Genes needs to be read in first
+            initConfigComplexCollectionType( ("Drivers"), &gene_drivers, Drivers_DESC_TEXT );
+            other_parameters_exist = true;
+        }
+
+        if( other_parameters_exist )
+        {
+            ret = JsonConfigurable::Configure( config );
+            if( ret && !JsonConfigurable::_dryrun )
+            {
+                trait_modifiers.CheckConfiguration();
+                gene_drivers.CheckConfiguration();
+            }
+        }
 
         return ret;
     }
@@ -189,45 +326,83 @@ namespace Kernel
         throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "Should not get here" );
     }
 
-    void VectorSpeciesParameters::Initialize(const std::string& vector_species_name)
+    // ------------------------------------------------------------------------
+    // --- VectorSpeciesCollection
+    // ------------------------------------------------------------------------
+
+    VectorSpeciesCollection::VectorSpeciesCollection()
+        : JsonConfigurableCollection( "Vector_Species_Parameters" )
+        , m_SpeciesNames()
     {
-        LOG_DEBUG_F( "VectorSpeciesParameters::Initialize: species = %s\n", vector_species_name.c_str() );
-        _species = vector_species_name;
     }
 
-    void VectorSpeciesParameters::serialize( IArchive& ar, VectorSpeciesParameters*& parameters )
+    VectorSpeciesCollection::~VectorSpeciesCollection()
     {
-        if( !ar.IsWriter() )
+    }
+
+    void VectorSpeciesCollection::CheckConfiguration()
+    {
+        if( m_Collection.size() > MAX_SPECIES )
         {
-            parameters = new VectorSpeciesParameters();
+            std::stringstream ss;
+            ss << m_Collection.size() << " (>" << MAX_SPECIES << ") species is not allowed in 'Vector_Species_Params'.\n";
+            ss << "Please reduce the number of species you have to the maximum of " << MAX_SPECIES;
+            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
         }
 
-        ar.startObject();
-        //ar.labelElement("habitat_paramss") & parameters->habitat_params;
-        ar.labelElement( "aquaticarrhenius1" ) & parameters->aquaticarrhenius1;
-        ar.labelElement( "aquaticarrhenius2" ) & parameters->aquaticarrhenius2;
-        ar.labelElement( "infectedarrhenius1" ) & parameters->infectedarrhenius1;
-        ar.labelElement( "infectedarrhenius2" ) & parameters->infectedarrhenius2;
-        ar.labelElement( "cyclearrhenius1" ) & parameters->cyclearrhenius1;
-        ar.labelElement( "cyclearrhenius2" ) & parameters->cyclearrhenius2;
-        ar.labelElement( "cyclearrheniusreductionfactor" ) & parameters->cyclearrheniusreductionfactor;
-        ar.labelElement( "immatureduration" ) & parameters->immatureduration;
-        ar.labelElement( "daysbetweenfeeds" ) & parameters->daysbetweenfeeds;
-        ar.labelElement( "anthropophily" ) & parameters->anthropophily;
-        ar.labelElement( "eggbatchsize" ) & parameters->eggbatchsize;
-        ar.labelElement( "infectedeggbatchmod" ) & parameters->infectedeggbatchmod;
-        ar.labelElement( "eggsurvivalrate" ) & parameters->eggsurvivalrate;
-        ar.labelElement( "infectiousmortalitymod" ) & parameters->infectiousmortalitymod;
-        ar.labelElement( "aquaticmortalityrate" ) & parameters->aquaticmortalityrate;
-        ar.labelElement( "adultlifeexpectancy" ) & parameters->adultlifeexpectancy;
-        ar.labelElement( "transmissionmod" ) & parameters->transmissionmod;
-        ar.labelElement( "acquiremod" ) & parameters->acquiremod;
-        ar.labelElement( "infectioushfmortmod" ) & parameters->infectioushfmortmod;
-        ar.labelElement( "indoor_feeding" ) & parameters->indoor_feeding;
-        ar.labelElement( "nighttime_feeding" ) & parameters->nighttime_feeding;
-        ar.labelElement( "adultmortality" ) & parameters->adultmortality;
-        ar.labelElement( "immaturerate" ) & parameters->immaturerate;
-        ar.endObject();
+        for( auto p_vsp : m_Collection )
+        {
+            m_SpeciesNames.insert( p_vsp->name );
+        }
+
+        if( m_SpeciesNames.size() != m_Collection.size() )
+        {
+            std::stringstream ss;
+            ss << "Duplicate vector species name.\n";
+            ss << "The names of the species in 'Vector_Species_Params' must be unique.\n";
+            ss << "The following names are defined:\n";
+            for( auto p_vsp : m_Collection )
+            {
+                ss << p_vsp->name << "\n";
+            }
+            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+        }
+    }
+
+    const jsonConfigurable::tDynamicStringSet& VectorSpeciesCollection::GetSpeciesNames() const
+    {
+        return m_SpeciesNames;
+    }
+
+    const VectorSpeciesParameters& VectorSpeciesCollection::GetSpecies( const std::string& rName ) const
+    {
+        VectorSpeciesParameters* p_found = nullptr;
+        for( auto p_vsp : m_Collection )
+        {
+            if( p_vsp->name == rName )
+            {
+                p_found = p_vsp;
+            }
+        }
+        if( p_found == nullptr )
+        {
+            std::stringstream ss;
+            ss << "'" << rName << "' is an unknown species of vectors.\n";
+            ss << "Valid species names are:\n";
+            for( auto p_vsp : m_Collection )
+            {
+                ss << p_vsp->name << "\n";
+            }
+            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+        }
+        return *p_found;
+    }
+
+    VectorSpeciesParameters* VectorSpeciesCollection::CreateObject()
+    {
+        // this object should get added to the end of the collection
+        // so that should be its index
+        return new VectorSpeciesParameters( m_Collection.size() );
     }
 }
 

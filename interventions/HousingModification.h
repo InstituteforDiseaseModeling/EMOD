@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -17,6 +9,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "InterventionEnums.h"
 #include "Configure.h"
 #include "IWaningEffect.h"
+#include "Insecticides.h"
+#include "InsecticideWaningEffect.h"
 
 namespace Kernel
 {
@@ -27,10 +21,11 @@ namespace Kernel
         DECLARE_FACTORY_REGISTERED(InterventionFactory, SimpleHousingModification, IDistributableIntervention)
 
     public:
-        virtual bool Configure( const Configuration * config ) override;
         SimpleHousingModification();
         SimpleHousingModification( const SimpleHousingModification& );
         virtual ~SimpleHousingModification();
+
+        virtual bool Configure( const Configuration * config ) override;
 
         // IDistributableIntervention
         virtual bool Distribute(IIndividualHumanInterventionsContext *context, ICampaignCostObserver  * const pCCO ) override;
@@ -38,10 +33,19 @@ namespace Kernel
         virtual void SetContextTo(IIndividualHumanContext *context) override;
         virtual void Update(float dt) override;
 
+        // IReportInterventionData
+        virtual ReportInterventionData GetReportInterventionData() const override;
+
     protected:
-        IWaningEffect* killing_effect;
-        IWaningEffect* blocking_effect;
-        IHousingModificationConsumer *ihmc; // aka individual or individual vector interventions container
+        virtual void initConfigInsecticideName( InsecticideName* pName );
+        virtual void initConfigRepelling( WaningConfig* pRepellingConfig );
+        virtual void initConfigKilling( WaningConfig* pKillingConfig );
+        virtual void SetInsecticideName( InsecticideName& rName );
+        virtual void ApplyEffectsRepelling( float dt );
+        virtual void ApplyEffectsKilling( float dt );
+
+        IInsecticideWaningEffect* m_pInsecticideWaningEffect;
+        IHousingModificationConsumer *m_pIHMC; // aka individual or individual vector interventions container
 
         DECLARE_SERIALIZABLE(SimpleHousingModification);
     };
@@ -51,6 +55,20 @@ namespace Kernel
         DECLARE_FACTORY_REGISTERED(InterventionFactory, IRSHousingModification, IDistributableIntervention)
 
         DECLARE_SERIALIZABLE(IRSHousingModification);
+    };
+
+    class MultiInsecticideIRSHousingModification : public SimpleHousingModification
+    {
+        DECLARE_FACTORY_REGISTERED( InterventionFactory,
+                                    MultiInsecticideIRSHousingModification,
+                                    IDistributableIntervention )
+
+        DECLARE_SERIALIZABLE(MultiInsecticideIRSHousingModification);
+
+    public:
+        virtual bool Configure( const Configuration * config ) override;
+
+    protected:
     };
 
     class ScreeningHousingModification : public SimpleHousingModification
@@ -65,19 +83,9 @@ namespace Kernel
         DECLARE_FACTORY_REGISTERED(InterventionFactory, SpatialRepellentHousingModification, IDistributableIntervention)
 
         DECLARE_SERIALIZABLE(SpatialRepellentHousingModification);
-    };
 
-    class ArtificialDietHousingModification : public SimpleHousingModification
-    {
-        DECLARE_FACTORY_REGISTERED(InterventionFactory, ArtificialDietHousingModification, IDistributableIntervention)
-
-        DECLARE_SERIALIZABLE(ArtificialDietHousingModification);
-    };
-
-    class InsectKillingFenceHousingModification : public SimpleHousingModification
-    {
-        DECLARE_FACTORY_REGISTERED(InterventionFactory, InsectKillingFenceHousingModification, IDistributableIntervention)
-
-        DECLARE_SERIALIZABLE(InsectKillingFenceHousingModification);
+    protected:
+        virtual void initConfigKilling( WaningConfig* pKillingConfig );
+        virtual void ApplyEffectsKilling( float dt ) override;
     };
 }

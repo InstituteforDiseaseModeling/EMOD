@@ -1,0 +1,20 @@
+{
+    "class": "MosquitoRelease",
+    "Dont_Allow_Duplicates": 0,
+    "Intervention_Name" : "Release_YDrive_Male",
+    "Cost_To_Consumer" : 123,
+    "Disqualifying_Properties" : [],
+    "New_Property_Value" : "",
+    "Released_Species": "arabiensis", 
+    "Released_Type" : "FIXED_NUMBER",
+    "Released_Number": 77,
+    "Released_Infectious": 0.0,
+    "Released_Wolbachia" : "VECTOR_WOLBACHIA_FREE",
+    "Released_Microsporidia": 0,
+    "Released_Microsporidia_Strain": "",
+    "Released_Genome" : [
+        [    "X",        "Y" ],
+        [ "Wild", "Modified" ],
+        [   "c0",       "c1" ]
+    ]
+}

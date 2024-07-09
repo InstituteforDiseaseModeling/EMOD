@@ -1,0 +1,153 @@
+{
+    "Genes" : [
+        {
+            "Is_Gender_Gene": 0,
+            "Alleles": [
+                {
+                    "Name": "Aw",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 1.0
+                },
+                {
+                    "Name": "Ad",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.0
+                },
+                {
+                    "Name": "Am",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.0
+                }
+            ],
+            "Mutations": []
+        },
+        {
+            "Is_Gender_Gene": 0,
+            "Alleles": [
+                {
+                    "Name": "Bw",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 1.0
+                },
+                {
+                    "Name": "Bd",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.0
+                },
+                {
+                    "Name": "Bm",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.0
+                }
+            ],
+            "Mutations": []
+        },
+        {
+            "Is_Gender_Gene": 0,
+            "Alleles": [
+                {
+                    "Name": "Cw",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 1.0
+                },
+                {
+                    "Name": "Ce",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.0
+                },
+                {
+                    "Name": "Cm",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.0
+                }
+            ],
+            "Mutations": []
+        }
+    ],
+    "Drivers" : [
+        {
+            "Driver_Type" : "INTEGRAL_AUTONOMOUS",
+            "Driving_Allele" : "Ad",
+            "Alleles_Driven" : [
+                {
+                    "Allele_To_Copy"    : "Ad",
+                    "Allele_To_Replace" : "Aw",
+                    "Copy_To_Likelihood" : [
+                        {
+                            "Copy_To_Allele" : "Aw",
+                            "Likelihood" : 0.1
+                        },
+                        {
+                            "Copy_To_Allele" : "Ad",
+                            "Likelihood" : 0.85
+                        },
+                        {
+                            "Copy_To_Allele" : "Am",
+                            "Likelihood" : 0.05
+                        }
+                    ]
+                },
+                {
+                    "Allele_To_Copy"    : "Ce",
+                    "Allele_To_Replace" : "Cw",
+                    "Copy_To_Likelihood" : [
+                        {
+                            "Copy_To_Allele" : "Cw",
+                            "Likelihood" : 0.13
+                        },
+                        {
+                            "Copy_To_Allele" : "Ce",
+                            "Likelihood" : 0.80
+                        },
+                        {
+                            "Copy_To_Allele" : "Cm",
+                            "Likelihood" : 0.07
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "Driver_Type" : "INTEGRAL_AUTONOMOUS",
+            "Driving_Allele" : "Bd",
+            "Alleles_Driven" : [
+                {
+                    "Allele_To_Copy"    : "Bd",
+                    "Allele_To_Replace" : "Bw",
+                    "Copy_To_Likelihood" : [
+                        {
+                            "Copy_To_Allele" : "Bw",
+                            "Likelihood" : 0.2
+                        },
+                        {
+                            "Copy_To_Allele" : "Bd",
+                            "Likelihood" : 0.74
+                        },
+                        {
+                            "Copy_To_Allele" : "Bm",
+                            "Likelihood" : 0.06
+                        }
+                    ]
+                },
+                {
+                    "Allele_To_Copy"    : "Ce",
+                    "Allele_To_Replace" : "Cw",
+                    "Copy_To_Likelihood" : [
+                        {
+                            "Copy_To_Allele" : "Cw",
+                            "Likelihood" : 0.13
+                        },
+                        {
+                            "Copy_To_Allele" : "Ce",
+                            "Likelihood" : 0.8
+                        },
+                        {
+                            "Copy_To_Allele" : "Cm",
+                            "Likelihood" : 0.07
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

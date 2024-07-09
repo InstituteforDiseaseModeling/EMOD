@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include <ctype.h>
 
@@ -20,14 +12,27 @@ SETUP_LOGGING( "BaseTextReport" )
 
 namespace Kernel {
 
+#define NUM_TIME_STEPS_TO_BUFFER_WRITING (50)
+
     BaseTextReport::BaseTextReport( const std::string& rReportName, bool everyTimeStep )
         : BaseReport()
         , write_every_time_step( everyTimeStep )
+        , write_header_newline(true)
+        , num_time_steps(0)
         , report_name( rReportName )
         , output_stream()
         , reduced_stream()
-        , outfile()
-        , write_header_newline(true)
+    {
+    }
+
+    BaseTextReport::BaseTextReport( const BaseTextReport& rThat )
+        : BaseReport( rThat )
+        , write_every_time_step( rThat.write_every_time_step )
+        , write_header_newline(rThat.write_header_newline)
+        , num_time_steps( rThat.num_time_steps )
+        , report_name( rThat.report_name )
+        , output_stream()
+        , reduced_stream()
     {
     }
 
@@ -45,8 +50,6 @@ namespace Kernel {
                 FileSystem::RemoveFile( file_path );
             }
 
-            FileSystem::OpenFileForWriting( outfile, file_path.c_str() );
-
             WriteData(GetHeader() + (write_header_newline ? "\n" : ""));
         }
     }
@@ -55,9 +58,11 @@ namespace Kernel {
     {
         if( write_every_time_step )
         {
+            num_time_steps++;
             GetDataFromOtherCores();
-            if( EnvPtr->MPI.Rank == 0 )
+            if( (EnvPtr->MPI.Rank == 0) && (num_time_steps >= NUM_TIME_STEPS_TO_BUFFER_WRITING) )
             {
+                num_time_steps = 0;
                 WriteData( reduced_stream.str() );
                 reduced_stream.str( std::string() ); // clear stream
             }
@@ -74,15 +79,10 @@ namespace Kernel {
 
     void BaseTextReport::Finalize()
     {
-        if( EnvPtr->MPI.Rank == 0 )
+        if( (EnvPtr->MPI.Rank == 0) && (!write_every_time_step || (num_time_steps > 0)) )
         {
-            if( !write_every_time_step )
-            {
-                WriteData( reduced_stream.str() );
-                reduced_stream.str( std::string() ); // clear stream
-            }
-
-            outfile.close();
+            WriteData( reduced_stream.str() );
+            reduced_stream.str( std::string() ); // clear stream
         }
     }
 
@@ -113,7 +113,18 @@ namespace Kernel {
             return ;
         }
 
+        // ------------------------------------------------------------------------------------------------
+        // --- Previously, we open the file during initialization and closed during finalize.
+        // --- Users were seeing times when the ReportEventRecorder.csv would have no data even though
+        // --- the header was written during initialization.  Hence, we are changing to open and closing
+        // --- for each write to the file.  This should only happen once per timestep.
+        // --- Performance comparision has this being 3-5% slower.
+        // --- I considered flush() but this seems much safer.
+        // ------------------------------------------------------------------------------------------------
+        ofstream outfile;
+        FileSystem::OpenFileForWriting( outfile, GetOutputFilePath().c_str(), false, true );
         outfile << rStringData ;
+        outfile.close();
     }
 
     void BaseTextReport::SetReportName(const std::string& new_name)
@@ -122,7 +133,7 @@ namespace Kernel {
         bool good_name = true;
         for(std::string::const_iterator it = new_name.begin(); it != new_name.end(); it++)
         {
-            if(!isalnum(*it))
+            if( !isalnum(*it) && (*it != '_') && (*it != '-') && (*it != '.') )
             {
                 good_name = false;
                 break;

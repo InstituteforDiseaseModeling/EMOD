@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -13,8 +5,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <fstream>
 #include <math.h>
 #include <unordered_map>
-
-#include "BoostLibWrapper.h"
 
 #include "Sugar.h"
 #include "CajunIncludes.h"
@@ -91,7 +81,7 @@ namespace Kernel
 
         //  Updates weather based on the time step.  If the time step is long, then it adjusts.
         //  For instance, is rainfall over an hour or over a week?
-        virtual void UpdateWeather( float time, float dt, RANDOMBASE* pRNG );
+        virtual void UpdateWeather( float time, float dt, RANDOMBASE* pRNG, bool initialization=false );
 
     protected:
         friend class ClimateFactory;

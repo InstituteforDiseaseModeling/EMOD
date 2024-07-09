@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -13,7 +5,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "SimulationEnums.h"
 #include "BaseTextReportEvents.h"
 #include "IRelationship.h"
-
+#include "InterventionName.h"
 
 #define MAX_AGE (100)
 
@@ -62,6 +54,7 @@ namespace Kernel
                                 int indexAge,
                                 int indexCirc,
                                 int indexHiv,
+                                int indexStage,
                                 int indexArt,
                                 const std::vector<int>& rIPValueIndexList,
                                 const std::vector<int>& rInterventionIndexList );
@@ -97,6 +90,10 @@ namespace Kernel
                 , num_partners_lifetime_sum(0.0)
                 , num_relationships_by_type( RelationshipType::COUNT, 0.0f )
                 , num_concordant_relationships_by_type( RelationshipType::COUNT, 0.0f )
+                , num_has_debuted(0.0)
+                , num_first_coital_act(0.0)
+                , considering_relationship_by_type( RelationshipType::COUNT, 0.0f )
+                , available_relationship_by_type( RelationshipType::COUNT, 0.0f )
             {
             }
 
@@ -131,6 +128,10 @@ namespace Kernel
             float num_partners_lifetime_sum;                         // mc weight sum of the number of lifetime partners.
             std::vector<float> num_relationships_by_type;            // mc weight sum of the number of individuals in relationship of some disease state, by type
             std::vector<float> num_concordant_relationships_by_type; // mc weight sum of the number of individuals in relationship of some disease state, by type
+            float num_has_debuted;                                   // sum of individuals who have debuted
+            float num_first_coital_act;                              // sum of individuals who had their first coital act
+            std::vector<float> considering_relationship_by_type;
+            std::vector<float> available_relationship_by_type;
         };
 
         struct Dimension
@@ -160,18 +161,19 @@ namespace Kernel
         float stop_year ;                                        // Year to stop  collecting data
 
         // matrix dimenion flags - bools control if dimenion exists.  vectors have column for each value, except age_bins which has one column
-        bool                     dim_gender;
-        std::vector<float>       dim_age_bins;
-        bool                     dim_is_circumcised;
-        bool                     dim_has_hiv;
-        bool                     dim_on_art;
-        std::vector<std::string> dim_ip_key_list ;
-        std::vector<std::string> dim_intervention_name_list;
+        bool                          dim_gender;
+        std::vector<float>            dim_age_bins;
+        bool                          dim_is_circumcised;
+        bool                          dim_has_hiv;
+        bool                          dim_hiv_stage;
+        bool                          dim_on_art;
+        std::vector<std::string>      dim_ip_key_list ;
+        std::vector<InterventionName> dim_intervention_name_list;
 
         // controls for data columns
         bool                      data_has_transmitters;
         bool                      data_stratify_infected_by_CD4;
-        std::string               data_name_of_intervention_to_count;
+        InterventionName          data_name_of_intervention_to_count;
         std::vector<EventTrigger> data_event_list;
         bool                      data_has_relationships;
         bool                      data_has_concordant_relationships;

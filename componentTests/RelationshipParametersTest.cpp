@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include <iostream>
@@ -92,13 +84,13 @@ SUITE(RelationshipParametersTest)
     TEST(TestMigrationActionsDistributionGreaterThanOne)
     {
         TestHelper_Exception( __LINE__, "testdata/RelationshipParametersTest/TestMigrationActionsDistributionGreaterThanOne.json",
-            "Configuration variable Migration_Actions_Distribution with value 5.5 out of range: greater than 1." );
+            "Configuration variable 'Migration_Actions_Distribution' with value 5.5 out of range: greater than 1." );
     }
 
     TEST(TestMigrationActionsDistributionLessThanZero)
     {
         TestHelper_Exception( __LINE__, "testdata/RelationshipParametersTest/TestMigrationActionsDistributionLessThanZero.json",
-            "Configuration variable Migration_Actions_Distribution with value -0.2 out of range: less than 0." );
+            "Configuration variable 'Migration_Actions_Distribution' with value -0.2 out of range: less than 0." );
     }
 
     TEST(TestMigrationActionsDistributionNotEqualToOne)

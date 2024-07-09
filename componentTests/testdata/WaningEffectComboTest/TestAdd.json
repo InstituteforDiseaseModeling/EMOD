@@ -9,8 +9,8 @@
             "Expire_At_Durability_Map_End" : 1,
             "Durability_Map" :
             {
-                "Times"  : [ 0.0, 1.0, 2.0 ],
-                "Values" : [ 0.2, 0.4, 0.6 ]
+                "Times"  : [ 0.0, 1.0, 4.0 ],
+                "Values" : [ 0.2, 0.4, 0.7 ]
             }
         },
         {

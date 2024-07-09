@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "ControlledVaccine.h"
@@ -104,7 +96,7 @@ namespace Kernel
         }
     }
 
-    const std::string& ControlledVaccine::GetInterventionName() const
+    const InterventionName& ControlledVaccine::GetInterventionName() const
     {
         return GetName();
     }
@@ -112,8 +104,15 @@ namespace Kernel
     bool ControlledVaccine::AllowRevaccination( const IControlledVaccine& rNewVaccine ) const
     {
         bool allow = false;
-        if( (m_TimeSinceVaccination >= m_DurationToWaitBeforeRevaccination) ||
-            (this->GetInterventionName() != rNewVaccine.GetInterventionName()) )
+        if( expired )
+        {
+            // This is to cover the situation where there is a listener to the expired event
+            // and that listener tries to add a new vaccine.  The vacine will have expired
+            // but it will not have been removed.
+            allow = true;
+        }
+        else if( (m_TimeSinceVaccination >= m_DurationToWaitBeforeRevaccination) ||
+                 (this->GetInterventionName() != rNewVaccine.GetInterventionName()) )
         {
             allow = true;
         }

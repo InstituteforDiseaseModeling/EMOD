@@ -1,0 +1,5 @@
+{
+    "class": "BroadcastEvent",
+    "Intervention_Name": "MySpecialIntervention",
+    "Broadcast_Event" : "NewInfectionEvent"
+}

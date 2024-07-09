@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 #include "InfectionSTI.h"
@@ -14,10 +6,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "FerrandAgeDependentDistribution.h"
 #include "HIVEnums.h"
 #include "Types.h"
-
-#define NUM_WHO_STAGES (4)
-#define MIN_WHO_HIV_STAGE (1) // sometimes 1 is a magic number
-#define MAX_WHO_HIV_STAGE (NUM_WHO_STAGES+1)
 
 namespace Kernel
 {
@@ -43,10 +31,8 @@ namespace Kernel
         static float AIDS_duration_in_months;
         static float acute_stage_infectivity_multiplier;
         static float AIDS_stage_infectivity_multiplier;
-        static float ART_viral_suppression_multiplier;
         static float personal_infectivity_heterogeneity;
         static float personal_infectivity_scale;
-        static float max_CD4_cox;
         static FerrandAgeDependentDistribution mortality_distribution_by_age;
         static IDistribution* p_hetero_infectivity_distribution;
     };
@@ -60,8 +46,8 @@ namespace Kernel
         virtual ~InfectionHIV(void);
         static InfectionHIV *CreateInfection(IIndividualHumanContext *context, suids::suid _suid);
 
-        virtual void SetParameters( IStrainIdentity* infstrain=nullptr, int incubation_period_override = -1) override;
-        virtual void Update(float dt, ISusceptibilityContext* immunity = nullptr) override;
+        virtual void SetParameters( const IStrainIdentity* infstrain, int incubation_period_override = -1 ) override;
+        virtual void Update( float currentTime, float dt, ISusceptibilityContext* immunity = nullptr ) override;
         virtual void SetContextTo(IIndividualHumanContext* context) override;
 
         virtual NaturalNumber GetViralLoad() const override;
@@ -69,12 +55,13 @@ namespace Kernel
         virtual float GetTimeInfected() const override;
         virtual float GetDaysTillDeath() const override;
         virtual float GetInfectiousness() const override;
-        virtual void SetupSuppressedDiseaseTimers() override;
+        virtual void SetupSuppressedDiseaseTimers( float durationFromEnrollmentToArtAidsDeath ) override;
         virtual void ApplySuppressionDropout() override;
         virtual void ApplySuppressionFailure() override;
         
         // kto moved to public for access through interventions
         float GetWHOStage() const override;
+        virtual const HIVInfectionStage::Enum& GetStage() const override;
 
     protected:
         InfectionHIV();
@@ -85,9 +72,10 @@ namespace Kernel
         void SetupNonSuppressedDiseaseTimers();
         /* clorton virtual */ bool  ApplyDrugEffects(float dt, ISusceptibilityContext* immunity = nullptr);
         void SetStageFromDuration();
-        virtual const HIVInfectionStage::Enum& GetStage() const override;
-        static float GetWeightInKgFromWHOStage(float whoStage);
-        float ComputeDurationFromEnrollmentToArtAidsDeath() const;
+        void SetStage( HIVInfectionStage::Enum stage );
+
+        void SetupWouldHaveTimers();
+        void UpdateWouldHaveTimers( float dt );
 
         // additional infection members
         float ViralLoad;
@@ -97,7 +85,6 @@ namespace Kernel
 
         float m_time_infected;
 
-        float prognosis_timer;
         HIVInfectionStage::Enum m_infection_stage;
 
         float m_fraction_of_prognosis_spent_in_stage[ NUM_WHO_STAGES ];
@@ -105,6 +92,14 @@ namespace Kernel
         float m_acute_duration; // Measured in days
         float m_latent_duration;
         float m_aids_duration;
+
+        float m_duration_until_would_have_entered_latent;
+        float m_duration_until_would_have_entered_aids;
+        float m_duration_until_would_have_died;
+        bool m_would_have_entered_latent;
+        bool m_would_have_entered_aids;
+        bool m_would_have_died;
+        bool m_has_been_suppressed;
 
         float m_hetero_infectivity_multiplier;
 

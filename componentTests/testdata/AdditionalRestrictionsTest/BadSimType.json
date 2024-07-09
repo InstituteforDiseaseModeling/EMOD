@@ -1,0 +1,7 @@
+{
+    "Simulation_Type": "MALARIA_SIM",
+    "IsCircumcised" : 
+    {
+        "class" : "IsCircumcised"
+    }
+}

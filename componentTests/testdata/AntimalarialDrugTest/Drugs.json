@@ -1,0 +1,57 @@
+{
+    "Simulation_Timestep" : 1,
+    "Infection_Updates_Per_Timestep" : 8,
+    "Malaria_Drug_Params": [
+        {
+            "Name": "Artemether",
+            "PKPD_Model": "CONCENTRATION_VERSUS_TIME",
+            "Drug_Cmax": 114.0, 
+            "Drug_Decay_T1": 0.120, 
+            "Drug_Decay_T2": 0.120, 
+            "Drug_Dose_Interval": 0.5, 
+            "Drug_Fulltreatment_Doses": 6, 
+            "Drug_Gametocyte02_Killrate": 2.5, 
+            "Drug_Gametocyte34_Killrate": 1.5, 
+            "Drug_GametocyteM_Killrate" : 0.7, 
+            "Drug_Hepatocyte_Killrate"  : 0.0, 
+            "Drug_PKPD_C50": 0.60, 
+            "Drug_Vd": 1.00, 
+            "Max_Drug_IRBC_Kill": 8.9,
+            "Bodyweight_Exponent": 1
+       },
+       {
+            "Name": "Lumefantrine",
+            "PKPD_Model": "CONCENTRATION_VERSUS_TIME",
+            "Drug_Cmax": 1017.0, 
+            "Drug_Decay_T1": 1.300, 
+            "Drug_Decay_T2": 2.0, 
+            "Drug_Dose_Interval": 0.5, 
+            "Drug_Fulltreatment_Doses": 6, 
+            "Drug_Gametocyte02_Killrate": 2.4, 
+            "Drug_Gametocyte34_Killrate": 0.0, 
+            "Drug_GametocyteM_Killrate" : 0.0, 
+            "Drug_Hepatocyte_Killrate"  : 0.0, 
+            "Drug_PKPD_C50": 280.0, 
+            "Drug_Vd": 1.20, 
+            "Max_Drug_IRBC_Kill": 4.8,
+            "Bodyweight_Exponent": 0.35
+       },
+       {
+            "Name": "Piperaquine",
+            "PKPD_Model": "CONCENTRATION_VERSUS_TIME",
+            "Drug_Cmax": 30.0, 
+            "Drug_Decay_T1": 0.170, 
+            "Drug_Decay_T2": 41.000, 
+            "Drug_Dose_Interval": 1.0, 
+            "Drug_Fulltreatment_Doses": 3, 
+            "Drug_Gametocyte02_Killrate": 2.3, 
+            "Drug_Gametocyte34_Killrate": 0.0, 
+            "Drug_GametocyteM_Killrate" : 0.0, 
+            "Drug_Hepatocyte_Killrate"  : 0.0, 
+            "Drug_PKPD_C50": 5.00, 
+            "Drug_Vd": 49.00, 
+            "Max_Drug_IRBC_Kill": 4.6,
+            "Bodyweight_Exponent": 0.0
+       }
+    ]
+}

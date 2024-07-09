@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -17,7 +9,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "BaseChannelReport.h"
 #include "Log.h"
-#include "BoostLibWrapper.h"
 #include "Configure.h"
 
 //////////////////////////////////////////////////////////////////////////////
@@ -74,6 +65,8 @@ protected:
     SpatialReport();
     virtual bool Configure( const Configuration* config );
 
+    virtual const char* GetChannelsDependsOn() const;
+
     virtual void Accumulate( std::string channel_name, int nodeid, float value );
 
     virtual void addDerivedCumulativeSummaryChannel(std::string channel_name, std::string channel_cumulative_name);
@@ -110,7 +103,7 @@ protected:
     ChannelInfo campaign_cost_info;
     ChannelInfo disease_deaths_info;
     ChannelInfo human_infectious_reservoir_info;
-    ChannelInfo infection_rate_info;
+    ChannelInfo infected_info;
     ChannelInfo land_temperature_info;
     ChannelInfo new_infections_info;
     ChannelInfo new_reported_infections_info;

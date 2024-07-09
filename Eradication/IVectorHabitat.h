@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -13,6 +5,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "ISerializable.h"
 #include "VectorEnums.h"
 #include "Types.h"
+#include "GeneticProbability.h"
 
 class Configuration;
 
@@ -30,6 +23,7 @@ namespace Kernel
     struct IVectorHabitat : ISerializable
     {
         virtual bool Configure( const Configuration* inputJson ) = 0;
+        virtual IVectorHabitat* Clone() = 0;
 
         virtual void Update( float dt, INodeContext* node, const std::string& species ) = 0;
 
@@ -42,10 +36,10 @@ namespace Kernel
         virtual void                     AddEggs(int32_t eggs) = 0;
         virtual void                     SetMaximumLarvalCapacity(float) = 0;
 
-        virtual float                    GetOvipositionTrapKilling()     const = 0;
-        virtual float                    GetArtificialLarvalMortality()  const = 0;
-        virtual float                    GetLarvicideHabitatScaling()    const = 0;
-        virtual float                    GetRainfallMortality()          const = 0;
+        virtual float                     GetOvipositionTrapKilling()     const = 0;
+        virtual const GeneticProbability& GetArtificialLarvalMortality()  const = 0;
+        virtual float                     GetLarvicideHabitatScaling()    const = 0;
+        virtual float                     GetRainfallMortality()          const = 0;
 
         virtual float GetEggCrowdingCorrection( bool refresh = false ) = 0;
 

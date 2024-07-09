@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "VectorPopulation.h"
@@ -13,13 +5,14 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Debug.h"
 #include "Exceptions.h"
 #include "Log.h"
-#include "NodeVector.h"
+#include "INodeContext.h"
+#include "Climate.h"
 #include "SimulationConfig.h"
 #include "TransmissionGroupMembership.h"
 #include "Vector.h"
 #include "VectorParameters.h"
 #include "VectorSpeciesParameters.h"
-#include "VectorCohortWithHabitat.h"
+#include "VectorCohort.h"
 #include "StrainIdentity.h"
 #include "IMigrationInfoVector.h"
 #include "RANDOM.h"
@@ -39,11 +32,6 @@ namespace Kernel
         HANDLE_ISUPPORTS_VIA(IVectorPopulation)
     END_QUERY_INTERFACE_BODY(VectorPopulation)
 
-    // ---------------------------------------------------------
-    // --- integer form of the maximum age of a vector in days
-    // ---------------------------------------------------------
-    uint32_t I_MAX_AGE = 150;
-
     // ------------------------------------------------------------------------------
     // --- Table for storing mortailityFromAge() calculations for each possible age.
     // --- Age should be a factor of dt and we are assuming that dt is an integer day
@@ -52,15 +40,29 @@ namespace Kernel
 
     VectorPopulation::VectorPopulation()
         : m_larval_habitats( nullptr )
+        , genome_counts()
+        , state_counts()
+        , wolbachia_counts()
+        , microsporidia_counts()
+        , m_AgeAtDeathByState()
+        , m_AgeAtDeathByGenomeByState()
+        , m_ProgressedLarvaeToImmatureCount( 0 )
+        , m_ProgressedLarvaeToImmatureSumDur( 0.0 )
+        , num_gestating_queue()
+        , num_gestating_begin( 0 )
+        , num_gestating_end( 0 )
+        , num_looking_to_feed( 0 )
+        , num_fed_counter( 0 )
+        , num_attempt_feed_indoor( 0 )
+        , num_attempt_feed_outdoor( 0 )
+        , num_attempt_but_not_feed( 0 )
         , neweggs(0)
-        , adult(0)
-        , infected(0)
-        , infectious(0)
-        , males(0)
         , new_adults(0)
+        , unmated_adults(0)
         , dead_mosquitoes_before(0)
         , dead_mosquitoes_indoor(0)
         , dead_mosquitoes_outdoor(0)
+        , num_infs_per_state_counts()
         , dryheatmortality(0.0f)
         , infectiouscorrection(0.0f)
         , infected_progress_this_timestep(0.0f)
@@ -68,33 +70,81 @@ namespace Kernel
         , outdoorinfectiousbites(0.0f)
         , indoorbites(0.0f)
         , outdoorbites(0.0f)
-        , infectivity(0.0)
-        , infectivity_indoor(0.0f)
-        , infectivity_outdoor(0.0f)
-        , species_ID("gambiae")
+        , m_EIR_by_pool()
+        , m_HBR_by_pool()
+        , gender_mating_eggs()
+        , m_EggCohortVectorOfMaps()
+        , m_ContagionToDepositIndoor()
+        , m_ContagionToDepositOutdoor()
+        , EggQueues()
+        , LarvaQueues()
+        , ImmatureQueues()
+        , pAdultQueues( new VectorCohortCollectionStdMapWithAging() )
+        , InfectedQueues()
+        , InfectiousQueues()
+        , MaleQueues()
+        , m_ReleasedInfectious()
+        , m_ReleasedAdults()
+        , m_ReleasedMales()
         , m_context(nullptr)
+        , m_pNodeVector(nullptr)
+        , m_vector_params(nullptr)
         , m_species_params(nullptr)
         , m_probabilities(nullptr)
         , m_VectorMortality(true)
-        , m_LocalMortalityProbabilityTable()
-        , m_DefaultLocalMortalityProbability( 1.0 )
+        , m_LocalMatureMortalityProbabilityTable()
+        , m_DefaultLocalMatureMortalityProbability()
+        , m_Fertilizer()
+        , m_SpeciesIndex(-1)
+        , m_UnmatedMaleTotal(0)
+        , m_MaleMatingCdf()
+        , m_IsSortingVectors(false)
+        , m_ImmigratingInfectious()
+        , m_ImmigratingInfected()
+        , m_ImmigratingAdult()
     {
         if( m_MortalityTable.size() == 0 )
         {
-            for( uint32_t i = 0; i <= I_MAX_AGE; ++i )
+            for( uint32_t i = 0; i < VectorCohort::I_MAX_AGE; ++i )
             {
                 float t_age = float( i );
                 float mortality = mortalityFromAge( t_age );
                 m_MortalityTable.push_back( mortality );
             }
         }
-        m_LocalMortalityProbabilityTable.push_back( std::vector<float>() ); // WOLBACHIA_FREE
-        m_LocalMortalityProbabilityTable.push_back( std::vector<float>() ); // not WOLBACHIA_FREE
+        // Initialize table for each gender
+        int num_genders = 2;
+        for( int i = 0 ; i < num_genders; ++i )
+        {
+            m_LocalMatureMortalityProbabilityTable.push_back( std::vector<std::vector<std::vector<float>>>() );
+            m_LocalMatureMortalityProbabilityTable[i].push_back( std::vector<std::vector<float>>() ); // WOLBACHIA FREE
+            m_LocalMatureMortalityProbabilityTable[i].push_back( std::vector<std::vector<float>>() ); // has wolbachia
+            // allocate space in UpdateLocalMatureMortalityProbability() after m_species_params is set
+            m_DefaultLocalMatureMortalityProbability.push_back( 1.0 );
+        }
+
+        release_assert( m_DefaultLocalMatureMortalityProbability.size() == num_genders );
+        release_assert( m_LocalMatureMortalityProbabilityTable.size() == num_genders );
+        release_assert( m_LocalMatureMortalityProbabilityTable[ 0 ].size() == 2 ); //for female - 2 wolbachia entries - free and has
+        release_assert( m_LocalMatureMortalityProbabilityTable[ 1 ].size() == 2 ); //for mmale - 2 wolbachia entries - free and has
+
+        genome_counts.resize( VectorStateEnum::pairs::count(), GenomeCountMap_t() );
+        state_counts.resize( VectorStateEnum::pairs::count() , 0 );
+        wolbachia_counts.resize( VectorWolbachia::pairs::count(), 0 );
+
+        m_AgeAtDeathByState.resize( VectorStateEnum::pairs::count(), AgeAtDeath() );
+        m_AgeAtDeathByGenomeByState.resize( VectorStateEnum::pairs::count(), AgeAtDeathGenomeMap_t() );
+
+        m_EggCohortVectorOfMaps.resize( VectorHabitatType::pairs::count(), EggCohortMap_t() );
+
+        num_infs_per_state_counts.resize( VectorStateEnum::pairs::count(), 0 );
     }
 
-    void VectorPopulation::Initialize( INodeContext *context, const std::string& species_name, uint32_t adults, uint32_t _infectious )
+    void VectorPopulation::Initialize( INodeContext *context,
+                                       int speciesIndex,
+                                       uint32_t adults )
     {
-        species_ID = species_name;
+        m_SpeciesIndex = speciesIndex;
 
         SetContextTo(context);
 
@@ -103,72 +153,124 @@ namespace Kernel
         // Wekesa, J. W., R. S. Copeland, et al. (1992). "Effect of Plasmodium Falciparum on Blood Feeding Behavior of Naturally Infected Anopheles Mosquitoes in Western Kenya." Am J Trop Med Hyg 47(4): 484-488.
         // ANDERSON, R. A., B. G. J. KNOLS, et al. (2000). "Plasmodium falciparum sporozoites increase feeding-associated mortality of their mosquito hosts Anopheles gambiae s.l." Parasitology 120(04): 329-333.
         infectiouscorrection = 0;
-        if (params()->vector_params->human_feeding_mortality * species()->infectioushfmortmod < 1.0)
+        if (params()->human_feeding_mortality * species()->infectioushfmortmod < 1.0)
         {
-            infectiouscorrection = float((1.0 - params()->vector_params->human_feeding_mortality * species()->infectioushfmortmod) / (1.0 - params()->vector_params->human_feeding_mortality));
+            infectiouscorrection = float((1.0 - params()->human_feeding_mortality * species()->infectioushfmortmod) / (1.0 - params()->human_feeding_mortality));
         }
 
         // Set up initial populations of adult/infectious/male mosquitoes
-        InitializeVectorQueues(adults, _infectious);
+        InitializeVectorQueues( adults );
     }
 
-    void VectorPopulation::InitializeVectorQueues( uint32_t adults, uint32_t _infectious )
+    void VectorPopulation::InitializeVectorQueues( uint32_t numFemales )
     {
-        adult = adults;
-        males = adult;
-        infectious = _infectious;
-
-        if( adult > 0 )
+        if( numFemales > 0 )
         {
-            // adult initialized at age 0
-            VectorCohort* pvc = VectorCohort::CreateCohort( VectorStateEnum::STATE_ADULT, 0, 0, adult, VectorMatingStructure( VectorGender::VECTOR_FEMALE ), &species_ID );
-            AdultQueues.push_back( pvc );
+            // -----------------------------------------------------------------------
+            // --- We multiply by two because the input value is the number of females
+            // --- and we want essentially the same number of males as females.
+            // -----------------------------------------------------------------------
+            InitialGenomeData initial_genome_data = m_Fertilizer.DetermineInitialGenomeData( m_context->GetRng(),
+                                                                                             2 * numFemales );
 
-            // Initialize the cohort's egg queue so that they start off laying eggs
-            // This should be similar to how VectorPopulationIndividual has individual vectors starting off with eggs.
-            if( species()->eggbatchsize > 0 )
+            for( auto& r_mated : initial_genome_data.mated_females )
             {
-                float days_between_feeds = m_context->GetRng()->randomRound( GetFeedingCycleDuration() );
-                float percent_feed_per_day = 1.0f / days_between_feeds ;
-                uint32_t num_eggs = uint32_t( percent_feed_per_day * pvc->GetPopulation() * species()->eggbatchsize );
+                if( r_mated.count > 0 )
+                {
+                    AddInitialFemaleCohort( r_mated.female, r_mated.male, r_mated.count );
+                }
+            }
 
-                // ------------------------------------------------------------------------------------------------
+            for( auto& r_male : initial_genome_data.males )
+            {
+                if( r_male.count > 0 )
+                {
+                    AddInitialMaleCohort( r_male.genome, r_male.count );
+                }
+            }
+        }
+    }
+
+    void VectorPopulation::AddInitialCohort( VectorStateEnum::Enum state,
+                                             const VectorGenome& rGenomeFemale,
+                                             const VectorGenome& rGenomeMate,
+                                             uint32_t num )
+    {
+        uint32_t days_between_feeds = m_context->GetRng()->randomRound( GetFeedingCycleDuration() );
+        float percent_feed_per_day = 1.0f / float( days_between_feeds );
+
+        std::vector<float> percentages( days_between_feeds, percent_feed_per_day );
+        std::vector<uint64_t> num_fed_on_each_day = m_context->GetRng()->multinomial_approx( num, percentages );
+        uint32_t num_remaining = num;
+        for( uint32_t day = 1; day <= days_between_feeds; ++day )
+        {
+            uint32_t feed_on_day = num_remaining;
+            if( day < days_between_feeds )
+            {
+                feed_on_day = num_fed_on_each_day[ day-1 ];
+            }
+            release_assert( num_remaining >= feed_on_day );
+            num_remaining -= feed_on_day;
+
+            float age = 0.0;
+            if( params()->vector_aging )
+            {
+                age = float( (days_between_feeds + 1) - day );
+            }
+
+            // progress is 1 since males/females should be at 1 from progressing from Immature to adult
+            VectorCohort* pvc = VectorCohort::CreateCohort( m_pNodeVector->GetNextVectorSuid().data,
+                                                            state,
+                                                            age,
+                                                            1.0,
+                                                            0.0,
+                                                            feed_on_day,
+                                                            rGenomeFemale,
+                                                            m_SpeciesIndex );
+
+            queueIncrementTotalPopulation( pvc );
+            if( state == VectorStateEnum::STATE_ADULT )
+            {
+                // -------------------------------------------------------------------------------------------------
+                // --- Initialize the cohort's gestation queue so that they start off laying eggs
+                // --- This should be similar to how VectorPopulationIndividual has individual vectors starting off 
                 // --- We assign days [1, days_between_feeds] (vs [0,days_between_feeds-1] because
                 // --- we want to simulate that the eggs were added at the end of feeding.
                 // --- For example, if day=1, then the cohort will birth eggs on the first update.
                 // --- If day = days_between_feeds, the cohort will birth eggs on the "days_between_feeds'th" day.
                 // ------------------------------------------------------------------------------------------------
-                for( float day = 1.0f ; day <= days_between_feeds ; day += 1.0f )
-                {
-                    pvc->AddNewEggs( uint32_t(day), num_eggs );
-                }
+                pvc->AddNewGestating( day, feed_on_day );
+                pvc->SetMateGenome( rGenomeMate );
+                pAdultQueues->add( pvc, 0.0, true );
             }
-
-            // progress is 1 since males should be at 1 from progressing from Immature to Male
-            VectorCohort* pvc_male = VectorCohort::CreateCohort( VectorStateEnum::STATE_MALE, 0, 1, males, VectorMatingStructure( VectorGender::VECTOR_MALE ), &species_ID );
-            MaleQueues.push_back( pvc_male );
-        }
-
-        if( infectious > 0 )
-        {
-            // infectious initialized at age 20
-            // progress is 1 since Infectious should be at 1 from progressing from Infected to Infectious
-            InfectiousQueues.push_back( VectorCohort::CreateCohort( VectorStateEnum::STATE_INFECTIOUS, 20, 1, infectious, VectorMatingStructure( VectorGender::VECTOR_FEMALE ), &species_ID ) );
+            else
+            {
+                MaleQueues.add( pvc, 0.0, true );
+            }
         }
     }
 
-    VectorPopulation *VectorPopulation::CreatePopulation( INodeContext *context, const std::string& species_name, uint32_t adults, uint32_t infectious )
+    void VectorPopulation::AddInitialFemaleCohort( const VectorGenome& rGenomeFemale,
+                                                   const VectorGenome& rGenomeMate,
+                                                   uint32_t num )
+    {
+        AddInitialCohort( VectorStateEnum::STATE_ADULT, rGenomeFemale, rGenomeMate, num );
+    }
+
+    void VectorPopulation::AddInitialMaleCohort( const VectorGenome& rGenome, uint32_t num )
+    {
+        VectorGenome genome_empty;
+        AddInitialCohort( VectorStateEnum::STATE_MALE, rGenome, genome_empty, num );
+    }
+
+    VectorPopulation *VectorPopulation::CreatePopulation( INodeContext *context,
+                                                          int speciesIndex,
+                                                          uint32_t adults )
     {
         VectorPopulation *newpopulation = _new_ VectorPopulation();
         release_assert( newpopulation );
-        newpopulation->Initialize( context, species_name, adults, infectious );
+        newpopulation->Initialize( context, speciesIndex, adults );
         return newpopulation;
-    }
-
-    void VectorPopulation::SetupIntranodeTransmission(ITransmissionGroups *txIndoor, ITransmissionGroups *txOutdoor)
-    {
-        m_txIndoor  = txIndoor;
-        m_txOutdoor = txOutdoor;
     }
 
     void VectorPopulation::SetupLarvalHabitat( INodeContext *context )
@@ -181,122 +283,303 @@ namespace Kernel
         }
 
         // Create a larval habitat for each type specified in configuration file for this species
-        for( auto habitat_param : species()->habitat_params.habitat_map )
+        for( IVectorHabitat* p_habitat_orig : species()->habitat_params.GetHabitats() )
         {
-            VectorHabitatType::Enum type = habitat_param.first;
-            IVectorHabitat* habitat = ivnc->GetVectorHabitatBySpeciesAndType( species_ID, type, habitat_param.second );
-            float max_larval_capacity = habitat->GetMaximumLarvalCapacity() * params()->vector_params->x_tempLarvalHabitat * ivnc->GetLarvalHabitatMultiplier(type,species_ID);
+            IVectorHabitat* p_habitat = p_habitat_orig->Clone();
 
-            habitat->SetMaximumLarvalCapacity( max_larval_capacity );
+            float max_larval_capacity = p_habitat->GetMaximumLarvalCapacity()
+                                      * params()->x_tempLarvalHabitat
+                                      * ivnc->GetLarvalHabitatMultiplier( p_habitat->GetVectorHabitatType(), m_species_params->name );
+            p_habitat->SetMaximumLarvalCapacity( max_larval_capacity );
 
-            // TODO: probably it would be preferable to store the "Required_Habitat_Parameter" values
-            //       as a map-by-Habitat_Type already in VectorSpeciesParameters.
-            m_larval_capacities[type] = max_larval_capacity; 
+            ivnc->AddHabitat( m_species_params->name, p_habitat );
         }
     }
 
     VectorPopulation::~VectorPopulation()
     {
-        for (auto queue : EggQueues)
+        for( auto egg_map : m_EggCohortVectorOfMaps )
         {
-            delete queue;
+            for( auto entry : egg_map )
+            {
+                delete entry.second;
+            }
         }
+        m_EggCohortVectorOfMaps.clear();
 
-        for (auto queue : LarvaQueues)
+        for( auto p_vc : EggQueues )
         {
-            delete queue;
+            delete p_vc;
         }
+        EggQueues.clear();
 
-        for (auto queue : ImmatureQueues)
-        {
-            delete queue;
-        }
+        LarvaQueues.clear();
+        ImmatureQueues.clear();
+        MaleQueues.clear();
+        pAdultQueues->clear();
+        InfectedQueues.clear();
+        InfectiousQueues.clear();
 
-        for (auto queue : AdultQueues)
+        for( auto p_vc : m_ReleasedInfectious )
         {
-            delete queue;
+            delete p_vc;
         }
+        for( auto p_vc : m_ReleasedAdults )
+        {
+            delete p_vc;
+        }
+        for( auto p_vc : m_ReleasedMales )
+        {
+            delete p_vc;
+        }
+        m_ReleasedInfectious.clear();
+        m_ReleasedAdults.clear();
+        m_ReleasedMales.clear();
 
-        for (auto queue : InfectedQueues)
+        for( auto p_vc : m_ImmigratingInfectious )
         {
-            delete queue;
+            delete p_vc;
         }
-
-        for (auto queue : InfectiousQueues)
+        for( auto p_vc : m_ImmigratingInfected )
         {
-            delete queue;
+            delete p_vc;
         }
-
-        for (auto queue : MaleQueues)
+        for( auto p_vc : m_ImmigratingAdult )
         {
-            delete queue;
+            delete p_vc;
         }
+        m_ImmigratingInfectious.clear();
+        m_ImmigratingInfected.clear();
+        m_ImmigratingAdult.clear();
     }
 
-    void VectorPopulation::UpdateLocalAdultMortalityProbability( float dt )
+    void VectorPopulation::UpdateLocalMatureMortalityProbability( float dt )
     {
-        m_LocalMortalityProbabilityTable[ 0 ].clear();
-        m_LocalMortalityProbabilityTable[ 1 ].clear();
+        if( m_LocalMatureMortalityProbabilityTable[ VectorGender::VECTOR_FEMALE ][0].size() == 0 )
+        {
+            for( int g = 0; g < 2; ++g ) // g=0=female, g=1=male
+            {
+                for( int w = 0; w < 2; ++w ) // w=0=no wolbachia, w=1=has wolbachia
+                {
+                    for( int m = 0; m < species()->microsporidia_strains.Size(); ++m )
+                    {
+                        // add an array for ages for each strain
+                        m_LocalMatureMortalityProbabilityTable[ g ][ w ].push_back( std::vector<float>() );
+                    }
+                }
+            }
+        }
+
+        UpdateLocalMatureMortalityProbabilityTable( dt,
+                                                    species()->adultmortality,
+                                                    species()->microsporidia_strains.GetMortalityModifierListFemale(),
+                                                    &m_LocalMatureMortalityProbabilityTable[ VectorGender::VECTOR_FEMALE ],
+                                                    &m_DefaultLocalMatureMortalityProbability[ VectorGender::VECTOR_FEMALE ] );
+
+        UpdateLocalMatureMortalityProbabilityTable( dt,
+                                                    species()->malemortality,
+                                                    species()->microsporidia_strains.GetMortalityModifierListMale(),
+                                                    &m_LocalMatureMortalityProbabilityTable[ VectorGender::VECTOR_MALE ],
+                                                    &m_DefaultLocalMatureMortalityProbability[ VectorGender::VECTOR_MALE ] );
+
+        int num_microsporidia_strains = species()->microsporidia_strains.Size();
+        release_assert( m_LocalMatureMortalityProbabilityTable[ 0 ][ 0 ].size() == num_microsporidia_strains); //for female and wolbachia free - 2 microsporidia strains
+        release_assert( m_LocalMatureMortalityProbabilityTable[ 0 ][ 1 ].size() == num_microsporidia_strains); //for female and has wolbachia  - 2 microsporidia strains
+        release_assert( m_LocalMatureMortalityProbabilityTable[ 1 ][ 0 ].size() == num_microsporidia_strains); //for male and wolbachia free - 2 microsporidia strains
+        release_assert( m_LocalMatureMortalityProbabilityTable[ 1 ][ 1 ].size() == num_microsporidia_strains); //for male and has wolbachia  - 2 microsporidia strains
+    }
+
+    void VectorPopulation::UpdateLocalMatureMortalityProbabilityTable( float dt,
+                                                                       float matureMortality,
+                                                                       const std::vector<float>& microsporidiaModifier,
+                                                                       std::vector<std::vector<std::vector<float>>>* pProbabilityTable,
+                                                                       float* pDefaultProbability )
+    {
+        int num_microsporidia_strains = species()->microsporidia_strains.Size();
+        release_assert(  (*pProbabilityTable).size() == 2 ); // pointer is for one gender, so 2 for wolbachie free and has
+        release_assert(  (*pProbabilityTable)[ 0 ].size() == num_microsporidia_strains ); // for wolbachia free, 2 for microsporidia strains
+        release_assert(  (*pProbabilityTable)[ 1 ].size() == num_microsporidia_strains ); // for has wolbachia, 2 for microsporidia strains
+        for( int w = 0; w < 2; ++w )
+        {
+            for( int ms = 0; ms < num_microsporidia_strains; ++ms )
+            {
+                (*pProbabilityTable)[ w ][ ms ].clear(); // clear the ages
+            }
+        }
 
         float wolb_free = 1.0;
-        float wolb_mod = params()->vector_params->WolbachiaMortalityModification;
+        float wolb_mod  = params()->WolbachiaMortalityModification;
+        float ms_free   = 1.0;
 
         // if we are not aging vectors, then "from_age" below is always zero.
-        uint32_t num_ages = params()->vector_params->vector_aging ? m_MortalityTable.size() : 1;
+        uint32_t num_ages = params()->vector_aging ? m_MortalityTable.size() : 1;
 
         // calculate probability for immature vectors
-        float local_adult_mortality = species()->adultmortality + dryheatmortality;
-        m_DefaultLocalMortalityProbability = float( EXPCDF( -dt * local_adult_mortality * wolb_free ) );
+        float local_mortality = matureMortality + dryheatmortality;
+        *pDefaultProbability = float( EXPCDF( -dt * local_mortality * wolb_free * ms_free ) );
 
-        for( uint32_t i_age = 0 ; i_age < num_ages; ++i_age )
+        for( int ms = 0; ms < microsporidiaModifier.size(); ++ms )
         {
-            float from_age = 0.0;
-            if( params()->vector_params->vector_aging )
+            float ms_mod = microsporidiaModifier[ ms ];
+            for( uint32_t i_age = 0 ; i_age < num_ages; ++i_age )
             {
-                from_age = m_MortalityTable[ i_age ];
+                float from_age = 0.0;
+                if( params()->vector_aging )
+                {
+                    from_age = m_MortalityTable[ i_age ];
+                }
+
+                float p_local_mortality_wfree_ms = float( EXPCDF( -dt * (local_mortality + from_age) * wolb_free * ms_mod ) );
+                float p_local_mortality_wmod_ms  = float( EXPCDF( -dt * (local_mortality + from_age) * wolb_mod  * ms_mod  ) );
+
+                (*pProbabilityTable)[ 0 ][ ms ].push_back( p_local_mortality_wfree_ms );
+                (*pProbabilityTable)[ 1 ][ ms ].push_back( p_local_mortality_wmod_ms  );
             }
-
-            float p_local_mortality_free = float( EXPCDF( -dt * (local_adult_mortality + from_age) * wolb_free ) );
-            float p_local_mortality_mod  = float( EXPCDF( -dt * (local_adult_mortality + from_age) * wolb_mod  ) );
-
-            m_LocalMortalityProbabilityTable[ 0 ].push_back( p_local_mortality_free );
-            m_LocalMortalityProbabilityTable[ 1 ].push_back( p_local_mortality_mod  );
         }
     }
 
 
-    float VectorPopulation::GetLocalAdultMortalityProbability( float dt, IVectorCohort* pvc, VectorWolbachia::Enum wolb ) const
+    float VectorPopulation::GetLocalMatureMortalityProbability( float dt, IVectorCohort* pvc ) const
     {
-        float p_local_mortality = m_DefaultLocalMortalityProbability;
-        if( pvc != nullptr )
+        release_assert( pvc != nullptr );
+
+        int i_gender = int( pvc->GetGenome().GetGender() );
+        VectorStateEnum::Enum state = pvc->GetState();
+
+        float p_local_mortality = m_DefaultLocalMatureMortalityProbability[ i_gender ];
+        if( (state == VectorStateEnum::STATE_MALE      ) || 
+            (state == VectorStateEnum::STATE_ADULT     ) || 
+            (state == VectorStateEnum::STATE_INFECTED  ) || 
+            (state == VectorStateEnum::STATE_INFECTIOUS) )
         {
             // --------------------------------------------------------------------------------
-            // --- Use the enum passed in and not the value in the cohort.
-            // --- This allows the calling methods to override the enum.
             // --- We don't use the WolbachiaMortalityModification on Males and Immature vectors 
             // --------------------------------------------------------------------------------
-            uint32_t i_wolb = (wolb == VectorWolbachia::WOLBACHIA_FREE) ? 0 : 1;
-            uint32_t i_age  = (params()->vector_params->vector_aging  ) ? uint32_t( pvc->GetAge() ) : 0;
+            uint32_t i_wolb = ((state == VectorStateEnum::STATE_ADULT) && pvc->HasWolbachia()) ? 1 : 0;
+            uint32_t i_ms   = pvc->GetGenome().GetMicrosporidiaStrainIndex();
+            uint32_t i_age  = (params()->vector_aging  ) ? uint32_t( pvc->GetAge() ) : 0;
 
-            if( i_age > I_MAX_AGE )
+            if( i_age >= VectorCohort::I_MAX_AGE )
             {
                 // When I_MAX_AGE is large (i.e. > 100 ), then mortalityFromAge() approaches zero
                 // so the last value should not be different from a value calculated at a larger age.
-                return i_age = I_MAX_AGE;
+               i_age = VectorCohort::I_MAX_AGE-1;
             }
 
-            p_local_mortality = m_LocalMortalityProbabilityTable[ i_wolb ][ i_age ];
+            p_local_mortality = m_LocalMatureMortalityProbabilityTable[ i_gender ][ i_wolb ][ i_ms ][ i_age ];
         }
+        float modifier = species()->trait_modifiers.GetModifier( VectorTrait::MORTALITY, pvc->GetGenome() );
+        p_local_mortality *= modifier;
         return p_local_mortality;
     }
 
     void VectorPopulation::UpdateAge( IVectorCohort* pvc, float dt )
     {
-        if( (pvc != nullptr) && params()->vector_params->vector_aging )
+        if( pvc != nullptr )
         {
             pvc->IncreaseAge( dt );
         }
     }
+
+    void VectorPopulation::VerifyCounts( VectorStateEnum::Enum state,
+                                         const VectorCohortCollectionAbstract& rCollection,
+                                         uint32_t expCount,
+                                         const GenomeCountMap_t& rExpGenomeCount )
+    {
+        std::string state_name = VectorStateEnum::pairs::lookup_key( state );
+        uint32_t actual_count = 0;
+        GenomeCountMap_t actual_genome_count;
+        for( auto pvc : rCollection )
+        {
+            if( pvc->GetState() != state ) continue;
+            actual_count += pvc->GetPopulation();
+            actual_genome_count[ pvc->GetGenome().GetBits() ] += pvc->GetPopulation();
+        }
+        if( actual_count != expCount )
+        {
+            std::stringstream ss;
+            ss << state_name << "  expCount(=" << expCount << ") != actual_count(=" << actual_count << ")" ;
+            throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+        }
+        uint32_t exp_count_from_genomes = 0;
+        for( auto entry : rExpGenomeCount )
+        {
+            exp_count_from_genomes += entry.second;
+            if( actual_genome_count[ entry.first ] != entry.second )
+            {
+                std::string genome_name = m_species_params->genes.GetGenomeName( VectorGenome(entry.first) );
+                std::stringstream ss;
+                ss << state_name << "  genome='" << genome_name << "'   expCount(=" << entry.second << ") != actual_count(=" << actual_genome_count[ entry.first ] << ")";
+                throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+            }
+        }
+        if( exp_count_from_genomes != expCount )
+        {
+            std::stringstream ss;
+            ss << state_name << "  expCount(=" << expCount << ") != exp_count_from_genomes(=" << exp_count_from_genomes << ")";
+            throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+        }
+    }
+
+    void VectorPopulation::VerifyAllCounts()
+    {
+#if 0
+        VerifyCounts( VectorStateEnum::STATE_MALE,       MaleQueues,       state_counts[ VectorStateEnum::STATE_MALE       ], genome_counts[ VectorStateEnum::STATE_MALE       ] );
+        VerifyCounts( VectorStateEnum::STATE_IMMATURE,   ImmatureQueues,   state_counts[ VectorStateEnum::STATE_IMMATURE   ], genome_counts[ VectorStateEnum::STATE_IMMATURE   ] );
+        VerifyCounts( VectorStateEnum::STATE_LARVA,      LarvaQueues,      state_counts[ VectorStateEnum::STATE_LARVA      ], genome_counts[ VectorStateEnum::STATE_LARVA      ] );
+        VerifyCounts( VectorStateEnum::STATE_ADULT,      *pAdultQueues,      state_counts[ VectorStateEnum::STATE_ADULT      ], genome_counts[ VectorStateEnum::STATE_ADULT      ] );
+        if( (params()->vector_sampling_type == VectorSamplingType::TRACK_ALL_VECTORS) ||
+            (params()->vector_sampling_type == VectorSamplingType::SAMPLE_IND_VECTORS) )
+        {
+            VerifyCounts( VectorStateEnum::STATE_INFECTED,   *pAdultQueues, state_counts[ VectorStateEnum::STATE_INFECTED   ], genome_counts[ VectorStateEnum::STATE_INFECTED   ] );
+            VerifyCounts( VectorStateEnum::STATE_INFECTIOUS, *pAdultQueues, state_counts[ VectorStateEnum::STATE_INFECTIOUS ], genome_counts[ VectorStateEnum::STATE_INFECTIOUS ] );
+        }
+        else
+        {
+            VerifyCounts( VectorStateEnum::STATE_INFECTED,   InfectedQueues,   state_counts[ VectorStateEnum::STATE_INFECTED   ], genome_counts[ VectorStateEnum::STATE_INFECTED   ] );
+            VerifyCounts( VectorStateEnum::STATE_INFECTIOUS, InfectiousQueues, state_counts[ VectorStateEnum::STATE_INFECTIOUS ], genome_counts[ VectorStateEnum::STATE_INFECTIOUS ] );
+        }
+#endif
+
+    }
+
+    // 
+    void VectorPopulation::visitVectors( vector_cohort_visit_function_t  func, VectorGender::Enum gender = VectorGender::VECTOR_BOTH_GENDERS)
+    {
+        if (gender == VectorGender::VECTOR_BOTH_GENDERS || gender == VectorGender::VECTOR_FEMALE)
+        {
+            // Use the verbose "foreach" construct here because empty or completely-progressed queues will be removed
+            for (auto it = pAdultQueues->begin(); it != pAdultQueues->end(); ++it)
+            {
+                IVectorCohort* cohort = *it;
+                func(cohort);
+            }
+
+            // Use the verbose "foreach" construct here because empty or completely-progressed queues will be removed
+            for (auto it = InfectedQueues.begin(); it != InfectedQueues.end(); ++it)
+            {
+                IVectorCohort* cohort = *it;
+                func(cohort);
+            }
+
+            // Use the verbose "foreach" construct here because empty or completely-progressed queues will be removed
+            for (auto it = InfectiousQueues.begin(); it != InfectiousQueues.end(); ++it)
+            {
+                IVectorCohort* cohort = *it;
+                func(cohort);
+            }
+        }
+        if (gender == VectorGender::VECTOR_BOTH_GENDERS || gender == VectorGender::VECTOR_MALE)
+        {
+            // Use the verbose "foreach" construct here because empty or completely-progressed queues will be removed
+            for (auto it = MaleQueues.begin(); it != MaleQueues.end(); ++it)
+            {
+                IVectorCohort* cohort = *it;
+                func(cohort);
+            }
+        }
+    }
+
 
     void VectorPopulation::UpdateVectorPopulation( float dt )
     {
@@ -305,21 +588,48 @@ namespace Kernel
         m_HBR_by_pool = std::make_pair(0.0f, 0.0f);
 
         // Reset counters
+        release_assert( genome_counts.size() == m_AgeAtDeathByGenomeByState.size() );
+        release_assert( genome_counts.size() == m_AgeAtDeathByState.size() );
+        for( int i = 0; i < genome_counts.size(); ++i )
+        {
+            genome_counts[ i ].clear();
+            m_AgeAtDeathByGenomeByState[ i ].clear();
+            m_AgeAtDeathByState[ i ].clear();
+        }
+        m_ProgressedLarvaeToImmatureCount = 0;
+        m_ProgressedLarvaeToImmatureSumDur = 0.0;
+
+        memset( state_counts.data(),              0, state_counts             .size()*sizeof(state_counts             [0]) );
+        memset( num_infs_per_state_counts.data(), 0, num_infs_per_state_counts.size()*sizeof(num_infs_per_state_counts[0]) );
+        memset( wolbachia_counts.data(),          0, wolbachia_counts         .size()*sizeof(wolbachia_counts         [0]) );
+
+        for( int strain_index = 0; strain_index < m_species_params->microsporidia_strains.Size(); ++strain_index )
+        {
+            memset( microsporidia_counts[ strain_index ].data(), 0, microsporidia_counts[ strain_index ].size() * sizeof(uint32_t));
+        }
+
+        num_gestating_queue.clear();
+        num_gestating_begin     = 0;
+        num_gestating_end       = 0;
+        num_looking_to_feed     = 0;
+        num_fed_counter         = 0;
+        num_attempt_feed_indoor = 0;
+        num_attempt_feed_outdoor= 0;
+        num_attempt_but_not_feed= 0;
         neweggs                 = 0;
+        new_adults              = 0;
+        unmated_adults          = 0;
         indoorinfectiousbites   = 0;
         outdoorinfectiousbites  = 0;
         indoorbites             = 0;
         outdoorbites            = 0;
-        new_adults              = 0;
         dead_mosquitoes_before  = 0;
         dead_mosquitoes_indoor  = 0;
         dead_mosquitoes_outdoor = 0;
 
         gender_mating_eggs.clear();
-        gender_mating_males.clear();
-        vector_genetics_adults.clear();
-        vector_genetics_infected.clear();
-        vector_genetics_infectious.clear();
+
+        AddReleasedVectorsToQueues();
 
         float temperature = m_context->GetLocalWeather()->airtemperature();
         infected_progress_this_timestep = (species()->infectedarrhenius1 * exp( -species()->infectedarrhenius2 / (temperature + float( CELSIUS_TO_KELVIN )) )) * dt;
@@ -328,14 +638,18 @@ namespace Kernel
         Update_Lifecycle_Probabilities(dt);
 
         // Update vector-cohort lists
-        Update_Egg_Hatching(dt);
         Update_Infectious_Queue(dt);
         Update_Infected_Queue(dt);
         Update_Adult_Queue(dt);
         Update_Male_Queue(dt);
         Update_Immature_Queue(dt);
         Update_Larval_Queue(dt);
+        Update_Egg_Hatching( dt );
         Update_Egg_Laying(dt);
+
+        DepositContagion();
+
+        VerifyAllCounts(); // enable/disable in the method
 
         // Now calculate quantities for reporting:
         float eff_pop = m_context->GetStatPop(); //probs()->effective_host_population; // actual bites divided by actual pop (not risk-weighted pop for feeding probs)
@@ -352,8 +666,16 @@ namespace Kernel
         {
             LOG_DEBUG_F("The effective human population at node %lu is zero, so EIR and HBR are not being normalized in VectorPopulation::UpdateVectorPopulation.\n", m_context->GetSuid().data );
         }
-        // (3) vector-to-human infectivity
-        infectivity = GetEIRByPool(VectorPoolIdEnum::BOTH_VECTOR_POOLS) * species()->transmissionmod;
+    }
+
+    float VectorPopulation::GetInfectedProgress( IVectorCohort* pCohort )
+    {
+        float modifier = 1.0;
+        if( pCohort->GetState() == VectorStateEnum::STATE_INFECTED )
+        {
+            modifier = this->m_species_params->trait_modifiers.GetModifier( VectorTrait::INFECTED_PROGRESS, pCohort->GetGenome() );
+        }
+        return infected_progress_this_timestep * modifier;
     }
 
     void VectorPopulation::Update_Lifecycle_Probabilities( float dt )
@@ -369,139 +691,159 @@ namespace Kernel
             float temperature = m_context->GetLocalWeather()->airtemperature();
             dryheatmortality  = dryHeatMortality(temperature);
         }
-        UpdateLocalAdultMortalityProbability( dt );
+        UpdateLocalMatureMortalityProbability( dt );
     }
 
     void VectorPopulation::Update_Infectious_Queue( float dt )
     {
-        infectious = 0;
+        InfectiousQueues.updateAge( dt );
+
         // Use the verbose "foreach" construct here because empty infectious cohorts (e.g. old vectors) will be removed
-        for( size_t iCohort = 0; iCohort < InfectiousQueues.size(); /* increment in loop */ )
+        for( auto it = InfectiousQueues.begin(); it != InfectiousQueues.end(); ++it )
         {
-            IVectorCohort* cohort = InfectiousQueues[ iCohort ];
+            IVectorCohort* cohort = *it;
 
-            UpdateAge( cohort, dt );
+            bool prev_has_microsporidia = cohort->HasMicrosporidia();
+            if( !cohort->HasMated() )
+            {
+                AddAdultsAndMate( cohort, InfectiousQueues, false );
+            }
 
-            ProcessFeedingCycle( dt, cohort );
+            if( cohort->GetPopulation() > 0 )
+            {
+                ProcessFeedingCycle( dt, cohort );
+            }
+
+            cohort->Update( m_context->GetRng(), dt, species()->trait_modifiers, 0.0, prev_has_microsporidia );
+
+            queueIncrementTotalPopulation( cohort );// update INFECTIOUS counters
 
             if( cohort->GetPopulation() <= 0 )
             {
-                InfectiousQueues[ iCohort ] = InfectiousQueues.back();
-                InfectiousQueues.pop_back();
+                InfectiousQueues.remove( it );
                 delete cohort;
-
-                // !! Don't increment iCohort. !!
-            }
-            else
-            {
-                queueIncrementTotalPopulation( cohort );// update INFECTIOUS counters
-
-                ++iCohort;
             }
         }
+        InfectiousQueues.compact();
     }
 
     void VectorPopulation::Update_Infected_Queue( float dt )
     {
-        infected = 0;
-
         // Use the verbose "foreach" construct here because empty or completely-progressed queues will be removed
-        for( size_t iCohort = 0; iCohort < InfectedQueues.size(); /* increment in loop */ )
+        for( auto it = InfectedQueues.begin(); it != InfectedQueues.end(); ++it )
         {
-            IVectorCohort* cohort = InfectedQueues[ iCohort ];
+            IVectorCohort* cohort = *it;
 
             UpdateAge( cohort, dt );
 
-            // progress with sporogony
-            cohort->IncreaseProgress( infected_progress_this_timestep );
+            bool prev_has_microsporidia = cohort->HasMicrosporidia();
+            if( !cohort->HasMated() )
+            {
+                AddAdultsAndMate( cohort, InfectedQueues, false );
+            }
 
-            ProcessFeedingCycle( dt, cohort );
+            if( cohort->GetPopulation() > 0 )
+            {
+                ProcessFeedingCycle( dt, cohort );
+            }
+
+            cohort->Update( m_context->GetRng(), dt, species()->trait_modifiers, GetInfectedProgress( cohort ), prev_has_microsporidia );
+
+            queueIncrementTotalPopulation( cohort ); // update counters
 
             // done with this queue if it is fully progressed or is empty
-            if (cohort->GetProgress() >= 1 || cohort->GetPopulation() <= 0)
+            if( (cohort->GetState() == VectorStateEnum::STATE_INFECTIOUS) || (cohort->GetPopulation() <= 0) )
             {
-                bool delete_cohort = true;
+                InfectedQueues.remove( it );
 
                 // infected queue completion, moving to infectious
                 if (cohort->GetPopulation() > 0)
                 {
-                    cohort->SetState( VectorStateEnum::STATE_INFECTIOUS );
-                    queueIncrementTotalPopulation( cohort ); // update INFECTIOUS counters
-                    MergeProgressedCohortIntoCompatibleQueue( InfectiousQueues, cohort, 0.0 );
-                    delete_cohort = false;
+                    InfectiousQueues.add( cohort, 0.0, true );
                 }
-
-                InfectedQueues[ iCohort ] = InfectedQueues.back();
-                InfectedQueues.pop_back();
-                if( delete_cohort )
+                else
                 {
                     delete cohort;
                 }
-                // !! Don't increment iCohort. !!
             }
-            else
-            {
-                queueIncrementTotalPopulation( cohort ); // update INFECTED counters
+        }
+        InfectedQueues.compact();
+    }
 
-                ++iCohort;
-            }
+    void VectorPopulation::UpdateGestatingCount( const IVectorCohort* cohort )
+    {
+        if( cohort->GetPopulation() > 0 )
+        {
+            num_gestating_end += cohort->GetNumGestating();
+            cohort->ReportOnGestatingQueue( num_gestating_queue );
         }
     }
 
     void VectorPopulation::Update_Adult_Queue( float dt )
     {
-        adult = 0;
+        pAdultQueues->updateAge( dt );
+
         // Use the verbose "foreach" construct here because empty adult cohorts (e.g. old vectors) will be removed
-        for (size_t iCohort = 0; iCohort < AdultQueues.size(); /* increment in loop */)
+        for( auto it = pAdultQueues->begin(); it != pAdultQueues->end(); ++it )
         {
-            IVectorCohort* cohort = AdultQueues[iCohort];
+            IVectorCohort* cohort = *it;
 
-            UpdateAge( cohort, dt );
-
-            uint32_t newinfected = ProcessFeedingCycle( dt, cohort );
-            // correct for too high
-            if( newinfected > cohort->GetPopulation() )
+            bool prev_has_microsporidia = cohort->HasMicrosporidia();
+            if( !cohort->HasMated() )
             {
-                newinfected = cohort->GetPopulation();
+                AddAdultsAndMate( cohort, *pAdultQueues, false );
             }
+
+            uint32_t newinfected = 0;
+            if( cohort->GetPopulation() > 0 )
+            {
+                 newinfected = ProcessFeedingCycle( dt, cohort );
+            }
+
+            cohort->Update( m_context->GetRng(), dt,species()->trait_modifiers, 0.0, prev_has_microsporidia );
 
             if (newinfected > 0)
             {
-                // Reduce this cohort
-                cohort->SetPopulation( cohort->GetPopulation() - newinfected );
-
                 // Move newly infected vectors into another cohort in the infected queue
-                VectorCohort* tempentrynew = VectorCohort::CreateCohort( VectorStateEnum::STATE_INFECTED, cohort->GetAge(), 0, newinfected, cohort->GetVectorGenetics(), &species_ID );
-                queueIncrementTotalPopulation( tempentrynew ); // update INFECTED counters
-                MergeProgressedCohortIntoCompatibleQueue( InfectedQueues, tempentrynew, infected_progress_this_timestep );
+                // Since they are infected, they have just fed and need to start gestating
+                IVectorCohort* infected_cohort = VectorCohort::CreateCohort( m_pNodeVector->GetNextVectorSuid().data,
+                                                                             VectorStateEnum::STATE_INFECTED,
+                                                                             cohort->GetAge(),
+                                                                             0.0, //reset progress
+                                                                             cohort->GetDurationOfMicrosporidia(),
+                                                                             newinfected,
+                                                                             cohort->GetGenome(),
+                                                                             m_SpeciesIndex );
+                infected_cohort->SetMateGenome( cohort->GetMateGenome() );
+                StartGestating( newinfected, infected_cohort );
+                queueIncrementTotalPopulation( infected_cohort ); // update INFECTED counters
+                InfectedQueues.add( infected_cohort, GetInfectedProgress( cohort ), true );
             }
+
+            queueIncrementTotalPopulation( cohort ); // update ADULT counters
 
             if( cohort->GetPopulation() <= 0 )
             {
-                AdultQueues[ iCohort ] = AdultQueues.back();
-                AdultQueues.pop_back();
+                pAdultQueues->remove( it );
                 delete cohort;
-
-                // !! Don't increment iCohort. !!
-            }
-            else
-            {
-                queueIncrementTotalPopulation( cohort ); // update ADULT counters
-
-                ++iCohort;
             }
         }
+        pAdultQueues->compact();
     }
 
     float VectorPopulation::AdjustForConditionalProbability( float& rCumulative, float probability )
     {
         if( rCumulative >= 1.0 )
         {
-            return 0.0;
+            return 1.0;
         }
 
         //adjust for conditional probability
         float adjusted = probability / (1.0f - rCumulative);
+        if( adjusted > 1.0 )
+        {
+            adjusted = 1.0;
+        }
 
         rCumulative += probability;
         if( rCumulative > 1.0 )
@@ -512,37 +854,83 @@ namespace Kernel
         return adjusted;
     }
 
-    void VectorPopulation::AdjustForFeedingRate( float dt, float p_local_mortality, VectorPopulation::FeedingProbabilities& rFeedProbs )
+    void VectorPopulation::UpdateSugarKilling( IVectorCohort* cohort, VectorPopulation::FeedingProbabilities& rFeedProbs )
     {
-        float feedingrate = 1.0f / GetFeedingCycleDuration();
+        // Now if sugar feeding exists every day or after each feed, and mortality is associated, then set probabilities
+        if( (species()->vector_sugar_feeding == VectorSugarFeeding::VECTOR_SUGAR_FEEDING_EVERY_FEED) ||
+            (species()->vector_sugar_feeding == VectorSugarFeeding::VECTOR_SUGAR_FEEDING_EVERY_DAY ) )
+        {
+            float sugar_trap_killing = probs()->sugarTrapKilling.GetValue( m_SpeciesIndex, cohort->GetGenome() );
 
-        rFeedProbs.die_without_attempting_to_feed  *= (1.0f - feedingrate * dt);
-        rFeedProbs.die_before_human_feeding        *= feedingrate * dt;
-        rFeedProbs.successful_feed_animal          *= feedingrate * dt;
-        rFeedProbs.successful_feed_artifical_diet  *= feedingrate * dt;
-        rFeedProbs.successful_feed_attempt_indoor  *= feedingrate * dt;
-        rFeedProbs.successful_feed_attempt_outdoor *= feedingrate * dt;
+            // adjust for the vectors that ARE feeding today
+            rFeedProbs.die_sugar_feeding = (1.0 - rFeedProbs.die_local_mortality) * sugar_trap_killing;
 
-        rFeedProbs.die_without_attempting_to_feed += p_local_mortality;
+            // now adjust the rest of the feeding branch probabilities to account for
+            // the vectors that died during sugar feeding
+            rFeedProbs.die_before_human_feeding        *= (1.0f - sugar_trap_killing );
+            rFeedProbs.successful_feed_animal          *= (1.0f - sugar_trap_killing );
+            rFeedProbs.successful_feed_artifical_diet  *= (1.0f - sugar_trap_killing );
+            rFeedProbs.successful_feed_attempt_indoor  *= (1.0f - sugar_trap_killing );
+            rFeedProbs.successful_feed_attempt_outdoor *= (1.0f - sugar_trap_killing );
+            rFeedProbs.survive_without_feeding         *= (1.0f - sugar_trap_killing );
+        }
+
+        // correct for sugar feeding
+        if( species()->vector_sugar_feeding == VectorSugarFeeding::VECTOR_SUGAR_FEEDING_EVERY_DAY )
+        {
+            float sugar_trap_killing = probs()->sugarTrapKilling.GetValue( m_SpeciesIndex, cohort->GetGenome() );
+
+            // adjust killing for the vectors that are not feeding today
+            rFeedProbs.die_without_attempting_to_feed += (1.0 - rFeedProbs.die_without_attempting_to_feed) * sugar_trap_killing;  // add in sugarTrap to kill rate
+        }
     }
 
     void VectorPopulation::AdjustForCumulativeProbability( VectorPopulation::FeedingProbabilities& rFeedProbs )
     {
-        float cum_prob = 0.0;
-        cum_prob += rFeedProbs.die_without_attempting_to_feed;
-        cum_prob += rFeedProbs.die_before_human_feeding;
+        //--------------------------------------------------------------------------------------------------
+        // --- We use AdjustForConditionalProbability() because we are trying to find the probability
+        // --- that X vectors did something from a subset that did something else.  For example,
+        // --- we want the probabity that if a vector did not die, then did it have a successful animal feed.
+        // --- Then, if it did not die and did not have a successful animal feed, did it have a successful
+        // --- artificial diet?
+        //--------------------------------------------------------------------------------------------------
 
+        // -----------------------
+        // --- Non-Feeding Branch
+        // -----------------------
+        float cum_prob = rFeedProbs.die_local_mortality;
+        rFeedProbs.die_without_attempting_to_feed = AdjustForConditionalProbability( cum_prob, rFeedProbs.die_without_attempting_to_feed );
+
+        // -----------------------
+        // --- Feeding Branch
+        // -----------------------
+        cum_prob  = rFeedProbs.die_local_mortality;
+        rFeedProbs.die_sugar_feeding               = AdjustForConditionalProbability( cum_prob, rFeedProbs.die_sugar_feeding               );
+        rFeedProbs.die_before_human_feeding        = AdjustForConditionalProbability( cum_prob, rFeedProbs.die_before_human_feeding        );
         rFeedProbs.successful_feed_animal          = AdjustForConditionalProbability( cum_prob, rFeedProbs.successful_feed_animal          );
         rFeedProbs.successful_feed_artifical_diet  = AdjustForConditionalProbability( cum_prob, rFeedProbs.successful_feed_artifical_diet  );
         rFeedProbs.successful_feed_attempt_indoor  = AdjustForConditionalProbability( cum_prob, rFeedProbs.successful_feed_attempt_indoor  );
         rFeedProbs.successful_feed_attempt_outdoor = AdjustForConditionalProbability( cum_prob, rFeedProbs.successful_feed_attempt_outdoor );
+        rFeedProbs.survive_without_feeding         = AdjustForConditionalProbability( cum_prob, rFeedProbs.survive_without_feeding         );
 
-        cum_prob = rFeedProbs.die_indoor;
-        rFeedProbs.successful_feed_artifical_diet_indoor = AdjustForConditionalProbability( cum_prob, rFeedProbs.successful_feed_artifical_diet_indoor );
-        rFeedProbs.successful_feed_human_indoor          = AdjustForConditionalProbability( cum_prob, rFeedProbs.successful_feed_human_indoor          );
+        // -------------------------------------------------------------
+        // --- Attempt Indoor Feeding Branch - subset of Feeding Branch
+        // -------------------------------------------------------------
+        cum_prob = rFeedProbs.indoor.successful_feed_ad;
+        rFeedProbs.indoor.die_before_feeding    = AdjustForConditionalProbability( cum_prob, rFeedProbs.indoor.die_before_feeding    );
+        rFeedProbs.indoor.not_available         = AdjustForConditionalProbability( cum_prob, rFeedProbs.indoor.not_available         );
+        rFeedProbs.indoor.die_during_feeding    = AdjustForConditionalProbability( cum_prob, rFeedProbs.indoor.die_during_feeding    );
+        rFeedProbs.indoor.die_after_feeding     = AdjustForConditionalProbability( cum_prob, rFeedProbs.indoor.die_after_feeding     );
+        rFeedProbs.indoor.successful_feed_human = AdjustForConditionalProbability( cum_prob, rFeedProbs.indoor.successful_feed_human );
 
-        cum_prob = rFeedProbs.die_outdoor;
-        rFeedProbs.successful_feed_human_outdoor = AdjustForConditionalProbability( cum_prob, rFeedProbs.successful_feed_human_outdoor );
+        // -------------------------------------------------------------
+        // --- Attempt Outdoor Feeding Branch - subset of Feeding Branch
+        // -------------------------------------------------------------
+        cum_prob = rFeedProbs.outdoor.die_before_feeding;
+        rFeedProbs.outdoor.not_available         = AdjustForConditionalProbability( cum_prob, rFeedProbs.outdoor.not_available         );
+        rFeedProbs.outdoor.die_during_feeding    = AdjustForConditionalProbability( cum_prob, rFeedProbs.outdoor.die_during_feeding    );
+        rFeedProbs.outdoor.die_after_feeding     = AdjustForConditionalProbability( cum_prob, rFeedProbs.outdoor.die_after_feeding     );
+        rFeedProbs.outdoor.successful_feed_human = AdjustForConditionalProbability( cum_prob, rFeedProbs.outdoor.successful_feed_human );
     }
 
     VectorPopulation::FeedingProbabilities VectorPopulation::CalculateFeedingProbabilities( float dt, IVectorCohort* cohort )
@@ -562,56 +950,109 @@ namespace Kernel
             x_infectiouscorrection = infectiouscorrection;
         }
 
+        const VectorGenome& r_genome = cohort->GetGenome();
+
         // calculate local mortality / survivability
-        float p_local_mortality = GetLocalAdultMortalityProbability( dt, cohort, cohort->GetVectorGenetics().GetWolbachia() );
+        float p_local_mortality = GetLocalMatureMortalityProbability( dt, cohort );
         float p_local_survivability = 1.0f - p_local_mortality;
+
+        float feed_attempt_outdoor    = probs()->outdoorattempttohumanfeed.GetValue(    m_SpeciesIndex, r_genome );
+        float survive_without_feeding = probs()->survivewithoutsuccessfulfeed.GetValue( m_SpeciesIndex, r_genome );
 
         FeedingProbabilities feed_probs;
 
-        feed_probs.die_without_attempting_to_feed  = p_local_survivability * probs()->diewithoutattemptingfeed;
-        feed_probs.die_before_human_feeding        = p_local_survivability * probs()->diebeforeattempttohumanfeed;
-        feed_probs.successful_feed_animal          = p_local_survivability * probs()->successfulfeed_animal;
-        feed_probs.successful_feed_artifical_diet  = p_local_survivability * probs()->successfulfeed_AD;
-        feed_probs.successful_feed_attempt_indoor  = p_local_survivability * probs()->indoorattempttohumanfeed;
-        feed_probs.successful_feed_attempt_outdoor = p_local_survivability * probs()->outdoorattempttohumanfeed;
+        feed_probs.die_local_mortality             = p_local_mortality;
+        feed_probs.die_without_attempting_to_feed  = p_local_survivability * probs()->diewithoutattemptingfeed.GetValue( m_SpeciesIndex, r_genome );
+        feed_probs.die_sugar_feeding               = 0.0f;
+        feed_probs.die_before_human_feeding        = p_local_survivability * probs()->diebeforeattempttohumanfeed.GetValue(  m_SpeciesIndex, r_genome );
+        feed_probs.successful_feed_animal          = p_local_survivability * probs()->successfulfeed_animal.GetValue(        m_SpeciesIndex, r_genome );
+        feed_probs.successful_feed_artifical_diet  = p_local_survivability * probs()->successfulfeed_AD.GetValue(            m_SpeciesIndex, r_genome );
+        feed_probs.successful_feed_attempt_indoor  = p_local_survivability * probs()->indoorattempttohumanfeed.GetValue(     m_SpeciesIndex, r_genome );
+        feed_probs.successful_feed_attempt_outdoor = p_local_survivability * feed_attempt_outdoor;
+        feed_probs.survive_without_feeding         = p_local_survivability * survive_without_feeding;
 
-        feed_probs.die_indoor                      = probs()->indoor_diebeforefeeding 
-                                                   + probs()->indoor_dieduringfeeding * x_infectioushfmortmod
-                                                   + probs()->indoor_diepostfeeding   * x_infectiouscorrection;
+        feed_probs.indoor.successful_feed_ad       = probs()->indoor_successfulfeed_AD.GetValue(    m_SpeciesIndex, r_genome );
+        feed_probs.indoor.die_before_feeding       = probs()->indoor_diebeforefeeding.GetValue(     m_SpeciesIndex, r_genome );
+        feed_probs.indoor.not_available            = probs()->indoor_hostnotavailable.GetValue(     m_SpeciesIndex, r_genome );
+        feed_probs.indoor.die_during_feeding       = probs()->indoor_dieduringfeeding.GetValue(     m_SpeciesIndex, r_genome ) * x_infectioushfmortmod;
+        feed_probs.indoor.die_after_feeding        = probs()->indoor_diepostfeeding.GetValue(       m_SpeciesIndex, r_genome ) * x_infectiouscorrection;
+        feed_probs.indoor.successful_feed_human    = probs()->indoor_successfulfeed_human.GetValue( m_SpeciesIndex, r_genome ) * x_infectiouscorrection;
 
-        feed_probs.successful_feed_artifical_diet_indoor = probs()->indoor_successfulfeed_AD;
+        // returningmortality is related to OutdoorRestKill where the vector is resting after a feed
+        float outdoor_successfulfeed_human = probs()->outdoor_successfulfeed_human.GetValue( m_SpeciesIndex, r_genome );
+        float outdoor_returningmortality   = probs()->outdoor_returningmortality.GetValue(   m_SpeciesIndex, r_genome );
 
-        feed_probs.successful_feed_human_indoor   = probs()->indoor_successfulfeed_human * x_infectiouscorrection;
+        feed_probs.outdoor.die_before_feeding       = probs()->outdoor_diebeforefeeding;
+        feed_probs.outdoor.not_available            = probs()->outdoor_hostnotavailable.GetValue(     m_SpeciesIndex, r_genome );
+        feed_probs.outdoor.die_during_feeding       = probs()->outdoor_dieduringfeeding.GetValue(     m_SpeciesIndex, r_genome ) * x_infectioushfmortmod;
+        feed_probs.outdoor.die_after_feeding        = probs()->outdoor_diepostfeeding.GetValue(       m_SpeciesIndex, r_genome ) * x_infectiouscorrection
+                                                    + outdoor_successfulfeed_human * outdoor_returningmortality * x_infectiouscorrection;
 
-        feed_probs.die_outdoor                    = probs()->outdoor_diebeforefeeding
-                                                  + probs()->outdoor_dieduringfeeding * x_infectioushfmortmod
-                                                  + probs()->outdoor_diepostfeeding   * x_infectiouscorrection
-                                                  + probs()->outdoor_successfulfeed_human * probs()->outdoor_returningmortality * x_infectiouscorrection;
+        feed_probs.outdoor.successful_feed_human    = (1.0f - outdoor_returningmortality) * outdoor_successfulfeed_human * x_infectiouscorrection;
 
-        feed_probs.successful_feed_human_outdoor  = (1.0f - probs()->outdoor_returningmortality) * probs()->outdoor_successfulfeed_human * x_infectiouscorrection;
+        UpdateSugarKilling( cohort, feed_probs );
 
-        AdjustForFeedingRate( dt, p_local_mortality, feed_probs );
+        // -----------------------------------------------------------------------------------
+        // --- We need to normalize the probabilities due to floating point rounding errors.
+        // --- For example, 0.1 can turn into 0.0999999 but then we sum that up over the
+        // --- number of people.  The error becomes slightly magnified and normalization
+        // --- helps to remove it.  The code after this assumes the normalization.
+        // -----------------------------------------------------------------------------------
+        feed_probs.Normalize();
 
         AdjustForCumulativeProbability( feed_probs );
 
-        LOG_DEBUG_F( "die_without_attempting_to_feed       =%14.11f\n", feed_probs.die_without_attempting_to_feed );
-        LOG_DEBUG_F( "die_before_human_feeding             =%14.11f\n", feed_probs.die_before_human_feeding );
-        LOG_DEBUG_F( "successful_feed_animal               =%14.11f\n", feed_probs.successful_feed_animal );
-        LOG_DEBUG_F( "successful_feed_artifical_diet       =%14.11f\n", feed_probs.successful_feed_artifical_diet );
-        LOG_DEBUG_F( "successful_feed_attempt_indoor       =%14.11f\n", feed_probs.successful_feed_attempt_indoor );
-        LOG_DEBUG_F( "successful_feed_attempt_outdoor      =%14.11f\n", feed_probs.successful_feed_attempt_outdoor );
-        LOG_DEBUG_F( "die_indoor                           =%14.11f\n", feed_probs.die_indoor );
-        LOG_DEBUG_F( "successful_feed_artifical_diet_indoor=%14.11f\n", feed_probs.successful_feed_artifical_diet_indoor );
-        LOG_DEBUG_F( "successful_feed_human_indoor         =%14.11f\n", feed_probs.successful_feed_human_indoor );
-        LOG_DEBUG_F( "die_outdoor                          =%14.11f\n", feed_probs.die_outdoor );
-        LOG_DEBUG_F( "successful_feed_human_outdoor        =%14.11f\n", feed_probs.successful_feed_human_outdoor );
+        // -------------------------------------------------------------------------------------
+        // --- Normalization helps but does not resolve everyting.  Hence, we need to make sure
+        // --- values that are supposed to be 1.0 are 1.0.
+        // --- NOTE: survive_without_feeding can be > 0.0 when using spatial repellent.
+        // ---       This means that successful_feed_attempt_outdoor will be < 1.0
+        // -------------------------------------------------------------------------------------
+        if( survive_without_feeding == 0.0 )
+        {
+            feed_probs.successful_feed_attempt_outdoor = 1.0;
+            if( feed_attempt_outdoor == 0.0 )
+            {
+                feed_probs.successful_feed_attempt_indoor = 1.0;
+                // We could go further but stopping since this should happen rarely
+            }
+        }
+
+        // successful_feed_human can equal zero if all the other values are zero, but should be 1.0
+        // if the others are not zero.  However, there can be floating point round off error,
+        // so we need to force it to 1.
+        if( feed_probs.indoor.successful_feed_human  != 0.0 ) feed_probs.indoor.successful_feed_human  = 1.0;
+        if( feed_probs.outdoor.successful_feed_human != 0.0 ) feed_probs.outdoor.successful_feed_human = 1.0;
+
+#if 0
+        LOG_DEBUG_F( "die_local_mortality            =%14.11f\n", feed_probs.die_local_mortality );
+        LOG_DEBUG_F( "die_without_attempting_to_feed =%14.11f\n", feed_probs.die_without_attempting_to_feed );
+        LOG_DEBUG_F( "die_sugar_feeding              =%14.11f\n", feed_probs.die_sugar_feeding );
+        LOG_DEBUG_F( "die_before_human_feeding       =%14.11f\n", feed_probs.die_before_human_feeding );
+        LOG_DEBUG_F( "successful_feed_animal         =%14.11f\n", feed_probs.successful_feed_animal );
+        LOG_DEBUG_F( "successful_feed_artifical_diet =%14.11f\n", feed_probs.successful_feed_artifical_diet );
+        LOG_DEBUG_F( "successful_feed_attempt_indoor =%14.11f\n", feed_probs.successful_feed_attempt_indoor );
+        LOG_DEBUG_F( "successful_feed_attempt_outdoor=%14.11f\n", feed_probs.successful_feed_attempt_outdoor );
+        LOG_DEBUG_F( "survive_without_feeding        =%14.11f\n", feed_probs.survive_without_feeding );
+        LOG_DEBUG_F( "indoor_successful_feed_ad      =%14.11f\n", feed_probs.indoor.successful_feed_ad );
+        LOG_DEBUG_F( "indoor_die_before_feeding      =%14.11f\n", feed_probs.indoor.die_before_feeding );
+        LOG_DEBUG_F( "indoor_not_available           =%14.11f\n", feed_probs.indoor.not_available );
+        LOG_DEBUG_F( "indoor_die_during_feeding      =%14.11f\n", feed_probs.indoor.die_during_feeding );
+        LOG_DEBUG_F( "indoor_die_after_feeding       =%14.11f\n", feed_probs.indoor.die_after_feeding );
+        LOG_DEBUG_F( "indoor_successful_feed_human   =%14.11f\n", feed_probs.indoor.successful_feed_human );
+        LOG_DEBUG_F( "outdoor_die_before_feeding     =%14.11f\n", feed_probs.outdoor.die_before_feeding );
+        LOG_DEBUG_F( "outdoor_not_available          =%14.11f\n", feed_probs.outdoor.not_available );
+        LOG_DEBUG_F( "outdoor_die_during_feeding     =%14.11f\n", feed_probs.outdoor.die_during_feeding );
+        LOG_DEBUG_F( "outdoor_die_after_feeding      =%14.11f\n", feed_probs.outdoor.die_after_feeding );
+        LOG_DEBUG_F( "outdoor_successful_feed_human  =%14.11f\n", feed_probs.outdoor.successful_feed_human );
+#endif
 
         return feed_probs;
     }
 
-    uint32_t VectorPopulation::CalculatePortionInProbability( bool isForDeath, uint32_t& rRemainingPop, float prob )
+    uint32_t VectorPopulation::CalculatePortionInProbability( uint32_t& rRemainingPop, float prob )
     {
-        if( (isForDeath && !m_VectorMortality) || (rRemainingPop <= 0) || (prob <= 0.0) )
+        if( (rRemainingPop <= 0) || (prob <= 0.0) )
         {
             return 0;
         }
@@ -631,37 +1072,110 @@ namespace Kernel
         }
     }
 
-    void VectorPopulation::VectorToHumanDeposit( const IStrainIdentity& strain,
-                                                 uint32_t attemptFeed,
+    // ---------------------------------------------------------------------------------------------
+    // --- GH-4251 - Number of Infectious Bites in Vector Model and Individual Are Not Similar
+    // --- Dividing the amount deposited by the population average of the the probablity of
+    // --- the vector transmitting.  All the values deposited will be normalized by the total
+    // --- total number of people in the population - StrainAwareTransmissionGroups::EndUpdate().
+    // --- IndividualHumanVector::Expose() will take the total contagion from SATG and multiply
+    // --- this by the individuals probability of the vector transmitting to them.  This resulting
+    // --- value will be used in the Poisson draw to determine how many bites the person received.
+    // ---------------------------------------------------------------------------------------------
+    void VectorPopulation::VectorToHumanDeposit( const VectorGenome& rGenome,
+                                                 const IStrainIdentity& rStrain,
+                                                 uint32_t numInfectiousBites,
                                                  TransmissionRoute::Enum route )
     {
-        release_assert( (route == TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_INDOOR) || (route == TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_OUTDOOR) );
-        auto vector = ((route == TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_INDOOR) ? NodeVector::vector_indoor : NodeVector::vector_outdoor );
-        m_context->DepositFromIndividual( strain, float( attemptFeed ) * species()->transmissionmod, vector, route );
+        release_assert( (route == TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_INDOOR) ||
+                        (route == TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_OUTDOOR) );
+
+        bool first_one = false;
+        IStrainIdentity* p_si = rStrain.Clone();
+        StrainGenomeId sgi( p_si, rGenome.GetBits() );
+
+        if( route == TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_INDOOR )
+        {
+            if( m_ContagionToDepositIndoor.count( sgi ) == 0 )
+            {
+                first_one = true;
+                m_ContagionToDepositIndoor[ sgi ] = 0.0f;
+            }
+            // See comment above GH-4251
+            float prob_transmit = probs()->indoor_dieduringfeeding.GetValue(     m_SpeciesIndex, rGenome )
+                                + probs()->indoor_diepostfeeding.GetValue(       m_SpeciesIndex, rGenome )
+                                + probs()->indoor_successfulfeed_human.GetValue( m_SpeciesIndex, rGenome );
+            release_assert( prob_transmit > 0.0 );
+
+            m_ContagionToDepositIndoor[ sgi ] += (float(numInfectiousBites) / prob_transmit);
+        }
+        else
+        {
+            if( m_ContagionToDepositOutdoor.count( sgi ) == 0 )
+            {
+                first_one = true;
+                m_ContagionToDepositOutdoor[ sgi ] = 0.0f;
+            }
+            // See comment above GH-4251
+            float prob_transmit = probs()->outdoor_dieduringfeeding.GetValue(     m_SpeciesIndex, rGenome )
+                                + probs()->outdoor_diepostfeeding.GetValue(       m_SpeciesIndex, rGenome )
+                                + probs()->outdoor_successfulfeed_human.GetValue( m_SpeciesIndex, rGenome );
+            release_assert( prob_transmit > 0.0 );
+
+            m_ContagionToDepositOutdoor[ sgi ] += (float(numInfectiousBites) / prob_transmit);
+        }
+        if( !first_one )
+        {
+            // if this is not the first one in the map, then we need to delete the object
+            delete p_si;
+        }
+    }
+
+    void VectorPopulation::DepositContagionHelper( TransmissionRoute::Enum route,
+                                                   std::map<VectorPopulation::StrainGenomeId,float>& rContagionToDeposit )
+    {
+        for( auto& r_entry : rContagionToDeposit )
+        {
+            GeneticProbability gp_amount( m_SpeciesIndex,
+                                          VectorGenome( r_entry.first.vectorGenomeBits ),
+                                          r_entry.second );
+
+            m_pNodeVector->DepositFromIndividual( *(r_entry.first.pStrainId), gp_amount, route );
+
+            delete r_entry.first.pStrainId;
+        }
+        rContagionToDeposit.clear();
+    }
+
+    void VectorPopulation::DepositContagion()
+    {
+        DepositContagionHelper( TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_INDOOR,
+                                m_ContagionToDepositIndoor );
+
+        DepositContagionHelper( TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_OUTDOOR,
+                                m_ContagionToDepositOutdoor );
     }
 
     uint32_t VectorPopulation::VectorToHumanTransmission( IVectorCohort* cohort,
+                                                          const IStrainIdentity* pStrain,
                                                           uint32_t attemptFeed,
                                                           TransmissionRoute::Enum route )
     {
-        release_assert( (route == TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_INDOOR) || (route == TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_OUTDOOR) );
-        uint32_t infected_bites = 0;
-        if( cohort->GetState() == VectorStateEnum::STATE_INFECTIOUS )
+        release_assert( (route == TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_INDOOR ) ||
+                        (route == TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_OUTDOOR) );
+
+        uint32_t infectious_bites = 0;
+        if( (cohort->GetState() == VectorStateEnum::STATE_INFECTIOUS) && (attemptFeed > 0) )
         {
-            infected_bites = attemptFeed;
-
             // deposit indoor and outdoor contagion into vector-to-human group
-            const IStrainIdentity& strain = cohort->GetStrainIdentity();
+            float modifier = GetDiseaseTransmissionModifier( cohort );
+            float prob_transmission = species()->transmissionmod * modifier;
 
-            LOG_DEBUG_F( "Vector->Human [%s] infectiousness (aka bite) of strain %d, 'population' %d, xmod %f.\n",
-                         (route == TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_INDOOR) ? "indoor" : "outdoor",
-                         strain.GetAntigenID(),
-                         attemptFeed,
-                         species()->transmissionmod );
+            infectious_bites = uint32_t( m_context->GetRng()->binomial_approx( attemptFeed, prob_transmission ) );
 
-            VectorToHumanDeposit( strain, attemptFeed, route );
+            release_assert( pStrain != nullptr );
+            VectorToHumanDeposit( cohort->GetGenome(), *pStrain, infectious_bites, route);
         }
-        return infected_bites;
+        return infectious_bites;
     }
 
     uint32_t VectorPopulation::CalculateHumanToVectorInfection( TransmissionRoute::Enum route,
@@ -673,34 +1187,12 @@ namespace Kernel
 
         if( (cohort->GetState() == VectorStateEnum::STATE_ADULT) && (numHumanFeed > 0) )
         {
-            ITransmissionGroups* txGroups = nullptr;
-            TransmissionGroupMembership_t group;
+            GeneticProbability host_infectivity_gp = m_pNodeVector->GetTotalContagionGP( route );
+            float host_infectivity = host_infectivity_gp.GetValue( m_SpeciesIndex, cohort->GetGenome() );
 
-            switch (route)
-            {
-                case TransmissionRoute::TRANSMISSIONROUTE_HUMAN_TO_VECTOR_INDOOR:
-                    txGroups = m_txIndoor;
-                    group = NodeVector::vector_indoor;
-                    break;
+            float modifier = GetDiseaseAcquisitionModifier( cohort );
 
-                case TransmissionRoute::TRANSMISSIONROUTE_HUMAN_TO_VECTOR_OUTDOOR:
-                    txGroups = m_txOutdoor;
-                    group = NodeVector::vector_outdoor;
-                    break;
-
-                default:
-                    throw new BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "route", int32_t(route), "transmission route" );
-            }
-
-            float host_infectivity = txGroups->GetTotalContagion();
-
-            //Wolbachia related impacts on infection susceptibility
-            float x_infectionWolbachia = 1.0;
-            if( cohort->GetVectorGenetics().GetWolbachia() != VectorWolbachia::WOLBACHIA_FREE )
-            {
-                x_infectionWolbachia = params()->vector_params->WolbachiaInfectionModification;
-            }
-            float prob_infected = species()->acquiremod * x_infectionWolbachia * host_infectivity / probSuccessfulFeed;
+            float prob_infected = host_infectivity * modifier / probSuccessfulFeed;
 
             num_infected = uint32_t( m_context->GetRng()->binomial_approx( numHumanFeed, prob_infected ) );
         }
@@ -708,8 +1200,43 @@ namespace Kernel
         return num_infected;
     }
 
+    float VectorPopulation::GetDiseaseAcquisitionModifier( IVectorCohort* cohort )
+    {
+        //Wolbachia related impacts on infection susceptibility
+        float from_wolbachia = 1.0;
+        if( cohort->HasWolbachia() )
+        {
+            from_wolbachia = params()->WolbachiaInfectionModification;
+        }
+
+        int strain_index = cohort->GetGenome().GetMicrosporidiaStrainIndex();
+        float duration = cohort->GetDurationOfMicrosporidia();
+        float from_microsporidia = m_species_params->microsporidia_strains[ strain_index ]->disease_acquisition_modifier.getValueLinearInterpolation( duration, 1.0 );
+
+        float from_genetic_trait = this->m_species_params->trait_modifiers.GetModifier( VectorTrait::INFECTED_BY_HUMAN, cohort->GetGenome() );
+
+        float total_modifier = species()->acquiremod * from_wolbachia * from_microsporidia * from_genetic_trait;
+
+        return total_modifier;
+    }
+
+    float VectorPopulation::GetDiseaseTransmissionModifier( IVectorCohort* cohort )
+    {
+        int strain_index = cohort->GetGenome().GetMicrosporidiaStrainIndex();
+        float duration = cohort->GetDurationOfMicrosporidia();
+        float from_microsporidia = m_species_params->microsporidia_strains[ strain_index ]->disease_transmission_modifier.getValueLinearInterpolation( duration, 1.0 );
+
+        float from_genetic_trait = m_species_params->trait_modifiers.GetModifier( VectorTrait::TRANSMISSION_TO_HUMAN, cohort->GetGenome() );
+
+        float total_modifier = from_microsporidia * from_genetic_trait;
+
+        return total_modifier;
+    }
+
     float VectorPopulation::CalculateEggBatchSize( IVectorCohort* cohort )
     {
+        float fecundity_modifier = m_species_params->trait_modifiers.GetModifier( VectorTrait::FECUNDITY, cohort->GetGenome() );
+
         // Oocysts, not sporozoites affect egg batch size:
         // Hogg, J. C. and H. Hurd (1997). 
         //    "The effects of natural Plasmodium falciparum infection on the fecundity
@@ -717,23 +1244,18 @@ namespace Kernel
         // Parasitology 114(04): 325-331.
         float x_infectedeggbatchmod = (cohort->GetState() == VectorStateEnum::STATE_INFECTED) ? float( species()->infectedeggbatchmod ) : 1.0f;
 
-        float egg_batch_size = species()->eggbatchsize * x_infectedeggbatchmod;
+        float egg_batch_size = species()->eggbatchsize * x_infectedeggbatchmod * fecundity_modifier;
 
         return egg_batch_size;
     }
 
-    void VectorPopulation::GenerateEggs( uint32_t numFeedHuman,
-                                         uint32_t numFeedAD,
-                                         uint32_t numFeedAnimal,
-                                         IVectorCohort* cohort )
+    void VectorPopulation::StartGestating( uint32_t numFed, IVectorCohort* cohort )
     {
-        float egg_batch_size = CalculateEggBatchSize( cohort );
-
-        uint32_t num_feed = numFeedHuman + numFeedAD + numFeedAnimal;
+        num_fed_counter += numFed;
 
         // -----------------------------------------------------------------------------------------------------
         // --- Since the duration is likely to be a non-integer, we want to have some portion of the
-        // --- vectors lay their eggs on day1 (the truncated day) and the rest on day 2 (truncated day plus 1).
+        // --- vectors finish gestating on day1 (the truncated day) and the rest on day 2 (truncated day plus 1).
         // --- This should simulate how the individual vectors will randomly make this same decision.
         // -----------------------------------------------------------------------------------------------------
         float feeding_duration = GetFeedingCycleDuration();
@@ -743,124 +1265,234 @@ namespace Kernel
 
         float feeding_day2_percent = feeding_duration - uint32_t( feeding_duration );
 
-        uint32_t num_feed_day2 = m_context->GetRng()->binomial_approx( num_feed, feeding_day2_percent );
-        uint32_t num_feed_day1 = num_feed - num_feed_day2;
+        uint32_t num_fed_day2 = m_context->GetRng()->binomial_approx( numFed, feeding_day2_percent );
+        release_assert( numFed >= num_fed_day2 );
+        uint32_t num_fed_day1 = numFed - num_fed_day2;
 
-        uint32_t num_eggs_day1 = uint32_t( egg_batch_size * float( num_feed_day1 ) );
-        uint32_t num_eggs_day2 = uint32_t( egg_batch_size * float( num_feed_day2 ) );
+        release_assert( numFed == (num_fed_day1 + num_fed_day2) );
+        release_assert( day1 != day2 );
+        cohort->AddNewGestating( day1, num_fed_day1 );
+        cohort->AddNewGestating( day2, num_fed_day2 );
 
-        cohort->AddNewEggs( day1, num_eggs_day1 );
-        cohort->AddNewEggs( day2, num_eggs_day2 );
+        UpdateGestatingCount( cohort );
     }
 
-    void VectorPopulation::AdjustEggsForDeath( IVectorCohort* cohort, uint32_t numDied )
+    void VectorPopulation::AddEggsToLayingQueue( IVectorCohort* cohort, uint32_t numDoneGestating )
     {
-        cohort->AdjustEggsForDeath( numDied );
+        if( cohort->HasMated() )
+        {
+            float egg_batch_size = CalculateEggBatchSize( cohort );
+            uint32_t num_eggs = uint32_t( egg_batch_size * float( numDoneGestating ) );
+
+            VectorMatingGenome vmg( std::make_pair( cohort->GetGenome().GetBits(), cohort->GetMateGenome().GetBits() ) );
+            neweggs += num_eggs;
+            gender_mating_eggs[ vmg ] += num_eggs;
+
+            LOG_DEBUG_F( "adding %d eggs to vector genome bits %lld-%lld.  current total=%d\n",
+                         num_eggs,
+                         cohort->GetGenome().GetBits(),
+                         cohort->GetMateGenome().GetBits(),
+                         gender_mating_eggs[ vmg ] );
+        }
     }
 
-    void VectorPopulation::AddEggsToLayingQueue( IVectorCohort* cohort, uint32_t num_eggs )
+    VectorPopulation::IndoorOutdoorResults 
+    VectorPopulation::ProcessIndoorOutdoorFeeding( const VectorPopulation::IndoorOutdoorProbabilities& rProbs,
+                                                   float probHumanFeed,
+                                                   uint32_t attemptToFeed,
+                                                   IVectorCohort* cohort,
+                                                   TransmissionRoute::Enum routeHumanToVector,
+                                                   TransmissionRoute::Enum routeVectorToHuman )
     {
-        neweggs += num_eggs;
-        gender_mating_eggs[ cohort->GetVectorGenetics().GetIndex() ] += num_eggs;
+        IndoorOutdoorResults results;
 
-        LOG_DEBUG_F( "adding %d eggs to vector genetics index %d.  current total=%d\n",
-                     num_eggs,
-                     cohort->GetVectorGenetics().GetIndex(),
-                     gender_mating_eggs[ cohort->GetVectorGenetics().GetIndex() ] );
+        if( attemptToFeed == 0 ) return results;
+
+        uint32_t orig_attemptToFeed = attemptToFeed;
+
+        // --------------------------------
+        // --- Feeding Branch Subset
+        // --- These probabilities are impacted by the individual-level interventions.
+        // --- The results outside this method are impacted by the node-level interventions.
+        // --- successful_feed_human shoule be 1.0 at this point.  Hence, all of those attempting
+        // --- to feed should feed.
+        // --------------------------------
+        uint32_t ad_feed          = CalculatePortionInProbability( attemptToFeed, rProbs.successful_feed_ad    );
+        uint32_t died_before_feed = CalculatePortionInProbability( attemptToFeed, rProbs.die_before_feeding    );
+        uint32_t not_feed         = CalculatePortionInProbability( attemptToFeed, rProbs.not_available         );
+        uint32_t died_during_feed = CalculatePortionInProbability( attemptToFeed, rProbs.die_during_feeding    );
+        uint32_t died_after_feed  = CalculatePortionInProbability( attemptToFeed, rProbs.die_after_feeding     );
+        uint32_t human_feed       = CalculatePortionInProbability( attemptToFeed, rProbs.successful_feed_human );
+
+        num_attempt_but_not_feed += not_feed;
+
+        static StrainIdentity fake_strain;
+
+        results.num_died             = (died_before_feed + died_during_feed + died_after_feed);
+        results.num_fed_ad           = ad_feed;
+        results.num_fed_human        = human_feed;
+        results.num_bites_total      = (died_during_feed + died_after_feed + human_feed); // used for human biting rate
+        results.num_bites_infectious = VectorToHumanTransmission( cohort,
+                                                                  &fake_strain,
+                                                                  results.num_bites_total,
+                                                                  routeVectorToHuman );
+
+        // some successful feeds result in infected adults
+        // NOTE: we only care about the vectors that survive
+        results.num_infected = CalculateHumanToVectorInfection( routeHumanToVector,
+                                                                cohort,
+                                                                probHumanFeed,
+                                                                results.num_fed_human );
+
+        release_assert( orig_attemptToFeed >= (results.num_died + results.num_fed_ad + results.num_fed_human + not_feed) );
+        release_assert( orig_attemptToFeed >= results.num_bites_total );
+        release_assert( results.num_bites_total >= results.num_bites_infectious );
+        release_assert( results.num_fed_human >= results.num_infected );
+
+        return results;
     }
 
     uint32_t VectorPopulation::ProcessFeedingCycle( float dt, IVectorCohort* cohort )
     {
         if( cohort->GetPopulation() <= 0 )
             return 0;
+        uint32_t population_before_deaths = cohort->GetPopulation();
 
         FeedingProbabilities feed_probs = CalculateFeedingProbabilities( dt, cohort );
 
-        uint32_t remaining_pop = cohort->GetPopulation();
+        // -----------------------------------------------------------
+        // --- Head of both Feeding and Non-Feeding Branches
+        // --- Some portion of the total population should die due to
+        // --- life expectancy, dry heat mortality, etc
+        // -----------------------------------------------------------
+        uint32_t died_local_mortality = cohort->AdjustGestatingForDeath( m_context->GetRng(), feed_probs.die_local_mortality, false ); // i.e. life expectancy
 
-        uint32_t died_without_feeding   = CalculatePortionInProbability( true,  remaining_pop, feed_probs.die_without_attempting_to_feed  );
+        AddEggsToLayingQueue( cohort, cohort->RemoveNumDoneGestating() );
 
-        AdjustEggsForDeath( cohort, died_without_feeding );
-        AddEggsToLayingQueue( cohort, cohort->GetGestatedEggs() );
+        // ------------------------------------------------------------------
+        // --- Non-Feeding Branch Continued
+        // --- Of those that are NOT looking to feed, some might die due to
+        // --- interventions that target non-feeding vectors
+        // ------------------------------------------------------------------
+        uint32_t died_without_feeding = cohort->AdjustGestatingForDeath( m_context->GetRng(), feed_probs.die_without_attempting_to_feed, true ); //contains ever day sugar trap killing
 
-        uint32_t died_before_feeding    = CalculatePortionInProbability( true,  remaining_pop, feed_probs.die_before_human_feeding        );
-        uint32_t successful_animal_feed = CalculatePortionInProbability( false, remaining_pop, feed_probs.successful_feed_animal          );
-        uint32_t successful_AD_feed     = CalculatePortionInProbability( false, remaining_pop, feed_probs.successful_feed_artifical_diet  );
-        uint32_t attempt_feed_indoor    = CalculatePortionInProbability( false, remaining_pop, feed_probs.successful_feed_attempt_indoor  );
-        uint32_t attempt_feed_outdoor   = CalculatePortionInProbability( false, remaining_pop, feed_probs.successful_feed_attempt_outdoor );
+        // --------------------------------------------------------
+        // --- Feeding Branch Continued
+        // --- Now, we are only considering those vectors that are
+        // --- looking to feed (i.e. a blood meal)
+        // --------------------------------------------------------
+        uint32_t looking_to_feed = cohort->GetNumLookingToFeed();
+        num_looking_to_feed += looking_to_feed;
+        num_gestating_begin += cohort->GetNumGestating();
 
-        // update human biting rate
-        indoorbites  += attempt_feed_indoor;
-        outdoorbites += attempt_feed_outdoor;
+        uint32_t died_sugar_feeding     = CalculatePortionInProbability( looking_to_feed, feed_probs.die_sugar_feeding               ); // every day/feed
+        uint32_t died_before_feeding    = CalculatePortionInProbability( looking_to_feed, feed_probs.die_before_human_feeding        );
+        uint32_t successful_animal_feed = CalculatePortionInProbability( looking_to_feed, feed_probs.successful_feed_animal          );
+        uint32_t successful_AD_feed     = CalculatePortionInProbability( looking_to_feed, feed_probs.successful_feed_artifical_diet  );
+        uint32_t attempt_feed_indoor    = CalculatePortionInProbability( looking_to_feed, feed_probs.successful_feed_attempt_indoor  );
+        uint32_t attempt_feed_outdoor   = CalculatePortionInProbability( looking_to_feed, feed_probs.successful_feed_attempt_outdoor );
+        LOG_VALID_F("looking_to_feed=%u , died_before_feeding=%u, successful_animal_feed=%u , attempt_feed_indoor=%u , attempt_feed_outdoor=%u  \n", 
+            cohort->GetNumLookingToFeed(), 
+            died_before_feeding,
+            successful_animal_feed,
+            attempt_feed_indoor,
+            attempt_feed_outdoor);
 
-        // for the infectious cohort, need to update infectious bites
-        indoorinfectiousbites  += VectorToHumanTransmission( cohort, attempt_feed_indoor,  TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_INDOOR );
-        outdoorinfectiousbites += VectorToHumanTransmission( cohort, attempt_feed_outdoor, TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_OUTDOOR );
+        // NOTE: looking_to_feed could be non-zero at this point because
+        // VectorProbabilites::survivewithoutsuccessfulfeed is non-zero
+        // due to something like SpatialRepellent
+        num_attempt_but_not_feed += looking_to_feed;
+        num_attempt_feed_indoor  += attempt_feed_indoor;
+        num_attempt_feed_outdoor += attempt_feed_outdoor;
+
+        float prob_human_feed_indoor  = probs()->indoor_successfulfeed_human.GetValue( m_SpeciesIndex, cohort->GetGenome() );
+        float prob_human_feed_outdoor = probs()->outdoor_successfulfeed_human.GetValue( m_SpeciesIndex, cohort->GetGenome() );
 
         // indoor feeds
-        uint32_t died_indoor = 0;
-        uint32_t feed_indoor = 0;
-        uint32_t infected_indoor = 0;
-        if( attempt_feed_indoor > 0 )
+        IndoorOutdoorResults indoor_results = ProcessIndoorOutdoorFeeding( feed_probs.indoor,
+                                                                           prob_human_feed_indoor,
+                                                                           attempt_feed_indoor, 
+                                                                           cohort, 
+                                                                           TransmissionRoute::TRANSMISSIONROUTE_HUMAN_TO_VECTOR_INDOOR,
+                                                                           TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_INDOOR );
+
+        successful_AD_feed    += indoor_results.num_fed_ad;
+        // should mosquito weight be in here?
+        indoorbites           += float( indoor_results.num_bites_total );
+        indoorinfectiousbites += float( indoor_results.num_bites_infectious );
+
+        IndoorOutdoorResults outdoor_results = ProcessIndoorOutdoorFeeding( feed_probs.outdoor,
+                                                                            prob_human_feed_outdoor,
+                                                                            attempt_feed_outdoor, 
+                                                                            cohort, 
+                                                                            TransmissionRoute::TRANSMISSIONROUTE_HUMAN_TO_VECTOR_OUTDOOR,
+                                                                            TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_OUTDOOR );
+
+        // should mosquito weight be in here?
+        outdoorbites           += float( outdoor_results.num_bites_total );
+        outdoorinfectiousbites += float( outdoor_results.num_bites_infectious );
+
+        // cast to int32_t because LOG_VALID_F (varargs) was doing something weird with the unsigned integers
+        LOG_VALID_F("Update Female Deaths cohort_id=%d, population_before_deaths=%d,  age=%f , died_before_feeding=%d, died_feed_related=%d microsporidia=%d \n",
+                     int32_t(cohort->GetID()),
+                     int32_t(population_before_deaths),
+                     cohort->GetAge(),
+                     int32_t(died_local_mortality + died_without_feeding + died_sugar_feeding + died_before_feeding),
+                     int32_t(indoor_results.num_died + outdoor_results.num_died),
+                     cohort->HasMicrosporidia() );
+        // -------------------------
+        // --- Update death counters
+        // -------------------------
+        dead_mosquitoes_before  += died_local_mortality + died_without_feeding + died_sugar_feeding + died_before_feeding;
+        dead_mosquitoes_indoor  += indoor_results.num_died;
+        dead_mosquitoes_outdoor += outdoor_results.num_died;
+
+        uint32_t num_total_died = died_local_mortality
+                                + died_without_feeding
+                                + died_sugar_feeding
+                                + died_before_feeding
+                                + indoor_results.num_died
+                                + outdoor_results.num_died;
+        UpdateAgeAtDeath( cohort, num_total_died );
+
+        // ---------------------
+        // --- Adjust Population
+        // ---------------------
+        // died_local_mortality & died_without_feeding have already been subtracted from the population
+        if( m_VectorMortality )
         {
-            died_indoor         = CalculatePortionInProbability( true,  attempt_feed_indoor, feed_probs.die_indoor                            );
-            successful_AD_feed += CalculatePortionInProbability( false, attempt_feed_indoor, feed_probs.successful_feed_artifical_diet_indoor );
-            feed_indoor         = CalculatePortionInProbability( false, attempt_feed_indoor, feed_probs.successful_feed_human_indoor          );
-
-            // some successful feeds result in infected adults
-            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            // !!! NOTE: no infectious correction as in outdoor !!!
-            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            float prob_feed = probs()->indoor_successfulfeed_human;
-
-            infected_indoor = CalculateHumanToVectorInfection( TransmissionRoute::TRANSMISSIONROUTE_HUMAN_TO_VECTOR_INDOOR,
-                                                               cohort,
-                                                               prob_feed,
-                                                               feed_indoor );
+            uint32_t num_died = died_sugar_feeding + died_before_feeding + indoor_results.num_died + outdoor_results.num_died;
+            cohort->SetPopulation( cohort->GetPopulation() - num_died );
+        }
+        else
+        {
+            // When not killing the vectors, we want to reset the population to what it was before
+            cohort->SetPopulation( cohort->GetPopulation() + died_local_mortality + died_without_feeding );
         }
 
-        // outdoor feeds
-        uint32_t died_outdoor = 0;
-        uint32_t feed_outdoor = 0;
-        uint32_t infected_outdoor = 0;
-        if( attempt_feed_outdoor > 0 )
-        {
-            died_outdoor = CalculatePortionInProbability( true,  attempt_feed_outdoor, feed_probs.die_outdoor                   );
-            feed_outdoor = CalculatePortionInProbability( false, attempt_feed_outdoor, feed_probs.successful_feed_human_outdoor );
+        // ---------------------------------------------------------------------------------
+        // --- Remove those that are infected so that the num_infected becomes a new cohort
+        // ---------------------------------------------------------------------------------
+        uint32_t num_infected = indoor_results.num_infected + outdoor_results.num_infected;
+        indoor_results.num_fed_human  -= indoor_results.num_infected;
+        outdoor_results.num_fed_human -= outdoor_results.num_infected;
 
-            // some successful feeds result in infected adults
-            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            // !!! NOTE: infectious correction in outdoor but not indoor !!!
-            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            float x_infectiouscorrection = (cohort->GetState() == VectorStateEnum::STATE_INFECTIOUS) ? float( infectiouscorrection ) : 1.0f;
+        cohort->SetPopulation( cohort->GetPopulation() - num_infected );
 
-            float prob_feed = (1.0f - probs()->outdoor_returningmortality) * probs()->outdoor_successfulfeed_human * x_infectiouscorrection;
+        // -----------------------------------------
+        // --- Start those that fed to be gestating
+        // -----------------------------------------
+        uint32_t successful_human_feed = indoor_results.num_fed_human + outdoor_results.num_fed_human;
+        uint32_t num_fed = successful_human_feed + successful_AD_feed + successful_animal_feed;
+        StartGestating( num_fed, cohort );
 
-            infected_outdoor = CalculateHumanToVectorInfection( TransmissionRoute::TRANSMISSIONROUTE_HUMAN_TO_VECTOR_OUTDOOR,
-                                                                cohort,
-                                                                prob_feed,
-                                                                feed_outdoor );
-        }
-
-        // adjust population
-        dead_mosquitoes_before  += died_without_feeding + died_before_feeding;
-        dead_mosquitoes_indoor  += died_indoor;
-        dead_mosquitoes_outdoor += died_outdoor;
-
-        uint32_t num_dead = died_without_feeding + died_before_feeding + died_indoor + died_outdoor;
-        cohort->SetPopulation( cohort->GetPopulation() - num_dead );
-
-        // Generate eggs for laying
-        uint32_t successful_human_feed = feed_indoor + feed_outdoor;
-        GenerateEggs( successful_human_feed, successful_AD_feed, successful_animal_feed, cohort );
-
-        return (infected_indoor + infected_outdoor);
+        return num_infected;
     }
 
     float VectorPopulation::GetFeedingCycleDuration() const
     {
         float mean_cycle_duration = species()->daysbetweenfeeds;
-        if( params()->vector_params->temperature_dependent_feeding_cycle != TemperatureDependentFeedingCycle::NO_TEMPERATURE_DEPENDENCE )
+        if( species()->temperature_dependent_feeding_cycle != TemperatureDependentFeedingCycle::NO_TEMPERATURE_DEPENDENCE )
         {
             // Temperature-dependent gonotrophic cycle duration:
             // (1) Hoshen MB and Morse AP.
@@ -879,11 +1511,11 @@ namespace Kernel
 
             // Whole temperature-dependent distribution can be shifted by changing
             // "Days_Between_Feeds" parameter, which is always the value at 30 degrees C.
-            if (params()->vector_params->temperature_dependent_feeding_cycle == TemperatureDependentFeedingCycle::BOUNDED_DEPENDENCE)
+            if ( species()->temperature_dependent_feeding_cycle == TemperatureDependentFeedingCycle::BOUNDED_DEPENDENCE)
             {
                 mean_cycle_duration = (airtemp > 15) ? 1.0f + 37.0f * ( (species()->daysbetweenfeeds - 1.0f) / 2.0f ) / ( airtemp - 11.5f ) : 10.0f;
             }
-            else if (params()->vector_params->temperature_dependent_feeding_cycle == TemperatureDependentFeedingCycle::ARRHENIUS_DEPENDENCE)
+            else if ( species()->temperature_dependent_feeding_cycle == TemperatureDependentFeedingCycle::ARRHENIUS_DEPENDENCE)
             {
                 mean_cycle_duration = 1/( species()->cyclearrhenius1 * exp(-species()->cyclearrhenius2 / (airtemp + CELSIUS_TO_KELVIN)) );// * dt;  ( 4.090579e+10 * exp(-7.740230e+03 / (airtemp + CELSIUS_TO_KELVIN)) );
             }
@@ -891,8 +1523,8 @@ namespace Kernel
             {
                 throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__,
                     "Unknown Temperature_Dependent_Feeding_Cycle in GetFeedingCycleDuration()",
-                    params()->vector_params->temperature_dependent_feeding_cycle, 
-                    TemperatureDependentFeedingCycle::pairs::lookup_key( params()->vector_params->temperature_dependent_feeding_cycle ) );
+                    species()->temperature_dependent_feeding_cycle,
+                    TemperatureDependentFeedingCycle::pairs::lookup_key( species()->temperature_dependent_feeding_cycle ) );
             }
 
             LOG_VALID_F("Mean gonotrophic cycle duration = %0.5f days at %0.2f degrees C.\n", mean_cycle_duration, airtemp);
@@ -902,267 +1534,572 @@ namespace Kernel
 
     void VectorPopulation::Update_Immature_Queue( float dt )
     {
-        // calculate local mortality, includes outdoor area killling
-        float p_local_mortality = GetLocalAdultMortalityProbability( dt, nullptr );
-        p_local_mortality = p_local_mortality + (1.0f - p_local_mortality) * probs()->outdoorareakilling;
-
-        // Use the verbose "for" construct here because we may be modifying the list
-        for( size_t iCohort = 0; iCohort < ImmatureQueues.size(); /* increment in loop */ )
+        for( auto cohort : ImmatureQueues )
         {
-            IVectorCohort* cohort = ImmatureQueues[ iCohort ];
-
             // introduce climate dependence here if we can figure it out
-            cohort->IncreaseProgress( dt * species()->immaturerate );
+            cohort->Update( m_context->GetRng(), dt, species()->trait_modifiers, dt * species()->immaturerate, cohort->HasMicrosporidia() );
 
             if( m_VectorMortality )
             {
+                // calculate local mortality, includes outdoor area killling
+                float p_local_mortality = GetLocalMatureMortalityProbability( dt, cohort );
+                float outdoor_killing = probs()->outdoorareakilling.GetValue( m_SpeciesIndex, cohort->GetGenome() );
+                p_local_mortality = p_local_mortality + (1.0f - p_local_mortality) * outdoor_killing;
+
                 uint32_t die = uint32_t( m_context->GetRng()->binomial_approx( cohort->GetPopulation(), p_local_mortality ) );
                 cohort->SetPopulation( cohort->GetPopulation() - die );
             }
+            LOG_VALID_F("Update_Immature_Queue cohort_id=%u progress=%f sex=%d population=%u. \n",
+                         cohort->GetID(), cohort->GetProgress(), cohort->GetGenome().GetGender(), cohort->GetPopulation());
+        }
+        // ----------------------------------------------------------------------
+        // --- We need to add the males separately from the females so that
+        // --- the number of males is constant while we are figuring out which
+        // --- portion of females are mating with which males.
+        // --- We could probably add the females first but it makes more sense for
+        // --- the females to mate with the males that will be current at the
+        // --- end of the timestep.
+        // ----------------------------------------------------------------------
+        CheckProgressionToAdultForMales();
+        CheckProgressionToAdultForFemales();
+    }
 
-            if (cohort->GetProgress() >= 1 || cohort->GetPopulation() <= 0)
+    void VectorPopulation::CheckProgressionToAdultForMales()
+    {
+        // Use the verbose "for" construct here because we may be modifying the list
+        for( auto it = ImmatureQueues.begin(); it != ImmatureQueues.end(); ++it )
+        {
+            IVectorCohort* cohort = *it;
+
+            if( cohort->GetGenome().GetGender() != VectorGender::VECTOR_MALE )
             {
-                bool delete_cohort = true;
-                if (cohort->GetPopulation() > 0) // corrected in case of too long a time step
-                {
-                    // female or male?
-                    if (cohort->GetVectorGenetics().GetGender() == VectorGender::VECTOR_FEMALE) //female
-                    {
-                        // new mating calculations
-                        if(gender_mating_males.empty() || males == 0)// no males listed, so stay immature 
-                        {
-                            ++iCohort;
-                            continue;
-                        }
-                        else if(gender_mating_males.size() == 1)// just one type of males, so all females mate with that type
-                        {
-                            AddAdultsFromMating( gender_mating_males.begin()->first,
-                                                 cohort->GetVectorGenetics().GetIndex(),
-                                                 cohort->GetPopulation() );
-                        }
-                        else
-                        {
-                            // now iterate over all males, there will be a slight rounding error
-                            for (auto& maletypes : gender_mating_males)
-                            {
-                                float currentProbability = float(maletypes.second)/males;
-                                uint32_t matedPop = uint32_t( currentProbability * float(cohort->GetPopulation()) );
+                continue;
+            }
 
-                                AddAdultsFromMating( maletypes.first, 
-                                                     cohort->GetVectorGenetics().GetIndex(),
-                                                     matedPop );
-                            }
-                        }
-                    }
-                    else // male
-                    {
-                        cohort->SetState( VectorStateEnum::STATE_MALE );
-                        queueIncrementTotalPopulation( cohort );//update counter
-                        MergeProgressedCohortIntoCompatibleQueue( MaleQueues, cohort, 0.0 );
-                        delete_cohort = false;
-                    }
-                }// new adults of age 0
+            if( (cohort->GetProgress() >= 1) && (cohort->GetPopulation() > 0) )
+            {
+                ImmatureSugarTrapKilling( cohort );
+            }
 
-                ImmatureQueues[ iCohort ] = ImmatureQueues.back();
-                ImmatureQueues.pop_back();
-                if( delete_cohort )
-                {
-                    delete cohort;
-                }
-                // !! Don't increment iCohort. !!
+            if( (cohort->GetProgress() >= 1) && (cohort->GetPopulation() > 0) )
+            {
+                cohort->SetState( VectorStateEnum::STATE_MALE );
+                queueIncrementTotalPopulation( cohort );
+
+                MaleQueues.add( cohort, 0.0, true ); //deletes cohort
+                ImmatureQueues.remove( it );
+            }
+            else if( cohort->GetPopulation() <= 0 )
+            {
+                ImmatureQueues.remove( it );
+                delete cohort;
             }
             else
             {
-                ++iCohort;
+                queueIncrementTotalPopulation( cohort );//update counter
             }
         }
+        ImmatureQueues.compact();
     }
 
-    void VectorPopulation::AddAdultsFromMating( const VectorGeneticIndex_t& rVgiMale,
-                                                const VectorGeneticIndex_t& rVgiFemle,
-                                                uint32_t pop )
+    void VectorPopulation::CheckProgressionToAdultForFemales()
     {
-        IVectorCohort* temp_cohort = VectorCohort::CreateCohort( VectorStateEnum::STATE_ADULT, 0.0, 0, pop, rVgiFemle, &species_ID );
-        ApplyMatingGenetics( temp_cohort, VectorMatingStructure( rVgiMale ) );
-        queueIncrementTotalPopulation( temp_cohort );
-        new_adults += temp_cohort->GetPopulation();
-        MergeProgressedCohortIntoCompatibleQueue( AdultQueues, temp_cohort, 0.0 );
-    }
+        InitializeMaleMatingCDF();
 
+        VectorGenome unmated;
 
-    void VectorPopulation::ApplyMatingGenetics( IVectorCohort* cohort, const VectorMatingStructure& male_vector_genetics )
-    {
-        // (1) Determine female fertility
-        if( cohort->GetVectorGenetics().GetSterility() == VectorSterility::VECTOR_STERILE )
+        // Use the verbose "for" construct here because we may be modifying the list
+        for( auto it = ImmatureQueues.begin(); it != ImmatureQueues.end(); ++it )
         {
-            // Already sterile
-        }
-        else if( male_vector_genetics.GetSterility() == VectorSterility::VECTOR_STERILE )
-        {
-            // Female mated with a sterile male
-            cohort->GetVectorGenetics().SetSterility(VectorSterility::VECTOR_STERILE);
-        }
-        else if( !VectorMatingStructure::WolbachiaCompatibleMating(cohort->GetVectorGenetics().GetWolbachia(), male_vector_genetics.GetWolbachia()) )
-        {
-            // Cytoplasmic incompatibility due to differing Wolbachia infections
-            cohort->GetVectorGenetics().SetSterility(VectorSterility::VECTOR_STERILE);
-        }
+            IVectorCohort* cohort = *it;
 
-        // (2) Wolbachia retains female type
-        
-        // (3) Solve for pesticide resistance of mating
-        cohort->GetVectorGenetics().SetPesticideResistance( cohort->GetVectorGenetics().GetPesticideResistance().first, male_vector_genetics.GetPesticideResistance().first );
-
-        // (4) Finally define mated HEGs case
-        cohort->GetVectorGenetics().SetHEG( cohort->GetVectorGenetics().GetHEG().first, male_vector_genetics.GetHEG().first );
-    }
-
-    // Seek a compatible (same gender-mating type) queue in specified list (e.g. AdultQueues, InfectiousQueues) and increase its population.
-    // EAW: If we have to do this a lot, then we might consider a different type of container (e.g. map instead of vector).
-#if 1
-    void VectorPopulation::MergeProgressedCohortIntoCompatibleQueue( VectorCohortVector_t &queues, IVectorCohort* pvc, float progressThisTimestep )
-    {
-        // -----------------------------------------------------------------------
-        // --- Select the cohort that is within a time step of an existing cohort.
-        // --- i.e. +/- half a day
-        // -----------------------------------------------------------------------
-        float delta_progress = progressThisTimestep * 0.5 ;
-
-        VectorCohortVector_t::iterator it = std::find_if( queues.begin(),
-                                                          queues.end(),
-                                                          [pvc, delta_progress ](IVectorCohort* cohort)
-                                                          {
-                                                              return (cohort->GetState()          == pvc->GetState()         ) &&
-                                                                     (cohort->GetVectorGenetics() == pvc->GetVectorGenetics()) &&
-                                                                     (cohort->GetAge()            == pvc->GetAge()           ) &&
-                                                                     ((cohort->GetProgress() - delta_progress) <= pvc->GetProgress()) &&
-                                                                     (pvc->GetProgress() <= (cohort->GetProgress() + delta_progress));
-                                                          } );
-        if (it != queues.end())
-        {
-            (*it)->Merge( pvc );
-            delete pvc;
-        }
-        else
-        {
-            LOG_DEBUG_F("Creating new '%s' VectorCohort with population %d for type: %s, %s, %s, pesticide-resistance: %s-%s, HEG: %s-%s. \n", species_ID.c_str(), pvc->GetPopulation(),
-                VectorGender::pairs::lookup_key(    pvc->GetVectorGenetics().GetGender() ),
-                VectorSterility::pairs::lookup_key( pvc->GetVectorGenetics().GetSterility() ),
-                VectorWolbachia::pairs::lookup_key( pvc->GetVectorGenetics().GetWolbachia() ),
-                VectorAllele::pairs::lookup_key(    pvc->GetVectorGenetics().GetPesticideResistance().first ),
-                VectorAllele::pairs::lookup_key(    pvc->GetVectorGenetics().GetPesticideResistance().second ),
-                VectorAllele::pairs::lookup_key(    pvc->GetVectorGenetics().GetHEG().first ),
-                VectorAllele::pairs::lookup_key(    pvc->GetVectorGenetics().GetHEG().second ) );
-
-            queues.push_back( pvc );
-        }
-    }
-#else
-    void VectorPopulation::MergeProgressedCohortIntoCompatibleQueue( VectorCohortVector_t &queues, IVectorCohort* pvc, float progressThisTimestep )
-    {
-        IVectorCohort* p_found_cohort = nullptr;
-        float min_delta_progress = progressThisTimestep;
-        for( auto cohort : queues )
-        {
-            float delta_progress = fabs( cohort->GetProgress() - pvc->GetProgress() );
-
-            if( (cohort->GetState() == pvc->GetState()) &&
-                (cohort->GetVectorGenetics() == pvc->GetVectorGenetics()) &&
-                (cohort->GetAge() == pvc->GetAge()) &&
-                (delta_progress <= min_delta_progress) )
+            if( cohort->GetGenome().GetGender() != VectorGender::VECTOR_FEMALE )
             {
-                p_found_cohort = cohort;
-                min_delta_progress = delta_progress;
+                continue;
+            }
 
-                // saves about 5% overall on queues that have no progress
-                if( min_delta_progress == 0.0 ) break;
+            if( cohort->GetProgress() < 1 )
+            {
+                //Update counter if still immature or no males to mate with
+                queueIncrementTotalPopulation( cohort );
+            }
+            else if( (cohort->GetPopulation() > 0) && (cohort->GetProgress() >= 1) )
+            {
+                ImmatureSugarTrapKilling( cohort );
+
+                // Move as many females to ADULT as there are males to mate with
+                AddAdultsAndMate( cohort, *pAdultQueues, true );
+
+                if( cohort->GetPopulation() > 0 )
+                {
+                    AddAdultCohort( cohort,
+                                    unmated,
+                                    cohort->GetPopulation(),
+                                    *pAdultQueues,
+                                    true );
+                }
+            }
+
+            if( cohort->GetPopulation() <= 0 )
+            {
+                ImmatureQueues.remove( it );
+                delete cohort;
+            }
+        }
+        ImmatureQueues.compact();
+    }
+
+    bool VectorPopulation::IsSugarTrapKillingEnabled()
+    {
+        VectorSugarFeeding::Enum vsf = species()->vector_sugar_feeding;
+
+        bool is_sugar_trap_killing_enabled = ( (vsf == VectorSugarFeeding::VECTOR_SUGAR_FEEDING_ON_EMERGENCE_ONLY) ||
+                                               (vsf == VectorSugarFeeding::VECTOR_SUGAR_FEEDING_EVERY_FEED       ) ||
+                                               (vsf == VectorSugarFeeding::VECTOR_SUGAR_FEEDING_EVERY_DAY        ) )
+                                            && probs()->is_using_sugar_trap;
+
+        return is_sugar_trap_killing_enabled;
+    }
+
+    float VectorPopulation::GetSugarTrapKilling( IVectorCohort* pCohort )
+    {
+        float sugar_trap_killing = 0.0;
+        if( IsSugarTrapKillingEnabled() )
+        {
+            sugar_trap_killing = probs()->sugarTrapKilling.GetValue( m_SpeciesIndex, pCohort->GetGenome() );
+
+        }
+        return sugar_trap_killing;
+    }
+
+    void VectorPopulation::ImmatureSugarTrapKilling( IVectorCohort* pCohort )
+    {
+        // -------------------------------------------------------------------------------------------
+        // --- now if sugar feeding exists every day or after each feed, and mortality is associated,
+        // --- then check for killing
+        // -------------------------------------------------------------------------------------------
+        float sugar_trap_killing = GetSugarTrapKilling( pCohort );
+        if( sugar_trap_killing > 0.0 )
+        {
+            uint32_t die = uint32_t( m_context->GetRng()->binomial_approx( pCohort->GetPopulation(), sugar_trap_killing ) );
+            pCohort->SetPopulation( pCohort->GetPopulation() - die );
+            if( pCohort->GetGenome().GetGender() == VectorGender::VECTOR_FEMALE )
+            {
+                dead_mosquitoes_before += die;
+            }
+        }
+    }
+
+    void VectorPopulation::InitializeMaleMatingCDF()
+    {
+        // ------------------------------------------------------------------------------
+        // --- Setup the m_MaleMatingCdf so that there is one entry for each male cohort
+        // --- and unmated_count_cdf is the cumulative count
+        // ------------------------------------------------------------------------------
+        m_MaleMatingCdf.clear();
+        m_UnmatedMaleTotal = 0;
+        for( auto p_male_cohort : this->MaleQueues )
+        {
+            MaleMatingCohort mmc( p_male_cohort, p_male_cohort->GetPopulation() );
+            m_UnmatedMaleTotal += mmc.unmated_count;
+            mmc.unmated_count_cdf = m_UnmatedMaleTotal;
+
+            m_MaleMatingCdf.push_back( mmc );
+        }
+    }
+
+    void VectorPopulation::UpdateMaleMatingCDF( std::vector<VectorPopulation::MaleMatingCohort>::iterator selected_it )
+    {
+        // -----------------------------------------------------------------------
+        // --- Deduct from the unmated_count since this cohort was selected.
+        // --- This means that this cohort and all of the other ones that follow
+        // --- need to have cumulative count deducted was well.
+        // -----------------------------------------------------------------------
+        release_assert( selected_it->unmated_count > 0 );
+        selected_it->unmated_count -= 1;
+
+        while( selected_it != m_MaleMatingCdf.end() )
+        {
+            selected_it->unmated_count_cdf -= 1;
+            ++selected_it;
+        }
+        m_UnmatedMaleTotal -= 1;
+    }
+
+    std::vector<VectorPopulation::MaleMatingCohort>::iterator VectorPopulation::SelectMaleMatingCohort()
+    {
+        // ---------------------------------------------------------------------------------------
+        // --- This must be called after InitializeMaleMatingCDF() and after UpdateMaleMatingCDF()
+        // ---------------------------------------------------------------------------------------
+        release_assert( m_UnmatedMaleTotal > 0 );
+
+        // ---------------------------------------------------------------
+        // --- Select a male cohort based on the cumulative unmated count.
+        // ---------------------------------------------------------------
+        uint32_t ran = uint32_t( round( m_context->GetRng()->e() * float(m_UnmatedMaleTotal) ) );
+        auto it = std::lower_bound( m_MaleMatingCdf.begin(), m_MaleMatingCdf.end(), ran, CompareMaleGenomeDist );
+        release_assert( it != m_MaleMatingCdf.end() );
+
+        // ------------------------------------------------------------------------------
+        // --- If lower_bound() selects a cohort where everyone has already mated, then
+        // --- find the next/nearby cohort that still has unmated males.
+        // ------------------------------------------------------------------------------
+        bool go_forward = it->unmated_count_cdf < m_UnmatedMaleTotal;
+        while( it->unmated_count == 0 )
+        {
+            if( go_forward )
+                ++it;
+            else
+                --it;
+        }
+        release_assert( it != m_MaleMatingCdf.end() );
+        release_assert( it->unmated_count > 0 );
+
+        return it;
+    }
+
+    bool VectorPopulation::CompareMaleGenomeDist( const VectorPopulation::MaleMatingCohort& rLeft, uint32_t val )
+    {
+        // -------------------------------------------------------------------------------------------------------
+        // --- NOTE: std::lowerbound() needs this to be strictly less than.  If the input to lowerbound() is equal
+        // --- to the max value, '<' allows this element to be chosen.
+        // -------------------------------------------------------------------------------------------------------
+        return rLeft.unmated_count_cdf < val;
+    }
+
+    void VectorPopulation::AddAdultsAndMate( IVectorCohort* pFemaleCohort,
+                                             VectorCohortCollectionAbstract& rQueue,
+                                             bool isNewAdult )
+    {
+        std::map<IVectorCohort*,uint32_t> microsporidia_infected_males[ MAX_MICROSPORIDIA_STRAINS ];
+
+        // 0 index no microsporidia, > 0 index implies has microsporidia
+        GenomeCountMap_t genome_to_count_map[ MAX_MICROSPORIDIA_STRAINS ]; 
+
+        uint32_t pop = pFemaleCohort->GetPopulation();
+        std::vector<uint32_t> num_females_newly_infected_with_microsporidia( MAX_MICROSPORIDIA_STRAINS, 0 );
+
+        for( uint32_t i = 0 ; (i < pop) && (m_UnmatedMaleTotal > 0); ++i )
+        {
+            auto it = SelectMaleMatingCohort();
+            release_assert( it->unmated_count > 0 );
+
+            IVectorCohort* p_male_cohort = it->p_cohort;
+            VectorGameteBitPair_t male_genome_bits = p_male_cohort->GetGenome().GetBits();
+
+            int female_ms_strain_index = pFemaleCohort->GetGenome().GetMicrosporidiaStrainIndex();
+            int male_ms_strain_index   = p_male_cohort->GetGenome().GetMicrosporidiaStrainIndex();
+
+            bool female_has_microsporidia = pFemaleCohort->HasMicrosporidia();
+            bool male_has_microsporidia   = p_male_cohort->HasMicrosporidia();
+
+            if( male_has_microsporidia && !female_has_microsporidia )
+            {
+                // Male infecting Female
+                float prob_transmission = m_species_params->microsporidia_strains[ male_ms_strain_index ]->male_to_female_transmission_probability;
+                if( m_context->GetRng()->SmartDraw( prob_transmission ) )
+                {
+                    female_has_microsporidia = true;
+                    female_ms_strain_index = male_ms_strain_index;
+                    ++num_females_newly_infected_with_microsporidia[ male_ms_strain_index ];
+                }
+            }
+            else if( !male_has_microsporidia && female_has_microsporidia )
+            {
+                // Female infecting Male
+                float prob_transmission = m_species_params->microsporidia_strains[ female_ms_strain_index ]->female_to_male_transmission_probability;
+                if( m_context->GetRng()->SmartDraw( prob_transmission ) )
+                {
+                    microsporidia_infected_males[ female_ms_strain_index ][ p_male_cohort ] += 1;
+
+                    // -----------------------------------------------------------------------------------
+                    // --- I'm having the female carry that the male was infected because it shows that
+                    // --- both parents were/became infected.  I also think that if this tends towards all
+                    // --- vectors getting infected, then this should cause the creation of fewer cohorts.
+                    // --- This also helps with male-to-egg transmission
+                    // -----------------------------------------------------------------------------------
+                    VectorGenome male_genome = p_male_cohort->GetGenome();
+                    male_genome.SetMicrosporidiaStrain( female_ms_strain_index );
+                    male_genome_bits = male_genome.GetBits();
+                }
+            }
+
+            // ---------------------------------------------------------------------------------------
+            // --- Keep a count of which females mated with which males and were infected with which
+            // --- strain of microsporidia.  We create cohorts later when we know how many are in each
+            // --- cohort.  Should reduce the number of cohorts created.
+            // ---------------------------------------------------------------------------------------
+            if( genome_to_count_map[ female_ms_strain_index ].count(male_genome_bits) == 0 )
+            {
+                genome_to_count_map[ female_ms_strain_index ][ male_genome_bits ] = 0;
+            }
+            genome_to_count_map[ female_ms_strain_index ][ male_genome_bits ] += 1;
+
+            UpdateMaleMatingCDF( it );
+        }
+
+        // ---------------------------------------------------------------------
+        // --- If some of the females got infected by the males, then split them
+        // --- off into a new cohort.  If the input female cohort was infected
+        // --- with microsporidia, then set the pointer to that cohort.
+        // ---------------------------------------------------------------------
+        std::vector<IVectorCohort*> female_cohort_list( MAX_MICROSPORIDIA_STRAINS, nullptr );
+        for( int strain_index = 0; strain_index < MAX_MICROSPORIDIA_STRAINS; ++strain_index )
+        {
+            if( num_females_newly_infected_with_microsporidia[ strain_index ] == 0 )
+            {
+                female_cohort_list[ strain_index ] = pFemaleCohort;
+            }
+            else
+            {
+                female_cohort_list[ strain_index ] = pFemaleCohort->SplitNumber( m_context->GetRng(),
+                                                                                 m_pNodeVector->GetNextVectorSuid().data,
+                                                                                 num_females_newly_infected_with_microsporidia[ strain_index ] );
+                release_assert( female_cohort_list[ strain_index ] != nullptr );
+        
+                female_cohort_list[ strain_index ]->InfectWithMicrosporidia( strain_index );
+            }
+        }
+        
+        // -----------------------------------------------------------------------------------------
+        // --- Create new female, mated cohorts paring the female cohort with the right
+        // --- collection of entries in genome_to_count_map. 0=no microsporidia, >0 = has microsporidia
+        // --- If pFemaleCohort was infected with microsporidia, the genome_to_count_map[ 0 ] should
+        // --- end up being empty. This seems like less code.
+        // -----------------------------------------------------------------------------------------
+        for( int strain_index = 0; strain_index < MAX_MICROSPORIDIA_STRAINS; ++strain_index )
+        {
+            IVectorCohort* p_cohort = female_cohort_list[ strain_index ];
+            for( auto entry : genome_to_count_map[ strain_index ] )
+            {
+                AddAdultCohort( p_cohort,
+                                VectorGenome(entry.first), //male genome
+                                entry.second,
+                                rQueue,
+                                isNewAdult );
+                if( p_cohort->GetPopulation() == 0 )
+                {
+                    break;
+                }
             }
         }
 
-        if( p_found_cohort != nullptr )
+        // ----------------------------------------------------------------------------
+        // --- Delete the cohort that was created for the females that got infected
+        // --- with microsporidia.  All of the vectors in the cohort should have mated
+        // --- and should exist in a new cohort.
+        // ----------------------------------------------------------------------------
+        for( auto p_cohort : female_cohort_list )
         {
-            p_found_cohort->Merge( pvc );
-            delete pvc;
+            if( (p_cohort != nullptr) && (p_cohort != pFemaleCohort) )
+            {
+                release_assert( p_cohort->GetPopulation() == 0 );
+                delete p_cohort;
+            }
+        }
+        female_cohort_list.clear();
+
+        // -----------------------------------------------------------
+        // --- Split off new Male cohorts infected with microsporidia
+        // -----------------------------------------------------------
+        for( int female_strain_index = 0; female_strain_index < MAX_MICROSPORIDIA_STRAINS; ++female_strain_index )
+        {
+            for( auto entry : microsporidia_infected_males[ female_strain_index ] )
+            {
+                IVectorCohort* p_new_cohort = entry.first->SplitNumber( m_context->GetRng(),
+                                                                        m_pNodeVector->GetNextVectorSuid().data,
+                                                                        entry.second );
+                release_assert( p_new_cohort != nullptr );
+                p_new_cohort->InfectWithMicrosporidia( female_strain_index );
+                MaleQueues.add( p_new_cohort, 0.0, true );
+            }
+        }
+
+        // -------------------------------------------------------------------------------------
+        // --- I don't think we need to udpate the m_MaleMatingCdf because during this timestep
+        // --- the newly infected male has just mated so can't mate again.
+        // -------------------------------------------------------------------------------------
+    }
+
+    void VectorPopulation::AddAdultCohort( IVectorCohort* pFemaleCohort,
+                                           const VectorGenome& rMaleGenome,
+                                           uint32_t pop,
+                                           VectorCohortCollectionAbstract& rQueue,
+                                           bool isNewAdult )
+    {
+        IVectorCohort* temp_cohort = nullptr;
+        if( isNewAdult )
+        {
+            temp_cohort = VectorCohort::CreateCohort( m_pNodeVector->GetNextVectorSuid().data,
+                                                      VectorStateEnum::STATE_ADULT,
+                                                      0.0,
+                                                      0.0,
+                                                      pFemaleCohort->GetDurationOfMicrosporidia(),
+                                                      pop,
+                                                      pFemaleCohort->GetGenome(),
+                                                      m_SpeciesIndex );
+            release_assert( pFemaleCohort->GetPopulation() >= pop );
+            pFemaleCohort->SetPopulation( pFemaleCohort->GetPopulation() - pop );
         }
         else
         {
-            LOG_DEBUG_F( "Creating new '%s' VectorCohort with population %d for type: %s, %s, %s, pesticide-resistance: %s-%s, HEG: %s-%s. \n", species_ID.c_str(), pvc->GetPopulation(),
-                         VectorGender::pairs::lookup_key( pvc->GetVectorGenetics().GetGender() ),
-                         VectorSterility::pairs::lookup_key( pvc->GetVectorGenetics().GetSterility() ),
-                         VectorWolbachia::pairs::lookup_key( pvc->GetVectorGenetics().GetWolbachia() ),
-                         VectorAllele::pairs::lookup_key( pvc->GetVectorGenetics().GetPesticideResistance().first ),
-                         VectorAllele::pairs::lookup_key( pvc->GetVectorGenetics().GetPesticideResistance().second ),
-                         VectorAllele::pairs::lookup_key( pvc->GetVectorGenetics().GetHEG().first ),
-                         VectorAllele::pairs::lookup_key( pvc->GetVectorGenetics().GetHEG().second ) );
+            temp_cohort = pFemaleCohort->SplitNumber( m_context->GetRng(), m_pNodeVector->GetNextVectorSuid().data, pop );
+            release_assert( temp_cohort != nullptr );
+        }
+        temp_cohort->SetMateGenome( rMaleGenome );
+        if( isNewAdult )
+        {
+            queueIncrementTotalPopulation( temp_cohort );
+            new_adults += temp_cohort->GetPopulation();
+        }
+        rQueue.add( temp_cohort, 0.0, true );
+    }
 
-            queues.push_back( pvc );
+    void VectorPopulation::AddReleasedCohort( VectorStateEnum::Enum state,
+                                              const VectorGenome& rFemaleGenome,
+                                              const VectorGenome& rMaleGenome,
+                                              uint32_t pop )
+    {
+        if( pop == 0 ) return;
+
+        float microsporidia_duration = 0.0;
+        if( rFemaleGenome.HasMicrosporidia() )
+        {
+            // Set value so that microsporidia is fully mature
+            microsporidia_duration = 1000.0;
+        }
+
+        VectorCohort* temp_cohort = VectorCohort::CreateCohort( m_pNodeVector->GetNextVectorSuid().data,
+                                                                state,
+                                                                0.0,
+                                                                0.0,
+                                                                microsporidia_duration,
+                                                                pop,
+                                                                rFemaleGenome,
+                                                                m_SpeciesIndex );
+        // if this is true, our vectors-to-be-released are mated and we're going to make them gestated
+        if (VectorGender::VECTOR_MALE == rMaleGenome.GetGender())
+        {
+            temp_cohort->SetMateGenome(rMaleGenome);
+            temp_cohort->AddNewGestating(1, pop); // setting them gestated and ready to lay
+            if (params()->vector_aging)
+            {
+                //setting age to days-between-feeds because gestated (see AddInitialCohort)
+                temp_cohort->SetAge(m_context->GetRng()->randomRound(GetFeedingCycleDuration())); 
+            }
+        }
+        switch( state )
+        {
+            case VectorStateEnum::STATE_INFECTIOUS:
+                m_ReleasedInfectious.push_back( temp_cohort );
+                break;
+            case VectorStateEnum::STATE_ADULT:
+                m_ReleasedAdults.push_back( temp_cohort );
+                break;
+            default:
+                throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__,
+                                                         "VectorStateEnum", state, EventType::pairs::lookup_key( state ) );
         }
     }
-#endif
+
+    void VectorPopulation::AddReleasedVectorsToQueues()
+    {
+        for( auto p_cohort : m_ReleasedInfectious )
+        {
+            new_adults += p_cohort->GetPopulation();
+
+            InfectiousQueues.add( p_cohort, 0.0, true );
+        }
+        m_ReleasedInfectious.clear();
+
+        for( auto p_cohort : m_ReleasedAdults )
+        {
+            new_adults += p_cohort->GetPopulation();
+
+            pAdultQueues->add( p_cohort, 0.0, true );
+        }
+        m_ReleasedAdults.clear();
+
+        for( auto p_cohort : m_ReleasedMales )
+        {
+            MaleQueues.add( p_cohort, 0.0, true );
+        }
+        m_ReleasedMales.clear();
+    }
 
     void VectorPopulation::Update_Larval_Queue( float dt )
     {
         // Use the verbose "for" construct here because we may be modifying the list
-        for( size_t iCohort = 0; iCohort < LarvaQueues.size(); /* increment in loop */ )
+        for( auto it = LarvaQueues.begin(); it != LarvaQueues.end(); ++it )
         {
-            IVectorCohort* cohort = LarvaQueues[ iCohort ];
-
-            IVectorCohortWithHabitat *larvaentry = nullptr;
-            if( cohort->QueryInterface( GET_IID( IVectorCohortWithHabitat ), (void**)&larvaentry ) != s_OK )
-            {
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "larva", "IVectorCohortWithHabitat", "IVectorCohort" );
-            }
+            IVectorCohort* cohort = *it;
 
             // Apply temperature and over-crowding dependent larval development
-            cohort->IncreaseProgress( GetLarvalDevelopmentProgress(dt, larvaentry) );
+            cohort->Update( m_context->GetRng(), dt, species()->trait_modifiers, GetLarvalDevelopmentProgress(dt, cohort), cohort->HasMicrosporidia() );
 
             // Apply larval mortality, the probability of which may depend on over-crowding and Notre Dame instar-specific dynamics
-            float p_larval_mortality = GetLarvalMortalityProbability(dt, larvaentry);
+            float p_larval_mortality = GetLarvalMortalityProbability(dt, cohort).GetValue( m_SpeciesIndex, cohort->GetGenome() );
             uint32_t nowPop = cohort->GetPopulation();
             uint32_t newPop = nowPop - uint32_t( m_context->GetRng()->binomial_approx( nowPop, p_larval_mortality ) );
-            LOG_VALID_F( "Adjusting larval population from %d to %d based on overcrowding considerations.\n", nowPop, newPop );
+            LOG_VALID_F( "Adjusting larval population from %d to %d based on overcrowding considerations, id = %d.\n", nowPop, newPop, cohort->GetID() );
             cohort->SetPopulation( newPop );
 
-            if ( cohort->GetProgress() >= 1 || cohort->GetPopulation() <= 0)
+            queueIncrementTotalPopulation( cohort );
+
+            if( (cohort->GetState() == VectorStateEnum::STATE_IMMATURE) || (cohort->GetPopulation() <= 0) )
             {
+                LarvaQueues.remove( it );
                 if ( cohort->GetPopulation() > 0)
                 {
-                    // Emerged larva become immature adults
-                    ImmatureQueues.push_back(VectorCohort::CreateCohort( VectorStateEnum::STATE_IMMATURE, 0.0, 0, cohort->GetPopulation(), cohort->GetVectorGenetics(), &species_ID ));
-                    LOG_DEBUG_F("Immature adults emerging from larva queue: population=%d, vector_genetics index=%d.\n", cohort->GetPopulation(), cohort->GetVectorGenetics().GetIndex());
+                    m_ProgressedLarvaeToImmatureCount  += cohort->GetPopulation();
+                    m_ProgressedLarvaeToImmatureSumDur += cohort->GetAge()*cohort->GetPopulation();
+
+                    // same issue as below with updating the larva in the habitat
+                    cohort->ClearProgress();
+                    cohort->SetAge( 0.0 );
+
+                    ImmatureQueues.add( cohort, 0.0, false );
+                    LOG_DEBUG_F("Immature adults emerging from larva queue: population = %d, genome bits = %lld, id = %d, age = %f , has microsporidia %d\n",
+                                cohort->GetPopulation(), 
+                                cohort->GetGenome().GetBits(), 
+                                cohort->GetID(), cohort->GetAge(),
+                                cohort->HasMicrosporidia());
                 }
-
-                LarvaQueues[ iCohort ] = LarvaQueues.back();
-                LarvaQueues.pop_back();
-                delete cohort;
-
-                // !! Don't increment iCohort. !!
+                else
+                {
+                    delete cohort;
+                }
             }
             else
             {
-                // Only counting female larva to keep egg-crowding and larval-competition calculations backward-consistent
-                if(cohort->GetVectorGenetics().GetGender() == VectorGender::VECTOR_FEMALE)
-                {
-                    // Pass back larva in this cohort to total count in habitat
-                    larvaentry->GetHabitat()->AddLarva(cohort->GetPopulation(), cohort->GetProgress());
-                }
-
-                ++iCohort;
+                // ---------------------------------------------------------------------
+                // --- I want to move ths into VectorCohort::Update(), but it depends
+                // --- on both population AND progress.  The population also depends on
+                // --- progress so unless you have the population calculation dependent
+                // --- on the progress from last update or you move the population
+                // --- calculation into VectorCohort, we are kind of stuck.
+                // ---------------------------------------------------------------------
+                // Pass back larva in this cohort to total count in habitat
+                cohort->GetHabitat()->AddLarva( cohort->GetPopulation(), cohort->GetProgress() );
             }
         }
+        LarvaQueues.compact();
     }
 
-    float VectorPopulation::GetLarvalDevelopmentProgress(float dt, IVectorCohortWithHabitat* larva) const
+    float VectorPopulation::GetLarvalDevelopmentProgress(float dt, IVectorCohort* larva) const
     {
         // Get local larval growth modifier, which depends on larval crowding
-        float locallarvalgrowthmod = 1.0; 
+        float local_larval_growth_mod = 1.0; 
         
         // if density dependent delay, slow growth
-        if(!(params()->vector_params->larval_density_dependence == LarvalDensityDependence::NO_DENSITY_DEPENDENCE ||
-             params()->vector_params->larval_density_dependence == LarvalDensityDependence::LARVAL_AGE_DENSITY_DEPENDENT_MORTALITY_ONLY))
+        if(!(params()->larval_density_dependence == LarvalDensityDependence::NO_DENSITY_DEPENDENCE ||
+             params()->larval_density_dependence == LarvalDensityDependence::LARVAL_AGE_DENSITY_DEPENDENT_MORTALITY_ONLY))
         {
-            locallarvalgrowthmod = larva->GetHabitat()->GetLocalLarvalGrowthModifier();
+            local_larval_growth_mod = larva->GetHabitat()->GetLocalLarvalGrowthModifier();
         }
+
+        int strain_index = larva->GetGenome().GetMicrosporidiaStrainIndex();
+        float microsporidia_modifier = m_species_params->microsporidia_strains[ strain_index ]->larval_growth_modifier;
 
         // Larval development is temperature dependent
         float temperature = m_context->GetLocalWeather()->airtemperature();
@@ -1170,24 +2107,21 @@ namespace Kernel
         // Craig, M. H., R. W. Snow, et al. (1999).
         // "A climate-based distribution model of malaria transmission in sub-Saharan Africa."
         // Parasitol Today 15(3): 105-111.
-        float progress = ( species()->aquaticarrhenius1 * exp(-species()->aquaticarrhenius2 / (temperature + CELSIUS_TO_KELVIN)) ) * dt * locallarvalgrowthmod;
-        LOG_VALID_F( "%s returning %f based on temperature (%f), and growth modifier (%f).\n", __FUNCTION__, progress, temperature, locallarvalgrowthmod );
+        float progress = ( species()->aquaticarrhenius1 * exp(-species()->aquaticarrhenius2 / (temperature + CELSIUS_TO_KELVIN)) ) * dt;
+        progress *= local_larval_growth_mod;
+        progress *= microsporidia_modifier;
+        LOG_VALID_F( "%s returning %f based on temperature %f, and growth modifier %f, has microsporidia %d \n", __FUNCTION__, progress, temperature, local_larval_growth_mod, larva->HasMicrosporidia());
 
         return progress;
     }
 
-    float VectorPopulation::GetLarvalMortalityProbability(float dt, IVectorCohortWithHabitat* larva) const
+    GeneticProbability VectorPopulation::GetLarvalMortalityProbability(float dt, IVectorCohort* larva) const
     {
         IVectorHabitat* habitat = larva->GetHabitat();
 
         // (1) Local larval mortality from larval competition in habitat
         // float larval_survival_weight = GetRelativeSurvivalWeight(habitat);
-        IVectorCohort * vc = nullptr;
-        if( larva->QueryInterface( GET_IID( IVectorCohort ), (void**)&vc ) != s_OK )
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "IVectorCohortWithHabitat", "IVectorCohort", "larva" );
-        }
-        float locallarvalmortality = habitat->GetLocalLarvalMortality(species()->aquaticmortalityrate, vc->GetProgress());
+        float locallarvalmortality = habitat->GetLocalLarvalMortality(species()->aquaticmortalityrate, larva->GetProgress());
 
         // (2) Rainfall mortality
         float rainfallmortality = habitat->GetRainfallMortality();
@@ -1195,14 +2129,15 @@ namespace Kernel
         // (3) Artificial mortality (e.g. larvicides)
         // N.B. Larvicide mortality is modeled as instant and complete in treated habitat.
         //      May later add in survival of pupal stages, which are resistant to some larvicides.
-        float artificialmortality = habitat->GetArtificialLarvalMortality();
+        GeneticProbability artificialmortality = habitat->GetArtificialLarvalMortality();
 
         // Calculate total mortality probability from mortality rates by cause
-        float p_larval_mortality = float(EXPCDF(-dt * (locallarvalmortality + rainfallmortality)));
-        p_larval_mortality = p_larval_mortality + (1.0f - p_larval_mortality) * artificialmortality;
+        float larval_mortality = float(EXPCDF(-dt * (locallarvalmortality + rainfallmortality)));
+        GeneticProbability p_larval_mortality = artificialmortality * (1.0f - larval_mortality) + larval_mortality;
 
         LOG_VALID_F( "%s returning %f based on local larval mortality (%f), rainfall mortality (%f), and artifical mortality (%f).\n",
-                     __FUNCTION__, p_larval_mortality, locallarvalmortality, rainfallmortality, artificialmortality );
+                     __FUNCTION__, p_larval_mortality.GetDefaultValue(), locallarvalmortality, rainfallmortality, artificialmortality.GetDefaultValue() );
+
         return p_larval_mortality;
     }
 
@@ -1222,491 +2157,500 @@ namespace Kernel
         //          distribute the right number of eggs, but will have systematic biases in which genetic indices get the few eggs.
         //          At present, we will just round and live with the potential bias away from completely full larval habitat.
 
+        // We are adding both genders of larva to the habitat so we need to add both genders of eggs to the habitat.
+        uint32_t neweggs_both_genders = 2 * neweggs;
+
         // Loop over larval habitats
         for (auto habitat : (*m_larval_habitats))
         {
-            float fractional_allocation = 0;
-
-            if( total_capacity != 0 )
+            float fractional_allocation = 0.0f;
+            if( total_capacity != 0.0f )
             {
                 fractional_allocation = habitat->GetCurrentLarvalCapacity() / total_capacity;
             }
-            
-            habitat->AddEggs(neweggs * fractional_allocation);
+            habitat->AddEggs( neweggs_both_genders * fractional_allocation );
 
             // Now lay each type of egg, laying male and female eggs, except for sterile ones
-            for (auto& eggs : gender_mating_eggs)
+            for (auto& entry : gender_mating_eggs)
             {
                 // Use the index of the egg map to construct the vector-genetics structure
-                VectorMatingStructure vms = VectorMatingStructure(eggs.first);
+                VectorMatingGenome parents_genome = entry.first;
+                VectorGenome female_genome( parents_genome.first );
+                VectorGenome male_genome( parents_genome.second );
 
-                // If the female was sterile, her eggs are not viable
-                if( vms.GetSterility() == VectorSterility::VECTOR_STERILE )
+                // If one of the parents was sterile, then the eggs are not viable
+                if( (m_species_params->trait_modifiers.GetModifier( VectorTrait::STERILITY, female_genome ) == 0.0) ||
+                    (m_species_params->trait_modifiers.GetModifier( VectorTrait::STERILITY, male_genome   ) == 0.0) )
+                {
                     continue;
+                }
+
+                if( !AreWolbachiaCompatible( female_genome, male_genome ) )
+                   continue;
 
                 // Eggs laid in this habitat are scaled by fraction of available habitat here
                 // TODO: revisit rounding issue described in warning above.
-                int eggs_to_lay = eggs.second * fractional_allocation;
-                if( eggs_to_lay < 1 )
+                uint32_t eggs_to_lay = uint32_t( float(entry.second) * fractional_allocation );
+                if( eggs_to_lay == 0 )
+                {
                     continue;
-
-                // Otherwise, add a female egg cohort in this larval habitat
-                // If delayed hatching is enabled, these will be merged with existing egg cohorts by habitat and genetics
-
-                // We now have the number of eggs laid in a given habitat for a given mated female genetic structure
-                // We now need to separate out the eggs for each specific unmated egg type
-                
-                // We start with the simple case of pesticide resistance being sensitive-sensitive and HEGs being WT-WT.  This is most simulations, and it allows them to remain as fast as possible
-                // This simple case also still handles all Wolbachia simulations
-                // TODO: this and the pesticide-only case may not really be a noticable time advantage to single out
-                if( vms.GetPesticideResistance().first == VectorAllele::WILD &&
-                    vms.GetPesticideResistance().second == VectorAllele::WILD &&
-                    vms.GetHEG().first == VectorAllele::WILD &&
-                    vms.GetHEG().second == VectorAllele::WILD )
-                {
-                    VectorMatingStructure vms_egg = vms;
-                    vms_egg.SetUnmated();
-                    CreateEggCohortOfType(habitat, eggs_to_lay, vms_egg);
                 }
-                else
+
+                // -------------------------------------------------------------------------
+                // --- The egg batch detailes to this point have all been for female eggs.
+                // --- The fertilizer is generating both male and female genomes so we need
+                // --- to double the number of eggs to include the male eggs.
+                // -------------------------------------------------------------------------
+                eggs_to_lay *= 2;
+
+                GenomeCountPairVector_t fertilized_egg_list = m_Fertilizer.DetermineFertilizedEggs(
+                    m_context->GetRng(),
+                    female_genome,
+                    male_genome,
+                    eggs_to_lay );
+
+                TransmitMicrosporidiaToEggs( female_genome, male_genome, fertilized_egg_list );
+
+                for( auto fertilized_eggs : fertilized_egg_list )
                 {
-                    // Now for the more interesting cases involving HEGs or pesticide Resistance
-                    // Moved into a separate function for clarity
-                    CreateEggCohortAlleleSorting( habitat, eggs_to_lay, vms );
+                    if( fertilized_eggs.count > 0 )
+                    {
+                        CreateEggCohortOfType( habitat, fertilized_eggs.genome, fertilized_eggs.count );
+                    }
                 }
             }
         }
     }
 
-    void VectorPopulation::CreateEggCohortOfType(IVectorHabitat* habitat, uint32_t eggs_to_lay, const VectorMatingStructure& vms_egg)
+    void VectorPopulation::CreateEggCohortOfType(IVectorHabitat* habitat, const VectorGenome& rGenome, uint32_t eggs_to_lay )
     {
-        // Find if there is a compatible existing cohort of eggs
-        VectorCohortVector_t::iterator itEggs = std::find_if( EggQueues.begin(), EggQueues.end(), [vms_egg, habitat](IVectorCohort* cohort) -> bool 
+        IVectorCohort* cohort = VectorCohort::CreateCohort( habitat,
+                                                            m_pNodeVector->GetNextVectorSuid().data,
+                                                            VectorStateEnum::STATE_EGG,
+                                                            0.0,
+                                                            0.0,
+                                                            eggs_to_lay,
+                                                            rGenome,
+                                                            m_SpeciesIndex );
+        queueIncrementTotalPopulation( cohort );
+
+        VectorGameteBitPair_t bits = cohort->GetGenome().GetBits();
+        VectorHabitatType::Enum vht = habitat->GetVectorHabitatType();
+
+        IVectorCohort* p_existing = m_EggCohortVectorOfMaps[ vht ][ bits ];
+        if( p_existing != nullptr )
         {
-            // If this QI gets cumbersome, nothing really prevents the EggQueues (and LarvaQueues) from being lists of the derived type pointers
-            IVectorCohortWithHabitat *eggentry = nullptr;
-            if( cohort->QueryInterface( GET_IID( IVectorCohortWithHabitat ), (void**)&eggentry ) != s_OK )
-            {
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "cohort", "IVectorCohortWithHabitat", "IVectorCohort" );
-            }
+            LOG_VALID_F( "Laying %d eggs into existing egg queue (bits=%s, habitat=%s).\n",
+                         cohort->GetPopulation(),
+                         species()->genes.GetGenomeName( rGenome ).c_str(),
+                         VectorHabitatType::pairs::lookup_key( habitat->GetVectorHabitatType() ) );
 
-            // Compatible means with matching habitat and genetics
-            return ( cohort->GetVectorGenetics() == vms_egg ) && ( eggentry->GetHabitat() == habitat );
-        } );
-
-        if ( itEggs != EggQueues.end() ) 
-        { 
-            (*itEggs)->SetPopulation( (*itEggs)->GetPopulation() + eggs_to_lay ); 
-            LOG_VALID_F( "Laying %d eggs into existing egg queue (index=%d, habitat=%s).\n", eggs_to_lay, vms_egg.GetIndex(), VectorHabitatType::pairs::lookup_key( habitat->GetVectorHabitatType() ) );
+            p_existing->SetPopulation( p_existing->GetPopulation() + cohort->GetPopulation() );
+            delete cohort;
+            cohort = nullptr;
         }
         else
         {
-            EggQueues.push_back( VectorCohortWithHabitat::CreateCohort( habitat, VectorStateEnum::STATE_EGG, 0, eggs_to_lay, vms_egg, &species_ID ) );
-            LOG_VALID_F( "Laying %d eggs and pushing into new egg queue (index=%d, habitat=%s).\n", eggs_to_lay, vms_egg.GetIndex(), VectorHabitatType::pairs::lookup_key( habitat->GetVectorHabitatType() ) );
-        }
+            LOG_VALID_F( "Laying %d eggs and pushing into new egg queue (bits=%s, habitat=%s).\n",
+                         cohort->GetPopulation(),
+                         species()->genes.GetGenomeName( rGenome ).c_str(),
+                         VectorHabitatType::pairs::lookup_key( habitat->GetVectorHabitatType() ) );
 
-        // Males larvae are produced in Update_Egg_Hatching in equal proportion to female hatching eggs
-    }
-
-    void VectorPopulation::CreateEggCohortAlleleSorting( IVectorHabitat* habitat, uint32_t eggs_to_lay, VectorMatingStructure vms )
-    {
-        // This first Allele Sorting function focuses on pesticide resistance alleles and then calls a second function for HEG sorting, if necessary
-        AlleleFractions_t fractions = VectorMatingStructure::GetAlleleFractions(vms.GetPesticideResistance());
-
-        // now check to see if HEGs relevant
-        if( vms.GetHEG().first == VectorAllele::WILD && vms.GetHEG().second == VectorAllele::WILD )
-        {
-            // WILD HEGs only here
-            vms.SetHEG( VectorAllele::WILD, VectorAllele::NotMated );
-
-            for (auto& fraction_by_type : fractions)
-            {
-                vms.SetPesticideResistance( fraction_by_type.first, VectorAllele::NotMated );
-                if( fraction_by_type.second > 0 )
-                {
-                    // Jump straight to creating eggs
-                    CreateEggCohortOfType(habitat, uint32_t(fraction_by_type.second * eggs_to_lay), vms);
-                }
-            }
-        }
-        else
-        {
-            // Now have to process HEGs
-            for (auto& fraction_by_type : fractions)
-            {
-                vms.SetPesticideResistance( fraction_by_type.first, VectorAllele::NotMated );
-                if( fraction_by_type.second > 0 )
-                {
-                    // Do the additional sorting by HEG for each pesticide-resistance type
-                    CreateEggCohortHEGSorting( habitat, uint32_t(fraction_by_type.second * eggs_to_lay), vms );
-                }
-            }
+            m_EggCohortVectorOfMaps[ vht ][ bits ] = cohort;
         }
     }
 
-    void VectorPopulation::CreateEggCohortHEGSorting( IVectorHabitat* habitat, uint32_t eggs_to_lay, VectorMatingStructure vms )
+    void VectorPopulation::TransmitMicrosporidiaToEggs( const VectorGenome& rFemaleGenome,
+                                                        const VectorGenome& rMaleGenome,
+                                                        GenomeCountPairVector_t& rFertilizedEggList )
     {
-        
-        AlleleFractions_t fractions;
-        AllelePair_t matedHEGs;
-        // This is the lowest-level Egg Cohort sorting function, invoked if HEGs are active
-        // check whether early or late homing, now set to early homing only
-        if(params()->vector_params->heg_model == HEGModel::OFF)
-        {
-            fractions = VectorMatingStructure::GetAlleleFractionsEarlyHoming(vms.GetHEG(), 0);// no homing
-        }else if(params()->vector_params->heg_model == HEGModel::EGG_HOMING) // late
-        {
-            fractions = VectorMatingStructure::GetAlleleFractions(vms.GetHEG());
+        int female_strain_index = rFemaleGenome.GetMicrosporidiaStrainIndex();
+        float female_to_egg_tran = m_species_params->microsporidia_strains[ female_strain_index ]->female_to_egg_transmission_probability;
 
-            // Corrections for HEGs homing in heterozygous individuals
-            float homingFraction = params()->vector_params->HEGhomingRate * fractions[VectorAllele::HALF];
-            fractions[VectorAllele::HALF] -= homingFraction;
-            fractions[VectorAllele::FULL] += homingFraction;
-        }else if(params()->vector_params->heg_model == HEGModel::GERMLINE_HOMING) // early in females only
+        int male_strain_index = rMaleGenome.GetMicrosporidiaStrainIndex();
+        float male_to_egg_tran = m_species_params->microsporidia_strains[ male_strain_index ]->male_to_egg_transmission_probability;
+
+        float prob_transmission = 1.0 - (1.0 - female_to_egg_tran) * (1.0 - male_to_egg_tran);
+        float fraction_female_strain = 1.0;
+        if( (female_to_egg_tran + male_to_egg_tran) > 0.0 )
         {
-            fractions = VectorMatingStructure::GetAlleleFractionsEarlyHoming(vms.GetHEG(), params()->vector_params->HEGhomingRate);
-        }else if(params()->vector_params->heg_model == HEGModel::DUAL_GERMLINE_HOMING) // early in males only
-        {
-            fractions = VectorMatingStructure::GetAlleleFractionsDualEarlyHoming(vms.GetHEG(), params()->vector_params->HEGhomingRate);
-        }else if(params()->vector_params->heg_model == HEGModel::DRIVING_Y) // homing is fraction of eggs that would have been female that are now male (e.g. 90% male offspring is 80% homing)
-        {
-            // this HEG works differently than the others
-            // all males inherit the driving-Y, females born are wildtype
-            // this HEG breaks the symmetry of male-female hatching in equal numbers, so this is the only time a male cohort is laid
-            // when it hatches, it hatches an equivalent male cohort
-            // when the residual female fraction hatches, it hatches a male cohort that caries driving-Y
-            // as such, the fractions are used as follows: FULL is for females laid (they act as wild type, since the HEG is inactive in females, but the male matched hatching has the HEG
-            // HALF is used to indicate below that a cohort is to be laid as males
-            // if the male is WILD, then all progeny are normal proceed normally, regardless of the female
-            matedHEGs = vms.GetHEG();
-            if(matedHEGs.second == VectorAllele::WILD)
-            {
-                fractions[VectorAllele::WILD] = 1.0f;
-                fractions[VectorAllele::HALF] = 0;
-                fractions[VectorAllele::FULL] = 0;
-            }else if(matedHEGs.second == VectorAllele::FULL)
-            {
-                fractions[VectorAllele::WILD] = 0;
-                fractions[VectorAllele::HALF] = params()->vector_params->HEGhomingRate;
-                fractions[VectorAllele::FULL] = 1.0f-params()->vector_params->HEGhomingRate;
-            }else
-            {
-                throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "DRIVING_Y allele", matedHEGs.second, VectorAllele::pairs::lookup_key(matedHEGs.second) );
-            }
+            fraction_female_strain = female_to_egg_tran / (female_to_egg_tran + male_to_egg_tran);
         }
 
-        // Corrections for HEGs fecundity
-        float fecundityFactor = 1.0f;
-        if(params()->vector_params->heg_model == HEGModel::OFF)
+        if( prob_transmission > 0.0 )
         {
-            fecundityFactor = 1.0f;
-        }else if(params()->vector_params->heg_model == HEGModel::DRIVING_Y)
-        {
-            switch( vms.GetHEG().second ) // fitness depends on male
+            int orig_num = rFertilizedEggList.size();
+            for( int i = 0; i < orig_num; ++i )
             {
-            case VectorAllele::WILD:
-                fecundityFactor = 1.0f;
-                break;
-            case VectorAllele::HALF:
-                fecundityFactor = 1.0 - params()->vector_params->HEGfecundityLimiting;
-                break;
-            case VectorAllele::FULL:
-                fecundityFactor = 1.0 - params()->vector_params->HEGfecundityLimiting;
-                break;
-            case VectorAllele::NotMated: break;
-            default: break;
-            }
-        }else{
-            switch( vms.GetHEG().first )
-            {
-            case VectorAllele::FULL:
-                // fecundity reduction assumed to act on female (just an assumption)
-                fecundityFactor = 1.0 - params()->vector_params->HEGfecundityLimiting;
-                break;
 
-            case VectorAllele::HALF:
-                fecundityFactor = 1.0;// in this current temporary version, heterozygous has no fitness cost
-                break;
-            case VectorAllele::WILD: break;
-            case VectorAllele::NotMated: break;
-            default: break;
-            }
-        }
+                uint32_t orig_count = rFertilizedEggList[ i ].count;
+                uint32_t num_microporidia  = uint32_t( m_context->GetRng()->binomial_approx( orig_count, prob_transmission ) );
+                if( num_microporidia > 0 )
+                {
+                    uint32_t num_female_strain = num_microporidia; // if fraction_female_strain == 1.0
+                    if( fraction_female_strain == 0.0 )
+                    {
+                        num_female_strain = 0;
+                    }
+                    else if( fraction_female_strain < 1.0 )
+                    {
+                        num_female_strain = uint32_t( m_context->GetRng()->binomial_approx( num_microporidia, fraction_female_strain ) );
+                        release_assert(  num_microporidia >= num_female_strain );
+                    }
+                    uint32_t num_male_strain = num_microporidia - num_female_strain;
 
-        // Now finally lay eggs
-        for (auto& fraction_by_type : fractions)
-        {
-            vms.SetHEG( fraction_by_type.first, VectorAllele::NotMated );
-            if( fraction_by_type.second > 0 )
-            {
-                // Check for Driving Y male biased case here, or just proceed as normal
-                if(params()->vector_params->heg_model == HEGModel::DRIVING_Y && fraction_by_type.first == VectorAllele::HALF)
-                {
-                    vms.SetHEG(VectorAllele::FULL, VectorAllele::NotMated);
-                    vms.SetGender(VectorGender::VECTOR_MALE);
-                    CreateEggCohortOfType(habitat, uint32_t(fraction_by_type.second * fecundityFactor * eggs_to_lay), vms);
-                    vms.SetGender(VectorGender::VECTOR_FEMALE);
-                }else
-                {
-                    // Apply the fecundity factor here
-                    CreateEggCohortOfType(habitat, uint32_t(fraction_by_type.second * fecundityFactor * eggs_to_lay), vms);
+                    if( num_female_strain > 0 )
+                    {
+                        release_assert( rFertilizedEggList[ i ].count >= num_female_strain );
+                        rFertilizedEggList[ i ].count -= num_female_strain;
+
+                        GenomeCountPair microsporidia_gcp( rFertilizedEggList[ i ].genome, num_female_strain );
+                        microsporidia_gcp.genome.SetMicrosporidiaStrain( female_strain_index );
+                        rFertilizedEggList.push_back( microsporidia_gcp );
+                    }
+
+                    if( num_male_strain > 0 )
+                    {
+                        release_assert( rFertilizedEggList[ i ].count >= num_male_strain );
+                        rFertilizedEggList[ i ].count -= num_male_strain;
+
+                        GenomeCountPair microsporidia_gcp( rFertilizedEggList[ i ].genome, num_male_strain );
+                        microsporidia_gcp.genome.SetMicrosporidiaStrain( male_strain_index );
+                        rFertilizedEggList.push_back( microsporidia_gcp );
+                    }
                 }
             }
         }
+    }
+
+    bool VectorPopulation::AreWolbachiaCompatible( const VectorGenome& rFemale, const VectorGenome& rMale) const
+    {
+        bool is_compatible = true;
+        switch( rFemale.GetWolbachia() )
+        {
+            case VectorWolbachia::VECTOR_WOLBACHIA_FREE:
+                if( rMale.GetWolbachia() != VectorWolbachia::VECTOR_WOLBACHIA_FREE )
+                {
+                    // Wolbachia-free female is cytoplasmically incompatible with any Wolbachia-infected male
+                    is_compatible = false;
+                }
+                break;
+
+            case VectorWolbachia::VECTOR_WOLBACHIA_A:
+                if( (rMale.GetWolbachia() == VectorWolbachia::VECTOR_WOLBACHIA_B ) ||
+                    (rMale.GetWolbachia() == VectorWolbachia::VECTOR_WOLBACHIA_AB) )
+                {
+                    // Female with Wolbachia A is incompatible to male with either B or AB
+                    is_compatible = false;
+                }
+                break;
+
+            case VectorWolbachia::VECTOR_WOLBACHIA_B:
+                if( (rMale.GetWolbachia() == VectorWolbachia::VECTOR_WOLBACHIA_A ) ||
+                    (rMale.GetWolbachia() == VectorWolbachia::VECTOR_WOLBACHIA_AB) )
+                {
+                    // Female with Wolbachia B is incompatible to male with either A or AB
+                    is_compatible = false;
+                }
+                break;
+
+            case VectorWolbachia::VECTOR_WOLBACHIA_AB:
+                // Female with Wolbachia AB is compatible with any male
+                break;
+
+            default:
+                throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__,
+                                                         "femaleWolbachia", rFemale.GetWolbachia(), VectorWolbachia::pairs::lookup_key( rFemale.GetWolbachia() ) );
+        }
+
+        // Otherwise, the mating is compatible
+        return is_compatible;
     }
 
     void VectorPopulation::Update_Egg_Hatching( float dt )
     {
         // Calculate egg-hatch delay factor
-        Fraction eggHatchDelayFactor = dt;
-        Fraction localdensdephatchmod = 1.0;
-        NonNegativeFloat temperature = m_context->GetLocalWeather()->airtemperature();
+        float eggHatchDelayFactor = dt;
+        float localdensdephatchmod = 1.0;
+        float temperature = m_context->GetLocalWeather()->airtemperature();
 
         // These options are mutually exclusive
-        if(params()->vector_params->temperature_dependent_egg_hatching)
+        if(params()->temperature_dependent_egg_hatching)
         {
-            Fraction tempdephatch = ( params()->vector_params->eggarrhenius1 * exp(-params()->vector_params->eggarrhenius2 / (temperature + CELSIUS_TO_KELVIN)) );
+            float tempdephatch = ( params()->eggarrhenius1 * exp(-params()->eggarrhenius2 / (temperature + CELSIUS_TO_KELVIN)) );
             eggHatchDelayFactor *= tempdephatch;
         }
-        else if( params()->vector_params->egg_hatch_delay_dist != EggHatchDelayDist::NO_DELAY && params()->vector_params->meanEggHatchDelay > 0 )
+        else if( params()->egg_hatch_delay_dist != EggHatchDelayDist::NO_DELAY && params()->meanEggHatchDelay > 0 )
         {
-            eggHatchDelayFactor /= params()->vector_params->meanEggHatchDelay;
-            eggHatchDelayFactor = min(float(eggHatchDelayFactor), 1.0f); // correct to avoid too many eggs
+            float egg_hatch_rate = 1.0f / params()->meanEggHatchDelay;
+            eggHatchDelayFactor = EXPCDF(-egg_hatch_rate * dt);
         }
+        // Extreme temperatures can cause this value to jump outside 0-1
+        if( eggHatchDelayFactor < 0.0 ) eggHatchDelayFactor = 0.0;
+        if( eggHatchDelayFactor > 1.0 ) eggHatchDelayFactor = 1.0;
+
 
         // Now process remaining eggs
-        for( size_t iCohort = 0; iCohort < EggQueues.size(); /* increment in loop */ )
+        for( auto& r_egg_map : m_EggCohortVectorOfMaps )
         {
-            IVectorCohort* cohort = EggQueues[ iCohort ];
-
-            IVectorCohortWithHabitat *eggentry = nullptr;
-            if( cohort->QueryInterface( GET_IID( IVectorCohortWithHabitat ), (void**)&eggentry ) != s_OK )
+            for( auto& r_cohort_entry : r_egg_map )
             {
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "cohort", "IVectorCohortWithHabitat", "IVectorCohort" );
-            }
-            IVectorHabitat* habitat = eggentry->GetHabitat();
+                if( r_cohort_entry.second == nullptr ) continue;
 
-            // Potential inter-species competitive weighting
-            // float egg_survival_weight = GetRelativeSurvivalWeight(habitat);
+                IVectorCohort* cohort = r_cohort_entry.second;
 
-            // Calculate egg-crowding correction for these eggs based on habitat and decrease population
-            if (params()->vector_params->delayed_hatching_when_habitat_dries_up)  // if delayed hatching is given, we need them to survive upon drought, thus only adjust population when there is water
-            {
-                if( habitat->GetCurrentLarvalCapacity() >= 1 ) // no drought
+                IVectorHabitat* habitat = cohort->GetHabitat();
+
+                // Potential inter-species competitive weighting
+                // float egg_survival_weight = GetRelativeSurvivalWeight(habitat);
+
+                // Calculate egg-crowding correction for these eggs based on habitat and decrease population
+                if (params()->delayed_hatching_when_habitat_dries_up)  // if delayed hatching is given, we need them to survive upon drought, thus only adjust population when there is water
                 {
-                    NonNegativeFloat egg_crowding_correction = habitat->GetEggCrowdingCorrection( true );
+                    if( habitat->GetCurrentLarvalCapacity() >= 1 ) // no drought
+                    {
+                        NonNegativeFloat egg_crowding_correction = habitat->GetEggCrowdingCorrection();
+                        uint32_t nowPop = cohort->GetPopulation();
+                        uint32_t newPop = m_context->GetRng()->binomial_approx( nowPop, egg_crowding_correction );
+                        LOG_VALID_F( "Updating egg population from %d to %d with egg_crowding_correction of %f\n",
+                             nowPop, newPop, float( egg_crowding_correction ) );
+                        cohort->SetPopulation( newPop );
+                    }
+                    // else do nothing (in case of drought, with the dhwhdr param set, don't reduce eggs with egg_crowding_correction)
+
+                }
+                else   // otherwise, use original 'anopheles implementation'
+                {
+                    NonNegativeFloat egg_crowding_correction = habitat->GetEggCrowdingCorrection();
                     uint32_t nowPop = cohort->GetPopulation();
-                    uint32_t newPop = uint32_t( nowPop * egg_crowding_correction );
+                    uint32_t newPop = m_context->GetRng()->binomial_approx( nowPop, egg_crowding_correction );
                     LOG_VALID_F( "Updating egg population from %d to %d with egg_crowding_correction of %f\n",
-                         nowPop, newPop, float( egg_crowding_correction ) );
+                            nowPop, newPop, float( egg_crowding_correction ) );
                     cohort->SetPopulation( newPop );
                 }
-                // else do nothing (in case of drought, with the dhwhdr param set, don't reduce eggs with egg_crowding_correction)
 
-            }
-            else   // otherwise, use original 'anopheles implementation'
-            {
-                NonNegativeFloat egg_crowding_correction = habitat->GetEggCrowdingCorrection();
-                uint32_t nowPop = cohort->GetPopulation();
-                uint32_t newPop = uint32_t( nowPop * egg_crowding_correction );
-                LOG_VALID_F( "Updating egg population from %d to %d with egg_crowding_correction of %f\n",
-                        nowPop, newPop, float( egg_crowding_correction ) );
-                cohort->SetPopulation( newPop );
-            }
-
-            // Include a daily egg mortality to prevent perfect hybernation
-            if (params()->vector_params->egg_mortality)
-            {
-                uint32_t currPop = cohort->GetPopulation();
-                uint32_t newerPop = uint32_t( currPop * species()->eggsurvivalrate );
-                cohort->SetPopulation( newerPop ); // (default 0.99 is based on Focks 1993)
-                LOG_VALID_F( "Updating egg population due to egg mortality: old_pop = %d, new_pop = %d.\n", currPop, newerPop );
-            }
-
-            if (params()->vector_params->delayed_hatching_when_habitat_dries_up)
-            {
-                if (habitat->GetCurrentLarvalCapacity() < 1)
+                // Include a daily egg mortality to prevent perfect hybernation
+                if (params()->egg_mortality)
                 {
-                    LOG_VALID_F( "Multiplying eggHatchDelayFactor (%f) by drought delay factor from config (%f)\n", float( eggHatchDelayFactor ), params()->vector_params->droughtEggHatchDelay );
-                    eggHatchDelayFactor *= params()->vector_params->droughtEggHatchDelay; //  (should be , default 1/3 is based on Focks 1993)
+                    uint32_t currPop = cohort->GetPopulation();
+                    uint32_t newerPop = m_context->GetRng()->binomial_approx( currPop, species()->eggsurvivalrate );
+                    cohort->SetPopulation( newerPop ); // (default 0.99 is based on Focks 1993)
+                    LOG_VALID_F( "Updating egg population due to egg mortality: old_pop = %d, new_pop = %d.\n", currPop, newerPop );
                 }
-            }
 
-            // Get local density dependence hatching modifier, which depends on larval crowding
-            // if density dependent delay, slow growth
-            if (params()->vector_params->egg_hatch_density_dependence == EggHatchDensityDependence::DENSITY_DEPENDENCE)
-            {
-                if (habitat->GetCurrentLarvalCapacity() < 1)
+                float tmp_eggHatchDelayFactor = eggHatchDelayFactor;
+                if( params()->delayed_hatching_when_habitat_dries_up &&
+                    (habitat->GetCurrentLarvalCapacity() < 1) )
                 {
+                    LOG_VALID_F( "Multiplying eggHatchDelayFactor %f by drought delay factor from config %f\n", float( tmp_eggHatchDelayFactor ), params()->droughtEggHatchDelay );
+                    tmp_eggHatchDelayFactor *= params()->droughtEggHatchDelay; //  (should be , default 1/3 is based on Focks 1993)
+                }
+                else if( (params()->egg_hatch_density_dependence == EggHatchDensityDependence::DENSITY_DEPENDENCE) &&
+                         (habitat->GetTotalLarvaCount(PREVIOUS_TIME_STEP) > habitat->GetCurrentLarvalCapacity()) )
+                {
+                    // Get local density dependence hatching modifier, which depends on larval crowding
+                    // if density dependent delay, slow growth
                     localdensdephatchmod = habitat->GetLocalLarvalGrowthModifier();
-                    if (params()->vector_params->delayed_hatching_when_habitat_dries_up)
+                    if (params()->delayed_hatching_when_habitat_dries_up)
                     {
-                        localdensdephatchmod = max(params()->vector_params->droughtEggHatchDelay,float(localdensdephatchmod));
+                        localdensdephatchmod = max(params()->droughtEggHatchDelay,float(localdensdephatchmod));
                     }
                     LOG_VALID_F( "localdensdephatchmod set to %f due to egg_hatch_density_dependence = %s, larval CC = %f, larval growth mod = %f, and configurable dought egg hatch delay factor = %f.\n",
                                  float( localdensdephatchmod ),
-                                 EggHatchDensityDependence::pairs::lookup_key( params()->vector_params->egg_hatch_density_dependence ),
+                                 EggHatchDensityDependence::pairs::lookup_key( params()->egg_hatch_density_dependence ),
                                  float( habitat->GetCurrentLarvalCapacity() ),
                                  float( habitat->GetLocalLarvalGrowthModifier() ),
-                                 params()->vector_params->droughtEggHatchDelay
+                                 params()->droughtEggHatchDelay
                                );
                 }
-            }
 
-            //}  NOTE: For now without if statement. Need to include a seperate parameter to address this.  
-            uint32_t hatched = eggHatchDelayFactor * localdensdephatchmod * cohort->GetPopulation();
-            LOG_VALID_F( "temperature = %f, local density dependence modifier is %f, egg hatch delay factor is %f, current population is %d, hatched is %d.\n",
-                         float(temperature),
-                         float(localdensdephatchmod),
-                         float(eggHatchDelayFactor),
-                         cohort->GetPopulation(),
-                         hatched
-                     );
+                //}  NOTE: For now without if statement. Need to include a seperate parameter to address this.  
+                float percent_hatched = float( tmp_eggHatchDelayFactor ) * float( localdensdephatchmod );
+                uint32_t hatched = m_context->GetRng()->binomial_approx( cohort->GetPopulation(), percent_hatched );
+                LOG_VALID_F( "temperature = %f, local density dependence modifier is %f, egg hatch delay factor is %f, current population is %d, hatched is %d, id = %d.\n",
+                             float(temperature),
+                             float(localdensdephatchmod),
+                             float( tmp_eggHatchDelayFactor ),
+                             cohort->GetPopulation(),
+                             hatched,
+                             cohort->GetID()
+                           );
 
-            if( hatched > 0 )
-            {
-                VectorMatingStructure vms_larva = cohort->GetVectorGenetics();
-                LarvaQueues.push_back( VectorCohortWithHabitat::CreateCohort( habitat, VectorStateEnum::STATE_LARVA, 0, hatched, vms_larva, &species_ID ) );
-                LOG_DEBUG_F("Hatching %d female eggs and pushing into larval queues (index=%d).\n", hatched, vms_larva.GetIndex());
+                if( hatched > 0 )
+                {
+                    IVectorCohort* temp_cohort = VectorCohort::CreateCohort( habitat,
+                                                                             m_pNodeVector->GetNextVectorSuid().data,
+                                                                             VectorStateEnum::STATE_LARVA,
+                                                                             0.0,
+                                                                             cohort->GetDurationOfMicrosporidia(),
+                                                                             hatched,
+                                                                             cohort->GetGenome(),
+                                                                             m_SpeciesIndex );
 
-                // Eggs calculations were only done for female eggs
-                // So, here on hatching we will push back an equal number of male larva as well
-                vms_larva.SetGender(VectorGender::VECTOR_MALE);
-                LarvaQueues.push_back( VectorCohortWithHabitat::CreateCohort( habitat, VectorStateEnum::STATE_LARVA, 0, hatched, vms_larva, &species_ID ) );
-                LOG_DEBUG_F("Hatching %d male eggs and pushing into larval queues (index=%d).\n", hatched, vms_larva.GetIndex());
-            }
+                    LarvaQueues.add( temp_cohort, 0.0, false );
+                    queueIncrementTotalPopulation( temp_cohort );
+                    LOG_DEBUG_F("Hatching %d female eggs and pushing into larval queues (bits=%lld), id = %d , has microsporidia %d\n", hatched, cohort->GetGenome().GetBits(), temp_cohort->GetID(), cohort->HasMicrosporidia()  );
 
-            auto nowPop = cohort->GetPopulation();
-            auto newPop = nowPop - hatched;
-            LOG_VALID_F( "Updating egg population from %d to %d based on hatching of %d\n", nowPop, newPop, hatched );
-            cohort->SetPopulation( newPop );
+                    // Pass back larva in this cohort to total count in habitat
+                    habitat->AddLarva( temp_cohort->GetPopulation(), temp_cohort->GetProgress() );
+                }
 
-            if(cohort->GetPopulation() <= 0)
-            {
-                EggQueues[ iCohort ] = EggQueues.back();
-                EggQueues.pop_back();
-                delete cohort;
+                auto nowPop = cohort->GetPopulation();
+                auto newPop = nowPop - hatched;
+                LOG_VALID_F( "Updating egg population from %d to %d based on hatching of %d.\n", nowPop, newPop, hatched);
+                cohort->SetPopulation( newPop );
 
-                // !! Don't increment iCohort. !!
-            }
-            else
-            {
-                ++iCohort;
+                if(cohort->GetPopulation() <= 0)
+                {
+                    delete r_cohort_entry.second;
+                    r_cohort_entry.second = nullptr;
+                }
+                else
+                {
+                    cohort->Update( m_context->GetRng(), dt, species()->trait_modifiers, 0.0, cohort->HasMicrosporidia() );
+                }
             }
         }
     }
 
     void VectorPopulation::Update_Male_Queue( float dt )
     {
-        males = 0;
+        MaleQueues.updateAge( dt );
+
         // Use the verbose "foreach" construct here because empty male cohorts (e.g. old vectors) will be removed
-        for( size_t iCohort = 0; iCohort < MaleQueues.size(); /* increment in loop */ )
+        for( auto it = MaleQueues.begin(); it != MaleQueues.end(); ++it )
         {
-            IVectorCohort* cohort = MaleQueues[ iCohort ];
+            IVectorCohort* cohort = *it;
 
-            UpdateAge( cohort, dt );
+            float p_local_male_mortality = GetLocalMatureMortalityProbability( dt, cohort ); // can be age dependent
+            float p_outdoor_killing = probs()->outdoorareakilling.GetValue( m_SpeciesIndex, cohort->GetGenome() );
+            float p_sugar_trap_killing = GetSugarTrapKilling( cohort );
+            float p_outdoor_rest_killing   = probs()->outdoorRestKilling.GetValue( m_SpeciesIndex, cohort->GetGenome() );
 
-            // Convert mortality rates to mortality probability (can make age dependent)
-            float p_local_male_mortality = GetLocalAdultMortalityProbability( dt, cohort );
-            p_local_male_mortality = p_local_male_mortality + (1.0f - p_local_male_mortality) * probs()->outdoorareakilling_male;
+            float p_male_mortality = p_local_male_mortality;
+            p_male_mortality += (1.0f - p_male_mortality) * p_outdoor_killing;
+            p_male_mortality += (1.0f - p_male_mortality) * p_sugar_trap_killing;
+            p_male_mortality += (1.0f - p_male_mortality) * p_outdoor_rest_killing;
 
             // adults die
             uint32_t new_pop = cohort->GetPopulation();
             if( (new_pop > 0) && m_VectorMortality )
             {
-                uint32_t dead_mosquitos = uint32_t(m_context->GetRng()->binomial_approx( new_pop, p_local_male_mortality ) );
+                uint32_t dead_mosquitos = uint32_t( m_context->GetRng()->binomial_approx( new_pop, p_male_mortality ) );
+                // cast to int32_t because LOG_VALID_F (varargs) was doing something weird with the unsigned integers
+                LOG_VALID_F("Update Male Deaths cohort_id=%d , age=%f , population_before_deaths=%d , died=%d microsporidia=%d \n",
+                             int32_t(cohort->GetID()),
+                             cohort->GetAge(),
+                             int32_t(new_pop),
+                             int32_t(dead_mosquitos),
+                             cohort->HasMicrosporidia());
                 new_pop -= dead_mosquitos;
+                UpdateAgeAtDeath( cohort, dead_mosquitos );
             }
             cohort->SetPopulation( new_pop );
 
             if( cohort->GetPopulation() <= 0 )
             {
-                MaleQueues[ iCohort ] = MaleQueues.back();
-                MaleQueues.pop_back();
+                MaleQueues.remove( it );
                 cohort->Release();
-                //delete cohort;
-
-                // !! Don't increment iCohort. !!
             }
             else
             {
                 queueIncrementTotalPopulation( cohort );
-
-                ++iCohort;
             }
         }
+        MaleQueues.compact();
     }
 
     void VectorPopulation::queueIncrementTotalPopulation( IVectorCohort* cohort )
     {
-        VectorGeneticIndex_t index = cohort->GetVectorGenetics().GetIndex();
-        if(cohort->GetVectorGenetics().GetGender() == VectorGender::VECTOR_FEMALE)
+        if( cohort->GetPopulation() > 0 )
         {
-            if( cohort->GetState() == VectorStateEnum::STATE_ADULT )
+            VectorStateEnum::Enum vector_state = cohort->GetState();
+            VectorGameteBitPair_t bits = cohort->GetGenome().GetBits();
+
+            state_counts[ vector_state ] += cohort->GetPopulation();
+            genome_counts[ vector_state ][ bits ] += cohort->GetPopulation();
+
+            int strain_index = cohort->GetGenome().GetMicrosporidiaStrainIndex();
+            microsporidia_counts[ strain_index ][ vector_state ] += cohort->GetPopulation();
+            release_assert( state_counts[ vector_state ] >= microsporidia_counts[ strain_index ][ vector_state ] );
+
+            if( (vector_state == VectorStateEnum::STATE_ADULT     ) ||
+                (vector_state == VectorStateEnum::STATE_INFECTED  ) ||
+                (vector_state == VectorStateEnum::STATE_INFECTIOUS) )
             {
-                adult += cohort->GetPopulation();
-                vector_genetics_adults[index] += cohort->GetPopulation();
+                VectorWolbachia::Enum wol = cohort->GetWolbachia();
+                wolbachia_counts[ int(wol) ] += cohort->GetPopulation();
+                if( !cohort->HasMated() )
+                {
+                    unmated_adults += cohort->GetPopulation();
+                }
             }
-            else if( cohort->GetState() == VectorStateEnum::STATE_INFECTED )
-            {
-                infected +=cohort->GetPopulation();
-                vector_genetics_infected[index] += cohort->GetPopulation();
-            }
-            else if( cohort->GetState() == VectorStateEnum::STATE_INFECTIOUS )
-            {
-                infectious += cohort->GetPopulation();
-                vector_genetics_infectious[index] += cohort->GetPopulation();
-            }
-        }
-        else
-        {
-            males +=cohort->GetPopulation();
-            gender_mating_males[index] += cohort->GetPopulation();
+
+            queueIncrementNumInfs( cohort );
         }
     }
 
-    void VectorPopulation::AddVectors( const VectorMatingStructure& _vector_genetics, uint32_t releasedNumber )
+    void VectorPopulation::queueIncrementNumInfs( IVectorCohort* cohort )
     {
+        if( (cohort->GetState() == VectorStateEnum::STATE_INFECTED  ) ||
+            (cohort->GetState() == VectorStateEnum::STATE_INFECTIOUS) )
+        {
+            num_infs_per_state_counts[ cohort->GetState() ] += cohort->GetPopulation();
+        }
+    }
+
+
+    void VectorPopulation::AddVectors( const VectorGenome& rGenome,
+                                       const VectorGenome& rMateGenome,
+                                       bool isFraction,
+                                       uint32_t releasedNumber,
+                                       float releasedFraction,
+                                       float releasedInfectious )
+    {
+        uint32_t num_to_release = releasedNumber;
+
         // Insert into correct Male or Female list
-        if (_vector_genetics.GetGender() == VectorGender::VECTOR_FEMALE)
+        if( rGenome.GetGender() == VectorGender::VECTOR_FEMALE )
         {
-            // If unmated, put in Immature with progress 1, so that the females can mate with the local male population.
-            // This will throw an exception if only one of the extra fields is mated.
-            if( !_vector_genetics.IsMated() )
+            if( isFraction )
             {
-                VectorCohort* tempentry = VectorCohort::CreateCohort( VectorStateEnum::STATE_IMMATURE, 0.0, 1, releasedNumber, _vector_genetics, &species_ID );
-                ImmatureQueues.push_back(tempentry);
+                uint32_t pop = getCount( VectorStateEnum::STATE_ADULT )
+                             + getCount( VectorStateEnum::STATE_INFECTED )
+                             + getCount( VectorStateEnum::STATE_INFECTIOUS );
+                num_to_release = uint32_t( float( pop ) * releasedFraction );
             }
-            else
-            { 
-                AddVectors_Adults( _vector_genetics, releasedNumber );
-            }
+            uint32_t num_infectious = uint32_t( float( num_to_release ) * releasedInfectious );
+            num_to_release = (num_infectious >= num_to_release) ? 0 : (num_to_release - num_infectious);
+
+            AddReleasedCohort( VectorStateEnum::STATE_ADULT,      rGenome, rMateGenome, num_to_release );
+            AddReleasedCohort( VectorStateEnum::STATE_INFECTIOUS, rGenome, rMateGenome, num_infectious );
         }
         else
         {
+            if( isFraction )
+            {
+                uint32_t pop = getCount( VectorStateEnum::STATE_MALE );
+                num_to_release = uint32_t( float( pop ) * releasedFraction );
+            }
+
             // progress is 1 since males should be at 1 from progressing from Immature to Male
-            VectorCohort* tempentry = VectorCohort::CreateCohort( VectorStateEnum::STATE_MALE, 0.0, 1.0, releasedNumber, _vector_genetics, &species_ID );
-            MaleQueues.push_back( tempentry );
-            queueIncrementTotalPopulation( tempentry );//update counter
+            VectorCohort* tempentry = VectorCohort::CreateCohort( m_pNodeVector->GetNextVectorSuid().data,
+                                                                  VectorStateEnum::STATE_MALE,
+                                                                  0.0,
+                                                                  1.0,
+                                                                  0.0,
+                                                                  num_to_release,
+                                                                  rGenome,
+                                                                  m_SpeciesIndex );
+            m_ReleasedMales.push_back( tempentry );
         }
 
-        LOG_INFO_F( "We added %lu '%s' mosquitoes of type: %s, %s, %s, pesticide-resistance: %s-%s, HEG: %s-%s. \n", releasedNumber, species_ID.c_str(), 
-                    VectorGender::pairs::lookup_key(_vector_genetics.GetGender()), 
-                    VectorSterility::pairs::lookup_key(_vector_genetics.GetSterility()), 
-                    VectorWolbachia::pairs::lookup_key(_vector_genetics.GetWolbachia()), 
-                    VectorAllele::pairs::lookup_key(_vector_genetics.GetPesticideResistance().first), 
-                    VectorAllele::pairs::lookup_key(_vector_genetics.GetPesticideResistance().second), 
-                    VectorAllele::pairs::lookup_key(_vector_genetics.GetHEG().first), 
-                    VectorAllele::pairs::lookup_key(_vector_genetics.GetHEG().second) );
-    }
-
-    void VectorPopulation::AddVectors_Adults( const VectorMatingStructure& _vector_genetics, uint32_t releasedNumber )
-    {
-        // already mated, so go in AdultQueues
-        VectorCohort* tempentry = VectorCohort::CreateCohort( VectorStateEnum::STATE_ADULT, 0.0, 0, releasedNumber, _vector_genetics, &species_ID );
-        AdultQueues.push_back( tempentry );
-        queueIncrementTotalPopulation( tempentry );//update counter
-        new_adults += tempentry->GetPopulation();
+        LOG_INFO_F( "We added %lu '%s' mosquitoes of type: %s\n",
+                    num_to_release,
+                    m_species_params->name.c_str(), 
+                    VectorGender::pairs::lookup_key(rGenome.GetGender()) );
     }
 
     // Return a vector that contains a randomly order set of indexes that are from 0 to (N-1)
@@ -1760,59 +2704,65 @@ namespace Kernel
 
         std::vector<uint32_t> random_indexes = GetRandomIndexes( m_context->GetRng(), r_reachable_nodes.size() );
 
-        Vector_Migration_Queue( random_indexes, r_reachable_nodes, r_migration_types, fraction_traveling, pMigratingQueue, AdultQueues      );
-        Vector_Migration_Queue( random_indexes, r_reachable_nodes, r_migration_types, fraction_traveling, pMigratingQueue, InfectedQueues   );
-        Vector_Migration_Queue( random_indexes, r_reachable_nodes, r_migration_types, fraction_traveling, pMigratingQueue, InfectiousQueues );
+        INodeVector* p_inv = nullptr;
+        if( s_OK != m_context->QueryInterface( GET_IID( INodeVector ), (void**)&p_inv ) )
+        {
+            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "m_context", "INodeVector", "INodeContext" );
+        }
+
+        Vector_Migration_Queue( random_indexes, r_reachable_nodes, r_migration_types, fraction_traveling, p_inv, pMigratingQueue, *pAdultQueues    );
+        Vector_Migration_Queue( random_indexes, r_reachable_nodes, r_migration_types, fraction_traveling, p_inv, pMigratingQueue, InfectedQueues   );
+        Vector_Migration_Queue( random_indexes, r_reachable_nodes, r_migration_types, fraction_traveling, p_inv, pMigratingQueue, InfectiousQueues );
     }
 
     void VectorPopulation::Vector_Migration_Queue( const std::vector<uint32_t>& rRandomIndexes,
                                                    const std::vector<suids::suid>& rReachableNodes,
                                                    const std::vector<MigrationType::Enum>& rMigrationTypes,
                                                    const std::vector<float>& rFractionTraveling,
+                                                   INodeVector* pINV,
                                                    VectorCohortVector_t* pMigratingQueue,
-                                                   VectorCohortVector_t& rQueue )
+                                                   VectorCohortCollectionAbstract& rQueue )
     {
-        for( size_t iCohort = 0; iCohort < rQueue.size(); ++iCohort )
+        for( auto it = rQueue.begin(); it != rQueue.end(); ++it )
         {
-            IVectorCohort* p_vc = rQueue[ iCohort ];
-
-            std::vector<uint64_t> travelers = m_context->GetRng()->multinomial_approx( p_vc->GetPopulation(), rFractionTraveling );
+            IVectorCohort* p_vc = *it;
 
             for( uint32_t index : rRandomIndexes )
             {
-                suids::suid         to_node       = rReachableNodes[ index ];
-                MigrationType::Enum mig_type      = rMigrationTypes[ index ];
-                uint32_t            num_travelers = travelers[ index ];
-                
-                if( num_travelers > 0 )
+                suids::suid         to_node           = rReachableNodes[ index ];
+                MigrationType::Enum mig_type          = rMigrationTypes[ index ];
+                float               percent_traveling = rFractionTraveling[ index ];
+
+                if( percent_traveling > 0.0f )
                 {
-                    if( num_travelers > p_vc->GetPopulation() )
+                    IVectorCohort* p_traveling_vc = p_vc->SplitPercent( m_context->GetRng(),
+                                                                        m_pNodeVector->GetNextVectorSuid().data,
+                                                                        percent_traveling );
+                    if( p_traveling_vc == nullptr )
                     {
-                        num_travelers = p_vc->GetPopulation();
+                        continue;
                     }
-
-                    IVectorCohort* p_traveling_vc = p_vc->Split( num_travelers );
-
-                    IMigrate* emigre = p_traveling_vc->GetIMigrate();
-                    emigre->SetMigrating( to_node, mig_type, 0.0, 0.0, false );
-                    pMigratingQueue->push_back( p_traveling_vc );
+                    else if( p_traveling_vc->GetPopulation() == 0 )
+                    {
+                        delete p_traveling_vc;
+                    }
+                    else
+                    {
+                        IMigrate* emigre = p_traveling_vc->GetIMigrate();
+                        emigre->SetMigrating( to_node, mig_type, 0.0, 0.0, false );
+                        pMigratingQueue->push_back( p_traveling_vc );
+                    }
                 }
             }
         }
 
-        for( size_t iCohort = 0; iCohort < rQueue.size(); /* index loop */ )
+        for( auto it = rQueue.begin(); it != rQueue.end(); ++it )
         {
-            if( rQueue[ iCohort ]->GetPopulation() <= 0 )
+            IVectorCohort* p_vc = *it;
+            if( p_vc->GetPopulation() <= 0 )
             {
-                IVectorCohort* pvc = rQueue[ iCohort ];
-                delete pvc;
-
-                rQueue[ iCohort ] = rQueue.back();
-                rQueue.pop_back();
-            }
-            else
-            {
-                ++iCohort;
+                rQueue.remove( it );
+                delete p_vc;
             }
         }
     }
@@ -1822,20 +2772,64 @@ namespace Kernel
         switch( pvc->GetState() )
         {
             case VectorStateEnum::STATE_ADULT:
-                MergeProgressedCohortIntoCompatibleQueue( AdultQueues, pvc, 0.0 );
+                if( m_IsSortingVectors )
+                    m_ImmigratingAdult.push_back( pvc );
+                else
+                    pAdultQueues->add( pvc, 0.0, true );
                 break;
 
             case VectorStateEnum::STATE_INFECTED:
-                MergeProgressedCohortIntoCompatibleQueue( InfectedQueues, pvc, infected_progress_this_timestep );
+                if( m_IsSortingVectors )
+                    m_ImmigratingInfected.push_back( pvc );
+                else
+                    InfectedQueues.add( pvc, GetInfectedProgress( pvc ), true );
                 break;
 
             case VectorStateEnum::STATE_INFECTIOUS:
-                MergeProgressedCohortIntoCompatibleQueue( InfectiousQueues, pvc, 0.0 );
+                if( m_IsSortingVectors )
+                    m_ImmigratingInfectious.push_back( pvc );
+                else
+                    InfectiousQueues.add( pvc, 0.0, true );
                 break;
 
             default:
                 throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "IVectorCohort::GetState()", pvc->GetState(), VectorStateEnum::pairs::lookup_key( pvc->GetState() ) );
         }
+    }
+
+    void VectorPopulation::SetSortingVectors()
+    {
+        m_IsSortingVectors = true;
+    }
+
+    bool IdOrder( IVectorCohort* pLeft, IVectorCohort* pRight )
+    {
+        return pLeft->GetID() < pRight->GetID();
+    }
+
+    void VectorPopulation::SortImmigratingVectors()
+    {
+        release_assert( m_IsSortingVectors );
+
+        std::sort( m_ImmigratingAdult.begin(),      m_ImmigratingAdult.end(),      IdOrder );
+        std::sort( m_ImmigratingInfected.begin(),   m_ImmigratingInfected.end(),   IdOrder );
+        std::sort( m_ImmigratingInfectious.begin(), m_ImmigratingInfectious.end(), IdOrder );
+
+        for( auto pvc : m_ImmigratingAdult )
+        {
+            pAdultQueues->add( pvc, 0.0, true );
+        }
+        for( auto pvc : m_ImmigratingInfected )
+        {
+            InfectedQueues.add( pvc, GetInfectedProgress( pvc ), true );
+        }
+        for( auto pvc : m_ImmigratingInfectious )
+        {
+            InfectiousQueues.add( pvc, 0.0, true );
+        }
+        m_ImmigratingAdult.clear();
+        m_ImmigratingInfected.clear();
+        m_ImmigratingInfectious.clear();
     }
 
     void VectorPopulation::Expose( const IContagionPopulation* cp, float dt, TransmissionRoute::Enum transmission_route )
@@ -1885,7 +2879,7 @@ namespace Kernel
 
 #if 0
         // Modified for inter-species competitive advantage for egg-crowding and larval mortality in case of shared habitat
-        if( params()->vector_params->enable_vector_species_habitat_competition )
+        if( params()->enable_vector_species_habitat_competition )
         {
             float max_capacity = habitat->GetMaximumLarvalCapacity();
             survival_weight = (max_capacity > 0) ? ( m_larval_capacities.at(habitat->GetVectorHabitatType()) / max_capacity ) : 0;
@@ -1897,116 +2891,375 @@ namespace Kernel
 
     uint32_t VectorPopulation::getInfectedCount( IStrainIdentity* pStrain ) const
     {
-        uint32_t num_infected = infected;
-        if( pStrain != nullptr )
-        {
-            num_infected = 0;
-            for( auto p_cohort : InfectedQueues )
-            {
-                if( p_cohort->GetStrainIdentity().GetGeneticID() == pStrain->GetGeneticID() )
-                {
-                    num_infected += p_cohort->GetPopulation();
-                }
-            }
-        }
-        return num_infected;
+        throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__,
+                                          "Specific strains only used in individual vector model.\n" );
     }
 
     uint32_t VectorPopulation::getInfectiousCount( IStrainIdentity* pStrain ) const
     {
-        uint32_t num_infectious = infectious;
-        if( pStrain != nullptr )
-        {
-            num_infectious = 0;
-            for( auto p_cohort : InfectiousQueues )
-            {
-                if( p_cohort->GetStrainIdentity().GetGeneticID() == pStrain->GetGeneticID() )
-                {
-                    num_infectious += p_cohort->GetPopulation();
-                }
-            }
-        }
-        return num_infectious;
+        throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__,
+                                          "Specific strains only used in individual vector model.\n" );
     }
 
-    uint32_t VectorPopulation::getAdultCount()       const { return adult;      }
-    uint32_t VectorPopulation::getMaleCount()        const { return males;      }
-    uint32_t VectorPopulation::getNewEggsCount()     const { return neweggs;    }
+    uint32_t VectorPopulation::getCount( VectorStateEnum::Enum state ) const
+    {
+        return state_counts[ state ];
+    }
 
+    uint32_t VectorPopulation::getNumInfsCount( VectorStateEnum::Enum state ) const
+    {
+        return num_infs_per_state_counts[ state ];
+    }
+
+    uint32_t VectorPopulation::getGenomeCount( VectorStateEnum::Enum state, const VectorGenome& rGenome ) const
+    {
+        VectorGameteBitPair_t bits = rGenome.GetBits();
+        uint32_t count = 0;
+        if( genome_counts[ state ].count( bits ) > 0 )
+        {
+            count = genome_counts[ state ].at( bits );
+        }
+        return count;
+    }
+
+    const std::vector<uint32_t>& VectorPopulation::getGestatingQueue() const { return num_gestating_queue; }
+    uint32_t VectorPopulation::getIndoorBites()                 const { return indoorbites;             }
+    uint32_t VectorPopulation::getInfectiousIndoorBites()       const { return indoorinfectiousbites;   }
+    uint32_t VectorPopulation::getOutdoorBites()                const { return outdoorbites;            }
+    uint32_t VectorPopulation::getInfectiousOutdoorBites()      const { return outdoorinfectiousbites;  }
+    uint32_t VectorPopulation::getNumGestatingBegin()           const { return num_gestating_begin;     }
+    uint32_t VectorPopulation::getNumGestatingEnd()             const { return num_gestating_end;       }
+    uint32_t VectorPopulation::getNewEggsCount()                const { return neweggs;                 }
+    uint32_t VectorPopulation::getNumLookingToFeed()            const { return num_looking_to_feed;     }
+    uint32_t VectorPopulation::getNumFed()                      const { return num_fed_counter;         }
+    uint32_t VectorPopulation::getNumAttemptFeedIndoor()        const { return num_attempt_feed_indoor; }
+    uint32_t VectorPopulation::getNumAttemptFeedOutdoor()       const { return num_attempt_feed_outdoor;}
+    uint32_t VectorPopulation::getNumAttemptButNotFeed()        const { return num_attempt_but_not_feed;}
     uint32_t VectorPopulation::getNewAdults()                   const { return new_adults;              }
+    uint32_t VectorPopulation::getUnmatedAdults()               const { return unmated_adults;          }
     uint32_t VectorPopulation::getNumDiedBeforeFeeding()        const { return dead_mosquitoes_before;  }
     uint32_t VectorPopulation::getNumDiedDuringFeedingIndoor()  const { return dead_mosquitoes_indoor;  }
     uint32_t VectorPopulation::getNumDiedDuringFeedingOutdoor() const { return dead_mosquitoes_outdoor; }
 
-    double  VectorPopulation::getInfectivity()      const  { return infectivity; }
+    uint32_t VectorPopulation::getWolbachiaCount( VectorWolbachia::Enum wol ) const
+    {
+        return wolbachia_counts[ int(wol) ];
+    }
 
-    const std::string& VectorPopulation::get_SpeciesID() const { return species_ID; }
+    uint32_t VectorPopulation::getMicrosporidiaCount( int msStrainIndex, VectorStateEnum::Enum state ) const
+    {
+        return microsporidia_counts[ msStrainIndex ][ state ];
+    }
+
+    const std::string& VectorPopulation::get_SpeciesID() const { return m_species_params->name; }
 
     const VectorHabitatList_t& VectorPopulation::GetHabitats() const  { return (*m_larval_habitats); }
-    
-    const VectorSpeciesParameters* GetVectorSpeciesParameters( const std::string& species_name )
+
+    GenomeNamePairVector_t VectorPopulation::GetPossibleGenomes() const
     {
-        try
+        return m_Fertilizer.CreateAllPossibleGenomesWithNames();
+    }
+
+    const std::set<std::string>& VectorPopulation::GetPossibleAlleleNames() const
+    {
+        return m_species_params->genes.GetDefinedAlleleNames();
+    }
+
+    std::vector<PossibleGenome> VectorPopulation::GetAllPossibleGenomes( VectorGender::Enum gender ) const
+    {
+        GenomeNamePairVector_t all_gnpv = GetPossibleGenomes();
+
+        // ----------------------------------------------------------------------
+        // --- Pick out the genomes of the gender that we are collecting data on
+        // ----------------------------------------------------------------------
+        std::vector<PossibleGenome> all_possible_genomes;
+        for( auto& gnp : all_gnpv )
         {
-            return GET_CONFIGURABLE(SimulationConfig)->vector_params->vspMap.at( species_name );
+            if( (gender == VectorGender::VECTOR_BOTH_GENDERS) ||
+                (gender == gnp.genome.GetGender()) )
+            {
+                all_possible_genomes.push_back( PossibleGenome( gnp ) );
+            }
         }
-        catch( const std::out_of_range& )
+        return all_possible_genomes;
+    }
+
+    bool PossibleGenomeCompare( const PossibleGenome& left, const PossibleGenome& right )
+    {
+        return left.genome < right.genome;
+    }
+
+    // Genomes are considered similar if for each locus (ignoring gender), the set of allele are
+    // the same for each genome.  For example:
+    //    1-1 & 1-1 = similar     - both genomes have 1
+    //    1-0 & 0-1 = similar     - both genomes have 0 and 1
+    //    2-0 & 0-1 = NOT similar - the right genome does not have 2 and the left does not have 1
+    //    1-1 & 0-1 = NOT similar - the left genome does not have 0
+    bool VectorPopulation::SimilarGenomes( uint8_t numGenes, const VectorGenome& rLeft, const VectorGenome& rRight ) const
+    {
+        for( uint8_t i = 0; i < numGenes; ++i )
         {
-            std::stringstream msg;
-            msg << "VectorPopulation of species '" << species_name.c_str() << "' not found in configuration. ";
-            msg << "Add '" << species_name.c_str() << "' to Vector_Species_Params in configuration or, ";
-            msg << "if using serialized populations, remove vector populations of this species.\n";
-            throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+            std::pair<uint8_t, uint8_t> left_allele  = rLeft.GetLocus( i );
+            std::pair<uint8_t, uint8_t> right_allele = rRight.GetLocus( i );
+
+            // the allele in the left genome need to exist in the right genome to be similar
+            if( (left_allele.first  != right_allele.first) && (left_allele.first  != right_allele.second) ) return false;
+            if( (left_allele.second != right_allele.first) && (left_allele.second != right_allele.second) ) return false;
+
+            // AND the allele in the right genome need to exist in the left genome to be similar
+            if( (right_allele.first  != left_allele.first) && (right_allele.first  != left_allele.second) ) return false;
+            if( (right_allele.second != left_allele.first) && (right_allele.second != left_allele.second) ) return false;
         }
+        return true;
+    }
+
+    std::vector<PossibleGenome> VectorPopulation::CombinePossibleGenomes(
+        bool combineSimilarGenomes,
+        std::vector<PossibleGenome>& rPossibleGenomes ) const
+    {
+        if( !combineSimilarGenomes )
+        {
+            return rPossibleGenomes;
+        }
+        else
+        {
+            // sort the list because it helps to ensure the combining is
+            // consistent during test
+            std::sort( rPossibleGenomes.begin(), rPossibleGenomes.end(), PossibleGenomeCompare );
+
+            int num_genes = GetNumGenes();
+            std::vector<PossibleGenome> net_possible_genomes;
+
+            for( auto& pg : rPossibleGenomes )
+            {
+                bool found = false;
+                for( int i = 0; !found && (i < net_possible_genomes.size()); ++i )
+                {
+                    PossibleGenome& r_exist_gnp = net_possible_genomes[ i ];
+                    if( SimilarGenomes( num_genes, pg.genome, r_exist_gnp.genome ) )
+                    {
+                        found = true;
+                        r_exist_gnp.similar_genomes.push_back( pg.genome );
+                    }
+                }
+                if( !found )
+                {
+                    net_possible_genomes.push_back( pg );
+                }
+            }
+            return net_possible_genomes;
+        }
+    }
+
+    std::vector<PossibleGenome> VectorPopulation::FindPossibleGenomes( VectorGender::Enum gender,
+                                                                       bool combineSimilarGenomes ) const
+    {
+        std::vector<PossibleGenome> all_possible_genomes = GetAllPossibleGenomes( gender );
+        std::vector<PossibleGenome> net_possible_genomes = CombinePossibleGenomes( combineSimilarGenomes,
+                                                                                   all_possible_genomes );
+        return net_possible_genomes;
+    }
+
+    uint8_t VectorPopulation::GetNumGenes() const
+    {
+        return m_species_params->genes.Size();
+    }
+
+    uint8_t VectorPopulation::GetLocusIndex( const std::string& rAlleleName ) const
+    {
+        return m_species_params->genes.GetLocusIndex( rAlleleName );
+    }
+
+    void VectorPopulation::ConvertAlleleCombinationsStrings( const std::string& rParameterName,
+                                                             const std::vector<std::vector<std::string>>& rComboStrings,
+                                                             GenomeNamePairVector_t* pPossibleGenomes ) const
+    {
+        VectorGameteBitPair_t bit_mask = 0;
+        std::vector<VectorGameteBitPair_t> vgbp_genomes;
+
+        m_species_params->genes.ConvertAlleleCombinationsStrings( rParameterName,
+                                                                  rComboStrings,
+                                                                  &bit_mask,
+                                                                  &vgbp_genomes );
+
+        for( auto vgbp : vgbp_genomes )
+        {
+            VectorGenome genome( vgbp );
+            std::string name = m_species_params->genes.GetGenomeName( genome );
+            pPossibleGenomes->push_back( GenomeNamePair( genome, name ) );
+        }
+    }
+
+    uint32_t VectorPopulation::getDeathCount( VectorStateEnum::Enum state ) const
+    {
+        return m_AgeAtDeathByState[ state ].count;
+    }
+
+    uint32_t VectorPopulation::getDeathCount( VectorStateEnum::Enum state, const VectorGenome& rGenome ) const
+    {
+        VectorGameteBitPair_t bits = rGenome.GetBits();
+        uint32_t count = 0;
+        if( m_AgeAtDeathByGenomeByState[ state ].count( bits ) > 0 )
+        {
+            count = m_AgeAtDeathByGenomeByState[ state ].at( bits ).count;
+        }
+        return count;
+    }
+
+    float VectorPopulation::getSumAgeAtDeath( VectorStateEnum::Enum state ) const
+    {
+        return m_AgeAtDeathByState[ state ].sum_age_days;
+    }
+
+    float VectorPopulation::getSumAgeAtDeath( VectorStateEnum::Enum state, const VectorGenome& rGenome ) const
+    {
+        VectorGameteBitPair_t bits = rGenome.GetBits();
+        float sum_age = 0.0;
+        if( m_AgeAtDeathByGenomeByState[ state ].count( bits ) > 0 )
+        {
+            sum_age = m_AgeAtDeathByGenomeByState[ state ].at( bits ).sum_age_days;
+        }
+        return sum_age;
+    }
+
+    std::vector<std::string> VectorPopulation::GetMicrosporidiaStrainNames() const
+    {
+        std::vector<std::string> strain_name_list;
+        for( auto& strain_name : species()->microsporidia_strains.GetStrainNames() )
+        {
+            strain_name_list.push_back( strain_name );
+        }
+        return strain_name_list;
+    }
+
+    uint32_t VectorPopulation::getProgressFromLarvaeToImmatureNum() const
+    {
+        return m_ProgressedLarvaeToImmatureCount;
+    }
+
+    float    VectorPopulation::getProgressFromLarvaeToImmatureSumDuration() const
+    {
+        return m_ProgressedLarvaeToImmatureSumDur;
     }
 
     void VectorPopulation::SetContextTo(INodeContext *context)
     {
         m_context = context;
         
-        LOG_DEBUG_F( "Creating VectorSpeciesParameters for %s and suid=%d\n", species_ID.c_str(), context->GetSuid().data);
-        m_species_params = GetVectorSpeciesParameters( species_ID );
+        release_assert( m_SpeciesIndex >= 0 );
+
+        m_vector_params = GET_CONFIGURABLE( SimulationConfig )->vector_params;
+        if( m_vector_params->vector_species.Size() == 0 )
+        {
+            std::ostringstream msg;
+            msg << "There is a vector population in the simulation but no vector species parameters could be loaded from the configuration.\n";
+            msg << "Please use parameter 'Vector_Species_Params' in the configuration to define the vector species parameters.";
+            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+        }
+
+        if( m_SpeciesIndex >= m_vector_params->vector_species.Size() )
+        {
+            std::ostringstream msg;
+            msg << "There are more vector populations in the simulation than vector species parameters defined in the configuration.\n";
+            msg << "Please use parameter 'Vector_Species_Params' in the configuration to define more vector species.";
+            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+        }
+
+        m_species_params = m_vector_params->vector_species[ m_SpeciesIndex ];
+
+        for( int strain_index = 0; strain_index < m_species_params->microsporidia_strains.Size(); ++strain_index )
+        {
+            std::vector<uint32_t> count_by_state( VectorStateEnum::pairs::count() , 0 );
+            microsporidia_counts.push_back( count_by_state );
+        }
 
         // Query for vector node context
         IVectorNodeContext* ivnc = nullptr;
-        if (s_OK !=  context->QueryInterface(GET_IID(IVectorNodeContext), (void**)&ivnc))
+        if( s_OK != context->QueryInterface( GET_IID( IVectorNodeContext ), (void**)&ivnc ) )
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context", "IVectorNodeContext", "INodeContext" );
         }
+
+        // Create larval habitat objects for this species 
+        // and keep a list of pointers so the node can update it with new rainfall, etc.
+        // Larval habitats can exist already when a serialized population was loaded.
+        m_larval_habitats = ivnc->GetVectorHabitatsBySpecies( m_species_params->name );
+        if( m_larval_habitats->size() == 0 )
+        {
+            SetupLarvalHabitat( m_context );
+        }
+
+        if( s_OK != m_context->QueryInterface( GET_IID( INodeVector ), (void**)&m_pNodeVector ) )
+        {
+            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "m_context", "INodeVector", "INodeContext" );
+        }
+
+        InfectiousQueues.initialize( m_pNodeVector, true ); // need INodeVector for migration
+        InfectedQueues.initialize(   m_pNodeVector, true ); // need INodeVector for migration
+        pAdultQueues->initialize(    m_pNodeVector, true ); // need INodeVector for migration
+        MaleQueues.initialize(       nullptr,       true );
+        ImmatureQueues.initialize(   nullptr,       params()->vector_aging );
+        LarvaQueues.initialize(      nullptr,       params()->vector_aging );
+        //EggQueues - not a VectorCohortCollection
+
+        m_Fertilizer.Initialize( &(m_species_params->genes), &(m_species_params->trait_modifiers), &(m_species_params->gene_drivers) );
 
         // Set pointer to shared vector lifecycle probabilities container.
         // The species-independent probabilities, e.g. dependent on individual-human vector-control interventions, are updated once by the node
         // The species-specific probabilities are overwritten when FinalizeTransitionProbabilites is called in Update_Lifecycle_Probabilities
         m_probabilities  = ivnc->GetVectorLifecycleProbabilities();
 
-        m_larval_habitats = ivnc->GetVectorHabitatsBySpecies( species_ID );
+        // -------------------------------------------------------------------------------------
+        // --- If EggQueues or LarvaQueues are not empty, then we get here due to serialization
+        // --- (VectorPopulation's don't migrate).  Hence, we need to replace the VectorHabitat
+        // --- objects with the ones owned by NodeVector.  SetHabitat() will delete the copies
+        // --- owned by VectorCohortWtihHabitat which were created for each cohort during
+        // --- the deserialization process.
+        // -------------------------------------------------------------------------------------
 
-        // For each cohort in EggQueues, look at it's habitat type and (re)wire it to the correct habitat instance.
-        for ( auto cohort : EggQueues )
+        // Rewire the habitat objects.  EggQueues is a temporary variable used during serialization.
+        // Put objects in EggQueues into map
+        for( auto cohort : EggQueues )
         {
-            auto with_habitat = dynamic_cast<IVectorCohortWithHabitat*>(cohort);
-            with_habitat->SetHabitat( ivnc->GetVectorHabitatBySpeciesAndType( species_ID, with_habitat->GetHabitatType(), nullptr ) );
+            if( cohort != nullptr ) // older code serialized null cohorts
+            {
+                cohort->SetHabitat( ivnc->GetVectorHabitatBySpeciesAndType( m_species_params->name, cohort->GetHabitatType(), nullptr ) );
+
+                VectorGameteBitPair_t bits = cohort->GetGenome().GetBits();
+                VectorHabitatType::Enum vht = cohort->GetHabitat()->GetVectorHabitatType();
+                m_EggCohortVectorOfMaps[ vht ][ bits ] = cohort;
+            }
         }
+        EggQueues.clear();
 
         // For each cohort in LarvaQueues, look at it's habitat type and (re)wire it to the correct habitat instance.
         for ( auto cohort : LarvaQueues )
         {
-            auto with_habitat = dynamic_cast<IVectorCohortWithHabitat*>(cohort);
-            with_habitat->SetHabitat( ivnc->GetVectorHabitatBySpeciesAndType( species_ID, with_habitat->GetHabitatType(), nullptr ) );
+            cohort->SetHabitat( ivnc->GetVectorHabitatBySpeciesAndType( m_species_params->name, cohort->GetHabitatType(), nullptr ) );
         }
     }
 
-    std::vector<uint64_t> VectorPopulation::GetNewlyInfectedVectorIds() const
+    std::vector<uint32_t> VectorPopulation::GetNewlyInfectedVectorIds() const
     {
-        throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "Only supported in individual vector model." );
+        throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "Unique mosquito IDs only used in individual vector model.\n" );
     }
 
-    std::vector<uint64_t> VectorPopulation::GetInfectiousVectorIds() const
+    std::vector<uint32_t> VectorPopulation::GetInfectiousVectorIds() const
     {
-        throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "Only supported in individual vector model." );
+        throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "Unique mosquito IDs only used in individual vector model.\n" );
     }
 
-    const SimulationConfig* VectorPopulation::params()  const { return GET_CONFIGURABLE(SimulationConfig); }
+    std::map<uint32_t, uint32_t> VectorPopulation::getNumInfectiousByCohort() const
+    {
+        std::map<uint32_t, uint32_t> infectious_counts;
+        for (auto cohort : InfectiousQueues)
+        {
+            uint32_t index = cohort->GetID();
+            uint32_t count = cohort->GetPopulation();
+            infectious_counts[index] = count;
+        }
+        return infectious_counts;
+    }
 
     const infection_list_t& VectorPopulation::GetInfections() const
     {
@@ -2018,46 +3271,126 @@ namespace Kernel
         throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "Only supported in individual vector model." );
     }
 
+    void VectorPopulation::UpdateAgeAtDeath( IVectorCohort* pCohort, uint32_t numDied )
+    {
+        VectorStateEnum::Enum state = pCohort->GetState();
+        float sum_age = float( numDied ) * pCohort->GetAge();
+        VectorGameteBitPair_t bits = pCohort->GetGenome().GetBits();
+
+        m_AgeAtDeathByState[ state ].count        += numDied;
+        m_AgeAtDeathByState[ state ].sum_age_days += sum_age;
+
+        m_AgeAtDeathByGenomeByState[ state ][ bits ].count        += numDied;
+        m_AgeAtDeathByGenomeByState[ state ][ bits ].sum_age_days += sum_age;
+    }
+
+    suids::suid VectorPopulation::GetSuid() const
+    {
+        throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "Not supported in VECTOR_SIM" );
+    }
+
     REGISTER_SERIALIZABLE(VectorPopulation);
 
     void VectorPopulation::serialize(IArchive& ar, VectorPopulation* obj)
     {
         VectorPopulation& population = *obj;
 //        ar.labelElement("m_larval_habitats") & population.m_larval_habitats;  // NodeVector owns this information.
-        ar.labelElement("m_larval_capacities"); Kernel::serialize(ar, population.m_larval_capacities);
-        ar.labelElement("neweggs") & population.neweggs;
-        ar.labelElement("adult") & population.adult;
-        ar.labelElement("infected") & population.infected;
-        ar.labelElement("infectious") & population.infectious;
-        ar.labelElement("males") & population.males;
         ar.labelElement("dryheatmortality") & population.dryheatmortality;
         ar.labelElement("infectiouscorrection") & population.infectiouscorrection;
         ar.labelElement("indoorinfectiousbites") & population.indoorinfectiousbites;
         ar.labelElement("outdoorinfectiousbites") & population.outdoorinfectiousbites;
         ar.labelElement("indoorbites") & population.indoorbites;
         ar.labelElement("outdoorbites") & population.outdoorbites;
-        ar.labelElement("infectivity") & population.infectivity;
-        ar.labelElement("infectivity_indoor") & population.infectivity_indoor;
-        ar.labelElement("infectivity_outdoor") & population.infectivity_outdoor;
         ar.labelElement("m_EIR_by_pool"); Kernel::serialize(ar, population.m_EIR_by_pool);
         ar.labelElement("m_HBR_by_pool"); Kernel::serialize(ar, population.m_HBR_by_pool);
-        ar.labelElement("gender_mating_eggs"); Kernel::serialize(ar, population.gender_mating_eggs);
-        ar.labelElement("gender_mating_males"); Kernel::serialize(ar, population.gender_mating_males);
-        ar.labelElement("vector_genetics_adults"); Kernel::serialize(ar, population.vector_genetics_adults);
-        ar.labelElement("vector_genetics_infected"); Kernel::serialize(ar, population.vector_genetics_infected);
-        ar.labelElement("vector_genetics_infectious"); Kernel::serialize(ar, population.vector_genetics_infectious);
-        ar.labelElement("species_ID") & population.species_ID;
+
+        // These get cleared at the beginning of UpdateVectorPopulation() so they do not need to be saved
+        //ar.labelElement("gender_mating_eggs"); Kernel::serialize(ar, population.gender_mating_eggs);
+        //ar.labelElement("neweggs") & population.neweggs;
+        //ar.labelElement("genome_counts") & population.genome_counts;
+        //ar.labelElement("wolbachia_counts") & population.wolbachia_counts;
+        //ar.labelElement("microsporidia_counts") & population.microsporidia_counts;
+        //ar.labelElement( "m_AgeAtDeathByState" ) & population.m_AgeAtDeathByState;
+        //ar.labelElement( "m_AgeAtDeathByGenomeByState" ) & population.m_AgeAtDeathByGenomeByState;
+        //ar.labelElement( "m_ProgressedLarvaeToImmatureCount" ) & population.m_ProgressedLarvaeToImmatureCount;
+        //ar.labelElement( "m_ProgressedLarvaeToImmatureSumDur" ) & population.m_ProgressedLarvaeToImmatureSumDur;
+
+        // Adding state_counts so that the check in SimulationVector for
+        // if the node is initialized with vectors works as desired.
+        ar.labelElement("state_counts") & population.state_counts;
+
+        if( ar.IsWriter() )
+        {
+            population.EggQueues.clear();
+            for( auto& r_egg_map : population.m_EggCohortVectorOfMaps )
+            {
+                for( auto entry : r_egg_map )
+                {
+                    // ------------------------------------------------------------------------------
+                    // --- The maps are allowed to have nullptr entries because we don't want to be
+                    // --- constantly changing the size of the map.  However, we don't want to
+                    // --- serialize them.
+                    // ------------------------------------------------------------------------------
+                    if( entry.second != nullptr )
+                    {
+                        population.EggQueues.push_back( entry.second );
+                    }
+                }
+            }
+        }
+        // -----------------------------------------------------------------------------
+        // --- else the reader will put the data into EggQueues and SetContextTo() will
+        // --- put it into m_EggCohortVectorOfMaps after the habitats get re-wired
+        // -----------------------------------------------------------------------------
+
+        std::string species_name;
+        if( ar.IsWriter() )
+        {
+            release_assert( population.m_species_params != nullptr );
+            species_name = population.m_species_params->name;
+        }
+        ar.labelElement( "species_name" ) & species_name;
+        ar.labelElement( "m_SpeciesIndex" ) & population.m_SpeciesIndex;
+
         ar.labelElement("EggQueues") & population.EggQueues;
         ar.labelElement("LarvaQueues") & population.LarvaQueues;
         ar.labelElement("ImmatureQueues") & population.ImmatureQueues;
-        ar.labelElement("AdultQueues") & population.AdultQueues;
+        ar.labelElement("AdultQueues") & *(population.pAdultQueues);
         ar.labelElement("InfectedQueues") & population.InfectedQueues;
         ar.labelElement("InfectiousQueues") & population.InfectiousQueues;
         ar.labelElement("MaleQueues") & population.MaleQueues;
-        // Species parameters and probabilities will be set in SetContextTo()
-        // ar.labelElement("m_species_params"); VectorSpeciesParameters::serialize(ar, const_cast<VectorSpeciesParameters*&>(population.m_species_params));
-        // ar.labelElement("m_probabilities"); VectorProbabilities::serialize(ar, population.m_probabilities);
         ar.labelElement("m_VectorMortality") & population.m_VectorMortality;
+        ar.labelElement( "m_UnmatedMaleTotal" ) & population.m_UnmatedMaleTotal;
+        ar.labelElement( "m_MaleMatingCdf" ) & population.m_MaleMatingCdf;
+
+        // --------------------------------------------------------------------------
+        // --- If reading a serialized file, connect the pointers in m_MaleMatingCdf.
+        // --- We need to serialize m_MaleMatingCdf because it is populated in Update_Immature_Queue()
+        // --- but can be used in the next time step in Update_Adult_Queue().
+        // --------------------------------------------------------------------------
+        if( ar.IsReader() )
+        {
+            for( auto& r_mmc : population.m_MaleMatingCdf )
+            {
+                release_assert( r_mmc.male_cohort_id > 0 );
+                release_assert( r_mmc.p_cohort == nullptr );
+
+                bool found = false;
+                for( auto p_male_cohort : population.MaleQueues )
+                {
+                    if( p_male_cohort->GetID() == r_mmc.male_cohort_id )
+                    {
+                        r_mmc.p_cohort = p_male_cohort;
+                        found = true;
+                        break;
+                    }
+                }
+                release_assert( found );
+            }
+        }
+
+        // Probabilities will be set in SetContextTo()
+        // ar.labelElement("m_probabilities"); VectorProbabilities::serialize(ar, population.m_probabilities);
 
         // do not need to serialize these since they are updated each time step before they are used
         //m_LocalMortalityProbabilityTable()

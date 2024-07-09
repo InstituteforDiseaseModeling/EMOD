@@ -1,0 +1,121 @@
+{
+    "Genes": [
+        {
+            "Is_Gender_Gene": 0,
+            "Alleles": [
+                {
+                    "Name": "Aw",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 1
+                },
+                {
+                    "Name": "At",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0
+                }
+            ],
+            "Mutations": []
+        },
+        {
+            "Is_Gender_Gene": 0,
+            "Alleles": [
+                {
+                    "Name": "Bw",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 1
+                },
+                {
+                    "Name": "Bt",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0
+                }
+            ],
+            "Mutations": []
+        },
+        {
+            "Is_Gender_Gene": 0,
+            "Alleles": [
+                {
+                    "Name": "Cw",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 1
+                },
+                {
+                    "Name": "Ct",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0
+                }
+            ],
+            "Mutations": []
+        }
+    ],
+    "Gene_To_Trait_Modifiers" : [
+    ],
+    "Drivers" : [
+        {
+            "Driver_Type" : "DAISY_CHAIN",
+            "Driving_Allele" : "Bt",
+            "Alleles_Driven" : [
+                {
+                    "Allele_To_Copy"    : "At",
+                    "Allele_To_Replace" : "Aw",
+                    "Copy_To_Likelihood" : [
+                        {
+                            "Copy_To_Allele" : "Aw",
+                            "Likelihood" : 0.0
+                        },
+                        {
+                            "Copy_To_Allele" : "At",
+                            "Likelihood" : 1.0
+                        }
+                    ]
+                },
+                {
+                    "Allele_To_Copy"    : "Bt",
+                    "Allele_To_Replace" : "Bw",
+                    "Copy_To_Likelihood" : [
+                        {
+                            "Copy_To_Allele" : "Bw",
+                            "Likelihood" : 1.0
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "Driver_Type" : "DAISY_CHAIN",
+            "Driving_Allele" : "Ct",
+            "Alleles_Driven" : [
+                {
+                    "Allele_To_Copy"    : "Bt",
+                    "Allele_To_Replace" : "Bw",
+                    "Copy_To_Likelihood" : [
+                        {
+                            "Copy_To_Allele" : "Bw",
+                            "Likelihood" : 0.0
+                        },
+                        {
+                            "Copy_To_Allele" : "Bt",
+                            "Likelihood" : 1.0
+                        }
+                    ]
+                },
+                {
+                    "Allele_To_Copy"    : "Ct",
+                    "Allele_To_Replace" : "Cw",
+                    "Copy_To_Likelihood" : [
+                        {
+                            "Copy_To_Allele" : "Cw",
+                            "Likelihood" : 1.0
+                        },
+                        {
+                            "COMMENT": "Daisy chain cannot drive itself.",
+                            "Copy_To_Allele" : "Ct",
+                            "Likelihood" : 0.0
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

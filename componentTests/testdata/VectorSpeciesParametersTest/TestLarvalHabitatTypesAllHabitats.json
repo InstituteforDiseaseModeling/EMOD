@@ -1,0 +1,56 @@
+{
+    "Vector_Species_Params": [
+        {
+            "Name" : "species_1",
+            "Acquire_Modifier": 0.2,
+            "Adult_Life_Expectancy": 10,
+            "Male_Life_Expectancy": 10,
+            "Anthropophily": 0.95,
+            "Aquatic_Arrhenius_1": 84200000000,
+            "Aquatic_Arrhenius_2": 8328,
+            "Aquatic_Mortality_Rate": 0.1,
+            "Cycle_Arrhenius_1": 0,
+            "Cycle_Arrhenius_2": 0,
+            "Cycle_Arrhenius_Reduction_Factor": 0,
+            "Days_Between_Feeds": 3,
+            "Egg_Batch_Size": 100,
+            "Immature_Duration": 4,
+            "Indoor_Feeding_Fraction": 0.5,
+            "Infected_Arrhenius_1": 117000000000,
+            "Infected_Arrhenius_2": 8336,
+            "Infected_Egg_Batch_Factor": 0.8,
+            "Infectious_Human_Feed_Mortality_Factor": 1.5,
+            "Habitats": [
+                {
+                    "Habitat_Type" : "CONSTANT",
+                    "Max_Larval_Capacity" : 11250000000
+                },
+                {
+                    "Habitat_Type" : "ALL_HABITATS",
+                    "Max_Larval_Capacity" : 11250000000
+                },
+                {
+                    "Habitat_Type" : "TEMPORARY_RAINFALL",
+                    "Max_Larval_Capacity" : 11250000000
+                }
+            ],
+            "Microsporidia_Female_To_Egg_Transmission_Probability": 0.0,
+            "Microsporidia_Female_To_Male_Transmission_Probability": 0.0,
+            "Microsporidia_Male_To_Female_Transmission_Probability": 0.0,
+            "Microsporidia_Larval_Growth_Modifier": 1.0,
+            "Microsporidia_Female_Mortality_Modifier": 1.0,
+            "Microsporidia_Male_Mortality_Modifier": 1.0,
+            "Microsporidia_Duration_To_Disease_Acquisition_Modification": {
+                "Times" : [   0 ],
+                "Values": [ 1.0 ]
+            },
+            "Microsporidia_Duration_To_Disease_Transmission_Modification": {
+                "Times" : [   0 ],
+                "Values": [ 1.0 ]
+            },
+            "Temperature_Dependent_Feeding_Cycle": "NO_TEMPERATURE_DEPENDENCE",
+            "Transmission_Rate": 0.5,
+            "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_NONE"
+        }
+    ]
+}

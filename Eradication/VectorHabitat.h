@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -41,10 +33,10 @@ namespace Kernel
         virtual void                     AddEggs(int32_t eggs) override;
         virtual void                     SetMaximumLarvalCapacity(float) override;
 
-        virtual float                    GetOvipositionTrapKilling()     const override;
-        virtual float                    GetArtificialLarvalMortality()  const override;
-        virtual float                    GetLarvicideHabitatScaling()    const override;
-        virtual float                    GetRainfallMortality()          const override;
+        virtual float                     GetOvipositionTrapKilling()     const override;
+        virtual const GeneticProbability& GetArtificialLarvalMortality()  const override;
+        virtual float                     GetLarvicideHabitatScaling()    const override;
+        virtual float                     GetRainfallMortality()          const override;
 
         virtual float GetEggCrowdingCorrection( bool refresh = false ) override;
         virtual float GetLocalLarvalGrowthModifier() const override;
@@ -52,6 +44,7 @@ namespace Kernel
 
     protected:
         VectorHabitat( VectorHabitatType::Enum type );
+        VectorHabitat( const VectorHabitat& rMaster );
 
         virtual QueryResult QueryInterface( iid_t, void** ) override { return e_NOINTERFACE; }
         virtual int32_t AddRef() override { return 1; }
@@ -74,7 +67,7 @@ namespace Kernel
         int32_t                  m_new_egg_count;
 
         float                    m_oviposition_trap_killing;
-        float                    m_artificial_larval_mortality;
+        GeneticProbability       m_artificial_larval_mortality;
         float                    m_larvicide_habitat_scaling;
         float                    m_rainfall_mortality;
         float                    m_egg_crowding_correction;
@@ -88,8 +81,11 @@ namespace Kernel
     class ConstantHabitat : public VectorHabitat
     {
     public:
+        ConstantHabitat();
+        ConstantHabitat( const ConstantHabitat& rMaster );
+
+        virtual IVectorHabitat* Clone() override;
         virtual void UpdateCurrentLarvalCapacity(float dt, INodeContext* node) override;
-        ConstantHabitat();  //boring... inherit
     protected:
         DECLARE_SERIALIZABLE(ConstantHabitat);
     };
@@ -97,8 +93,12 @@ namespace Kernel
     class TemporaryRainfallHabitat : public VectorHabitat
     {
     public:
-        virtual void UpdateCurrentLarvalCapacity(float dt, INodeContext* node) override;
         TemporaryRainfallHabitat();
+        TemporaryRainfallHabitat( const TemporaryRainfallHabitat& rMaster );
+
+        virtual IVectorHabitat* Clone() override;
+        virtual void UpdateCurrentLarvalCapacity(float dt, INodeContext* node) override;
+
     protected:
         DECLARE_SERIALIZABLE(TemporaryRainfallHabitat);
     };
@@ -106,8 +106,12 @@ namespace Kernel
     class WaterVegetationHabitat : public VectorHabitat
     {
     public:
-        virtual void UpdateCurrentLarvalCapacity(float dt, INodeContext* node) override;
         WaterVegetationHabitat();
+        WaterVegetationHabitat( const WaterVegetationHabitat& rMaster );
+
+        virtual IVectorHabitat* Clone() override;
+        virtual void UpdateCurrentLarvalCapacity(float dt, INodeContext* node) override;
+ 
     protected:
         DECLARE_SERIALIZABLE(WaterVegetationHabitat);
     };
@@ -115,8 +119,12 @@ namespace Kernel
     class HumanPopulationHabitat : public VectorHabitat
     {
     public:
-        virtual void UpdateCurrentLarvalCapacity(float dt, INodeContext* node) override;
         HumanPopulationHabitat();
+        HumanPopulationHabitat( const HumanPopulationHabitat& rMaster );
+
+        virtual IVectorHabitat* Clone() override;
+        virtual void UpdateCurrentLarvalCapacity(float dt, INodeContext* node) override;
+
     protected:
         DECLARE_SERIALIZABLE(HumanPopulationHabitat);
     };
@@ -124,43 +132,30 @@ namespace Kernel
     class BrackishSwampHabitat : public VectorHabitat
     {
     public:
-        virtual void UpdateCurrentLarvalCapacity(float dt, INodeContext* node) override;
         BrackishSwampHabitat();
+        BrackishSwampHabitat( const BrackishSwampHabitat& rMaster );
+
+        virtual IVectorHabitat* Clone() override;
+        virtual void UpdateCurrentLarvalCapacity(float dt, INodeContext* node) override;
+
     protected:
         DECLARE_SERIALIZABLE(BrackishSwampHabitat);
-    };
-
-    class MarshyStreamHabitat : public VectorHabitat
-    {
-    public:
-        virtual void UpdateCurrentLarvalCapacity(float dt, INodeContext* node) override;
-        MarshyStreamHabitat();
-
-    protected:
-
-        static const float rainfall_to_fill;
-        static const float water_table_outflow_days;
-        static const float stream_outflow_days;
-        static const float stream_outflow_threshold;
-        static const float evaporation_days;
-        static const float permeability;
-
-        float water_table;
-        float stream_level;
-
-        DECLARE_SERIALIZABLE(MarshyStreamHabitat);
     };
 
     class LinearSplineHabitat : public VectorHabitat
     {
     public:
-        virtual void UpdateCurrentLarvalCapacity(float dt, INodeContext* node) override;
         LinearSplineHabitat();
+        LinearSplineHabitat( const LinearSplineHabitat& rMaster );
 
         virtual bool Configure( const Configuration* inputJson );
 
+        virtual IVectorHabitat* Clone() override;
+        virtual void UpdateCurrentLarvalCapacity(float dt, INodeContext* node) override;
+
     protected:
-        float day_of_year;
+        float day_of_distribution;
+        float duration_of_distribution; 
         InterpolatedValueMap capacity_distribution;
 
         DECLARE_SERIALIZABLE(LinearSplineHabitat);

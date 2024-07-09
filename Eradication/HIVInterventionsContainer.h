@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -47,7 +39,10 @@ namespace Kernel
 
         virtual void ApplyProbMaternalTransmissionModifier( const ProbabilityNumber &probReduction ) override;
 
-        virtual void GoOnART( bool viralSupression, float daysToAchieveSuppression ) override;
+        virtual void GoOnART( bool viralSupression,
+                              float daysToAchieveSuppression,
+                              float durationFromEnrollmentToArtAidsDeath,
+                              float artMultiplierOnTransmissionProbPerAct ) override;
         virtual void GoOffART() override;
 
         // IHIVMedicalHistory
@@ -98,7 +93,6 @@ namespace Kernel
         virtual const ProbabilityNumber GetInfectivitySuppression() const override;
         virtual float GetDurationSinceLastStartingART() const override;
         virtual const ProbabilityNumber& GetProbMaternalTransmissionModifier() const override;
-        virtual void BroadcastNewHIVInfection() override;
 
         // Update parameters in this container before the infections are updated
         virtual void InfectiousLoopUpdate( float dt ) override;
@@ -145,6 +139,7 @@ namespace Kernel
         float last_recorded_CD4;        // replaces cd4_at_last_ART_monitoring_visit
         unsigned int num_times_started_ART ;
         ReceivedTestResultsType::Enum received_HIV_test_results ;
+        float infectivity_suppression_multiplier;
 
         DECLARE_SERIALIZABLE(HIVInterventionsContainer);
     };

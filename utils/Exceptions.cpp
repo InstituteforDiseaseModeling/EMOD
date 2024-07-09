@@ -1,13 +1,3 @@
-#include "Exceptions.h"
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
-
 #pragma once
 
 #include <stdafx.h>
@@ -16,6 +6,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <iomanip>
 #include <boost/lexical_cast.hpp> // no!!!
 #include "Exceptions.h"
+#include "FileSystem.h"
 #include "Types.h" // temp, for backtrace
 #ifdef __GNUC__
 #include <execinfo.h>
@@ -280,7 +271,7 @@ namespace Kernel {
         std::ostringstream _tmp_msg;
         _tmp_msg << "CalculatedValueOutOfRangeException: "
                  << what()
-                 << GET_VAR_NAME( var_name )
+                 << "'" << GET_VAR_NAME( var_name ) << "'"
                  << " assigned calculated value "
                  << bad_value
                  << " that violates range constraint "
@@ -295,7 +286,7 @@ namespace Kernel {
         _tmp_msg << "ConfigurationRangeException: "
                  << what()
                  << "Configuration variable " 
-                 << GET_VAR_NAME(var_name)
+                 << "'" << GET_VAR_NAME( var_name ) << "'"
                  << " with value " 
                  << var_value 
                  << " out of range: "
@@ -336,7 +327,7 @@ namespace Kernel {
         _msg = _tmp_msg.str();
     }
 
-    FileNotFoundException::FileNotFoundException( const char * src_file_name, int line_num, const char* func_name, const char * missing_file_name )
+    FileNotFoundException::FileNotFoundException( const char * src_file_name, int line_num, const char* func_name, const char * missing_file_name, const char* note )
     : DetailedException( src_file_name, line_num, func_name )
     {
         std::ostringstream _tmp_msg;
@@ -344,6 +335,27 @@ namespace Kernel {
             << what()
             << "Could not find file "
             << GET_STR(missing_file_name);
+        if( note != nullptr )
+        {
+            _tmp_msg << ".\n" << note;
+        }
+        _msg = _tmp_msg.str();
+    }
+
+    FileNotFoundException::FileNotFoundException( const char * src_file_name, int line_num, const char* func_name, bool includeSystemErrorMessage, const char * missing_file_name )
+    : DetailedException( src_file_name, line_num, func_name )
+    {
+        std::ostringstream _tmp_msg;
+        _tmp_msg << "FileNotFoundException: "
+            << what()
+            << "Could not find file "
+            << GET_STR(missing_file_name);
+        if( includeSystemErrorMessage )
+        {
+            std::stringstream ss;
+            ss << "Received system error '" << FileSystem::GetSystemErrorMessage() << "'.";
+            _tmp_msg << ".\n" << ss.str();
+        }
         _msg = _tmp_msg.str();
     }
 
@@ -521,9 +533,9 @@ namespace Kernel {
         std::ostringstream _tmp_msg;
         _tmp_msg << "OutOfRangeException: "
                  << what()
-                 << "Variable "
+                 << "Variable '"
                  << GET_VAR_NAME(var_name)
-                 << " had value " 
+                 << "' had value " 
                  << std::setprecision(9) << value 
                  << " which was inconsistent with range limit "
                  << std::setprecision(9) << value_violated;

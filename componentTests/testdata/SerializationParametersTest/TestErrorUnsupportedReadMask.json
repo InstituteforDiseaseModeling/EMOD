@@ -1,0 +1,9 @@
+{
+    "Serialization_Mask_Node_Read": 17,
+    "Serialized_Population_Filenames": [
+        "testdata/SerializationParametersTest/dummy.dtk"
+    ],
+    "Serialized_Population_Path": ".",
+    "Serialized_Population_Reading_Type": "READ",
+    "Serialized_Population_Writing_Type": "NONE"
+}

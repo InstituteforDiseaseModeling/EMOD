@@ -1,8 +1,10 @@
 {
     "Simulation_Timestep" : 1,
     "Infection_Updates_Per_Timestep" : 8,
-    "Malaria_Drug_Params": {
-       "10_Dose_Drug": {
+    "Malaria_Drug_Params": [
+        {
+            "Name": "10_Dose_Drug",
+            "PKPD_Model": "CONCENTRATION_VERSUS_TIME",
             "Drug_Cmax": 1000, 
             "Drug_Decay_T1": 1, 
             "Drug_Decay_T2": 4, 
@@ -16,6 +18,6 @@
             "Drug_Vd": 3, 
             "Max_Drug_IRBC_Kill": 3.45,
             "Bodyweight_Exponent": 0
-       }
-    }
+        }
+    ]
 }

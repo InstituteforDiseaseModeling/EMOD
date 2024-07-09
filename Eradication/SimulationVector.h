@@ -1,16 +1,7 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
 #include <map>
-#include "BoostLibWrapper.h"
 #include "Simulation.h"
 #include "VectorContexts.h"
 #include "IVectorCohort.h"
@@ -18,10 +9,11 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 namespace Kernel
 {
-    struct IVectorMigrationReporting ;
+    struct IVectorMigrationReporting;
 
     class SimulationVector : public Simulation, public IVectorSimulationContext
     {
+        GET_SCHEMA_STATIC_WRAPPER( SimulationVector )
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
         DECLARE_QUERY_INTERFACE()
 
@@ -29,6 +21,8 @@ namespace Kernel
         static SimulationVector *CreateSimulation();
         static SimulationVector *CreateSimulation(const ::Configuration *config);
         virtual ~SimulationVector();
+
+        virtual bool Configure( const Configuration* inputJson );
 
         // IVectorSimulationContext methods
         virtual void  PostMigratingVector( const suids::suid& nodeSuid, IVectorCohort* ind ) override;
@@ -39,8 +33,7 @@ namespace Kernel
         virtual void addNewNodeFromDemographics( ExternalNodeId_t externalNodeId,
                                                  suids::suid node_suid,
                                                  NodeDemographicsFactory *nodedemographics_factory,
-                                                 ClimateFactory *climate_factory,
-                                                 bool white_list_enabled ) override;
+                                                 ClimateFactory *climate_factory ) override;
         virtual int  populateFromDemographics(const char* campaign_filename, const char* loadbalance_filename) override;
 
         // Creates reporters.  Specifies vector-species-specific reporting in addition to base reporting
@@ -54,8 +47,8 @@ namespace Kernel
 
         // holds a vector of migrating vectors for each node rank
         vector<vector<IVectorCohort*>> migratingVectorQueues;
-        vector< IVectorMigrationReporting* > vector_migration_reports ;
-        std::map<suids::suid,float> node_populations_map ;
+        vector< IVectorMigrationReporting* > vector_migration_reports;
+        std::map<suids::suid, float> node_populations_map;
 
         virtual void Initialize(const ::Configuration *config) override;
 

@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -35,6 +27,7 @@ protected:
     void normalizeChannelWithLastTimestep( const std::string &channel_name, const std::string &normalization_channel_name );
 
     // channels specific to this particular report-type
+    float* human_population; // needed for daily_xx calculations
     float* adult_vectors;
     float* infectious_vectors;
     float* daily_eir;

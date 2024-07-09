@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include <stdafx.h>
 #include "stdio.h" // remove()
@@ -51,8 +43,13 @@ bool FileSystem::RemoveDirectory( const std::string& rDir )
 
 bool FileSystem::FileExists( const std::string& rPath )
 {
+#ifdef WIN32
+    struct _stat64 s;
+    bool exists = _stat64( rPath.c_str(), &s ) == 0 ;
+#else
     struct stat s;
     bool exists = stat( rPath.c_str(), &s ) == 0 ;
+#endif
     exists = exists && (s.st_mode & S_IFREG) ; /*needed for linux, works on windows*/
     return exists ;
 }
@@ -179,7 +176,7 @@ void FileSystem::OpenFileForReading( std::ifstream& rInputStream, const char* pF
 {
     if( !FileSystem::FileExists( pFilename ) )
     {
-        throw Kernel::FileNotFoundException( __FILE__, __LINE__, __FUNCTION__, pFilename );
+        throw Kernel::FileNotFoundException( __FILE__, __LINE__, __FUNCTION__, true, pFilename );
     }
 
     std::ios_base::openmode mode = std::ios_base::in;

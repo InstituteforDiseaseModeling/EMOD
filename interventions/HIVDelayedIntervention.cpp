@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "HIVDelayedIntervention.h"
@@ -30,7 +22,6 @@ namespace Kernel
 
     HIVDelayedIntervention::HIVDelayedIntervention()
     : DelayedIntervention()
-    , year2DelayMap()
     , days_remaining(-1)
     , broadcast_event()
     , broadcast_on_expiration_event()
@@ -41,7 +32,6 @@ namespace Kernel
     HIVDelayedIntervention::HIVDelayedIntervention( const HIVDelayedIntervention& master )
         : DelayedIntervention( master )
     {
-        year2DelayMap = master.year2DelayMap;
         days_remaining = master.days_remaining;
         broadcast_event = master.broadcast_event;
         broadcast_on_expiration_event = master.broadcast_on_expiration_event;
@@ -56,7 +46,7 @@ namespace Kernel
         DelayedIntervention::PreConfigure(inputJson);
 
         DistributionFunction::Enum delay_function( DistributionFunction::CONSTANT_DISTRIBUTION );
-        initConfig( "Delay_Period_Distribution", delay_function, inputJson, MetadataDescriptor::Enum( "Delay_Distribution", DI_Delay_Distribution_DESC_TEXT, MDD_ENUM_ARGS( DistributionFunction ) ) );
+        initConfig( "Delay_Period_Distribution", delay_function, inputJson, MetadataDescriptor::Enum( "Delay_Distribution", Delay_Period_Distribution_DESC_TEXT, MDD_ENUM_ARGS( DistributionFunction ) ) );
         delay_distribution = DistributionFactory::CreateDistribution( this, delay_function, "Delay_Period", inputJson );
 
         initConfigTypeMap( "Broadcast_Event", &broadcast_event, HIV_Delayed_Intervention_Broadcast_Event_DESC_TEXT );
@@ -142,7 +132,6 @@ namespace Kernel
         DelayedIntervention::serialize( ar, obj );
         HIVDelayedIntervention& delayed = *obj;
 
-        ar.labelElement("year2DelayMap"                 ) & delayed.year2DelayMap;
         ar.labelElement("days_remaining"                ) & delayed.days_remaining;
         ar.labelElement("broadcast_event"               ) & delayed.broadcast_event;
         ar.labelElement("broadcast_on_expiration_event" ) & delayed.broadcast_on_expiration_event;

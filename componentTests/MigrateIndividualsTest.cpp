@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 
 #include "stdafx.h"
@@ -15,6 +7,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "componentTests.h"
 #include "MigrateIndividuals.h"
+#include "Individual.h"
 
 #include "FileSystem.h"
 #include "Configuration.h"
@@ -33,6 +26,7 @@ SUITE(MigrateIndividualsTest)
             : m_MigrateIndividuals()
             , m_pSimulationConfig( new SimulationConfig() )
         {
+            JsonConfigurable::_useDefaults = true;
             Environment::Finalize();
             Environment::setLogger( new SimpleLogger( Logger::tLevel::WARNING ) );
             Environment::setSimulationConfig( m_pSimulationConfig );
@@ -42,6 +36,7 @@ SUITE(MigrateIndividualsTest)
 
         ~MigrateFixture()
         {
+            IndividualHumanConfig::migration_pattern = MigrationPattern::RANDOM_WALK_DIFFUSION;
             delete m_pSimulationConfig;
             Environment::Finalize();
         }
@@ -54,6 +49,7 @@ SUITE(MigrateIndividualsTest)
         // --- the migration_structure is valid.
         // -------------------------------------------------------------
         m_pSimulationConfig->migration_structure = MigrationStructure::FIXED_RATE_MIGRATION;
+        IndividualHumanConfig::migration_pattern = MigrationPattern::SINGLE_ROUND_TRIPS;
         std::unique_ptr<Configuration> p_config( Configuration_Load( "testdata/MigrateIndividualsTest.json" ) );
         m_MigrateIndividuals.Configure( p_config.get() );
     }

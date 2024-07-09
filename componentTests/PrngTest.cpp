@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include <iostream>
@@ -15,10 +7,225 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "RANDOM.h"
 
+#include <random>
+
 using namespace Kernel;
+
 
 SUITE(PrngTest)
 {
+    TEST( TestWeibull2 )
+    {
+        PSEUDO_DES rng( 42 );
+
+        int num_draws = 1000;
+        float scale = 0.05f;
+        float heterogeneity = 0.2f;
+
+        std::vector<std::pair<float,int>> histogram;
+        histogram.push_back( std::make_pair(  5.0f, 0 ) );
+        histogram.push_back( std::make_pair( 10.0f, 0 ) );
+        histogram.push_back( std::make_pair( 15.0f, 0 ) );
+        histogram.push_back( std::make_pair( 20.0f, 0 ) );
+        histogram.push_back( std::make_pair( 25.0f, 0 ) );
+        histogram.push_back( std::make_pair( 30.0f, 0 ) );
+        histogram.push_back( std::make_pair( 35.0f, 0 ) );
+        histogram.push_back( std::make_pair( 40.0f, 0 ) );
+        histogram.push_back( std::make_pair( 10000.0f, 0 ) );
+
+        float sum = 0.0;
+        for( int i = 0; i < num_draws; ++i )
+        {
+            float duration = 365.0 * rng.Weibull2( scale, heterogeneity );
+            sum += duration;
+
+            for( int j = 0; j < histogram.size(); ++j )
+            {
+                if( duration < histogram[ j ].first )
+                {
+                    histogram[ j ].second += 1;
+                    break;
+                }
+            }
+
+        }
+        float average = sum / float( num_draws );
+        printf("scale=%f  heterogeneity=%f  average=%f\n",scale,heterogeneity,average);
+
+        for( auto dur_count : histogram )
+        {
+            printf("%f - %d\n",dur_count.first,dur_count.second);
+        }
+
+
+    }
+
+    TEST( TestGamma )
+    {
+        PSEUDO_DES rng( 42 );
+
+        float k = 2.0f;
+        float theta = 0.38f;
+
+        float exp_mean = k * theta;
+        float exp_var = k * theta * theta;
+
+        int num_samples = 100000;
+        float sum = 0.0;
+        float sum2 = 0.0;
+        for( int i = 0; i < num_samples; ++i )
+        {
+            float val = rng.rand_gamma( k, theta );
+            sum += val;
+            sum2 += val*val;
+        }
+        float act_mean = sum / float( num_samples );
+        float act_var = (sum2 / float( num_samples - 1 )) - (act_mean * act_mean);
+
+        CHECK_CLOSE( exp_mean, act_mean, exp_mean/1000.0 );
+        CHECK_CLOSE( exp_var, act_var, exp_var/10.0 );
+    }
+
+    TEST( TestGamma2 )
+    {
+        PSEUDO_DES rng( 42 );
+
+        float k = 1000.0;
+        float theta = 100.0;
+
+        float exp_mean = k * theta;
+        float exp_var = k * theta * theta;
+
+        int num_samples = 100000;
+        float sum = 0.0;
+        float sum2 = 0.0;
+        for( int i = 0; i < num_samples; ++i )
+        {
+            float val = rng.rand_gamma( k, theta );
+            sum += val;
+            sum2 += val*val;
+        }
+        float act_mean = sum / float( num_samples );
+        float act_var = (sum2 / float( num_samples - 1 )) - (act_mean * act_mean);
+
+        CHECK_CLOSE( exp_mean, act_mean, exp_mean/1000.0 );
+        CHECK_CLOSE( exp_var, act_var, exp_var/10.0 );
+    }
+
+    TEST( TestMultivariateHypergeometric )
+    {
+        PSEUDO_DES rng( 42 );
+
+        std::vector<uint32_t> num_each_item;
+        num_each_item.push_back( 4 );
+        num_each_item.push_back( 3 );
+        num_each_item.push_back( 2 );
+        num_each_item.push_back( 1 );
+
+        for( int num_samples = 1; num_samples <= 3; ++num_samples )
+        {
+            std::vector<float> sum(4,0);
+
+            int num_iterations = 1000000;
+            for( int i = 0; i < num_iterations; ++i )
+            {
+                std::vector<uint32_t> num_selected_each_item = rng.multivariate_hypergeometric( num_each_item, num_samples );
+                for( int j = 0; j < num_selected_each_item.size(); ++j )
+                {
+                    sum[ j ] += num_selected_each_item[ j ];
+                }
+            }
+
+            for( auto& r_sum : sum )
+            {
+                r_sum /= float( num_samples * num_iterations );
+            }
+
+            CHECK_CLOSE( 0.4, sum[ 0 ], 0.001 );
+            CHECK_CLOSE( 0.3, sum[ 1 ], 0.001 );
+            CHECK_CLOSE( 0.2, sum[ 2 ], 0.001 );
+            CHECK_CLOSE( 0.1, sum[ 3 ], 0.001 );
+        }
+
+        // Test that if the number of samples is greater than the total number of items
+        // that we get back our input.  It basically has to return everything because
+        // we have asked it for more than there was.
+        std::vector<uint32_t> num_selected_each_item = rng.multivariate_hypergeometric( num_each_item, 20 );
+        CHECK_EQUAL( num_each_item.size(), num_selected_each_item.size() );
+        CHECK_EQUAL( num_each_item[ 0 ], num_selected_each_item[ 0 ] );
+        CHECK_EQUAL( num_each_item[ 1 ], num_selected_each_item[ 1 ] );
+        CHECK_EQUAL( num_each_item[ 2 ], num_selected_each_item[ 2 ] );
+        CHECK_EQUAL( num_each_item[ 3 ], num_selected_each_item[ 3 ] );
+    }
+
+    TEST( TestNegativeBinomial )
+    {
+        PSEUDO_DES rng( 42 );
+
+        float n = 5.0;
+        float p = 0.4f;
+
+        std::default_random_engine generator;
+        std::negative_binomial_distribution<int> distribution( n, p );
+
+        int num_samples = 100000;
+        float sum = 0.0f;
+        float sum2 = 0.0f;
+
+        for( int i = 0; i < num_samples; ++i )
+        {
+            float val = float( rng.negative_binomial( n, p ) );
+            //float val = distribution( generator );
+            sum += val;
+            sum2 += val*val;
+        }
+        float act_mean = sum / float( num_samples - 1 );
+        float act_var = (sum2 / float( num_samples - 1 )) - (act_mean * act_mean);
+        float exp_mean = n * (1.0 - p) / p;
+        float exp_var = n * (1.0 - p) / (p * p);
+        CHECK_CLOSE( exp_mean, act_mean, 0.01 );
+        CHECK_CLOSE( act_var, exp_var, 0.1 );
+    }
+
+    TEST( TestBinomialNumpy )
+    {
+        PSEUDO_DES rng( 42 );
+
+        int num_above_threshold = 0;
+        int num_samples = 5000;
+        for( uint64_t n = 1; n <= 100; ++n )
+        {
+            for( double p = 0.01; p <= 0.5; p += 0.01 )
+            {
+                uint64_t sum = 0;
+                uint64_t sum2 = 0;
+                for( int k = 0; k < num_samples; ++k )
+                {
+                    uint64_t val = rng.binomial_approx( n, p );
+                    sum += val;
+                    sum2 += val*val;
+                }
+                double sample_mean = double(sum) / double(num_samples);
+                double sample_var = double(sum2) / double( num_samples ) - sample_mean*sample_mean ;
+                double analytic_mean = n * p;
+                double analytic_var = n * p * (1.0 - p);
+                double mean_diff = (sample_mean - analytic_mean) / analytic_mean;
+                double var_diff = (sample_var - analytic_var) / analytic_var;
+                if( fabs( mean_diff ) > 0.1 )
+                    ++num_above_threshold;
+                else if( fabs( var_diff ) > 0.1 )
+                    ++num_above_threshold;
+            }
+        }
+
+        // num_samples                     500     5000
+        // binomial_true                =  646        1
+        // binomial_approx(old)         =  876      307
+        // binomial_approx2(old)        = 1350      805
+        // binomial_numpy(new approx)   =  670       11
+        CHECK( num_above_threshold < 15 );
+    }
+
     TEST( Test_eGauss )
     {
         RANDOMBASE* prng = new PSEUDO_DES( 42 );

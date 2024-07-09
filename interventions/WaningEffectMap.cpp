@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
@@ -72,7 +64,7 @@ namespace Kernel
 
         if( configured || JsonConfigurable::_dryrun )
         {
-            initConfigComplexType( "Durability_Map", &m_DurationMap, WEM_Durability_Map_End_DESC_TEXT );
+            initConfigTypeMap( "Durability_Map", &m_DurationMap, WEM_Durability_Map_End_DESC_TEXT );
 
             configured = WaningEffectConstant::Configure( pInputJson );
             if( configured && !JsonConfigurable::_dryrun )
@@ -117,7 +109,14 @@ namespace Kernel
     {
         float multiplier = GetMultiplier( m_TimeSinceStart );
 
-        currentEffect = multiplier * m_EffectOriginal;
+        if( m_Expired && m_ExpireAtDurationMapEnd )
+        {
+            currentEffect = 0.0;
+        }
+        else
+        {
+            currentEffect = multiplier * m_EffectOriginal;
+        }
         LOG_DEBUG_F( "currentEffect = %f.\n", currentEffect );
 
         if( m_ExpireAtDurationMapEnd )

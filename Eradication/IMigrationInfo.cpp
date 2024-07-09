@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "IMigrationInfo.h"
@@ -30,9 +22,6 @@ namespace Kernel
             IMigrationInfoFactory* p_mif = nullptr ;
 #ifndef DISABLE_VECTOR
             if( (sim_type == SimType::VECTOR_SIM) || (sim_type == SimType::MALARIA_SIM)
-#ifdef ENABLE_DENGUE
-                || (sim_type == SimType::DENGUE_SIM)
-#endif
                 )
             {
                 if( useDefaultMigration )

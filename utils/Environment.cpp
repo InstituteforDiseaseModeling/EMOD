@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "StatusReporter.h"
@@ -17,7 +9,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Configuration.h"
 #include "Configure.h"
 #include "Log.h"
-#include "ValidationLog.h"
 #include "IdmMpi.h"
 #include "EventTrigger.h"
 #include "EventTriggerNode.h"
@@ -51,8 +42,6 @@ Environment::Environment()
     MPI.NumTasks  = 1;
     MPI.Rank      = 0;
     MPI.p_idm_mpi = nullptr;
-
-    Report.Validation = nullptr;
 
     event_trigger_factories.resize( Kernel::EventType::pairs::count(), nullptr );
 }
@@ -122,7 +111,7 @@ bool Environment::Initialize(
             if( !FileSystem::DirectoryExists(outputPath) )
             {
                 LOG_ERR_F( "Rank=%d: Failed to create new output directory '%s' with error %s\n", localEnv->MPI.Rank, outputPath.c_str(), strerror(errno) );
-                throw Kernel::FileNotFoundException( __FILE__, __LINE__, __FUNCTION__, outputPath.c_str() );
+                throw Kernel::FileNotFoundException( __FILE__, __LINE__, __FUNCTION__, true, outputPath.c_str() );
             }
         }
     }
@@ -153,8 +142,6 @@ bool Environment::Initialize(
     if( localEnv->Config->CheckElementByName("Default_Config_Path") || config->CheckElementByName("Default_Config_Path") )
         Kernel::JsonConfigurable::_possibleNonflatConfig = true;
 
-    localEnv->Report.Validation = ValidationLog::CreateNull(); // eliminate some overhead by creating a dummy object that does nothing
-
     localEnv->Status_Reporter = StatusReporter::getInstance();
 
     return true;
@@ -162,11 +149,8 @@ bool Environment::Initialize(
 
 Environment::~Environment()
 {
-    if (Config)
-        delete Config;
-
-    if (Report.Validation)
-        delete Report.Validation;
+    delete Config;
+    Config = nullptr;
 
     delete pIPFactory ;
     pIPFactory = nullptr ;
@@ -198,22 +182,29 @@ std::string Environment::FindFileOnPath( const std::string& rFilename )
     {
         throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "Environment has not been created." );
     }
-    std::string error = "";
+
+    if( localEnv->InputPaths.size() == 0 )
+    {
+        throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "No 'input paths' set." );
+    }
+
+    std::stringstream ss;
+    ss << "Received the following system error messages while checking for the existance\n";
+    ss << "of the file at the following locations:\n";
     for( auto path : localEnv->InputPaths )
     {
         std::string filepath = FileSystem::Concat( path, rFilename );
-        error += filepath;
         if( FileSystem::FileExists( filepath ) )
         {
             return filepath;
         }
         else
         {
-            error += ":";
+            ss << filepath << " - '" << FileSystem::GetSystemErrorMessage() << "'\n";
         }
     }
         
-    throw Kernel::FileNotFoundException( __FILE__, __LINE__, __FUNCTION__, error.c_str() );
+    throw Kernel::FileNotFoundException( __FILE__, __LINE__, __FUNCTION__, rFilename.c_str(), ss.str().c_str() );
 }
 
 const Configuration* Environment::getConfiguration()
@@ -247,9 +238,10 @@ Environment* Environment::getInstance()
 
 void Environment::setInstance(Environment * env)
 {
-    if( localEnv != nullptr )
+    if( (localEnv != nullptr) && (localEnv != env) )
     {
         delete localEnv ;
+        localEnv = nullptr;
     }
     localEnv = env ;
 

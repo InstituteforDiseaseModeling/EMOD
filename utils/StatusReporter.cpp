@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 #include "stdafx.h"
 #include "Debug.h"
 #include "StatusReporter.h"
@@ -47,6 +39,8 @@ void StatusReporter::WriteStatusToFile( const std::string & status )
 
 #include <stdio.h>
 #include <winsock.h>
+
+#include "Exceptions.h"
 
 // Required for winsock.h and winsock2.h
 #ifndef WIN32_LEAN_AND_MEAN
@@ -120,7 +114,8 @@ _bstr_t * StatusReporter::GetSchedulerName()
 
     if ((retval != 0) || (bytesAllocated == 0))
     {
-        throw "Couldn't get scheduler name from 'CCP_SCHEDULER' environment variable.\n";
+        throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__,
+                                                 "Couldn't get scheduler name from 'CCP_SCHEDULER' environment variable.\n" );
     }
 
     _bstr_t *schedulerName = new _bstr_t(schedulerNameBuffer);
@@ -128,7 +123,8 @@ _bstr_t * StatusReporter::GetSchedulerName()
 
     if (!schedulerName)
     {
-        throw "Couldn't create BSTR for schedulerName - out of memory?\n";
+        throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__,
+                                                 "Couldn't create BSTR for schedulerName - out of memory?\n" );
     }
 
     return schedulerName;
@@ -142,7 +138,8 @@ long StatusReporter::GetJobId()
 
     if ((retval != 0) || (bytesAllocated == 0))
     {
-        throw "Couldn't get job id 'CCP_JOBID' environment variable.\n";
+        throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__,
+                                                 "Couldn't get job id 'CCP_JOBID' environment variable.\n" );
     }
 
     long jobId = atoi(jobIdBuffer);
@@ -157,7 +154,7 @@ void StatusReporter::GetSchedulerInterface()
     if (FAILED(hr = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED)))
     {
         errorMessage << "CoInitializeEx() failed - " << hr << std::endl;
-        throw errorMessage.str().c_str();
+        throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, errorMessage.str().c_str() );
     }
 
     coInitialized = true;
@@ -171,7 +168,7 @@ void StatusReporter::GetSchedulerInterface()
     if (FAILED(hr))
     {
         errorMessage << "CoCreateInstance(Scheduler) failed - " << hr << std::endl;
-        throw errorMessage.str().c_str();
+        throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, errorMessage.str().c_str() );
     }
 }
 
@@ -180,8 +177,8 @@ void StatusReporter::ConnectToScheduler( _bstr_t * schedulerName )
     HRESULT hr;
     if (FAILED(hr = scheduler->Connect(schedulerName->GetBSTR())))
     {
-        errorMessage << "Couldn't connect to HPC scheduler '" << (char *)schedulerName << "' - " << hr << std::endl;
-        throw errorMessage.str().c_str();
+        errorMessage << "Couldn't connect to HPC scheduler '" << schedulerName->operator const char *() << "' - error number = " << hr << std::endl;
+        throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, errorMessage.str().c_str() );
     }
 }
 
@@ -191,7 +188,7 @@ void StatusReporter::GetJobInterface( long jobId )
     if (FAILED(hr = scheduler->OpenJob(jobId, &schedulerJob)))
     {
         errorMessage << "Couldn't open scheduler job " << jobId << " - " << hr << std::endl;
-        throw errorMessage.str().c_str();
+        throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, errorMessage.str().c_str() );
     }
 }
 
@@ -217,7 +214,8 @@ void StatusReporter::AllocateLocalWinsockData()
     m_pLocalWinsockJunk = _new_ LocalWinsockJunk;
     if (!m_pLocalWinsockJunk)
     {
-        throw "Couldn't allocate WinSock data - out of memory?\n";
+        throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__,
+                                                 "Couldn't allocate WinSock data - out of memory?\n" );
     }
 }
 
@@ -232,7 +230,7 @@ void StatusReporter::InitializeWinsock()
     if (retval != 0)
     {
         errorMessage << "WSAStartup() failed - " << retval << std::endl;
-        throw errorMessage.str().c_str();
+        throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, errorMessage.str().c_str() );
     }
 }
 
@@ -243,7 +241,7 @@ void StatusReporter::CreateSendSocket()
     {
         int error = WSAGetLastError();
         errorMessage << "Error opening UDP socket for status reporting - " << error << std::endl;
-        throw errorMessage.str().c_str();
+        throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, errorMessage.str().c_str() );
     }
 }
 

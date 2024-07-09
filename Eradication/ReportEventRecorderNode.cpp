@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
@@ -41,9 +33,9 @@ namespace Kernel
 
     const std::string ReportEventRecorderNode::ENABLE_PARAMETER_NAME   = "Report_Node_Event_Recorder";
     const std::string ReportEventRecorderNode::EVENTS_LIST_NAME        = "Report_Node_Event_Recorder_Events";
-    const std::string ReportEventRecorderNode::EVENTS_LIST_DESC        =  ""; // ???
+    const std::string ReportEventRecorderNode::EVENTS_LIST_DESC        =  Report_Node_Event_Recorder_Events_DESC_TEXT;
     const std::string ReportEventRecorderNode::IGNORE_EVENTS_LIST_NAME = "Report_Node_Event_Recorder_Ignore_Events_In_List";
-    const std::string ReportEventRecorderNode::IGNORE_EVENTS_LIST_DESC =  "";  // ???
+    const std::string ReportEventRecorderNode::IGNORE_EVENTS_LIST_DESC =  Report_Node_Event_Recorder_Ignore_Events_In_List_DESC_TEXT;
 
     const std::string STATS_BY_IP_PARAMETER_NAME = "Report_Node_Event_Recorder_Stats_By_IPs";
 
@@ -152,8 +144,10 @@ namespace Kernel
         return ss.str();
     }
 
-    float ReportEventRecorderNode::GetTime( INodeEventContext* pEntity ) const
+    std::string ReportEventRecorderNode::GetTime( INodeEventContext* pEntity ) const
     {
-        return pEntity->GetTime().time;
+        std::stringstream ss;
+        ss << pEntity->GetTime().time;
+        return ss.str();
     }
 }

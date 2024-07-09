@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
@@ -19,6 +11,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Sugar.h"
 #include "IndividualSTI.h"
 #include "IRelationshipParameters.h"
+#include "IndividualEventContext.h"
+
 
 SETUP_LOGGING( "STIInterventionsContainer" )
 
@@ -29,26 +23,64 @@ namespace Kernel
         HANDLE_INTERFACE(ISTIBarrierConsumer)
         HANDLE_INTERFACE(ISTICircumcisionConsumer)
         HANDLE_INTERFACE(ISTICoInfectionStatusChangeApply)
+        HANDLE_INTERFACE(ICoitalActRiskData)
     END_QUERY_INTERFACE_DERIVED(STIInterventionsContainer, InterventionsContainer)
 
     STIInterventionsContainer::STIInterventionsContainer() 
     : InterventionsContainer()
     , is_circumcised(false)
     , circumcision_reduced_require(0.0)
+    , risk_modifier_acquisition( 1.0 )
+    , risk_modifier_transmission( 1.0 )
+    , has_blocking_overrides()
     , STI_blocking_overrides()
+    , snr_inv_list()
     {
+        has_blocking_overrides.resize( RelationshipType::COUNT, false );
+        STI_blocking_overrides.resize( RelationshipType::COUNT, Sigmoid() );
     }
 
     STIInterventionsContainer::~STIInterventionsContainer()
     {
     }
-    
+
+    void STIInterventionsContainer::Update( float dt )
+    {
+        // reset these to 1 so that the be modified by interventions
+        risk_modifier_acquisition  = 1.0;
+        risk_modifier_transmission = 1.0;
+
+        std::fill( has_blocking_overrides.begin(), has_blocking_overrides.end(), false );
+
+        InterventionsContainer::Update( dt );
+    }
+
+    void STIInterventionsContainer::AddNonPfaRelationshipStarter( INonPfaRelationshipStarter* pSNR )
+    {
+        snr_inv_list.push_back( pSNR );
+    }
+
+    void STIInterventionsContainer::StartNonPfaRelationships()
+    {
+        for( auto p_snr : snr_inv_list )
+        {
+            p_snr->StartNonPfaRelationship();
+        }
+        snr_inv_list.clear();
+    }
+
     void
     STIInterventionsContainer::UpdateSTIBarrierProbabilitiesByType(
         RelationshipType::Enum rel_type,
         const Sigmoid& config_overrides
     )
     {
+        if( parent->GetEventContext()->GetGender() == Gender::FEMALE )
+        {
+            throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "Females cannot have STIBarrier." );
+        }
+
+        has_blocking_overrides[ rel_type ] = true;
         STI_blocking_overrides[ rel_type ] = config_overrides;
     }
 
@@ -58,10 +90,10 @@ namespace Kernel
     )
     const
     {
-        if( STI_blocking_overrides.find( pRelParams->GetType() ) != STI_blocking_overrides.end() )
+        if( has_blocking_overrides[ pRelParams->GetType() ] )
         {
             LOG_DEBUG( "Using override condom config values from campaign.\n" );
-            return STI_blocking_overrides.at( pRelParams->GetType() );
+            return STI_blocking_overrides[ pRelParams->GetType() ];
         }
         else
         {
@@ -96,14 +128,7 @@ namespace Kernel
 
     void STIInterventionsContainer::ApplyCircumcision( float reduceAcquire ) 
     {
-        // Need to get gender
-        IIndividualHuman *ih = nullptr;
-        if( s_OK != parent->QueryInterface(GET_IID(IIndividualHuman), (void**) &ih) )
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "IIndividualHuman", "IIndividualHuman" );
-        }
-
-        if( ih->GetGender() == Gender::FEMALE )
+        if( parent->GetEventContext()->GetGender() == Gender::FEMALE )
         {
             throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "Females cannot be circumcised." );
         }
@@ -147,6 +172,22 @@ namespace Kernel
         ihsti->ClearStiCoInfectionState();
     }
 
+    void STIInterventionsContainer::UpdateCoitalActRiskFactors( float acqMod, float tranMod )
+    {
+        risk_modifier_acquisition  *= acqMod;
+        risk_modifier_transmission *= tranMod;
+    }
+
+    float STIInterventionsContainer::GetCoitalActRiskAcquisitionFactor() const
+    {
+        return risk_modifier_acquisition;
+    }
+
+    float STIInterventionsContainer::GetCoitalActRiskTransmissionFactor() const
+    {
+        return risk_modifier_transmission;
+    }
+
     REGISTER_SERIALIZABLE(STIInterventionsContainer);
 
     void serialize_overrides( IArchive& ar, std::map< RelationshipType::Enum, Sigmoid >& blocking_overrides )
@@ -188,7 +229,11 @@ namespace Kernel
         STIInterventionsContainer& container = *obj;
         ar.labelElement("is_circumcised"              ) & container.is_circumcised;
         ar.labelElement("circumcision_reduced_require") & container.circumcision_reduced_require;
-        ar.labelElement("STI_blocking_overrides"      ); serialize_overrides( ar, container.STI_blocking_overrides );
+        ar.labelElement("risk_modifier_acquisition"   ) & container.risk_modifier_acquisition;
+        ar.labelElement("risk_modifier_transmission"  ) & container.risk_modifier_transmission;
+        ar.labelElement("has_blocking_overrides"      ) & container.has_blocking_overrides;
+        ar.labelElement("STI_blocking_overrides"      ) & container.STI_blocking_overrides;
+        ar.labelElement("snr_inv_list"                ) & container.snr_inv_list;
     }
 }
 

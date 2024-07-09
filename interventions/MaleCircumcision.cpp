@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "MaleCircumcision.h"
@@ -45,6 +37,7 @@ namespace Kernel
 
     bool MaleCircumcision::Configure( const Configuration * inputJson )
     {
+        initConfigTypeMap( "Cost_To_Consumer", &cost_per_unit, Male_Circumcision_Cost_To_Consumer_DESC_TEXT, 0.0f, FLT_MAX, 0.0f );
         initConfigTypeMap( "Circumcision_Reduced_Acquire", &m_ReducedAcquire, Male_Circumcision_Reduced_Acquire_DESC_TEXT, 0.0f, 1.0f, 0.60f );
         initConfigTypeMap( "Apply_If_Higher_Reduced_Acquire", &m_ApplyIfHigherReducedAcquire, Male_Circumcision_Apply_If_Higher_Reduced_Acquire_DESC_TEXT, false );
 

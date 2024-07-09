@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "BehaviorPfa.h"
@@ -28,11 +20,8 @@ namespace Kernel
 
     void BehaviorPfa::AddIndividual( IIndividualHumanSTI* sti_person )
     {
-        IIndividualHuman* person = nullptr;
-        if (sti_person->QueryInterface(GET_IID(IIndividualHuman), (void**)&person) != s_OK)
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "sti_person", "IIndividualHuman*", "IIndividualHumanSTI*");
-        }
+        IIndividualHuman* person = sti_person->GetIndividualHuman();
+
         int agebin_index = parameters->BinIndexForAgeAndSex(person->GetAge(), person->GetGender());
 
         LOG_DEBUG_F("%s( [ %f, %c, %d ])\n", __FUNCTION__, person->GetAge(), person->GetGender() == Gender::MALE ? 'M' : 'F', person->GetSuid().data);
@@ -48,15 +37,14 @@ namespace Kernel
             AddToPopulation(m_female_population.at(agebin_index), sti_person, agebin_index);
             new_females[agebin_index]++; //DEBUG
         }
+
+        sti_person->GetIndividualHuman()->BroadcastEvent( EventTrigger::PFA_Entered );        
     }
 
     void BehaviorPfa::RemoveIndividual( IIndividualHumanSTI* sti_person )
     {
-        IIndividualHuman* person = nullptr;
-        if (sti_person->QueryInterface(GET_IID(IIndividualHuman), (void**)&person) != s_OK)
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "sti_person", "IIndividualHuman*", "IIndividualHumanSTI*");
-        }
+        IIndividualHuman* person = sti_person->GetIndividualHuman();
+
         int agebin_index = parameters->BinIndexForAgeAndSex(person->GetAge(), person->GetGender());
 
         LOG_DEBUG_F("%s( [ %f, %c, %d ])\n", __FUNCTION__, person->GetAge(), person->GetGender() == Gender::MALE ? 'M' : 'F', person->GetSuid().data);
@@ -70,6 +58,8 @@ namespace Kernel
         {
             release_assert( RemoveFromPopulation(sti_person, m_female_population, true) );
         }
+
+        sti_person->GetIndividualHuman()->BroadcastEvent( EventTrigger::PFA_Exited );
     }
 
     void BehaviorPfa::Update( const IdmDateTime& rCurrentTime, float dt )
@@ -80,9 +70,9 @@ namespace Kernel
         m_time_since_last_update += dt;
         if( m_time_since_last_update >= parameters->UpdatePeriod() )
         {
-            if (LOG_LEVEL(INFO))
+            if (LOG_LEVEL(DEBUG))
             {
-                LOG_INFO_F( "%s: new individuals since last update:\n", __FUNCTION__ );
+                LOG_DEBUG_F( "%s: new individuals since last update:\n", __FUNCTION__ );
                 cout << "[ ";
                 for (auto count : new_males) {
                     cout << count << ' ';
@@ -103,11 +93,9 @@ namespace Kernel
             for (human_list_t::iterator it = m_all_males.begin(); it != m_all_males.end(); /*it++*/)
             {
                 IIndividualHumanSTI* sti_male = *it;
-                IIndividualHuman* male = nullptr;
-                if (sti_male->QueryInterface(GET_IID(IIndividualHuman), (void**)&male))
-                {
-                    throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "sti_male", "IIndividualHuman", "IIndividualHumanSTI" );
-                }
+                IIndividualHuman* male = sti_male->GetIndividualHuman();
+
+                male->BroadcastEvent( EventTrigger::PFA_SeekingPartner );
                 int male_agebin_index = parameters->BinIndexForAgeAndSex(male->GetAge(), Gender::MALE);
 
                 total_male_queue_index++ ;
@@ -121,6 +109,10 @@ namespace Kernel
                     if (m_female_population[female_agebin_index].size() > 0)
                     {
                         float joint_probability         = joint_probability_table.at(male_agebin_index)[female_agebin_index];
+                        if( m_female_population[ female_agebin_index ].front()->EnterRelationshipNow() )
+                        {
+                            joint_probability *= 10.0f; //increase probabilty of this female age bin to be selected
+                        }
                         preference[female_agebin_index] = joint_probability;
                         cumulative_probability         += joint_probability;
                     }
@@ -170,11 +162,18 @@ namespace Kernel
                     m_all_males.erase(current);
 
                     // Form new relationship
-                    relationship_fn(sti_male, sti_female);
+                    relationship_fn( sti_male, sti_female, false, nullptr );
+
+                    
+                    sti_male->GetIndividualHuman()->BroadcastEvent( EventTrigger::PFA_FoundPartner );
+                    sti_female->GetIndividualHuman()->BroadcastEvent( EventTrigger::PFA_FoundPartner );
+
                     new_relationships++;
                 }
                 else
-                {
+                {                                        
+                    sti_male->GetIndividualHuman()->BroadcastEvent( EventTrigger::PFA_NoPartnerFound );                                       
+                    
                     // No Suitable partner was found, go on to next
                     it++;
                 }
@@ -183,7 +182,7 @@ namespace Kernel
             UpdateQueueLengths( m_QueueLengthsAfter );
 
             m_time_since_last_update = 0.0f;
-            LOG_INFO_F( "%s: %d new relationships formed this update.\n", __FUNCTION__, new_relationships );
+            LOG_DEBUG_F( "%s: %d new relationships formed this update.\n", __FUNCTION__, new_relationships );
             {
                 memset( new_males.data(), 0, new_males.size() * sizeof(int) );
                 memset( new_females.data(), 0, new_females.size() * sizeof(int) );
@@ -191,9 +190,123 @@ namespace Kernel
         }
     }
 
+    void BehaviorPfa::BeginUpdate()
+    {
+    }
+
+    void BehaviorPfa::RegisterIndividual( IIndividualHumanSTI* pIndividualSti )
+    {
+        // ----------------------------------------------------------------------------------
+        // --- NOTE:  The checks for size.  The map and the vector must have the same number
+        // --- of entries.  If a person were added twice, they could appear in the vector
+        // --- twice but the map once.
+        // ----------------------------------------------------------------------------------
+
+        if( pIndividualSti->GetIndividualHuman()->IsDead() )
+        {
+            return;
+        }
+        if( pIndividualSti->GetIndividualHuman()->GetGender() == Gender::MALE )
+        {
+            release_assert( m_RegisteredIDtoIndexMapMales.count( pIndividualSti->GetSuid().data ) == 0 );
+            m_RegisteredMales.push_back( pIndividualSti );
+            m_RegisteredIDtoIndexMapMales.insert( std::make_pair( pIndividualSti->GetSuid().data, (m_RegisteredMales.size() -1) ) );
+            release_assert( m_RegisteredMales.size() == m_RegisteredIDtoIndexMapMales.size() );
+        }
+        else
+        {
+            release_assert( m_RegisteredIDtoIndexMapFemales.count( pIndividualSti->GetSuid().data ) == 0 );
+            m_RegisteredFemales.push_back( pIndividualSti );
+            m_RegisteredIDtoIndexMapFemales.insert( std::make_pair( pIndividualSti->GetSuid().data, (m_RegisteredFemales.size() -1) ) );
+            release_assert( m_RegisteredFemales.size() == m_RegisteredIDtoIndexMapFemales.size() );
+        }
+    }
+
+    void RemoveFromRegistration( IIndividualHumanSTI* pIndividualSti,
+                                 std::vector<IIndividualHumanSTI*>& rRegistered,
+                                 std::map<uint32_t, uint32_t>& rIDtoIndexMap )
+    {
+        if( rIDtoIndexMap.count( pIndividualSti->GetSuid().data ) == 0 )
+        {
+            return;
+        }
+        release_assert( rRegistered.size() > 0 );
+
+        uint32_t index = rIDtoIndexMap.at( pIndividualSti->GetSuid().data );
+        if( index != (rRegistered.size() - 1) )
+        {
+            uint32_t last_id = rRegistered.back()->GetSuid().data;
+            rIDtoIndexMap[ last_id ] = index;
+            rRegistered[ index ] = rRegistered.back();
+        }
+        rIDtoIndexMap.erase( pIndividualSti->GetSuid().data );
+        rRegistered.pop_back();
+        release_assert( rRegistered.size() == rIDtoIndexMap.size() );
+    }
+
+    void BehaviorPfa::UnregisterIndividual( IIndividualHumanSTI* pIndividualSti )
+    {
+        if( pIndividualSti->GetIndividualHuman()->GetGender() == Gender::MALE )
+        {
+            RemoveFromRegistration( pIndividualSti, m_RegisteredMales, m_RegisteredIDtoIndexMapMales );
+        }
+        else
+        {
+            RemoveFromRegistration( pIndividualSti, m_RegisteredFemales, m_RegisteredIDtoIndexMapFemales );
+        }
+    }
+
+    bool BehaviorPfa::StartNonPfaRelationship( IIndividualHumanSTI* pIndividualSti,
+                                               const IPKeyValue& rPartnerHasIP,
+                                               Sigmoid* pCondomUsage )
+    {
+        IIndividualHuman* p_individual = pIndividualSti->GetIndividualHuman();
+
+        std::vector<IIndividualHumanSTI*>* p_possible_partners;
+        if( p_individual->GetGender() == Gender::MALE )
+        {
+            p_possible_partners = & m_RegisteredFemales;
+        }
+        else
+        {
+            p_possible_partners = & m_RegisteredMales;
+        }
+
+        bool partner_found = false;
+        int num_attempts = 0;
+        while( !partner_found && (num_attempts < p_possible_partners->size()) )
+        {
+            int selected_index = int( this->m_rng->e() * float(p_possible_partners->size()) );
+            IIndividualHumanSTI* p_new_partner = (*p_possible_partners)[ selected_index ];
+
+            if( p_new_partner == nullptr ) continue; // can be null due to death
+
+            bool has_ip = true;
+            if( rPartnerHasIP.IsValid() )
+            {
+                has_ip = p_new_partner->GetIndividualHuman()->GetProperties()->Contains(rPartnerHasIP);
+            }
+
+            if( has_ip && !areInRelationship(pIndividualSti, p_new_partner) )
+            {
+                partner_found = true;
+
+                if( pIndividualSti->GetIndividualHuman()->GetGender() == Gender::MALE )
+                    relationship_fn( pIndividualSti, p_new_partner, true, pCondomUsage );
+                else
+                    relationship_fn( p_new_partner, pIndividualSti, true, pCondomUsage );
+            }
+
+            ++num_attempts;
+        }
+
+        return partner_found;
+    }
+
+
     void BehaviorPfa::Print(const char *rel_type) const
     {
-        LOG_WARN_F("female %s PFA queue lengths:\t", rel_type);
+        LOG_DEBUG_F("female %s PFA queue lengths:\t", rel_type);
         stringstream ss;
 
         ss << "[ ";
@@ -202,10 +315,10 @@ namespace Kernel
             ss << m_female_population[female_agebin_index].size()  << ' ';
         }
         ss << "]" << endl;
-        LOG_WARN_F(ss.str().c_str());
+        LOG_DEBUG_F(ss.str().c_str());
         ss.str("");
 
-        LOG_WARN_F("male %s PFA queue lengths:\t", rel_type);
+        LOG_DEBUG_F("male %s PFA queue lengths:\t", rel_type);
         ss << "[ ";
         int male_agebin_count = parameters->GetMaleAgeBinCount();
         for (int male_agebin_index = 0; male_agebin_index < male_agebin_count; male_agebin_index++) {
@@ -213,7 +326,7 @@ namespace Kernel
         }
 
         ss << "]" << endl;
-        LOG_WARN_F(ss.str().c_str());
+        LOG_DEBUG_F(ss.str().c_str());
         ss.str("");
     }
 
@@ -253,6 +366,10 @@ namespace Kernel
     BehaviorPfa::BehaviorPfa()
         : m_cum_prob_threshold(0.0f)
         , m_time_since_last_update(0.0f)
+        , m_RegisteredMales()
+        , m_RegisteredFemales()
+        , m_RegisteredIDtoIndexMapMales()
+        , m_RegisteredIDtoIndexMapFemales()
         , m_all_males()
         , m_male_population()
         , m_female_population()
@@ -276,6 +393,10 @@ namespace Kernel
                               RelationshipCreator creator )
         : m_cum_prob_threshold(selectionThreshold)
         , m_time_since_last_update(0.0f)
+        , m_RegisteredMales()
+        , m_RegisteredFemales()
+        , m_RegisteredIDtoIndexMapMales()
+        , m_RegisteredIDtoIndexMapFemales()
         , m_all_males()
         , m_male_population(params->GetMaleAgeBinCount())
         , m_female_population(params->GetFemaleAgeBinCount())
@@ -303,6 +424,10 @@ namespace Kernel
         }
         new_males.resize(agebins.at(Gender::MALE).size());
         new_females.resize(agebins.at(Gender::FEMALE).size());
+
+        // these will need to hold all the people of the gender so allocating for 600k
+        m_RegisteredMales.reserve(300000);
+        m_RegisteredFemales.reserve(300000);
     }
 
     BehaviorPfa::~BehaviorPfa()
@@ -323,10 +448,20 @@ namespace Kernel
     void BehaviorPfa::AddToPopulation( human_list_t &age_bin_list, IIndividualHumanSTI* sti_person, int age_bin_index )
     {
         LOG_DEBUG_F("%s( [ %d ] )\n", __FUNCTION__, sti_person->GetSuid().data);
-        age_bin_list.push_back(sti_person);
-        human_list_t::iterator it = age_bin_list.end();
+        human_list_t::iterator it;
+        if( sti_person->EnterPfaNow() )
+        {
+            age_bin_list.push_front( sti_person ); // If we want the person to enter the PFA immediately, we put them at the front of the queue so that it happens sooner.
+            it = age_bin_list.begin();             // It still does not guarantee that they get into a relationship, but greatly increases the probability.                                        
+        }
+        else
+        {
+            age_bin_list.push_back(sti_person);
+            it = age_bin_list.end();
+            --it;
+        }
 
-        pair_t pair = pair_t::pair(age_bin_index, --it);
+        pair_t pair = pair_t::pair(age_bin_index, it);
 
         if (m_population_map.find(sti_person) != m_population_map.end())
         {
@@ -388,7 +523,7 @@ namespace Kernel
         {
             if( rel->GetFemalePartnerId().data == person2->GetSuid().data )
             {
-                LOG_INFO_F( "PFA attempted to create duplicate relationship between male individual %d and female individual %d\n", person1->GetSuid().data, person2->GetSuid().data );
+                LOG_DEBUG_F( "PFA attempted to create duplicate relationship between male individual %d and female individual %d\n", person1->GetSuid().data, person2->GetSuid().data );
                 existing_relationship = true;
                 break; // preserve single exit point from function
             }

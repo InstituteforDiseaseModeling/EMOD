@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include <iostream>
@@ -55,7 +47,10 @@ SUITE(FlowControllerImplTest)
         unique_ptr<IPairFormationRateTable> rate_table( RateTableImpl::CreateRateTable( from_data.get() ) );
         unique_ptr<IPairFormationStats> stats( PairFormationStatsImpl::CreateStats( from_data.get() ) );
         unique_ptr<IPairFormationAgent> pfa( BehaviorPfa::CreatePfa( p_config.get(), from_data.get(), 0.2f, &ran,
-                [this](IIndividualHumanSTI* male, IIndividualHumanSTI* female) { /*AddRelationship( male, female );*/ } ) );
+                [this]( IIndividualHumanSTI* male,
+                        IIndividualHumanSTI* female,
+                        bool isOutsidePFA,
+                        Sigmoid* pCondomUsage) { /*AddRelationship( male, female );*/ } ) );
 
         unique_ptr<IPairFormationFlowController> controller( FlowControllerImpl::CreateController( pfa.get(), 
                                                                                                    stats.get(), 

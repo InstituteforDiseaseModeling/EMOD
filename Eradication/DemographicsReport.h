@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -37,7 +29,16 @@ protected:
     float oldBirths, totalBirths;
     float newNaturalDeaths;
 
-    static float age_buckets[20];
+    ChannelID avg_age_id;
+    ChannelID gender_id;
+    ChannelID pseudo_pop_id;
+    ChannelID births_id;
+    ChannelID deaths_id;
+    ChannelID stat_pop_id;
+    ChannelID mothers_id;
+    std::vector<ChannelID> pop_age_ids;
+
+    static float age_buckets[21];
     static std::string age_ranges[(sizeof(age_buckets) / sizeof(float)) + 1];
 
     float population_by_age_bucket[(sizeof(age_buckets) / sizeof(float)) + 1];

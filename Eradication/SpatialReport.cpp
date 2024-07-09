@@ -1,20 +1,9 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
 #include <functional>
 #include <map>
 #include <vector>
-#include "BoostLibWrapper.h"
-// not in boost wrapper???
-#include <boost/math/special_functions/fpclassify.hpp>
 
 #include "SpatialReport.h"
 #include "INodeContext.h"
@@ -56,7 +45,7 @@ SpatialReport::SpatialReport()
 , campaign_cost_info(               "Campaign_Cost",                    "US dollars")
 , disease_deaths_info(              "Disease_Deaths",                   "")
 , human_infectious_reservoir_info(  "Human_Infectious_Reservoir",       "???")
-, infection_rate_info(              "Infection_Rate",                   "???")
+, infected_info(                    "Infected",                         "Number Infected")
 , land_temperature_info(            "Land_Temperature",                 "degrees C")
 , new_infections_info(              "New_Infections",                   "")
 , new_reported_infections_info(     "New_Reported_Infections",          "")
@@ -82,7 +71,7 @@ void SpatialReport::populateChannelInfos(tChanInfoMap &channel_infos)
     channel_infos[ campaign_cost_info.name ] = &campaign_cost_info;
     channel_infos[ disease_deaths_info.name ] = &disease_deaths_info;
     channel_infos[ human_infectious_reservoir_info.name ] = &human_infectious_reservoir_info;
-    channel_infos[ infection_rate_info.name ] = &infection_rate_info;
+    channel_infos[ infected_info.name ] = &infected_info;
     channel_infos[ land_temperature_info.name ] = &land_temperature_info;
     channel_infos[ new_infections_info.name ] = &new_infections_info;
     channel_infos[ new_reported_infections_info.name ] = &new_reported_infections_info;
@@ -134,10 +123,14 @@ bool SpatialReport::Configure(
     tChanInfoMap channel_infos;
     populateChannelInfos(channel_infos);
     spatial_output_channels.possible_values = getKeys( channel_infos );
-    initConfigTypeMap( "Spatial_Output_Channels", &spatial_output_channels, Spatial_Output_Channels_DESC_TEXT);
+    initConfigTypeMap( "Spatial_Output_Channels", &spatial_output_channels, Spatial_Output_Channels_DESC_TEXT, GetChannelsDependsOn() );
     return JsonConfigurable::Configure( config );
 }
 
+const char* SpatialReport::GetChannelsDependsOn() const
+{
+    return "Enable_Spatial_Output";
+}
 
 /////////////////////////
 // steady-state methods
@@ -206,6 +199,9 @@ SpatialReport::LogNodeData(
     if(prevalence_info.enabled)
         Accumulate(prevalence_info.name, nodeid, pNC->GetInfected());
 
+    if(infected_info.enabled)
+        Accumulate(infected_info.name, nodeid, pNC->GetInfected());
+
     const Kernel::Climate* weather = pNC->GetLocalWeather();
     if(weather)
     {
@@ -230,9 +226,6 @@ SpatialReport::LogNodeData(
 
     if(human_infectious_reservoir_info.enabled)
         Accumulate(human_infectious_reservoir_info.name, nodeid, pNC->GetInfectivity());
-
-    if(infection_rate_info.enabled)
-        Accumulate(infection_rate_info.name, nodeid, pNC->GetInfectionRate());
 }
 
 void SpatialReport::EndTimestep( float currentTime, float dt )
@@ -275,7 +268,7 @@ void SpatialReport::InitializeFiles()
             if( spatial_output_channels.count( name ) <= 0 )
                 continue;
 
-            string filepath = FileSystem::Concat( EnvPtr->OutputPath, (report_name + "_" + name + ".bin") );
+            string filepath = FileSystem::Concat( EnvPtr->OutputPath, (GetReportName() + "_" + name + ".bin") );
             ofstream* file = new ofstream();
             FileSystem::OpenFileForWriting( *file, filepath.c_str(), true );
 
@@ -361,7 +354,13 @@ SpatialReport::Accumulate( std::string channel_name, int nodeid, float value )
 
     if(it == nodeid_index_map.end())
     {
-        nodeid_index_map[nodeid] = nodeid_index_map.size();
+        // -------------------------------------------------------------------------------
+        // --- Kurt - The order of operations for std_map[key_not_in_map] = std_map.size();
+        // --- is ambiguous. On linux, the map is extended before the size is calculated.
+        // --- The following gets around this ambiguity.
+        // -------------------------------------------------------------------------------
+        int current_map_size = static_cast<int>(nodeid_index_map.size());
+        nodeid_index_map[ nodeid ] = current_map_size;
     }
 
     int node_index = channelDataMap.GetChannelLength() - _nrmSize + nodeid_index_map[nodeid];

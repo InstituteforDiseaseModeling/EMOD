@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "TransmissionGroupsFactory.h"
@@ -15,6 +7,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 namespace Kernel
 {
+    // NOTE: StrainAwareTransmissionGroupsGP is not created here because NodeVector
+    // needs to have a pointer to the concrete object.
     ITransmissionGroups* TransmissionGroupsFactory::CreateNodeGroups( TransmissionGroupType::Enum groupsType, RANDOMBASE* prng )
     {
         ITransmissionGroups* groups = nullptr;
@@ -27,7 +21,7 @@ namespace Kernel
 #ifndef DISABLE_HIV
 #ifndef _DLLS_
         case TransmissionGroupType::RelationshipGroups:
-            groups = (ITransmissionGroups*) _new_ RelationshipGroups( prng );
+            groups = (ITransmissionGroups*) _new_ RelationshipGroups();
             break;
 #endif
 #endif

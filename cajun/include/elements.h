@@ -36,7 +36,8 @@ enum ElementType
    NUMBER_ELEMENT,
    STRING_ELEMENT,
    BOOLEAN_ELEMENT,
-   NULL_ELEMENT
+   NULL_ELEMENT,
+   UINT64_ELEMENT
 };
 
 
@@ -185,6 +186,7 @@ public:
 };
 
 typedef TrivialType_T<double, NUMBER_ELEMENT> Number;
+typedef TrivialType_T<uint64_t, UINT64_ELEMENT> Uint64;
 typedef TrivialType_T<bool, BOOLEAN_ELEMENT> Boolean;
 typedef TrivialType_T<std::string, STRING_ELEMENT> String;
 

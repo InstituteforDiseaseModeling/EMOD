@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include <memory> // unique_ptr
@@ -21,10 +13,13 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Properties.h"
 
 #include "FileSystem.h"
-#include "IndividualCoInfection.h"
+#include "Individual.h"
 
 #include "Diagnostics.h"
 #include "RandomFake.h"
+#include "MalariaDrugTypeParameters.h"
+#include "VectorParameters.h"
+#include "SusceptibilityMalaria.h"
 
 using namespace Kernel; 
 
@@ -43,6 +38,14 @@ SUITE(SerializationTest)
             Environment::setLogger( new SimpleLogger() );
             Environment::setSimulationConfig( m_pSimulationConfig );
 
+            unique_ptr<Configuration> p_config( Environment::LoadConfigurationFile( "testdata/SerializationTest/VSP.json" ) );
+            m_pSimulationConfig->vector_params->vector_species.ConfigureFromJsonAndKey( p_config.get(), "Vector_Species_Params" );
+            m_pSimulationConfig->vector_params->vector_species.CheckConfiguration();
+
+            EnvPtr->Config = Environment::LoadConfigurationFile( "testdata/SerializationTest/Drugs.json" );
+            MalariaDrugTypeCollection::GetInstanceNonConst()->ConfigureFromJsonAndKey( EnvPtr->Config, "Malaria_Drug_Params" );
+            MalariaDrugTypeCollection::GetInstanceNonConst()->CheckConfiguration();
+
             IPFactory::DeleteFactory();
             IPFactory::CreateFactory();
 
@@ -51,10 +54,15 @@ SUITE(SerializationTest)
             ip_values.insert( std::make_pair( "HIGH", 0.1f ) );
 
             IPFactory::GetInstance()->AddIP( 1, "Risk", ip_values );
+
+            SusceptibilityMalariaConfig::falciparumMSPVars      = DEFAULT_MSP_VARIANTS;
+            SusceptibilityMalariaConfig::falciparumNonSpecTypes = DEFAULT_NONSPECIFIC_TYPES;
+            SusceptibilityMalariaConfig::falciparumPfEMP1Vars   = DEFAULT_PFEMP1_VARIANTS;
         }
 
         ~SerializationFixture()
         {
+            MalariaDrugTypeCollection::DeleteInstance();
             delete m_pSimulationConfig;
             m_pSimulationConfig = nullptr;
             IPFactory::DeleteFactory();
@@ -183,113 +191,5 @@ SUITE(SerializationTest)
         delete binary_writer;
         delete reader;
         delete json;
-    }
-
-    TEST_FIXTURE(SerializationFixture, TestAirborneSerialization)
-    {
-        try
-        {
-            // Open and read JSON
-            std::string* json = FileSystem::ReadFile( "testdata/SerializationTest/airborneIndividual.json" );
-
-            // Instantiate from JSON
-            IndividualHumanAirborne* individual = nullptr;
-            ISerializable* source = (ISerializable*)individual;
-            IArchive* reader = dynamic_cast<IArchive*>(new JsonFullReader( json->c_str() ));
-            (*reader).labelElement("individual") & source;
-
-            // Serialize to binary
-            IArchive* binary_writer = dynamic_cast<IArchive*>(new BinaryArchiveWriter());
-            (*binary_writer) & source;
-
-            // Deserialize from binary
-            const char* buffer = binary_writer->GetBuffer();
-            size_t count = binary_writer->GetBufferSize();
-            IArchive* binary_reader = dynamic_cast<IArchive*>(new BinaryArchiveReader( buffer, count ));
-            ISerializable* destination = nullptr;
-            (*binary_reader) & destination;
-            IndividualHumanAirborne* compare = (IndividualHumanAirborne*)destination;
-
-            // Compare
-            IArchive* writer = dynamic_cast<IArchive*>(new BinaryArchiveWriter());
-            (*writer) & compare;
-
-            const char* actual = writer->GetBuffer();
-            size_t actual_count = writer->GetBufferSize();
-
-            CHECK_EQUAL( count, actual_count );
-            CHECK_ARRAY_EQUAL( buffer, actual, count );
-
-            delete writer;
-
-            compare = nullptr;
-            delete destination;
-            delete binary_reader;
-            delete source;
-            individual = nullptr;
-            delete binary_writer;
-            delete reader;
-            delete json;
-        }
-        catch( DetailedException& re )
-        {
-            PrintDebug( re.GetMsg() );
-            PrintDebug( re.GetStackTrace() );
-            CHECK( false );
-        }
-    }
-
-    TEST_FIXTURE(SerializationFixture, TestCoinfectionSerialization)
-    {
-        try
-        {
-            // Open and read JSON
-            std::string* json = FileSystem::ReadFile( "testdata/SerializationTest/coinfectionIndividual.json" );
-
-            // Instantiate from JSON
-            IndividualHumanCoInfection* individual = nullptr;
-            ISerializable* source = (ISerializable*)individual;
-            IArchive* reader = dynamic_cast<IArchive*>(new JsonFullReader( json->c_str() ));
-            (*reader).labelElement("individual") & source;
-
-            // Serialize to binary
-            IArchive* binary_writer = dynamic_cast<IArchive*>(new BinaryArchiveWriter());
-            (*binary_writer) & source;
-
-            // Deserialize from binary
-            const char* buffer = binary_writer->GetBuffer();
-            size_t count = binary_writer->GetBufferSize();
-            IArchive* binary_reader = dynamic_cast<IArchive*>(new BinaryArchiveReader( buffer, count ));
-            ISerializable* destination = nullptr;
-            (*binary_reader) & destination;
-            IndividualHumanCoInfection* compare = (IndividualHumanCoInfection*)destination;
-
-            // Compare
-            IArchive* writer = dynamic_cast<IArchive*>(new BinaryArchiveWriter());
-            (*writer) & compare;
-
-            const char* actual = writer->GetBuffer();
-            size_t actual_count = writer->GetBufferSize();
-
-            CHECK_EQUAL( count, actual_count );
-            CHECK_ARRAY_EQUAL( buffer, actual, count );
-
-            delete writer;
-
-            compare = nullptr;
-            delete destination;
-            delete binary_reader;
-            delete source;
-            individual = nullptr;
-            delete binary_writer;
-            delete reader;
-            delete json;
-        }
-        catch( DetailedException& re )
-        {
-            PrintDebug( re.GetMsg() );
-            PrintDebug( re.GetStackTrace() );
-            CHECK( false );
-        }
     }
 }

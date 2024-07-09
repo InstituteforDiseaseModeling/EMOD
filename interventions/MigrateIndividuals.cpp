@@ -1,16 +1,9 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "MigrateIndividuals.h"
 #include "IMigrate.h"
 #include "SimulationConfig.h"
+#include "Individual.h"
 #include "IIndividualHumanContext.h"
 #include "NodeEventContext.h"  // for INodeEventContext (ICampaignCostObserver)
 #include "INodeContext.h"
@@ -32,17 +25,24 @@ namespace Kernel
 
     bool MigrateIndividuals::Configure( const Configuration * inputJson )
     {
-        if ( !JsonConfigurable::_dryrun &&
-            //(EnvPtr->getSimulationConfig() != nullptr) &&
-            ( GET_CONFIGURABLE( SimulationConfig )->migration_structure == MigrationStructure::NO_MIGRATION ) )
+        if( !JsonConfigurable::_dryrun )
         {
-            std::stringstream msg;
-            msg << _module << " cannot be used when 'Migration_Model' = 'NO_MIGRATION'.";
-            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+            if( GET_CONFIGURABLE( SimulationConfig )->migration_structure == MigrationStructure::NO_MIGRATION )
+            {
+                std::stringstream msg;
+                msg << _module << " cannot be used when 'Migration_Model' = 'NO_MIGRATION'.";
+                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+            }
+            if( IndividualHumanConfig::migration_pattern != MigrationPattern::SINGLE_ROUND_TRIPS )
+            {
+                std::stringstream msg;
+                msg << _module << " can only be used when 'Migration_Pattern' = 'SINGLE_ROUND_TRIPS'.";
+                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+            }
         }
         
         DistributionFunction::Enum before_leaving_function(DistributionFunction::CONSTANT_DISTRIBUTION);
-        initConfig( "Duration_Before_Leaving_Distribution", before_leaving_function, inputJson, MetadataDescriptor::Enum( "Duration_Before_Leaving_Distribution_Type", Duration_Before_Leaving_Distribution_DESC_TEXT, MDD_ENUM_ARGS(DistributionFunction) ) );
+        initConfig( "Duration_Before_Leaving_Distribution", before_leaving_function, inputJson, MetadataDescriptor::Enum( "Duration_Before_Leaving_Distribution", Duration_Before_Leaving_Distribution_DESC_TEXT, MDD_ENUM_ARGS(DistributionFunction) ) );
         duration_before_leaving = DistributionFactory::CreateDistribution( this, before_leaving_function, "Duration_Before_Leaving", inputJson );
 
         DistributionFunction::Enum at_node_function(DistributionFunction::CONSTANT_DISTRIBUTION);

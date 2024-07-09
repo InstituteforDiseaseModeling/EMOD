@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -22,6 +14,7 @@ namespace Kernel
         bool is_infected;
         unsigned int gender;
         float age;
+        unsigned int previous_coita_acts_count;
         unsigned int active_relationship_count;
         unsigned int cumulative_lifetime_relationships;
         unsigned int relationships_in_last_six_months;
@@ -30,7 +23,7 @@ namespace Kernel
         bool has_sti;
         bool is_superspreader;
         unsigned int relationship_count[RelationshipType::COUNT];
-        std::string props ;
+        std::vector<std::string> props ;
 
         ParticipantInfo();
     };
@@ -41,6 +34,7 @@ namespace Kernel
         float start_time;
         float scheduled_end_time;
         unsigned int relationship_type;
+        bool is_outside_pfa;
         ParticipantInfo participant_a;
         ParticipantInfo participant_b;
         ExternalNodeId_t original_node_id;
@@ -55,23 +49,12 @@ namespace Kernel
         unsigned int id;
         ExternalNodeId_t node_id;
         unsigned int relationship_type;
+        bool is_outside_pfa;
         unsigned int male_id;
         unsigned int female_id;
         float male_age;
         float female_age;
+        unsigned int num_total_coital_acts;
         unsigned int termination_reason;
-    };
-
-    struct CoitalActInfo
-    {
-        float time;
-        std::string _line;
-        virtual std::string GetHeader() const;
-        virtual void GatherLineFromRelationship( const IRelationship* pRel );
-
-        virtual std::string GetLine()
-        {
-            return _line;
-        }
     };
 }

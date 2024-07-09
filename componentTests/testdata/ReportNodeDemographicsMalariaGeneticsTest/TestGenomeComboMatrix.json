@@ -1,0 +1,37 @@
+{
+    "Enable_FPG_Similarity_To_Base": 0,
+    "Sporozoite_Life_Expectancy": 1000000,
+    "Num_Sporozoites_In_Bite_Fail": 12,
+    "Probability_Sporozoite_In_Bite_Fails": 0.5,
+    "Num_Oocyst_From_Bite_Fail": 3,
+    "Probability_Oocyst_From_Bite_Fails": 0.5,
+    "Sporozoites_Per_Oocyst_Distribution": "GAUSSIAN_DISTRIBUTION",
+    "Sporozoites_Per_Oocyst_Gaussian_Mean": 10000,
+    "Sporozoites_Per_Oocyst_Gaussian_Std_Dev": 1000,
+    "Crossover_Gamma_K"     : 2.0,
+    "Crossover_Gamma_Theta" : 0.38,
+    "Barcode_Genome_Locations" : [
+         311500,
+        1116500,
+        2140000,
+        3290000,
+        4323333,  4756667,
+        5656667,  6123333,
+        7056667,  7523333, 
+        8423333,  8856667,
+        9790000, 10290000,
+       11356667, 11923333,
+       13156667, 13823333,
+       15256667, 16023333,
+       17690000, 18590000,
+       20590000, 21690000
+    ],
+    "Drug_Resistant_Genome_Locations" : [],
+    "HRP_Genome_Locations" : [],
+    "MSP_Genome_Location" : 0, 
+    "PfEMP1_Variants_Genome_Locations": [
+    ],
+    "Var_Gene_Randomness_Type" : "ALL_RANDOM",
+    "Neighborhood_Size_MSP" : 4,
+    "Neighborhood_Size_PfEMP1" : 10
+}

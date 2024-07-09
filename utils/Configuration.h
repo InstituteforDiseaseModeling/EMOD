@@ -1,21 +1,12 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
-#include "IdmApi.h"
 #include <string>
 #include <set>
 #include <vector>
 #include <map>
 
-#include "BoostLibWrapper.h"
+#include "Exceptions.h"
 #include "ISupports.h"
 #include "CajunIncludes.h"
 
@@ -52,6 +43,20 @@ private:
     std::map<std::string, json::Number> extendedConfig;
 };
 
+template<typename T>
+T ConvertIntegerValue( const char* parameterName, double jsonValue )
+{
+    if( jsonValue != T(jsonValue) )
+    {
+        std::ostringstream errMsg; // using a non-parameterized exception.
+        errMsg << "The value for parameter '"<< parameterName << "' appears to be a decimal ("
+                << jsonValue
+                << ") but needs to be an integer." << std::endl;
+        throw Kernel::GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, errMsg.str().c_str() );
+    }
+    return T( jsonValue );
+}
+
 class JsonUtility
 {
 public:
@@ -59,7 +64,7 @@ public:
     static void logJsonException( const json::ScanException &pe, std::string& err_msg );
 };
 
-Configuration IDMAPI *Configuration_Load( const std::string& rFilename ) ;
+Configuration *Configuration_Load( const std::string& rFilename ) ;
 
 /////////////////////////////////////////////////////////////////////////////////////////
 // config/json loading wrappers
@@ -98,6 +103,12 @@ std::vector< std::vector< float > > GET_CONFIG_VECTOR2D_FLOAT(const json::QuickI
 inline std::vector< std::vector< float > > GET_CONFIG_VECTOR2D_FLOAT(const json::QuickInterpreter* parameter_source, const std::string& name)
 {
     return GET_CONFIG_VECTOR2D_FLOAT(parameter_source, name.c_str());
+}
+
+std::vector< std::vector< std::vector< float > > > GET_CONFIG_VECTOR3D_FLOAT(const json::QuickInterpreter* parameter_source, const char *name);
+inline std::vector< std::vector< std::vector< float > > > GET_CONFIG_VECTOR3D_FLOAT(const json::QuickInterpreter* parameter_source, const std::string& name)
+{
+    return GET_CONFIG_VECTOR3D_FLOAT(parameter_source, name.c_str());
 }
 
 std::vector< std::vector< int > > GET_CONFIG_VECTOR2D_INT(const json::QuickInterpreter* parameter_source, const char *name);
@@ -152,10 +163,12 @@ namespace Kernel
     //////////////////////////////////////////////////////////////////////
     // Configuration Mechanism
 
-    struct IDMAPI IConfigurable : ISupports
+    struct IConfigurable : ISupports
     {
         virtual bool Configure(const Configuration *config) = 0;
         virtual QuickBuilder GetSchema() = 0;
+        virtual json::Array GetSimTypes() = 0;
+        virtual void ClearSchema() = 0;
     };
 
 #define DECLARE_CONFIGURED(classname) \

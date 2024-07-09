@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
@@ -19,7 +11,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Exceptions.h"
 #include "ProgVersion.h"
 #include "Configuration.h"
-#include "BoostLibWrapper.h"
 #include "IdmMpi.h"
 #include "Debug.h"
 
@@ -31,8 +22,37 @@ using namespace json;
 
 SETUP_LOGGING( "ChannelData" )
 
+// ----------------------------------------------------------------------------
+// --- ChannelID
+// ----------------------------------------------------------------------------
+
+ChannelID::ChannelID()
+    : m_Index( -1 )
+    , m_ChannelName()
+{
+}
+
+ChannelID::ChannelID( int index, const std::string& channelName )
+    : m_Index( index )
+    , m_ChannelName( channelName )
+{
+}
+
+const std::string& ChannelID::GetName() const
+{
+    release_assert( !m_ChannelName.empty() );
+    return m_ChannelName;
+}
+
+
+
+// ----------------------------------------------------------------------------
+// --- ChannelDataMap
+// ----------------------------------------------------------------------------
+
 ChannelDataMap::ChannelDataMap()
     : channel_data_map()
+    , channel_index_to_map()
     , timesteps_reduced(0)
     , p_output_augmentor(nullptr)
     , start_year( -FLT_MAX )
@@ -111,10 +131,14 @@ const ChannelDataMap::channel_data_t& ChannelDataMap::GetChannel( const std::str
     return channel_data_map[ channel_name ] ;
 }
 
-void ChannelDataMap::AddChannel( const std::string& channel_name )
+ChannelID ChannelDataMap::AddChannel( const std::string& channel_name )
 {
     channel_data_t data ;
     channel_data_map[ channel_name ] = data ;
+    channel_data_t* p_data = &channel_data_map[ channel_name ];
+    channel_index_to_map.push_back( p_data );
+
+    return ChannelID( (channel_index_to_map.size()-1), channel_name );
 }
 
 void ChannelDataMap::RemoveChannel( const std::string& channel_name )
@@ -130,6 +154,19 @@ void ChannelDataMap::SetChannelData( const std::string& channel_name, const Chan
 void ChannelDataMap::SetLastValue( const std::string& channel_name, ChannelDataMap::channel_data_element_t value )
 {
     channel_data_map[ channel_name ].back() = value ;
+}
+
+void ChannelDataMap::Accumulate( const ChannelID& rID, channel_data_element_t value )
+{
+    release_assert( (0 <= rID.m_Index) && rID.m_Index < channel_index_to_map.size() );
+
+    channel_data_t *data = channel_index_to_map[ rID.m_Index ];
+    if (data->size() == 0) // initialize the vectors if this is the first time. assume we are on timestep 0
+        data->push_back(value);
+    else
+    {
+        data->back() += value;
+    }
 }
 
 void ChannelDataMap::Accumulate( const std::string& channel_name, ChannelDataMap::channel_data_element_t value )
@@ -152,9 +189,17 @@ void ChannelDataMap::Accumulate( const std::string& channel_name, int index, Cha
 void ChannelDataMap::ExponentialValues( const std::string& channel_name )
 {
     channel_data_t& r_channel_data = channel_data_map[ channel_name ];
-    for( auto& r_data : r_channel_data )
+    for( float& r_data : r_channel_data )
     {
-        r_data = exp( r_data );
+        // --------------------------------------------------------------------
+        // --- We cast to a double and back to a float to ensure that we get 
+        // --- consistent results.  If we just have "r_data = exp( r_data )",
+        // --- the result is not as consistent as you'd like, especially when
+        // --- comparing a full sim and one from a serialized population.
+        // --------------------------------------------------------------------
+        double val = r_data;
+        val = exp( val );
+        r_data = float( val );
     }
 }
 
@@ -181,45 +226,71 @@ void ChannelDataMap::Reduce()
     ar.labelElement("Channels") & send_name_size_map;
 
     const char* buffer = ar.GetBuffer();
-    size_t buffer_size = ar.GetBufferSize();
+    uint32_t buffer_size = ar.GetBufferSize();
 
-    EnvPtr->MPI.p_idm_mpi->PostChars( (char*)buffer, buffer_size, EnvPtr->MPI.Rank );
+    // send my channel names and number of channels to all other cores
+    IdmMpi::RequestList outbound_requests;
+    for( int to_rank = 0 ; to_rank < EnvPtr->MPI.NumTasks ; ++to_rank )
+    {
+        if( to_rank == EnvPtr->MPI.Rank ) continue;
 
+        IdmMpi::Request size_request;
+        EnvPtr->MPI.p_idm_mpi->SendIntegers( &buffer_size, 1, to_rank, &size_request );
+        outbound_requests.Add( size_request );
+
+        if( buffer_size > 0 )
+        {
+            IdmMpi::Request buffer_request;
+            EnvPtr->MPI.p_idm_mpi->SendChars( const_cast<char*>(buffer), buffer_size, to_rank, &buffer_request );
+            outbound_requests.Add( buffer_request );
+        }
+    }
+
+    // Get from the other cores their channel names and sizes and update my map
     for( int from_rank = 0 ; from_rank < EnvPtr->MPI.NumTasks ; ++from_rank )
     {
         if( from_rank == EnvPtr->MPI.Rank ) continue;
 
         std::vector<char> receive_json;
 
-        EnvPtr->MPI.p_idm_mpi->GetChars( receive_json, from_rank );
+        int receive_size = 0;
+        EnvPtr->MPI.p_idm_mpi->ReceiveIntegers( &receive_size, 1, from_rank );
 
-        receive_json.push_back( '\0' );
-
-        Kernel::JsonFullReader reader( receive_json.data() );
-        Kernel::IArchive* reader_par = static_cast<Kernel::IArchive*>(&reader);
-        Kernel::IArchive& reader_ar = *reader_par;
-
-        std::map<std::string,int> get_name_size_map;
-        reader_ar.labelElement("Channels") & get_name_size_map;
-
-        for( auto& entry : get_name_size_map )
+        if (receive_size > 0)
         {
-            std::string name = entry.first;
-            int         size = entry.second;
+            receive_json.resize( receive_size + 1 );
+            EnvPtr->MPI.p_idm_mpi->ReceiveChars( receive_json.data(), receive_size, from_rank );
+            receive_json.push_back( '\0' );
 
-            if( channel_data_map.count( name ) == 0 )
+            Kernel::JsonFullReader reader( receive_json.data() );
+            Kernel::IArchive* reader_par = static_cast<Kernel::IArchive*>(&reader);
+            Kernel::IArchive& reader_ar = *reader_par;
+
+            std::map<std::string,int> get_name_size_map;
+            reader_ar.labelElement("Channels") & get_name_size_map;
+
+            for( auto& entry : get_name_size_map )
             {
-                channel_data_t data(size);
-                channel_data_map[ name ] = data;
-            }
-            else if( channel_data_map[ name ].size() != size )
-            {
-                std::stringstream ss;
-                ss << "Channel=" << name << "  from rank=" << from_rank << " had size=" << size << " while this rank=" << EnvPtr->MPI.Rank << " had size=" << channel_data_map[ name ].size() << "\n";
-                throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+                std::string name = entry.first;
+                int         size = entry.second;
+
+                if( channel_data_map.count( name ) == 0 )
+                {
+                    channel_data_t data(size);
+                    channel_data_map[ name ] = data;
+                }
+                else if( channel_data_map[ name ].size() != size )
+                {
+                    std::stringstream ss;
+                    ss << "Channel=" << name << "  from rank=" << from_rank << " had size=" << size << " while this rank=" << EnvPtr->MPI.Rank << " had size=" << channel_data_map[ name ].size() << "\n";
+                    throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+                }
             }
         }
     }
+
+    // synchronize with other cores
+    EnvPtr->MPI.p_idm_mpi->WaitAll( outbound_requests );
 
     // -----------------------------------------------
     // --- Reduce the data in each channel of the map

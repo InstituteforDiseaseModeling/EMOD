@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include <iostream>
@@ -34,7 +26,10 @@ SUITE(BehaviorPfaTest)
         RandomFake fake_rng ;
 
         unique_ptr<IPairFormationAgent> pfa( BehaviorPfa::CreatePfa( p_config.get(), from_data.get(), 0.0f, &fake_rng,
-                [this,&fake_rng](IIndividualHumanSTI* male,IIndividualHumanSTI* female) { AddRelationship( &fake_rng, male, female ); } ) );
+                [this,&fake_rng]( IIndividualHumanSTI* male,
+                                  IIndividualHumanSTI* female,
+                                  bool isOutsidePFA,
+                                  Sigmoid* pCondomUsage ) { AddRelationship( &fake_rng, male, female ); } ) );
 
         BehaviorPfa* bpfa = dynamic_cast<BehaviorPfa*>( pfa.get() );
 
@@ -164,7 +159,10 @@ SUITE(BehaviorPfaTest)
         RandomFake fake_rng ;
 
         unique_ptr<IPairFormationAgent> pfa( BehaviorPfa::CreatePfa( p_config.get(), from_data.get(), 0.0f, &fake_rng,
-                [this,&fake_rng](IIndividualHumanSTI* male, IIndividualHumanSTI* female) { AddRelationship( &fake_rng, male, female ); } ) );
+                [this,&fake_rng]( IIndividualHumanSTI* male,
+                                  IIndividualHumanSTI* female,
+                                  bool isOutsidePFA,
+                                  Sigmoid* pCondomUsage ) { AddRelationship( &fake_rng, male, female ); } ) );
 
         BehaviorPfa* bpfa = dynamic_cast<BehaviorPfa*>( pfa.get() );
 
@@ -245,7 +243,10 @@ SUITE(BehaviorPfaTest)
         for( int male_bin_index = 0 ; male_bin_index < from_data->GetMaleAgeBinCount() ; male_bin_index++ )
         {
             unique_ptr<IPairFormationAgent> pfa( BehaviorPfa::CreatePfa( p_config.get(), from_data.get(), 0.0f, &rng,
-                    [this, &rng ](IIndividualHumanSTI* male, IIndividualHumanSTI* female) { AddRelationship( &rng, male, female ); } ) );
+                    [this, &rng ]( IIndividualHumanSTI* male,
+                                   IIndividualHumanSTI* female,
+                                   bool isOutsidePFA,
+                                   Sigmoid* pCondomUsage ) { AddRelationship( &rng, male, female ); } ) );
 
             BehaviorPfa* bpfa = dynamic_cast<BehaviorPfa*>( pfa.get() );
 

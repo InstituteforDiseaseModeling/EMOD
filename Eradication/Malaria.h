@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -92,9 +84,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #define AVERAGE_RBC_LIFESPAN        (120)     // days
 #define AVERAGE_RBC_CONCENTRATION   (5e6)     // RBC/microliter
-
-#define MALARIA_TEST_BLOOD_SMEAR    (1)
-#define MALARIA_TEST_NEW_DIAGNOSTIC (2)
 
 #define DEFAULT_BASE_GAMETOCYTE_MOSQUITO_SURVIVAL   (0.01f) // For initialization of flags only-- See Eckhoff Intrahost paper for details of parameter
 #define DEFAULT_CYTOKINE_GAMETOCYTE_INACTIVATION    (0.02f) // For initialization of flags only-- See Eckhoff Intrahost paper for details of parameter

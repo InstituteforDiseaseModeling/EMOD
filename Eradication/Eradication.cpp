@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
@@ -21,7 +13,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "Environment.h"
 #include "FileSystem.h"
-#include "BoostLibWrapper.h"
 
 #ifdef WIN32
 #include <windows.h>
@@ -46,6 +37,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 // Version info extraction for both program and dlls
 #include "ProgVersion.h"
 #include "DllLoader.h"
+
+#include "InstructionSetInfo.h"
 
 
 using namespace std;
@@ -84,6 +77,7 @@ void FPE_SignalHandler( int signal )
     std::cout << exp.GetMsg() << "\n\n";
     std::cout << exp.GetStackTrace() << "\n\n";
     fflush( stdout );
+    EnvPtr->MPI.p_idm_mpi->Abort( -1 );
     exit(-1);
 }
 
@@ -119,7 +113,7 @@ void DisableFloatingPointSignalHandler()
 
     _controlfp_s(&currentlControl, currentlControl | _EM_ZERODIVIDE | _EM_INVALID , _MCW_EM);	// disable FPE signals by setting bits    
 #else
-    feclearexcept(FE_INVALID | FE_DIVBYZERO | FE_OVERFLOW);    // disable FPE signals
+    fedisableexcept(FE_INVALID | FE_DIVBYZERO | FE_OVERFLOW);    // disable FPE signals
 #endif
     std::signal(SIGFPE, SIG_DFL);	//set default signal handler for SIGFPE
 }
@@ -140,7 +134,7 @@ int main(int argc, char* argv[])
     ProgDllVersion* pv = new ProgDllVersion(); // why new this instead of just put it on the stack?
     auto sims = getSimTypeList();
     std::stringstream output;
-    output << "Intellectual Ventures(R)/EMOD Disease Transmission Kernel " << pv->getVersion() << std::endl
+    output << "EMOD Disease Transmission Kernel " << pv->getVersion() << std::endl
            << "Built on " << pv->getBuildDate() <<
            " by " << pv->getBuilderName() <<
            " from " << pv->getSccsBranch() <<
@@ -154,7 +148,14 @@ int main(int argc, char* argv[])
     }
     sim_types_str.pop_back();
     sim_types_str.pop_back();
-    output << sim_types_str << "." << std::endl << std::endl;
+    output << sim_types_str << "." << std::endl;
+#ifdef ENABLE_LOG_VALID
+    output << "TestSugar Enabled" << std::endl;
+#endif
+    Kernel::InstructionSetInfo info;
+    output << info.GetSupportString() << std::endl;
+
+    output << std::endl;
     LOG_INFO_F( output.str().c_str() );
     EnvPtr->Log->Flush();
     delete pv;
@@ -231,7 +232,7 @@ int MPIInitWrapper( int argc, char* argv[])
         // caught, tear everything down, decisively.
         if (!fSuccessful)
         {
-            if( EnvPtr != nullptr && EnvPtr->Log != nullptr )
+            if( (EnvPtr != nullptr) && (EnvPtr->Log != nullptr) )
             {
                 EnvPtr->Log->Flush();
             }
@@ -253,6 +254,7 @@ int MPIInitWrapper( int argc, char* argv[])
         return -1;
     }
 }
+
 
 bool ControllerInitWrapper( int argc, char *argv[], IdmMpi::MessageInterface* pMpi )
 {
@@ -304,7 +306,6 @@ bool ControllerInitWrapper( int argc, char *argv[], IdmMpi::MessageInterface* pM
             std::list<string> dllNames;
             std::list<string> dllVersions;
 #ifdef WIN32
-
             if( po.CommandLineHas( "dll-path" ) )
             {
                 DllLoader dllLoader;
@@ -324,6 +325,8 @@ bool ControllerInitWrapper( int argc, char *argv[], IdmMpi::MessageInterface* pM
             {
                 LOG_DEBUG("The EModule root path is not given, so nothing to get version from.\n");
             }
+            Kernel::InstructionSetInfo inst_set;
+            oss << inst_set.GetSupportString() << std::endl;
 #endif
             LOG_INFO(oss.str().c_str());
             return true;
@@ -362,25 +365,6 @@ bool ControllerInitWrapper( int argc, char *argv[], IdmMpi::MessageInterface* pM
     }
     EnvPtr->Log->Flush();
 
-    bool is_getting_schema = po.CommandLineHas( "get-schema" );
-
-    // --------------------------------------------------------------------------------------------------
-    // --- DMB 9-9-2014 ERAD-1621 Users complained that a file not found exception on config.json
-    // --- really didn't tell them that they forgot to specify the configuration file on the command line.
-    // --- One should be able to get the schema without specifying a config file.
-    // --------------------------------------------------------------------------------------------------
-    if( (po.GetCommandLineValueString( "config" ) == po.GetCommandLineValueDefaultString( "config" )) &&
-       !is_getting_schema )
-    {
-        if( !FileSystem::FileExists( po.GetCommandLineValueDefaultString( "config" ) ) )
-        {
-            std::string msg ;
-            msg += "The configuration file '" + po.GetCommandLineValueDefaultString( "config" ) + "' could not be found.  " ;
-            msg += "Did you forget to define the configuration file on the command line with --config or -C?" ;
-            LOG_ERR_F( msg.c_str() );
-            return false ;
-        }
-    }
 
     /////////////////////////////////////////////////////////////////////////////////////////
     // Run model
@@ -396,34 +380,48 @@ bool ControllerInitWrapper( int argc, char *argv[], IdmMpi::MessageInterface* pM
             StatusReporter::updateScheduler = true;
         }
 
-        auto configFileName = po.GetCommandLineValueString( "config" );
-
-        auto schema_path = po.GetCommandLineValueString("schema-path");
+        bool is_getting_schema = po.CommandLineHas( "get-schema" );
+        auto schema_path       = po.GetCommandLineValueString("schema-path");
+        auto configFileName    = po.GetCommandLineValueString( "config" );
 
 #ifdef ENABLE_PYTHON
         // Start python interpreter if python-script-path is not empty; default value for python-script-path option is empty string
-        Kernel::PythonSupport::SetupPython(po.GetCommandLineValueString( "python-script-path" ));
+        if ( pMpi->GetRank() == 0 )
+        {
+            Kernel::PythonSupport::SetupPython(po.GetCommandLineValueString( "python-script-path" ));
+        }
 #endif
 
-        if( Kernel::PythonSupport::IsPythonInitialized() )
+        // Exceptions for misconfiguration of schema
+        if( Kernel::PythonSupport::IsPythonInitialized() && is_getting_schema && schema_path == "stdout")
         {
-            if( is_getting_schema && schema_path == "stdout")
-            {
-                std::stringstream msg;
-                msg << "--schema-path=stdout and --python-script-path defined:  Post processing only works on a file.  "
-                    << "Please define --schema-path as a filename.";
-                throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
-            }
-            else if( !Kernel::PythonSupport::PythonScriptsExist() )
-            {
-                std::stringstream msg;
-                msg << "--python-script-path specified but no python scripts found.";
-                throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
-            }
+            std::stringstream msg;
+            msg << "--schema-path=stdout and --python-script-path defined:  Post processing only works on a file.  "
+                << "Please define --schema-path as a filename.";
+            throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
         }
 
         // Run python pre-process script; does nothing and returns configFileName if no python.
         configFileName = Kernel::PythonSupport::RunPyFunction( configFileName, Kernel::PythonSupport::SCRIPT_PRE_PROCESS );
+
+        // Ensure all processes have the same value for configFileName
+        int fname_tmp_size = configFileName.size() + 1;
+        pMpi->BroadcastInteger(&fname_tmp_size, 1, 0);
+        char* fname_tmp = static_cast<char*>(malloc(fname_tmp_size*sizeof(char)));
+        std::strcpy(fname_tmp, configFileName.c_str());
+        pMpi->BroadcastChar(fname_tmp, fname_tmp_size, 0);
+        configFileName = fname_tmp;
+        free(fname_tmp); fname_tmp = nullptr;
+
+        // Exceptions for missing simulation configuration file
+        if( !is_getting_schema && !FileSystem::FileExists( configFileName ) )
+        {
+            std::string msg;
+            msg += "The configuration file '" + configFileName + "' could not be found.";
+            msg += "Did you forget to define the configuration file on the command line with --config or -C?" ;
+            LOG_ERR_F( msg.c_str() );
+            return false;
+        }
 
         // set up the environment
         EnvPtr->Log->Flush();
@@ -433,7 +431,6 @@ bool ControllerInitWrapper( int argc, char *argv[], IdmMpi::MessageInterface* pM
             configFileName,
             po.GetCommandLineValueString( "input-path"  ),
             po.GetCommandLineValueString( "output-path" ),
-// 2.5            po.GetCommandLineValueString( "state-path"  ),
             po.GetCommandLineValueString( "dll-path"    ),
             is_getting_schema
             );
@@ -449,9 +446,6 @@ bool ControllerInitWrapper( int argc, char *argv[], IdmMpi::MessageInterface* pM
             writeInputSchemas( po.GetCommandLineValueString( "dll-path" ).c_str(), po.GetCommandLineValueString( "schema-path" ).c_str() );
             return true;
         }
-
-        // check if we can support python scripts based on simulation type
-        std::string sim_type_str = GET_CONFIG_STRING( EnvPtr->Config, "Simulation_Type" );
 
         // UDP-enabled StatusReporter needs host and sim unique id.
         if( po.GetCommandLineValueString( "monitor_host" ) != "none" )
@@ -471,6 +465,7 @@ bool ControllerInitWrapper( int argc, char *argv[], IdmMpi::MessageInterface* pM
             LOG_INFO_F("Status monitor sim id: %s\n", po.GetCommandLineValueString( "sim_id" ).c_str() );
             EnvPtr->getStatusReporter()->SetHPCId( po.GetCommandLineValueString( "sim_id" ) );
         }
+
 
 #ifdef _DEBUG
     //#define DEBUG_MEMORY_LEAKS // uncomment this to run an extra warm-up pass and enable dumping objects 
@@ -524,12 +519,11 @@ bool ControllerInitWrapper( int argc, char *argv[], IdmMpi::MessageInterface* pM
             if (status)
             {
                 DisableFloatingPointSignalHandler();	//prevent external programs from triggering fpe, e.g. Python dll
-            	release_assert( EnvPtr );
-                if ( EnvPtr->MPI.Rank == 0 )
-                {
-                    // Run python post-process script; does nothing if no python.
-                    Kernel::PythonSupport::RunPyFunction( EnvPtr->OutputPath, Kernel::PythonSupport::SCRIPT_POST_PROCESS );
-                }
+                release_assert( EnvPtr );
+
+                // Run python post-process script; does nothing if no python.
+                Kernel::PythonSupport::RunPyFunction( EnvPtr->OutputPath, Kernel::PythonSupport::SCRIPT_POST_PROCESS );
+
                 LOG_INFO( "Controller executed successfully.\n" );
             }
             else
@@ -609,14 +603,6 @@ bool ControllerInitWrapper( int argc, char *argv[], IdmMpi::MessageInterface* pM
 
     if( EnvPtr != nullptr )
     {
-        EnvPtr->Log->Flush();
-#if 0
-        // Workaround: let's not do this.
-        if((Kernel::SimulationConfig*)EnvPtr->SimConfig)
-        {
-            ((Kernel::SimulationConfig*)EnvPtr->SimConfig)->Release();
-        }
-#endif
         EnvPtr->Log->Flush();
     }
 

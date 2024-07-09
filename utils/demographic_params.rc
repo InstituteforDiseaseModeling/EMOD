@@ -1,0 +1,149 @@
+// The following parameter definitions are from the docs for when we have a demographic schema
+
+#define Metadata_DESC_TEXT "The structure that contains the metadata for the demographics file."
+#define Author_DESC_TEXT "The person who created the demographics file. EMOD does not use this value."
+#define DateCreated_DESC_TEXT "The date the demographics file was created. EMOD does not use this value."
+#define IdReference_DESC_TEXT "The identifier for a simulation; all input files (except configuration and campaign files) used in a simulation must have the same IdReference value."
+#define NodeCount_DESC_TEXT "The number of nodes to expect in the input files."
+#define Tool_DESC_TEXT "The software tool used to create the demographics file. EMOD does not use this value."
+#define Resolution_DESC_TEXT "The spatial resolution of the demographics file."
+
+#define Defaults_DESC_TEXT "The structure that contains parameter settings that will be applied to all nodes in a simulation."
+
+#define NodeProperties_DESC_TEXT "An array that contains parameters that add properties to nodes in a simulation. For example, you can define values for intervention status, risk, and other properties and assign values to different nodes."
+
+#define Nodes_DESC_TEXT "The structure that contains parameters settings that will be applied to specific nodes."
+#define NodeID_DESC_TEXT "The identifier for a particular node."
+
+#define IndividualAttributes_DESC_TEXT "The structure that contains parameters that add or modify the distribution of attributes across individuals in a simulation. For example, the age or immunity distribution. An initial value for an individual is a randomly selected value from a distribution. For example, if you use a uniform distribution to initialize age, the initial ages of individuals in the simulation will be evenly distributed between some minimum and maximum value."
+#define AgeDistribution_DESC_TEXT "The structure defining a complex age distribution. Age_Initialization_Distribution_Type in the configuration file must be set to DISTRIBUTION_COMPLEX."
+#define AgeDistribution1_DESC_TEXT "The first value, in days, in the age distribution, the meaning of which depends upon the value set in AgeDistributionFlag."
+#define AgeDistribution2_DESC_TEXT "The second value, in days, in the age distribution, the meaning of which depends upon the value set in AgeDistributionFlag."
+#define AgeDistributionFlag_DESC_TEXT "The type of distribution to use for age."
+#define FertilityDistribution_DESC_TEXT "The distribution of the fertility rate in the population."
+#define MigrationHeterogeneityDistribution1_DESC_TEXT "The first value in the migration heterogeneity distribution, the meaning of which depends upon the value set in MigrationHeterogeneityFlag."
+#define MigrationHeterogeneityDistribution2_DESC_TEXT "The second value in the distribution, the meaning of which depends upon the value set in MigrationHeterogeneityDistributionFlag."
+#define MigrationHeterogeneityDistributionFlag_DESC_TEXT "The type of distribution to use for migration heterogeneity."
+#define MortalityDistribution_DESC_TEXT "The distribution of non-disease mortality for a population."
+#define PercentageChildren_DESC_TEXT "The percentage of individuals in the node that are children."
+#define PrevalenceDistribution1_DESC_TEXT "The first value in the prevalence distribution, the meaning of which depends upon the value set in PrevalenceDistributionFlag."
+#define PrevalenceDistribution2_DESC_TEXT "The second value in the distribution, the meaning of which depends upon the value set in PrevalenceDistributionFlag."
+#define PrevalenceDistributionFlag_DESC_TEXT "The type of distribution to use for prevalence."
+#define RiskDistribution1_DESC_TEXT "The first value in the risk distribution, the meaning of which depends upon the value set in RiskDistributionFlag."
+#define RiskDistribution2_DESC_TEXT "The second value in the distribution, the meaning of which depends upon the value set in RiskDistributionFlag."
+#define RiskDistributionFlag_DESC_TEXT "The type of distribution to use for risk."
+#define SusceptibilityDistribution1_DESC_TEXT "The first value in the susceptibility distribution, the meaning of which depends upon the value set in SusceptibilityDistributionFlag."
+#define SusceptibilityDistribution2_DESC_TEXT "The second value in the susceptibility distribution, the meaning of which depends upon the value set in SusceptibilityDistributionFlag."
+#define SusceptibilityDistributionFlag_DESC_TEXT "The type of distribution to use for susceptibility."
+
+//Distributions
+#define AxisNames_DESC_TEXT "An array of the names used for each axis of a complex distribution."
+#define AxisScaleFactors_DESC_TEXT "A list of the scale factors used to convert axis units to data measurements in a complex distribution. For example, 365 to convert daily mortality to annual mortality. The array must contain one factor for each axis."
+#define AxisUnits_DESC_TEXT "An array of the scale factors to use to convert the units used for the axes into days."
+#define DistributionValues_DESC_TEXT "An array of values between 0 and 1 listed in ascending order that defines a complex age distribution. Each value represents the proportion of the population below that age and the difference between two successive values is the proportion of the population in the age bin defined in ResultValues. Age_Initialization_Distribution_Type in the configuration file must be set to DISTRIBUTION_COMPLEX."
+#define PopulationGroups_DESC_TEXT "An array in which each row represents one of the distribution axes and contains the values that the independent variable can take."
+#define NumDistributionAxes_DESC_TEXT "The number of axes to use for a complex distribution."
+#define NumPopulationGroups_DESC_TEXT "An array of population groupings for each independent variable for a complex distribution."
+#define ResultScaleFactor_DESC_TEXT "The scale factor used to convert ResultUnits to number of births, deaths, or another variable per individual per day."
+#define ResultUnits_DESC_TEXT "A string that indicates the units used for the ResultValues parameter of a complex distribution. This value is informational and not used by EMOD."
+#define ResultValues_DESC_TEXT "An array in which each row represents one of the distribution axes and contains the dependent variable values. The units are configurable; the values are scaled by the value in ResultScaleFactor before being passed to EMOD in units of days."
+
+#define NodeAttributes_DESC_TEXT "The structure that contains parameters that add or modify information regarding the location, migration, habitat, and population of a simulation. Some NodeAttributes depend on values set in the configuration parameters."
+#define Altitude_DESC_TEXT "The altitude, in meters, for the node. Required, but only used when Climate_Model is set to CLIMATE_KOPPEN."
+#define Latitude_DESC_TEXT "Latitude of the node in decimal degrees. This can be used for several things, including determining infectiousness by latitude and defining the size of grid cells."
+#define Longitude_DESC_TEXT "Longitude of the node in decimal degrees. This can be used for several things, including defining the size of grid cells."
+#define Airport_DESC_TEXT "Indicates whether or not the node has an airport for air migration from (not to) the node."
+#define Region_DESC_TEXT "Indicates whether or not the node has a road network for regional migration from (not to) the node."
+#define Seaport_DESC_TEXT "Indicates whether or not the node is connected by sea migration from (not to) the node."
+#define BirthRate_DESC_TEXT "The birth rate, in births per person per day."
+#define InitialPopulation_DESC_TEXT "The number of people that will be populated into the node at the beginning of the simulation. You can scale this number using Base_Population_Scale_Factor in the configuration file."
+#define InfectivityReservoirSize_DESC_TEXT "The quantity-per-timestep added to the total infectivity present in a node; it is equivalent to the expected number of additional infections in a node, per timestep."
+#define InfectivityReservoirStartTime_DESC_TEXT "The beginning of the exogeneous reservoir of infectivity."
+#define InfectivityReservoirEndTime_DESC_TEXT "The ending of the exogeneous reservoir of infectivity."
+#define NodePropertyValues_DESC_TEXT "A dictionary that allows you to to set the values of the Node Properties for each node."
+
+#define IndividualProperties_DESC_TEXT "An array that contains parameters that add properties to individuals in a simulation. For example, you can define values for accessibility, age, geography, risk, and other properties and assign values to different individuals."
+#define Initial_Distribution_DESC_TEXT "An array of floats that define the proportion of property values to assign to individuals or nodes at the beginning of the simulation and when new individuals are born. Their sum must equal 1 and the number of members in this array must match the number of members in Values. For Age_Bin property types, omit this parameter as the demographics file controls the age distribution."
+#define Property_DESC_TEXT "The individual or node property type for which you will assign values to create groups."
+#define TransmissionMatrix_DESC_TEXT "An object that contains **Route** and **Matrix** parameters that define how to scale the base infectivity from individuals in one group to individuals in another (the HINT feature)."
+#define Age_Bin_Edges_In_Years_DESC_TEXT "An array of integers that represents the ages, in years, at which to demarcate the age groups for individuals."
+#define Values_DESC_TEXT "An array of the user-defined values that can be assigned to individuals or nodes for this property. The order of the values corresponds to the order of the Initial_Distribution array.You can have up to 125 values for the Geographic and InterventionStatus property types and up to 5 values for all other types."
+
+
+// ----------------------------------------------------------------------------
+// --- Malaria ONLY
+// ----------------------------------------------------------------------------
+// Both in NodeAttributes
+
+#define InitialVectorsPerSpecies_DESC_TEXT "The number of vectors per species that will be populated into the node at the beginning of the simulation. Population responds to habitat availability that can be scaled by LarvalHabitatMultiplier. Vector_Sampling_Type in the configuration file must be set to TRACK_ALL_VECTORS or SAMPLE_IND_VECTORS."
+#define LarvalHabitatMultiplier_DESC_TEXT "The value by which to scale the larval habitat availability (specified in config.Vector_Species_Params.Habitats) per node.  You can specify that it is across all habitat types, for specific habitat type, or for a specific mosquito species within each habitat type.  This parameter is an array of dictionaries.  See ScaleLarvalHabitat intervention for formatting."
+
+// ----------------------------------------------------------------------------
+// --- HIV ONLY
+// ----------------------------------------------------------------------------
+
+#define Society_DESC_TEXT "The structure that defines the behavioral-based parameters of a relationship type."
+#define Concurrency_Configuration_DESC_TEXT "The structure that determines how concurrent relationships are formed, for all relationship types."
+#define Concurrency_Parameters_DESC_TEXT "The structure that determines how concurrent relationships are formed, for a specific relationship type."
+#define Pair_Formation_Parameters_DESC_TEXT "Structure that defines all relationship formation parameters for the relationship type specified."
+#define Relationship_Parameters_DESC_TEXT "The structure that determines basic aspects of the relationship, such as condom usage or how to handle migration."
+
+#define COMMERCIAL_DESC_TEXT "The structure that defines basic relationship, pair formation, and concurrency parameters for transactional relationships involving commercial sex work (CSW)."
+#define INFORMAL_DESC_TEXT "The structure that defines basic relationship, pair formation, and concurrency parameters for longer-term non-marital relationships."
+#define MARITAL_DESC_TEXT "The structure that defines basic relationship, pair formation, and concurrency parameters for marital relationships."
+#define TRANSITORY_DESC_TEXT "The structure that defines basic relationship, pair formation, and concurrency parameters for brief relationships lasting one night, weekend, or week."
+
+//Assortivity
+#define Group_DESC_TEXT "The group that individuals may belong to that is used for the weighting matrix for  pair formation."
+#define Axes_DESC_TEXT "The axes defined in Group to use for the weighting matrix for pair formation. The order of the array defines the order of the weighting matrix."
+#define Weighting_Matrix_RowMale_ColumnFemale_DESC_TEXT "The weights to apply to pair formation rates for individuals belonging to the groups defined in Axes. Rows are indexed by the male attribute and columns by the female attribute as defined in Axes.  A single row or column cannot be all zeros.  The matrix must be square with the number of dimensions defined by the number of entries in Axes."
+#define Property_Name_DESC_TEXT "If Group is set to INDIVIDUAL_PROPERTY, the name of the individual property as defined in the IndividualProperties section."
+#define Assortivity_Start_Year_DESC_TEXT "The year to start using the assortivity weighting matrix."
+
+//ConcurrencyParameters
+#define Prob_Extra_Relationship_Female_DESC_TEXT "The probability of a female receiving a flag that allows her to seek additional relationships while currently in another relationship."
+#define Prob_Extra_Relationship_Male_DESC_TEXT "The probability of a male receiving a flag that allows him to seek additional relationships while currently in another relationship."
+#define Max_Simultaneous_Relationships_Female_DESC_TEXT "For females, the maximum number of concurrent relationships."
+#define Max_Simultaneous_Relationships_Male_DESC_TEXT "For males, the maximum number of concurrent relationships."
+#define Concurrency_By_Property_NONE_DESC_TEXT "When not using an Individual Property, the default value is 'NONE'.  You define the maximum and probability of extra relationships independent of individual property values."
+#define Concurrency_By_Property_IP_DESC_TEXT "The values of the Society.Concurrency_Configuration.Individual_Property_Name IP will be the keys of this dictionary.  For each value, you can define different maximums and probabilities of extra relationships.  For example, if you use an IP of 'Risk', you could have people with 'Risk=HIGH' have more relationships than those with 'Risk=LOW'."
+
+//Concurrency_Configuration
+#define Probability_Person_Is_Behavioral_Super_Spreader_DESC_TEXT "The probability that an individual is a behavioral super spreader, where they are allowed multiple relationships of all types."
+#define Individual_Property_Name_DESC_TEXT "The individual property used to create groups of people for configuring relationship concurrency settings. The property name must be defined in the IndividualProperties section. If the concurrency settings do not vary based on individual properties, set to NONE."
+#define Concurrency_Configuration_By_Property_NONE_DESC_TEXT "If Society.Concurrency_Configuration.Individual_Property_Name='NONE', then this key is 'NONE' and you define the order of relationship consideration.  Since it is 'NONE', it is independent of IP values."
+#define Concurrency_Configuration_By_Property_IP_DESC_TEXT "If Society.Concurrency_Configuration.Individual_Property_Name is equal to an IP Property Name, then there will be a key for each value of the IP.  You can define different orders of relationship consideration for different IP values.  For example, if the IP is 'Risk', then you might have 'Risk=LOW' people consider marital relationships first while 'Risk=HIGH' considers commercial first."
+#define Extra_Relational_Flag_Type_DESC_TEXT "The manner in which extra-relational flags are distributed. Individuals cannot seek additional concurrent relationships unless they have a flag for the relationship type they are currently in. Possible values are Correlated or Independent."
+#define Correlated_Relationship_Type_Order_DESC_TEXT "The relationship types listed in order of the correlated probabilities. The array must contain all relationship types and Extra_Relational_Flag_Type must be set to Correlated."
+
+//PairFormationParametersImpl
+#define Formation_Rate_Constant_DESC_TEXT "If Formation_Rate_Type is set to CONSTANT, the number of new relationships per day for this relationship type."
+#define Formation_Rate_Interpolated_Values_DESC_TEXT "The structure that contains two arrays of times and values that will be interpolated to provide the formation rate when Formation_Rate_Type is set to INTERPOLATED_VALUES."
+#define Formation_Rate_Sigmoid_DESC_TEXT "The structure that determines the shape of the sigmoidal curve for pair formation when Formation_Rate_Type is set to SIGMOID_VARIABLE_WIDTH_HEIGHT."
+#define Formation_Rate_Type_DESC_TEXT "The type of functional form that describes that pair formation rate."
+#define Extra_Relational_Rate_Ratio_Female_DESC_TEXT "For women, the rate ratio for having extra-relational sex for this relationship type, where the ratio is the event over the period of time defined in **Update_Period**."
+#define Extra_Relational_Rate_Ratio_Male_DESC_TEXT "For males, the rate ratio for having extra-relational sex for this relationship type, where the ratio is the event over the period of time defined in **Update_Period**."
+#define Number_Age_Bins_Female_DESC_TEXT "The number of age bins to divide the female population into for pair formation."
+#define Number_Age_Bins_Male_DESC_TEXT "The number of age bins to divide the male population into for pair formation."
+#define Age_of_First_Bin_Edge_Female_DESC_TEXT "The maximum age for the first age bin when dividing the female population into age bins for pair formation."
+#define Age_of_First_Bin_Edge_Male_DESC_TEXT "The maximum age for the first age bin when dividing the male population into age bins for pair formation."
+#define Years_Between_Bin_Edges_Female_DESC_TEXT "For the female population, the number of years covered in each age bin."
+#define Years_Between_Bin_Edges_Male_DESC_TEXT "For the male population, the number of years covered in each age bin."
+#define Update_Period_DESC_TEXT "The period, in days, to wait before an individual is eligible to seek out new relationships."
+#define Joint_Probabilities_DESC_TEXT "The relative preference of members of one age bin to form relationships with members of another age bin. The columns represent female bins and rows represent male bins."
+#define Assortivity_DESC_TEXT "The object that defines how people will preferentially form pairs based on their membership in different groups."
+
+//RelationshipParameters
+#define Coital_Act_Rate_DESC_TEXT "The probability of a coital act occurring at each time step."
+#define Condom_Usage_Probability_DESC_TEXT "The structure that determines the probability of condom usage over time in a relationship type."
+#define Duration_Weibull_Heterogeneity_DESC_TEXT "Inverse of the Weibull shape (1/kappa) parameter of relationship duration in years."
+#define Duration_Weibull_Scale_DESC_TEXT "Weibull scale parameter of relationship duration in years."
+#define Condom_Usage_DESC_TEXT "Min=Left-asymptote of the sigmoidally-varying condom usage probability;\
+ Max=Right-asymptote of the sigmoidally-varying condom usage probability;\
+ Mid=Year in which the sigmoidally-varying condom usage probability reaches an inflection point half way between the early and late values;\
+ Rate=Governs the speed of transition between early and late values of the condom usage sigmoid for relationship. The slope at the mid-year is proportional to the rate."
+#define Migration_Actions_DESC_TEXT "A list of what relationship action to take when one member of the relationship migrates to another node. The order in which they are listed corresponds to the probability values in Migration_Actions_Distributions."
+#define Migration_Actions_Distribution_DESC_TEXT "A list of the proportion of relationships that take a given action when one member of the relationship migrates. The sum of all values must be 1 and the order of the list corresponds to the order in Migration_Actions."
+
+
+

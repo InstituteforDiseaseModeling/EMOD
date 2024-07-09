@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -13,10 +5,10 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <map>
 #include <vector>
 
-#include "BoostLibWrapper.h"
 #include "Configure.h"
 #include "InterventionEnums.h"
 #include "PropertyRestrictions.h"
+#include "IAdditionalRestrictions.h"
 
 namespace Kernel
 {
@@ -58,5 +50,7 @@ namespace Kernel
         jsonConfigurable::tDynamicStringSet property_restrictions_set;
         PropertyRestrictions<IPKey,IPKeyValue,IPKeyValueContainer> property_restrictions;
         bool target_residents_only;
+        AdditionalTargetingConfig targeting_config;
+        IAdditionalRestrictions* additional_restrictions;
     };
 }

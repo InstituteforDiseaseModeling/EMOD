@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "SimulationConfig.h"
@@ -14,7 +6,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Vector.h"
 #include "IContagionPopulation.h"
 #include "StrainIdentity.h"
-#include "NodeVector.h"
+#include "INodeContext.h"
+#include "Climate.h"
 #include "Exceptions.h"
 #include "Log.h"
 #include "Debug.h"
@@ -23,8 +16,12 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "VectorSpeciesParameters.h"
 #include "RANDOM.h"
 #include "TransmissionGroupMembership.h"
+#include "IContagionPopulationGP.h"
+#include "VectorToHumanAdapter.h"
+#include "NodeEventContext.h"
+#include "BroadcasterObserver.h"
 
-SETUP_LOGGING( "VectorPopulationIndividual" )
+SETUP_LOGGING("VectorPopulationIndividual")
 
 // VectorPopulationIndividual handles treatment of Vector population as an ensemble
 // of individual vectors, although it is possible to run the code with each vector
@@ -38,96 +35,89 @@ namespace Kernel
     BEGIN_QUERY_INTERFACE_DERIVED(VectorPopulationIndividual, VectorPopulation)
     END_QUERY_INTERFACE_DERIVED(VectorPopulationIndividual, VectorPopulation)
 
-    VectorPopulationIndividual::VectorPopulationIndividual(uint32_t mosquito_weight) 
-    : VectorPopulation()
-    , m_mosquito_weight(mosquito_weight)
-    , m_average_oviposition_killing(0.0f)
-    , current_vci(nullptr)
-    { 
+    VectorPopulationIndividual::VectorPopulationIndividual(uint32_t mosquito_weight)
+        : VectorPopulation()
+        , m_mosquito_weight(mosquito_weight)
+        , m_average_oviposition_killing(0.0f)
+        , current_vci(nullptr)
+    {
+        delete pAdultQueues;
+        pAdultQueues = new VectorCohortCollectionStdVector();
     }
 
-    void VectorPopulationIndividual::InitializeVectorQueues( uint32_t adults, uint32_t _infectious )
+    void VectorPopulationIndividual::AddInitialFemaleCohort( const VectorGenome& rGenomeFemale,
+                                                             const VectorGenome& rGenomeMate,
+                                                             uint32_t num )
     {
-        adult      = adults;
-        infectious = _infectious;
-
-        if (adult > 0)
+        uint32_t adjusted_population = num / m_mosquito_weight;
+        for (uint32_t i = 0; i < adjusted_population; i++)
         {
-            uint32_t adjusted_population = adults / m_mosquito_weight;
-            for (uint32_t i = 0; i < adjusted_population; i++)
-            {
-                VectorCohortIndividual* pvci = VectorCohortIndividual::CreateCohort( VectorStateEnum::STATE_ADULT,
-                                                                                     0,
-                                                                                     0,
-                                                                                     m_mosquito_weight,
-                                                                                     VectorMatingStructure( VectorGender::VECTOR_FEMALE ),
-                                                                                     &species_ID );
+            VectorCohortIndividual* pvci = CreateAdultCohort(
+                m_pNodeVector->GetNextVectorSuid().data,
+                VectorStateEnum::STATE_ADULT,
+                0.0,
+                0.0,
+                0.0,
+                m_mosquito_weight,
+                rGenomeFemale,
+                m_SpeciesIndex );
+            pvci->SetMateGenome(rGenomeMate);
 
-                RandomlySetOvipositionTimer( pvci );
+            RandomlySetOvipositionTimer(pvci);
 
-                AdultQueues.push_back( pvci );
-            }
-
-            // and a population of males as well
-            // progress is 1 since males should be at 1 from progressing from Immature to Male
-            MaleQueues.push_back( VectorCohort::CreateCohort( VectorStateEnum::STATE_MALE,
-                                                              0,
-                                                              1,
-                                                              adult,
-                                                              VectorMatingStructure( VectorGender::VECTOR_MALE ),
-                                                              &species_ID ) );
-            males = adult;
-        }
-
-        if (infectious > 0)
-        {
-            uint32_t adjusted_population = _infectious / m_mosquito_weight;
-            for (uint32_t i = 0; i < adjusted_population; i++)
-            { 
-                // infectious initialized at age 20
-                AdultQueues.push_back( VectorCohortIndividual::CreateCohort( VectorStateEnum::STATE_INFECTIOUS,
-                                                                            20,
-                                                                            0,
-                                                                            m_mosquito_weight,
-                                                                            VectorMatingStructure(VectorGender::VECTOR_FEMALE),
-                                                                            &species_ID ) );
-            }
+            pAdultQueues->add( pvci, 0.0, false );
+            queueIncrementTotalPopulation( pvci );
         }
     }
 
     VectorPopulationIndividual *VectorPopulationIndividual::CreatePopulation( INodeContext *context,
-                                                                              const std::string& species_name,
+                                                                              int speciesIndex,
                                                                               uint32_t adult,
-                                                                              uint32_t infectious,
-                                                                              uint32_t mosquito_weight )
+                                                                              uint32_t mosquito_weight)
     {
         VectorPopulationIndividual *newpopulation = _new_ VectorPopulationIndividual(mosquito_weight);
-        newpopulation->Initialize(context, species_name, adult, infectious);
+        newpopulation->Initialize(context, speciesIndex, adult);
 
         return newpopulation;
     }
 
     VectorPopulationIndividual::~VectorPopulationIndividual()
     {
+        VectorCohortIndividual::DeleteSupply();
     }
 
-    void VectorPopulationIndividual::Update_Infectious_Queue( float dt )
+    VectorCohortIndividual *VectorPopulationIndividual::CreateAdultCohort( uint32_t vectorID,
+                                                                           VectorStateEnum::Enum state,
+                                                                           float age,
+                                                                           float progress,
+                                                                           float microsporidiaDuration,
+                                                                           uint32_t initial_population,
+                                                                           const VectorGenome& rGenome,
+                                                                           int speciesIndex )
     {
-        // just reset counter, all entries are in Adult_Queue for Vector_pop_individual
-        infectious = 0;
+        VectorCohortIndividual* pvci = VectorCohortIndividual::CreateCohort( vectorID,
+                                                                             state,
+                                                                             age,
+                                                                             progress,
+                                                                             microsporidiaDuration,
+                                                                             initial_population,
+                                                                             rGenome,
+                                                                             speciesIndex );
+        return pvci;
     }
 
-    void VectorPopulationIndividual::Update_Infected_Queue( float dt )
+    void VectorPopulationIndividual::Update_Infectious_Queue(float dt)
     {
         // no queue entries, since all entries are in the Adult_Queue
-        // only need to reset counter
-        infected = 0;
     }
 
-    void VectorPopulationIndividual::Update_Adult_Queue( float dt )
+    void VectorPopulationIndividual::Update_Infected_Queue(float dt)
     {
-        adult = 0; // other counters were reset in other functions
+        // no queue entries, since all entries are in the Adult_Queue
+    }
 
+    void VectorPopulationIndividual::Update_Adult_Queue(float dt)
+    {
         // Get habitat-weighted average oviposition-trap killing fraction to be used in ProcessFeedingCycle
         // TODO: it might be more consistent to put this in with the other lifecycle probabilities somehow
         m_average_oviposition_killing = 0;
@@ -135,7 +125,7 @@ namespace Kernel
         for (auto habitat : (*m_larval_habitats))
         {
             float capacity = habitat->GetCurrentLarvalCapacity();
-            m_average_oviposition_killing  += capacity * habitat->GetOvipositionTrapKilling();
+            m_average_oviposition_killing += capacity * habitat->GetOvipositionTrapKilling();
             total_larval_capacity += capacity;
         }
         
@@ -143,103 +133,131 @@ namespace Kernel
         {
             m_average_oviposition_killing /= total_larval_capacity;
         }
-        
+
         // Use the verbose "foreach" construct here because empty queues (i.e. dead individuals) will be removed
-        for (size_t iCohort = 0; iCohort < AdultQueues.size(); /* increment in loop */)
+        for( auto it = pAdultQueues->begin(); it != pAdultQueues->end(); ++it )
         {
+            IVectorCohort* cohort = *it;
+
             // static cast is _much_ faster than QI and we _must_ have an IVectorCohortIndividual here.
-            IVectorCohort* cohort = AdultQueues[iCohort];
             IVectorCohortIndividual* tempentry2 = current_vci = static_cast<IVectorCohortIndividual*>(static_cast<VectorCohortIndividual*>(static_cast<VectorCohortAbstract*>(cohort)));
 
             // Increment age of individual mosquitoes
-            UpdateAge( cohort, dt );
+            UpdateAge(cohort, dt);
 
-            ProcessFeedingCycle( dt, cohort ) ;
-
-            // Progress with sporogony in infected mosquitoes
-            if( cohort->GetState() == VectorStateEnum::STATE_INFECTED )
+            bool prev_has_microsporidia = cohort->HasMicrosporidia();
+            if( !cohort->HasMated() )
             {
-                cohort->IncreaseProgress( infected_progress_this_timestep );
+                AddAdultsAndMate( cohort, *pAdultQueues, false );
+            }
 
-                if ( (cohort->GetProgress() >= 1) && (cohort->GetPopulation() > 0) )
+            if( cohort->GetPopulation() > 0 )
+            {
+                ProcessFeedingCycle(dt, cohort);
+            }
+
+            if( cohort->GetPopulation() > 0 )
+            {
+                float infected_progress = GetInfectedProgress( cohort );
+                if( (cohort->GetState() == VectorStateEnum::STATE_INFECTIOUS) ||
+                    (cohort->GetState() == VectorStateEnum::STATE_INFECTED  ) )
                 {
-                    // change state to INFECTIOUS
-                    cohort->SetState( VectorStateEnum::STATE_INFECTIOUS );
-
-                    // update INFECTIOUS counters
-                    queueIncrementTotalPopulation( cohort );
-                    ++iCohort;
-                    continue;
+                    LOG_VALID_F("infected progress this timestep %f state %u id %u temperature %f  \n",
+                                 infected_progress,
+                                 cohort->GetState(),
+                                 cohort->GetID(),
+                                 m_context->GetLocalWeather()->airtemperature());
                 }
+
+                cohort->Update( m_context->GetRng(), dt, species()->trait_modifiers, infected_progress, prev_has_microsporidia );
             }
 
             // Remove empty cohorts (i.e. dead mosquitoes)
-            if ( cohort->GetPopulation() <= 0 )
+            if (cohort->GetPopulation() <= 0)
             {
-                AdultQueues[iCohort] = AdultQueues.back();
-                AdultQueues.pop_back();
-                VectorCohortIndividual::reclaim(tempentry2);
+                UpdateAgeAtDeath( cohort, 1 );
 
-                // !! Don't increment iCohort. !!
+                pAdultQueues->remove( it );
+                VectorCohortIndividual::reclaim(tempentry2);
             }
             else
             {
                 // Increment counters
-                queueIncrementTotalPopulation( cohort );
-                ++iCohort;
+                queueIncrementTotalPopulation(cohort);
             }
         }
 
         // Acquire infections with strain tracking for exposed queues
 
         LOG_DEBUG("Exposure to contagion: human to vector.\n");
-        m_txIndoor->ExposeToContagion(  (IInfectable*)this, NodeVector::vector_indoor,  dt, TransmissionRoute::TRANSMISSIONROUTE_HUMAN_TO_VECTOR_INDOOR );
-        m_txOutdoor->ExposeToContagion( (IInfectable*)this, NodeVector::vector_outdoor, dt, TransmissionRoute::TRANSMISSIONROUTE_HUMAN_TO_VECTOR_OUTDOOR );
+        m_pNodeVector->ExposeVector( (IInfectable*)this, dt );
         IndoorExposedQueues.clear();
         OutdoorExposedQueues.clear();
     }
 
-    void VectorPopulationIndividual::AdjustForFeedingRate( float dt, float p_local_mortality, VectorPopulation::FeedingProbabilities& rFeedProbs )
+    void VectorPopulationIndividual::AdjustForCumulativeProbability(VectorPopulation::FeedingProbabilities& rFeedProbs)
     {
-        rFeedProbs.die_without_attempting_to_feed += p_local_mortality;
-        rFeedProbs.die_before_human_feeding       += p_local_mortality;
-    }
+        // ----------------------
+        // --- Not Feeding Branch
+        // ----------------------
+        rFeedProbs.die_without_attempting_to_feed += rFeedProbs.die_local_mortality;
 
-    void VectorPopulationIndividual::AdjustForCumulativeProbability( VectorPopulation::FeedingProbabilities& rFeedProbs )
-    {
-        // not cumulative
-        //rFeedProbs.die_without_attempting_to_feed = rFeedProbs.die_without_attempting_to_feed;
-        //rFeedProbs.die_before_human_feeding       = rFeedProbs.die_before_human_feeding;
-
+        // -------------------
+        // --- Feeding Branch
+        // -------------------
+        rFeedProbs.die_sugar_feeding               += rFeedProbs.die_local_mortality;
+        rFeedProbs.die_before_human_feeding        += rFeedProbs.die_sugar_feeding;
         rFeedProbs.successful_feed_animal          += rFeedProbs.die_before_human_feeding;
         rFeedProbs.successful_feed_artifical_diet  += rFeedProbs.successful_feed_animal;
         rFeedProbs.successful_feed_attempt_indoor  += rFeedProbs.successful_feed_artifical_diet;
         rFeedProbs.successful_feed_attempt_outdoor += rFeedProbs.successful_feed_attempt_indoor;
+        rFeedProbs.survive_without_feeding         += rFeedProbs.successful_feed_attempt_outdoor;
 
-        // start with die_indoor
-        //rFeedProbs.die_indoor                            = rFeedProbs.die_indoor;
-        rFeedProbs.successful_feed_artifical_diet_indoor += rFeedProbs.die_indoor;
-        rFeedProbs.successful_feed_human_indoor          += rFeedProbs.successful_feed_artifical_diet_indoor;
+        // -----------------------------------------------------------------
+        // --- Attempt To Feed Indoor Branch - subset of the Feeding Branch
+        // -----------------------------------------------------------------
+        // start with successful_feed_ad
+        rFeedProbs.indoor.die_before_feeding    += rFeedProbs.indoor.successful_feed_ad;
+        rFeedProbs.indoor.not_available         += rFeedProbs.indoor.die_before_feeding;
+        rFeedProbs.indoor.die_during_feeding    += rFeedProbs.indoor.not_available;
+        rFeedProbs.indoor.die_after_feeding     += rFeedProbs.indoor.die_during_feeding;
+        rFeedProbs.indoor.successful_feed_human += rFeedProbs.indoor.die_after_feeding;
 
-        // start with die_outdoor
-        //rFeedProbs.die_outdoor                   = rFeedProbs.die_outdoor;
-        rFeedProbs.successful_feed_human_outdoor += rFeedProbs.die_outdoor;
+        // -----------------------------------------------------------------
+        // --- Attempt To Feed Outdoor Branch - subset of the Feeding Branch
+        // -----------------------------------------------------------------
+        // start with outdoor_die_before_feeding
+        rFeedProbs.outdoor.not_available         += rFeedProbs.outdoor.die_before_feeding;
+        rFeedProbs.outdoor.die_during_feeding    += rFeedProbs.outdoor.not_available;
+        rFeedProbs.outdoor.die_after_feeding     += rFeedProbs.outdoor.die_during_feeding;
+        rFeedProbs.outdoor.successful_feed_human += rFeedProbs.outdoor.die_after_feeding;
     }
 
     bool VectorPopulationIndividual::DidDie( IVectorCohort* cohort,
                                              float probDies,
-                                             float outcome, 
-                                             uint32_t& rCounter )
+                                             float outcome,
+                                             bool enableMortality,
+                                             uint32_t& rCounter,
+                                             const char* msg,
+                                             const char* name )
     {
         bool vector_dies = (outcome <= probDies);
-        if( vector_dies )
+        if (vector_dies)
         {
-            if( m_VectorMortality )
+            if( msg != nullptr )
+            {
+                LOG_VALID_F("The mosquito died %s%s, id = %d.\n", msg, name, cohort->GetID());
+            }
+            if (enableMortality)
             {
                 //mosquito dies
-                cohort->SetPopulation( 0 );
-                ++rCounter;
+                cohort->SetPopulation(0);
             }
+            else
+            {
+                cohort->AddNewGestating( 0, 0 ); // set as not gestating
+            }
+            ++rCounter;
         }
         return vector_dies;
     }
@@ -247,75 +265,159 @@ namespace Kernel
     bool VectorPopulationIndividual::DidFeed( IVectorCohort* cohort,
                                               float probFeed,
                                               float outcome,
-                                              uint32_t& rCounter )
+                                              uint32_t& rCounter,
+                                              const char* msg,
+                                              const char* name )
     {
         bool fed = (outcome <= probFeed);
-        if( fed )
+        if (fed)
         {
             rCounter += cohort->GetPopulation();
+            if (msg != nullptr)
+            {
+                LOG_VALID_F("The mosquito successfully %s%s, id = %d, state = %s .\n",
+                             msg,
+                             name, 
+                             cohort->GetID(),
+                             VectorStateEnum::pairs::lookup_key(cohort->GetState()));
+            }
         }
         return fed;
     }
 
-    bool VectorPopulationIndividual::DiedLayingEggs( IVectorCohort* cohort )
+    bool VectorPopulationIndividual::DiedLayingEggs( IVectorCohort* cohort, const FeedingProbabilities& rFeedProbs )
     {
-        uint32_t num_eggs = cohort->GetGestatedEggs();
-        if( num_eggs > 0 )
+        uint32_t numDoneGestating = cohort->RemoveNumDoneGestating();
+        if ( numDoneGestating > 0)
         {
-            if( m_average_oviposition_killing > 0 ) // avoid drawing random number if zero
+            if (m_average_oviposition_killing > 0) // avoid drawing random number if zero
             {
-                if( DidDie( cohort, m_average_oviposition_killing, m_context->GetRng()->e(), dead_mosquitoes_before ) ) return true;
+                if( DidDie( cohort, m_average_oviposition_killing, m_context->GetRng()->e(), m_VectorMortality, dead_mosquitoes_before, "laying eggs", "" ) ) return true;
             }
 
-            AddEggsToLayingQueue( cohort, num_eggs );
+            AddEggsToLayingQueue( cohort, numDoneGestating );
             current_vci->IncrementParity(); // increment number of times vector has laid eggs
-
-                                           // Now if sugar feeding exists every day or after each feed, and mortality is associated, then check for killing
-            if( ( (params()->vector_params->vector_sugar_feeding == VectorSugarFeeding::VECTOR_SUGAR_FEEDING_EVERY_FEED) ||
-                  (params()->vector_params->vector_sugar_feeding == VectorSugarFeeding::VECTOR_SUGAR_FEEDING_EVERY_DAY ) )
-                && (probs()->sugarTrapKilling > 0) )  // avoid drawing random number if zero
-            {
-                if( DidDie( cohort, probs()->sugarTrapKilling, m_context->GetRng()->e(), dead_mosquitoes_before ) ) return true;
-            }
         }
+
         return false;
     }
 
-    uint32_t VectorPopulationIndividual::ProcessFeedingCycle( float dt, IVectorCohort* cohort )
+    VectorPopulationIndividual::IndoorOutdoorResults
+    VectorPopulationIndividual::ProcessIndoorOutdoorFeeding(
+        const char* pIndoorOutdoorName,
+        const VectorPopulationIndividual::IndoorOutdoorProbabilities& rProbs,
+        float probHumanFeed,
+        IVectorCohort* cohort,
+        TransmissionRoute::Enum routeVectorToHuman,
+        VectorCohortVector_t& rExposedQueues )
     {
-        if( cohort->GetPopulation() <= 0 )
+        IndoorOutdoorResults results;
+
+        // --------------------------------
+        // --- Indoor/OutdoorFeeding Branch Subset
+        // --------------------------------
+        // Reset cumulative probability for another random draw
+        // to assign indoor-feeding outcomes among the following:
+        float outcome = m_context->GetRng()->e();
+
+        bool died_or_did_not_feed = false;
+        uint32_t num_died_before_feed = 0;
+        uint32_t num_not_feed         = 0;
+        uint32_t num_died_during_feed = 0;
+        uint32_t num_died_after_feed  = 0;
+        uint32_t num_ad_feed          = 0;
+        uint32_t num_human_feed       = 0;
+
+        bool did_feed = DidFeed( cohort, rProbs.successful_feed_ad, outcome, num_ad_feed, "fed on an artificial diet", pIndoorOutdoorName );
+
+        if( !did_feed )
+        {
+            // The 'or' should stop calling DidDie() once died_or_not_feed=true
+            died_or_did_not_feed =                         DidDie( cohort, rProbs.die_before_feeding, outcome, m_VectorMortality, num_died_before_feed, "attempting to feed", pIndoorOutdoorName );
+            died_or_did_not_feed = died_or_did_not_feed || DidDie( cohort, rProbs.not_available,      outcome, false            , num_not_feed,         "attempting to feed", pIndoorOutdoorName );
+            died_or_did_not_feed = died_or_did_not_feed || DidDie( cohort, rProbs.die_during_feeding, outcome, m_VectorMortality, num_died_during_feed, "attempting to feed", pIndoorOutdoorName );
+            died_or_did_not_feed = died_or_did_not_feed || DidDie( cohort, rProbs.die_after_feeding,  outcome, m_VectorMortality, num_died_after_feed,  "attempting to feed", pIndoorOutdoorName );
+        }
+
+        if( !died_or_did_not_feed && !did_feed )
+        {
+            // successful_feed_human should equal 1.0 so fixing at 1.0 to avoid floating point rounding issues
+            did_feed = DidFeed( cohort, /*rProbs.successful_feed_human*/1.0, outcome, num_human_feed, "fed on an human"   , pIndoorOutdoorName );
+        }
+        results.num_died             = (num_died_before_feed + num_died_during_feed + num_died_after_feed);
+        results.num_fed_ad           = num_ad_feed;
+        results.num_fed_human        = num_human_feed;
+        results.num_bites_total      = (num_died_during_feed + num_died_after_feed + num_human_feed); // used for human biting rate
+        results.num_bites_infectious = VectorToHumanTransmission( cohort,
+                                                                  current_vci->GetStrainIdentity(),
+                                                                  results.num_bites_total , 
+                                                                  routeVectorToHuman );
+
+        num_attempt_but_not_feed += num_not_feed;
+
+        if( died_or_did_not_feed ) return results;
+
+        release_assert( ((num_human_feed > 0) || (num_ad_feed > 0)) && did_feed );
+
+        // (c) successful human feed?
+        if( (num_human_feed > 0) && (cohort->GetState() == VectorStateEnum::STATE_ADULT) )
+        {
+            release_assert( probHumanFeed > 0 );
+
+            // push back to exposed cohort (to be checked for new infection)
+            rExposedQueues.push_back(cohort);
+        }
+        //else ++num_attempt_but_not_feed;
+
+        return results;
+    }
+
+    uint32_t VectorPopulationIndividual::ProcessFeedingCycle(float dt, IVectorCohort* cohort)
+    {
+        if (cohort->GetPopulation() <= 0)
             return 0;
 
         IVectorCohortIndividual *tempentry2 = current_vci;
 
-        FeedingProbabilities feed_probs = CalculateFeedingProbabilities( dt, cohort );
+        FeedingProbabilities feed_probs = CalculateFeedingProbabilities(dt, cohort);
 
-        // Uniform random number between 0 and 1 for feeding-cycle outcome calculations
+        // Random draw to be used in both Feeding and Non-Feeding Branches
         float outcome = m_context->GetRng()->e();
 
-        // Determine whether it will feed? (i.e. die without attempting to feed)
-        tempentry2->SetOvipositionTimer( tempentry2->GetOvipositionTimer() - dt );
-        if(tempentry2->GetOvipositionTimer() > 0.0f)
+        // --------------------------------------------------
+        // --- Head of both Feeding and Non-Feeding Branches
+        // --- Check if the vector should have died due to 
+        // --- life expectancy, dry heat mortality, etc.
+        // --------------------------------------------------
+        if( DidDie( cohort, feed_probs.die_local_mortality, outcome, m_VectorMortality, dead_mosquitoes_before, "local mortality", "" ) ) return 0;
+
+        // Determine whether it will feed?
+        tempentry2->SetOvipositionTimer(tempentry2->GetOvipositionTimer() - int(dt));
+        if( tempentry2->GetOvipositionTimer() > 0 )
         {
-            //not feeding so just experiences mortality
-            float cumulative_probability = feed_probs.die_without_attempting_to_feed;
+            // -------------------------------------------------
+            // --- Non-Feeding Branch Continued
+            // --- not feeding so determine if some died to due
+            // --- interventions targeted at non-feeding vectors
+            // -------------------------------------------------
+            if( DidDie( cohort, feed_probs.die_without_attempting_to_feed, outcome, m_VectorMortality, dead_mosquitoes_before, "without attempting to feed", "" ) ) return 0;
 
-            // possibly correct for sugar feeding
-            if( (params()->vector_params->vector_sugar_feeding == VectorSugarFeeding::VECTOR_SUGAR_FEEDING_EVERY_DAY) &&
-                (probs()->sugarTrapKilling > 0) )
-            {
-                cumulative_probability += (1.0 - cumulative_probability) * probs()->sugarTrapKilling;  // add in sugarTrap to kill rate
-            }
-
-            DidDie( cohort, cumulative_probability, outcome, dead_mosquitoes_before );
-
+            num_gestating_begin += cohort->GetNumGestating();
+            UpdateGestatingCount( cohort );
             return 0;
         }
 
         // Lays eggs and calculate oviposition killing before feeding
-        if( DiedLayingEggs( cohort ) ) return 0;
+        if( DiedLayingEggs( cohort, feed_probs ) ) return 0;
+
+        // ----------------------------
+        // --- Feeding Branch Continued
+        // ----------------------------
+        release_assert( cohort->GetNumLookingToFeed() > 0 );
+        num_looking_to_feed += cohort->GetNumLookingToFeed();
 
         // Use initial random draw to assign individual mosquito feeding outcomes among the following:
+        //     (0) die_sugar_feeding
         //     (1) diebeforeattempttohumanfeed
         //     (2) successfulfeed_animal
         //     (3) successfulfeed_AD
@@ -327,98 +429,124 @@ namespace Kernel
         uint32_t successful_AD_feed     = 0;
         uint32_t successful_human_feed  = 0;
 
+        // (0) die_sugar_feeding
+        if( DidDie( cohort, feed_probs.die_sugar_feeding, outcome, m_VectorMortality, dead_mosquitoes_before, "sugar trap", "") ) return 0;
+
         // (1) die before human feeding?
-        if( DidDie( cohort, feed_probs.die_before_human_feeding, outcome, dead_mosquitoes_before ) ) return 0;
+        if (DidDie(cohort, feed_probs.die_before_human_feeding, outcome, m_VectorMortality, dead_mosquitoes_before, "before human feeding", "")) return 0;
 
         do { // at least one feeding attempt
 
-            // (2) feed on animal?
-            if( DidFeed( cohort, feed_probs.successful_feed_animal, outcome, successful_animal_feed ) ) continue;
+             // (2) feed on animal?
+            if (DidFeed(cohort, feed_probs.successful_feed_animal, outcome, successful_animal_feed, "fed on an animal", "")) continue;
 
             // (3) feed on artificial diet?
-            if( DidFeed( cohort, feed_probs.successful_feed_artifical_diet, outcome, successful_AD_feed ) ) continue;
+            if (DidFeed(cohort, feed_probs.successful_feed_artifical_diet, outcome, successful_AD_feed, "fed on an artificial diet", "")) continue;
 
             // (4) attempt indoor feed?
-            uint32_t indoor_bites = 0;
-            if( DidFeed( cohort, feed_probs.successful_feed_attempt_indoor, outcome, indoor_bites ) )
+            uint32_t attempt_indoor_feed = 0;
+            if (DidFeed(cohort, feed_probs.successful_feed_attempt_indoor, outcome, attempt_indoor_feed, nullptr, nullptr ))
             {
-                // update human biting rate as well
-                indoorbites += float( indoor_bites );
+                num_attempt_feed_indoor += attempt_indoor_feed;
 
-                // for the infectious cohort, need to update infectious bites
-                indoorinfectiousbites += VectorToHumanTransmission( cohort, cohort->GetPopulation(), TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_INDOOR );
+                float prob_human_feed  = probs()->indoor_successfulfeed_human.GetValue( m_SpeciesIndex, cohort->GetGenome() );
 
-                // Reset cumulative probability for another random draw
-                // to assign outdoor-feeding outcomes among the following:
-                outcome = m_context->GetRng()->e();
+                // --------------------------------
+                // --- Inddoor Feeding Branch Subset
+                // --------------------------------
+                IndoorOutdoorResults results = ProcessIndoorOutdoorFeeding( "-indoor",
+                                                                            feed_probs.indoor,
+                                                                            prob_human_feed,
+                                                                            cohort, 
+                                                                            TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_INDOOR,
+                                                                            IndoorExposedQueues );
 
-                // (a) die in attempt to indoor feed?
-                if( DidDie( cohort, feed_probs.die_indoor, outcome, dead_mosquitoes_indoor ) ) return 0;
+                dead_mosquitoes_indoor += results.num_died;
+                successful_AD_feed     += results.num_fed_ad;
+                successful_human_feed  += results.num_fed_human;
+                indoorbites            += float( results.num_bites_total);  // update human biting rate as well
+                indoorinfectiousbites  += float( results.num_bites_infectious );
 
-                // (b) artificial diet?
-                if( DidFeed( cohort, feed_probs.successful_feed_artifical_diet_indoor, outcome, successful_AD_feed ) ) continue;
-
-                // (c) successful human feed?
-                if( DidFeed( cohort, feed_probs.successful_feed_human_indoor, outcome, successful_human_feed ) )
-                { 
-                    if( (cohort->GetState() == VectorStateEnum::STATE_ADULT) && (probs()->indoor_successfulfeed_human > 0) )
-                    {
-                        // push back to exposed cohort (to be checked for new infection)
-                        IndoorExposedQueues.push_back(cohort);
-                    }
+                if( (results.num_fed_ad > 0) || (results.num_fed_human > 0) )
+                {
+                    continue;
                 }
-                // else no host found
-                continue;
+                else
+                {
+                    return 0;
+                }
             }
 
+            // Part of Feeding Branch
             // (5) attempt outdoor feed?
-            uint32_t outdoor_bites = 0;
-            if( DidFeed( cohort, feed_probs.successful_feed_attempt_outdoor, outcome, outdoor_bites ) )
-            { 
-                // update human biting rate
-                outdoorbites += float( outdoor_bites );
+            uint32_t attempt_outdoor_feed = 0;
+            if (DidFeed(cohort, feed_probs.successful_feed_attempt_outdoor, outcome, attempt_outdoor_feed, nullptr, nullptr ))
+            {
+                num_attempt_feed_outdoor += attempt_outdoor_feed;
 
-                // for the infectious cohort, need to update infectious bites
-                outdoorinfectiousbites += VectorToHumanTransmission( cohort, cohort->GetPopulation(), TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_OUTDOOR );
+                float prob_human_feed  = probs()->outdoor_successfulfeed_human.GetValue( m_SpeciesIndex, cohort->GetGenome() );
 
-                // Reset cumulative probability for another random draw
-                // to assign outdoor-feeding outcomes among the following:
-                outcome = m_context->GetRng()->e();
+                // --------------------------------
+                // --- Outdoor Feeding Branch Subset
+                // --------------------------------
+                IndoorOutdoorResults results = ProcessIndoorOutdoorFeeding( "-outdoor",
+                                                                            feed_probs.outdoor,
+                                                                            prob_human_feed,
+                                                                            cohort, 
+                                                                            TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_OUTDOOR,
+                                                                            OutdoorExposedQueues );
 
-                // (a) die in attempt to outdoor feed?
-                if( DidDie( cohort, feed_probs.die_outdoor, outcome, dead_mosquitoes_outdoor ) ) return 0;
+                dead_mosquitoes_outdoor += results.num_died;
+                successful_human_feed   += results.num_fed_human;
+                outdoorbites            += float( results.num_bites_total );  // update human biting rate as well
+                outdoorinfectiousbites  += float( results.num_bites_infectious );
 
-                // (b) successful human feed?
-                if( DidFeed( cohort, feed_probs.successful_feed_human_outdoor, outcome, successful_human_feed ) )
-                { 
-                    if( (cohort->GetState() == VectorStateEnum::STATE_ADULT) && (probs()->outdoor_successfulfeed_human > 0) )
-                    {
-                        // push back to exposed cohort (to be checked for new infection)
-                        OutdoorExposedQueues.push_back(cohort);
-                    }
+                if( (results.num_fed_ad > 0) || (results.num_fed_human > 0) )
+                {
+                    continue;
                 }
-                //else survived to next day
-                continue;
+                else
+                {
+                    return 0;
+                }
             }
+            // NOTE: We can get to this point because VectorProbabilites::survivewithoutsuccessfulfeed
+            // is non-zero due to something like SpatialRepellent
+            ++num_attempt_but_not_feed;
         }
-        while(0); // just one feed for now, but here is where we will decide whether to continue feeding
+        while (0); // just one feed for now, but here is where we will decide whether to continue feeding
 
-        // now adjust egg batch size and reset oviposition timer for next cycle
-        GenerateEggs( successful_human_feed, successful_AD_feed , successful_animal_feed, cohort );
+        // Start those that fed to be gestating and reset oviposition timer for next cycle
+        uint32_t num_fed = successful_human_feed + successful_AD_feed + successful_animal_feed;
+        StartGestating( num_fed, cohort );
 
         return 0; // not used
     }
 
-    void VectorPopulationIndividual::GenerateEggs( uint32_t numFeedHuman,
-                                                   uint32_t numFeedAD,
-                                                   uint32_t numFeedAnimal,
-                                                   IVectorCohort* cohort )
+    void VectorPopulationIndividual::StartGestating( uint32_t numFed, IVectorCohort* cohort )
     {
-        float egg_batch_size = CalculateEggBatchSize( cohort );
+        num_fed_counter += numFed;
+        cohort->AddNewGestating( CalculateOvipositionTime(), numFed ); // also sets oviposition timer
+        UpdateGestatingCount( cohort );
+    }
 
-        uint32_t num_feed = numFeedHuman + numFeedAD + numFeedAnimal;
-        uint32_t num_eggs = uint32_t( egg_batch_size * float( num_feed ) );
-        cohort->AddNewEggs( CalculateOvipositionTime(), num_eggs ); // also sets oviposition timer
+    void VectorPopulationIndividual::UpdateGestatingCount( const IVectorCohort* cohort )
+    {
+        // Overrode this method for performance reasons
+        if( cohort->GetPopulation() > 0 )
+        {
+            uint32_t num = cohort->GetNumGestating();
+            num_gestating_end += num;
+
+            const IVectorCohortIndividual* p_ivci = static_cast<const IVectorCohortIndividual*>(static_cast<const VectorCohortIndividual*>(static_cast<const VectorCohortAbstract*>(cohort)));
+            int day = p_ivci->GetOvipositionTimer();
+            if( (num <= 0) || (day < 1) ) day = 1;
+            while( day > num_gestating_queue.size() )
+            {
+                num_gestating_queue.push_back( 0 );
+            }
+            num_gestating_queue[ day - 1 ] += num;
+        }
     }
 
     uint32_t VectorPopulationIndividual::CalculateOvipositionTime()
@@ -429,13 +557,17 @@ namespace Kernel
         // Allocate timers randomly to upper and lower bounds of fractional duration
         // If mean is 2.8 days: 80% will have 3-day cycles, and 20% will have 2-day cycles
         uint32_t timer = m_context->GetRng()->randomRound( mean_cycle_duration );
+        LOG_VALID_F("Mean gonotrophic cycle duration = %0.5f days at %0.2f degrees C , timer set to %u .\n",
+                     mean_cycle_duration, m_context->GetLocalWeather()->airtemperature(), timer);
 
         return timer;
     }
 
-    void VectorPopulationIndividual::RandomlySetOvipositionTimer( VectorCohortIndividual* pvci )
+    void VectorPopulationIndividual::RandomlySetOvipositionTimer(VectorCohortIndividual* pvci)
     {
         uint32_t days_between_feeds = CalculateOvipositionTime();
+        LOG_VALID_F("The feeding duration is %d days.\n", days_between_feeds);
+
         uint32_t timer = m_context->GetRng()->uniformZeroToN32( days_between_feeds );
 
         // --------------------------------------------------------------------------------------
@@ -446,121 +578,257 @@ namespace Kernel
         // --------------------------------------------------------------------------------------
         timer += 1;
 
-        if( params()->vector_params->vector_aging )
+        if (params()->vector_aging)
         {
-            float age = float( (days_between_feeds+1) - timer ); // +1 to offset +1 to timer above
-            pvci->SetAge( age );
+            float age = float((days_between_feeds + 1) - timer); // +1 to offset +1 to timer above
+            pvci->SetAge(age);
         }
-        pvci->AddNewEggs( timer, uint32_t(species()->eggbatchsize) ); // also sets timer
+        pvci->AddNewGestating( timer, 1 ); // also sets timer
     }
 
-    void VectorPopulationIndividual::AddAdultsFromMating( const VectorGeneticIndex_t& rVgiMale,
-                                                          const VectorGeneticIndex_t& rVgiFemle,
-                                                          uint32_t pop )
+    void VectorPopulationIndividual::AddAdultsAndMate( IVectorCohort* pFemaleCohort,
+                                                       VectorCohortCollectionAbstract& rQueue,
+                                                       bool isNewAdult )
     {
-        VectorSugarFeeding::Enum vsf = params()->vector_params->vector_sugar_feeding;
-        bool is_sugar_trap_killing_enabled = ( (vsf == VectorSugarFeeding::VECTOR_SUGAR_FEEDING_ON_EMERGENCE_ONLY) ||
-                                               (vsf == VectorSugarFeeding::VECTOR_SUGAR_FEEDING_EVERY_FEED       ) ||
-                                               (vsf == VectorSugarFeeding::VECTOR_SUGAR_FEEDING_EVERY_DAY        ) )
-                                             && (probs()->sugarTrapKilling > 0.0);
-
-        uint32_t temppop = pop / m_mosquito_weight;
-        for( uint32_t i = 0; i < temppop; i++ )
+        if( isNewAdult )
         {
-            // now if sugar feeding exists every day or after each feed, and mortality is associated, then check for killing
-            if( !is_sugar_trap_killing_enabled || (m_context->GetRng()->e() >= probs()->sugarTrapKilling) )
+            pFemaleCohort->SetPopulation( pFemaleCohort->GetPopulation() / m_mosquito_weight );
+            VectorPopulation::AddAdultsAndMate( pFemaleCohort, rQueue, isNewAdult );
+            pFemaleCohort->SetPopulation( pFemaleCohort->GetPopulation() * m_mosquito_weight );
+        }
+        else if( m_UnmatedMaleTotal > 0 )
+        {
+            auto it = SelectMaleMatingCohort();
+
+            IVectorCohort* p_male_cohort = it->p_cohort;
+            VectorGameteBitPair_t male_genome_bits = p_male_cohort->GetGenome().GetBits();
+
+            int female_ms_strain_index = pFemaleCohort->GetGenome().GetMicrosporidiaStrainIndex();
+            int male_ms_strain_index   = p_male_cohort->GetGenome().GetMicrosporidiaStrainIndex();
+
+            bool female_has_microsporidia = pFemaleCohort->HasMicrosporidia();
+            bool male_has_microsporidia = p_male_cohort->HasMicrosporidia();
+
+            if( male_has_microsporidia && !female_has_microsporidia )
             {
-                VectorCohortIndividual* tempentrynew = VectorCohortIndividual::CreateCohort( VectorStateEnum::STATE_ADULT, 0, 0, m_mosquito_weight, rVgiFemle, &species_ID );
-                ApplyMatingGenetics( tempentrynew, VectorMatingStructure( rVgiMale ) );
-                AdultQueues.push_back( tempentrynew );
-                queueIncrementTotalPopulation( tempentrynew );//to keep accounting consistent with non-aging version
-                new_adults += 1;
+                // Male infecting Female
+                float prob_transmission = m_species_params->microsporidia_strains[ male_ms_strain_index ]->male_to_female_transmission_probability;
+                if( m_context->GetRng()->SmartDraw( prob_transmission ) )
+                {
+                    pFemaleCohort->InfectWithMicrosporidia( male_ms_strain_index );
+                }
             }
+            else if( !male_has_microsporidia && female_has_microsporidia )
+            {
+                // Female infecting Male
+                float prob_transmission = m_species_params->microsporidia_strains[ female_ms_strain_index ]->female_to_male_transmission_probability;
+                if( m_context->GetRng()->SmartDraw( prob_transmission ) )
+                {
+                    IVectorCohort* p_new_male_cohort = p_male_cohort->SplitNumber( m_context->GetRng(), m_pNodeVector->GetNextVectorSuid().data, 1 );
+                    p_new_male_cohort->InfectWithMicrosporidia( female_ms_strain_index );
+                    release_assert( p_new_male_cohort != nullptr );
+
+                    // -----------------------------------------------------------------------------------
+                    // --- I'm having the female carry that the male was infected because it shows that
+                    // --- both parents were/became infected.  I also think that if this tends towards all
+                    // --- vectors getting infected, then this should cause the creation of fewer cohorts.
+                    // -----------------------------------------------------------------------------------
+                    male_genome_bits = p_new_male_cohort->GetGenome().GetBits();
+
+                    if( p_new_male_cohort != nullptr )
+                    {
+                        MaleQueues.add( p_new_male_cohort, 0.0, true );
+                    }
+                }
+            }
+
+            pFemaleCohort->SetMateGenome( VectorGenome( male_genome_bits ) );
+
+            UpdateMaleMatingCDF( it );
         }
     }
 
-    void VectorPopulationIndividual::AddVectors_Adults( const VectorMatingStructure& _vector_genetics, uint32_t releasedNumber )
+    void VectorPopulationIndividual::AddAdultCohort( IVectorCohort* pFemaleCohort,
+                                                     const VectorGenome& rMaleGenome,
+                                                     uint32_t pop,
+                                                     VectorCohortCollectionAbstract& rQueue,
+                                                     bool isNewAdult )
     {
-        uint32_t temppop = releasedNumber / m_mosquito_weight;
-        // already mated, so go in AdultQueues
-        for (uint32_t i = 0; i < temppop; i++)
+        release_assert( isNewAdult ); // assume AddAdultsAndMate() only gives us the new adults
+
+        for( uint32_t i = 0; i < pop; ++i )
         {
-            IVectorCohort* tempentry = VectorCohortIndividual::CreateCohort(VectorStateEnum::STATE_ADULT, 0, 0, m_mosquito_weight, _vector_genetics, &species_ID);
-            AdultQueues.push_back(tempentry);
-            queueIncrementTotalPopulation( tempentry );
+            VectorCohortIndividual* tempentrynew = CreateAdultCohort( m_pNodeVector->GetNextVectorSuid().data,
+                                                                      VectorStateEnum::STATE_ADULT,
+                                                                      0.0,
+                                                                      0.0,
+                                                                      pFemaleCohort->GetDurationOfMicrosporidia(),
+                                                                      m_mosquito_weight,
+                                                                      pFemaleCohort->GetGenome(),
+                                                                      m_SpeciesIndex );
+            tempentrynew->SetMateGenome( rMaleGenome );
+            queueIncrementTotalPopulation( tempentrynew );//to keep accounting consistent with non-aging version
             new_adults += 1;
+            rQueue.add( tempentrynew, 0.0, false );
+        }
+        pFemaleCohort->SetPopulation( pFemaleCohort->GetPopulation() - pop );
+    }
+
+    void VectorPopulationIndividual::AddReleasedCohort( VectorStateEnum::Enum state,
+                                                        const VectorGenome& rFemaleGenome,
+                                                        const VectorGenome& rMaleGenome,
+                                                        uint32_t pop )
+    {
+        float microsporidia_duration = 0.0;
+        if( rFemaleGenome.HasMicrosporidia() )
+        {
+            // Set value so that microsporidia is fully mature
+            microsporidia_duration = 1000.0;
+        }
+
+        for( uint32_t i = 0; i < pop; ++i )
+        {
+            VectorCohortIndividual* tempentrynew = CreateAdultCohort( m_pNodeVector->GetNextVectorSuid().data,
+                                                                      VectorStateEnum::STATE_ADULT,
+                                                                      0.0,
+                                                                      0.0,
+                                                                      microsporidia_duration,
+                                                                      m_mosquito_weight,
+                                                                      rFemaleGenome,
+                                                                      m_SpeciesIndex );
+            // if this is true, our vectors-to-be-released are mated and we're going to make them gestated
+            if (VectorGender::VECTOR_MALE == rMaleGenome.GetGender())
+            {
+                tempentrynew->SetMateGenome(rMaleGenome);
+                tempentrynew->AddNewGestating(1, 1); //setting them gestated and ready to lay
+                if (params()->vector_aging)
+                {
+                    //setting age to days-between-feeds because gestated (see RandomlySetOvipositionTimer)
+                    tempentrynew->SetAge(CalculateOvipositionTime()); 
+                }
+            }
+            if( (state == VectorStateEnum::STATE_INFECTED) || (state == VectorStateEnum::STATE_INFECTIOUS) )
+            {
+                // assume no ParasiteGenomes
+                StrainIdentity tmp;
+                tempentrynew->AcquireNewInfection( &tmp );
+                tempentrynew->SetState( state );
+            }
+            m_ReleasedAdults.push_back( tempentrynew );
         }
     }
 
-    void VectorPopulationIndividual::Expose( const IContagionPopulation* cp, float dt, TransmissionRoute::Enum transmission_route )
+    void VectorPopulationIndividual::Expose( const IContagionPopulation* cp, 
+                                             float dt,
+                                             TransmissionRoute::Enum transmission_route )
     {
+        IContagionPopulationGP* cp_gp = nullptr;
+        if ( s_OK != (const_cast<IContagionPopulation*>(cp))->QueryInterface(GET_IID(IContagionPopulationGP), (void**)&cp_gp) )
+        {
+            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "cp", "IContagionPopulationGP", "IContagionPopulation" );
+        }
+
         // Get the infectiouness from the contagion population
-        float infection_prob = cp->GetTotalContagion();
+        GeneticProbability infection_prob = cp_gp->GetTotalContagionGP();
 
         // Nothing to do if there isn't any
-        if ( infection_prob == 0 ) return;
+        if( infection_prob.GetSum() == 0 ) return;
 
         // Determine whether we are acting on an indoor or outdoor exposed population
-        if ( transmission_route == TransmissionRoute::TRANSMISSIONROUTE_HUMAN_TO_VECTOR_INDOOR )
+        if (transmission_route == TransmissionRoute::TRANSMISSIONROUTE_HUMAN_TO_VECTOR_INDOOR)
         {
-            ExposeCohortList( cp, IndoorExposedQueues, probs()->indoor_successfulfeed_human, infection_prob );
+            ExposeCohortList( cp, IndoorExposedQueues, probs()->indoor_successfulfeed_human, infection_prob, true );
         }
-        else if ( transmission_route == TransmissionRoute::TRANSMISSIONROUTE_HUMAN_TO_VECTOR_OUTDOOR )
+        else if (transmission_route == TransmissionRoute::TRANSMISSIONROUTE_HUMAN_TO_VECTOR_OUTDOOR)
         {
-            ExposeCohortList( cp, OutdoorExposedQueues, probs()->outdoor_successfulfeed_human, infection_prob );
+            ExposeCohortList( cp, OutdoorExposedQueues, probs()->outdoor_successfulfeed_human, infection_prob, false );
         }
         else
         {
             std::ostringstream oss;
             oss << "Error in " << __FUNCTION__ << " : don't know what to do with transmission_route = " << transmission_route << std::endl;
-            throw IllegalOperationException(__FILE__, __LINE__, __FUNCTION__, oss.str().c_str() );
+            throw IllegalOperationException(__FILE__, __LINE__, __FUNCTION__, oss.str().c_str());
         }
     }
 
-    void VectorPopulationIndividual::ExposeCohortList( const IContagionPopulation* cp, VectorCohortVector_t& list, float success_prob, float infection_prob )
+    void VectorPopulationIndividual::ExposeCohortList( const IContagionPopulation* cp,
+                                                       VectorCohortVector_t& list,
+                                                       const GeneticProbability& success_prob_gp,
+                                                       const GeneticProbability& infection_prob_gp,
+                                                       bool isIndoors )
     {
-        StrainIdentity strainID;
-        strainID.SetAntigenID(cp->GetAntigenID());
-
-        float x_infectionWolbachia = 1.0;
         for (auto exposed : list)
         {
-            if( exposed->GetVectorGenetics().GetWolbachia() != VectorWolbachia::WOLBACHIA_FREE )
-            {
-                x_infectionWolbachia = params()->vector_params->WolbachiaInfectionModification;
-            }
+            // we don't model a vector having multiple strains. It can have only one infection.
+            if( exposed->GetState() != VectorStateEnum::STATE_ADULT ) continue;
+
+            float modifier = GetDiseaseAcquisitionModifier( exposed );
+
+            float infection_prob = infection_prob_gp.GetValue( m_SpeciesIndex, exposed->GetGenome() );
+            float success_prob = success_prob_gp.GetValue( m_SpeciesIndex, exposed->GetGenome() );
+            float prob = infection_prob * modifier / success_prob;
+
             // Determine if there is a new infection
-            float prob = species()->acquiremod * x_infectionWolbachia * infection_prob / success_prob;
             if( m_context->GetRng()->SmartDraw( prob ) )
             {
-                LOG_DEBUG_F( "(individual) VECTOR (%d) acquired infection from HUMAN.\n", exposed->GetPopulation() );
+                LOG_DEBUG_F("(individual) VECTOR (%d) acquired infection from HUMAN.\n", exposed->GetPopulation());
+                
                 // Draw weighted random strain from ContagionPopulation
-                cp->ResolveInfectingStrain( &strainID );
-
-                // Set state to STATE_INFECTED and store strainID
-                IVectorCohortIndividual *vci = nullptr;
-                if( (exposed)->QueryInterface( GET_IID( IVectorCohortIndividual ), (void**)&vci ) != s_OK )
+                StrainIdentity strainID;
+                // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                // !!! In the co-transmission model, this step selects the person !!!
+                // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                if( cp->ResolveInfectingStrain( &strainID ) )
                 {
-                    throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "exposed", "IVectorCohortIndividual", "VectorCohort" );
-                }
-                vci->AcquireNewInfection( &strainID );
+                    current_vci = nullptr;
+                    if ((exposed)->QueryInterface(GET_IID(IVectorCohortIndividual), (void**)&current_vci) != s_OK)
+                    {
+                        throw QueryInterfaceException(__FILE__, __LINE__, __FUNCTION__, "exposed", "IVectorCohortIndividual", "VectorCohort");
+                    }
 
-                // Adjust population-level counters
-                adult    -= exposed->GetPopulation();
-                infected += exposed->GetPopulation();
+                    // Set state to STATE_INFECTED and store strainID
+                    AcquireNewInfection( exposed->GetID(), current_vci, strainID, isIndoors );
+
+                    // Adjust population-level counters
+                    state_counts[ VectorStateEnum::STATE_ADULT    ] -= exposed->GetPopulation();
+                    state_counts[ VectorStateEnum::STATE_INFECTED ] += exposed->GetPopulation();
+
+                    genome_counts[ VectorStateEnum::STATE_ADULT    ][ exposed->GetGenome().GetBits() ] -= exposed->GetPopulation();
+                    genome_counts[ VectorStateEnum::STATE_INFECTED ][ exposed->GetGenome().GetBits() ] += exposed->GetPopulation();
+
+                    int strain_index = exposed->GetGenome().GetMicrosporidiaStrainIndex();
+                    microsporidia_counts[ strain_index ][ VectorStateEnum::STATE_ADULT    ] -= exposed->GetPopulation();
+                    microsporidia_counts[ strain_index ][ VectorStateEnum::STATE_INFECTED ] += exposed->GetPopulation();
+
+                    queueIncrementNumInfs( exposed );
+                }
             }
         }
     }
 
-    void VectorPopulationIndividual::Vector_Migration( float dt, IMigrationInfo* pMigInfo, VectorCohortVector_t* pMigratingQueue)
+    void VectorPopulationIndividual::AcquireNewInfection( uint32_t vectorID,
+                                                          IVectorCohortIndividual* pVCI,
+                                                          const StrainIdentity& rStrain,
+                                                          bool isIndoors )
     {
-        release_assert( pMigInfo );
-        release_assert( pMigratingQueue );
+        VectorToHumanAdapter adapter( m_context, vectorID );
+        IIndividualEventBroadcaster* broadcaster = m_context->GetEventContext()->GetIndividualEventBroadcaster();
+        broadcaster->TriggerObservers( &adapter, EventTrigger::HumanToVectorTransmission );
+
+        pVCI->AcquireNewInfection( &rStrain );
+    }
+
+    void VectorPopulationIndividual::Vector_Migration( float dt,
+                                                       IMigrationInfo* pMigInfo,
+                                                       VectorCohortVector_t* pMigratingQueue )
+    {
+        release_assert(pMigInfo);
+        release_assert(pMigratingQueue);
 
         // Use the verbose "for" construct here because we may be modifying the list and need to protect the iterator.
-        for (size_t iCohort = 0; iCohort < AdultQueues.size(); /* increment in loop */)
+        for( auto it = pAdultQueues->begin(); it != pAdultQueues->end(); ++it )
         {
-            IVectorCohort* tempentry = AdultQueues[iCohort];
+            IVectorCohort* tempentry = *it;
 
             suids::suid destination = suids::nil_suid();
             MigrationType::Enum mig_type = MigrationType::NO_MIGRATION;
@@ -568,38 +836,44 @@ namespace Kernel
             pMigInfo->PickMigrationStep( m_context->GetRng(), nullptr, 1.0, destination, mig_type, time );
 
             // test if each vector will migrate this time step
-            if( !destination.is_nil() && (time <= dt) )
+            if (!destination.is_nil() && (time <= dt))
             {
-                AdultQueues[iCohort] = AdultQueues.back();
-                AdultQueues.pop_back();
+                pAdultQueues->remove( it );
 
                 // Used to use dynamic_cast here which is _very_ slow.
                 IMigrate* emigre = tempentry->GetIMigrate();
-                emigre->SetMigrating( destination, mig_type, 0.0, 0.0, false );
+                emigre->SetMigrating(destination, mig_type, 0.0, 0.0, false);
                 pMigratingQueue->push_back(tempentry);
-            }
-            else
-            {
-                ++iCohort;
             }
         }
     }
 
-    void VectorPopulationIndividual::AddImmigratingVector( IVectorCohort* pvc )
+    void VectorPopulationIndividual::AddImmigratingVector(IVectorCohort* pvc)
     {
-        AdultQueues.push_back( pvc );
+        if( m_IsSortingVectors )
+            m_ImmigratingAdult.push_back( pvc );
+        else
+            pAdultQueues->add( pvc, 0.0, true );
     }
 
-    uint32_t VectorPopulationIndividual::getInfectedCount( IStrainIdentity* pStrain ) const
+    uint32_t VectorPopulationIndividual::CountStrains( VectorStateEnum::Enum state,
+                                                       const VectorCohortCollectionAbstract& queue,
+                                                       IStrainIdentity* pStrain ) const
     {
-        uint32_t num_infected = infected;
+        uint32_t num_infected = state_counts[ state ];
         if( pStrain != nullptr )
         {
             num_infected = 0;
-            for( auto p_cohort : AdultQueues )
+            for( auto p_cohort : queue )
             {
-                if( (p_cohort->GetState() == VectorStateEnum::STATE_INFECTED) &&
-                    (p_cohort->GetStrainIdentity().GetGeneticID() == pStrain->GetGeneticID()) )
+                IVectorCohortIndividual *p_vci = nullptr;
+                if( p_cohort->QueryInterface( GET_IID( IVectorCohortIndividual ), (void**)&p_vci ) != s_OK )
+                {
+                    throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__,
+                                                   "p_cohort", "IVectorCohortIndividual", "IVectorCohort" );
+                }
+
+                if( (p_cohort->GetState() == state) && p_vci->HasStrain( *pStrain ) )
                 {
                     num_infected += p_cohort->GetPopulation();
                 }
@@ -608,70 +882,47 @@ namespace Kernel
         return num_infected;
     }
 
-    uint32_t VectorPopulationIndividual::getInfectiousCount( IStrainIdentity* pStrain ) const
+    uint32_t VectorPopulationIndividual::getInfectedCount(IStrainIdentity* pStrain) const
     {
-        uint32_t num_infectious = infectious;
-        if( pStrain != nullptr )
-        {
-            num_infectious = 0;
-            for( auto p_cohort : AdultQueues )
-            {
-                if( (p_cohort->GetState() == VectorStateEnum::STATE_INFECTIOUS) &&
-                    (p_cohort->GetStrainIdentity().GetGeneticID() == pStrain->GetGeneticID()) )
-                {
-                    num_infectious += p_cohort->GetPopulation();
-                }
-            }
-        }
-        return num_infectious;
+        return CountStrains(VectorStateEnum::STATE_INFECTED, *pAdultQueues, pStrain);
     }
 
-
-    std::vector<uint64_t> VectorPopulationIndividual::GetNewlyInfectedVectorIds() const
+    uint32_t VectorPopulationIndividual::getInfectiousCount(IStrainIdentity* pStrain) const
     {
-        std::vector<uint64_t> suids;
-        for (auto cohort : AdultQueues)
+        return CountStrains(VectorStateEnum::STATE_INFECTIOUS, *pAdultQueues, pStrain);
+    }
+
+    std::vector<uint32_t> VectorPopulationIndividual::GetNewlyInfectedVectorIds() const
+    {
+        std::vector<uint32_t> suids;
+        for (auto cohort : *pAdultQueues)
         {
-            if ( cohort->GetState() != VectorStateEnum::STATE_INFECTED)
-                continue;
-
-            if (cohort->GetProgress() == 0)
+            if ((cohort->GetState() == VectorStateEnum::STATE_INFECTED) && (cohort->GetProgress() == 0))
             {
-                IVectorCohortIndividual* ivci = NULL;
-                if( s_OK != cohort->QueryInterface( GET_IID( IVectorCohortIndividual ), (void**)&ivci ) )
-                {
-                    throw QueryInterfaceException(
-                        __FILE__, __LINE__, __FUNCTION__,
-                        "cohort", "IVectorCohortIndividual", "VectorCohort" );
-                }
-
-                suids.push_back(ivci->GetID());
+                suids.push_back(cohort->GetID());
             }
         }
 
         return suids;
     }
 
-    std::vector<uint64_t> VectorPopulationIndividual::GetInfectiousVectorIds() const
+    std::vector<uint32_t> VectorPopulationIndividual::GetInfectiousVectorIds() const
     {
-        std::vector<uint64_t> suids;
-        for (auto cohort : AdultQueues)
+        std::vector<uint32_t> suids;
+        for (auto cohort : *pAdultQueues)
         {
-            if (cohort->GetState() != VectorStateEnum::STATE_INFECTIOUS)
-                continue;
-
-            IVectorCohortIndividual* ivci = NULL;
-            if( s_OK != cohort->QueryInterface( GET_IID( IVectorCohortIndividual ), (void**)&ivci ) )
+            if (cohort->GetState() == VectorStateEnum::STATE_INFECTIOUS)
             {
-                throw QueryInterfaceException(
-                    __FILE__, __LINE__, __FUNCTION__,
-                    "cohort", "IVectorCohortIndividual", "VectorCohort" );
+                suids.push_back(cohort->GetID());
             }
-
-            suids.push_back(ivci->GetID());
         }
 
         return suids;
+    }
+
+    std::map<uint32_t, uint32_t> VectorPopulationIndividual::getNumInfectiousByCohort() const
+    {
+        throw NotYetImplementedException(__FILE__, __LINE__, __FUNCTION__, "Counts of infectious mosquitoes only supported in cohort model.\n");
     }
 
     REGISTER_SERIALIZABLE(VectorPopulationIndividual);

@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -208,6 +200,17 @@ namespace Kernel
         {
             return nullptr;
         }
+        if( m_MapAll.count( str ) == 0 )
+        {
+            std::stringstream ss;
+            ss << "Unknown event = '" << str << "'.\n";
+            ss << "The known events are:\n";
+            for( auto& entry : m_MapAll )
+            {
+                ss << entry.first << "\n";
+            }
+            throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+        }
         return m_MapAll.at( str );
     }
 
@@ -292,6 +295,24 @@ namespace Kernel
 
         for( auto& name : rTriggerNameList )
         {
+            if( name.empty() )
+            {
+                std::ostringstream msg;
+                msg << "'" << rParamName
+                    << "', a "
+                    << EventType::pairs::lookup_key( EVENT_TYPE )
+                    << " event type, with empty string is invalid.\n"
+                    << "Custom "
+                    << EventType::pairs::lookup_key( EVENT_TYPE )
+                    << " events must be defined in the "
+                    << USER_EVENTS_PARAMETER_NAME
+                    << " list.\nThe built-in plus custom events are:\n";
+                for( auto value : Factory::GetInstance()->GetAllEventTriggers() )
+                {
+                    msg << value.ToString() << "...";
+                }
+                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+            }
             trigger_list.push_back( CreateTrigger( rParamName, name ) );
         }
 

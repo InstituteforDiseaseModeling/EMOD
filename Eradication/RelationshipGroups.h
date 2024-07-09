@@ -1,139 +1,110 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
-#include "TransmissionGroupsBase.h"
+#include "ITransmissionGroups.h"
+#include "CoitalAct.h"
+#include "StrainIdentity.h"
 
-namespace Kernel {
-    class IContagionProbabilities: public ISupports
+namespace Kernel
+{
+    struct IContagionInfo: public ISupports
     {
-        public:
-        virtual act_prob_vec_t GetProbabilities() const = 0;
-        virtual NaturalNumber GetInfectorID( void ) const = 0;
+    public:
+        virtual const CoitalAct& GetCoitalAct() const = 0;
+        virtual float GetInterventionReducedAcquire() const = 0;
     };
 
-    class DiscreteContagionPopulation : public IContagionPopulation, public IContagionProbabilities
+    struct CoitalActAndStrain
+    {
+        CoitalAct coital_act;
+        StrainIdentity strain;
+
+        CoitalActAndStrain( const CoitalAct& rCoitalAct, const IStrainIdentity& rStrain )
+            : coital_act( rCoitalAct )
+            , strain()
+        {
+            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            // !!! Use the setters to initialize "strain" to avoid the checks in the constructor.
+            // !!! We put the ID of the human that is the source of the infection in the antigenID.
+            // !!! This number will be greater than InfectionConfig::number_basestrains so we need
+            // !!! to work around the check in the constructor.  Should probably rethink where that
+            // !!! check takes place.
+            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            strain.SetAntigenID( rStrain.GetAntigenID() );
+            strain.SetGeneticID( rStrain.GetGeneticID() );
+        }
+    };
+
+    class DiscreteContagionPopulation : public IContagionPopulation, public IContagionInfo
     {
         DECLARE_QUERY_INTERFACE()
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
     public:
-        DiscreteContagionPopulation( act_prob_vec_t &payload, NaturalNumber depositor_id )
-        {
-            probs = payload;
-            _infector = depositor_id;
-        }
-        virtual ~DiscreteContagionPopulation() {}
+        DiscreteContagionPopulation( const CoitalActAndStrain& rCoitalActAndStrain,
+                                     float interventionReducedAcquire );
+        virtual ~DiscreteContagionPopulation();
 
         // IContagionPopulation
         virtual int GetAntigenID( void ) const override;
-        virtual int GetGeneticID( void ) const override { return -1; }
-        virtual void SetAntigenID(int in_antigenID) override {}
-        virtual void SetGeneticID(int in_geneticID) override {}
-        virtual float GetTotalContagion( void ) const override { return 0; }
-        virtual void ResolveInfectingStrain( IStrainIdentity* strainId ) const override { }
+        virtual float GetTotalContagion( void ) const override;
+        virtual bool ResolveInfectingStrain( IStrainIdentity* strainId ) const override;
 
         // IContagionProbabilities
-        virtual NaturalNumber GetInfectorID( void ) const override;
-
-        virtual act_prob_vec_t GetProbabilities() const override
-        {
-            return probs;
-        }
+        virtual const CoitalAct& GetCoitalAct() const override;
+        virtual float GetInterventionReducedAcquire() const override;
 
     protected:
-        act_prob_vec_t probs;
-        AntigenId _antigen;
-        NaturalNumber _infector;
+        const CoitalActAndStrain& m_CoitalActAndStrain;
+        float m_InterventionReducedAcquire;
     };
 
-    class INodeSTI;
+
+    struct INodeSTI;
+
     class RelationshipGroups: public ITransmissionGroups
     {
         public:
-            RelationshipGroups( RANDOMBASE * prng );
+            RelationshipGroups();
 
             // ITransmissionGroups - invalid methods
-            virtual void AddProperty( const string& property, const PropertyValueList_t& values, const ScalingMatrix_t& scalingMatrix );
-            virtual void GetGroupMembershipForProperties( const std::map<std::string, uint32_t>& properties, std::map< int, TransmissionGroupMembership_t> & membershipOut ) const;
-            virtual void GetGroupMembershipForProperties( const tProperties& properties, TransmissionGroupMembership_t& membershipOut ) const override;
+            virtual void AddProperty( const std::string& property, const PropertyValueList_t& values, const ScalingMatrix_t& scalingMatrix );
+            virtual void GetGroupMembershipForProperties( const IPKeyValueContainer& properties, TransmissionGroupMembership_t& membershipOut ) const override;
 
             // ITransmissionGroups - implemented methods
-            virtual void Build(float contagionDecayRate, int numberOfStrains, int numberOfSubstrains = 1);
-            virtual void UpdatePopulationSize(const TransmissionGroupMembership_t& transmissionGroupMembership, float size_changes, float mc_weight);
-            virtual void DepositContagion(const IStrainIdentity& strain, float amount, TransmissionGroupMembership_t poolMembership);
-            virtual void ExposeToContagion(IInfectable* candidate, TransmissionGroupMembership_t poolMembership, float deltaTee, TransmissionRoute::Enum tx_route = TransmissionRoute::TRANSMISSIONROUTE_CONTACT) const;
-            virtual void EndUpdate(float infectivityMultiplier = 1.0f, float infectivityAddition = 0.0f );
-
-            virtual void CorrectInfectivityByGroup(float infectivityCorrection, TransmissionGroupMembership_t transmissionGroupMembership);
-            virtual float GetTotalContagion( void ) override { return nanf("NAN"); }
-            virtual act_prob_vec_t DiscreteGetTotalContagion( void ) { return infectionRate[0]; }
+            virtual void Build(float contagionDecayRate, int numberOfStrains, int numberOfSubstrains = 1) override;
+            virtual void UpdatePopulationSize(const TransmissionGroupMembership_t& transmissionGroupMembership, float size_changes, float mc_weight) override;
+            virtual void DepositContagion(const IStrainIdentity& strain, float amount, TransmissionGroupMembership_t poolMembership) override;
+            virtual void ExposeToContagion(IInfectable* candidate, TransmissionGroupMembership_t poolMembership, float deltaTee, TransmissionRoute::Enum tx_route = TransmissionRoute::TRANSMISSIONROUTE_CONTACT) override;
+            virtual void CorrectInfectivityByGroup( float infectivityCorrection, TransmissionGroupMembership_t transmissionGroupMembership ) override;
+            virtual void EndUpdate(float infectivityMultiplier = 1.0f, float infectivityAddition = 0.0f ) override;
             virtual float GetContagionByProperty( const IPKeyValue& property_value ) override;
+
+            virtual void UseTotalPopulationForNormalization( void ) override;
+            virtual void UseGroupPopulationForNormalization( void ) override;
+
+            virtual float GetPopulationSize( const TransmissionGroupMembership_t& transmissionGroupMembership ) const override;
+            virtual void ClearPopulationSize() override;
+
+            virtual void SetTag( const std::string& tag ) override;
+            virtual const std::string& GetTag( void ) const override;
+
+            virtual void ClearStrain( const IStrainIdentity* pStrain, const TransmissionGroupMembership_t& membership ) override;
+
+            virtual float GetTotalContagion( void ) override;
+            virtual float GetTotalContagionForGroup( TransmissionGroupMembership_t group ) override;    // Return total contagion for given membership.
 
             // Special RelationGroups methods so we can use RelationshipID instead of strings with the ID in them
             virtual void SetParent( INodeSTI* parent );
-            virtual void AddProperty( const string& property, const std::list<uint32_t>& values, const ScalingMatrix_t& scalingMatrix );
-            virtual void addPropertyValuesToValueToIndexMap( const string& propertyName, const std::list<uint32_t>& valueSet, int currentMatrixSize );
+            virtual void AddProperty( const std::string& property, const std::list<uint32_t>& values, const ScalingMatrix_t& scalingMatrix );
+            virtual void addPropertyValuesToValueToIndexMap( const std::string& propertyName, const std::list<uint32_t>& valueSet, int currentMatrixSize );
 
+            // Other
+            virtual void DepositContagion( const IStrainIdentity& strain, const CoitalAct& rCoitalAct );
 
-        protected:
-        
-            typedef vector<act_prob_vec_t> DiscreteContagionAccumulator_t;
+    protected:
+            void CreateRandomIndexes( std::vector<int>& rRandomIndexes ) const;
 
-            void BuildRouteScalingMatrices( void );
-
-            // index to RelationshipID
-            map< int, uint32_t > poolIndexToRelationshipReverseMap;
-
-            // Relationship name to RelationshipID
-            map<const string, list<uint32_t>> propertyNameToValuesMap;
-
-            typedef map<uint32_t, int> RgValueToIndexMap_t; // RelationshipID to index
-            typedef map<string, RgValueToIndexMap_t> RgPropertyValueToIndexMap_t; // RelationshipName to map
-            RgPropertyValueToIndexMap_t rg_propertyValueToIndexMap;      // Used to determine group membership
-
-            PropertyToMatrixMap_t rg_propertyNameToMatrixMap;
-
-            unsigned int max_index;
-            ScalingMatrix_t scalingMatrix;
-            string transmissionRouteName;
-            float contagionDecayRate;
-            DiscreteContagionAccumulator_t shedContagion;
-            DiscreteContagionAccumulator_t currentContagion;
-            DiscreteContagionAccumulator_t infectionRate;
-            std::map< GroupIndex, int > infectors;
-            float populationSize;
-
-            static std::string tag;
-
-        private:
+            std::map<uint32_t,std::map<uint32_t, std::vector<CoitalActAndStrain>>> m_ExposedPersonsCoitalActsMap; // human_id to rel_id to acts for this relationship
             INodeSTI * m_parent;
-
-            virtual void UseTotalPopulationForNormalization( void ) { return; } // N/A
-            virtual void UseGroupPopulationForNormalization( void ) { return; } // N/A
-
-            virtual void SetTag( const std::string& tag )   { return; };
-            virtual const std::string& GetTag( void ) const { return tag; };
-
-            virtual float GetTotalContagionForGroup( TransmissionGroupMembership_t group ) override { return nanf("NAN"); }
-// NOTYET        virtual float GetTotalContagionForProperties( const IPKeyValueContainer& property_value ) override { return nanf("NAN"); }
-
-            static void LogActivity( unsigned int _action, unsigned int _actor, unsigned int _index, float _amount );
-            struct LogEntry {
-                unsigned int action;
-                unsigned int actor;
-                unsigned int index;
-                float amount;
-            };
-#define GRP_LOG_COUNT    0x100000   // 2^20 entries
-            static unsigned int _head;
-            static unsigned int _tail;
-            static LogEntry _log[GRP_LOG_COUNT];
     };
 }

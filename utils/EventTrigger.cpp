@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -30,63 +22,57 @@ namespace Kernel
     // -----------------------------------------------------------------------------------------------
     std::vector<std::pair<std::string,EventTrigger*>> EventTriggerFactory::m_VectorBuiltIn;
 
-    const EventTrigger& EventTrigger::Births                     = EventTriggerFactory::CreateBuiltInEventTrigger( "Births"                    );
-    const EventTrigger& EventTrigger::EveryUpdate                = EventTriggerFactory::CreateBuiltInEventTrigger( "EveryUpdate"               );
-    const EventTrigger& EventTrigger::EveryTimeStep              = EventTriggerFactory::CreateBuiltInEventTrigger( "EveryTimeStep"             );
-    const EventTrigger& EventTrigger::NewInfectionEvent          = EventTriggerFactory::CreateBuiltInEventTrigger( "NewInfectionEvent"         );
-    const EventTrigger& EventTrigger::TBActivation               = EventTriggerFactory::CreateBuiltInEventTrigger( "TBActivation"              );
-    const EventTrigger& EventTrigger::NewClinicalCase            = EventTriggerFactory::CreateBuiltInEventTrigger( "NewClinicalCase"           );
-    const EventTrigger& EventTrigger::NewSevereCase              = EventTriggerFactory::CreateBuiltInEventTrigger( "NewSevereCase"             );
-    const EventTrigger& EventTrigger::DiseaseDeaths              = EventTriggerFactory::CreateBuiltInEventTrigger( "DiseaseDeaths"             );
-    const EventTrigger& EventTrigger::OpportunisticInfectionDeath = EventTriggerFactory::CreateBuiltInEventTrigger("OpportunisticInfectionDeath");
-    const EventTrigger& EventTrigger::NonDiseaseDeaths           = EventTriggerFactory::CreateBuiltInEventTrigger( "NonDiseaseDeaths"          );
-    const EventTrigger& EventTrigger::TBActivationSmearPos       = EventTriggerFactory::CreateBuiltInEventTrigger( "TBActivationSmearPos"      );
-    const EventTrigger& EventTrigger::TBActivationSmearNeg       = EventTriggerFactory::CreateBuiltInEventTrigger( "TBActivationSmearNeg"      );
-    const EventTrigger& EventTrigger::TBActivationExtrapulm      = EventTriggerFactory::CreateBuiltInEventTrigger( "TBActivationExtrapulm"     );
-    const EventTrigger& EventTrigger::TBActivationPostRelapse    = EventTriggerFactory::CreateBuiltInEventTrigger( "TBActivationPostRelapse"   );
-    const EventTrigger& EventTrigger::TBPendingRelapse           = EventTriggerFactory::CreateBuiltInEventTrigger( "TBPendingRelapse"          );
-    const EventTrigger& EventTrigger::TBActivationPresymptomatic = EventTriggerFactory::CreateBuiltInEventTrigger( "TBActivationPresymptomatic");
-    const EventTrigger& EventTrigger::TestPositiveOnSmear        = EventTriggerFactory::CreateBuiltInEventTrigger( "TestPositiveOnSmear"       );
-    const EventTrigger& EventTrigger::ProviderOrdersTBTest       = EventTriggerFactory::CreateBuiltInEventTrigger( "ProviderOrdersTBTest"      );
-    const EventTrigger& EventTrigger::TBTestPositive             = EventTriggerFactory::CreateBuiltInEventTrigger( "TBTestPositive"            );
-    const EventTrigger& EventTrigger::TBTestNegative             = EventTriggerFactory::CreateBuiltInEventTrigger( "TBTestNegative"            );
-    const EventTrigger& EventTrigger::TBTestDefault              = EventTriggerFactory::CreateBuiltInEventTrigger( "TBTestDefault"             );
-    const EventTrigger& EventTrigger::TBRestartHSB               = EventTriggerFactory::CreateBuiltInEventTrigger( "TBRestartHSB"              );
-    const EventTrigger& EventTrigger::TBMDRTestPositive          = EventTriggerFactory::CreateBuiltInEventTrigger( "TBMDRTestPositive"         );
-    const EventTrigger& EventTrigger::TBMDRTestNegative          = EventTriggerFactory::CreateBuiltInEventTrigger( "TBMDRTestNegative"         );
-    const EventTrigger& EventTrigger::TBMDRTestDefault           = EventTriggerFactory::CreateBuiltInEventTrigger( "TBMDRTestDefault"          );
-    const EventTrigger& EventTrigger::TBFailedDrugRegimen        = EventTriggerFactory::CreateBuiltInEventTrigger( "TBFailedDrugRegimen"       );
-    const EventTrigger& EventTrigger::TBRelapseAfterDrugRegimen  = EventTriggerFactory::CreateBuiltInEventTrigger( "TBRelapseAfterDrugRegimen" );
-    const EventTrigger& EventTrigger::TBStartDrugRegimen         = EventTriggerFactory::CreateBuiltInEventTrigger( "TBStartDrugRegimen"        );
-    const EventTrigger& EventTrigger::TBStopDrugRegimen          = EventTriggerFactory::CreateBuiltInEventTrigger( "TBStopDrugRegimen"         );
-    const EventTrigger& EventTrigger::PropertyChange             = EventTriggerFactory::CreateBuiltInEventTrigger( "PropertyChange"            );
-    const EventTrigger& EventTrigger::STIDebut                   = EventTriggerFactory::CreateBuiltInEventTrigger( "STIDebut"                  );
-    const EventTrigger& EventTrigger::StartedART                 = EventTriggerFactory::CreateBuiltInEventTrigger( "StartedART"                );
-    const EventTrigger& EventTrigger::StoppedART                 = EventTriggerFactory::CreateBuiltInEventTrigger( "StoppedART"                );
-    const EventTrigger& EventTrigger::InterventionDisqualified   = EventTriggerFactory::CreateBuiltInEventTrigger( "InterventionDisqualified"  );
-    const EventTrigger& EventTrigger::HIVNewlyDiagnosed          = EventTriggerFactory::CreateBuiltInEventTrigger( "HIVNewlyDiagnosed"         );
-    const EventTrigger& EventTrigger::GaveBirth                  = EventTriggerFactory::CreateBuiltInEventTrigger( "GaveBirth"                 );
-    const EventTrigger& EventTrigger::Pregnant                   = EventTriggerFactory::CreateBuiltInEventTrigger( "Pregnant"                  );
-    const EventTrigger& EventTrigger::Emigrating                 = EventTriggerFactory::CreateBuiltInEventTrigger( "Emigrating"                );
-    const EventTrigger& EventTrigger::Immigrating                = EventTriggerFactory::CreateBuiltInEventTrigger( "Immigrating"               );
-    const EventTrigger& EventTrigger::HIVTestedNegative          = EventTriggerFactory::CreateBuiltInEventTrigger( "HIVTestedNegative"         );
-    const EventTrigger& EventTrigger::HIVTestedPositive          = EventTriggerFactory::CreateBuiltInEventTrigger( "HIVTestedPositive"         );
-    const EventTrigger& EventTrigger::NewlySymptomatic           = EventTriggerFactory::CreateBuiltInEventTrigger( "NewlySymptomatic"             );
-    const EventTrigger& EventTrigger::SymptomaticCleared         = EventTriggerFactory::CreateBuiltInEventTrigger( "SymptomaticCleared" );
-    const EventTrigger& EventTrigger::TwelveWeeksPregnant        = EventTriggerFactory::CreateBuiltInEventTrigger( "TwelveWeeksPregnant"       );
-    const EventTrigger& EventTrigger::FourteenWeeksPregnant      = EventTriggerFactory::CreateBuiltInEventTrigger( "FourteenWeeksPregnant"     );
-    const EventTrigger& EventTrigger::SixWeeksOld                = EventTriggerFactory::CreateBuiltInEventTrigger( "SixWeeksOld"               );
-    const EventTrigger& EventTrigger::EighteenMonthsOld          = EventTriggerFactory::CreateBuiltInEventTrigger( "EighteenMonthsOld"         );
-    const EventTrigger& EventTrigger::STIPreEmigrating           = EventTriggerFactory::CreateBuiltInEventTrigger( "STIPreEmigrating"          );
-    const EventTrigger& EventTrigger::STIPostImmigrating         = EventTriggerFactory::CreateBuiltInEventTrigger( "STIPostImmigrating"        );
-    const EventTrigger& EventTrigger::STINewInfection            = EventTriggerFactory::CreateBuiltInEventTrigger( "STINewInfection"           ); 
-    const EventTrigger& EventTrigger::NewExternalHIVInfection    = EventTriggerFactory::CreateBuiltInEventTrigger( "NewExternalHIVInfection"   );
-    const EventTrigger& EventTrigger::NodePropertyChange         = EventTriggerFactory::CreateBuiltInEventTrigger( "NodePropertyChange"        );
-    const EventTrigger& EventTrigger::HappyBirthday              = EventTriggerFactory::CreateBuiltInEventTrigger( "HappyBirthday"             );
-    const EventTrigger& EventTrigger::EnteredRelationship        = EventTriggerFactory::CreateBuiltInEventTrigger( "EnteredRelationship"       );
-    const EventTrigger& EventTrigger::ExitedRelationship         = EventTriggerFactory::CreateBuiltInEventTrigger( "ExitedRelationship"        );
-    const EventTrigger& EventTrigger::FirstCoitalAct             = EventTriggerFactory::CreateBuiltInEventTrigger( "FirstCoitalAct"            );
-    const EventTrigger& EventTrigger::ExposureComplete           = EventTriggerFactory::CreateBuiltInEventTrigger( "ExposureComplete"        );
+    const EventTrigger& EventTrigger::Births                         = EventTriggerFactory::CreateBuiltInEventTrigger( "Births"                         );
+    const EventTrigger& EventTrigger::EveryUpdate                    = EventTriggerFactory::CreateBuiltInEventTrigger( "EveryUpdate"                    );
+    const EventTrigger& EventTrigger::NewInfectionEvent              = EventTriggerFactory::CreateBuiltInEventTrigger( "NewInfectionEvent"              );
+    const EventTrigger& EventTrigger::NewClinicalCase                = EventTriggerFactory::CreateBuiltInEventTrigger( "NewClinicalCase"                );
+    const EventTrigger& EventTrigger::NewSevereCase                  = EventTriggerFactory::CreateBuiltInEventTrigger( "NewSevereCase"                  );
+    const EventTrigger& EventTrigger::DiseaseDeaths                  = EventTriggerFactory::CreateBuiltInEventTrigger( "DiseaseDeaths"                  );
+    const EventTrigger& EventTrigger::NonDiseaseDeaths               = EventTriggerFactory::CreateBuiltInEventTrigger( "NonDiseaseDeaths"               );
+    const EventTrigger& EventTrigger::PropertyChange                 = EventTriggerFactory::CreateBuiltInEventTrigger( "PropertyChange"                 );
+    const EventTrigger& EventTrigger::STIDebut                       = EventTriggerFactory::CreateBuiltInEventTrigger( "STIDebut"                       );
+    const EventTrigger& EventTrigger::StartedART                     = EventTriggerFactory::CreateBuiltInEventTrigger( "StartedART"                     );
+    const EventTrigger& EventTrigger::StoppedART                     = EventTriggerFactory::CreateBuiltInEventTrigger( "StoppedART"                     );
+    const EventTrigger& EventTrigger::InterventionDisqualified       = EventTriggerFactory::CreateBuiltInEventTrigger( "InterventionDisqualified"       );
+    const EventTrigger& EventTrigger::HIVNewlyDiagnosed              = EventTriggerFactory::CreateBuiltInEventTrigger( "HIVNewlyDiagnosed"              );
+    const EventTrigger& EventTrigger::GaveBirth                      = EventTriggerFactory::CreateBuiltInEventTrigger( "GaveBirth"                      );
+    const EventTrigger& EventTrigger::Pregnant                       = EventTriggerFactory::CreateBuiltInEventTrigger( "Pregnant"                       );
+    const EventTrigger& EventTrigger::Emigrating                     = EventTriggerFactory::CreateBuiltInEventTrigger( "Emigrating"                     );
+    const EventTrigger& EventTrigger::Immigrating                    = EventTriggerFactory::CreateBuiltInEventTrigger( "Immigrating"                    );
+    const EventTrigger& EventTrigger::HIVTestedNegative              = EventTriggerFactory::CreateBuiltInEventTrigger( "HIVTestedNegative"              );
+    const EventTrigger& EventTrigger::HIVTestedPositive              = EventTriggerFactory::CreateBuiltInEventTrigger( "HIVTestedPositive"              );
+    const EventTrigger& EventTrigger::NewlySymptomatic               = EventTriggerFactory::CreateBuiltInEventTrigger( "NewlySymptomatic"               );
+    const EventTrigger& EventTrigger::SymptomaticCleared             = EventTriggerFactory::CreateBuiltInEventTrigger( "SymptomaticCleared"             );
+    const EventTrigger& EventTrigger::TwelveWeeksPregnant            = EventTriggerFactory::CreateBuiltInEventTrigger( "TwelveWeeksPregnant"            );
+    const EventTrigger& EventTrigger::FourteenWeeksPregnant          = EventTriggerFactory::CreateBuiltInEventTrigger( "FourteenWeeksPregnant"          );
+    const EventTrigger& EventTrigger::SixWeeksOld                    = EventTriggerFactory::CreateBuiltInEventTrigger( "SixWeeksOld"                    );
+    const EventTrigger& EventTrigger::EighteenMonthsOld              = EventTriggerFactory::CreateBuiltInEventTrigger( "EighteenMonthsOld"              );
+    const EventTrigger& EventTrigger::STIPreEmigrating               = EventTriggerFactory::CreateBuiltInEventTrigger( "STIPreEmigrating"               );
+    const EventTrigger& EventTrigger::STIPostImmigrating             = EventTriggerFactory::CreateBuiltInEventTrigger( "STIPostImmigrating"             );
+    const EventTrigger& EventTrigger::STINewInfection                = EventTriggerFactory::CreateBuiltInEventTrigger( "STINewInfection"                ); 
+    const EventTrigger& EventTrigger::STIExposed                     = EventTriggerFactory::CreateBuiltInEventTrigger( "STIExposed"                     );
+    const EventTrigger& EventTrigger::NodePropertyChange             = EventTriggerFactory::CreateBuiltInEventTrigger( "NodePropertyChange"             );
+    const EventTrigger& EventTrigger::HappyBirthday                  = EventTriggerFactory::CreateBuiltInEventTrigger( "HappyBirthday"                  );
+    const EventTrigger& EventTrigger::EnteredRelationship            = EventTriggerFactory::CreateBuiltInEventTrigger( "EnteredRelationship"            );
+    const EventTrigger& EventTrigger::ExitedRelationship             = EventTriggerFactory::CreateBuiltInEventTrigger( "ExitedRelationship"             );
+    const EventTrigger& EventTrigger::FirstCoitalAct                 = EventTriggerFactory::CreateBuiltInEventTrigger( "FirstCoitalAct"                 );
+    const EventTrigger& EventTrigger::ExposureComplete               = EventTriggerFactory::CreateBuiltInEventTrigger( "ExposureComplete"               );
+    const EventTrigger& EventTrigger::VectorToHumanTransmission      = EventTriggerFactory::CreateBuiltInEventTrigger( "VectorToHumanTransmission"      );
+    const EventTrigger& EventTrigger::HumanToVectorTransmission      = EventTriggerFactory::CreateBuiltInEventTrigger( "HumanToVectorTransmission"      );
+    const EventTrigger& EventTrigger::ReceivedInfectiousBites        = EventTriggerFactory::CreateBuiltInEventTrigger( "ReceivedInfectiousBites"        );
+    const EventTrigger& EventTrigger::InfectionCleared               = EventTriggerFactory::CreateBuiltInEventTrigger( "InfectionCleared"               );
+    const EventTrigger& EventTrigger::WouldHaveDied                  = EventTriggerFactory::CreateBuiltInEventTrigger( "WouldHaveDied"                  );
+    const EventTrigger& EventTrigger::WouldHaveHadAIDS               = EventTriggerFactory::CreateBuiltInEventTrigger( "WouldHaveHadAIDS"               );
+    const EventTrigger& EventTrigger::WouldHaveEnteredLatentStage    = EventTriggerFactory::CreateBuiltInEventTrigger( "WouldHaveEnteredLatentStage"    );
+    const EventTrigger& EventTrigger::HIVInfectionStageEnteredLatent = EventTriggerFactory::CreateBuiltInEventTrigger( "HIVInfectionStageEnteredLatent" );
+    const EventTrigger& EventTrigger::HIVInfectionStageEnteredAIDS   = EventTriggerFactory::CreateBuiltInEventTrigger( "HIVInfectionStageEnteredAIDS"   );
+    const EventTrigger& EventTrigger::HIVInfectionStageEnteredOnART  = EventTriggerFactory::CreateBuiltInEventTrigger( "HIVInfectionStageEnteredOnART"  );
+    const EventTrigger& EventTrigger::NewMalariaInfectionObject      = EventTriggerFactory::CreateBuiltInEventTrigger( "NewMalariaInfectionObject"      );
+    const EventTrigger& EventTrigger::PFA_Entered                    = EventTriggerFactory::CreateBuiltInEventTrigger( "PFA_Entered"                    );
+    const EventTrigger& EventTrigger::PFA_Exited                     = EventTriggerFactory::CreateBuiltInEventTrigger( "PFA_Exited"                     );
+    const EventTrigger& EventTrigger::PFA_SeekingPartner             = EventTriggerFactory::CreateBuiltInEventTrigger( "PFA_SeekingPartner"             );
+    const EventTrigger& EventTrigger::PFA_FoundPartner               = EventTriggerFactory::CreateBuiltInEventTrigger( "PFA_FoundPartner"               );
+    const EventTrigger& EventTrigger::PFA_NoPartnerFound             = EventTriggerFactory::CreateBuiltInEventTrigger( "PFA_NoPartnerFound"             );
 
     const EventType::Enum EventTriggerFactory::EVENT_TYPE = EventType::INDIVIDUAL;
     const char* EventTriggerFactory::CONSTRAINT_SCHEMA_STRING = "'<configuration>:Custom_Individual_Events.*' or Built-in";

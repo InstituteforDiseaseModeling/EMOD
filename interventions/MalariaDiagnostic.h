@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -13,16 +5,12 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <list>
 #include <vector>
 
-#include "Diagnostics.h"
+#include "StandardDiagnostic.h"
+#include "MalariaEnums.h"
 
 namespace Kernel
 {
-    ENUM_DEFINE(MalariaDiagnosticType,
-        ENUM_VALUE_SPEC(Microscopy       , 1)
-        ENUM_VALUE_SPEC(NewDetectionTech , 2)
-        ENUM_VALUE_SPEC(Other            , 3))
-
-    class MalariaDiagnostic : public SimpleDiagnostic 
+    class MalariaDiagnostic : public StandardDiagnostic 
     {
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
         DECLARE_QUERY_INTERFACE()
@@ -36,9 +24,11 @@ namespace Kernel
         virtual ~MalariaDiagnostic();
 
     protected:
+        virtual void ConfigureSensitivitySpecificity( const Configuration* inputJson ) override;
         virtual bool positiveTestResult() override;
 
         MalariaDiagnosticType::Enum malaria_diagnostic_type;
+        float measurement_sensitivity;
         float detection_threshold;
 
         DECLARE_SERIALIZABLE(MalariaDiagnostic);

@@ -1,16 +1,7 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
 #include "Properties.h"
-#include "PropertiesString.h"
 #include "BasePropertiesTemplates.h"
 #include "Log.h"
 #include "IdmString.h"
@@ -110,7 +101,7 @@ namespace Kernel
 
     IPKey& IPKey::operator=( const std::string& rKeyStr )
     {
-        m_pIP = IPFactory::GetInstance()->GetIP( rKeyStr, m_ParameterName );
+        m_pIP = IPFactory::GetInstance()->GetIP( rKeyStr );
         return *this;
     }
 
@@ -133,6 +124,36 @@ namespace Kernel
     void IPKey::serialize( IArchive& ar, IPKey& key )
     {
         BaseKey::serialize( ar, key, key_assign_func );
+    }
+
+    // ------------------------------------------------------------------------
+    // --- IPKeyParameter
+    // ------------------------------------------------------------------------
+
+    IPKeyParameter::IPKeyParameter()
+        : IPKey()
+        , m_ParameterName()
+    {
+    }
+
+    IPKeyParameter::~IPKeyParameter()
+    {
+    }
+
+    IPKeyParameter& IPKeyParameter::operator=( const std::string& rKeyStr )
+    {
+        m_pIP = IPFactory::GetInstance()->GetIP( rKeyStr, m_ParameterName );
+        return *this;
+    }
+
+    const std::string& IPKeyParameter::GetParameterName() const
+    {
+        return m_ParameterName;
+    }
+
+    void IPKeyParameter::SetParameterName( const std::string& rParameterName )
+    {
+        m_ParameterName = rParameterName;
     }
 
     // ------------------------------------------------------------------------
@@ -499,7 +520,7 @@ namespace Kernel
 
     IPKeyValue& IPKeyValue::operator=( const std::string& rKeyValueStr )
     {
-        m_pInternal =IPFactory::GetInstance()->GetKeyValue<IPKeyValueContainer>( IP_KEY, rKeyValueStr, m_ParameterName );
+        m_pInternal =IPFactory::GetInstance()->GetKeyValue<IPKeyValueContainer>( IP_KEY, rKeyValueStr );
         return *this;
     }
 
@@ -531,6 +552,36 @@ namespace Kernel
     void IPKeyValue::serialize( IArchive& ar, IPKeyValue& kv )
     {
         BaseKeyValue::serialize( ar, kv, key_value_assign_func );
+    }
+
+    // ------------------------------------------------------------------------
+    // --- IPKeyValueParameter
+    // ------------------------------------------------------------------------
+
+    IPKeyValueParameter::IPKeyValueParameter()
+        : IPKeyValue()
+        , m_ParameterName()
+    {
+    }
+
+    IPKeyValueParameter::~IPKeyValueParameter()
+    {
+    }
+
+    IPKeyValueParameter& IPKeyValueParameter::operator=( const std::string& rKeyValueStr )
+    {
+        m_pInternal =IPFactory::GetInstance()->GetKeyValue<IPKeyValueContainer>( IP_KEY, rKeyValueStr, m_ParameterName );
+        return *this;
+    }
+
+    const std::string& IPKeyValueParameter::GetParameterName() const
+    {
+        return m_ParameterName;
+    }
+
+    void IPKeyValueParameter::SetParameterName( const std::string& rParameterName )
+    {
+        m_ParameterName = rParameterName;
     }
 
     // ------------------------------------------------------------------------
@@ -589,7 +640,10 @@ namespace Kernel
 
     IPKeyValueContainer& IPKeyValueContainer::operator=( const IPKeyValueContainer& rThat )
     {
-        BaseKeyValueContainer<IPKey, IPKeyValue, IPKeyValueIterator>::operator=( rThat );
+        if( this != &rThat )
+        {
+            BaseKeyValueContainer<IPKey, IPKeyValue, IPKeyValueIterator>::operator=( rThat );
+        }
         return *this;
     }
 
@@ -618,19 +672,105 @@ namespace Kernel
         BaseKeyValueContainer<IPKey, IPKeyValue, IPKeyValueIterator>::Set( rNewKeyValue.m_pInternal );
     }
 
-    tProperties IPKeyValueContainer::GetOldVersion() const
-    {
-        tProperties old_map;
-        for( auto p_kvi : m_Vector )
-        {
-            old_map.emplace( p_kvi->GetProperty()->GetKeyAsString(), p_kvi->GetValueAsString() );
-        }
-        return old_map;
-    }
-
     IPKeyValue IPKeyValueContainer::FindFirst( const IPKeyValueContainer& rContainer ) const
     {
         return IPKeyValue( BaseKeyValueContainer::FindFirst( rContainer ) );
+    }
+
+    void IPKeyValueContainer::serialize( IArchive& ar, IPKeyValueContainer& obj )
+    {
+        BaseKeyValueContainer::serialize( ar, obj );
+    }
+
+    // ------------------------------------------------------------------------
+    // --- IPKeyValueContainerFull
+    // ------------------------------------------------------------------------
+    // See BasePropertiesTempaltes.h for template classes/methods
+
+    IPKeyValueContainerFull::IPKeyValueContainerFull()
+        : IPKeyValueContainer()
+        , m_ToStringCache()
+    {
+    }
+
+    IPKeyValueContainerFull::IPKeyValueContainerFull( const std::vector<KeyValueInternal*>& rInternalList )
+        : IPKeyValueContainer( rInternalList )
+        , m_ToStringCache()
+    {
+        UpdateCache();
+    }
+
+    IPKeyValueContainerFull::IPKeyValueContainerFull( const IPKeyValueContainerFull& rThat )
+        : IPKeyValueContainer( rThat )
+        , m_ToStringCache( rThat.m_ToStringCache )
+    {
+    }
+
+    IPKeyValueContainerFull::IPKeyValueContainerFull( const IPKeyValueContainer& rThat )
+        : IPKeyValueContainer( rThat )
+    {
+        UpdateCache();
+    }
+
+    IPKeyValueContainerFull::~IPKeyValueContainerFull()
+    {
+    }
+
+    IPKeyValueContainerFull& IPKeyValueContainerFull::operator=( const IPKeyValueContainerFull& rThat )
+    {
+        if( this != &rThat )
+        {
+            IPKeyValueContainer::operator=( rThat );
+            this->m_ToStringCache = rThat.m_ToStringCache;
+        }
+        return *this;
+    }
+
+    IPKeyValueContainerFull& IPKeyValueContainerFull::operator=( const IPKeyValueContainer& rThat )
+    {
+        if( this != &rThat )
+        {
+            IPKeyValueContainer::operator=( rThat );
+            UpdateCache();
+        }
+        return *this;
+    }
+
+    void IPKeyValueContainerFull::Add( const IPKeyValue& rKeyValue )
+    {
+        IPKeyValueContainer::Add( rKeyValue );
+        UpdateCache();
+    }
+
+    void IPKeyValueContainerFull::Remove( const IPKeyValue& rKeyValue )
+    {
+        IPKeyValueContainer::Remove( rKeyValue );
+        UpdateCache();
+    }
+
+    void IPKeyValueContainerFull::Set( const IPKeyValue& rNewKeyValue )
+    {
+        IPKeyValueContainer::Set( rNewKeyValue );
+        UpdateCache();
+    }
+
+    std::string IPKeyValueContainerFull::ToString() const
+    {
+        return m_ToStringCache;
+    }
+
+    void IPKeyValueContainerFull::UpdateCache()
+    {
+        m_ToStringCache = IPKeyValueContainer::ToString();
+    }
+
+    void IPKeyValueContainerFull::serialize( IArchive& ar, IPKeyValueContainerFull& obj )
+    {
+        IPKeyValueContainer::serialize( ar, obj );
+        if( ar.IsReader() )
+        {
+            obj.UpdateCache();
+        }
     }
 
     // ------------------------------------------------------------------------
@@ -763,7 +903,11 @@ namespace Kernel
         float total_prob = 0.0;
         for( auto entry : rValues )
         {
-            KeyValueInternal* pkvi = new KeyValueInternal( this, entry.first, externalNodeId, entry.second );
+            KeyValueInternal* pkvi = new KeyValueInternal( this,
+                                                           entry.first,
+                                                           externalNodeId,
+                                                           entry.second,
+                                                           IPFactory::GetInstance()->GetNextUniqueKeyValueID() );
             IPFactory::GetInstance()->AddKeyValue( pkvi );
             m_Values.push_back( pkvi );
             total_prob += entry.second;
@@ -937,7 +1081,7 @@ namespace Kernel
                     ss << ": Duplicate Value found: " << value;
                     throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
                 }
-                KeyValueInternal* pkvi = new KeyValueInternal( this, value, externalNodeId, 0.0 );
+                KeyValueInternal* pkvi = new KeyValueInternal( this, value, externalNodeId, 0.0, IPFactory::GetInstance()->GetNextUniqueKeyValueID() );
                 IPFactory::GetInstance()->AddKeyValue( pkvi );
                 m_Values.push_back( pkvi );
             }
@@ -945,8 +1089,6 @@ namespace Kernel
 
         if( !isNotFirstNode )
         {
-            IPFactory::GetInstance()->CheckIpKeyInWhitelist( IP_KEY, m_Key, m_Values.size() );
-
             if( rDemog.Contains( IP_TRANS_KEY ) && (rDemog[ IP_TRANS_KEY ].size() > 0) )
             {
                 std::ostringstream msg;
@@ -1049,7 +1191,7 @@ namespace Kernel
         return p_factory;
     }
 
-    void IPFactory::Initialize( uint32_t externalNodeId, const JsonObjectDemog& rDemog, bool isWhitelistEnabled )
+    void IPFactory::Initialize( uint32_t externalNodeId, const JsonObjectDemog& rDemog )
     {
        read_function_t read_fn =
             []( int idx, uint32_t externalNodeId, const JsonObjectDemog& rDemog, bool isNotFirstNode )
@@ -1059,7 +1201,7 @@ namespace Kernel
            return p_ip;
        };
 
-        BaseFactory::Initialize( IP_KEY, IP_NAME_KEY, read_fn, externalNodeId, rDemog, isWhitelistEnabled );
+        BaseFactory::Initialize( IP_KEY, IP_NAME_KEY, read_fn, externalNodeId, rDemog );
     }
 
     void IPFactory::WriteTransitionsFile()
@@ -1090,9 +1232,16 @@ namespace Kernel
         return new IndividualProperty( externalNodeId, rKeyStr, rValues );
     }
 
-    void IPFactory::AddIP( uint32_t externalNodeId, const std::string& rKeyStr, const std::map<std::string,float>& rValues )
+    IndividualProperty* IPFactory::AddIP( uint32_t externalNodeId,
+                                          const std::string& rKeyStr,
+                                          const std::map<std::string, float>& rValues,
+                                          bool haveFactoryMaintain )
     {
-        BaseFactory::AddIP( externalNodeId, rKeyStr, rValues, IPFactory::construct_ip );
+        return static_cast<IndividualProperty*>( BaseFactory::AddIP( externalNodeId,
+                                                                     rKeyStr, 
+                                                                     rValues,
+                                                                     IPFactory::construct_ip,
+                                                                     haveFactoryMaintain ) );
     }
 
     std::vector<IndividualProperty*> IPFactory::GetIPList() const
@@ -1138,34 +1287,6 @@ namespace Kernel
         }
         return properties;
     }
-
-#if 0 // something not working here yet. function currently lives in PropertyReport as a static method.
-    void
-    IPFactory::GenerateAllPermutationsOnce(
-        std::set< std::string > &keys,
-        tKeyValuePair perm,
-        tPermutations &permutationsSet
-    )
-    {
-        if( keys.size() )
-        {
-            const std::string key = *keys.begin();
-            keys.erase( key );
-            const IndividualProperty * p_ip = IPFactory::GetInstance()->GetIP( key );
-            for( auto kv : p_ip->GetValues<IPKeyValueContainer>() )
-            {
-                std::string value = kv.GetValueAsString();
-                auto kvp = perm;
-                kvp.insert( make_pair( key, value ) );
-                GenerateAllPermutationsOnce( keys, kvp, permutationsSet );
-            }
-        }
-        else
-        { 
-            permutationsSet.insert( perm );
-        }
-    }
-#endif
 
     // -------------------------------------------------------------------------------
     // --- This defines the implementations for these templetes with these parameters.

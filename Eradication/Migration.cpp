@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "Migration.h"
@@ -68,7 +60,7 @@ namespace Kernel
 
     void MigrationRateData::AddRate( float ageYears, float rate )
     {
-        m_InterpMap.insert( std::make_pair( ageYears, rate ) );
+        m_InterpMap.add( ageYears, rate );
     }
 
     float MigrationRateData::GetRate( float ageYears ) const
@@ -795,11 +787,6 @@ static const char* NODE_OFFSETS          = "NodeOffsets";            // required
 
     void MigrationInfoFile::OpenMigrationFile( const std::string& filepath, uint32_t expected_binary_file_size )
     {
-        if( !FileSystem::FileExists( filepath ) )
-        {
-            throw FileNotFoundException( __FILE__, __LINE__, __FUNCTION__, filepath.c_str() );
-        }
-
         FileSystem::OpenFileForReading( m_FileStream, filepath.c_str(), true );
 
         m_FileStream.seekg(0, ios::end);
@@ -865,7 +852,7 @@ static const char* NODE_OFFSETS          = "NodeOffsets";            // required
     {
         CreateInfoFileList();
 
-        initConfigTypeMap( "Enable_Migration_Heterogeneity",  &m_IsHeterogeneityEnabled, Enable_Migration_Heterogeneity_DESC_TEXT, true, "Migration_Model", "FIXED_RATE_MIGRATION" );
+        initConfigTypeMap( "Enable_Migration_Heterogeneity",  &m_IsHeterogeneityEnabled, Enable_Migration_Heterogeneity_DESC_TEXT, false, "Migration_Model", "FIXED_RATE_MIGRATION" );
 
         initConfigTypeMap( "Enable_Local_Migration",      &(m_InfoFileList[0]->m_IsEnabled), Enable_Local_Migration_DESC_TEXT,    false, "Migration_Model", "FIXED_RATE_MIGRATION" );
         initConfigTypeMap( "Enable_Air_Migration",        &(m_InfoFileList[1]->m_IsEnabled), Enable_Air_Migration_DESC_TEXT,      false, "Migration_Model", "FIXED_RATE_MIGRATION" );

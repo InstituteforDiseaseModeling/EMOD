@@ -84,6 +84,10 @@ void Writer::Visit(const Number& number) {
    m_ostr << number;
 }
 
+void Writer::Visit(const Uint64& number) {
+    m_ostr << number;
+}
+
 void Writer::Visit(const Boolean& booleanElement) {
    m_ostr << (booleanElement ? "true" : "false");
 }

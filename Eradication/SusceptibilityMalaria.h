@@ -1,17 +1,8 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
-#include "BoostLibWrapper.h"
 #include "Common.h"
-#include "IMalariaAntibody.h" // for MalariaAntibodyType enum, containers of IMalariaAntibody pointers
+#include "MalariaAntibody.h"
 #include "MalariaEnums.h"
 #include "MalariaContexts.h"
 #include "SusceptibilityVector.h"
@@ -24,7 +15,6 @@ namespace Kernel
 
     public:
         friend class SusceptibilityMalaria;
-        friend struct IMalariaAntibody;
 
         virtual bool Configure( const Configuration* config ) override;
 
@@ -38,12 +28,16 @@ namespace Kernel
         static float non_specific_growth;
         static float antibody_csp_decay_days;
 
+        // antigen population
+        static int falciparumMSPVars;
+        static int falciparumNonSpecTypes;
+        static int falciparumPfEMP1Vars;
+
     protected:
         static bool enable_maternal_antibodies_transmission;
         static MaternalAntibodiesType::Enum maternal_antibodies_type;
         static float maternal_antibody_protection;
         static float maternal_antibody_decay_rate;
-        static bool sexual_combination;
         static InnateImmuneVariationType::Enum innate_immune_variation_type;
         static float base_gametocyte_mosquito_survival;
         static float cytokine_gametocyte_inactivation;
@@ -62,6 +56,8 @@ namespace Kernel
         static float erythropoiesis_anemia_effect;
         static float pyrogenic_threshold;
         static float fever_IRBC_killrate;
+        static float PfHRP2_boost_rate; // Picograms/iRBC/day: 1.4e-13 grams per 48h / 2 (48h cycle to daily)
+        static float PfHRP2_decay_rate; // Fraction Per Day - fraction removed after each day (based on 3.67 day half-life)
 
         // thresholds for defining a unique clinical incident (from spiking symptoms of concurrent infections)
         // EAW: are either of these redundant with IndividualHumanFlagsMalaria.feverDetectionThreshold?
@@ -87,57 +83,54 @@ namespace Kernel
         virtual void Update(float dt) override;
         virtual void UpdateInfectionCleared() override;
 
+        // -------------------------------------
+        // --- IMalariaSusceptibility interfaces
+        // -------------------------------------
+        virtual float   get_fever()                 const override;
+        virtual float   get_fever_celsius()         const override;
+        virtual float   get_fever_killing_rate()    const override;
+        virtual float   get_cytokines()             const override;
+        virtual double  get_RBC_availability()      const override;
+        virtual int64_t get_RBC_count()             const override;
+        virtual float   get_parasite_density()      const override;
+        virtual float   get_maternal_antibodies()   const override;
+        virtual float   get_inv_microliters_blood() const override;
+        virtual float   GetMaxFever()               const override;
+        virtual float   GetMaxParasiteDensity()     const override;
+        virtual float   GetHemoglobin()             const override;
+        virtual float   GetPfHRP2()                 const override;
+
+        virtual float  get_fraction_of_variants_with_antibodies(MalariaAntibodyType::Enum type) const override;
+
+        virtual MalariaAntibody* RegisterAntibody(MalariaAntibodyType::Enum type, int variant, float capacity=0.0f) override;
+        virtual SevereCaseTypesEnum::Enum  CheckSevereCaseType() const override;
+
         // functions to mediate interaction with Infection_Malaria objects
+        virtual void BoostAntibody( MalariaAntibodyType::Enum type, int variant, float boosted_antibody_concentration ) override;
         virtual void UpdateActiveAntibody( pfemp1_antibody_t &pfemp1_variant, int minor_variant, int major_variant ) override;
 
-        // IMalariaSusceptibility interfaces
-        virtual void   SetAntigenPresent() override;
-        virtual float  get_fever()              const override;
-        virtual float  get_fever_celsius()      const override;
-        virtual float  get_cytokines()          const override;
-        virtual double get_RBC_availability()   const override;
-        virtual float  get_parasite_density()   const override;
-        virtual float  GetMaxFever()            const override;
-        virtual float  GetMaxParasiteDensity()  const override;
-        virtual float  GetHemoglobin()          const override;
-        virtual bool   CheckForParasitesWithTest( int test_type = MALARIA_TEST_BLOOD_SMEAR ) const override;
-        virtual float  CheckParasiteCountWithTest( int test_type = MALARIA_TEST_BLOOD_SMEAR ) const override;
-        virtual float  get_fraction_of_variants_with_antibodies(MalariaAntibodyType::Enum type) const override;
-        virtual IMalariaAntibody* RegisterAntibody(MalariaAntibodyType::Enum type, int variant, float capacity=0.0f) override;
-        virtual SevereCaseTypesEnum::Enum  CheckSevereCaseType() const override;
-        virtual float  get_inv_microliters_blood() const override;
-        virtual void   ResetMaximumSymptoms() override;
-        virtual long long get_RBC_count() const override;
-        virtual float  get_maternal_antibodies() const override;
-        virtual void   init_maternal_antibodies(float mother_factor) override;
-        virtual float  get_fever_killing_rate() const override;
+        virtual void ResetMaximumSymptoms() override;
+        virtual void SetActiveAntibody( MalariaAntibody* pAntibody ) override;
+        virtual void init_maternal_antibodies(float mother_factor) override;
 
         // functions to mediate interactions with red blood cell count
-        virtual void   remove_RBCs(int64_t infectedAsexual, int64_t infectedGametocytes, double RBC_destruction_multiplier) override;
+        virtual void remove_RBCs(int64_t infectedAsexual, int64_t infectedGametocytes, double RBC_destruction_multiplier) override;
+
+        virtual void UpdateIRBC( int64_t irbcFromInfection, int64_t irbcFromInfectionWithHRP ) override;
 
     protected:
-
-        const SimulationConfig *params() const;
 
         // Functions to enforce antigen-antibody reactions (e.g. stimulation, decay)
         void  updateImmunityCSP( float dt );
         void  updateImmunityMSP( float dt, float& temp_cytokine_stimulation );
         void  updateImmunityPfEMP1Minor( float dt );
         void  updateImmunityPfEMP1Major( float dt );
-        void  decayAllAntibodies( float dt );
         void  recalculateBloodCapacity( float _age );
         void  countAntibodyVariations();
 
-        // Immune initialization
-        void InitializeAntibodyVariants(MalariaAntibodyType::Enum type, float frac_variants);
-        std::vector<int> InitialVariants(int n_choose, int n_total);
-
-        // IAntibodyBoostable functions
-        virtual void BoostAntibody( MalariaAntibodyType::Enum type, int variant, float boosted_antibody_concentration ) override;
-
         // Clinical outcome calculations
         void  updateClinicalStates( float dt );
-        void  ReportClinicalCase( ClinicalSymptomsEnum::Enum symptom );
+        void  ReportClinicalCase( ClinicalSymptomsEnum::Enum symptom, bool isNew );
         float get_severe_disease_probability( float dt, float& anemiaSevereFraction, float& parasiteSevereFraction, float& feverSevereFraction );
         float get_fatal_disease_probability(  float dt, float& anemiaFatalFraction,  float& parasiteFatalFraction,  float& feverFatalFraction );
 
@@ -150,21 +143,28 @@ namespace Kernel
             float& anemiaPartialProb, float& parasitePartialProb, float& feverPartialProb);
 
         void  UpdateMaximumSymptoms();
+        void  UpdateDiagnosticVariables( float dt, int64_t totalIRBC, int64_t totalIRBCWithHRP );
 
-        int32_t m_antigenic_flag;
+        bool m_antigenic_flag;
 
         // containers for antibody objects
         float m_maternal_antibody_strength;
-        IMalariaAntibody* m_CSP_antibody;
-        std::vector<IMalariaAntibody*> m_active_MSP_antibodies;
-        std::vector<IMalariaAntibody*> m_active_PfEMP1_minor_antibodies;
-        std::vector<IMalariaAntibody*> m_active_PfEMP1_major_antibodies;
+        MalariaAntibody m_CSP_antibody;
+        std::vector<MalariaAntibody> m_MSP_antibodies;
+        std::vector<MalariaAntibody> m_PfEMP1_minor_antibodies;
+        std::vector<MalariaAntibody> m_PfEMP1_major_antibodies;
+
+        std::vector<MalariaAntibody*> m_active_MSP_antibodies;
+        std::vector<MalariaAntibody*> m_active_PfEMP1_minor_antibodies;
+        std::vector<MalariaAntibody*> m_active_PfEMP1_major_antibodies;
 
         // RBC information
         int64_t m_RBC;
         int64_t m_RBCcapacity;
         int64_t m_RBCproduction;   // how many RBC's a person should have /120 (AVERAGE_RBC_LIFESPAN)
         float   m_inv_microliters_blood; // ==/(age dependent estimate of blood volume)
+        int64_t m_TotalIRBC;
+        int64_t m_TotalIRBCWithHRP;
 
         // symptomatic variables
         float m_cytokines;
@@ -172,6 +172,7 @@ namespace Kernel
         float m_ind_fever_kill_rate;
         float m_cytokine_stimulation;
         float m_parasite_density;
+        float m_PfHRP2_pg; //picograms
         std::vector<int> m_antibodies_to_n_variations; // how many variations of each antigen type does an individual have antibodies to
 
         // maxima over sub-time-step updates.  reset every time step.

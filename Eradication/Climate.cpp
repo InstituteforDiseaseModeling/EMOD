@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include <iomanip>
@@ -108,9 +100,14 @@ namespace Kernel {
         }
     }
 
-    void Climate::UpdateWeather( float time, float dt, RANDOMBASE* pRNG )
+    void Climate::UpdateWeather( float time, float dt, RANDOMBASE* pRNG, bool initialization )
     {
-        if(enable_climate_stochasticity)
+        // -----------------------------------------------------------------------------------
+        // --- We don't want to add stochasticity during initialization because it can change
+        // --- the random number stream compared when running from a serialized file comapred
+        // --- to running the full sim
+        // -----------------------------------------------------------------------------------
+        if( enable_climate_stochasticity && !initialization )
             AddStochasticity( pRNG, airtemperature_variance, landtemperature_variance, rainfall_variance_enabled, humidity_variance );
 
         // cap values to within physically-possible bounds
@@ -179,7 +176,7 @@ namespace Kernel {
     {
         LOG_DEBUG( "Configure\n" );
 
-        initConfig( "Climate_Model", climate_structure, config, MetadataDescriptor::Enum("climate_structure", Climate_Model_DESC_TEXT, MDD_ENUM_ARGS(ClimateStructure)), "Simulation_Type", "VECTOR_SIM, MALARIA_SIM, DENGUE_SIM, POLIO_SIM, AIRBORNE_SIM" );
+        initConfig( "Climate_Model", climate_structure, config, MetadataDescriptor::Enum("climate_structure", Climate_Model_DESC_TEXT, MDD_ENUM_ARGS(ClimateStructure)), "Simulation_Type", "VECTOR_SIM, MALARIA_SIM" );
 
         initConfig( "Climate_Update_Resolution", climate_update_resolution, config, MetadataDescriptor::Enum("climate_update_resolution", Climate_Update_Resolution_DESC_TEXT, MDD_ENUM_ARGS(ClimateUpdateResolution)), "Climate_Model", "CLIMATE_CONSTANT,CLIMATE_BY_DATA,CLIMATE_KOPPEN" );
 

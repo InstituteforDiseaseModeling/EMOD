@@ -1,15 +1,6 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
-#include "IdmApi.h"
 #include "CajunIncludes.h"
 #include "Configuration.h"      // for MetadataDescriptor namespace
 #include "ConfigurationImpl.h"  // for MetadataDescriptor namespace
@@ -19,9 +10,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 // 'resource' files with description texts for schema
 #include "config_params.rc"
-#ifdef ENABLE_POLIO
-#include "polio_params.rc"
-#endif
 #include "iv_params.rc"
 
 #include <stdarg.h>
@@ -42,15 +30,15 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 namespace Kernel
 {
-    class IPKey;
-    class IPKeyValue;
-    class NPKey;
-    class NPKeyValue;
+    class IPKeyParameter;
+    class IPKeyValueParameter;
+    class NPKeyParameter;
+    class NPKeyValueParameter;
     class EventTrigger;
     class EventTriggerNode;
     class EventTriggerCoordinator;
 
-    struct IDMAPI IComplexJsonConfigurable
+    struct IComplexJsonConfigurable
     {
         virtual void ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key ) = 0;
         virtual json::QuickBuilder GetSchema() = 0;
@@ -131,7 +119,7 @@ namespace Kernel
                 virtual const ConstrainedString& operator=( const std::string& new_value );
 
                 std::string constraints;
-                tStringSet * constraint_param;
+                const tStringSet * constraint_param;
                 std::string parameter_name;
         };
 
@@ -140,12 +128,12 @@ namespace Kernel
 
     bool ignoreParameter( const json::QuickInterpreter * pJson, const char * condition_key, const char * condition_value = nullptr );
 
-    class IDMAPI JsonConfigurable : public IConfigurable
+    class JsonConfigurable : public IConfigurable
     {
         friend class InterventionFactory;
         friend class DemographicRestrictions;
+        friend class ReportFilter;
         friend class DistributionConstantConfigurable;
-        friend class DurationDistribution;
         friend class DistributionExponentialConfigurable;
         friend class DistributionGaussianConfigurable;
         friend class DistributionLogNormalConfigurable;
@@ -157,11 +145,12 @@ namespace Kernel
         friend class DistributionPiecewiseConstantConfigurable;
         friend class DistributionPiecewiseLinearConfigurable;
 
-
     public:
         typedef std::map< float, float > tFloatFloatMapConfigType;
         typedef std::map< std::string, float > tStringFloatMapConfigType;
         static const char * default_string;
+
+        static void CheckMissingParameters();
 
     private:
         typedef std::map< std::string, bool * > tBoolConfigTypeMapType;
@@ -177,7 +166,9 @@ namespace Kernel
         typedef std::map< std::string, const std::set< std::string > * > tVectorStringConstraintsTypeMapType;
         typedef std::map< std::string, std::vector< float > * > tVectorFloatConfigTypeMapType;
         typedef std::map< std::string, std::vector< int > * > tVectorIntConfigTypeMapType;
+        typedef std::map< std::string, std::vector< uint32_t > * >tVectorUint32ConfigTypeMapType;
         typedef std::map< std::string, std::vector< std::vector< float > > * > tVector2dFloatConfigTypeMapType;
+        typedef std::map< std::string, std::vector< std::vector< std::vector< float > > >* > tVector3dFloatConfigTypeMapType;
         typedef std::map< std::string, std::vector< std::vector< int > > * > tVector2dIntConfigTypeMapType;
         typedef std::map< std::string, tFloatFloatMapConfigType * > tFloatFloatMapConfigTypeMapType;
         typedef std::map< std::string, tStringFloatMapConfigType * > tStringFloatMapConfigTypeMapType;
@@ -185,10 +176,11 @@ namespace Kernel
         typedef std::map< std::string, NaturalNumber * > tNNConfigTypeMapType;
         typedef std::map< std::string, JsonConfigurable * > tJsonConfigurableMapType;
         typedef std::map< std::string, IComplexJsonConfigurable * > tComplexJsonConfigurableMapType;
-        typedef std::map< std::string, IPKey * > tIPKeyMapType;
-        typedef std::map< std::string, IPKeyValue * > tIPKeyValueMapType;
-        typedef std::map< std::string, NPKey * > tNPKeyMapType;
-        typedef std::map< std::string, NPKeyValue * > tNPKeyValueMapType;
+        typedef std::map< std::string, IPKeyParameter * > tIPKeyMapType;
+        typedef std::map< std::string, IPKeyValueParameter * > tIPKeyValueMapType;
+        typedef std::map< std::string, std::vector<IPKeyValueParameter>* > tIPKeyValueVectorMapType;
+        typedef std::map< std::string, NPKeyParameter * > tNPKeyMapType;
+        typedef std::map< std::string, NPKeyValueParameter * > tNPKeyValueMapType;
         typedef std::map< std::string, EventTrigger * > tEventTriggerMapType;
         typedef std::map< std::string, std::vector<EventTrigger> * > tEventTriggerVectorMapType;
         typedef std::map< std::string, EventTriggerNode * > tEventTriggerNodeMapType;
@@ -197,8 +189,10 @@ namespace Kernel
         typedef std::map< std::string, std::vector<EventTriggerCoordinator> * > tEventTriggerCoordinatorVectorMapType;
 
     public:
-
-        virtual json::QuickBuilder GetSchema();
+        //IConfigurable
+        virtual json::QuickBuilder GetSchema() override;
+        virtual json::Array GetSimTypes() override;
+        virtual void ClearSchema() override;
 
         virtual std::string GetTypeName() const;
 
@@ -215,8 +209,6 @@ namespace Kernel
             Registrator( const char* class_name, get_schema_funcptr_t gs_callback );
         };
 
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         static jsonConfigurable::tStringSet missing_parameters_set;
 
         // TEST ONLY - componentTests needs to clear this so that other tests don't fail
@@ -240,7 +232,9 @@ namespace Kernel
             tVectorStringConstraintsTypeMapType vector2dStringConstraintsTypeMap;
             tVectorFloatConfigTypeMapType vectorFloatConfigTypeMap;
             tVectorIntConfigTypeMapType vectorIntConfigTypeMap;
+            tVectorUint32ConfigTypeMapType vectorUint32ConfigTypeMap;
             tVector2dFloatConfigTypeMapType vector2dFloatConfigTypeMap;
+            tVector3dFloatConfigTypeMapType vector3dFloatConfigTypeMap;
             tVector2dIntConfigTypeMapType vector2dIntConfigTypeMap;
             tFloatFloatMapConfigTypeMapType ffMapConfigTypeMap;
             tStringFloatMapConfigTypeMapType sfMapConfigTypeMap;
@@ -250,6 +244,7 @@ namespace Kernel
             tComplexJsonConfigurableMapType complexTypeMap;
             tIPKeyMapType ipKeyTypeMap ;
             tIPKeyValueMapType ipKeyValueTypeMap;
+            tIPKeyValueVectorMapType iPKeyValueVectorMapType;
             tNPKeyMapType npKeyTypeMap ;
             tNPKeyValueMapType npKeyValueTypeMap;
             tEventTriggerMapType eventTriggerTypeMap ;
@@ -271,7 +266,6 @@ namespace Kernel
         json::Object& GetSchemaBase();
 
         static std::set< std::string > empty_set;
-#pragma warning( pop )
 
         JsonConfigurable();
         JsonConfigurable( const JsonConfigurable& rConfig );
@@ -377,7 +371,7 @@ namespace Kernel
             const char* paramName,
             std::vector< float > * pVariable,
             const char* description = default_description,
-            float min = -FLT_MAX, float max = FLT_MAX, float defaultvalue = 1.0, bool ascending = false,
+            float min=-FLT_MAX, float max=FLT_MAX, bool ascending=false,
             const char* condition_key = nullptr, const char* condition_value = nullptr
         );
 
@@ -385,7 +379,15 @@ namespace Kernel
             const char* paramName,
             std::vector< int > * pVariable,
             const char* description = default_description,
-            int min = -INT_MAX, int max = INT_MAX, int defaultvalue = 1.0,
+            int min = -INT_MAX, int max = INT_MAX, bool ascending = false,
+            const char* condition_key = nullptr, const char* condition_value = nullptr
+        );
+
+        void initConfigTypeMap(
+            const char* paramName,
+            std::vector< uint32_t > * pVariable,
+            const char* description = default_description,
+            uint32_t min = 0, uint32_t max = UINT32_MAX, bool ascending = false,
             const char* condition_key = nullptr, const char* condition_value = nullptr
         );
 
@@ -393,7 +395,14 @@ namespace Kernel
             const char* paramName,
             std::vector< std::vector< float > > * pVariable,
             const char* description = default_description,
-            float min = -FLT_MAX, float max = FLT_MAX, float defaultvalue = 1.0,
+            float min = -FLT_MAX, float max = FLT_MAX,
+            const char* condition_key = nullptr, const char* condition_value = nullptr
+        );
+
+        void initConfigTypeMap( const char* paramName,
+            std::vector< std::vector< std::vector<float> > > * pVariable,
+            const char* description = default_description,
+            float min = -FLT_MAX, float max = FLT_MAX,
             const char* condition_key = nullptr, const char* condition_value = nullptr
         );
 
@@ -401,7 +410,7 @@ namespace Kernel
             const char* paramName,
             std::vector< std::vector< int > > * pVariable,
             const char* description = default_description,
-            int min = -INT_MAX, int max = INT_MAX, int defaultvalue = 1,
+            int min = -INT_MAX, int max = INT_MAX,
             const char* condition_key = nullptr, const char* condition_value = nullptr
         );
 
@@ -464,28 +473,36 @@ namespace Kernel
        void
        initConfigTypeMap(
             const char* paramName,
-            IPKey * pVariable,
+            IPKeyParameter * pVariable,
             const char* defaultDesc
        );
 
        void
        initConfigTypeMap(
             const char* paramName,
-            IPKeyValue * pVariable,
+            IPKeyValueParameter * pVariable,
+            const char* defaultDesc
+       );
+
+      void initConfigTypeMap(
+          const char* paramName,
+          std::vector<IPKeyValueParameter>* pVariable,
+          const char* description = default_description,
+          const char* condition_key = nullptr,
+          const char* condition_value = nullptr
+       );
+
+       void
+       initConfigTypeMap(
+            const char* paramName,
+            NPKeyParameter * pVariable,
             const char* defaultDesc
        );
 
        void
        initConfigTypeMap(
             const char* paramName,
-            NPKey * pVariable,
-            const char* defaultDesc
-       );
-
-       void
-       initConfigTypeMap(
-            const char* paramName,
-            NPKeyValue * pVariable,
+            NPKeyValueParameter * pVariable,
             const char* defaultDesc
        );
 
@@ -566,11 +583,12 @@ namespace Kernel
         void EnforceParameterAscending(const std::string& key, const std::vector<T> & values)
         {
             //Try to find a value to the left of an element with a value that is greater or equal 
-            for (auto it = values.cbegin(); it != values.cend() - 1; ++it) {
-                if (*it >= *(it + 1))
+            for( int i = 0; i < int(values.size())-1; ++i )
+            {
+                if( values[ i ] >= values[ i + 1 ] )
                 {
                     std::stringstream error_string;
-                    error_string << "The values in " << key << " must be unique and in ascending order.";
+                    error_string << "The values in '" << key << "' must be unique and in ascending order.";
                     throw InvalidInputDataException(__FILE__, __LINE__, __FUNCTION__, error_string.str().c_str());
                 }
             }
@@ -579,6 +597,11 @@ namespace Kernel
         template< typename T >
         void EnforceVectorParameterRanges( const std::string& key, std::vector<T> values, json::QuickInterpreter& jsonObj )
         {
+            if (values.size() == 0)
+            {
+                return;
+            }
+
             for (T& value : values)
             {
                 EnforceParameterRange<T>(key, value, jsonObj);
@@ -590,11 +613,20 @@ namespace Kernel
             }
         }
 
+        template< typename T >
+        void EnforceVectorVectorParameterRanges(const std::string& key, std::vector<std::vector<T>> values, json::QuickInterpreter& jsonObj)
+        {
+            for (std::vector<T>& value : values)
+            {
+                EnforceVectorParameterRanges<T>(key, value, jsonObj);
+            }
+        }
+
         template< typename myclass >
         bool initConfig(
             const char* key,
             myclass &thevar,
-            const json::QuickInterpreter * pJson,
+            const Configuration * pJson,
             const MetadataDescriptor::Enum &enum_md,
             const char* condition_key = nullptr, const char * condition_value = nullptr
         )
@@ -626,20 +658,19 @@ namespace Kernel
                 return true;
             }
 
-            if (pJson && pJson->Exist(key) == false && _useDefaults )
+            if (pJson && pJson->Exist(key) == false )
             {
                 if( _useDefaults )
                 {
                     if( (EnvPtr != nullptr) && EnvPtr->Log->CheckLogLevel(Logger::INFO, "JsonConfigurable"))
                     {
-                        EnvPtr->Log->Log(Logger::INFO, "JsonConfigurable", "Using the default value ( \"%s\" : \"%s\" ) for unspecified parameter.\n", key, enum_md.enum_value_specs[0].first.c_str() );
+                        EnvPtr->Log->Log(Logger::DEBUG, "JsonConfigurable", "Using the default value ( \"%s\" : \"%s\" ) for unspecified parameter.\n", key, enum_md.enum_value_specs[0].first.c_str() );
                     }
                     thevar = (myclass) enum_md.enum_value_specs[0].second;
                 }
-
-                if( _track_missing )
+                else
                 {
-                    missing_parameters_set.insert(key);
+                    handleMissingParam( key, pJson->GetDataLocation() );
                 }
 
                 return false;
@@ -672,22 +703,20 @@ namespace Kernel
                 {
                     std::ostringstream errorMsgFullList;
                     errorMsgFullList << "Failed to find enum match for value "
-                                     << GET_CONFIG_STRING(pJson, key)
+                                     << "'" << GET_CONFIG_STRING(pJson, key) << "'"
                                      << " and key "
-                                     << key
-                                     << ". Possible values are: ";
-                    std::vector< std::string > enum_key_list;
+                                     << "'" << key << "'.\n"
+                                     << "Possible values are:\n";
 
-                    // This funny code is to do a comma-separated list of strings without nasty code
-                    // to special-handle first or last item. Stole this from some dude on StackOverflow.
-                    // Ideally we wouldn't have to pre-pop the enum_key_list container, but don't know
-                    // what iterator to use for the MetadataDescriptor::Enum::enum_value_spec pair list.
-                    for (auto& vs : enum_md.enum_value_specs)
+                    for( int i = 0; i < enum_md.enum_value_specs.size(); ++i )
                     {
-                        enum_key_list.push_back( vs.first );
+                        errorMsgFullList << enum_md.enum_value_specs[ i ].first;
+                        if( (i+1) < enum_md.enum_value_specs.size())
+                        {
+                            errorMsgFullList << "\n";
+                        }
                     }
-                    std::copy(enum_key_list.begin(), enum_key_list.end() - 1, std::ostream_iterator<std::string>(errorMsgFullList, ", "));
-                    errorMsgFullList << enum_key_list.back();
+
                     throw Kernel::GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, errorMsgFullList.str().c_str() );
                 }
             }
@@ -714,7 +743,7 @@ namespace Kernel
             {
                 if( (EnvPtr != nullptr) && EnvPtr->Log->CheckLogLevel(Logger::INFO, "JsonConfigurable"))
                 {
-                    EnvPtr->Log->Log(Logger::INFO, "JsonConfigurable", "Using the default value ( \"%s\" : [ \"%s\" ] ) for unspecified parameter.\n", key, enum_md.enum_value_specs[0].first.c_str() );
+                    EnvPtr->Log->Log(Logger::DEBUG, "JsonConfigurable", "Using the default value ( \"%s\" : [ \"%s\" ] ) for unspecified parameter.\n", key, enum_md.enum_value_specs[0].first.c_str() );
                 }
                 thevector.push_back( (myclass) enum_md.enum_value_specs[0].second );
                 if( _track_missing )
@@ -781,6 +810,15 @@ namespace Kernel
         // initConfigComplexType replaces #3, and could ultimately replace some of #2.
         //
         void initConfigComplexType(
+            const char* paramName,
+            IComplexJsonConfigurable * pVariable,
+            const char* description = default_description,
+            const char* condition_key = nullptr, const char* condition_value = nullptr
+        );
+
+        // This is really for objects that are based on the JsonConfigurableColleciton
+        // template.  This code is needed because the schema generation is different.
+        void initConfigComplexCollectionType(
             const char* paramName,
             IComplexJsonConfigurable * pVariable,
             const char* description = default_description,
@@ -858,11 +896,24 @@ namespace Kernel
         virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) { return e_NOINTERFACE; }
         public:
             WaningConfig();
-            WaningConfig(json::QuickInterpreter* qi);
+            explicit WaningConfig(json::QuickInterpreter* qi);
             json::QuickBuilder GetSchema() override;
             virtual void ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key ) override;
             virtual bool  HasValidDefault() const override { return false; }
             json::Element _json;
+    };
+
+    class AdditionalTargetingConfig : public JsonConfigurable, public IComplexJsonConfigurable
+    {
+        IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
+            virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) { return e_NOINTERFACE; }
+    public:
+        AdditionalTargetingConfig();
+        AdditionalTargetingConfig(json::QuickInterpreter* qi);
+        json::QuickBuilder GetSchema() override;
+        virtual void ConfigureFromJsonAndKey(const Configuration* inputJson, const std::string& key) override;
+        virtual bool  HasValidDefault() const override { return false; }
+        json::Element _json;
     };
 
     #define GET_SCHEMA_STATIC_WRAPPER(x)\

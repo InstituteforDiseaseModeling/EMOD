@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
@@ -16,6 +8,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "INodeSTI.h"
 #include "NodeSTI.h"
 #include "NodeEventContext.h"
+#include "ReportUtilitiesSTI.h"
 
 SETUP_LOGGING( "RelationshipEndReporter" )
 
@@ -76,17 +69,19 @@ namespace Kernel
         suids::suid female_id = relationship->GetFemalePartnerId();
 
         RelationshipEndInfo info;
-        info.end_time           = float(simulation->GetSimulationTime().time); // current timestep
-        info.start_time         = relationship->GetStartTime();
-        info.scheduled_end_time = relationship->GetScheduledEndTime();
-        info.id                 = relationship->GetSuid().data;
-        info.node_id            = p_partner->GetParent()->GetExternalID();
-        info.relationship_type  = (unsigned int) relationship->GetType(); 
-        info.male_id            = male_id.data;
-        info.female_id          = female_id.data;
-        info.male_age           = male_age_years;
-        info.female_age         = female_age_years;
-        info.termination_reason = (unsigned int) relationship->GetTerminationReason(); 
+        info.end_time              = float(simulation->GetSimulationTime().time); // current timestep
+        info.start_time            = relationship->GetStartTime();
+        info.scheduled_end_time    = relationship->GetScheduledEndTime();
+        info.id                    = relationship->GetSuid().data;
+        info.node_id               = p_partner->GetParent()->GetExternalID();
+        info.relationship_type     = (unsigned int) relationship->GetType(); 
+        info.is_outside_pfa        = relationship->IsOutsidePFA();
+        info.male_id               = male_id.data;
+        info.female_id             = female_id.data;
+        info.male_age              = male_age_years;
+        info.female_age            = female_age_years;
+        info.num_total_coital_acts = relationship->GetTotalCoitalActs();
+        info.termination_reason    = (unsigned int) relationship->GetTerminationReason(); 
 
         if( (male_age_years < 0) || (female_age_years < 0) )
         {
@@ -122,24 +117,14 @@ namespace Kernel
                << "Node_ID,"
                << "Rel_start_time,"
                << "Rel_scheduled_end_time,"
-               << "Rel_actual_end_time,";
-
-        header << "Rel_type (";
-        for( int i = 0 ; i < RelationshipType::COUNT ; ++i )
-        {
-            header << i << " = " << RelationshipType::pairs::get_keys()[i];
-            if( (i+1) < RelationshipType::COUNT )
-            {
-                header << "; ";
-            }
-        }
-        header << "),";
-
-        header 
+               << "Rel_actual_end_time,"
+               << ReportUtilitiesSTI::GetRelationshipTypeColumnHeader() << ","
+               << "Is_rel_outside_PFA,"
                << "male_ID,"
                << "female_ID,"
                << "male_age,"
                << "female_age,"
+               << "num_total_coital_acts,"
                << "Termination_Reason";
         return header.str() ;
     }
@@ -156,17 +141,19 @@ namespace Kernel
         // TODO - per time step data reduction (if multi-core)
         for (auto& entry : report_data)
         {
-            GetOutputStream() << entry.id                 << ','
-                              << entry.node_id            << ','
-                              << entry.start_time         << ','
-                              << entry.scheduled_end_time << ','
-                              << entry.end_time           << ','
-                              << entry.relationship_type  << ','
-                              << entry.male_id            << ','
-                              << entry.female_id          << ','
-                              << entry.male_age           << ','
-                              << entry.female_age         << ','
-                              << RelationshipTerminationReason::pairs::lookup_key( entry.termination_reason )
+            GetOutputStream()        << entry.id
+                              << ',' << entry.node_id
+                              << ',' << entry.start_time
+                              << ',' << entry.scheduled_end_time
+                              << ',' << entry.end_time
+                              << ',' << entry.relationship_type
+                              << ',' << (entry.is_outside_pfa ? 'T' : 'F')
+                              << ',' << entry.male_id
+                              << ',' << entry.female_id
+                              << ',' << entry.male_age
+                              << ',' << entry.female_age
+                              << ',' << entry.num_total_coital_acts
+                              << ',' << RelationshipTerminationReason::pairs::lookup_key( entry.termination_reason )
                               << endl;
         }
 

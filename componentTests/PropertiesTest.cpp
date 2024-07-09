@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include <memory> // unique_ptr
@@ -102,13 +94,13 @@ SUITE(PropertiesTest)
 
             try
             {
-                IPFactory::GetInstance()->Initialize( 1, demographics_1->GetJsonObject(), true );
+                IPFactory::GetInstance()->Initialize( 1, demographics_1->GetJsonObject() );
                 if( readTwo )
                 {
                     INodeContext* nodeContext_2 = new INodeContextFake( 2 );
                     unique_ptr<NodeDemographics> demographics_2( factory->CreateNodeDemographics( nodeContext_2 ) );
 
-                    IPFactory::GetInstance()->Initialize( 2, demographics_2->GetJsonObject(), true );
+                    IPFactory::GetInstance()->Initialize( 2, demographics_2->GetJsonObject() );
                 }
                 CHECK_LN( false, lineNumber );
             }
@@ -122,6 +114,14 @@ SUITE(PropertiesTest)
                     PrintDebug( msg );
                 }
                 CHECK_LN( passed, lineNumber );
+            }
+        }
+
+        void ReplaceCarriageReturn( std::string* p_str )
+        {
+            while( p_str->find( "\r" ) != string::npos )
+            {
+                p_str->erase( p_str->find( "\r" ), 1 );
             }
         }
     };
@@ -146,7 +146,7 @@ SUITE(PropertiesTest)
             INodeContext* nodeContext = new INodeContextFake();
             unique_ptr<NodeDemographics> demographics( factory->CreateNodeDemographics(nodeContext) );
 
-            IPFactory::GetInstance()->Initialize( 1, demographics->GetJsonObject(), true );
+            IPFactory::GetInstance()->Initialize( 1, demographics->GetJsonObject() );
 
             std::vector<IndividualProperty*> ip_list = IPFactory::GetInstance()->GetIPList();
             CHECK_EQUAL( 2, ip_list.size() );
@@ -225,7 +225,7 @@ SUITE(PropertiesTest)
             INodeContext* nodeContext = new INodeContextFake();
             unique_ptr<NodeDemographics> demographics( factory->CreateNodeDemographics(nodeContext) );
 
-            IPFactory::GetInstance()->Initialize( 1, demographics->GetJsonObject(), true );
+            IPFactory::GetInstance()->Initialize( 1, demographics->GetJsonObject() );
 
             std::vector<IndividualProperty*> ip_list = IPFactory::GetInstance()->GetIPList();
             CHECK_EQUAL( 1, ip_list.size() );
@@ -302,6 +302,9 @@ SUITE(PropertiesTest)
             unique_ptr<string> p_act_contents( FileSystem::ReadFile( act_filename.c_str() ) );
             unique_ptr<string> p_exp_contents( FileSystem::ReadFile( exp_filename.c_str() ) );
 
+            ReplaceCarriageReturn( p_act_contents.get() );
+            ReplaceCarriageReturn( p_exp_contents.get() );
+
             CHECK( *p_exp_contents == *p_act_contents );
 
             // clean up
@@ -340,7 +343,7 @@ SUITE(PropertiesTest)
             INodeContext* nodeContext = new INodeContextFake();
             unique_ptr<NodeDemographics> demographics( factory->CreateNodeDemographics(nodeContext) );
 
-            IPFactory::GetInstance()->Initialize( 1, demographics->GetJsonObject(), true );
+            IPFactory::GetInstance()->Initialize( 1, demographics->GetJsonObject() );
 
             std::vector<IndividualProperty*> ip_list = IPFactory::GetInstance()->GetIPList();
             CHECK_EQUAL( 1, ip_list.size() );
@@ -378,6 +381,9 @@ SUITE(PropertiesTest)
 
             unique_ptr<string> p_act_contents( FileSystem::ReadFile( act_filename.c_str() ) );
             unique_ptr<string> p_exp_contents( FileSystem::ReadFile( exp_filename.c_str() ) );
+
+            ReplaceCarriageReturn( p_act_contents.get() );
+            ReplaceCarriageReturn( p_exp_contents.get() );
 
             CHECK( *p_exp_contents == *p_act_contents );
 
@@ -417,7 +423,7 @@ SUITE(PropertiesTest)
             INodeContext* nodeContext = new INodeContextFake();
             unique_ptr<NodeDemographics> demographics( factory->CreateNodeDemographics(nodeContext) );
 
-            IPFactory::GetInstance()->Initialize( 1, demographics->GetJsonObject(), true );
+            IPFactory::GetInstance()->Initialize( 1, demographics->GetJsonObject() );
 
             std::vector<IndividualProperty*> ip_list = IPFactory::GetInstance()->GetIPList();
             CHECK_EQUAL( 1, ip_list.size() );
@@ -458,6 +464,9 @@ SUITE(PropertiesTest)
             unique_ptr<string> p_act_contents( FileSystem::ReadFile( act_filename.c_str() ) );
             unique_ptr<string> p_exp_contents( FileSystem::ReadFile( exp_filename.c_str() ) );
 
+            ReplaceCarriageReturn( p_act_contents.get() );
+            ReplaceCarriageReturn( p_exp_contents.get() );
+
             CHECK( *p_exp_contents == *p_act_contents );
 
             // clean up
@@ -497,8 +506,8 @@ SUITE(PropertiesTest)
         INodeContext* nodeContext_2 = new INodeContextFake( 2 );
         unique_ptr<NodeDemographics> demographics_2( factory->CreateNodeDemographics( nodeContext_2 ) );
 
-        IPFactory::GetInstance()->Initialize( 1, demographics_1->GetJsonObject(), true );
-        IPFactory::GetInstance()->Initialize( 2, demographics_2->GetJsonObject(), true );
+        IPFactory::GetInstance()->Initialize( 1, demographics_1->GetJsonObject() );
+        IPFactory::GetInstance()->Initialize( 2, demographics_2->GetJsonObject() );
 
         IPKeyValue kv_access_no  = IPFactory::GetInstance()->GetIP( "Accessibility" )->GetValues<IPKeyValueContainer>().Get( "Accessibility:NO"  );
         IPKeyValue kv_access_yes = IPFactory::GetInstance()->GetIP( "Accessibility" )->GetValues<IPKeyValueContainer>().Get( "Accessibility:YES" );
@@ -643,7 +652,7 @@ SUITE(PropertiesTest)
         INodeContext* nodeContext = new INodeContextFake();
         unique_ptr<NodeDemographics> demographics( factory->CreateNodeDemographics(nodeContext) );
 
-        IPFactory::GetInstance()->Initialize( 1, demographics->GetJsonObject(), true );
+        IPFactory::GetInstance()->Initialize( 1, demographics->GetJsonObject() );
 
         std::vector<IndividualProperty*> ip_list = IPFactory::GetInstance()->GetIPList();
         CHECK_EQUAL( 1, ip_list.size() );
@@ -708,7 +717,7 @@ SUITE(PropertiesTest)
         INodeContext* nodeContext = new INodeContextFake();
         unique_ptr<NodeDemographics> demographics( factory->CreateNodeDemographics(nodeContext) );
 
-        IPFactory::GetInstance()->Initialize( 1, demographics->GetJsonObject(), true );
+        IPFactory::GetInstance()->Initialize( 1, demographics->GetJsonObject() );
 
         std::vector<IndividualProperty*> ip_list = IPFactory::GetInstance()->GetIPList();
         CHECK_EQUAL( 1, ip_list.size() );
@@ -802,14 +811,14 @@ SUITE(PropertiesTest)
     TEST_FIXTURE(PropertiesTestFixture, TestInvalidCoverage)
     {
         TestReadingError( false, __LINE__, "testdata/PropertiesTest/demog_TestInvalidCoverage.json",
-                          "Variable Demographics[IndividualProperties][Property=QualityOfCare][Coverage] had value 999 which was inconsistent with range limit 1");
+                          "Variable 'Demographics[IndividualProperties][Property=QualityOfCare][Coverage]' had value 999 which was inconsistent with range limit 1");
                            
     }
 
     TEST_FIXTURE(PropertiesTestFixture, TestInvalidProbability)
     {
         TestReadingError( false, __LINE__, "testdata/PropertiesTest/demog_TestInvalidProbability.json",
-                          "Variable Demographics[IndividualProperties][Property=QualityOfCare][Probability_Per_Timestep] had value -1 which was inconsistent with range limit 0");
+                          "Variable 'Demographics[IndividualProperties][Property=QualityOfCare][Probability_Per_Timestep]' had value -1 which was inconsistent with range limit 0");
     }
 
     TEST_FIXTURE(PropertiesTestFixture, TestMissingTo)
@@ -914,18 +923,6 @@ SUITE(PropertiesTest)
                           "demographics[IndividualProperties][0][Transitions] has more than zero entries.  They are not allowed with property=Age_Bin");
     }
 
-    TEST_FIXTURE(PropertiesTestFixture, TestNotInWhiteList)
-    {
-        TestReadingError( false, __LINE__, "testdata/PropertiesTest/demog_TestNotInWhiteList.json",
-                          "Invalid IndividualProperties key 'NonWhiteListProperty' found in demographics file. Use one of: 'Accessibility', 'Age_Bin', 'Geographic', 'HasActiveTB', 'InterventionStatus', 'Place', 'QualityOfCare', 'Risk'");
-    }
-
-    TEST_FIXTURE(PropertiesTestFixture, TestTooManyProperties)
-    {
-        TestReadingError( false, __LINE__, "testdata/PropertiesTest/demog_TestTooManyProperties.json",
-                          "Too many IndividualProperties (4). Max is 3.");
-    }
-
     TEST_FIXTURE( PropertiesTestFixture, TestNotSameNumberOfIPs )
     {
         TestReadingError( true, __LINE__, "testdata/PropertiesTest/demog_TestNotSameNumberOfIPs.json",
@@ -962,7 +959,7 @@ SUITE(PropertiesTest)
         // --- Initialize test
         // --------------------
         pSimConfig->demographics_initial = true ;
-        NodeDemographicsFactory::SetDemographicsFileList( NodeDemographicsFactory::ConvertLegacyStringToSet( "testdata/PropertiesTest/demog_TestTooManyProperties.json" ) ) ;
+        NodeDemographicsFactory::SetDemographicsFileList( NodeDemographicsFactory::ConvertLegacyStringToSet( "testdata/PropertiesTest/demog_TestGetAllPossibleKeyValueCombinations.json" ) ) ;
 
         nodeid_suid_map_t node_id_suid_map;
         unique_ptr<NodeDemographicsFactory> factory( NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config, true, 10, 1000 ) );
@@ -977,7 +974,7 @@ SUITE(PropertiesTest)
         INodeContext* nodeContext = new INodeContextFake();
         unique_ptr<NodeDemographics> demographics( factory->CreateNodeDemographics(nodeContext) );
 
-        IPFactory::GetInstance()->Initialize( 1, demographics->GetJsonObject(), false );
+        IPFactory::GetInstance()->Initialize( 1, demographics->GetJsonObject() );
 
         std::vector<IndividualProperty*> ip_list = IPFactory::GetInstance()->GetIPList();
         CHECK_EQUAL( 4, ip_list.size() );

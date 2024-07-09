@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
@@ -119,11 +111,7 @@ namespace Kernel
         if( !isInfected )
             return;
 
-        IIndividualHumanSTI* sti_individual = nullptr;
-        if( individual->QueryInterface( GET_IID( IIndividualHumanSTI ), (void**)&sti_individual ) != s_OK )
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "individual", "IIndividualSTI", "IndividualHuman" );
-        }
+        IIndividualHumanSTI* sti_individual = hiv_individual->GetIndividualHumanSTI();
 
         IDrugVaccineInterventionEffects *idvie = nullptr;
         if( s_OK != individual->GetInterventionsContext()->QueryInterface( GET_IID(IDrugVaccineInterventionEffects), (void**)&idvie ) ) {
@@ -131,11 +119,6 @@ namespace Kernel
                                            "individual->GetInterventionsContext()", 
                                            "IDrugVaccineInterventionEffects",
                                            "IIndividualHumanInterventionsContext" );
-        }
-
-        if( individual->QueryInterface( GET_IID( IIndividualHumanSTI ), (void**)&sti_individual ) != s_OK )
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "individual", "IIndividualSTI", "IndividualHuman" );
         }
 
         GetOutputStream() 

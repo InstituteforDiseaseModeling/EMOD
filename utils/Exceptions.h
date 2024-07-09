@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -65,11 +57,8 @@ namespace Kernel {
         virtual const std::string& GetStackTrace() const ;
 
     protected:
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         std::string _msg;
         std::string _stackTrace ;
-#pragma warning( pop )
         const char * _fileName;
         const char * _funcName;
         int _lineNum;
@@ -134,7 +123,8 @@ namespace Kernel {
     class IDMAPI FileNotFoundException : public DetailedException
     {
     public:
-        FileNotFoundException( const char * src_file_name, int line_num, const char* func_name, const char * missing_file_name );
+        FileNotFoundException( const char * src_file_name, int line_num, const char* func_name, const char * missing_file_name, const char* note = "" );
+        FileNotFoundException( const char * src_file_name, int line_num, const char* func_name, bool includeSystemErrorMessage, const char * missing_file_name );
     };
 
     // We have some specific ConfigurationExceptions below but this is for when there has been a configuration

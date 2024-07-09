@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "UnitTest++.h"
@@ -32,38 +24,102 @@ SUITE(InterpolatedValueMapTest)
 
         unique_ptr<Configuration> p_config( Environment::LoadConfigurationFile( "testdata/InterpolatedValueMapTest/Valid.json" ) );
 
-        map.ConfigureFromJsonAndKey( p_config.get(), "ValidData" );
+        map.Configure( p_config.get() );
 
-        CHECK( map.count(   0) == 0 );
-        CHECK( map.count(1000) > 0 );
-        CHECK( map.count(2000) > 0 );
-        CHECK( map.count(3000) > 0 );
-        CHECK( map.count(4000) == 0 );
-
-        CHECK_EQUAL( map[1000], 1 );
-        CHECK_EQUAL( map[2000], 2 );
-        CHECK_EQUAL( map[3000], 3 );
+        CHECK_EQUAL( 0.0, map.getValueLinearInterpolation(  999 ) );
+        CHECK_EQUAL( 1.0, map.getValueLinearInterpolation( 1000 ) );
+        CHECK_EQUAL( 1.5, map.getValueLinearInterpolation( 1500 ) );
+        CHECK_EQUAL( 2.0, map.getValueLinearInterpolation( 2000 ) );
+        CHECK_EQUAL( 2.5, map.getValueLinearInterpolation( 2500 ) );
+        CHECK_EQUAL( 3.0, map.getValueLinearInterpolation( 3000 ) );
+        CHECK_EQUAL( 3.0, map.getValueLinearInterpolation( 3001 ) );
     }
 
-    TEST(TestBadKeyName)
+    TEST( TestIsAtEnd )
     {
-        try
-        {
+        InterpolatedValueMap map;
 
-            unique_ptr<Configuration> p_config( Environment::LoadConfigurationFile( "testdata/InterpolatedValueMapTest/TestBadKeyName.json" ) );
+        map.add(   0.0f, 0.0f );
+        map.add( 360.0f, 1.0f );
 
-            InterpolatedValueMap map ;
+        float dt = 365.0f / 12.0f;
+        CHECK( !map.isAtEnd(   0.0 ) );
+        CHECK( !map.isAtEnd(    dt ) );
+        CHECK( !map.isAtEnd( 179.0 ) );
+        CHECK( !map.isAtEnd( 180.0 ) );
+        CHECK( !map.isAtEnd( 181.0 ) );
+        CHECK( !map.isAtEnd( 359.0 ) );
+        CHECK(  map.isAtEnd( 360.0 ) );
+        CHECK(  map.isAtEnd( 361.0 ) );
+        CHECK(  map.isAtEnd( 729.0 ) );
+        CHECK(  map.isAtEnd( 730.0 ) );
+        CHECK(  map.isAtEnd( 731.0 ) );
 
-            map.ConfigureFromJsonAndKey( p_config.get(), "BadKeyName" );
+        map.add( 180.0f, 1.0f );
 
-            CHECK( false ); // should not get here
-        }
-        catch( json::Exception& re )
-        {
-            std::string msg = re.what();
-            std::cout << msg << std::endl ;
-            CHECK( msg.find( "Object name not found: BadKeyName" ) != string::npos );
-        }
+        CHECK( !map.isAtEnd(   0.0 ) );
+        CHECK( !map.isAtEnd(    dt ) );
+        CHECK( !map.isAtEnd( 179.0 ) );
+        CHECK( !map.isAtEnd( 180.0 ) );
+        CHECK( !map.isAtEnd( 181.0 ) );
+        CHECK( !map.isAtEnd( 359.0 ) );
+        CHECK(  map.isAtEnd( 360.0 ) );
+        CHECK(  map.isAtEnd( 361.0 ) );
+        CHECK(  map.isAtEnd( 729.0 ) );
+        CHECK(  map.isAtEnd( 730.0 ) );
+        CHECK(  map.isAtEnd( 731.0 ) );
+
+        map.add( 730.0f, 1.0f );
+
+        CHECK( !map.isAtEnd(   0.0 ) );
+        CHECK( !map.isAtEnd(    dt ) );
+        CHECK( !map.isAtEnd( 179.0 ) );
+        CHECK( !map.isAtEnd( 180.0 ) );
+        CHECK( !map.isAtEnd( 181.0 ) );
+        CHECK( !map.isAtEnd( 359.0 ) );
+        CHECK( !map.isAtEnd( 360.0 ) );
+        CHECK( !map.isAtEnd( 361.0 ) );
+        CHECK( !map.isAtEnd( 729.0 ) );
+        CHECK(  map.isAtEnd( 730.0 ) );
+        CHECK(  map.isAtEnd( 731.0 ) );
+    }
+
+    TEST( TestGetValue )
+    {
+        InterpolatedValueMap map;
+
+        map.add(   0.0f, 0.0f );
+        map.add( 360.0f, 1.0f );
+
+        CHECK_EQUAL( 0.0, map.getValueLinearInterpolation(   0.0 ) );
+        CHECK_EQUAL( 0.5, map.getValueLinearInterpolation( 180.0 ) );
+        CHECK_EQUAL( 1.0, map.getValueLinearInterpolation( 360.0 ) );
+        CHECK_EQUAL( 1.0, map.getValueLinearInterpolation( 540.0 ) );
+        CHECK_EQUAL( 1.0, map.getValueLinearInterpolation( 720.0 ) );
+        CHECK_EQUAL( 1.0, map.getValueLinearInterpolation( 800.0 ) );
+
+        CHECK_EQUAL( 0.0, map.getValuePiecewiseConstant(   0.0 ) );
+        CHECK_EQUAL( 0.0, map.getValuePiecewiseConstant( 180.0 ) );
+        CHECK_EQUAL( 1.0, map.getValuePiecewiseConstant( 360.0 ) );
+        CHECK_EQUAL( 1.0, map.getValuePiecewiseConstant( 540.0 ) );
+        CHECK_EQUAL( 1.0, map.getValuePiecewiseConstant( 720.0 ) );
+        CHECK_EQUAL( 1.0, map.getValuePiecewiseConstant( 800.0 ) );
+
+        map.add( 720.0f, 2.0f );
+
+        CHECK_EQUAL( 0.0, map.getValueLinearInterpolation( 0.0 ) );
+        CHECK_EQUAL( 0.5, map.getValueLinearInterpolation( 180.0 ) );
+        CHECK_EQUAL( 1.0, map.getValueLinearInterpolation( 360.0 ) );
+        CHECK_EQUAL( 1.5, map.getValueLinearInterpolation( 540.0 ) );
+        CHECK_EQUAL( 2.0, map.getValueLinearInterpolation( 720.0 ) );
+        CHECK_EQUAL( 2.0, map.getValueLinearInterpolation( 800.0 ) );
+
+        CHECK_EQUAL( 0.0, map.getValuePiecewiseConstant( 0.0 ) );
+        CHECK_EQUAL( 0.0, map.getValuePiecewiseConstant( 180.0 ) );
+        CHECK_EQUAL( 1.0, map.getValuePiecewiseConstant( 360.0 ) );
+        CHECK_EQUAL( 1.0, map.getValuePiecewiseConstant( 540.0 ) );
+        CHECK_EQUAL( 2.0, map.getValuePiecewiseConstant( 720.0 ) );
+        CHECK_EQUAL( 2.0, map.getValuePiecewiseConstant( 800.0 ) );
     }
 
     void TestHelper_Exception( int lineNumber, const std::string& rFilename, const std::string& rExpMsg )
@@ -75,51 +131,59 @@ SUITE(InterpolatedValueMapTest)
 
             InterpolatedValueMap map ;
 
-            map.ConfigureFromJsonAndKey( p_config.get(), "MyDataMap" );
+            map.Configure( p_config.get() );
 
             CHECK_LN( false, lineNumber ); // should not get here
         }
         catch( DetailedException& re )
         {
             std::string msg = re.GetMsg();
-            //std::cout << msg << std::endl ;
-            CHECK_LN( msg.find( rExpMsg ) != string::npos, lineNumber );
+            bool passed = msg.find( rExpMsg ) != string::npos ;
+            if( !passed )
+            {
+                PrintDebug( "\n=== Expected ===\n" );
+                PrintDebug( rExpMsg );
+                PrintDebug( "\n=== Actual ===\n" );
+                PrintDebug( msg );
+                PrintDebug( "\n" );
+            }
+            CHECK_LN( passed, lineNumber );
         }
     }
 
     TEST(TestNotSameNumberOfElementsA)
     {
         TestHelper_Exception( __LINE__, "testdata/InterpolatedValueMapTest/TestNotSameNumberOfElementsA.json",
-            "MyDataMap: The number of elements in Times (=3) does not match the number of elements in Values (=2)." );
+            "The number of elements in 'Times' (=3) does not match the number of elements in 'Values' (=2)." );
     }
 
     TEST(TestNotSameNumberOfElementsB)
     {
         TestHelper_Exception( __LINE__, "testdata/InterpolatedValueMapTest/TestNotSameNumberOfElementsB.json",
-            "MyDataMap: The number of elements in Times (=2) does not match the number of elements in Values (=3)." );
+            "The number of elements in 'Times' (=2) does not match the number of elements in 'Values' (=3)." );
     }
 
     TEST(TestNegativeTime)
     {
         TestHelper_Exception( __LINE__, "testdata/InterpolatedValueMapTest/TestNegativeTime.json",
-            "Configuration variable MyDataMap:Times with value -2000 out of range: less than 0." );
+            "Configuration variable 'Times' with value -2000 out of range: less than 0." );
     }
 
     TEST(TestNegativeValue)
     {
         TestHelper_Exception( __LINE__, "testdata/InterpolatedValueMapTest/TestNegativeValue.json",
-            "Configuration variable MyDataMap:Values with value -2 out of range: less than 0." );
+            "Configuration variable 'Values' with value -2 out of range: less than 0." );
     }
 
     TEST(TestTimeTooLarge)
     {
         TestHelper_Exception( __LINE__, "testdata/InterpolatedValueMapTest/TestTimeTooLarge.json",
-            "Configuration variable MyDataMap:Times with value 1e+06 out of range: greater than 999999." );
+            "Configuration variable 'Times' with value 1e+06 out of range: greater than 999999." );
     }
 
     TEST(TestBadTimeOrder)
     {
         TestHelper_Exception( __LINE__, "testdata/InterpolatedValueMapTest/TestBadTimeOrder.json",
-            "MyDataMap:Times - Element number 2 (=2000) is <= element number 1 (=3000).  'Times' must be in increasing order." );
+            "The values in 'Times' must be unique and in ascending order." );
     }
 }

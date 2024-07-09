@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -64,19 +56,23 @@ namespace Kernel
         virtual const suids::suid & GetId() const override;
         virtual void SetContextTo(INodeContext* context) override;
         virtual std::list<INodeDistributableIntervention*> GetInterventionsByType(const std::string& type_name) override;
+        virtual bool ContainsExistingByName( const InterventionName& iv_name ) override;
         virtual void PurgeExisting( const std::string& iv_name ) override;
+        virtual const std::list<INodeDistributableIntervention*>& GetNodeInterventions() const override;
 
         // INodeInterventionConsumer
         virtual bool GiveIntervention( INodeDistributableIntervention * pIV ) override;
 
         // IOutbreakConsumer
-        virtual void AddImportCases( StrainIdentity* outbreak_strainID, float import_age, NaturalNumber num_cases_per_node, ProbabilityNumber prob_infect ) override;
+        virtual void AddImportCases( IStrainIdentity* outbreak_strainID, float import_age, NaturalNumber num_cases_per_node, ProbabilityNumber prob_infect ) override;
         //virtual void IncreasePrevalence(StrainIdentity* outbreak_strainID, IEventCoordinator2* pEC) override;
 
         // IIndividualTriggeredInterventionConsumer
         virtual void RegisterObserver( IIndividualEventObserver *pIEO, const EventTrigger& trigger ) override;
         virtual void UnregisterObserver( IIndividualEventObserver *pIEO, const EventTrigger& trigger ) override;
         virtual void TriggerObservers( IIndividualHumanEventContext *ihec, const EventTrigger& trigger ) override;
+        virtual uint64_t GetNumTriggeredEvents() override;
+        virtual uint64_t GetNumObservedEvents() override;
 
         //////////////////////////////////////////////////////////////////////////
          

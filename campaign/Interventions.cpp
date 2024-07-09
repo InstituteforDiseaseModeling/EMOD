@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include <stdafx.h>
 #ifndef WIN32
@@ -28,40 +20,6 @@ SETUP_LOGGING( "Interventions" )
 
 namespace Kernel
 {
-    void CheckSimType( const std::string& rSimTypeStr,
-                       const json::Object& rJsonObject,
-                       const char* pClassName )
-    {
-        json::QuickInterpreter sim_type_qi( rJsonObject[ "Sim_Types" ] );
-        json::QuickInterpreter sim_type_array( sim_type_qi.As<json::Array>() );
-
-        int num_types = sim_type_qi.As<json::Array>().Size() ;
-        assert( num_types > 0 );
-
-        if( std::string(sim_type_array[0].As<json::String>()) == std::string("*") )
-        {
-            // wild card means it is valid for any simulation type
-            return ;
-        }
-
-        std::string supported ;
-        for( int i = 0 ; i < num_types ; i++ )
-        {
-            std::string supported_sim_type = std::string(sim_type_array[i].As<json::String>()) ;
-            if( rSimTypeStr == supported_sim_type )
-            {
-                return ;
-            }
-            supported += "'"+supported_sim_type + "', " ;
-        }
-        supported = supported.substr( 0, supported.length() - 2 );
-
-        std::stringstream ss ;
-        ss << "The '" << pClassName << "' intervention is not valid with the current 'Simulation_Type' (='" << rSimTypeStr << "').  " ;
-        ss << "This intervention is only supported for the following simulation types: " << supported ;
-        throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
-    }
-
     BaseIntervention::BaseIntervention()
         : parent( nullptr )
         , name()
@@ -104,28 +62,30 @@ namespace Kernel
         // --- in the constructor because the pointer doesn't know what object
         // --- it is yet.
         // ------------------------------------------------------------------
-        name = typeid(*this).name();
+        std::string default_name = typeid(*this).name();
 #ifdef WIN32
-        name = name.substr( 14 ); // remove "class Kernel::"
+        default_name = default_name.substr( 14 ); // remove "class Kernel::"
 #else
-        name = abi::__cxa_demangle( name.c_str(), 0, 0, nullptr );
-        name = name.substr( 8 ); // remove "Kernel::"
+        default_name = abi::__cxa_demangle( default_name.c_str(), 0, 0, nullptr );
+        default_name = default_name.substr( 8 ); // remove "Kernel::"
 #endif
 
 
-        std::string default_name = name;
-
-        initConfigTypeMap( "Intervention_Name", &name, Intervention_Name_DESC_TEXT, default_name );
+        std::string tmp_name = default_name;
+        initConfigTypeMap( "Intervention_Name", &tmp_name, Intervention_Name_DESC_TEXT, default_name );
 
         initConfigTypeMap( "Dont_Allow_Duplicates", &dont_allow_duplicates, Dont_Allow_Duplicates_DESC_TEXT, false );
 
+        IPKeyValueParameter ip_key_value;
         jsonConfigurable::tDynamicStringSet tmp_disqualifying_properties;
         initConfigTypeMap("Disqualifying_Properties", &tmp_disqualifying_properties, IP_Disqualifying_Properties_DESC_TEXT );
-        initConfigTypeMap("New_Property_Value", &status_property, IP_New_Property_Value_DESC_TEXT );
+        initConfigTypeMap("New_Property_Value", &ip_key_value, IP_New_Property_Value_DESC_TEXT );
 
         bool ret = JsonConfigurable::Configure(inputJson);
         if( ret && !JsonConfigurable::_dryrun )
         {
+            name = tmp_name;
+
             // transfer the strings into the IPKeyValueContainer
             for( auto state : tmp_disqualifying_properties )
             {
@@ -134,6 +94,7 @@ namespace Kernel
             }
 
             // error if the intervention_state is an invalid_state
+            status_property = ip_key_value;
             if( status_property.IsValid() && disqualifying_properties.Contains( status_property ) )
             {
                 std::string abort_state_list ;
@@ -150,6 +111,14 @@ namespace Kernel
                                                         "Disqualifying_Properties", abort_state_list.c_str(),
                                                         "The New_Property_Value cannot be one of the Disqualifying_Properties." );
             }
+
+            if( name.empty() )
+            {
+                std::stringstream ss;
+                ss << "Invalid Parameter Value\n";
+                ss << "In '" << GetTypeName() << "', you cannot set the parameter 'Intervention_Name' to empty string.";
+                throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+            }
         }
         return ret ;
     }
@@ -165,23 +134,15 @@ namespace Kernel
         expired = isExpired;
     }
 
-    void
-    BaseIntervention::ValidateSimType( 
-        const std::string& rSimTypeStr
-    )
-    {
-        CheckSimType( rSimTypeStr, GetSchemaBase(), typeid(*this).name() );
-    }
-
     bool
     BaseIntervention::Distribute(
         IIndividualHumanInterventionsContext *context, // interventions container usually
         ICampaignCostObserver * const pICCO
     )
     {
-        if( dont_allow_duplicates && context->ContainsExisting( typeid(*this).name() ) )
+        if( dont_allow_duplicates && context->ContainsExistingByName( name ) )
         {
-            return false ;
+            return false;
         }
 
         if( AbortDueToDisqualifyingInterventionStatus( context->GetParent() ) )
@@ -234,9 +195,9 @@ namespace Kernel
         return false;
     }
 
-    bool BaseIntervention::UpdateIndividualsInterventionStatus()
+    bool BaseIntervention::UpdateIndividualsInterventionStatus( bool checkDisqualifyingProperties )
     {
-        if( AbortDueToDisqualifyingInterventionStatus( parent ) )
+        if( checkDisqualifyingProperties && AbortDueToDisqualifyingInterventionStatus( parent ) )
         {
             return false;
         }
@@ -253,6 +214,12 @@ namespace Kernel
     void BaseIntervention::SetContextTo( IIndividualHumanContext *context )
     {
         parent = context;
+    }
+
+    ReportInterventionData BaseIntervention::GetReportInterventionData() const
+    {
+        ReportInterventionData data( true, GetName().ToString() );
+        return data;
     }
 
     void BaseIntervention::serialize( IArchive& ar, BaseIntervention* obj )
@@ -276,6 +243,7 @@ namespace Kernel
         , name()
         , cost_per_unit(0.0f)
         , expired(false)
+        , dont_allow_duplicates(false)
         , first_time(true)
         , disqualifying_properties()
         , status_property()
@@ -290,24 +258,28 @@ namespace Kernel
         // --- in the constructor because the pointer doesn't know what object
         // --- it is yet.
         // ------------------------------------------------------------------
-        name = typeid(*this).name();
+        std::string default_name = typeid(*this).name();
 #ifdef WIN32
-        name = name.substr( 14 ); // remove "class Kernel::"
+        default_name = default_name.substr( 14 ); // remove "class Kernel::"
 #else
-        name = abi::__cxa_demangle( name.c_str(), 0, 0, nullptr );
-        name = name.substr( 8 ); // remove "Kernel::"
+        default_name = abi::__cxa_demangle( default_name.c_str(), 0, 0, nullptr );
+        default_name = default_name.substr( 8 ); // remove "Kernel::"
 #endif
-        std::string default_name = name;
+        std::string tmp_name = default_name;
 
-        initConfigTypeMap( "Intervention_Name", &name, Intervention_Name_DESC_TEXT, default_name );
+        initConfigTypeMap( "Intervention_Name", &tmp_name, Intervention_Name_DESC_TEXT, default_name );
+        initConfigTypeMap( "Dont_Allow_Duplicates", &dont_allow_duplicates, Dont_Allow_Duplicates_DESC_TEXT, false );
 
+        NPKeyValueParameter np_key_value;
         jsonConfigurable::tDynamicStringSet tmp_disqualifying_properties;
         initConfigTypeMap( "Disqualifying_Properties", &tmp_disqualifying_properties, NP_Disqualifying_Properties_DESC_TEXT );
-        initConfigTypeMap( "New_Property_Value", &status_property, NP_New_Property_Value_DESC_TEXT );
+        initConfigTypeMap( "New_Property_Value", &np_key_value, NP_New_Property_Value_DESC_TEXT );
 
         bool ret = JsonConfigurable::Configure( inputJson );
         if( ret && !JsonConfigurable::_dryrun )
         {
+            name = tmp_name;
+
             // transfer the strings into the NPKeyValueContainer
             for( auto state : tmp_disqualifying_properties )
             {
@@ -316,6 +288,7 @@ namespace Kernel
             }
 
             // error if the intervention_state is an invalid_state
+            status_property = np_key_value;
             if( status_property.IsValid() && disqualifying_properties.Contains( status_property ) )
             {
                 std::string abort_state_list ;
@@ -347,14 +320,6 @@ namespace Kernel
         expired = isExpired;
     }
 
-    void
-    BaseNodeIntervention::ValidateSimType( 
-        const std::string& rSimTypeStr
-    )
-    {
-        CheckSimType( rSimTypeStr, GetSchemaBase(), typeid(*this).name() );
-    }
-
     bool
     BaseNodeIntervention::Distribute(
         INodeEventContext *context, // interventions container usually
@@ -362,6 +327,11 @@ namespace Kernel
     )
     {
         parent = context;
+
+        if( dont_allow_duplicates && context->ContainsExistingByName(name) )
+        {
+            return false;
+        }
 
         if( AbortDueToDisqualifyingInterventionStatus( context ) )
         {
@@ -390,6 +360,12 @@ namespace Kernel
     void BaseNodeIntervention::SetContextTo( INodeEventContext *context )
     {
         parent = context;
+    }
+
+    ReportInterventionData BaseNodeIntervention::GetReportInterventionData() const
+    {
+        ReportInterventionData data( false, GetName().ToString() );
+        return data;
     }
 
     bool BaseNodeIntervention::AbortDueToDisqualifyingInterventionStatus( INodeEventContext* context )

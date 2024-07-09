@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "HousingModification.h"
@@ -22,101 +14,96 @@ SETUP_LOGGING( "SimpleHousingModification" )
 
 namespace Kernel
 {
+    BEGIN_QUERY_INTERFACE_BODY(SimpleHousingModification)
+        HANDLE_INTERFACE( IReportInterventionDataAccess )
+        HANDLE_INTERFACE(IConfigurable)
+        HANDLE_INTERFACE(IDistributableIntervention)
+        HANDLE_ISUPPORTS_VIA(IDistributableIntervention)
+    END_QUERY_INTERFACE_BODY(SimpleHousingModification)
+
     IMPLEMENT_FACTORY_REGISTERED(SimpleHousingModification)
     IMPLEMENT_FACTORY_REGISTERED(IRSHousingModification)
     IMPLEMENT_FACTORY_REGISTERED(ScreeningHousingModification)
     IMPLEMENT_FACTORY_REGISTERED(SpatialRepellentHousingModification)
-    IMPLEMENT_FACTORY_REGISTERED(ArtificialDietHousingModification)
-    IMPLEMENT_FACTORY_REGISTERED(InsectKillingFenceHousingModification)
+    IMPLEMENT_FACTORY_REGISTERED(MultiInsecticideIRSHousingModification)
 
-    REGISTER_SERIALIZABLE(SimpleHousingModification);
     REGISTER_SERIALIZABLE(IRSHousingModification);
     REGISTER_SERIALIZABLE(ScreeningHousingModification);
     REGISTER_SERIALIZABLE(SpatialRepellentHousingModification);
-    REGISTER_SERIALIZABLE(ArtificialDietHousingModification);
-    REGISTER_SERIALIZABLE(InsectKillingFenceHousingModification);
+    REGISTER_SERIALIZABLE(MultiInsecticideIRSHousingModification);
 
-    void SimpleHousingModification::serialize(IArchive& ar, SimpleHousingModification* obj)
-    {
-        SimpleHousingModification& mod = *obj;
-        ar.labelElement("blocking_effect") & mod.blocking_effect;
-        ar.labelElement("killing_effect") & mod.killing_effect;
-    }
-
-    void IRSHousingModification::serialize(IArchive& ar, IRSHousingModification* obj)
-    {
-        SimpleHousingModification::serialize(ar, obj);
-    }
-
-    void ScreeningHousingModification::serialize(IArchive& ar, ScreeningHousingModification* obj)
-    {
-        SimpleHousingModification::serialize(ar, obj);
-    }
-
-    void SpatialRepellentHousingModification::serialize(IArchive& ar, SpatialRepellentHousingModification* obj)
-    {
-        SimpleHousingModification::serialize(ar, obj);
-    }
-
-    void ArtificialDietHousingModification::serialize(IArchive& ar, ArtificialDietHousingModification* obj)
-    {
-        SimpleHousingModification::serialize(ar, obj);
-    }
-
-    void InsectKillingFenceHousingModification::serialize(IArchive& ar, InsectKillingFenceHousingModification* obj)
-    {
-        SimpleHousingModification::serialize(ar, obj);
-    }
-
-    bool
-    SimpleHousingModification::Configure(
-        const Configuration * inputJson
-    )
-    {
-        WaningConfig   killing_config;
-        WaningConfig   blocking_config;
-
-        initConfigComplexType("Killing_Config", &killing_config, HM_Killing_Config_DESC_TEXT );
-        initConfigComplexType("Blocking_Config", &blocking_config, HM_Blocking_Config_DESC_TEXT );
-        bool configured = BaseIntervention::Configure( inputJson );
-        if( !JsonConfigurable::_dryrun && configured )
-        {
-            killing_effect  = WaningEffectFactory::CreateInstance( killing_config  );
-            blocking_effect = WaningEffectFactory::CreateInstance( blocking_config );
-        }
-        return configured;
-    }
+    // ------------------------------------------------------------------------
+    // --- SimpleHousingModification
+    // ------------------------------------------------------------------------
 
     SimpleHousingModification::SimpleHousingModification()
     : BaseIntervention()
-    , killing_effect(nullptr)
-    , blocking_effect(nullptr)
-    , ihmc(nullptr)
+    , m_pInsecticideWaningEffect(nullptr)
+    , m_pIHMC(nullptr)
     {
         initSimTypes( 2, "VECTOR_SIM", "MALARIA_SIM" );
         initConfigTypeMap("Cost_To_Consumer", &cost_per_unit, HM_Cost_To_Consumer_DESC_TEXT, 0, 999999, 8.0);
     }
 
-    SimpleHousingModification::~SimpleHousingModification()
-    {
-        delete killing_effect;
-        delete blocking_effect;
-    }
-
     SimpleHousingModification::SimpleHousingModification( const SimpleHousingModification& master )
     : BaseIntervention( master )
-    , killing_effect( nullptr )
-    , blocking_effect( nullptr )
-    , ihmc( nullptr )
+    , m_pInsecticideWaningEffect( nullptr )
+    , m_pIHMC( nullptr )
     {
-        if( master.killing_effect != nullptr )
+        if( master.m_pInsecticideWaningEffect != nullptr )
         {
-            killing_effect = master.killing_effect->Clone();
+            m_pInsecticideWaningEffect = master.m_pInsecticideWaningEffect->Clone();
         }
-        if( master.blocking_effect != nullptr )
+    }
+
+    SimpleHousingModification::~SimpleHousingModification()
+    {
+        delete m_pInsecticideWaningEffect;
+    }
+
+    bool SimpleHousingModification::Configure( const Configuration * inputJson )
+    {
+        WaningConfig repelling_config;
+        WaningConfig killing_config;
+        InsecticideName name;
+
+        initConfigInsecticideName( &name );
+        initConfigRepelling( &repelling_config );
+        initConfigKilling( &killing_config );
+
+        bool configured = BaseIntervention::Configure( inputJson );
+        if( !JsonConfigurable::_dryrun && configured )
         {
-            blocking_effect = master.blocking_effect->Clone();
+            WaningConfig empty_config;
+            m_pInsecticideWaningEffect = new InsecticideWaningEffect( empty_config,
+                                                                      repelling_config,
+                                                                      empty_config,
+                                                                      killing_config );
+
+            SetInsecticideName( name );
         }
+        return configured;
+    }
+
+    void SimpleHousingModification::initConfigInsecticideName( InsecticideName* pName )
+    {
+        initConfigTypeMap( "Insecticide_Name", pName, INT_Insecticide_Name_DESC_TEXT );
+    }
+
+    void SimpleHousingModification::SetInsecticideName( InsecticideName& rName )
+    {
+        rName.CheckConfiguration( GetName().ToString(), "Insecticide_Name");
+        m_pInsecticideWaningEffect->SetName( rName );
+    }
+
+    void SimpleHousingModification::initConfigRepelling( WaningConfig* pRepellingConfig )
+    {
+        initConfigComplexType( "Repelling_Config", pRepellingConfig, HM_Repelling_Config_DESC_TEXT );
+    }
+
+    void SimpleHousingModification::initConfigKilling( WaningConfig* pKillingConfig )
+    {
+        initConfigComplexType( "Killing_Config", pKillingConfig, HM_Killing_Config_DESC_TEXT );
     }
 
     bool
@@ -130,7 +117,7 @@ namespace Kernel
             return false;
         }
 
-        if (s_OK != context->QueryInterface(GET_IID(IHousingModificationConsumer), (void**)&ihmc) )
+        if (s_OK != context->QueryInterface(GET_IID(IHousingModificationConsumer), (void**)&m_pIHMC) )
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context", "IHousingModificationConsumer", "IIndividualHumanInterventionsContext" );
         }
@@ -145,17 +132,13 @@ namespace Kernel
     )
     {
         BaseIntervention::SetContextTo( context );
-        if( killing_effect != nullptr )
+        if( m_pInsecticideWaningEffect != nullptr )
         {
-            killing_effect->SetContextTo( context );
-        }
-        if( blocking_effect != nullptr )
-        {
-            blocking_effect->SetContextTo( context );
+            m_pInsecticideWaningEffect->SetContextTo( context );
         }
 
         LOG_DEBUG("SimpleHousingModification::SetContextTo (probably deserializing)\n");
-        if (s_OK != context->GetInterventionsContext()->QueryInterface(GET_IID(IHousingModificationConsumer), (void**)&ihmc) )
+        if (s_OK != context->GetInterventionsContext()->QueryInterface(GET_IID(IHousingModificationConsumer), (void**)&m_pIHMC) )
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context", "IHousingModificationConsumer", "IIndividualHumanContext" );
         }
@@ -165,26 +148,114 @@ namespace Kernel
     {
         if( !BaseIntervention::UpdateIndividualsInterventionStatus() ) return;
 
-        killing_effect->Update(dt);
-        blocking_effect->Update(dt);
-        float current_killingrate = killing_effect->Current();
-        float current_blockingrate = blocking_effect->Current();
+        m_pInsecticideWaningEffect->Update( dt );
 
-        if( ihmc )
-        {
-            ihmc->ApplyHouseBlockingProbability( current_blockingrate );
-            ihmc->UpdateProbabilityOfScreenKilling( current_killingrate );
-        }
-        else
-        {
-            throw NullPointerException( __FILE__, __LINE__, __FUNCTION__, "ihmc", "IHousingModificationConsumer" );
-        }
+        ApplyEffectsRepelling( dt );
+        ApplyEffectsKilling( dt );
     }
 
-    BEGIN_QUERY_INTERFACE_BODY(SimpleHousingModification)
-        HANDLE_INTERFACE(IConfigurable)
-        HANDLE_INTERFACE(IDistributableIntervention)
-        HANDLE_ISUPPORTS_VIA(IDistributableIntervention)
-    END_QUERY_INTERFACE_BODY(SimpleHousingModification)
+    ReportInterventionData SimpleHousingModification::GetReportInterventionData() const
+    {
+        ReportInterventionData data = BaseIntervention::GetReportInterventionData();
+
+        if( m_pInsecticideWaningEffect->Has( ResistanceType::REPELLING ) )
+        {
+            data.efficacy_repelling = m_pInsecticideWaningEffect->GetCurrent( ResistanceType::REPELLING ).GetSum();
+        }
+        if( m_pInsecticideWaningEffect->Has( ResistanceType::KILLING ) )
+        {
+            data.efficacy_killing = m_pInsecticideWaningEffect->GetCurrent( ResistanceType::KILLING ).GetSum();
+        }
+
+        return data;
+    }
+
+    void SimpleHousingModification::ApplyEffectsRepelling( float dt )
+    {
+        GeneticProbability current_repellingrate = m_pInsecticideWaningEffect->GetCurrent( ResistanceType::REPELLING );
+
+        release_assert( m_pIHMC != nullptr );
+
+        m_pIHMC->UpdateProbabilityOfHouseRepelling( current_repellingrate );
+    }
+
+    void SimpleHousingModification::ApplyEffectsKilling( float dt )
+    {
+        GeneticProbability current_killingrate = m_pInsecticideWaningEffect->GetCurrent( ResistanceType::KILLING );
+
+        release_assert( m_pIHMC != nullptr );
+
+        m_pIHMC->UpdateProbabilityOfHouseKilling( current_killingrate );
+    }
+
+    REGISTER_SERIALIZABLE(SimpleHousingModification);
+
+    void SimpleHousingModification::serialize(IArchive& ar, SimpleHousingModification* obj)
+    {
+        BaseIntervention::serialize( ar, obj );
+        SimpleHousingModification& mod = *obj;
+        ar.labelElement("m_pInsecticideWaningEffect") & mod.m_pInsecticideWaningEffect;
+    }
+
+    // ------------------------------------------------------------------------
+    // --- IRSHousingModification
+    // ------------------------------------------------------------------------
+
+    void IRSHousingModification::serialize(IArchive& ar, IRSHousingModification* obj)
+    {
+        SimpleHousingModification::serialize(ar, obj);
+    }
+
+    // ------------------------------------------------------------------------
+    // --- MultiInsecticideIRSHousingModification
+    // ------------------------------------------------------------------------
+
+    bool MultiInsecticideIRSHousingModification::Configure( const Configuration * inputJson )
+    {
+        InsecticideWaningEffectCollection* p_iwec = new InsecticideWaningEffectCollection(false,true,false,true);
+
+        initConfigComplexCollectionType( "Insecticides", p_iwec, HM_MIRS_Insecticides_DESC_TEXT );
+
+        bool configured = BaseIntervention::Configure( inputJson );
+        if( !JsonConfigurable::_dryrun && configured )
+        {
+            p_iwec->CheckConfiguration();
+            m_pInsecticideWaningEffect = p_iwec;
+        }
+        return configured;
+    }
+
+    void MultiInsecticideIRSHousingModification::serialize(IArchive& ar, MultiInsecticideIRSHousingModification* obj)
+    {
+        SimpleHousingModification::serialize(ar, obj);
+    }
+
+    // ------------------------------------------------------------------------
+    // --- ScreeningHousingModification
+    // ------------------------------------------------------------------------
+
+    void ScreeningHousingModification::serialize(IArchive& ar, ScreeningHousingModification* obj)
+    {
+        SimpleHousingModification::serialize(ar, obj);
+    }
+
+    // ------------------------------------------------------------------------
+    // --- SpatialRepellentHousingModification
+    // ------------------------------------------------------------------------
+
+    void SpatialRepellentHousingModification::initConfigKilling( WaningConfig* pKillingConfig )
+    {
+        // do not include killing
+    }
+
+    void SpatialRepellentHousingModification::ApplyEffectsKilling( float dt )
+    {
+        // no killing
+    }
+
+    void SpatialRepellentHousingModification::serialize(IArchive& ar, SpatialRepellentHousingModification* obj)
+    {
+        SimpleHousingModification::serialize(ar, obj);
+    }
 }
 

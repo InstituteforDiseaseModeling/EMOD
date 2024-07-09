@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -23,8 +15,11 @@ namespace Kernel
 
 namespace ReportUtilities
 {
-    int GetBinIndex( float val, std::vector<float>& rValues );
+    int GetBinIndex( float val, const std::vector<float>& rValues );
     int GetAgeBin( float age, std::vector<float>& rAges );
+
+    void SendHasData( bool hasData );
+    bool GetHasData( int fromRank );
 
     void SendData( const std::string& rToSend );
     void GetData( int fromRank, std::vector<char>& rReceive );
@@ -38,6 +33,8 @@ namespace ReportUtilities
     void SerializeVector( Kernel::IJsonObjectAdapter& root, Kernel::JSerializer& helper, const char* pName, std::vector<std::vector<std::vector<std::vector<double>>>>& rData);
 
     void DeserializeVector( Kernel::IJsonObjectAdapter& root, bool isSettingValuesInVector, const char* pName, std::vector<std::string>& rData );
+    void DeserializeVector( Kernel::IJsonObjectAdapter& root, bool isSettingValuesInVector, const char* pName, std::vector<uint32_t>& rData );
+    void DeserializeVector( Kernel::IJsonObjectAdapter& root, bool isSettingValuesInVector, const char* pName, std::vector<float>& rData );
     void DeserializeVector( Kernel::IJsonObjectAdapter& root, bool isSettingValuesInVector, const char* pName, std::vector<double>& rData );
     void DeserializeVector( Kernel::IJsonObjectAdapter& root, bool isSettingValuesInVector, const char* pName, std::vector<std::vector<double>>& rData);
     void DeserializeVector( Kernel::IJsonObjectAdapter& root, bool isSettingValuesInVector, const char* pName, std::vector<std::vector<std::vector<double>>>& rData );

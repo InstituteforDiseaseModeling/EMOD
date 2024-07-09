@@ -1,0 +1,34 @@
+{
+    "Intervention_Name": "ARTMortalityTable",
+    "Dont_Allow_Duplicates": 0,
+    "Disqualifying_Properties": [],
+    "New_Property_Value": "",
+    "Cost_To_Consumer": 1,
+    "ART_Multiplier_On_Transmission_Prob_Per_Act": 0.08,
+    "ART_Is_Active_Against_Mortality_And_Transmission": 1,
+    "Days_To_Achieve_Viral_Suppression": 183.0,
+
+    "ART_Duration_Days_Bins": [365, 730, 36500],
+    "Age_Years_Bins": [10, 20, 50, 125],
+    "CD4_Count_Bins": [0, 100, 200, 400, 1000 ],
+    "MortalityTable": [
+        [
+            [0.6, 0.5, 0.4, 0.3, 0.2],
+            [0.7, 0.6, 0.5, 0.4, 0.3],
+            [0.8, 0.7, 0.6, 0.5, 0.4],
+            [0.9, 0.8, 0.7, 0.6, 0.5]
+        ],
+        [
+            [0.5, 0.4, 0.3, 0.2, 0.1],
+            [0.6, 0.5, 0.4, 0.3, 0.2],
+            [0.7, 0.6, 0.5, 0.4, 0.3],
+            [0.8, 0.7, 0.6, 0.5, 0.4]
+        ],
+        [
+            [0.4, 0.3, 0.2, 0.1, 0.01],
+            [0.5, 0.4, 0.3, 0.2, 0.1],
+            [0.6, 0.5, 0.4, 0.3, 0.2],
+            [0.7, 0.6, 0.5, 0.4, 0.3]
+        ]
+    ]
+}

@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
@@ -19,6 +11,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "SimulationEnums.h"
 #include "ISimulation.h"
 #include "EventTrigger.h"
+#include "SimulationEventContext.h"
 
 SETUP_LOGGING( "ReportEventRecorder" )
 
@@ -58,9 +51,12 @@ namespace Kernel
         return new ReportEventRecorder();
     }
 
-    ReportEventRecorder::ReportEventRecorder()
+    ReportEventRecorder::ReportEventRecorder( bool useYears )
         : BaseReportEventRecorder("ReportEventRecorder.csv")
-        , properties_to_report()
+        , m_PropertiesToReport()
+        , m_PropertyChangeIPKeyString()
+        , m_PropertyChangeIPKey()
+        , m_ReportFilter( ENABLE_PARAMETER_NAME.c_str(), "Report_Event_Recorder", useYears, true, true )
     {
     }
 
@@ -70,13 +66,24 @@ namespace Kernel
 
     void ReportEventRecorder::ConfigureOther( const Configuration * inputJson )
     {
-        properties_to_report.value_source = IPKey::GetConstrainedStringConstraintKey(); 
-        initConfigTypeMap("Report_Event_Recorder_Individual_Properties", &properties_to_report, Property_Restriction_DESC_TEXT, ENABLE_PARAMETER_NAME.c_str() );
+        m_ReportFilter.ConfigureParameters( *this, inputJson );
+
+        m_PropertiesToReport.value_source = IPKey::GetConstrainedStringConstraintKey(); 
+        initConfigTypeMap("Report_Event_Recorder_Individual_Properties", &m_PropertiesToReport, Report_Event_Recorder_Individual_Properties_DESC_TEXT, ENABLE_PARAMETER_NAME.c_str() );
+
+        initConfigTypeMap( "Report_Event_Recorder_PropertyChange_IP_Key_Of_Interest",
+                           &m_PropertyChangeIPKeyString,
+                           Report_Event_Recorder_PropertyChange_IP_Key_Of_Interest_DESC_TEXT, "" );
+    }
+
+    void ReportEventRecorder::CheckOther( const Configuration * inputJson )
+    {
+        m_ReportFilter.CheckParameters( inputJson );
     }
 
     void ReportEventRecorder::Initialize( unsigned int nrmSize )
     {
-        for( auto key_name : properties_to_report )
+        for( auto key_name : m_PropertiesToReport )
         {
             IndividualProperty* p_ip = IPFactory::GetInstance()->GetIP( key_name, "Report_Event_Recorder_Individual_Properties", false );
             if( p_ip == nullptr )
@@ -87,7 +94,36 @@ namespace Kernel
                 throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
             }
         }
+        if( !m_PropertyChangeIPKeyString.empty() )
+        {
+            IndividualProperty* p_ip = IPFactory::GetInstance()->GetIP( m_PropertyChangeIPKeyString, "Report_Event_Recorder_PropertyChange_IP_Key_Of_Interest", false );
+            if( p_ip == nullptr )
+            {
+                std::stringstream ss;
+                ss << "The IP Key (" << m_PropertyChangeIPKeyString << ") specified in 'Report_Event_Recorder_PropertyChange_IP_Key_Of_Interest' is unknown.\n"
+                    << "Valid values are: " << IPFactory::GetInstance()->GetKeysAsString();
+                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+            }
+            m_PropertyChangeIPKey = p_ip->GetKey<IPKey>();
+
+            // -----------------------------------------------------------------------------------------
+            // --- If the user is using the PropertyChange filter feature but did not add the event
+            // --- to the event list, add it.
+            // -----------------------------------------------------------------------------------------
+            auto it = std::find( eventTriggerList.begin(), eventTriggerList.end(), EventTrigger::PropertyChange );
+            if( it == eventTriggerList.end() )
+            {
+                eventTriggerList.push_back( EventTrigger::PropertyChange );
+            }
+        }
+        m_ReportFilter.Initialize();
+
         BaseReportEventRecorder::Initialize( nrmSize );
+    }
+
+    void ReportEventRecorder::CheckForValidNodeIDs( const std::vector<ExternalNodeId_t>& demographicNodeIds )
+    {
+        m_ReportFilter.CheckForValidNodeIDs( GetReportName(), demographicNodeIds );
     }
 
     void ReportEventRecorder::UpdateEventRegistration( float currentTime,
@@ -95,7 +131,8 @@ namespace Kernel
                                                        std::vector<INodeEventContext*>& rNodeEventContextList,
                                                        ISimulationEventContext* pSimEventContext )
     {
-        if( !is_registered )
+        bool is_valid_time = m_ReportFilter.IsValidTime( pSimEventContext->GetSimulationTime() );
+        if( !is_registered && is_valid_time )
         {
             for( auto pNEC : rNodeEventContextList )
             {
@@ -105,6 +142,11 @@ namespace Kernel
                 broadcaster_list.push_back( broadcaster );
             }
             is_registered = true;
+        }
+        else if( is_registered && !is_valid_time )
+        {
+            UnregisterAllBroadcasters();
+            is_registered = false;
         }
     }
 
@@ -120,7 +162,7 @@ namespace Kernel
                << "," << "Infected"
                << "," << "Infectiousness" ;
 
-        for (const auto& prop : properties_to_report)
+        for (const auto& prop : m_PropertiesToReport)
         {
             header << "," << prop;
         }
@@ -151,7 +193,7 @@ namespace Kernel
         // Report requested properties
         const auto * pProp = context->GetProperties();
 
-        for (const auto& prop_name : properties_to_report)
+        for (const auto& prop_name : m_PropertiesToReport)
         {
             IPKey key( prop_name );
             if( !pProp->Contains( key ) )
@@ -163,8 +205,29 @@ namespace Kernel
         return ss.str();
     }
 
-    float ReportEventRecorder::GetTime( IIndividualHumanEventContext* pEntity ) const
+    std::string ReportEventRecorder::GetTime( IIndividualHumanEventContext* pEntity ) const
     {
-        return pEntity->GetNodeEventContext()->GetTime().time;
+        std::stringstream ss;
+        ss << pEntity->GetNodeEventContext()->GetTime().time;
+        return ss.str();
+    }
+
+    bool ReportEventRecorder::notifyOnEvent( IIndividualHumanEventContext *pEntity, const EventTrigger& trigger )
+    {
+        bool notify = true;
+        if( (trigger == EventTrigger::PropertyChange) && m_PropertyChangeIPKey.IsValid() )
+        {
+            notify = (m_PropertyChangeIPKey == pEntity->GetInterventionsContext()->GetLastIPChange().GetKey<IPKey>());
+        }
+
+        notify = notify && m_ReportFilter.IsValidNode( pEntity->GetNodeEventContext() );
+        notify = notify && m_ReportFilter.IsValidHuman( pEntity->GetIndividualHumanConst() );
+
+        bool ret = true;
+        if( notify )
+        {
+            ret = BaseReportEventRecorder::notifyOnEvent( pEntity, trigger );
+        }
+        return ret;
     }
 }

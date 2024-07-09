@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include <memory> // unique_ptr
@@ -25,10 +17,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 using namespace std; 
 using namespace Kernel; 
-
-// maybe these shouldn't be protected in Simulation.h
-typedef boost::bimap<ExternalNodeId_t, suids::suid> nodeid_suid_map_t;
-typedef nodeid_suid_map_t::value_type nodeid_suid_pair;
 
 SUITE(CommunityHealthWorkerEventCoordinatorTest)
 {
@@ -718,7 +706,7 @@ SUITE(CommunityHealthWorkerEventCoordinatorTest)
         CHECK_EQUAL(   0, chw.GetNumEntitiesInQueue() );
         CHECK_EQUAL(  55, chw.GetDaysRemaining()      );
 
-        // events occured via another event coordinator
+        // events occurred via another event coordinator
         p_nc_1->GetEventContext()->VisitIndividuals( (INodeEventContext::individual_visit_function_t)BroadcastEvent_ListenForEvent );
         p_nc_2->GetEventContext()->VisitIndividuals( (INodeEventContext::individual_visit_function_t)BroadcastEvent_ListenForEvent );
         p_nc_3->GetEventContext()->VisitIndividuals( (INodeEventContext::individual_visit_function_t)BroadcastEvent_ListenForEvent );

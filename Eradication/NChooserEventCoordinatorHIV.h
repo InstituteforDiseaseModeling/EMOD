@@ -1,15 +1,8 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
 #include "NChooserEventCoordinatorSTI.h"
+#include "InterventionName.h"
 
 namespace Kernel
 {
@@ -68,19 +61,17 @@ namespace Kernel
         static std::vector<std::vector<TargetedDiseaseState::Enum>> ConvertStringsToDiseaseState( std::vector<std::vector<std::string>>& rStringMatrix );
 
         virtual bool HasDiseaseState( TargetedDiseaseState::Enum state,
-                                      const std::string& rHasInterventionName,
+                                      const InterventionName& rHasInterventionName,
                                       IIndividualHumanEventContext *pHEC,
                                       IIndividualHumanSTI* pSTI,
                                       IIndividualHumanHIV *pHIV,
                                       IHIVMedicalHistory * pMedHistory ) const;
 
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         std::set< std::string > m_AllowedStates; // member variable so that it exists shen JsonConfigurable::Configure() is called.
         std::vector<std::vector<std::string>> m_Vector2dStringDiseaseStates;
         std::vector<std::vector<TargetedDiseaseState::Enum>> m_DiseaseStates;
-        std::string m_HasInterventionName;
-#pragma warning( pop )
+        std::string m_HasInterventionNameString;
+        InterventionName m_HasInterventionName;
     };
 
     // ------------------------------------------------------------------------

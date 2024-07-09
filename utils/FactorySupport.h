@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -52,8 +44,9 @@ namespace Kernel
             std::ostringstream errMsg;
             string templateClassName = typeid(ReturnTypeT).name();
             templateClassName = templateClassName.substr( templateClassName.find_last_of("::")+1 );
-            errMsg << templateClassName 
-                   << " could not instantiate object from json because class was not specified as required. Details from caught exception: "
+            errMsg << "'" 
+                   << templateClassName
+                   << "' could not instantiate object from json because class was not specified as required.\nDetails from caught exception: "
                    << std::endl
                    << except.GetMsg()
                    << std::endl;

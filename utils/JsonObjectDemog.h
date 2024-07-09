@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -144,12 +136,9 @@ namespace Kernel
 
             Iterator( void* pData, std::shared_ptr<void> pDocument, void* pValue );
 
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
             void*                 m_pData ;
             std::shared_ptr<void> m_pDocument ;
             void*                 m_pValue ;
-#pragma warning( pop )
 
         };
 
@@ -159,12 +148,9 @@ namespace Kernel
     private:
         JsonObjectDemog( const std::string& rKey, void* pValue, std::shared_ptr<void> pDocument );
 
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         std::string m_Key ;
         std::shared_ptr<void> m_pDocument ;
         void* m_pValue ;
-#pragma warning( pop )
     };
 
     // A JsonWriter object allows one to create json formatted text

@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -102,14 +94,11 @@ namespace Kernel
 
         MigrationInfoNull();
 
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         // We need these member variables so that GetReachableNodes() and GetMigrationTypes()
         // can return references to objects that exist.
         std::vector<float>               m_EmptyListCDF;
         std::vector<suids::suid>         m_EmptyListNodes;
         std::vector<MigrationType::Enum> m_EmptyListTypes;
-#pragma warning( pop )
     };
 
     // ---------------------------
@@ -153,15 +142,12 @@ namespace Kernel
         virtual const std::vector<suids::suid>& GetReachableNodes( Gender::Enum gender ) const;
         virtual const std::vector<MigrationType::Enum>& GetMigrationTypes( Gender::Enum gender ) const;
 
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         INodeContext * m_Parent;
         bool m_IsHeterogeneityEnabled;
         std::vector<suids::suid>         m_ReachableNodes;
         std::vector<MigrationType::Enum> m_MigrationTypes;
         std::vector<float>               m_RateCDF;
         float                            m_TotalRate;
-#pragma warning( pop )
     };
 
     // -----------------------------
@@ -190,13 +176,9 @@ namespace Kernel
         virtual const std::vector<suids::suid>& GetReachableNodes( Gender::Enum gender ) const override;
         virtual const std::vector<MigrationType::Enum>& GetMigrationTypes( Gender::Enum gender ) const override;
 
-
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         std::vector<std::vector<MigrationRateData>> m_RateData;
         std::vector<suids::suid>         m_ReachableNodesFemale;
         std::vector<MigrationType::Enum> m_MigrationTypesFemale;
-#pragma warning( pop )
     };
 
     // ----------------------
@@ -211,13 +193,10 @@ namespace Kernel
     class IDMAPI MigrationInfoFile
     {
     public:
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         // These are public so that the factory can put these variables into initConfig() statements
         std::string m_Filename ;
         bool m_IsEnabled ;
         float m_xModifier ;
-#pragma warning( pop )
 
         MigrationInfoFile( MigrationType::Enum migType, 
                            int defaultDestinationsPerNode );
@@ -240,8 +219,6 @@ namespace Kernel
         virtual void OpenMigrationFile( const std::string& filepath, uint32_t expected_binary_file_size );
         virtual uint32_t GetNumGenderDataChunks() const;
 
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         std::string             m_ParameterNameEnable ;
         std::string             m_ParameterNameFilename ;
         int                     m_DestinationsPerNode ;
@@ -254,7 +231,6 @@ namespace Kernel
         std::ifstream           m_FileStream;
 
         std::unordered_map< ExternalNodeId_t, uint32_t > m_Offsets;
-#pragma warning( pop )
     };
 
     // ----------------------------------
@@ -293,11 +269,8 @@ namespace Kernel
                                                                         std::vector<MigrationInfoFile*>& infoFileList,
                                                                         bool* pIsFixedRate );
 
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         std::vector<MigrationInfoFile*> m_InfoFileList ;
         bool m_IsHeterogeneityEnabled;
-#pragma warning( pop )
     private:
     };
 
@@ -333,12 +306,9 @@ namespace Kernel
                                                                  const boost::bimap<ExternalNodeId_t, suids::suid>& rNodeIdSuidMap,
                                                                  float modifier );
 
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         bool  m_IsHeterogeneityEnabled;
         float m_xLocalModifier;
         int   m_TorusSize;
-#pragma warning( pop )
     private:
         void InitializeParameters(); // just used in multiple constructors
     };

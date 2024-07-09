@@ -1,8 +1,12 @@
 {
     "class": "AdherentDrug",
     "Cost_To_Consumer": 1,
-    "Drug_Type": "TestDrug",
-    "Dosing_Type": "FullTreatmentCourse",
+    "Doses" : [ 
+        ["TestDrug"], 
+        ["TestDrug"], 
+        ["TestDrug"]
+    ],
+    "Dose_Interval" : 3,
     "Adherence_Config" : {
         "class" : "WaningEffectCombo",
         "Effect_List" : [
@@ -34,5 +38,5 @@
     "Non_Adherence_Options" : [ "STOP", "NEXT_UPDATE", "NEXT_DOSAGE_TIME", "LOST_TAKE_NEXT" ],
     "Non_Adherence_Distribution" : [ 0.1, 0.7, 0.1, 0.1 ],
     "Max_Dose_Consideration_Duration" : 14,
-    "Took_Dose_Event" : "TBActivation"
+    "Took_Dose_Event" : "PFA_NoPartnerFound"
 }

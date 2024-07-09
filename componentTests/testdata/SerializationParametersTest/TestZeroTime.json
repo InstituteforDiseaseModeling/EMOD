@@ -1,0 +1,13 @@
+{
+   "Simulation_Timestep": 1.5, 
+    "Start_Time": 10,
+    "Serialization_Times" : [
+        -1,
+        0,
+        11.5,
+        13
+    ],
+    "Serialization_Precision" : "REDUCED",
+    "Serialized_Population_Writing_Type" : "TIME",
+    "Serialized_Population_Reading_Type" : "NONE"
+}
