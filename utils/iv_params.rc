@@ -315,5 +315,5 @@
 #define Node_Polygon_Vertices_DESC_TEXT "Comma-separated list of latitude/longitude points that bound a polygon."
 #define CHW_Waiting_Period_DESC_TEXT "The number of days a person or node can be in the queue waiting to get the intervention from the community health worker (CHW)."
 #define Waning_Config_DESC_TEXT "The configuration of how the intervention efficacy wanes over time."
-#define CampaignEventByYear_Start_Year_DESC_TEXT "The absolute year of the simulation to activate the event’s event coordinator. To have the intervention applied other than at the beginning of the year, you must enter a decimal value after the year. For example, 2010.5 would have the intervention applied halfway through the year 2010."
+#define CampaignEventByYear_Start_Year_DESC_TEXT "The absolute year of the simulation to activate the event's event coordinator. To have the intervention applied other than at the beginning of the year, you must enter a decimal value after the year. For example, 2010.5 would have the intervention applied halfway through the year 2010."
 #include "missing_iv_params.rc"
