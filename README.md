@@ -6,45 +6,48 @@ EMOD is also stochastic, meaning that there is randomness built into the model. 
 
 As of V2.22, EMOD will only support malaria and HIV and will no longer support diseases such as TB and Typhoid.
 
+
 History & Publication Samples
 -----------------------------
 EMOD development was started by Philip Welkoff in 2010 to model malaria.  Since that time, EMOD has been used in numerous studies and policy decisions.  Below is short sample of papers about EMOD and that used EMOD:
 
 **A malaria transmission-directed model of mosquito life cycle and ecology**
-Philip A Eckhoff
-Malaria Journal, 2011
-https://malariajournal.biomedcentral.com/articles/10.1186/1475-2875-10-303
+- Philip A Eckhoff
+- Malaria Journal, 2011
+- https://malariajournal.biomedcentral.com/articles/10.1186/1475-2875-10-303
 
 **Description of the EMOD-HIV Model v0.7**
-Anna Bershteyn, Daniel J. Klein, Edward Wenger, and Philip A. Eckhoff
-arXiv.org, 2012
-https://arxiv.org/pdf/1206.3720
+- Anna Bershteyn, Daniel J. Klein, Edward Wenger, and Philip A. Eckhoff
+- arXiv.org, 2012
+- https://arxiv.org/pdf/1206.3720
 
 **Effectiveness of reactive case detection for malaria elimination in three archetypical transmission settings: a modelling study**
-Jaline Gerardin,Caitlin A. Bever, Daniel Bridenbecker, Busiku Hamainza, Kafula Silumbe, John M. Miller, Thomas P. Eisele, Philip A. Eckoff, and Edward A. Wenger
-Malaria Journal, 2017
-https://malariajournal.biomedcentral.com/articles/10.1186/s12936-017-1903-z
+- Jaline Gerardin,Caitlin A. Bever, Daniel Bridenbecker, Busiku Hamainza, Kafula Silumbe, John M. Miller, Thomas P. Eisele, Philip A. Eckoff, and Edward A. Wenger
+- Malaria Journal, 2017
+- https://malariajournal.biomedcentral.com/articles/10.1186/s12936-017-1903-z
 
 **Implementation and applications of EMOD, an individual-based multi-disease modeling platform**
-Anna Bershteyn, Jaline Gerardin, Daniel Bridenbecker, Christopher W Lorton, Jonathan Bloedow, Robert S Baker, Guillaume Chabot-Couture, Ye Chen, Thomas Fischle, Kurt Frey, Jillian S Gauld, Hao Hu, Amanda S Izzo, Daniel J Klein, Dejan Lukacevic, Kevin A McCarthy, Joel C Miller, Andre Lin Ouedraogo, T Alex Perkins, Jeffrey Steinkraus, Tony Ting, Quirine A ten Bosch, Hung-Fu Ting, Svetlana Titova, Bradley G Wagner, Philip A Welkhoff, Edward A Wenger, Christian N Wiswell
-Pathogens and Disease, 2018
-https://academic.oup.com/femspd/article/76/5/fty059/5050059?login=false
+- Anna Bershteyn, Jaline Gerardin, Daniel Bridenbecker, Christopher W Lorton, Jonathan Bloedow, Robert S Baker, Guillaume Chabot-Couture, Ye Chen, Thomas Fischle, Kurt Frey, Jillian S Gauld, Hao Hu, Amanda S Izzo, Daniel J Klein, Dejan Lukacevic, Kevin A McCarthy, Joel C Miller, Andre Lin Ouedraogo, T Alex Perkins, Jeffrey Steinkraus, Tony Ting, Quirine A ten Bosch, Hung-Fu Ting, Svetlana Titova, Bradley G Wagner, Philip A Welkhoff, Edward A Wenger, Christian N Wiswell
+- Pathogens and Disease, 2018
+- https://academic.oup.com/femspd/article/76/5/fty059/5050059?login=false
 
 **Vector genetics, insecticide resistance and gene drives: an agent-based modeling approach to evaluate malaria transmission and elimination**
-Prashanth Selvaraj, Edward A. Wenger, Daniel Bridenbecker, Nikolai Windbichler, Jonathan R. Russell , Jaline Gerardin, Caitlin A. Bever, Milen Nikolov
-BioRxiv, 2020
-https://www.biorxiv.org/content/10.1101/2020.01.27.920421v1.full
+- Prashanth Selvaraj, Edward A. Wenger, Daniel Bridenbecker, Nikolai Windbichler, Jonathan R. Russell , Jaline Gerardin, Caitlin A. Bever, Milen Nikolov
+- BioRxiv, 2020
+- https://www.biorxiv.org/content/10.1101/2020.01.27.920421v1.full
 
 **The effect of 90-90-90 on HIV-1 incidence and mortality in eSwatini: a mathematical modelling study**
-Adam Akullian , Michelle Morrison, Geoffrey P Garnett, Zandile Mnisi, Nomthandazo Lukhele, Daniel Bridenbecker, Anna Bershteyn
-The Lancet HIV, 2020
-https://www.thelancet.com/action/showPdf?pii=S2352-3018%2819%2930436-9
+- Adam Akullian , Michelle Morrison, Geoffrey P Garnett, Zandile Mnisi, Nomthandazo Lukhele, Daniel Bridenbecker, Anna Bershteyn
+- The Lancet HIV, 2020
+- https://www.thelancet.com/action/showPdf?pii=S2352-3018%2819%2930436-9
+
 
 Running EMOD
 ------------
 Since EMOD is a stochastic model, you must run numerous realizations of each scenario in order to collect proper statistics.  You will likely need a high performance computing (HPC) platform to run these simulations.  As of July 2024, we only support a SLURM-based HPC.
 
 To make running EMOD easier, we have created some python packages that simplify configuring, running, and plotting the results.  As of July 2024, we are working to make these packages more user friendly and will have updates coming in Q4 of 2024.
+
 
 Directory structure
 -------------------
@@ -82,9 +85,9 @@ https://docs.idmod.org/projects/emod-malaria/en/latest/dev-install-overview.html
 
 Contributing
 ------------
-Questions or comments can be directed to `support@idmod.org <mailto:support@idmod.org>`.
+Questions or comments can be directed to [support@idmod.org](<mailto:support@idmod.org>).
 
-Full information about EMOD is provided in the `documentation <https://docs.idmod.org>`.
+Full information about EMOD is provided in the [documentation](<https://docs.idmod.org/models.html#emod>).
 
 
 Disclaimer
@@ -93,6 +96,3 @@ The code in this repository was developed by IDM and other collaborators to supp
  We've made it publicly available under the MIT License to provide others with a better understanding of our research and an opportunity to build upon it for 
  their own work. We make no representations that the code works as intended or that we will provide support, address issues that are found, or accept pull requests.
  You are welcome to create your own fork and modify the code to suit your own modeling needs as permitted under the MIT License.
-
-
-For more information, see the complete [EMOD documentation](https://docs.idmod.org/models.html#emod).
