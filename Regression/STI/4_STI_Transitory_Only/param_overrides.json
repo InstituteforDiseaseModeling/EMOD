@@ -25,6 +25,7 @@
         },
         "PRIMARY": {
             "Config_Name": "4_STI_Transitory_Only",
+            "Custom_Reports_Filename" : "custom_reports.json",
             "Simulation_Duration": 1500
         }
     }

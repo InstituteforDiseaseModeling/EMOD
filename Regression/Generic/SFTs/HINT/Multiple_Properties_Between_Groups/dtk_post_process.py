@@ -190,7 +190,7 @@ def create_report_file(param_obj, campaign_obj, stdout_df, property_df, property
                 [c for c in seed_cols if hint_support.channels[1] in c]]
             message_template = "{0}: total new infection after outbreak for {1} is {2}, expected 0.\n"
             for col in new_infection_non_susceptible:
-                total_new_infection = new_infection_non_susceptible.ix[1:, col].sum()
+                total_new_infection = new_infection_non_susceptible.loc[1:, col].sum()
                 if total_new_infection != 0:
                     success = False
                     outfile.write(message_template.format("BAD", col, total_new_infection))
@@ -209,7 +209,7 @@ def create_report_file(param_obj, campaign_obj, stdout_df, property_df, property
                               title="{}\nprobability".format(group_name), xlabel='day',ylabel='probability',category="probability_{}".format(group_name_modified),
                               line=True, alpha=0.5, overlap=True)
 
-            sft.plot_data(new_infection_sus.ix[:, 0].tolist(), expected_new_infection_list,
+            sft.plot_data(new_infection_sus.iloc[:, 0].tolist(), expected_new_infection_list,
                               label1='from property report',
                               label2="calculated data",
                               title="{}\nnew infections".format(group_name),

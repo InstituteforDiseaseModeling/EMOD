@@ -1,0 +1,162 @@
+{
+    "Default_Config_Path": "defaults/vector_default_config.json",
+    "parameters": {
+        "Config_Name": "79_Vector_Genetics_TooManyMales",
+        "Custom_Reports_Filename": "custom_reports.json",
+        "Geography": "",
+        "Demographics_Filenames": [
+            "single_node_demographics.json"
+        ],
+        "Run_Number": 0,
+        "Simulation_Duration": 2190,
+        
+        "Age_Dependent_Biting_Risk_Type": "SURFACE_AREA_DEPENDENT",
+        "Climate_Model": "CLIMATE_CONSTANT",
+        "Base_Air_Temperature": 22.0,
+        "Base_Land_Temperature": 26.0,
+        "Base_Rainfall": 10.0,
+        "Base_Relative_Humidity": 0.75,
+        "Birth_Rate_Dependence": "FIXED_BIRTH_RATE",
+        "Enable_Climate_Stochasticity": 0,
+        "Enable_Demographics_Birth": 1,
+        "Enable_Demographics_Reporting": 0,
+        "Enable_Initial_Prevalence": 1,
+        "Enable_Nondisease_Mortality": 1,
+        "Enable_Vector_Species_Report": 0,
+        "Population_Scale_Type": "FIXED_SCALING",
+        "Vector_Species_Params": [
+            {
+                "Name" : "gambiae2",
+                "Drivers": [
+                    {
+                        "Driving_Allele": "a1",
+                        "Driver_Type": "CLASSIC",
+                        "Alleles_Driven": [
+                            {
+                                "Allele_To_Copy": "a1",
+                                "Allele_To_Replace": "a0",
+                                "Copy_To_Likelihood" : [
+                                    {
+                                        "Copy_To_Allele" : "a0",
+                                        "Likelihood" : 0.0
+                                    },
+                                    {
+                                        "Copy_To_Allele" : "a1",
+                                        "Likelihood" : 1.0
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                "Gene_To_Trait_Modifiers": [
+                    {
+                        "Allele_Combinations": [
+                            [
+                                "a0",
+                                "a1"
+                            ]
+                        ],
+                        "Trait_Modifiers" : [
+                            {
+                                "Trait" : "FEMALE_EGG_RATIO",
+                                "Modifier": 0.0
+                            }
+                        ]
+                    },
+                    {
+                        "Allele_Combinations": [
+                            [
+                                "a1",
+                                "a1"
+                            ]
+                        ],
+                        "Trait_Modifiers" : [
+                            {
+                                "Trait" : "FEMALE_EGG_RATIO",
+                                "Modifier": 0.0
+                            }
+                        ]
+                    }
+                ],
+                "Genes": [
+                    {
+                        "Is_Gender_Gene": 0,
+                        "Alleles": [
+                            {
+                                "Name": "a0",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 1.0
+                            },
+                            {
+                                "Name": "a1",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.0
+                            }
+                        ],
+                        "Mutations": []
+                    }
+                ],
+                "Acquire_Modifier": 0.2,
+                "Adult_Life_Expectancy": 12,
+                "Male_Life_Expectancy": 10,
+                "Anthropophily": 0.65,
+                "Aquatic_Arrhenius_1": 84200000000,
+                "Aquatic_Arrhenius_2": 8328,
+                "Aquatic_Mortality_Rate": 0.1,
+                "Cycle_Arrhenius_1": 0,
+                "Cycle_Arrhenius_2": 0,
+                "Cycle_Arrhenius_Reduction_Factor": 0,
+                "Days_Between_Feeds": 3,
+                "Egg_Batch_Size": 100,
+                "Immature_Duration": 2,
+                "Indoor_Feeding_Fraction": 0.9,
+                "Infected_Arrhenius_1": 117000000000,
+                "Infected_Arrhenius_2": 8336,
+                "Infected_Egg_Batch_Factor": 0.8,
+                "Infectious_Human_Feed_Mortality_Factor": 1.5,
+                "Habitats": [
+                    {
+                        "Habitat_Type": "LINEAR_SPLINE",
+                        "Capacity_Distribution_Number_Of_Years": 1,
+                        "Capacity_Distribution_Over_Time": {
+                            "Times": [
+                                0.0,
+                                30.417,
+                                60.833,
+                                91.25,
+                                121.667,
+                                152.083,
+                                182.5,
+                                212.917,
+                                243.333,
+                                273.75,
+                                304.167,
+                                334.583
+                            ],
+                            "Values": [
+                                3,
+                                3,
+                                3,
+                                3,
+                                3,
+                                3,
+                                3,
+                                3,
+                                3,
+                                3,
+                                3,
+                                3
+                            ]
+                        },
+                        "Max_Larval_Capacity": 100000000.0
+                    }
+                ],
+                "Microsporidia": [],
+                "Temperature_Dependent_Feeding_Cycle": "NO_TEMPERATURE_DEPENDENCE",
+                "Transmission_Rate": 0.9,
+                "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_NONE"
+            }
+        ]
+    }
+}

@@ -1,0 +1,21 @@
+{
+    "Default_Config_Path": "../../defaults/generic_default_config.json", 
+    "parameters": {
+        "Base_Infectivity" : 0.0,
+        "Config_Name": "91_Generic_SpatialReportInfected", 
+        "Enable_Vital_Dynamics": 0,
+        "Geography": "NONE", 
+        "Infectious_Period_Distribution": "CONSTANT_DISTRIBUTION",
+        "Infectious_Period_Constant": 10,
+        "Simulation_Duration": 10, 
+        "Run_Number": 1,
+        "Demographics_Filenames": [ "demographics.json" ],
+        "Python_Script_Path": "SHARED",
+        "Enable_Spatial_Output": 1,
+        "Spatial_Output_Channels": [
+            "Population",
+            "Infected",
+            "Prevalence"
+        ]
+    }
+}

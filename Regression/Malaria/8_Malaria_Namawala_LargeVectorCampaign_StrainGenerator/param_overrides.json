@@ -32,15 +32,18 @@
         "Run_Number": 1,
         "Simulation_Duration": 730
     },
-    "Vector_Species_Params": {
-        "arabiensis": {
+    "Vector_Species_Params": [
+        {
+            "Name": "arabiensis",
             "Acquire_Modifier": 0.2
         },
-        "funestus": {
+        {
+            "Name": "funestus",
             "Acquire_Modifier": 0.2
         },
-        "gambiae": {
+        {
+            "Name": "gambiae",
             "Acquire_Modifier": 0.2
         }
-    }
+    ]
 }

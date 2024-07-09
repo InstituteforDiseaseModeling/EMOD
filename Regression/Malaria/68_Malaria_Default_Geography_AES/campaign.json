@@ -26,6 +26,10 @@
                 "Include_Arrivals": 0, 
                 "Include_Departures": 0, 
                 "Intervention_Config": {
+                    "Repelling_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect": 0.0
+                    }, 
                     "Blocking_Config": {
                         "Box_Duration": 1460, 
                         "Initial_Effect": 1, 

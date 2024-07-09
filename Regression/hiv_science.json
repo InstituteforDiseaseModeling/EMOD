@@ -1,5 +1,39 @@
 {
+    "failing": [
+        { "path" : "HIV/SFT/ARTMortalityTable/AgeBins" },
+        { "path" : "HIV/SFT/ARTMortalityTable/ARTDuration" },
+        { "path" : "HIV/SFT/ARTMortalityTable/CD4Count" },
+        { "path" : "HIV/SFT/HIV_Mortality/InfectionToDeath_Adult" },
+        { "path" : "HIV/SFT/HIV_Mortality/InfectionToDeath_Child_Slow" },
+        { "path" : "HIV/SFT/HIV_Mortality/SymptomaticAndDeathCounters" }
+    ],
     "science": [
-        { "path" : "HIV/SFT/Heterogeneous_Infectiousness_LogNormal" }
+        { "path" : "HIV/SFT/Heterogeneous_Infectiousness_LogNormal" },
+        { "path" : "HIV/SFT/HIV_Mortality/SymptomaticAndDeathCounters" },
+        { "path" : "HIV/SFT/HIV_Mortality/SymptomaticToDeath_ActualDuration" },
+        { "path" : "HIV/SFT/HIV_Mortality/SymptomaticToDeath_DurationCounter" },
+        { "path" : "HIV/SFT/HIV_Mortality/InfectionToDeath_Adult" },
+        { "path" : "HIV/SFT/HIV_Mortality/InfectionToDeath_Child_Rapid" },
+        { "path" : "HIV/SFT/HIV_Mortality/InfectionToDeath_Child_Slow" },
+        { "path" : "HIV/SFT/ARTMortalityTable/Adherence" },
+        { "path" : "HIV/SFT/ARTMortalityTable/AgeBins" },
+        { "path" : "HIV/SFT/ARTMortalityTable/AgeBins_2" },
+        { "path" : "HIV/SFT/ARTMortalityTable/ARTDuration" },
+        { "path" : "HIV/SFT/ARTMortalityTable/ARTDuration_2" },
+        { "path" : "HIV/SFT/ARTMortalityTable/CD4Count" },
+        { "path" : "HIV/SFT/ARTMortalityTable/CD4Count_2" },
+        { "path" : "HIV/SFT/ARTMortalityTable/Gender" },
+        { "path" : "HIV/SFT/ReferenceTrackingEventCoordinator" },
+        { "path" : "HIV/SFT/HIV_Relationship_Targeting/TargetHasBeenOnArt" },
+        { "path" : "HIV/SFT/HIV_Relationship_Targeting/TargetHasCd4Between" },
+        { "path" : "HIV/SFT/HIV_Relationship_Targeting/TargetIsHivPositive" },
+        { "path" : "HIV/SFT/HIV_Relationship_Targeting/TargetIsOnART" },
+        { "path" : "HIV/SFT/Concordant_Relationships" },
+        { "path" : "HIV/SFT/Reporter_RelationshipConsummated/Filtering" },
+        { "path" : "HIV/SFT/Reporter_RelationshipConsummated/Transmission" },
+        { "path" : "HIV/SFT/Reporter_RelationshipStart" },
+        { "path" : "HIV/SFT/Reporter_ReportEventRecorder/Basic_Filtering" },
+        { "path" : "HIV/SFT/Reporter_ReportEventRecorder/Filtering" },
+        { "path" : "HIV/SFT/Reporter_ReportEventRecorder/PropertyChange" }
     ]
 }

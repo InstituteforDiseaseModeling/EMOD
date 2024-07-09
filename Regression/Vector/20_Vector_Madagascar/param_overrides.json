@@ -77,6 +77,7 @@
             "Run_Number": 3,
             "Simulation_Duration": 730
         },
-        "logLevel_VectorPopulation": "WARNING"
+        "logLevel_VectorPopulation": "WARNING",
+        "logLevel_StandardEventCoordinator": "WARNING"
     }
 }

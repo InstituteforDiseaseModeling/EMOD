@@ -8,6 +8,7 @@
                          "Antigen": 0, 
                          "Genome": 0, 
                          "Number_Cases_Per_Node": 10, 
+                         "Probability_Of_Infection": 0.5,
                          "class": "Outbreak"
                     }, 
                     "class": "StandardInterventionDistributionEventCoordinator"

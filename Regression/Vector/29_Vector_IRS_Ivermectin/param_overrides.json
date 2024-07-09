@@ -23,9 +23,10 @@
         },
         "PRIMARY": {
             "Config_Name": "29_Vector_IRS_Ivermectin",
+            "Enable_Vector_Species_Report" : 1,
             "Geography": "Namawala",
             "Run_Number": 27
         },
-        "x_Temporary_Larval_Habitat": 0.02
+        "x_Temporary_Larval_Habitat": 0.04
     }
 }

@@ -1,0 +1,10 @@
+{
+    "Reports": [
+        {
+            "class": "ReportMicrosporidia",
+            "Enabled": 1,
+            "Pretty_Format": 1
+        }
+    ],
+    "Use_Defaults": 1
+}

@@ -1,0 +1,33 @@
+{
+    "parameters": {
+        "Config_Name": "Contraception_WaningEffectMapPiecewise",
+        "Age_Initialization_Distribution_Type": "DISTRIBUTION_COMPLEX",
+        "Birth_Rate_Dependence": "INDIVIDUAL_PREGNANCIES_BY_AGE_AND_YEAR",
+        "Custom_Individual_Events": [
+            "Use_Test",
+            "Test_Expiration_Event"
+        ],
+        "Demographics_Filenames": [
+            "../demographics/demographics.json",
+            "../demographics/IP_Overlay.json"
+        ],
+        "Population_Scale_Type": "FIXED_SCALING",
+        "x_Base_Population": 2,
+        "Enable_Property_Output": 1,
+        "Enable_Natural_Mortality": 0,
+        "Simulation_Duration": 350,
+        "Simulation_Timestep": 1,
+        "Inset_Chart_Include_Pregnancies": 1,
+        "Report_Event_Recorder": 0,
+        "Report_Event_Recorder_Events": [
+            "Pregnant",
+            "GaveBirth",
+            "Use_Test",
+            "Test_Expiration_Event"
+        ],
+        "Report_Event_Recorder_Individual_Properties": [
+            "CurrentStatus"
+        ]
+    },
+    "Default_Config_Path": "defaults/generic_science_config.json"
+}

@@ -67,14 +67,22 @@
         },
         "VECTOR": {
             "SPECIES": {
-                "Vector_Species_Names": [
-                    "arabiensis",
-                    "funestus",
-                    "gambiae"
+                "Vector_Species_Params": [
+                    {
+                        "Name": "arabiensis",
+                        "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_EVERY_DAY"
+                    },
+                    {
+                        "Name": "funestus",
+                        "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_EVERY_DAY"
+                    },
+                    {
+                        "Name": "gambiae",
+                        "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_EVERY_DAY"
+                    }
                 ]
             },
-            "Vector_Sampling_Type": "TRACK_ALL_VECTORS",
-            "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_EVERY_DAY"
+            "Vector_Sampling_Type": "TRACK_ALL_VECTORS"
         }
     }
 }

@@ -1,0 +1,38 @@
+{
+    "Reports": [
+        {
+            "Age_Bins": [],
+            "Stratify_By_Gender": 0,
+            "Barcodes": [
+                "TA",
+                "AT",
+                "TT"
+            ],
+            "Drug_Resistant_Strings": [
+                "TA",
+                "AT",
+                "TT"
+            ],
+            "Drug_Resistant_And_HRP_Statistic_Type": "NUM_INFECTIONS",
+            "class": "ReportNodeDemographicsMalariaGenetics"
+        },
+        {
+            "Species_List": [
+                "SillySkeeter"
+            ],
+            "class": "ReportVectorStatsMalariaGenetics"
+        }
+    ],
+    "Use_Defaults": 1,
+    "Not_Used": [
+        {
+            "class": "SqlReportMalariaGenetics",
+            "Start_Day": 700,
+            "End_Day": 705,
+            "Include_Health_Table": 1,
+            "Include_Infection_Data_Table": 1,
+            "Include_IndividualProperties_Data_Table": 0,
+            "Include_Drug_Status_Table": 1
+        }
+    ]
+}

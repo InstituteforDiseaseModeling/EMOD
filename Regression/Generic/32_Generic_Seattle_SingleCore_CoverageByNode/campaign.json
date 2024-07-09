@@ -23,18 +23,18 @@
         {
             "Event_Coordinator_Config": {
                 "Coverage_By_Node": [
-                    [
-                        1, 
-                        0.6
-                    ], 
-                    [
-                        2, 
-                        0.9
-                    ], 
-                    [
-                        3, 
-                        0.1
-                    ]
+                    {
+                        "Node_Id" : 1, 
+                        "Coverage" : 0.6
+                    }, 
+                    {
+                        "Node_Id" : 2, 
+                        "Coverage" : 0.9
+                    }, 
+                    {
+                        "Node_Id" : 3, 
+                        "Coverage" : 0.1
+                    }
                 ], 
                 "Intervention_Config": {
                     "Cost_To_Consumer": 10.0, 

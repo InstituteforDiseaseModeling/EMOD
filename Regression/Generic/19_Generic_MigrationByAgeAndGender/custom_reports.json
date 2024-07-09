@@ -1,0 +1,53 @@
+{
+    "Reports": [
+        {
+            "Age_Bins": [
+                40.0,
+                80.0,
+                125.0
+            ],
+            "class": "ReportNodeDemographics"
+        },
+        {
+            "class": "ReportPluginAgeAtInfection"
+        },
+        {
+            "class": "ReportPluginAgeAtInfectionHistogram"
+        },
+        {
+            "class": "ReportHumanMigrationTracking"
+        },
+        {
+            "class" : "ReportSimulationStats"
+        },
+        {
+            "class": "ReportEventCounter",
+            "Filename_Suffix": "",
+            "Start_Day": 0,
+            "End_Day": 1000,
+            "Node_IDs_Of_Interest": [],
+            "Min_Age_Years": 0.0,
+            "Max_Age_Years": 1000.0,
+            "Must_Have_IP_Key_Value": "",
+            "Must_Have_Intervention": "",
+            "Event_Trigger_List": [
+                "Emigrating",
+                "Immigrating",
+                "NewInfectionEvent"
+            ]
+        }
+    ],
+    "Use_Defaults": 1,
+	"Not_Used":[
+	    {
+			"Notes": "Not used due to locking up and failing on linux",
+            "class": "SqlReport",
+            "Start_Day" : 50,
+            "End_Day": 75,
+            "Include_Health_Table": 1,
+            "Include_Infection_Data_Table": 1,
+            "Include_Individual_Properties": 1
+        }
+	]
+}
+

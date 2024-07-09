@@ -1,0 +1,20 @@
+{
+    "Reports": [
+        {
+            "Age_Bins": [],
+            "Stratify_By_Gender": 0,
+            "Barcodes" : [
+                "TA",
+                "AT",
+                "TT"
+            ],
+            "Drug_Resistant_Strings": [
+                "TA",
+                "AT",
+                "TT"
+            ],
+            "class": "ReportNodeDemographicsMalariaGenetics"
+        }
+    ],
+    "Use_Defaults": 1
+}

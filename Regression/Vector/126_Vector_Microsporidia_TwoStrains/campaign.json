@@ -1,0 +1,93 @@
+{
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 100, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Number_Repetitions" : 1,
+                "Timesteps_Between_Repetitions" : 20,
+                "Intervention_Config": {
+                    "class": "MosquitoRelease",
+                    "Cost_To_Consumer": 200, 
+                    "Released_Number": 5000, 
+                    "Released_Species": "SillySkeeter", 
+                    "Released_Microsporidia_Strain": "Strain_A",
+                    "Released_Genome" : [
+                        [ "X", "Y" ]
+                    ]
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 200, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Number_Repetitions" : 1,
+                "Timesteps_Between_Repetitions" : 20,
+                "Intervention_Config": {
+                    "class": "MosquitoRelease",
+                    "Cost_To_Consumer": 200, 
+                    "Released_Number": 5000, 
+                    "Released_Species": "SillySkeeter", 
+                    "Released_Microsporidia_Strain": "Strain_B",
+                    "Released_Genome" : [
+                        [ "X", "X" ]
+                    ]
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 300, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Number_Repetitions" : 1,
+                "Timesteps_Between_Repetitions" : 20,
+                "Intervention_Config": {
+                    "class": "MosquitoRelease",
+                    "Cost_To_Consumer": 200, 
+                    "Released_Number": 5000, 
+                    "Released_Species": "SillySkeeter2", 
+                    "Released_Microsporidia_Strain": "Strain_C",
+                    "Released_Genome" : [
+                        [ "X", "Y" ]
+                    ]
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 400, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Number_Repetitions" : 1,
+                "Timesteps_Between_Repetitions" : 20,
+                "Intervention_Config": {
+                    "class": "MosquitoRelease",
+                    "Cost_To_Consumer": 200, 
+                    "Released_Number": 5000, 
+                    "Released_Species": "SillySkeeter2", 
+                    "Released_Microsporidia_Strain": "Strain_D",
+                    "Released_Genome" : [
+                        [ "X", "X" ]
+                    ]
+                }
+            }
+        }
+    ], 
+    "Use_Defaults": 1
+}

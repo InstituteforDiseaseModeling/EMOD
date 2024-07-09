@@ -1,0 +1,25 @@
+{
+    "Default_Config_Path": "defaults/generic_default_config.json",
+    "parameters": {
+        "DEMOGRAPHICS": {
+            "Population_Scale_Type" : "FIXED_SCALING",
+            "x_Base_Population": 10,
+            "Demographics_Filenames": ["Namawala_single_node_demographics.json"],
+            "Enable_Initial_Prevalence": 1
+        },
+        "PRIMARY": {
+            "Config_Name": "89_Generic_StandardDiagnostic",
+            "Geography": "Namawala",
+            "Run_Number": 1,
+            "Simulation_Duration": 180,
+            "Enable_Interventions": 1,
+            "logLevel_JsonConfigurable": "WARNING"
+        },
+        "Base_Infectivity": 0.5,
+        "Demographics_Reporting": 0,
+        "Custom_Individual_Events": [
+            "TestedPositive",
+            "TestedNegative"
+        ]
+    }
+}

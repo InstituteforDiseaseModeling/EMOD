@@ -1,0 +1,24 @@
+March 5, 2019
+cohort_vs_ind
+
+The purpose of this set of tests is:
+
+1) Provide simple tests that show some of the basic features of the vector model
+2) Provide a simple way to compare the cohort and individual models over these basic features
+
+The set of tests were created using the files in test_creation_files.
+
+All of the tests have the same dtk_post_process.py file.
+An improvement would be to refactor this so that the amount
+of code duplication is reduced.
+
+The same goes for the campaign and custom report files.
+If r_t.py can be fixed so that the test doesn't have to
+have actual copies of these files, then we could reduce
+the amount of duplication.
+
+To compare cohort vs individual, one just needs to change the Vector_Sampling_Type
+paramter in the default_config.json file and re-run the tests.
+The dtk_post_process.py will convert the ReportVectorStats.csv file
+to a json file so that we can compare and plot this data.  With this,
+one should be able to quickly and easily see the difference in the two models.

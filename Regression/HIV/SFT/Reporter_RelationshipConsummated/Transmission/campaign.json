@@ -1,0 +1,56 @@
+{
+    "Use_Defaults": 1,
+    "Events": [{
+            "Description": "Initial HIV outbreak",
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "CoitalActRiskFactors",
+                    "Transmission_Multiplier": 0.3,
+                    "Acquisition_Multiplier": 0.85,
+                    "Expiration_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Expiration_Constant": 2000
+                }
+            }
+        },
+        {
+            "Description": "Initial HIV outbreak",
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "MaleCircumcision",
+                    "Circumcision_Reduced_Acquire": 0.43
+                }
+            }
+        },
+        {
+            "Description": "Initial HIV outbreak",
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 0.1,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Incubation_Period_Override": 0,
+                    "Outbreak_Source": "PrevalenceIncrease"
+                }
+            }
+        }
+    ]
+}

@@ -31,14 +31,18 @@
                 "Demographic_Coverage": 1.0, 
                 "Intervention_Config": {
                     "class": "STIBarrier",
+                    "Cost_To_Consumer": 1.0,
                     "Early": 0.0,
                     "Late": 0.0,
                     "Midyear": 1990,
                     "Rate": 0.0,
                     "Relationship_Type": "TRANSITORY",
-                    "Cost_To_Consumer": 1.0
+                    "Usage_Duration_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Usage_Duration_Constant": 10000,
+                    "Usage_Expiration_Event": "NewMalariaInfectionObject"
                 }, 
-                "Target_Demographic": "Everyone",
+                "Target_Demographic": "ExplicitGender",
+                "Target_Gender": "Male",
                 "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Nodeset_Config": {
@@ -52,14 +56,18 @@
                 "Demographic_Coverage": 1.0, 
                 "Intervention_Config": {
                     "class": "STIBarrier",
+                    "Cost_To_Consumer": 1.0,
                     "Early": 0.0,
                     "Late": 0.0,
                     "Midyear": 1990,
                     "Rate": 0.0,
                     "Relationship_Type": "INFORMAL",
-                    "Cost_To_Consumer": 1.0
+                    "Usage_Duration_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Usage_Duration_Constant": 10000,
+                    "Usage_Expiration_Event": "NewMalariaInfectionObject"
                 }, 
-                "Target_Demographic": "Everyone",
+                "Target_Demographic": "ExplicitGender",
+                "Target_Gender": "Male",
                 "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Nodeset_Config": {
@@ -73,14 +81,18 @@
                 "Demographic_Coverage": 1.0, 
                 "Intervention_Config": {
                     "class": "STIBarrier",
+                    "Cost_To_Consumer": 1.0,
                     "Early": 0.0,
                     "Late": 0.0,
                     "Midyear": 1990,
                     "Rate": 0.0,
                     "Relationship_Type": "MARITAL",
-                    "Cost_To_Consumer": 1.0
+                    "Usage_Duration_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Usage_Duration_Constant": 10000,
+                    "Usage_Expiration_Event": "NewMalariaInfectionObject"
                 }, 
-                "Target_Demographic": "Everyone",
+                "Target_Demographic": "ExplicitGender",
+                "Target_Gender": "Male",
                 "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Nodeset_Config": {
@@ -94,14 +106,19 @@
                 "Demographic_Coverage": 1.0, 
                 "Intervention_Config": {
                     "class": "STIBarrier",
+                    "Cost_To_Consumer": 1.0,
                     "Early": 1.0,
                     "Late": 1.0,
                     "Midyear": 1990,
                     "Rate": 1.0,
                     "Relationship_Type": "TRANSITORY",
-                    "Cost_To_Consumer": 1.0
+                    "COMMENT":"!!!!!!!!!!!!! Causes interuption in coverage so spike in infected !!!!!!",
+                    "Usage_Duration_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Usage_Duration_Constant": 1000,
+                    "Usage_Expiration_Event": "NewMalariaInfectionObject"
                 }, 
-                "Target_Demographic": "Everyone",
+                "Target_Demographic": "ExplicitGender",
+                "Target_Gender": "Male",
                 "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Nodeset_Config": {
@@ -115,14 +132,18 @@
                 "Demographic_Coverage": 1.0, 
                 "Intervention_Config": {
                     "class": "STIBarrier",
+                    "Cost_To_Consumer": 1.0,
                     "Early": 1.0,
                     "Late": 1.0,
                     "Midyear": 1990,
                     "Rate": 1.0,
                     "Relationship_Type": "INFORMAL",
-                    "Cost_To_Consumer": 1.0
+                    "Usage_Duration_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Usage_Duration_Constant": 10000,
+                    "Usage_Expiration_Event": "NewMalariaInfectionObject"
                 }, 
-                "Target_Demographic": "Everyone",
+                "Target_Demographic": "ExplicitGender",
+                "Target_Gender": "Male",
                 "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Nodeset_Config": {
@@ -136,14 +157,18 @@
                 "Demographic_Coverage": 1.0, 
                 "Intervention_Config": {
                     "class": "STIBarrier",
+                    "Cost_To_Consumer": 1.0,
                     "Early": 1.0,
                     "Late": 1.0,
                     "Midyear": 1990,
                     "Rate": 1.0,
                     "Relationship_Type": "MARITAL",
-                    "Cost_To_Consumer": 1.0
+                    "Usage_Duration_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Usage_Duration_Constant": 10000,
+                    "Usage_Expiration_Event": "NewMalariaInfectionObject"
                 }, 
-                "Target_Demographic": "Everyone",
+                "Target_Demographic": "ExplicitGender",
+                "Target_Gender": "Male",
                 "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Nodeset_Config": {

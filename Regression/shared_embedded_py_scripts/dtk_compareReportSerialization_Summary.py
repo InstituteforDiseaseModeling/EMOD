@@ -15,7 +15,7 @@ import json
 import numpy
 
 # parameters
-Start_Day = 23
+Start_Day = 22
 End_Day = 67
 reporting_interval = 11
 DAYSPERYEAR = 365
@@ -34,15 +34,7 @@ annual_EIRs = []
 PfPRs_2to10 = []
 
 
-def Clear():
-    global sum_EIR
-    global sum_population_2to10
-    global sum_parasite_positive_2to10
-    sum_EIR = 0.0
-    sum_population_2to10 = 0
-    sum_parasite_positive_2to10 = 0
-
-def GenerateReportDataFromPopSerialization(output):
+def GenerateReportDataFromPopSerialization(output, debug=False):
     global sum_EIR
     global sum_population_2to10
     global sum_parasite_positive_2to10
@@ -52,7 +44,10 @@ def GenerateReportDataFromPopSerialization(output):
         msr_no_infection_streak = malaria_summary_report["DataByTime"]["No Infection Streak"]
         msr_no_PfPRs_2to10 = malaria_summary_report["DataByTime"]["PfPR_2to10"]
 
+    summary_messages = []
     for i in range(Start_Day, End_Day):
+        if debug:
+            print( "day: ", i )
         serialized_file = "state-" + str(i).zfill(5) + ".dtk"
         dtk = dft.read(output + "/" + serialized_file)
 
@@ -65,30 +60,80 @@ def GenerateReportDataFromPopSerialization(output):
             sum_no_infected_days = 0
 
         # MalariaSummaryReport.cpp, array PfPRs_2to10
-        for is2to10_infected_ind in [ind for ind in individualHumans if (
-                ind.m_is_infected and ind.m_age > 2 * DAYSPERYEAR and ind.m_age < 10 * DAYSPERYEAR)]:
-            if is2to10_infected_ind.m_parasites_detected_by_blood_smear > 0:
-                sum_parasite_positive_2to10 += is2to10_infected_ind.m_mc_weight
-
+        # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        # !!! Comparing MSR with the serialized data is confusing with respect to PfPRs_2to10
+        # !!! MSR gets the data for PfPRs_2to10 by listening for the EveryUpdate event.
+        # !!! Assume it is time T when this event occurs.  The age of the person has been updated
+        # !!! but they have not updated their diagnostic measurements.  These get updated after
+        # !!! this event. This event is called part way through the call to Individual::Update()
+        # !!! The serialized file is written after the completion of Simulation::Update().
+        # !!! This means that we have incremented the time so the data in the file says T+1 but the
+        # !!! the data is really for time T.  However, one should note that the diagnostic measurements
+        # !!! in the serialized file have been updated compared to what was seen in MSR.  For example,
+        # !!!    Individual::Update()
+        # !!!        Increment Age
+        # !!!        Update Infections
+        # !!!        Broadcast Every Update
+        # !!!            MSR::notifyOnEvent
+        # !!!        Update Diagnostic Measurements
+        # !!!    Increment Time
+        # !!!    SaveSerializedPopulation
+        # !!! Hence, to get the serialized file to sync up with the MSR, we need to increment
+        # !!! the age in the file by 1 so that the age of the person syncs with the diagnostic
+        # !!! measurement used in MSR.  We also have to consider the files one time step earlier.
+        # !!! NOTE:  Things could still get off if people die.
+        # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         for is2to10_ind in [ind for ind in individualHumans if
-                            ind.m_age > 2 * DAYSPERYEAR and ind.m_age < 10 * DAYSPERYEAR]:
+                            (ind.m_age+1) > 2 * DAYSPERYEAR and (ind.m_age+1) < 10 * DAYSPERYEAR]:
             sum_population_2to10 += is2to10_ind.m_mc_weight
+            if is2to10_ind.m_is_infected and (is2to10_ind.m_DiagnosticMeasurement[0] > 0):
+                sum_parasite_positive_2to10 += is2to10_ind.m_mc_weight
+            
+        # +1 because file T really corresponds to MSR T+1
+        if (i+1) % reporting_interval == 0:
+            duration_no_infection_streak.append(sum_no_infected_days)
+            PfPRs_2to10.append(sum_parasite_positive_2to10 / sum_population_2to10)
+            sum_population_2to10 = 0
+            sum_parasite_positive_2to10 = 0
 
         # MalariaSummaryReport.cpp, array annual_EIRs
-        vectorpopulations = [node.m_vectorpopulations for node in dtk.nodes]
-        eir_temp = [v.m_EIR_by_pool.second + v.m_EIR_by_pool.first for v in vectorpopulations[0]]
-        sum_EIR += sum(eir_temp)
+        # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        # !!! Skip T=22 because the EIR is updated in MSR::EndTimeStep() so it doesn't
+        # !!! have the same problems as the diagnostic measurements.
+        # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        if i > 22:
+            vectorpopulations = [node.m_vectorpopulations for node in dtk.nodes]
+            eir_temp = [v.m_EIR_by_pool.second + v.m_EIR_by_pool.first for v in vectorpopulations[0]]
+            sum_EIR += sum(eir_temp)
+            
+            if (i % reporting_interval) == 0:
+                annual_EIRs.append(DAYSPERYEAR * sum_EIR / reporting_interval)
+                sum_EIR = 0.0
 
-        if i % reporting_interval == 0:
-            duration_no_infection_streak.append(sum_no_infected_days)
-            annual_EIRs.append(DAYSPERYEAR * sum_EIR / reporting_interval)
-            PfPRs_2to10.append(sum_parasite_positive_2to10 / sum_population_2to10)
-            Clear()
+    comparison_duration_no_infection_streak, summary_messages = compare_spop_to_json(
+        label="NoInfectionStreak",
+        spop_channel=numpy.array(duration_no_infection_streak),
+        summary_json_channel=numpy.array(msr_no_infection_streak[Start_idx:End_idx]),
+        messages=summary_messages
+    )
+    # comparison_duration_no_infection_streak = numpy.allclose(numpy.array(duration_no_infection_streak),
+    #                                                          numpy.array(msr_no_infection_streak[Start_idx:End_idx]), atol=1e-6)
 
-    comparison_duration_no_infection_streak = numpy.allclose(numpy.array(duration_no_infection_streak),
-                                                             numpy.array(msr_no_infection_streak[Start_idx:End_idx]), atol=1e-6)
-    comparison_annual_EIRs = numpy.allclose(numpy.array(annual_EIRs), numpy.array(msr_annual_eir[Start_idx:End_idx]), atol=1e-6)
-    comparison_PfPRs_2to10 = numpy.allclose(numpy.array(PfPRs_2to10), numpy.array(msr_no_PfPRs_2to10[Start_idx:End_idx]), atol=1e-6)
+    comparison_annual_EIRs, summary_messages = compare_spop_to_json(
+        label="AnnualEIRs",
+        spop_channel=numpy.array(annual_EIRs),
+        summary_json_channel=numpy.array(msr_annual_eir[Start_idx:End_idx]),
+        messages=summary_messages
+    )
+    # comparison_annual_EIRs = numpy.allclose(numpy.array(annual_EIRs), numpy.array(msr_annual_eir[Start_idx:End_idx]), atol=1e-6)
+
+    comparison_PfPRs_2to10, summary_messages = compare_spop_to_json(
+        label="PfPRs_2to10",
+        spop_channel=numpy.array(PfPRs_2to10),
+        summary_json_channel=numpy.array(msr_no_PfPRs_2to10[Start_idx:End_idx]),
+        messages=summary_messages
+    )
+    # comparison_PfPRs_2to10 = numpy.allclose(numpy.array(PfPRs_2to10), numpy.array(msr_no_PfPRs_2to10[Start_idx:End_idx]), atol=1e-6)
 
     # print( "duration_no_infection_streak: ", duration_no_infection_streak, "     msr_no_infection_streak: ", msr_no_infection_streak )
     # print( "annual_EIRs: ", annual_EIRs, "        msr_annual_eir: ", msr_annual_eir )
@@ -97,10 +142,32 @@ def GenerateReportDataFromPopSerialization(output):
     result_dict = {"comparison_duration_no_infection_streak": str(comparison_duration_no_infection_streak),
                    "comparison_annual_EIRs" : str(comparison_annual_EIRs),
                    "comparison_PfPRs_2to10": str(comparison_PfPRs_2to10)}
-    return result_dict
+    if debug:
+        with open('DEBUG_compare_report_serialization_summary.json','w') as outfile:
+            json.dump(result_dict, outfile, sort_keys=True, indent=4)
+    return result_dict, summary_messages
+
+def compare_spop_to_json(spop_channel, summary_json_channel, label="NoInfectionStreak", messages=[]):
+    messages.append(f'TEST: Starting comparison of channel {label}\n')
+    all_good = numpy.allclose(spop_channel, summary_json_channel, atol=1e-6)
+    if all_good:
+        messages.append(f'\tGOOD: Channel {label} checks out!\n')
+    else:
+        messages.append(f'\tBAD: Channel {label} has issues.\n')
+        compare_index = 0
+        while compare_index < len(spop_channel):
+            if numpy.isclose(spop_channel[compare_index], summary_json_channel[compare_index]):
+                messages.append(f'\t\tOK: Bin at index {compare_index} checks out.\n')
+            else:
+                messages.append(f'\t\tBAD: Bin at index {compare_index} has issues.\n')
+            compare_index += 1
+    return all_good, messages
+
 
 def application(output):
     GenerateReportDataFromPopSerialization(output)
 
 # if __name__ == "__main__":
 #     application("someoutput")
+
+

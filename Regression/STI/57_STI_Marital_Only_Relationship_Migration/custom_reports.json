@@ -1,11 +1,8 @@
 {
-    "Custom_Reports" : 
-    {
-        "Use_Explicit_Dlls" : 1,
-        "ReportRelationshipMigrationTracking" :
+    "Reports": [
         {
-            "Enabled" : 1,
-            "Reports" : [ {} ]
+            "class": "ReportRelationshipMigrationTracking"
         }
-    }
+    ],
+    "Use_Defaults": 1
 }

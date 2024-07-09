@@ -57,14 +57,19 @@ class Report:
         
         self.num_tests += 1
     
-    def addFailingTest(self, scenario_path, failure_txt, insetchart_path, scenario_type):
+    def addFailingTest(self, scenario_path, failure_txt, insetchart_path, scenario_type, serialization_test_type=None):
         testcase_el = self.doc.createElement("testcase")
         testcase_el.setAttribute("name", scenario_path)
         testcase_el.setAttribute("time", "-1")
         
+        msg = scenario_path
+        if serialization_test_type != None:
+            msg = msg + " " + serialization_test_type
+        msg = msg + " failed validation!  Result data can be found at " + insetchart_path
+
         failure_el = self.doc.createElement("failure")
         failure_el.setAttribute("type", "Validation failure")
-        failure_el.setAttribute("message", scenario_path + " failed validation!  Result data can be found at " + insetchart_path)
+        failure_el.setAttribute("message", msg)
         
         failure_txt_el = self.doc.createTextNode(failure_txt)
         failure_el.appendChild(failure_txt_el)
@@ -142,8 +147,10 @@ class Report:
         self.suite_el.setAttribute("errors", str(self.num_errors))
         self.suite_el.setAttribute("time", str(time.total_seconds()))
         
-        if not os.path.exists("reports"):
-            os.makedirs("reports")
+        report_path = os.path.dirname(filename)
+        if not os.path.exists(report_path):
+            os.makedirs(report_path)
+
         with open( filename, "a" ) as report_file:
             report_file.write(self.doc.toprettyxml())
 

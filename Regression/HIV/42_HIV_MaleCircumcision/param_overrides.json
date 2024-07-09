@@ -128,6 +128,7 @@
         "Report_HIV_ByAgeAndGender_Collect_Circumcision_Data": 0,
         "Report_HIV_ByAgeAndGender_Collect_Gender_Data": 1,
         "Report_HIV_ByAgeAndGender_Collect_HIV_Data": 0,
+        "Report_HIV_ByAgeAndGender_Collect_HIV_Stage_Data": 0,
         "Report_HIV_ByAgeAndGender_Collect_IP_Data": [],
         "Report_HIV_ByAgeAndGender_Collect_Intervention_Data": [],
         "Report_HIV_ByAgeAndGender_Collect_On_Art_Data": 0,

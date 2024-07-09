@@ -12,10 +12,10 @@ import regression_utils as ru
 import regression_clg as clg
 
 class HpcMonitor(regression_local_monitor.Monitor):
-    def __init__(self, sim_id, scenario_path, report, params, suffix, config_json=None, scenario_type='tests',
+    def __init__(self, sim_id, scenario_path, report, params, suffix, config_json=None, scenario_type='tests', serialization_test_type=None,
                  priority='Normal'):
         #super(regression_local_monitor.Monitor,self).__init__( sim_id, scenario_path, report, params, config_json, scenario_type )
-        regression_local_monitor.Monitor.__init__( self, sim_id, scenario_path, report, params, config_json, scenario_type )
+        regression_local_monitor.Monitor.__init__( self, sim_id, scenario_path, report, params, config_json, scenario_type, serialization_test_type )
         #print "Running DTK execution and monitor thread for HPC commissioning."
         self.sim_root = self.params.sim_root # override base Monitor which uses local sim directory
         self.config_json = config_json
@@ -49,32 +49,20 @@ class HpcMonitor(regression_local_monitor.Monitor):
         hpc_command_line = jobsubmit_command.Commandline
 
         p = subprocess.Popen(hpc_command_line, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        p.wait(timeout=30)
-        assert p.returncode is 0, hpc_command_line
+        p.wait(timeout=60)
+        assert p.returncode == 0, hpc_command_line
 
     def run(self):
     
         self.__class__.sems.acquire()
-        def get_num_cores( some_json ):
-            num_cores = 1
-            if ('parameters' in some_json) and ('Num_Cores' in some_json['parameters']):
-                num_cores = some_json['parameters']['Num_Cores']
-            else:
-               print( "Didn't find key 'parameters/Num_Cores' in '{0}'. Using 1.".format( self.scenario_path ) )
-               
-            return int(num_cores)
-    
-        input_dir = ".;"
-        if "Geography" in self.config_json["parameters"]:
-            input_dir += os.path.join( self.params.input_root, self.config_json["parameters"]["Geography"] )
-        sim_dir = self.sim_root + "\\" + self.sim_timestamp   # can't use os.path.join() here because on linux it'll give us the wrong dir-separator...
+        self.sim_dir = self.sim_root + "/" + self.sim_timestamp   # can't use os.path.join() here because on linux it'll give us the wrong dir-separator...
         if self.suffix is not None:
             job_name = self.config_json["parameters"]["Config_Name"].replace( ' ', '_' ) + "_" + self.suffix + "_(" + self.sim_timestamp + ")"
         else:
             job_name = self.config_json["parameters"]["Config_Name"].replace( ' ', '_' ) + "_(" + self.sim_timestamp + ")"
         job_name = job_name[:79]
 
-        numcores = get_num_cores( self.config_json )
+        numcores = self.get_num_cores()
 
         hpc_resource_option = '/numcores:'
         hpc_resource_count  = str(numcores)
@@ -98,7 +86,10 @@ class HpcMonitor(regression_local_monitor.Monitor):
         eradication_bin = self.config_json['bin_path']
         eradication_options = {}
         if "Eradication" in eradication_bin:
-            eradication_options = { '--config':'config.json', '--input-path':input_dir, '--progress':' ' }
+            eradication_options = { '--config':'config.json', '--progress':' ' }
+        input_dir = self.get_input_path_from_geog( self.params.input_root )
+        if input_dir:
+            eradication_options[ "--input-path" ] = input_dir
 
         # python-script-path is optional parameter.
         if "PSP" in self.config_json:
@@ -113,20 +104,21 @@ class HpcMonitor(regression_local_monitor.Monitor):
         mpi_options = {}
         if mpi_core_option is not None:
             mpi_options[mpi_core_option] = mpi_core_count
+        #print( str( eradication_command ) )
         mpi_params = [eradication_command.Commandline]
         mpi_command = clg.CommandlineGenerator(mpi_bin, mpi_options, mpi_params)
         
         #job submit commandline
         jobsubmit_bin = 'job submit'
-        self.options['/workdir:'] = sim_dir
+        self.options['/workdir:'] = self.sim_dir
         self.options['/jobname:'] = job_name
         self.options[hpc_resource_option] = hpc_resource_count
         jobsubmit_params = [mpi_command.Commandline]
         jobsubmit_command = clg.CommandlineGenerator(jobsubmit_bin, self.options, jobsubmit_params)
 
-        #print( 'simulation command line:', eradication_command.Commandline )
-        #print( 'mpiexec command line:   ', mpi_command.Commandline )
-        #print( 'job submit command line:', jobsubmit_command.Commandline )
+        # print( 'simulation command line:', eradication_command.Commandline )
+        # print( 'mpiexec command line:   ', mpi_command.Commandline )
+        # print( 'job submit command line:', jobsubmit_command.Commandline )
 
         hpc_command_line = jobsubmit_command.Commandline
         if self.scenario_type != 'tests':
@@ -163,7 +155,7 @@ class HpcMonitor(regression_local_monitor.Monitor):
 
             if job_id == -1 and num_retries >= 5 and self.params.hide_graphs:
                 print( "Job submission failed multiple times for " + self.scenario_path + ".  Aborting this test and logging error." )
-                self.report.addErroringTest( self.scenario_path, "", sim_dir, self.scenario_type )
+                self.report.addErroringTest( self.scenario_path, "", self.sim_dir, self.scenario_type )
                 return
 
         monitor_cmd_line = "job view /scheduler:" + self.params.hpc_head_node + " " + str(job_id)
@@ -187,7 +179,7 @@ class HpcMonitor(regression_local_monitor.Monitor):
                         self.__class__.completed = self.__class__.completed + 1
                         print( self.scenario_path + " FAILED!" )
                         check_status = False
-                        self.report.addErroringTest( self.scenario_path, "", sim_dir, self.scenario_type )
+                        self.report.addErroringTest( self.scenario_path, "", self.sim_dir, self.scenario_type )
                         #self.finish(sim_dir, False)
                     if state == "Canceled":
                         self.__class__.completed = self.__class__.completed + 1
@@ -200,26 +192,14 @@ class HpcMonitor(regression_local_monitor.Monitor):
                         check_status = False
 
                         if self.scenario_type != 'pymod':
-                            with open( os.path.join(sim_dir, "status.txt"), "r" ) as status_file:
+                            with open( os.path.join(self.sim_dir, "status.txt"), "r" ) as status_file:
                                 for status_line in status_file.readlines():
                                     if status_line.startswith("Done"):
                                         time_split = status_line.split('-')[1].strip().split(':')
                                         self.duration = datetime.timedelta(hours=int(time_split[0]), minutes=int(time_split[1]), seconds=int(time_split[2]))
                                         break
 
-                        if self.scenario_type == 'tests':
-                            if self.params.all_outputs == False:
-                            # Following line is for InsetChart.json only
-                                self.verify(sim_dir)
-                            else:
-                                # Every .json file in output (not hidden with . prefix) will be used for validation
-                                for file in os.listdir( os.path.join( self.scenario_path, "output" ) ):
-                                    if ( file.endswith( ".json" ) or file.endswith( ".csv" ) or file.endswith( ".kml" ) or file.endswith( ".bin" ) or file.endswith( ".h5" ) or file.endswith( ".db" ) ) and file[0] != "." and file != "transitions.json" and "linux" not in file:
-                                        self.verify( sim_dir, file, "Channels" )
-                        elif self.scenario_type == 'science':   # self.report <> None:
-                            self.science_verify( sim_dir )
-                        elif self.scenario_type == 'pymod':   # self.report <> None:
-                            self.pymod_verify( sim_dir )
+                        self.verify_test()
 
                     break
             time.sleep(5)

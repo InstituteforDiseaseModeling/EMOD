@@ -5,8 +5,7 @@
             "Custom_Coordinator_Events": [],
             "Custom_Individual_Events": [],
             "Custom_Node_Events": [],
-            "Enable_Interventions": 1,
-            "PKPD_Model": "FIXED_DURATION_CONSTANT_EFFECT"
+            "Enable_Interventions": 1
         },
         "CLIMATE": {
             "AIR": {
@@ -145,6 +144,9 @@
             "Enable_Default_Reporting": 1,
             "Enable_Property_Output": 0,
             "Enable_Spatial_Output": 0,
+            "Inset_Chart_Include_Pregnancies": 0,
+            "Inset_Chart_Has_Interventions": [],
+            "Inset_Chart_Has_IP": [],
             "Report_Coordinator_Event_Recorder": 0,
             "Report_Event_Recorder": 0,
             "Report_Node_Event_Recorder": 0,
@@ -166,7 +168,8 @@
             "Start_Time": 0
         },
         "SERIALIZATION": {
-            "Serialization_Type": "NONE"
+            "Serialized_Population_Writing_Type": "NONE",
+            "Serialized_Population_Reading_Type": "NONE"
         },
         "STRAIN_TRACKING": {
             "Number_Basestrains": 1,
@@ -178,7 +181,6 @@
                 "Egg_Hatch_Delay_Distribution": "NO_DELAY",
                 "Egg_Hatch_Density_Dependence": "NO_DENSITY_DEPENDENCE",
                 "Egg_Saturation_At_Oviposition": "SATURATION_AT_OVIPOSITION",
-                "Enable_Delayed_Hatching_When_Habitat_Dries_Up": 0,
                 "Enable_Drought_Egg_Hatch_Delay": 0,
                 "Enable_Egg_Mortality": 0,
                 "Enable_Temperature_Dependent_Egg_Hatching": 0,
@@ -187,6 +189,7 @@
             "Enable_Vector_Aging": 0,
             "Enable_Vector_Migration": 0,
             "Enable_Vector_Mortality": 1,
+            "Enable_Vector_Species_Report" : 0,
             "HABITAT": {
                 "Air_Temperature_Offset": 0,
                 "Land_Temperature_Offset": 0,
@@ -195,23 +198,18 @@
                 "Semipermanent_Habitat_Decay_Rate": 0.01,
                 "Temporary_Habitat_Decay_Factor": 0.05
             },
-            "HEG_Fecundity_Limiting": 0.0,
-            "HEG_Homing_Rate": 0.0,
-            "HEG_Model": "OFF",
             "Human_Feeding_Mortality": 0.1,
+            "Insecticides": [],
             "Larval_Density_Dependence": "UNIFORM_WHEN_OVERPOPULATION",
             "Mosquito_Weight": 1,
             "Rainfall_In_mm_To_Fill_Swamp": 1000.0,
             "SPECIES": {
-                "Vector_Species_Names": [
-                    "arabiensis",
-                    "funestus",
-                    "gambiae"
-                ],
-                "Vector_Species_Params": {
-                    "arabiensis": {
+                "Vector_Species_Params": [
+                    {
+                        "Name" : "arabiensis",
                         "Acquire_Modifier": 0.2,
                         "Adult_Life_Expectancy": 10,
+                        "Male_Life_Expectancy": 10,
                         "Anthropophily": 0.95,
                         "Aquatic_Arrhenius_1": 84200000000,
                         "Aquatic_Arrhenius_2": 8328,
@@ -227,39 +225,22 @@
                         "Infected_Arrhenius_2": 8336,
                         "Infected_Egg_Batch_Factor": 0.8,
                         "Infectious_Human_Feed_Mortality_Factor": 1.5,
-                        "Larval_Habitat_Types": {
-                            "TEMPORARY_RAINFALL": 11250000000
-                        },
-                        "Nighttime_Feeding_Fraction": 1,
-                        "Transmission_Rate": 0.5
+                        "Habitats": [
+                            {
+                                "Habitat_Type": "TEMPORARY_RAINFALL",
+                                "Max_Larval_Capacity": 11250000000.0
+                            }
+                        ],
+                        "Microsporidia": [],
+                        "Temperature_Dependent_Feeding_Cycle": "NO_TEMPERATURE_DEPENDENCE",
+                        "Transmission_Rate": 0.5,
+                        "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_NONE"
                     },
-                    "farauti": {
-                        "Acquire_Modifier": 0.05,
-                        "Adult_Life_Expectancy": 5.9,
-                        "Anthropophily": 0.97,
-                        "Aquatic_Arrhenius_1": 84200000000,
-                        "Aquatic_Arrhenius_2": 8328,
-                        "Aquatic_Mortality_Rate": 0.1,
-                        "Cycle_Arrhenius_1": 0,
-                        "Cycle_Arrhenius_2": 0,
-                        "Cycle_Arrhenius_Reduction_Factor": 0,
-                        "Days_Between_Feeds": 2,
-                        "Egg_Batch_Size": 70,
-                        "Immature_Duration": 2,
-                        "Indoor_Feeding_Fraction": 0.05,
-                        "Infected_Arrhenius_1": 117000000000,
-                        "Infected_Arrhenius_2": 8336,
-                        "Infected_Egg_Batch_Factor": 0.8,
-                        "Infectious_Human_Feed_Mortality_Factor": 1.5,
-                        "Larval_Habitat_Types": {
-                            "BRACKISH_SWAMP": 10000000000
-                        },
-                        "Nighttime_Feeding_Fraction": 1,
-                        "Transmission_Rate": 0.8
-                    },
-                    "funestus": {
+                    {
+                        "Name" : "funestus",
                         "Acquire_Modifier": 0.2,
                         "Adult_Life_Expectancy": 10,
+                        "Male_Life_Expectancy": 10,
                         "Anthropophily": 0.95,
                         "Aquatic_Arrhenius_1": 84200000000,
                         "Aquatic_Arrhenius_2": 8328,
@@ -275,15 +256,22 @@
                         "Infected_Arrhenius_2": 8336,
                         "Infected_Egg_Batch_Factor": 0.8,
                         "Infectious_Human_Feed_Mortality_Factor": 1.5,
-                        "Larval_Habitat_Types": {
-                            "WATER_VEGETATION": 600000000
-                        },
-                        "Nighttime_Feeding_Fraction": 1,
-                        "Transmission_Rate": 0.5
+                        "Habitats": [
+                            {
+                                "Habitat_Type": "WATER_VEGETATION",
+                                "Max_Larval_Capacity": 600000000.0
+                            }
+                        ],
+                        "Microsporidia": [],
+                        "Temperature_Dependent_Feeding_Cycle": "NO_TEMPERATURE_DEPENDENCE",
+                        "Transmission_Rate": 0.5,
+                        "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_NONE"
                     },
-                    "gambiae": {
+                    {
+                        "Name" : "gambiae",
                         "Acquire_Modifier": 0.2,
                         "Adult_Life_Expectancy": 10,
+                        "Male_Life_Expectancy": 10,
                         "Anthropophily": 0.95,
                         "Aquatic_Arrhenius_1": 84200000000,
                         "Aquatic_Arrhenius_2": 8328,
@@ -299,18 +287,21 @@
                         "Infected_Arrhenius_2": 8336,
                         "Infected_Egg_Batch_Factor": 0.8,
                         "Infectious_Human_Feed_Mortality_Factor": 1.5,
-                        "Larval_Habitat_Types": {
-                            "TEMPORARY_RAINFALL": 1250000000
-                        },
-                        "Nighttime_Feeding_Fraction": 1,
-                        "Transmission_Rate": 0.5
+                        "Habitats": [
+                            {
+                                "Habitat_Type": "TEMPORARY_RAINFALL",
+                                "Max_Larval_Capacity": 1250000000.0
+                            }
+                        ],
+                        "Microsporidia": [],
+                        "Temperature_Dependent_Feeding_Cycle": "NO_TEMPERATURE_DEPENDENCE",
+                        "Transmission_Rate": 0.5,
+                        "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_NONE"
                     }
-                }
+                ]
             },
-            "Temperature_Dependent_Feeding_Cycle": "NO_TEMPERATURE_DEPENDENCE",
             "Vector_Larval_Rainfall_Mortality": "NONE",
             "Vector_Sampling_Type": "VECTOR_COMPARTMENTS_NUMBER",
-            "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_NONE",
             "Wolbachia_Infection_Modification": 1.0,
             "Wolbachia_Mortality_Modification": 1.0
         }

@@ -1,0 +1,22 @@
+{
+    "Default_Config_Path": "defaults/hiv_default_config.json",
+    "parameters": {
+        "Config_Name": "72_HIV_Sexual_Debut_Age_as_Intervention_current_age",
+        
+        "Comment": "All created individuals are expected to have their sexual debut set to MAX_HUMAN_AGE, i.e. never debut.",
+        "Simulation_Duration": 2000,
+        "Simulation_Timestep": 30,
+        "Sexual_Debut_Age_Setting_Type": "FROM_INTERVENTION"
+    },
+    "Custom_Individual_Events": [
+        "Male_SetSexualDebutAge_Event",
+        "Female_SetSexualDebutAge_Event"
+    ],
+    "Report_Event_Recorder": 1,
+    "Report_Event_Recorder_Events": [
+        "Male_SetSexualDebutAge_Event",
+        "Female_SetSexualDebutAge_Event",
+        "STIDebut"
+    ],
+    "x_Base_Population": 0.0001
+}

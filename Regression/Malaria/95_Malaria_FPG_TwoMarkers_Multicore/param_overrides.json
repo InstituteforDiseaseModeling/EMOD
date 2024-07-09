@@ -1,0 +1,79 @@
+{
+    "Default_Config_Path": "../../defaults/malaria_genetics_default_config.json",
+    "DEMOGRAPHICS": {
+        "COMMENT": "births is enabled to test when reports see population change",
+        "Enable_Birth": 1,
+        "Demographics_Filenames": [
+            "demographics.json"
+        ]
+    },
+    "MALARIA": {
+        "Falciparum_MSP_Variants": 16,
+        "Falciparum_Nonspecific_Types": 16,
+        "Falciparum_PfEMP1_Variants": 500,
+        "Parasite_Genetics": {
+            "Drug_Resistant_Genome_Locations": [ 1000000 ],
+            "HRP_Genome_Locations": [ 1000001 ]
+        }
+    },
+    "MIGRATION": {
+        "Air_Migration_Filename": "",
+        "Air_Migration_Roundtrip_Duration": 10000,
+        "Air_Migration_Roundtrip_Probability": 0,
+        "Enable_Air_Migration": 0,
+        "Enable_Family_Migration": 0,
+        "Enable_Local_Migration": 1,
+        "Enable_Migration_Heterogeneity": 0,
+        "Enable_Regional_Migration": 0,
+        "Enable_Sea_Migration": 0,
+        "Family_Migration_Filename": "",
+        "Family_Migration_Roundtrip_Duration": 0.0,
+        "Local_Migration_Filename": "LocalMigration_4_Nodes.bin",
+        "Local_Migration_Roundtrip_Duration": 10,
+        "Local_Migration_Roundtrip_Probability": 1,
+        "Migration_Model": "FIXED_RATE_MIGRATION",
+        ".Migration_Model": "NO_MIGRATION",
+        "Migration_Pattern": "SINGLE_ROUND_TRIPS",
+        "Regional_Migration_Filename": "",
+        "Regional_Migration_Roundtrip_Duration": 10000,
+        "Regional_Migration_Roundtrip_Probability": 0,
+        "Sea_Migration_Filename": "",
+        "Sea_Migration_Roundtrip_Duration": 10000,
+        "Sea_Migration_Roundtrip_Probability": 0,
+        "x_Air_Migration": 1,
+        "x_Family_Migration": 1,
+        "x_Local_Migration": 0.01,
+        "x_Regional_Migration": 1,
+        "x_Sea_Migration": 1
+    },
+    "PRIMARY": {
+        "Config_Name": "95_Malaria_FPG_TwoMarkers_Multicore_MalariaSqlReport",
+        "Geography": "MigrationTest",
+        "Python_Script_Path": "SHARED",
+        "Run_Number": 1,
+        "Num_Cores": 2,
+        "Random_Number_Generator_Policy": "ONE_PER_NODE",
+        "Simulation_Duration": 275
+    },
+    "REPORTS": {
+        "Custom_Reports_Filename": "custom_reports.json",
+        "Inset_Chart_Reporting_Include_30Day_Avg_Infection_Duration": 0
+    },
+    "VECTOR": {
+        "x_Temporary_Larval_Habitat": 0.01,
+        "Enable_Vector_Migration": 1, 
+
+        "Enable_Vector_Migration_Local": 1, 
+        "Vector_Migration_Filename_Local" : "LocalMigration_4_Nodes.bin",
+        "x_Vector_Migration_Local" : 0.01,
+
+        "Enable_Vector_Migration_Regional" : 0,
+        "Vector_Migration_Filename_Regional" : "",
+        "x_Vector_Migration_Regional" : 1.0,
+
+        "Vector_Migration_Modifier_Equation" : "EXPONENTIAL",
+        "Vector_Migration_Food_Modifier" : 0.0,
+        "Vector_Migration_Habitat_Modifier": 0.0, 
+        "Vector_Migration_Stay_Put_Modifier" : 0.0
+    }
+}

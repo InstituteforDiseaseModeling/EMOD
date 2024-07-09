@@ -1,0 +1,12 @@
+{
+    "Metadata": {
+        "Author": "stitova",
+        "NodeCount": 4,
+        "IdReference": "Gridded world grump2.5arcmin",
+        "DateCreated": "Mon Dec  7 14:17:44 2020",
+        "Tool": "convert_txt_to_bin.py",
+        "DatavalueCount": 1,
+        "MigrationType": "LOCAL_MIGRATION"
+    },
+    "NodeOffsets": "144B07A400000000144B07A50000000C144B07A600000018144B07A700000024"
+}

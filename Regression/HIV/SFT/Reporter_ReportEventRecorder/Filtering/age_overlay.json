@@ -1,0 +1,83 @@
+{
+    "Metadata": {
+          "DateCreated": "Fri Aug 20, 2014",
+          "Tool": "Hand",
+          "Author": "dklein",
+          "RegionName": "South Africa: Single Node",
+          "DataSource": "UN Population Division, 2012 Estimates",
+
+          "IdReference": "0",
+          "NodeCount": 4
+     }, 
+
+    "Defaults": 
+    { 
+        
+        "IndividualAttributes": 
+        { 
+            "AgeDistribution": 
+            { 
+                "NumDistributionAxes": 0,
+                "ResultUnits": "years",
+                "ResultScaleFactor": 365,
+                "AxisScaleFactors":  1,
+                "ResultValues": [ 0, 60],
+                "DistributionValues": [ 0.0, 1]
+            }
+        }
+     },
+    "Nodes": [ 
+        { 
+            "NodeID": 1,
+            "NodeAttributes": 
+            { 
+                "NOT_LGA_Name": "Base_Dem",
+                "InitialPopulation": 173960,
+
+                "NOTE": "The following parameters are required, but not used",
+                "Latitude": 0,
+                "Longitude": 0,
+                "Altitude": 0
+            }
+        },
+        { 
+            "NodeID": 2,
+            "NodeAttributes": 
+            { 
+                "NOT_LGA_Name": "Base_Dem",
+                "InitialPopulation": 173960,
+
+                "NOTE": "The following parameters are required, but not used",
+                "Latitude": 0,
+                "Longitude": 1,
+                "Altitude": 0
+            }
+        },
+        { 
+            "NodeID": 3,
+            "NodeAttributes": 
+            { 
+                "NOT_LGA_Name": "Base_Dem",
+                "InitialPopulation": 173960,
+
+                "NOTE": "The following parameters are required, but not used",
+                "Latitude": 1,
+                "Longitude": 0,
+                "Altitude": 0
+            }
+        },
+        { 
+            "NodeID": 4,
+            "NodeAttributes": 
+            { 
+                "NOT_LGA_Name": "Base_Dem",
+                "InitialPopulation": 173960,
+
+                "NOTE": "The following parameters are required, but not used",
+                "Latitude": 1,
+                "Longitude": 1,
+                "Altitude": 0
+            }
+        }
+    ]
+}

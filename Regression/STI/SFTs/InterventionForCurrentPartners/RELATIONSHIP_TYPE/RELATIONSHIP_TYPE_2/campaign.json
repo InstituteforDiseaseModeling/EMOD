@@ -1,0 +1,30 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender", 
+                "Target_Gender" : "FEMALE",
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "InterventionForCurrentPartners",
+                    "Cost_To_Consumer": 1.0,
+                    "Disqualifying_Properties": [],  
+                    "New_Property_Value": "", 
+                    "Minimum_Duration_Years": 0,
+                    "Prioritize_Partners_By": "RELATIONSHIP_TYPE",
+                    "Relationship_Types": ["COMMERCIAL","INFORMAL","MARITAL","TRANSITORY"],
+                    "Maximum_Partners": 1,
+                    "Event_Or_Config" : "Event",
+                    "Broadcast_Event": "This_Is_What_The_Partners_Should_Broadcast"
+                    }
+                }
+        }
+    ]
+}

@@ -1,0 +1,62 @@
+{
+    "Default_Config_Path": "../../defaults/malaria_genetics_default_config.json",
+    "DEMOGRAPHICS": {
+        "Demographics_Filenames": [
+            "demographics.json"
+        ]
+    },
+    "PRIMARY": {
+        "Config_Name": "100_Malaria_FPG_Drug_Resistance_Strain_Dominance",
+        "Custom_Reports_Filename" : "custom_reports.json",
+        "Enable_Demographics_Reporting": 0,
+        "Geography": "SamplesInput",
+        "Run_Number": 2,
+        "Simulation_Duration": 1200,
+        "logLevel_JsonConfigurable" : "WARNING"
+    },
+    "DRUGS" : {
+        "Malaria_Drug_Params": [
+            {
+                "Name": "Chloroquine",
+                "PKPD_Model": "CONCENTRATION_VERSUS_TIME",
+                "Resistances" : [
+                    {
+                        "Drug_Resistant_String": "T*",
+                        "PKPD_C50_Modifier" : 1.0,
+                        "Max_IRBC_Kill_Modifier" : 0.05
+                    },
+                    {
+                        "Drug_Resistant_String": "*T",
+                        "PKPD_C50_Modifier" : 1.0,
+                        "Max_IRBC_Kill_Modifier" : 1.0
+                    }
+                ]
+            },
+            {
+                "Name": "Quinine",
+                "PKPD_Model": "CONCENTRATION_VERSUS_TIME",
+                "Resistances" : [
+                    {
+                        "Drug_Resistant_String": "T*",
+                        "PKPD_C50_Modifier" : 1.0,
+                        "Max_IRBC_Kill_Modifier" : 1.0
+                    },
+                    {
+                        "Drug_Resistant_String": "*T",
+                        "PKPD_C50_Modifier" : 500.0,
+                        "Max_IRBC_Kill_Modifier" : 1.0
+                    }
+                ]
+            }
+        ]
+    },
+    "OTHER": {
+        "Parasite_Genetics" : {
+            "Enable_FPG_Similarity_To_Base": 0,
+            "Barcode_Genome_Locations" :        [ 100000, 2000000 ],
+            "Drug_Resistant_Genome_Locations" : [ 100001, 2000001 ],
+            "Var_Gene_Randomness_Type" : "ALL_RANDOM"
+        },
+        "x_Temporary_Larval_Habitat": 0.1
+    }
+}

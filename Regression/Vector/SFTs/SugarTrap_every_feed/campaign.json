@@ -1,0 +1,26 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config":  {
+                    "Cost_To_Consumer": 1.0,
+                    "Killing_Config" : {
+                        "Initial_Effect": 0.35,
+                        "class": "WaningEffectBox",
+                        "Box_Duration": 3
+                    },
+                    "Expiration_Distribution" : "CONSTANT_DISTRIBUTION",
+                    "Expiration_Constant" : 1000,
+                    "class": "SugarTrap"
+                }
+            }
+        }
+    ]
+}

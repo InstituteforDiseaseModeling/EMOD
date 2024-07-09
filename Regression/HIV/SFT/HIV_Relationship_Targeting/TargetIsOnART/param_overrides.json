@@ -1,0 +1,29 @@
+{
+    "parameters": {
+        "Base_Infectivity": 1e-09,
+        "x_Base_Population": 1e-05,
+        "Config_Name": "HIV_TargetIsOnART",
+        "Custom_Individual_Events": [
+            "HasHIV_GiveART",
+            "IAMNotOnART",
+            "IAMOnART"
+        ],
+        "Demographics_Filenames": [
+            "../../../input/SA_UN_demographics_extrapolated_WithProperties_Smoothed.json",
+            "../../../input/PFA_overlay.json",
+            "../../../input/InterventionStatus_overlay.json",
+            "../../../input/No_Condom_Usage_overlay.json",
+            "../../../input/PFA_formation_overlay.json"
+        ],
+        "Enable_Birth": 0,
+        "Enable_Natural_Mortality": 0,
+        "Report_Event_Recorder": 1,
+        "Report_Event_Recorder_Events": [
+            "HasHIV_GiveART",
+            "IAMNotOnART",
+            "IAMOnART"
+        ],
+        "Simulation_Duration": 100
+    },
+    "Default_Config_Path": "defaults/hiv_sft_default_config.json"
+}

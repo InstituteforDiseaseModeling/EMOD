@@ -5,13 +5,13 @@
             "Event_Coordinator_Config": {
                 "Demographic_Coverage": 1.0,
                 "Intervention_Config": {
-                    "Actual_IndividualIntervention_Config": {
-                        "Outbreak_Source": "PrevalenceIncrease",
-                        "class": "OutbreakIndividual"
-                    },
-                    "Event_Or_Config": "Config",
+                    "class": "SimpleHealthSeekingBehavior",
                     "Tendency": 0.01,
-                    "class": "SimpleHealthSeekingBehavior"
+                    "Event_Or_Config": "Config",
+                    "Actual_IndividualIntervention_Config": 
+                    {
+                        "class": "OutbreakIndividual"
+                    }
                 },
                 "Target_Demographic": "Everyone",
                 "class": "StandardInterventionDistributionEventCoordinator"
@@ -21,73 +21,6 @@
                 "class": "NodeSetAll"
             },
             "Start_Day": 1,
-            "class": "CampaignEvent"
-        },
-        {
-            "Event_Coordinator_Config": {
-                "Demographic_Coverage": 1.0,
-                "Intervention_Config": {
-                    "Actual_IndividualIntervention_Config": {
-                        "Outbreak_Source": "PrevalenceIncrease",
-                        "class": "OutbreakIndividual"
-                    },
-                    "Event_Or_Config": "Config",
-                    "Tendency": 0.9,
-                    "class": "SimpleHealthSeekingBehavior"
-                },
-                "Target_Demographic": "Everyone",
-                "class": "StandardInterventionDistributionEventCoordinator"
-            },
-            "Event_Name": "Outbreak",
-            "Nodeset_Config": {
-                "class": "NodeSetAll"
-            },
-            "Start_Day": 5000,
-            "class": "CampaignEvent"
-        },
-        {
-            "Event_Coordinator_Config": {
-                "Demographic_Coverage": 1.0,
-                "Intervention_Config": {
-                    "Actual_IndividualIntervention_Config": {
-                        "Outbreak_Source": "PrevalenceIncrease",
-                        "class": "OutbreakIndividual"
-                    },
-                    "Event_Or_Config": "Config",
-                    "Tendency": 0.1,
-                    "class": "SimpleHealthSeekingBehavior"
-                },
-                "Target_Demographic": "Everyone",
-                "class": "StandardInterventionDistributionEventCoordinator"
-            },
-            "Event_Name": "Outbreak",
-            "Nodeset_Config": {
-                "class": "NodeSetAll"
-            },
-            "Start_Day": 10000,
-            "class": "CampaignEvent"
-        },
-        {
-            "Event_Coordinator_Config": {
-                "Demographic_Coverage": 1.0,
-                "Intervention_Config": {
-                    "Actual_IndividualIntervention_Config": {
-                        "Outbreak_Source": "PrevalenceIncrease",
-                        "class": "OutbreakIndividual"
-                    },
-                    "Delay_Period_Distribution": "EXPONENTIAL_DISTRIBUTION",
-                    "Delay_Period_Exponential": 25,
-                    "Event_Or_Config": "Config",
-                    "class": "SimpleHealthSeekingBehavior"
-                },
-                "Target_Demographic": "Everyone",
-                "class": "StandardInterventionDistributionEventCoordinator"
-            },
-            "Event_Name": "Outbreak",
-            "Nodeset_Config": {
-                "class": "NodeSetAll"
-            },
-            "Start_Day": 15000,
             "class": "CampaignEvent"
         }
     ],

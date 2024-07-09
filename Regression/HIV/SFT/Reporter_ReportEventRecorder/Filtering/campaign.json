@@ -1,0 +1,20 @@
+{
+    "Use_Defaults": 1,
+    "Events": [{
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "MaleCircumcision",
+                    "Circumcision_Reduced_Acquire": 0.6,
+                    "Distributed_Event_Trigger": "I got MaleCircumcision"
+                }
+            }
+        }
+    ]
+}

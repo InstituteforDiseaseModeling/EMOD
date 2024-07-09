@@ -1,0 +1,14 @@
+{
+    "Default_Config_Path": "defaults/sti_scenario_default_config.json", 
+    "parameters": {
+        "Config_Name": "Relationship_Reporter",
+        "Run_Number" : 210,
+        "Simulation_Duration": 14600,
+        "Demographics_Filenames": ["../Inputs/uniform_demographics.json", "../Inputs/pfa_simple.json", "PFA_overlay_rates.json"],
+        "x_Base_Population": 0.2,
+		"Python_Script_Path": "SHARED",
+        "Report_Relationship_End": 1,
+		"Report_Relationship_Start": 1,
+        "Enable_Vital_Dynamics": 0
+    }
+}

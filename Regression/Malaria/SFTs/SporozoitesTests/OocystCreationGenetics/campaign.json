@@ -1,0 +1,149 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividualMalariaGenetics",
+                    "Create_Nucleotide_Sequence_From": "BARCODE_STRING",
+                    "Barcode_String": "TAAAAAAAAAAAAAAAAAAAAAAA"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividualMalariaGenetics",
+                    "Create_Nucleotide_Sequence_From": "BARCODE_STRING",
+                    "Barcode_String": "ATAAAAAAAAAAAAAAAAAAAAAA"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividualMalariaGenetics",
+                    "Create_Nucleotide_Sequence_From": "BARCODE_STRING",
+                    "Barcode_String": "ATAAAAAAAAAAAAAAAAAAAAAA"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividualMalariaGenetics",
+                    "Create_Nucleotide_Sequence_From": "BARCODE_STRING",
+                    "Barcode_String": "ATAAAAAAAAAAAAAAAAAAAAAA"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "Blocking_Config": {
+                        "Initial_Effect": 0.0,
+                        "class": "WaningEffectConstant"
+                    },
+                    "Cost_To_Consumer": 1,
+                    "Killing_Config": {
+                        "Initial_Effect": 0.0,
+                        "class": "WaningEffectConstant"
+                    },
+                    "Repelling_Config": {
+                        "Initial_Effect": 1.0,
+                        "class": "WaningEffectConstant"
+                    },
+                    "Usage_Config": {
+                        "Initial_Effect": 1.0,
+                        "Box_Duration": 30,
+                        "class": "WaningEffectBox"
+                    },
+                    "class": "SimpleBednet"
+                }
+            }
+        },
+                {
+            "class": "CampaignEvent",
+            "Start_Day": 33,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "AntimalarialDrug",
+                    "Cost_To_Consumer": 3.75, 
+                    "Drug_Type": "Chloroquine"
+                }
+            }
+        },
+                {
+            "class": "CampaignEvent",
+            "Start_Day": 33,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "Blocking_Config": {
+                        "Initial_Effect": 0.0,
+                        "class": "WaningEffectConstant"
+                    },
+                    "Cost_To_Consumer": 1,
+                    "Killing_Config": {
+                        "Initial_Effect": 0.0,
+                        "class": "WaningEffectConstant"
+                    },
+                    "Repelling_Config": {
+                        "Initial_Effect": 1.0,
+                        "class": "WaningEffectConstant"
+                    },
+                    "Usage_Config": {
+                        "Initial_Effect": 1.0,
+                        "Box_Duration": 16,
+                        "class": "WaningEffectBox"
+                    },
+                    "class": "SimpleBednet"
+                }
+            }
+        }
+    ]
+}

@@ -1,0 +1,109 @@
+{
+    "Default_Config_Path": "Vector/genetic_perf/default_config.json",
+    "parameters": {
+        "Config_Name": "17_VGP_6Gene_2Allele",
+        "Vector_Species_Params": [
+            {
+                "Name": "arabiensis",
+                "Genes": [
+                    {
+                        "Is_Gender_Gene": 0,
+                        "Alleles": [
+                            {
+                                "Name": "A1",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.5
+                            },
+                            {
+                                "Name": "A2",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.5
+                            }
+                        ],
+                        "Mutations": []
+                    },
+                    {
+                        "Is_Gender_Gene": 0,
+                        "Alleles": [
+                            {
+                                "Name": "B1",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.5
+                            },
+                            {
+                                "Name": "B2",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.5
+                            }
+                        ],
+                        "Mutations": []
+                    },
+                    {
+                        "Is_Gender_Gene": 0,
+                        "Alleles": [
+                            {
+                                "Name": "C1",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.5
+                            },
+                            {
+                                "Name": "C2",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.5
+                            }
+                        ],
+                        "Mutations": []
+                    },
+                    {
+                        "Is_Gender_Gene": 0,
+                        "Alleles": [
+                            {
+                                "Name": "D1",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.5
+                            },
+                            {
+                                "Name": "D2",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.5
+                            }
+                        ],
+                        "Mutations": []
+                    },
+                    {
+                        "Is_Gender_Gene": 0,
+                        "Alleles": [
+                            {
+                                "Name": "E1",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.5
+                            },
+                            {
+                                "Name": "E2",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.5
+                            }
+                        ],
+                        "Mutations": []
+                    },
+                    {
+                        "Is_Gender_Gene": 0,
+                        "Alleles": [
+                            {
+                                "Name": "F1",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.5
+                            },
+                            {
+                                "Name": "F2",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.5
+                            }
+                        ],
+                        "Mutations": []
+                    }
+                ]
+            }
+        ]
+    }
+}

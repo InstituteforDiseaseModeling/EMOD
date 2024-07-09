@@ -1,0 +1,22 @@
+{
+    "Default_Config_Path": "defaults/hiv_default_config.json",
+    "parameters": {
+        "Config_Name": "65_HIV_TargetHasCd4Between",
+        "logLevel_StandardEventCoordinator": "INFO",
+        "x_Base_Population": 0.0001,
+        "Simulation_Duration": 1000,
+        "Enable_Birth": 0,
+        "Enable_Natural_Mortality": 0,
+        "Demographics_Filenames": [
+            "../input/SA_UN_demographics_extrapolated_WithProperties_Smoothed.json",
+            "../input/PFA_overlay.json",
+            "../input/InterventionStatus_overlay.json",
+            "../input/No_Condom_Usage_overlay.json",
+            "PFA_formation_overlay.json"
+        ],
+        "Custom_Individual_Events": [
+            "HasHIV",
+            "NoHIV"
+        ]
+    }
+}

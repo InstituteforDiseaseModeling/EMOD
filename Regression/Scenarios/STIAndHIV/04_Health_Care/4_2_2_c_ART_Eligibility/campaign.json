@@ -119,7 +119,6 @@
                             ]
                         },
                         "Disqualifying_Properties": [],
-                        "Event_Or_Config": "Event",
                         "NOTE1": "Threshold for adult vs child guidelines",
                         "Negative_Diagnosis_Event": "ARTStaging2",
                         "New_Property_Value": "InterventionStatus:ARTStaging",
@@ -170,7 +169,6 @@
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
                         "Disqualifying_Properties": [],
-                        "Event_Or_Config": "Event",
                         "If_Active_TB": {
                             "Times": [
                                 2010.34

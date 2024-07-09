@@ -1,0 +1,1 @@
+Rel_ID,Node_ID,Rel_start_time,Rel_scheduled_end_time,Rel_actual_end_time,Rel_type (0 = TRANSITORY; 1 = INFORMAL; 2 = MARITAL; 3 = COMMERCIAL),Is_rel_outside_PFA,male_ID,female_ID,male_age,female_age,num_total_coital_acts,Termination_Reason

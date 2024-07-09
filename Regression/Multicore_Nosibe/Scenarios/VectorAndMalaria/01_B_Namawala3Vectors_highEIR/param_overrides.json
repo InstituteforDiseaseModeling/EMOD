@@ -67,16 +67,12 @@
         },
         "VECTOR": {
             "SPECIES": {
-                "Vector_Species_Names": [
-                    "arabiensis",
-                    "funestus",
-                    "gambiae"
-                ],
-                "Vector_Species_Params": {
-                    "arabiensis": {
+                "Vector_Species_Params": [
+                    {
+                        "Name": "arabiensis",
                         "Indoor_Feeding_Fraction": 1
                     }
-                }
+                ]
             }
         }
     }

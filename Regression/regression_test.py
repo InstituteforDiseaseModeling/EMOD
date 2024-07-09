@@ -23,6 +23,7 @@ import re
 import subprocess
 import sys
 import pdb
+import threading
 
 import regression_runner
 import regression_utils as ru
@@ -59,6 +60,7 @@ def get_argparser(parser = None):
     parser.add_argument("--config-constraints", nargs="?",                              help="key:value pair(s) which are used to filter the scenario list (the given key and value must be in the config.json)")
     parser.add_argument("--scons", action="store_true", default=False,                  help="Indicates scons build so look for custom DLLs in the build/64/Release directory.")
     parser.add_argument('--local', action='store_true', default=False,                  help='Run all simulations locally.')
+    parser.add_argument('--linux', action='store_true', default=False,                  help='Run on linux target')
     parser.add_argument("--print-error", action='store_true', default=False,            help="Print error message to screen.")
 
     return parser
@@ -86,7 +88,11 @@ def read_regression_files(suites):
     for suite in suites:
         if os.path.isdir(suite) and os.path.exists(os.path.join(suite, "param_overrides.json")):
             print("You specified a directory - " + suite)
-            add_regression_tests(regression_list_json, [{"path": suite}])
+            root = "tests"
+            # if this is single directory, determine if regression (tests) or science by presence of output/InsetChart.json
+            if not os.path.exists( os.path.join( suite, "output/InsetChart.json") ):
+                root = "science"
+            add_regression_tests(regression_list_json, [{"path": suite}], root)
         else:
             if not suite.endswith(".json"):
                 suite_file = suite + ".json"
@@ -169,38 +175,34 @@ def get_test_config(path, test_type, report):
     :param report: regression report (for keeping track of errors in loading)
     :return: json regression test config
     """
+    errmsg = None
+    config_json = None
+
     if test_type == "pymod":
-        return setup_pymod_directory( os.path.dirname( path ) )
+        config_json = setup_pymod_directory( os.path.dirname( path ) )
     else:
-        param_overrides_filename = os.path.join(path, "param_overrides.json")
-        if os.path.exists(param_overrides_filename):
-            return flatten_test_config(param_overrides_filename, test_type, report)
+        if not os.path.exists( path ):
+            errmsg = "Error flattening config - path does not exist: {}".format( path )
         else:
-            #print("Warning: no param_overrides.json file available, config will not be flattened")
-            try:
-                return ru.load_json(os.path.join(path, "config.json"))
-            except Exception as ex:
-                print( "Malformed config.json in: " + path ) 
+            param_overrides_filename = os.path.join(path, "param_overrides.json")
+            if os.path.exists( param_overrides_filename ):
+                try:
+                    config_json = ru.flattenConfig( param_overrides_filename )
+                except:
+                    errmsg = "Error flattening config: {} - {}".format( sys.exc_info()[0],
+                                                                        sys.exc_info()[1] )
+            else:
+                #print("Warning: no param_overrides.json file available, config will not be flattened")
+                try:
+                    config_json = ru.load_json(os.path.join(path, "config.json"))
+                except Exception as ex:
+                    errmsg = "Malformed config.json in: " + path
 
-    return None
+    if errmsg != None:
+        print(errmsg)
+        report.addErroringTest( path, errmsg, "(no simulation directory created).", test_type )
 
-def flatten_test_config(filename, test_type, report):
-    """
-    Flatten the test config for a path that contains param_overrides.json
-
-    :param filename: path to config.json
-    :param test_type: e.g. "tests", "science", etc.
-    :param report: regression report (for keeping track of errors in loading)
-    :return: flattened json regression test config
-    """
-    try:
-        if os.path.exists(filename):
-            return ru.flattenConfig(filename)
-    except:
-        print("Unexpected error while flattening config: {} - {}".format(sys.exc_info()[0], sys.exc_info()[1]))
-        report.addErroringTest(filename, "Error flattening config.", "(no simulation directory created).", test_type)
-
-    return None
+    return config_json
 
 def flatten_campaign(simcfg_path, test_type, report):
     """
@@ -235,15 +237,25 @@ def load_campjson_from_campaign(simcfg_path, enable_interventions, runner, campa
     """
     if enable_interventions == 1:
         if not campaign_filename or not os.path.exists(campaign_filename):
-            try:
-                campaign_filename = glob.glob(os.path.join(simcfg_path, "campaign_*.json"))[0]
-            except Exception as ex:
-                print( str( ex ) + " while processing " + simcfg_path )
+            print( "Caution: Didn't find {0} for {1}.".format( campaign_filename, simcfg_path ) )
+            campaign_filename = glob.glob(os.path.join(simcfg_path, "campaign_*.json"))[0]
         runner.campaign_filename = os.path.basename(campaign_filename)
-        campjson = ru.load_json(campaign_filename, lambda x: x.replace("u'", "'").replace("'", '"').strip('"'))
-        return str(campjson)
-    else:
-        return {'Events': []}
+        try:
+            # One version breaks HIV campaign scenarios, the other breaks others.
+            #campjson = ru.load_json(campaign_filename, lambda x: x.replace("u'", "'").replace("'", '"').strip('"'))
+            campjson = ru.load_json(campaign_filename)
+            #return json.dumps(campjson)
+            return campjson
+        except json.decoder.JSONDecodeError as err:
+            err_msg = "JSON Decode Error loading test campaign, {}: {}".format(campaign_filename, err)
+            sys.stderr.write(err_msg + "\n")
+            report.addErroringTest(simcfg_path, err_msg, "(no simulation directory created).", test_type)
+        except:
+            err_msg = "Unexpected error while loading campaign, {}: {} - {}".format(campaign_filename, sys.exc_info()[0], sys.exc_info()[1])
+            sys.stderr.write(err_msg + "\n")
+            report.addErroringTest(simcfg_path, err_msg, "(no simulation directory created).", test_type)
+
+    return {'Events': []}
 
 def get_exe_version(exepath):
     """
@@ -353,6 +365,228 @@ class SimulationIDGen(object):
         """Return the first id, usually used as a regression run id"""
         return self.get_simulation_id(1)
 
+def get_serialization_test_type( configjson ):
+    serialization_test_type = None
+
+    # The serialization tests for exactness work on windows and WSL but do not on CentOs.
+    # I'm out of time so we will run the full sim test and not the BEFORE and AFTER on Linux.
+    if (os.name == "nt") and ("Serialization_Test" in configjson["parameters"]):
+        if configjson["parameters"]["Serialization_Test"] == 1:
+            if "Serialized_Population_Writing_Type" not in configjson["parameters"]:
+                raise ValueError("If Serialization_Test=1, then you must define Serialized_Population_Writing_Type")
+            if configjson["parameters"]["Serialized_Population_Writing_Type"] != "TIME":
+                raise ValueError("If Serialization_Test=1, Serialized_Population_Writing_Type must equal TIME")
+
+            if "Serialization_Precision" not in configjson["parameters"]:
+                raise ValueError("If Serialization_Test=1, then you must define Serialization_Precision=FULL")
+            if configjson["parameters"]["Serialization_Precision"] != "FULL":
+                raise ValueError("If Serialization_Test=1, Serialization_Precision must equal FULL")
+
+            if "Serialization_Times" not in configjson["parameters"]:
+                raise ValueError("If Serialization_Test=1, then you must define Serialization_Times with one value")
+            if len(configjson["parameters"]["Serialization_Times"]) != 1:
+                raise ValueError("If Serialization_Test=1, Serialization_Times must have exactly one value")
+            serialization_time = configjson["parameters"]["Serialization_Times"][0]
+
+            if configjson["parameters"]["Start_Time"] != 0:
+                raise ValueError("If Serialization_Test=1, Start_Time should be zero")
+
+            if (serialization_time <= 0) or (configjson["parameters"]["Simulation_Duration"] <= serialization_time):
+                raise ValueError("If Serialization_Test=1, The serialization time should be between 0 and Simulation_Duration")
+
+            serialization_test_type = "FULL"
+
+    return serialization_test_type
+
+class SerializationTestMonitor(threading.Thread):
+    """Verify sim from serialized file gives same results as full sim
+
+    This class adds the ability to verify that a serialized population file was written
+    and read correctly (i.e. all the right object state).  It does this by running three
+    versions of the simulation:
+        - BEFORE - A simulation up to the point where the serialized file is created
+        - FULL   - The simulations for the full duration
+        - AFTER  - A simulation that reads the serialized file created in FULL and runs to the end
+    The test takes the InsetChart's created by BEFORE and AFTER, concatinates them, and compares
+    it to the saved version.  Since FULL is also compared to the saved version, we know that the
+    AFTER version was able to generated the same results as the FULL version.
+
+    To make a regression test a SerializationTest, one must do the following:
+        0) Configure a simulation to run for the full time, probably at least
+           50 timesteps past the serialization point
+        1) Add the flag "Serialization_Test" and set it to 1 in the param_overrides.json
+        2) Have "Serialized_Population_Writing_Type" set to "TIME"
+        3) Have only one timestep defined in "Serialization_Times"
+        4) Have "Serialization_Precision" set to "FULL" so that we avoid round off
+           error in the serialized file
+        For example:
+            "Serialization_Test": 1,
+            "Serialized_Population_Writing_Type": "TIME",
+            "Serialization_Precision": "FULL",
+            "Serialization_Times": [ 500 ]
+
+    WARNING: The AFTER sim will set the "Start_Time" to the time of the serialized file.
+             This means campaign events that occur before this time will not occur in the
+             AFTER sim.
+    """
+
+    def __init__( self,
+                  full_sim_thread,
+                  runner,
+                  full_sim_id,
+                  before_sim_id,
+                  after_sim_id,
+                  configjson,
+                  sim_path,
+                  report,
+                  scenario_type='tests' ):
+        threading.Thread.__init__( self )
+        self.full_sim_thread = full_sim_thread
+        self.runner = runner
+        self.full_sim_id = full_sim_id
+        self.before_sim_id = before_sim_id
+        self.after_sim_id = after_sim_id
+        self.configjson = configjson
+        self.sim_path = sim_path
+        self.report = report
+        self.scenario_type = scenario_type
+
+    def run(self):
+        # Assume full_sim_thread was started before this class was created
+        
+        # Run the sim from time 0 to serialization time
+        full_duration = self.configjson["parameters"]["Simulation_Duration"]
+        serialization_time = self.configjson["parameters"]["Serialization_Times"][0]
+        self.configjson["parameters"]["Simulation_Duration"] = serialization_time
+        before_sim_thread = self.runner.commissionFromConfigJson( self.before_sim_id,
+                                                                  self.configjson,
+                                                                  self.sim_path,
+                                                                  self.report,
+                                                                  self.scenario_type,
+                                                                  "BEFORE" )
+
+        # Wait for the FULL sim to finish so that we know we can get its serialized population file
+        self.full_sim_thread.join()
+
+        # Define the path name of the serialized file to be read
+        full_sim_dir = self.full_sim_thread.get_sim_path()
+        #full_sim_dir = os.path.join( ".." , self.full_sim_thread.sim_timestamp )
+        full_sim_output_dir = os.path.join( full_sim_dir, "output" )
+
+        base_dtk_filename = "state-{:05d}".format(serialization_time)
+
+        num_cores = 1
+        if "Num_Cores" in self.configjson["parameters"]:
+            num_cores = self.configjson["parameters"]["Num_Cores"]
+
+        file_names = []
+        if num_cores == 1:
+            dtk_filename = base_dtk_filename + ".dtk"
+            file_names.append( dtk_filename )
+        else:
+            for i in range(num_cores):
+                dtk_filename = base_dtk_filename + "-{:03d}.dtk".format(i)
+                file_names.append( dtk_filename )
+        
+        # This is here to test that a serialized file can be saved at time X but the
+        # simulation that is reading the file starts at a different time, say Day 0
+        serialized_start_time = serialization_time
+        if "Serialization_Test_Start_Time" in self.configjson["parameters"].keys():
+            serialized_start_time = float(self.configjson["parameters"]["Serialization_Test_Start_Time"])
+
+        # Configure the AFTER sim to read the serialized file created by the FULL sim
+        # Ensure that we have the AFTER sim starting the random number stream from
+        # where it was when the file was created
+        self.configjson["parameters"]["Serialized_Population_Writing_Type"] = "NONE"
+        self.configjson["parameters"]["Serialized_Population_Reading_Type"] = "READ"
+        self.configjson["parameters"]["Serialization_Mask_Node_Read"      ] = 0
+        self.configjson["parameters"]["Serialized_Population_Filenames"   ] = file_names
+        self.configjson["parameters"]["Serialized_Population_Path"        ] = full_sim_output_dir
+        self.configjson["parameters"]["Simulation_Duration"               ] = full_duration - serialization_time
+        self.configjson["parameters"]["Start_Time"                        ] = serialized_start_time
+        self.configjson["parameters"]["Enable_Random_Generator_From_Serialized_Population"] = 1
+
+        # Run the sim from serialization time to Simulation_Duration
+        after_sim_thread = self.runner.commissionFromConfigJson( self.after_sim_id,
+                                                                 self.configjson,
+                                                                 self.sim_path,
+                                                                 self.report,
+                                                                 self.scenario_type,
+                                                                 "AFTER" )
+
+        # Wait for the BEFORE and AFTER sims to finish so we can concatinate their output
+        # NOTE: These thread will not compare any output, just run the sim
+        before_sim_thread.join()
+        after_sim_thread.join()
+
+        # Concatinate the outut of the BEFORE and AFTER sims
+        before_sim_dir = before_sim_thread.get_sim_path()
+        before_sim_output_dir = os.path.join( before_sim_dir, "output" )
+        before_inset_chart_fn = os.path.join( before_sim_output_dir, "InsetChart.json" )
+        before_inset_chart_fn_new = os.path.join( before_sim_output_dir, "InsetChart-before.json" )
+        if os.path.exists( before_inset_chart_fn ):
+            os.rename( before_inset_chart_fn, before_inset_chart_fn_new )
+        else:
+            print( "Test file \"" + before_inset_chart_fn + "\" -- for " + self.sim_path + " -- does not exist." )
+            #failure_txt = "Report not generated by executable - InsetChart.json"
+            #before_sim_thread.report.addErroringTest( self.sim_path, failure_txt, before_sim_dir, self.scenario_type )
+            return
+        
+        after_sim_dir = after_sim_thread.get_sim_path()
+        after_sim_output_dir = os.path.join( after_sim_dir, "output" )
+        after_inset_chart_fn = os.path.join( after_sim_output_dir, "InsetChart.json" )
+        after_inset_chart_fn_new = os.path.join( after_sim_output_dir, "InsetChart-after.json" )
+        if os.path.exists( after_inset_chart_fn ):
+            os.rename( after_inset_chart_fn, after_inset_chart_fn_new )
+        else:
+            print( "Test file \"" + after_inset_chart_fn + "\" -- for " + self.sim_path + " -- does not exist." )
+            #failure_txt = "Report not generated by executable - InsetChart.json"
+            #after_sim_thread.report.addErroringTest( self.sim_path, failure_txt, after_sim_dir, self.scenario_type )
+            return
+
+        self.concat_inset_chart( before_inset_chart_fn_new,
+                                 after_inset_chart_fn_new,
+                                 after_inset_chart_fn )
+
+        # Since we put concatinated file in the AFTER sim directory, we will compare
+        # it with the saved results
+        after_sim_thread.serialization_test_type = "CONCAT"
+        after_sim_thread.verify(after_sim_dir,"InsetChart.json")
+
+        return
+
+    def concat_inset_chart( self, before_fn, after_fn, concat_fn ):
+        before_json = ru.load_json( before_fn )
+        after_json = ru.load_json( after_fn )
+
+        if( before_json["Header"]["Channels"] != after_json["Header"]["Channels"] ):
+            print("\nData files dont have the same number of Channels.")
+            return
+        
+        before_json["Header"]["Timesteps"] += after_json["Header"]["Timesteps"]
+
+        channels = set(before_json["Channels"])
+
+        for chan_title in channels:
+            num_steps_before = len(before_json["Channels"][chan_title]["Data"])
+            num_steps_after  = len(after_json[ "Channels"][chan_title]["Data"])
+
+            initial_value = 0
+        
+            # Notice that cumulative channels need to be handled specially
+            is_cumulative = ( chan_title.startswith("Cumulative") or
+                              chan_title.startswith("Campaign Cost") or
+                              chan_title.startswith("Births") )
+            if( is_cumulative and (num_steps_before > 0) ):
+                initial_value = before_json["Channels"][chan_title]["Data"][num_steps_before-1]
+            
+            for tstep_idx in range( 0, num_steps_after ):
+                before_json["Channels"][chan_title]["Data"].append( initial_value + after_json["Channels"][chan_title]["Data"][tstep_idx] )
+
+        with open( concat_fn, 'w' ) as handle:
+            json.dump(before_json, handle, sort_keys=True, indent=4)
+
+
 class TestRunner(object):
     """Encapsulate all the stuff for kicking off tests"""
     def __init__(self, cache_cwd, test_type, constraints_dict, report, runner):
@@ -405,15 +639,44 @@ class TestRunner(object):
                         ei = False
                         if "parameters" in configjson and "Enable_Interventions" in configjson["parameters"]:
                             ei = configjson["parameters"]["Enable_Interventions"]
-                        configjson["campaign_json"] = load_campjson_from_campaign(sim_path, ei, self.runner, campaign_file) 
+                        if campaign_file and campaign_file.endswith( ".json" ):
+                            configjson["campaign_json"] = load_campjson_from_campaign(sim_path, ei, self.runner, campaign_file) 
+                            configjson["parameters"]["Campaign_Filename"] = self.runner.campaign_filename
                 else:
-                    configjson["campaign_json"] = str(campjson)
+                    configjson["campaign_json"] = json.dumps(campjson)
 
-                # add custom reports, if they exist
-                if os.path.exists( os.path.join(sim_path, "custom_reports.json") ):
-                    configjson["custom_reports_json"] = str(ru.load_json(os.path.join(sim_path, "custom_reports.json")))
+                # add custom_reports to config
+                configjson["custom_reports_json"] = None
+                report_fn = ""
+                if "Custom_Reports_Filename" in configjson["parameters"]:
+                    cr_fn = configjson["parameters"]["Custom_Reports_Filename"]
+                    if (len(cr_fn) > 0) and cr_fn != "NoCustomReports":
+                        report_fn = os.path.join( sim_path, cr_fn )
+                if os.path.exists( report_fn ) == True:
+                    reportjson_file = open( report_fn )
+                    reportjson = json.loads( reportjson_file.read().replace( "u'", "'" ).replace( "'", '"' ).strip( '"' ) )
+                    reportjson_file.close()
+                    configjson["parameters"]["Custom_Reports_Filename"] = "custom_reports.json"
+                    configjson["custom_reports_json"] = reportjson
 
-                thread = self.runner.commissionFromConfigJson(sim_id, configjson, sim_path, self.report, self.scenario_type)
+                serialization_test_type = get_serialization_test_type( configjson )
+
+                thread = self.runner.commissionFromConfigJson(sim_id, configjson, sim_path, self.report, self.scenario_type, serialization_test_type )
+
+                if serialization_test_type != None:
+                    before_sim_id = self.sim_id_generator.get_simulation_id()
+                    after_sim_id = self.sim_id_generator.get_simulation_id()
+                    thread = SerializationTestMonitor( thread, 
+                                                       self.runner,
+                                                       sim_id,
+                                                       before_sim_id,
+                                                       after_sim_id,
+                                                       configjson,
+                                                       sim_path,
+                                                       self.report,
+                                                       self.scenario_type  )
+                    thread.start()
+
                 ru.reg_threads.append(thread)
         else:
             print("Error flattening config.  Skipping " + sim_path)
@@ -459,15 +722,24 @@ class TestRunner(object):
         """
         if len(self.constraints) != 0:
             real_params = configjson["parameters"]
+            scenario_name = ""
+            if "Config_Name" in real_params.keys():
+                scenario_name = real_params["Config_Name"]
 
             for constraint_name, constraint_value in self.constraints.items():
                 if constraint_name not in real_params.keys():
-                    print("Scenario configuration id not satisfy constaint(s). Key not present.")
-                    return False
-
-                if str(real_params[constraint_name]) != constraint_value:
-                    print("Scenario configuration did not satisfy constraint: {0} == {1} but must == {2}.".format(
-                        constraint_name, str(real_params[constraint_name]), constraint_value))
+                    print("WARNING: '{0}' configuration does not define constaint ('{1}'). Key not present.".format(
+                        scenario_name,constraint_name))
+                elif constraint_name == "Num_Cores":
+                    num_cores_constraint = int(constraint_value)
+                    num_cores_param      = int(real_params[constraint_name])
+                    if num_cores_param > num_cores_constraint:
+                        print("'{0}' configuration did not satisfy constraint: '{1}' = {2} but must <= {3}.".format(
+                            scenario_name, constraint_name, str(real_params[constraint_name]), constraint_value))
+                        return False
+                elif str(real_params[constraint_name]) != constraint_value:
+                    print("'{0}' configuration did not satisfy constraint: '{1}' = {2} but must == {3}.".format(
+                        scenario_name, constraint_name, str(real_params[constraint_name]), constraint_value))
                     return False
 
         return True
@@ -535,56 +807,66 @@ class TestRunner(object):
         """
         print("Plot sweep results...\n")
 
-        ref_json_prop = {}
-        ref_path_prop = os.path.join(sweep_path, os.path.join("output", "PropertyReport.json"))
-        if os.path.exists(ref_path_prop):
-            ref_json_prop = ru.load_json(os.path.join(self.cache_cwd, ref_path_prop))
+        file_prefix_list = []
+        file_prefix_list.append( "InsetChart" )
+        file_prefix_list.append( "PropertyReport" )
+        file_prefix_list.append( "AlleleFrequency" )
+        file_prefix_list.append( "ReportVectorGenetics" )
+        file_prefix_list.append( "ReportVectorStats" )
+        file_prefix_list.append( "ReportMalariaFiltered" )
 
-        ref_path = os.path.join(sweep_path, os.path.join("output", "InsetChart.json"))
-        ref_json = ru.load_json(os.path.join(self.cache_cwd, ref_path))
+        ref_dir_path = os.path.join(sweep_path, "output" )
+        ref_dir_path = os.path.join(self.cache_cwd, ref_dir_path)
 
-        (all_data, all_data_prop) = self.get_sweep_results(ref_path_prop, sweep_out_file)
+        ref_file_list = []
+        for ref_file_name in os.listdir( ref_dir_path ):
+            if ref_file_name.endswith(".json") and not ref_file_name.endswith(".linux.json"):
+                for prefix in file_prefix_list:
+                    if ref_file_name.startswith( prefix ):
+                        ref_file_list.append( ref_file_name )
 
         param_counts = []
 
         for param_name in self.param_names:
             param_counts.append(str(len(self.param_values[param_name])))
 
-        plot_title = "Sweep over " + ", ".join(self.param_names).replace(':', '_') + " (" + ", ".join(param_counts) + ") values"
+        plot_title_prefix = os.path.basename( sweep_path )
+        plot_title_prefix = plot_title_prefix + "\nSweep over " + ", ".join(self.param_names).replace(':', '_') + " (" + ", ".join(param_counts) + ") values"
         os.chdir(self.cache_cwd)
         import plotAllCharts
-        plotAllCharts.plotBunch(all_data, plot_title, ref_json)
 
-        if os.path.exists(ref_path_prop):
-            plotAllCharts.plotBunch(all_data_prop, plot_title, ref_json_prop)
+        for ref_file_name in ref_file_list:
+            ref_path = os.path.join( ref_dir_path, ref_file_name )
+            ref_json = ru.load_json( ref_path )
+            results_data = self.get_sweep_results( ref_file_name, sweep_out_file )
+            plot_title = plot_title_prefix + "\n" + ref_file_name
+            plotAllCharts.plotBunch( results_data, plot_title, ref_json )
 
-    def get_sweep_results(self, ref_path_prop, out_file=None):
+
+    def get_sweep_results(self, file_name, out_file=None):
         """
         Get sweep results for a sweep run, dump all simulation info to file if desired
 
-        :param ref_path_prop: path to the PropertyReport.json output file
+        :param file_name The name of the file expected in the output directory to get its JSON
         :param out_file: file to dump all simulation directories to
-        :return: (collected inset chart data, collected property report data)
+        :return: collected json data
         """
-        all_data = []
-        all_data_prop = []
+        results_data = []
         sim_dirs = []
 
         for reg_thread in ru.reg_threads:
-            sim_dir = os.path.join(reg_thread.sim_root, reg_thread.sim_timestamp)
-            sim_dirs.append(sim_dir)
-            icj_filename = os.path.join(sim_dir, os.path.join("output", "InsetChart.json"))
-            icj_json = ru.load_json(icj_filename)
-            all_data.append(icj_json)
-            if os.path.exists(ref_path_prop):
-                prj_json = ru.load_json(os.path.join(sim_dir, os.path.join("output", "PropertyReport.json")))
-                all_data_prop.append(prj_json)
+            sim_dir = os.path.join( reg_thread.sim_root, reg_thread.sim_timestamp )
+            sim_dirs.append( sim_dir )
+            sim_filename = os.path.join( sim_dir, os.path.join( "output", file_name ) )
+            sim_json = ru.load_json( sim_filename )
+            results_data.append( sim_json )
 
         if out_file:
             with open( out_file, "w" ) as outputs:
                 outputs.write( json.dumps( sim_dirs, indent=4, sort_keys=True ) )
 
-        return (all_data, all_data_prop)
+        return results_data
+
 
     def print_report_results(self):
         """Print message containing report summary results"""
@@ -621,7 +903,11 @@ def main():
     science = "science" in test_type
     sweep = "sweep" in test_type
 
-    ru.version_string = get_exe_version(params.executable_path)
+    if test_type != "pymod":
+        if params.linux:
+            ru.version_string = "<na:linux>"
+        else:
+            ru.version_string = get_exe_version(params.executable_path)
 
     # create report
     report = regression_report.Report(params, ru.version_string)
@@ -676,7 +962,7 @@ def main():
     if not (sweep and not science):
         test_runner.print_report_results()
 
-    if ru.final_warnings is not "":
+    if ru.final_warnings != "":
         print("----------------")
         print(ru.final_warnings)
         print("----------------")

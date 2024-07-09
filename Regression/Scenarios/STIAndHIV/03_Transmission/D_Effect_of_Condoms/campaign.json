@@ -30,7 +30,8 @@
             {
                 "class": "StandardInterventionDistributionEventCoordinator",
                 "Demographic_Coverage": 0.5,
-                "Target_Demographic": "Everyone",
+                "Target_Demographic": "ExplicitGender",
+                "Target_Gender": "Male",
                 "Intervention_Config":
                 {
                     "class": "STIBarrier",
@@ -39,7 +40,10 @@
                     "Late": 1,
                     "MidYear": 2030,
                     "Rate":1,
-                    "Relationship_Type": "TRANSITORY"
+                    "Relationship_Type": "TRANSITORY",
+                    "Usage_Duration_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Usage_Duration_Constant": 100000,
+                    "Usage_Expiration_Event": "NewMalariaInfectionObject"
                 }
             }
         }

@@ -1,0 +1,26 @@
+{
+   "Reports": [
+        {
+            "class": "ReportInfectionStatsMalaria",
+            "Start_Day": 3860,
+            "End_Day": 3880
+        },
+        {
+            "class": "ReportInfectionDuration",
+            "Start_Day": 3855,
+            "End_Day": 4000
+        },
+        {
+            "class": "ReportMalariaFilteredIntraHost",
+            "Filename_Suffix": "kids_400",
+            "Start_Day": 3600,
+            "End_Day": 5000,
+            "Node_IDs_Of_Interest": [
+                340461476
+            ],
+            "Min_Age_Years": 0.0,
+            "Max_Age_Years": 4.999
+        }
+   ],
+   "Use_Defaults": 1
+}

@@ -1,0 +1,32 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List":[340461477]
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "Blocking_Config": {
+                        "Initial_Effect": 1,
+                        "class": "WaningEffectConstant"
+                    },
+                    "Cost_To_Consumer": 1,
+                    "Killing_Config": {
+                        "Initial_Effect": 0.0,
+                        "class": "WaningEffectConstant"
+                    },
+                    "Repelling_Config": {
+                        "Initial_Effect": 0.5,
+                        "class": "WaningEffectConstant"
+                    },
+                    "class": "SpatialRepellent"
+                }
+            }
+        }
+    ]
+}

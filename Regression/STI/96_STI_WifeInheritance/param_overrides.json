@@ -1,0 +1,56 @@
+{
+    "Default_Config_Path": "./defaults/sti_default_config.json", 
+    "parameters": {
+        "Config_Name": "96_STI_WifeInheritance",
+        "Base_Year": 2000.0,
+        "Simulation_Duration": 950, 
+        "Simulation_Timestep": 1,
+        
+        "Enable_Vital_Dynamics": 1,
+        "Enable_Birth": 0,
+        "Demographics_Filenames": [
+            "../../HIV/input/SA_UN_demographics.json",
+            "../../HIV/input/PFA_overlay.json",
+            "PFA_Concurrency.json"
+        ],
+        "Custom_Individual_Events" : [
+            "Started_Purification",
+            "Started_Inherited_Marriage"
+        ],
+        "Enable_Disease_Mortality": 0,
+        "Base_Mortality": 0.01, 
+        "Base_Infectivity": 0.5, 
+        
+        "Incubation_Period_Distribution": "CONSTANT_DISTRIBUTION",
+        "Incubation_Period_Constant": 1,
+        "Infectious_Period_Distribution": "GAUSSIAN_DISTRIBUTION",
+        "Infectious_Period_Gaussian_Mean": 25,
+        "Infectious_Period_Gaussian_Std_Dev": 10,
+        
+        "Min_Days_Between_Adding_Relationships": 1, 
+        
+        "Enable_Demographics_Reporting": 0,
+        "Enable_Property_Output": 1,
+        "Inset_Chart_Has_IP": [ "WifeInheritanceStage" ],
+        "Inset_Chart_Has_Interventions": [ "WaitToStartPurifyingRelationship" ],
+        "Report_Relationship_Start": 1,
+        "Report_Relationship_End": 1,
+        "Report_Transmission": 1,
+        
+        "Report_Coital_Acts": 1,
+        "Report_Coital_Acts_Start_Year": 1961.5,
+        "Report_Coital_Acts_End_Year": 2100,
+        "Report_Coital_Acts_Node_IDs_Of_Interest": [],
+        "Report_Coital_Acts_Min_Age_Years" : 0.0,
+        "Report_Coital_Acts_Max_Age_Years" : 125.0,
+        "Report_Coital_Acts_Must_Have_IP_Key_Value" : "",
+        "Report_Coital_Acts_Must_Have_Intervention" : "",
+        "Report_Coital_Acts_Has_Intervention_With_Name":[],
+        "Report_Coital_Acts_Individual_Properties":["WifeInheritanceStage","IsPurifier","CanInheritWives"],
+        "Report_Coital_Acts_Relationship_Type": "COMMERCIAL",
+        "Report_Coital_Acts_Partners_With_IP_Key_Value":["IsPurifier:YES","CanInheritWives:YES","WifeInheritanceStage:PURIFICATION","WifeInheritanceStage:INHERITED_MARRIAGE"],
+        
+        "x_Base_Population": 0.002,
+        "x_Other_Mortality": 40.0
+    }
+}

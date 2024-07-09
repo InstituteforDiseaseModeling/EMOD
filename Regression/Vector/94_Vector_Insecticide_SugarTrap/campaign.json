@@ -1,0 +1,49 @@
+{
+    "Events": [
+        {
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 1.0, 
+                    "Killing_Config" : {
+                        "Decay_Time_Constant": 100, 
+                        "Initial_Effect": 0.7, 
+                        "class": "WaningEffectExponential"
+                    },
+                    "Expiration_Distribution" : "CONSTANT_DISTRIBUTION",
+                    "Expiration_Constant" : 150,
+                    "Insecticide_Name" : "carbamate",
+                    "class": "SugarTrap"
+                }, 
+                "class": "StandardInterventionDistributionEventCoordinator"
+            }, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Start_Day": 100, 
+            "class": "CampaignEvent"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 1.0, 
+                    "Killing_Config" : {
+                        "Decay_Time_Constant": 100, 
+                        "Initial_Effect": 0.7, 
+                        "class": "WaningEffectExponential"
+                    },
+                    "Expiration_Distribution" : "CONSTANT_DISTRIBUTION",
+                    "Expiration_Constant" : 150,
+                    "Insecticide_Name" : "pyrethroid",
+                    "class": "SugarTrap"
+                }, 
+                "class": "StandardInterventionDistributionEventCoordinator"
+            }, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Start_Day": 300, 
+            "class": "CampaignEvent"
+        }
+    ], 
+    "Use_Defaults": 1
+}

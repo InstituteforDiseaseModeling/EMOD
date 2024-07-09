@@ -27,7 +27,7 @@
         "Custom_Coordinator_Events": [],
         "Custom_Individual_Events": [],
         "Custom_Node_Events": [],
-        "Custom_Reports_Filename": "NoCustomReports",
+        "Custom_Reports_Filename": "",
         "Death_Rate_Dependence": "NONDISEASE_MORTALITY_BY_AGE_AND_GENDER",
         "Default_Geography_Initial_Node_Population": 1000,
         "Default_Geography_Torus_Size": 10,
@@ -89,6 +89,9 @@
         "Infection_Updates_Per_Timestep": 1,
         "Infectious_Period_Distribution": "CONSTANT_DISTRIBUTION",
         "Infectivity_Scale_Type": "CONSTANT_INFECTIVITY",
+        "Inset_Chart_Include_Pregnancies": 0,
+        "Inset_Chart_Has_Interventions": [],
+        "Inset_Chart_Has_IP": [],
         "Job_Node_Groups": "Chassis08",
         "Job_Priority": "BELOWNORMAL",
         "Land_Temperature_Filename": "",
@@ -110,7 +113,6 @@
         "Num_Cores": 1,
         "Number_Basestrains": 1,
         "Number_Substrains": 1,
-        "PKPD_Model": "FIXED_DURATION_CONSTANT_EFFECT",
         "Population_Density_C50": 30,
         "Population_Density_Infectivity_Correction": "CONSTANT_INFECTIVITY",
         "Population_Scale_Type": "USE_INPUT_FILE",
@@ -137,7 +139,7 @@
         "Sample_Rate_20_Plus": 1,
         "Sample_Rate_5_9": 1,
         "Sample_Rate_Birth": 1,
-        "Serialization_Type": "NONE",
+        "Serialized_Population_Writing_Type": "NONE",
         "Simulation_Duration": 60,
         "Simulation_Timestep": 1,
         "Simulation_Type": "GENERIC_SIM",
@@ -153,6 +155,7 @@
         "x_Birth": 1,
         "x_Other_Mortality": 0,
         "Incubation_Period_Constant": 0,
-        "Infectious_Period_Constant": 60
+        "Infectious_Period_Constant": 60,
+        "Serialized_Population_Reading_Type": "NONE"
     }
 }

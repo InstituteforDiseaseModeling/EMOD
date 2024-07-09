@@ -1,4 +1,4 @@
-Time, NodeID, NumIndividuals, NumInfected, NodeProp=InterventionStatus, NodeProp=Place, NodeProp=Risk
+Time,NodeID,NumIndividuals,NumInfected,NodeProp=InterventionStatus,NodeProp=Place,NodeProp=Risk
 0,100,1000,56,SPRAYED_B,RURAL,LOW
 0,99,990,49,NONE,RURAL,MED
 0,98,980,52,NONE,RURAL,LOW

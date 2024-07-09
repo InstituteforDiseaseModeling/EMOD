@@ -1,11 +1,8 @@
 {
-    "Custom_Reports" : 
-    {
-        "Use_Explicit_Dlls" : 1,
-        "MalariaPatientJSONReport" :
+    "Reports": [
         {
-            "Enabled" : 1,
-            "Reports" : [ {} ]
+            "class": "MalariaPatientJSONReport"
         }
-    }
+    ],
+    "Use_Defaults": 1
 }

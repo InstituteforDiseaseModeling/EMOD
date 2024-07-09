@@ -1,0 +1,34 @@
+{
+    "parameters": {
+        "CD4_At_Death_LogLogistic_Scale": 510.63,
+        "Config_Name": "ARTMortalityTable_ARTDuration",
+        "Demographics_Filenames": [
+            "../../../input/SA_UN_demographics_extrapolated_WithProperties_Smoothed.json",
+            "../../../input/PFA_overlay.json",
+            "./IP_overlay.json"
+        ],
+        "Enable_Birth": 0,
+        "Enable_Natural_Mortality": 0,
+        "HIV_Adult_Survival_Scale_Parameter_Intercept": 41.182,
+        "HIV_Age_Max_for_Adult_Age_Dependent_Survival": 75.0,
+        "HIV_Age_Max_for_Child_Survival_Function": 75.0,
+        "HIV_Child_Survival_Rapid_Progressor_Fraction": 0,
+        "HIV_Child_Survival_Slow_Progressor_Scale": 56.0,
+        "HIV_Child_Survival_Slow_Progressor_Shape": 0.05,
+        "Report_Event_Recorder": 1,
+        "Report_Event_Recorder_Events": [
+            "DiseaseDeaths",
+            "StartedART",
+            "StoppedART"
+        ],
+        "Report_Event_Recorder_Individual_Properties": [
+            "QualityOfCare"
+        ],
+        "Report_Event_Recorder_PropertyChange_IP_Key_Of_Interest" : "",
+        "Report_HIV_Period": 30,
+        "Simulation_Duration": 30000,
+        "Simulation_Timestep": 2,
+        "x_Other_Mortality": 0
+    },
+    "Default_Config_Path": "defaults/hiv_sft_default_config.json"
+}

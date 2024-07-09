@@ -1,0 +1,10 @@
+{
+    "Reports": [
+        {
+            "Age_Bins": [],
+            "Stratify_By_Gender": 0,
+            "class": "ReportNodeDemographicsMalaria"
+        }
+    ],
+    "Use_Defaults": 1
+}

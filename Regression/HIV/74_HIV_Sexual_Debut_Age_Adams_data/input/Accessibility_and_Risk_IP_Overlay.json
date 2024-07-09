@@ -1,0 +1,141 @@
+{
+   "Metadata": {
+      "Author": "abershteyn + aakullian",
+      "DateCreated": "May-2018",
+      "IdReference": "0",
+      "NodeCount": 1,
+      "RegionName": "Rakai Country",
+      "Tool": "Notepad++, Matlab R2016a, Excel for MS Office 2013"
+   },
+   "Nodes": [
+      {
+         "IndividualProperties": [
+            {
+               "Comment": "100% Healthcare Accessible",
+               "Initial_Distribution": [
+                  1,
+                  0
+               ],
+               "Property": "Accessibility",
+               "Transitions": [],
+               "Values": [
+                  "Yes",
+                  "No"
+               ]
+            },
+            {
+               "Initial_Distribution": [
+                  0.5,
+                  0.5
+               ],
+               "NOTE_TO_EDINAH": "Use this to create an embedded randomization for indirect effect of PrEP and VMMC",
+               "Property": "DividePopulationInHalf",
+               "Transitions": [],
+               "Values": [
+                  "FirstHalf",
+                  "SecondHalf"
+               ]
+            },
+            {
+               "Initial_Distribution": [
+                  0,
+                  1
+               ],
+               "Property": "WillDoTraditionalMC",
+               "Transitions": [],
+               "Values": [
+                  "Yes",
+                  "No"
+               ]
+            },
+            {
+               "Initial_Distribution": [
+                  1,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0,
+                  0
+               ],
+               "Property": "CascadeState",
+               "Transitions": [],
+               "Values": [
+                  "",
+                  "CommercialSex",
+                  "ARTStaging",
+                  "ARTStagingDiagnosticTest",
+                  "LinkingToART",
+                  "LinkingToPreART",
+                  "OnART",
+                  "OnPreART",
+                  "HCTTestingLoop",
+                  "HCTUptakeAtDebut",
+                  "HCTUptakePostDebut",
+                  "TestingOnANC",
+                  "TestingOnChild6w",
+                  "TestingOnSymptomatic",
+                  "LostForever",
+                  "VMMC"
+               ]
+            },
+            {
+               "Initial_Distribution": [
+                  0.6289163361055321,
+                  0.3710836638944679,
+                  0
+               ],
+               "Initial_Distribution__KP_Risk_Rakai": "<-- MARKER",
+               "Property": "Risk",
+               "Transitions": [],
+               "Values": [
+                  "LOW",
+                  "MEDIUM",
+                  "HIGH"
+               ]
+            },
+            {
+               "Comment": "Received initial first year immunizations, if VaccineState yes, eligible for boosters",
+               "Initial_Distribution": [
+                  0,
+                  1
+               ],
+               "Property": "VaccineState",
+               "Transitions": [],
+               "Values": [
+                  "Yes",
+                  "No"
+               ]
+            },
+            {
+               "Comment": "Fraction of viral load strata for inidivudals on ART, national levels for South Africa 2015",
+               "Initial_Distribution": [
+                  0.778,
+                  0.037,
+                  0.123,
+                  0.062
+               ],
+               "Property": "FractionViralLoadStrataOnART",
+               "Transitions": [],
+               "Values": [
+                  "ViralLoad0to399",
+                  "ViralLoad400to999",
+                  "ViralLoad1000to9999",
+                  "ViralLoad10000toInfinity"
+               ]
+            }
+         ],
+         "NodeID": 1,
+         "NodeName": "Rakai"
+      }
+   ]
+}

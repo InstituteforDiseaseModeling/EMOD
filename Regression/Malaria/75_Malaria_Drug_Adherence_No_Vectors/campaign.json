@@ -15,9 +15,8 @@
                 "Target_Demographic": "Everyone",
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
-                    "class": "OutbreakIndividualMalaria",
-                    "Antigen": 0,
-                    "Genome_Markers": [ ] 
+                    "class": "OutbreakIndividual",
+                    "Antigen": 0
                 }
             }
         },
@@ -38,7 +37,6 @@
                      "class": "AntimalarialDrug",
                      "Dont_Allow_Duplicates" : 1,
                      "Cost_To_Consumer": 1, 
-                     "Dosing_Type": "FullTreatmentCourse", 
                      "Drug_Type": "TestDrug"
                 }
             }
@@ -60,8 +58,13 @@
                     "class": "AdherentDrug",
                     "Dont_Allow_Duplicates" : 1,
                     "Cost_To_Consumer": 1,
-                    "Drug_Type": "TestDrug",
-                    "Dosing_Type": "FullTreatmentCourse",
+                    "Doses" : [
+                        [ "TestDrug" ],
+                        [ "TestDrug" ],
+                        [ "TestDrug" ],
+                        [ "TestDrug" ]
+                    ],
+                    "Dose_Interval" : 5,
                     "Adherence_Config" : {
                         "class": "WaningEffectMapCount",
                         "Initial_Effect" : 1.0,
@@ -95,8 +98,13 @@
                     "class": "AdherentDrug",
                     "Dont_Allow_Duplicates" : 1,
                     "Cost_To_Consumer": 1,
-                    "Drug_Type": "TestDrug",
-                    "Dosing_Type": "FullTreatmentCourse",
+                    "Doses" : [
+                        [ "TestDrug" ],
+                        [ "TestDrug" ],
+                        [ "TestDrug" ],
+                        [ "TestDrug" ]
+                    ],
+                    "Dose_Interval" : 5,
                     "Adherence_Config" : {
                         "class": "WaningEffectMapCount",
                         "Initial_Effect" : 1.0,
@@ -130,8 +138,13 @@
                     "class": "AdherentDrug",
                     "Dont_Allow_Duplicates" : 1,
                     "Cost_To_Consumer": 1,
-                    "Drug_Type": "TestDrug",
-                    "Dosing_Type": "FullTreatmentCourse",
+                    "Doses" : [
+                        [ "TestDrug" ],
+                        [ "TestDrug" ],
+                        [ "TestDrug" ],
+                        [ "TestDrug" ]
+                    ],
+                    "Dose_Interval" : 5,
                     "Adherence_Config" : {
                         "class": "WaningEffectMapCount",
                         "Initial_Effect" : 1.0,
@@ -165,8 +178,13 @@
                     "class": "AdherentDrug",
                     "Dont_Allow_Duplicates" : 1,
                     "Cost_To_Consumer": 1,
-                    "Drug_Type": "TestDrug",
-                    "Dosing_Type": "FullTreatmentCourse",
+                    "Doses" : [
+                        [ "TestDrug" ],
+                        [ "TestDrug" ],
+                        [ "TestDrug" ],
+                        [ "TestDrug" ]
+                    ],
+                    "Dose_Interval" : 5,
                     "Adherence_Config" : {
                         "class": "WaningEffectMapCount",
                         "Initial_Effect" : 1.0,
@@ -200,8 +218,13 @@
                     "class": "AdherentDrug",
                     "Dont_Allow_Duplicates" : 1,
                     "Cost_To_Consumer": 1,
-                    "Drug_Type": "TestDrug",
-                    "Dosing_Type": "FullTreatmentCourse",
+                    "Doses" : [
+                        [ "TestDrug" ],
+                        [ "TestDrug" ],
+                        [ "TestDrug" ],
+                        [ "TestDrug" ]
+                    ],
+                    "Dose_Interval" : 5,
                     "Adherence_Config" : {                        
                         "class" : "WaningEffectCombo",
                         "Add_Effects" : 0,
@@ -230,7 +253,7 @@
                     "Non_Adherence_Options" : [ "NEXT_UPDATE", "NEXT_DOSAGE_TIME", "LOST_TAKE_NEXT", "STOP" ],
                     "Non_Adherence_Distribution" : [ 0.4,             0.3,               0.2,          0.1 ],
                     "Max_Dose_Consideration_Duration" : 40,
-                    "Took_Dose_Event" : "TBActivation"
+                    "Took_Dose_Event" : "PFA_NoPartnerFound"
                      
                 }
             }

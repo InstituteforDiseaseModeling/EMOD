@@ -1,0 +1,35 @@
+
+{ 
+    "Metadata": 
+    { 
+        "DateCreated": "Fri Oct 7, 2016",
+        "Tool": "notepad",
+        "Author": "Daniel Bridenbecker",
+        "IdReference": "SampleContent",
+        "NodeCount" : 1
+    },
+    "Defaults": 
+    { 
+        "IndividualProperties": [ 
+            { 
+                "Property": "Risk",
+                "Values": [
+                    "LOW", 
+                    "MEDIUM", 
+                    "HIGH"
+                ],
+                "Initial_Distribution": [ 
+                    0.34, 
+                    0.33,
+                    0.33
+                ],
+                "Transitions": []
+            }
+        ]
+    },
+    "Nodes": [
+        {
+            "NodeID": 1
+        }
+    ]
+}

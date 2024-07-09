@@ -1,0 +1,12 @@
+{
+    "Reports": [
+        {
+            "Gender": "VECTOR_FEMALE",
+            "Species": "arabiensis",
+            "Stratify_By": "GENOME",
+            "Combine_Similar_Genomes": 1,
+            "class": "ReportVectorGenetics"
+        }
+    ],
+    "Use_Defaults": 1
+}

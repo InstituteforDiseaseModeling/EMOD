@@ -1,0 +1,115 @@
+{
+    "Events": [
+        {
+            "README": "Test the negative response additions of StandardDiagnostic over SimpleiDiagnostic.",
+            "class": "CampaignEvent",
+            "Start_Day": 10,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 0.1,
+                "Intervention_Config": {
+                    "class": "SimpleVaccine",
+                    "Cost_To_Consumer": 1,
+                    "Vaccine_Take": 1,
+                    "Vaccine_Type": "AcquisitionBlocking",
+                    "Waning_Config": {
+                        "class": "WaningEffectBox",
+                        "Box_Duration": 40, 
+                        "Initial_Effect": 0.75
+                    }
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 50,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "StandardDiagnostic",
+                    "Base_Sensitivity": 1.0,
+                    "Base_Specificity": 1.0,
+                    "Cost_To_Consumer": 1.0,
+                    "Days_To_Diagnosis": 0.0,
+                    "Treatment_Fraction": 1.0,
+                    "Event_Or_Config": "Config",
+                    "Positive_Diagnosis_Config": {
+                        "class": "BroadcastEvent",
+                        "Broadcast_Event" : "TestedPositive"
+                    },
+                    "Negative_Diagnosis_Config": {
+                        "class": "SimpleVaccine",
+                        "Cost_To_Consumer": 1,
+                        "Vaccine_Take": 1,
+                        "Vaccine_Type": "AcquisitionBlocking",
+                        "Waning_Config": {
+                            "class": "WaningEffectBox",
+                            "Box_Duration": 40, 
+                            "Initial_Effect": 0.75
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 99,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Target_Demographic": "Everyone",
+                    "Demographic_Coverage": 1.0,
+                    "Trigger_Condition_List": [ "TestedNegative" ],
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "SimpleVaccine",
+                        "Cost_To_Consumer": 1,
+                        "Vaccine_Take": 1,
+                        "Vaccine_Type": "AcquisitionBlocking",
+                        "Waning_Config": {
+                            "class": "WaningEffectBox",
+                            "Box_Duration": 40, 
+                            "Initial_Effect": 0.75
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 100,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "StandardDiagnostic",
+                    "Base_Sensitivity": 1.0,
+                    "Base_Specificity": 1.0,
+                    "Cost_To_Consumer": 1.0,
+                    "Days_To_Diagnosis": 0.0,
+                    "Treatment_Fraction": 1.0,
+                    "Event_Or_Config": "Event",
+                    "Positive_Diagnosis_Event": "TestedPositive",
+                    "Negative_Diagnosis_Event": "TestedNegative"
+                }
+            }
+        }
+    ],
+    "Use_Defaults": 1
+}

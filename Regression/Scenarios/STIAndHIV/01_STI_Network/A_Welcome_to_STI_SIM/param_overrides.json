@@ -10,6 +10,17 @@
         "Report_Relationship_Start": 1,
         "Report_Relationship_End": 1,
         "Report_Transmission": 1,
-        "Report_Coital_Acts": 1
+        "Report_Coital_Acts": 1,
+        "Report_Coital_Acts_Start_Year": 1900,
+        "Report_Coital_Acts_End_Year": 2100,
+        "Report_Coital_Acts_Node_IDs_Of_Interest": [],
+        "Report_Coital_Acts_Min_Age_Years" : 0.0,
+        "Report_Coital_Acts_Max_Age_Years" : 125.0,
+        "Report_Coital_Acts_Must_Have_IP_Key_Value" : "",
+        "Report_Coital_Acts_Must_Have_Intervention" : "",
+        "Report_Coital_Acts_Has_Intervention_With_Name":[],
+        "Report_Coital_Acts_Individual_Properties":[],
+        "Report_Coital_Acts_Relationship_Type": "NA",
+        "Report_Coital_Acts_Partners_With_IP_Key_Value":[]
     }
 }

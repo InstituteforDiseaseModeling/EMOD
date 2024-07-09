@@ -26,6 +26,7 @@
         },
         "PRIMARY": {
             "Config_Name": "54_Non_Square_PFA",
+            "Custom_Reports_Filename" : "custom_reports.json",
             "Run_Number": 1,
             "Simulation_Duration": 1000
         },

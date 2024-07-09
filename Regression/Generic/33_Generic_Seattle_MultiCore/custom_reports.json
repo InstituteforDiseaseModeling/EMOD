@@ -1,0 +1,8 @@
+{
+    "Reports": [
+        {
+            "class" : "ReportSimulationStats"
+        }
+    ],
+    "Use_Defaults": 1
+}

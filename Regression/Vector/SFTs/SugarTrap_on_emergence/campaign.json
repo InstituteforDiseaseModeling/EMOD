@@ -1,0 +1,46 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "SpaceSpraying",
+                    "Cost_To_Consumer": 1.0,
+                    "Spray_Coverage": 1.0,
+                    "Killing_Config": {
+                        "Box_Duration": 2,
+                        "Initial_Effect": 1,
+                        "class": "WaningEffectBox"
+                    }
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config":  {
+                    "Cost_To_Consumer": 1.0,
+                    "Killing_Config" : {
+                        "Initial_Effect": 0.25,
+                        "class": "WaningEffectConstant",
+                        "Box_Duration": 10
+                    },
+                    "Expiration_Distribution" : "CONSTANT_DISTRIBUTION",
+                    "Expiration_Constant" : 1000,
+                    "class": "SugarTrap"
+                }
+            }
+        }
+    ]
+}

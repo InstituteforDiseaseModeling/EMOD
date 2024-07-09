@@ -10,7 +10,6 @@
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever"
                         ],
-                        "Event_Or_Config": "Event",
                         "Female_Multiplier": 1,
                         "Interpolation_Order": 1,
                         "Negative_Diagnosis_Event": "OnART5",
@@ -796,7 +795,6 @@
                             "InterventionStatus:ARTStaging",
                             "InterventionStatus:TestingOnSymptomatic"
                         ],
-                        "Event_Or_Config": "Event",
                         "Interpolation_Order": 0,
                         "Negative_Diagnosis_Event": "Needs_Option_A",
                         "New_Property_Value": "InterventionStatus:TestingOnANC",
@@ -884,7 +882,6 @@
                             "InterventionStatus:ARTStaging",
                             "InterventionStatus:TestingOnSymptomatic"
                         ],
-                        "Event_Or_Config": "Event",
                         "Female_Multiplier": 1,
                         "Interpolation_Order": 1,
                         "New_Property_Value": "InterventionStatus:TestingOnChild6w",
@@ -1598,7 +1595,7 @@
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "class": "ARTBasic"
+                        "class": "AntiretroviralTherapy"
                     },
                     "Trigger_Condition_List": [
                         "OnART1"
@@ -1607,7 +1604,7 @@
                 },
                 "class": "StandardInterventionDistributionEventCoordinator"
             },
-            "Event_Name": "OnART: state 1 (run ARTBasic)",
+            "Event_Name": "OnART: state 1 (run AntiretroviralTherapy)",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },

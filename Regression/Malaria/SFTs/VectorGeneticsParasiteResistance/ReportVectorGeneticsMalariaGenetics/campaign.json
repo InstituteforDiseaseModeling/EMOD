@@ -1,0 +1,47 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Individual_Selection_Type": "DEMOGRAPHIC_COVERAGE",
+                "Intervention_Config": {
+                    "class": "OutbreakIndividualMalariaGenetics",
+                    "Barcode_String": "AA",
+                    "Create_Nucleotide_Sequence_From": "BARCODE_STRING",
+                    "Drug_Resistant_String": "",
+                    "HRP_String": "",
+                    "Ignore_Immunity": 1,
+                    "Incubation_Period_Override": -1
+                }
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 1
+        },
+                {
+            "class": "CampaignEvent",
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Individual_Selection_Type": "DEMOGRAPHIC_COVERAGE",
+                "Intervention_Config": {
+                    "class": "OutbreakIndividualMalariaGenetics",
+                    "Barcode_String": "GG",
+                    "Create_Nucleotide_Sequence_From": "BARCODE_STRING",
+                    "Drug_Resistant_String": "",
+                    "HRP_String": "",
+                    "Ignore_Immunity": 1,
+                    "Incubation_Period_Override": -1
+                }
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 1
+                }
+    ]
+}

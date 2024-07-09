@@ -1,0 +1,141 @@
+{
+    "Events": [
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 0.1, 
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual"
+                }, 
+                "Target_Demographic": "Everyone", 
+                "class": "StandardInterventionDistributionEventCoordinator"
+            }, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Start_Day": 1, 
+            "class": "CampaignEvent"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "class": "AdherentDrug",
+                    "Intervention_Name": "AdherentDrug-Piperaquine",
+                    "Cost_To_Consumer": 1,
+                    "Doses" : [
+                        [ "Piperaquine" ],
+                        [ "Piperaquine" ],
+                        [ "Piperaquine" ],
+                        [ "Piperaquine" ]
+                    ],
+                    "Dose_Interval" : 2,
+                    "Adherence_Config" : {
+                        "class": "WaningEffectMapCount",
+                        "Initial_Effect" : 1.0,
+                        "Durability_Map" :
+                        {
+                            "Times"  : [ 1.0, 2.0, 3.0, 4.0 ],
+                            "Values" : [ 0.5, 0.5, 0.5, 0.5 ]
+                        }
+                    },
+                    "Non_Adherence_Options" : [ "STOP" ],
+                    "Non_Adherence_Distribution" : [ 1.0 ],
+                    "Max_Dose_Consideration_Duration" : 40
+                }, 
+                "Demographic_Coverage": 1.0, 
+                "Target_Demographic": "Everyone", 
+                "class": "StandardInterventionDistributionEventCoordinator"
+            }, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Start_Day": 100, 
+            "class": "CampaignEvent"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "class": "SimpleBednet",
+                    "Cost_To_Consumer": 1, 
+                    "Repelling_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect": 0.1
+                    }, 
+                    "Blocking_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect": 0.9
+                    }, 
+                    "Killing_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect": 0.7
+                    }, 
+                    "Usage_Config": {
+                        "class": "WaningEffectMapPiecewise",
+                        "Initial_Effect" : 1.0,
+                        "Expire_At_Durability_Map_End": 1,
+                        "Durability_Map" :
+                        {
+                            "Times"  : [ 0.0, 30.0, 40.0,  50.0, 60.0, 70.0, 80.0, 90.0 ],
+                            "Values" : [ 1.0,  1.0,  0.8,   0.6,  0.4,  0.2,  0.0,  0.0 ]
+                        }
+                    }
+                }, 
+                "Demographic_Coverage": 1.0, 
+                "Property_Restrictions_Within_Node": [ { "Accessibility": "YES" } ],
+                "Target_Demographic": "Everyone", 
+                "class": "StandardInterventionDistributionEventCoordinator"
+            }, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Start_Day": 110, 
+            "class": "CampaignEvent"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "class": "UsageDependentBednet",
+                    "Cost_To_Consumer": 1,
+                    "Repelling_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect": 0.2
+                    },
+                    "Blocking_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect": 0.8
+                    },
+                    "Killing_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect": 1.0
+                    },
+                    "Usage_Config_List": [
+                        {
+                            "class": "WaningEffectMapPiecewise",
+                            "Initial_Effect" : 1.0,
+                            "Expire_At_Durability_Map_End": 1,
+                            "Durability_Map" :
+                            {
+                                "Times"  : [ 0.0, 30.0, 40.0,  50.0, 60.0, 70.0, 80.0, 90.0 ],
+                                "Values" : [ 0.0,  0.0,  0.2,   0.4,  0.6,  0.8,  1.0,  1.0 ]
+                            }
+                        }
+                    ],
+                    "Using_Event": "Bednet_Using",
+                    "Discard_Event": "Bednet_Discarded",
+                    "Expiration_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Received_Event": "Bednet_Got_New_One",
+                    "Expiration_Period_Constant": 90
+                }, 
+                "Demographic_Coverage": 1.0, 
+                "Target_Demographic": "Everyone", 
+                "Property_Restrictions_Within_Node": [ { "Accessibility": "NO" } ],
+                "class": "StandardInterventionDistributionEventCoordinator"
+            }, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Start_Day": 210, 
+            "class": "CampaignEvent"
+        }
+    ], 
+    "Use_Defaults": 1
+}

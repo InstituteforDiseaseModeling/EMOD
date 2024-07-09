@@ -22,7 +22,7 @@
         ], 
 
         "____________REPORTING___________": "",
-                "Custom_Reports_Filename" : "custom_reports.json",
+        "Custom_Reports_Filename" : "",
         "Report_HIV_Infection": 1,
         "Report_HIV_Infection_Start_Year": 1900,
         "Report_HIV_Infection_Stop_Year": 2100,
@@ -61,6 +61,7 @@
             90, 91, 92, 93, 94, 95, 96, 97, 98, 99
         ],
         "Report_HIV_ByAgeAndGender_Collect_HIV_Data"             : 0,
+        "Report_HIV_ByAgeAndGender_Collect_HIV_Stage_Data"       : 1,
         "Report_HIV_ByAgeAndGender_Collect_On_Art_Data"          : 0,
         "Report_HIV_ByAgeAndGender_Collect_Circumcision_Data"    : 0,
         "Report_HIV_ByAgeAndGender_Collect_IP_Data"              : ["Accessibility"],

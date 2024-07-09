@@ -1,0 +1,114 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender", 
+                "Target_Gender" : "FEMALE",
+                "Demographic_Coverage": 0.01,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Incubation_Period_Override": 0
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 360,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "CondomUsageProbabilityChanger",
+                    "Intervention_Name":"CondomUsageProbabilityChanger-TRANSITORY",
+                    "Relationship_Type": "TRANSITORY",
+                    "COMMENT1": "Set every transitory coital act to use condoms",
+                    "Overriding_Condom_Usage_Probability" :
+                    {
+                        "Min": 1.0,
+                        "Max": 1.0,
+                        "Mid": 2000,
+                        "Rate": 1
+                    }
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 540,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "CondomUsageProbabilityChanger",
+                    "Intervention_Name":"CondomUsageProbabilityChanger-INFORMAL",
+                    "Relationship_Type": "INFORMAL",
+                    "COMMENT1": "Set every INFORMAL coital act to NOT use condoms",
+                    "Overriding_Condom_Usage_Probability" :
+                    {
+                        "Min": 0.0,
+                        "Max": 0.0,
+                        "Mid": 2000,
+                        "Rate": 1
+                    }
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 720,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "CondomUsageProbabilityChanger",
+                    "Intervention_Name":"CondomUsageProbabilityChanger-INFORMAL",
+                    "Relationship_Type": "INFORMAL",
+                    "COMMENT1": "Set every INFORMAL coital act to USE condoms",
+                    "Overriding_Condom_Usage_Probability" :
+                    {
+                        "Min": 1.0,
+                        "Max": 1.0,
+                        "Mid": 2000,
+                        "Rate": 1
+                    }
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 900,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "CondomUsageProbabilityChanger",
+                    "Intervention_Name":"CondomUsageProbabilityChanger-INFORMAL",
+                    "Relationship_Type": "INFORMAL",
+                    "COMMENT1": "Reset INFORMAL coital act use of condoms",
+                    "Overriding_Condom_Usage_Probability" :
+                    {
+                        "Min": 0.10,
+                        "Max": 0.90,
+                        "Mid": 2000,
+                        "Rate": 1
+                    }
+                }
+            }
+        }
+    ]
+}

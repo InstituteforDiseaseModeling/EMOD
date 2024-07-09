@@ -1,0 +1,46 @@
+{
+    "Use_Defaults": 1,
+    "Campaign_Name": "SpaceSpraying",
+    "Events": [
+    {
+        "Event_Coordinator_Config": {
+            "Intervention_Config": {
+                "Cost_To_Consumer": 0,
+                "Killing_Config": {
+                    "Initial_Effect": 1,
+                    "class": "WaningEffectConstant"
+                },
+                "Habitat_Target": "ALL_HABITATS",
+                "Spray_Coverage": 1.0,
+                "class": "SpaceSpraying"
+            },
+            "class": "StandardInterventionDistributionEventCoordinator"
+        },
+        "Nodeset_Config": {
+            "class": "NodeSetAll"
+        },
+        "Start_Day": 1,
+        "class": "CampaignEvent"
+    },
+    {
+        "Event_Coordinator_Config": {
+            "Intervention_Config": {
+                "Larval_Habitat_Multiplier": [
+                    {
+                        "Factor": 0.0,
+                        "Habitat": "CONSTANT",
+                        "Species": "ALL_SPECIES"
+                    }
+                ],
+                "class": "ScaleLarvalHabitat"
+            },
+            "class": "StandardInterventionDistributionEventCoordinator"
+        },
+        "Nodeset_Config": {
+            "class": "NodeSetAll"
+        },
+        "Start_Day": 1,
+        "class": "CampaignEvent"
+    }
+    ]
+}

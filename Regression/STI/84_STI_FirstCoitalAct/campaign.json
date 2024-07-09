@@ -3,7 +3,22 @@
     "Events": [
         {
             "class": "CampaignEvent",
-            "Start_Day": 10,
+            "Start_Day": 1,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 0.1,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Antigen": 0, 
+                    "Genome": 0, 
+                    "Incubation_Period_Override": 0
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 30,
             "Nodeset_Config": { "class": "NodeSetAll" },
             "Event_Coordinator_Config": {
                 "class": "StandardInterventionDistributionEventCoordinator",
@@ -12,14 +27,19 @@
                     "Trigger_Condition_List": [
                         "FirstCoitalAct"
                     ],
-                    "Demographic_Coverage": 1.0,
+                    "Demographic_Coverage": 0.5,
+                    "Target_Demographic": "ExplicitGender", 
+                    "Target_Gender": "Male", 
                     "Actual_IndividualIntervention_Config":
                     {
-                        "class": "OutbreakIndividual",
-                        "Antigen": 0, 
-                        "Genome": 0, 
-                        "Incubation_Period_Override": 0,
-                        "Outbreak_Source": "PrevalenceIncrease"
+                        "class": "SimpleVaccine",
+                        "Cost_To_Consumer": 10,
+                        "Vaccine_Take": 1,
+                        "Vaccine_Type": "AcquisitionBlocking",
+                        "Waning_Config": {
+                            "class": "WaningEffectConstant",
+                            "Initial_Effect" : 1.0
+                        }
                     }
                 }
             }

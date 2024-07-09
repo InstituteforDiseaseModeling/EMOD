@@ -1,0 +1,159 @@
+{
+    "Events": [
+        {
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual"
+                },
+                "Individual_Selection_Type": "TARGET_NUM_INDIVIDUALS",
+                "Target_Num_Individuals": 100,
+                "Target_Demographic": "Everyone",
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 5,
+            "class": "CampaignEvent"
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 10,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1.0, 
+                "Intervention_Config": {
+                    "class": "DelayedIntervention",
+                    "Coverage": 1,
+                    "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Delay_Period_Constant": 300.0,
+                    "Actual_IndividualIntervention_Configs": [
+                        {
+                            "class": "AntimalarialDrug",
+                            "Cost_To_Consumer": 1,
+                            "Dosing_Type": "FullTreatmentCourse",
+                            "Drug_Type": "Artemether"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 50,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1.0, 
+                "Intervention_Config": {
+                    "class": "DelayedIntervention",
+                    "Coverage": 1,
+                    "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Delay_Period_Constant": 300.0,
+                    "Actual_IndividualIntervention_Configs": [
+                        {
+                            "class": "MalariaDiagnostic",
+                            "Cost_To_Consumer": 1, 
+                            "Diagnostic_Type": "FEVER", 
+                            "Detection_Threshold": 1, 
+                            "Event_Or_Config": "Config", 
+                            "Positive_Diagnosis_Config": {
+                                "class": "AntimalarialDrug",
+                                "Cost_To_Consumer": 1, 
+                                "Drug_Type": "Chloroquine"
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 80,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1.0, 
+                "Intervention_Config": {
+                    "class": "DelayedIntervention",
+                    "Coverage": 1,
+                    "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Delay_Period_Constant": 300.0,
+                    "Actual_IndividualIntervention_Configs": [
+                        {
+                            "class": "MultiPackComboDrug",
+                            "Cost_To_Consumer": 1,
+                            "Doses": [
+                                [ "Artemether", "Chloroquine" ],
+                                [ "Artemether" ],
+                                [ "Artemether", "Chloroquine" ],
+                                [ "Artemether" ],
+                                [ "Chloroquine" ],
+                                [],
+                                [ "Chloroquine" ]                        
+                            ],
+                            "Dose_Interval": 2
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 150,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1.0, 
+                "Intervention_Config": {
+                    "class": "DelayedIntervention",
+                    "Coverage": 1,
+                    "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Delay_Period_Constant": 300.0,
+                    "Actual_IndividualIntervention_Configs": [
+                        {
+                            "class": "AdherentDrug",
+                            "Cost_To_Consumer": 1,
+                            "Doses" : [
+                                [ "Lumefantrine", "DHA" ],
+                                [ "Lumefantrine" ],
+                                [ "Lumefantrine", "DHA" ],
+                                [ "Lumefantrine" ],
+                                [ "DHA" ],
+                                [],
+                                [ "DHA" ]                        
+                            ],
+                            "Dose_Interval" : 2,
+                            "Adherence_Config" : {
+                                "class": "WaningEffectMapCount",
+                                "Initial_Effect" : 1.0,
+                                "Durability_Map" :
+                                {
+                                    "Times"  : [ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0 ],
+                                    "Values" : [ 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1 ]
+                                }
+                            },
+                            "Non_Adherence_Options" : [ "NEXT_DOSAGE_TIME", "NEXT_UPDATE" ],
+                            "Non_Adherence_Distribution" : [ 0.5, 0.5 ],
+                            "Max_Dose_Consideration_Duration" : 40
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "Use_Defaults": 1
+}

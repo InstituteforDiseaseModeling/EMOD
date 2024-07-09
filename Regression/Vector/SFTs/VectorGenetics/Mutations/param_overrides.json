@@ -1,0 +1,103 @@
+{
+    "parameters": {
+        "DEMOGRAPHICS": {
+            "Demographics_Filenames": [
+                "../../Input/Vector_single_node_demographics.json"
+            ]
+        },
+        "FUDGE_FACTORS": {
+            "x_Temporary_Larval_Habitat": 1
+        },
+        "OUTPUT": {
+            "Custom_Reports_Filename": "custom_reports.json"
+        },
+        "PRIMARY": {
+            "Config_Name": "Vector:SFT:Reporting:Mutations",
+            "Simulation_Duration": 12
+        },
+        "VECTOR": {
+            "SPECIES": {
+                "Vector_Species_Params": [
+                     {
+                        "Name" :"TestVector",
+                        "Acquire_Modifier": 1,
+                        "Adult_Life_Expectancy": 25,
+                        "Male_Life_Expectancy": 17,
+                        "Anthropophily": 1,
+                        "Aquatic_Mortality_Rate": 0,
+                        "Immature_Duration": 1,
+                        "Indoor_Feeding_Fraction": 1,
+                        "Infectious_Human_Feed_Mortality_Factor": 0,
+                        "Habitats": [
+                            {
+                                "Habitat_Type": "CONSTANT",
+                                "Max_Larval_Capacity": 500000000.0
+                            }
+                        ],
+                        "Genes": [
+                            {
+                                "Is_Gender_Gene": 0,
+                                "Alleles": [
+                                    {
+                                        "Name": "a0",
+                                        "Is_Y_Chromosome" : 0,
+                                        "Initial_Allele_Frequency": 0.0
+                                    },
+                                    {
+                                        "Name": "a1",
+                                        "Is_Y_Chromosome" : 0,
+                                        "Initial_Allele_Frequency": 0.0
+                                    },
+                                    {
+                                        "Name": "a3",
+                                        "Is_Y_Chromosome" : 0,
+                                        "Initial_Allele_Frequency": 1.0
+                                    }
+                                ],
+                                "Mutations": [
+                                    {
+                                        "Mutate_From": "a3",
+                                        "Mutate_To": "a0",
+                                        "Probability_Of_Mutation": 0.01
+                                    }
+                                ]
+                            },
+                            {
+                                "Is_Gender_Gene": 0,
+                                "Alleles": [
+                                    {
+                                        "Name": "b0",
+                                        "Is_Y_Chromosome" : 0,
+                                        "Initial_Allele_Frequency": 0.0
+                                    },
+                                    {
+                                        "Name": "b1",
+                                        "Is_Y_Chromosome" : 0,
+                                        "Initial_Allele_Frequency": 0.0
+                                    },
+                                    {
+                                        "Name": "b2",
+                                        "Is_Y_Chromosome" : 0,
+                                        "Initial_Allele_Frequency": 1.0
+                                    }
+                                ],
+                                "Mutations": [
+                                    {
+                                        "Mutate_From": "b2",
+                                        "Mutate_To": "b0",
+                                        "Probability_Of_Mutation": 0.03
+                                    }
+                                ]
+                            }
+                        ],
+                        "Microsporidia": [],
+                        "Temperature_Dependent_Feeding_Cycle": "NO_TEMPERATURE_DEPENDENCE",
+                        "Transmission_Rate": 0.5
+                    }
+                ]
+            }
+        }
+    },
+    "Default_Config_Path": "defaults/vector_science_default_config.json"
+}
+

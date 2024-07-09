@@ -1,0 +1,72 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender", 
+                "Target_Gender" : "MALE",
+                "Demographic_Coverage": 0.20,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Antigen": 0, 
+                    "Genome": 0, 
+                    "Incubation_Period_Override": 0
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 75, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender", 
+                "Target_Gender" : "FEMALE",
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "CoitalActRiskFactors",
+                    "Disqualifying_Properties" : [],
+                    "New_Property_Value" : "",
+                    "Cost_To_Consumer": 1,
+                    "Acquisition_Multiplier" : 0.0,
+                    "Transmission_Multiplier" : 0.0,
+                    "Expiration_Distribution" : "CONSTANT_DISTRIBUTION",
+                    "Expiration_Constant" : 10,
+                    "Expiration_Event_Trigger" : "Twice_Likely_To_Acquire_Expired"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 300, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender", 
+                "Target_Gender" : "FEMALE",
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "CoitalActRiskFactors",
+                    "Disqualifying_Properties" : [],
+                    "New_Property_Value" : "",
+                    "Cost_To_Consumer": 1,
+                    "Acquisition_Multiplier" : 1.5,
+                    "Transmission_Multiplier" : 1.5,
+                    "Expiration_Distribution" : "CONSTANT_DISTRIBUTION",
+                    "Expiration_Constant" : 100,
+                    "Expiration_Event_Trigger" : "Twice_Likely_To_Acquire_Expired"
+                }
+            }
+        }
+    ]
+}

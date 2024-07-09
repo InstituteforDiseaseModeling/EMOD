@@ -20,6 +20,10 @@
                         "Initial_Effect": 1.0,
                         "Expected_Discard_Time" : 60
                     },
+                    "Repelling_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect": 0.0
+                    }, 
                     "Blocking_Config": {
                         "class": "WaningEffectConstant",
                         "Initial_Effect": 1.0

@@ -1,0 +1,87 @@
+{
+    "Campaign_Name": "ARTMortalityTable intervention test",
+    "Use_Defaults": 1,
+    "Events": [{
+            "Description": "Initial HIV outbreak",
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1.0,
+                "Travel_Linked": 0,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Incubation_Period_Override": 0,
+                    "Outbreak_Source": "PrevalenceIncrease"
+                }
+            }
+        },
+        {
+            "Description": "ARTMortalityTable for Adherence:HIGH",
+            "class": "CampaignEvent",
+            "Start_Day": 10,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "_Property_Restrictions": [
+                    "Adherence:HIGH"
+                ],
+                "Property_Restrictions": [
+                    "QualityOfCare:HIGH"
+                ],
+                "Intervention_Config": {
+                    "class": "ARTMortalityTable",
+                    "Cost_To_Consumer": 1,
+                    "ART_Multiplier_On_Transmission_Prob_Per_Act": 0.08,
+                    "ART_Is_Active_Against_Mortality_And_Transmission": 1,
+                    "Days_To_Achieve_Viral_Suppression": 183.0,
+                    "ART_Duration_Days_Bins": [182],
+                    "Age_Years_Bins": [25],
+                    "CD4_Count_Bins": [25],
+                    "MortalityTable": [
+                        [
+                            [0.1305]
+                        ]
+                    ]
+                }
+            }
+        },
+        {
+            "Description": "ARTMortalityTable for Adherence:LOW",
+            "class": "CampaignEvent",
+            "Start_Day": 10,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "_Property_Restrictions": [
+                    "Adherence:LOW"
+                ],
+                "Property_Restrictions": [
+                    "QualityOfCare:LOW"
+                ],
+                "Intervention_Config": {
+                    "class": "ARTMortalityTable",
+                    "Cost_To_Consumer": 1,
+                    "ART_Multiplier_On_Transmission_Prob_Per_Act": 0.08,
+                    "ART_Is_Active_Against_Mortality_And_Transmission": 1,
+                    "Days_To_Achieve_Viral_Suppression": 183.0,
+                    "ART_Duration_Days_Bins": [20],
+                    "Age_Years_Bins": [35],
+                    "CD4_Count_Bins": [624.5],
+                    "MortalityTable": [
+                        [
+                            [0.2538]
+                        ]
+                    ]
+                }
+            }
+        }
+    ]
+}

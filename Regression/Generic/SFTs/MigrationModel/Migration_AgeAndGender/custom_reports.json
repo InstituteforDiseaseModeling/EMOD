@@ -1,36 +1,13 @@
 {
-    "Custom_Reports" : 
-    {
-        "Use_Explicit_Dlls" : 1,
-        "ReportNodeDemographics" :
+    "Reports": [
         {
-            "Enabled" : 1,
-            "Reports" :
-            [
-                {
-                    "Age_Bins" : [ 22.0, 42.0, 62.0 ]
-                }
-            ]
-        },
-        "ReportHumanMigrationTracking" :
-        {
-            "Enabled" : 1,
-            "Reports" : [ {} ]
-        },
-        "KML_Demo_Reporter" :
-        {
-            "Enabled" : 1,
-            "Reports" : [ {} ]
-        },
-        "ReportPluginAgeAtInfection" :
-        {
-            "Enabled" : 1,
-            "Reports" : [ {} ]
-        },
-        "ReportPluginAgeAtInfectionHistogram" :
-        {
-            "Enabled" : 1,
-            "Reports" : [ {} ]
+            "Age_Bins": [
+                22.0,
+                42.0,
+                62.0
+            ],
+            "class": "ReportNodeDemographics"
         }
-    }
+    ],
+    "Use_Defaults": 1
 }

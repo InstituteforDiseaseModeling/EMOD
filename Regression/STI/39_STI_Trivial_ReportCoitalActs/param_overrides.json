@@ -2,6 +2,11 @@
     "Default_Config_Path": "../.././defaults/sti_default_config.json",
     "parameters": {
         "DEMOGRAPHICS": {
+            "Demographics_Filenames": [
+                "../../HIV/input/SA_UN_demographics.json",
+                "../../HIV/input/PFA_overlay.json",
+                "../../HIV/input/InterventionStatus_Accessibility_overlay.json"
+            ],
             "Enable_Vital_Dynamics": 0,
             "MORTALITY": {
                 "Base_Mortality": 0.01,
@@ -23,7 +28,18 @@
             "Simulation_Duration": 150
         },
         "STI": {
-            "Report_Coital_Acts": 1
+            "Report_Coital_Acts": 1,
+            "Report_Coital_Acts_Start_Year": 1960.6,
+            "Report_Coital_Acts_End_Year":   1960.9,
+            "Report_Coital_Acts_Node_IDs_Of_Interest": [],
+            "Report_Coital_Acts_Min_Age_Years" : 20.0,
+            "Report_Coital_Acts_Max_Age_Years" : 30.0,
+            "Report_Coital_Acts_Must_Have_IP_Key_Value" : "Accessibility:Yes",
+            "Report_Coital_Acts_Must_Have_Intervention" : "GoodCircumcision",
+            "Report_Coital_Acts_Has_Intervention_With_Name": [ "GoodCircumcision", "BadCircumcision" ],
+            "Report_Coital_Acts_Individual_Properties": [ "Accessibility" ],
+            "Report_Coital_Acts_Relationship_Type": "NA",
+            "Report_Coital_Acts_Partners_With_IP_Key_Value":[]
         }
     }
 }

@@ -1,0 +1,44 @@
+{
+    "Default_Config_Path": "defaults/malaria_genetics_science_default_config.json",
+    "DEMOGRAPHICS": {
+        "Demographics_Filenames": [
+            "demographics.json"
+        ]
+    },
+    "PRIMARY": {
+        "Config_Name": "Malaria::SFTs::ReportNodeDemographicsMalariaGenetics:AvgIdentityByDescent",
+        "Geography": "Namawala",
+        "Simulation_Duration":600,
+        "Enable_Vital_Dynamics": 0
+    },
+    "REPORTS": {
+        "Custom_Reports_Filename": "custom_reports.json"
+    },
+    "STRAIN_TRACKING": {
+
+        "Parasite_Genetics": {
+            "Var_Gene_Randomness_Type": "ALL_RANDOM",
+            "Barcode_Genome_Locations": [
+                5000000,
+                8000000,
+                10000000,
+                16000000,
+                21690000
+            ]
+        }
+    },
+    "VECTOR": {
+        "x_Temporary_Larval_Habitat": 0.05,
+        "Human_Feeding_Mortality": 0,
+        "Enable_Vector_Mortality": 0,
+        "Vector_Species_Params": [
+            {
+                "Acquire_Modifier": 1,
+                "Adult_Life_Expectancy": 730,
+                "Egg_Batch_Size": 0,
+                "Infectious_Human_Feed_Mortality_Factor": 0,
+                "Name": "SillySkeeter"
+            }
+        ]
+    }
+}

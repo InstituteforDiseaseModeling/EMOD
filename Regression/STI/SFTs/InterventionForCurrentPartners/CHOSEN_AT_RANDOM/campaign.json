@@ -1,0 +1,180 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 190, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender", 
+                "Target_Gender" : "FEMALE",
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "InterventionForCurrentPartners",
+                    "Cost_To_Consumer": 1.0,
+                    "Disqualifying_Properties": [],  
+                    "New_Property_Value": "", 
+                    "Minimum_Duration_Years": 0,
+                    "Prioritize_Partners_By": "OLDER_AGE",
+                    "Relationship_Types": [],
+                    "Maximum_Partners": 1,
+                    "Event_Or_Config" : "Event",
+                    "Broadcast_Event": "OLDER_AGE"
+                    }
+                }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 190, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender", 
+                "Target_Gender" : "FEMALE",
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "InterventionForCurrentPartners",
+                    "Cost_To_Consumer": 1.0,
+                    "Disqualifying_Properties": [],  
+                    "New_Property_Value": "", 
+                    "Minimum_Duration_Years": 0,
+                    "Prioritize_Partners_By": "CHOSEN_AT_RANDOM",
+                    "Relationship_Types": [],
+                    "Maximum_Partners": 1,
+                    "Event_Or_Config" : "Event",
+                    "Broadcast_Event": "CHOSEN_AT_RANDOM"
+                    }
+                }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 190, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender", 
+                "Target_Gender" : "FEMALE",
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "InterventionForCurrentPartners",
+                    "Cost_To_Consumer": 1.0,
+                    "Disqualifying_Properties": [],  
+                    "New_Property_Value": "", 
+                    "Minimum_Duration_Years": 0,
+                    "Prioritize_Partners_By": "YOUNGER_AGE",
+                    "Relationship_Types": [],
+                    "Maximum_Partners": 1,
+                    "Event_Or_Config" : "Event",
+                    "Broadcast_Event": "YOUNGER_AGE"
+                    }
+                }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 190, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender", 
+                "Target_Gender" : "FEMALE",
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "InterventionForCurrentPartners",
+                    "Cost_To_Consumer": 1.0,
+                    "Disqualifying_Properties": [],  
+                    "New_Property_Value": "", 
+                    "Minimum_Duration_Years": 0,
+                    "Prioritize_Partners_By": "NO_PRIORITIZATION",
+                    "Relationship_Types": [],
+                    "Maximum_Partners": 1,
+                    "Event_Or_Config" : "Event",
+                    "Broadcast_Event": "NO_PRIORITIZATION"
+                    }
+                }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 190, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender", 
+                "Target_Gender" : "FEMALE",
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "InterventionForCurrentPartners",
+                    "Cost_To_Consumer": 1.0,
+                    "Disqualifying_Properties": [],  
+                    "New_Property_Value": "", 
+                    "Minimum_Duration_Years": 0,
+                    "Prioritize_Partners_By": "LONGER_TIME_IN_RELATIONSHIP",
+                    "Relationship_Types": [],
+                    "Maximum_Partners": 1,
+                    "Event_Or_Config" : "Event",
+                    "Broadcast_Event": "LONGER_TIME_IN_RELATIONSHIP"
+                    }
+                }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 190, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender", 
+                "Target_Gender" : "FEMALE",
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "InterventionForCurrentPartners",
+                    "Cost_To_Consumer": 1.0,
+                    "Disqualifying_Properties": [],  
+                    "New_Property_Value": "", 
+                    "Minimum_Duration_Years": 0,
+                    "Prioritize_Partners_By": "SHORTER_TIME_IN_RELATIONSHIP",
+                    "Relationship_Types": [],
+                    "Maximum_Partners": 1,
+                    "Event_Or_Config" : "Event",
+                    "Broadcast_Event": "SHORTER_TIME_IN_RELATIONSHIP"
+                    }
+                }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 190, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender", 
+                "Target_Gender" : "FEMALE",
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "InterventionForCurrentPartners",
+                    "Cost_To_Consumer": 1.0,
+                    "Disqualifying_Properties": [],  
+                    "New_Property_Value": "", 
+                    "Minimum_Duration_Years": 0,
+                    "Prioritize_Partners_By": "RELATIONSHIP_TYPE",
+                    "Relationship_Types": ["MARITAL", "INFORMAL","TRANSITORY","COMMERCIAL"],
+                    "Maximum_Partners": 1,
+                    "Event_Or_Config" : "Event",
+                    "Broadcast_Event": "RELATIONSHIP_TYPE"
+                    }
+                }
+        }
+    ]
+}

@@ -1,0 +1,31 @@
+{
+    "Default_Config_Path": "../../defaults/malaria_default_config.json",
+    "CLIMATE": {
+        "Enable_Climate_Stochasticity": 0,
+        "Climate_Model": "CLIMATE_CONSTANT"
+    },
+    "DEMOGRAPHICS": {
+        "Enable_Vital_Dynamics": 0,
+        "Demographics_Filenames": [
+            "demographics.json"
+        ]
+    },
+    "PRIMARY": {
+        "Config_Name": "94_Malaria_OutbreakVarGenes_NoVectors",
+        "Custom_Reports_Filename" : "custom_reports.json",
+        "Enable_Demographics_Reporting": 0,
+        "Geography": "Namawala",
+        "Run_Number": 11,
+        "Simulation_Duration": 1000
+    },
+    "VECTOR": {
+        "Vector_Sampling_Type": "TRACK_ALL_VECTORS",
+        "x_Temporary_Larval_Habitat": 0.0
+    },
+    "STRAIN_TRACKING": {
+        "Malaria_Strain_Model": "FALCIPARUM_FIXED_STRAIN",
+        "Falciparum_MSP_Variants": 100,
+        "Falciparum_Nonspecific_Types": 20,
+        "Falciparum_PfEMP1_Variants": 1000
+    }
+}

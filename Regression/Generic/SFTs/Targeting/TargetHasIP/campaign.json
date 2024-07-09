@@ -1,0 +1,106 @@
+{
+    "Campaign_Name": "Targeting Config Individual Property test",
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "SimpleVaccine",
+                    "Intervention_Name" : "MyVaccine",
+                    "Cost_To_Consumer": 1,
+                    "COMMENT": "Making sure there is no transmission other than those caused by Outbreak",
+                    "Vaccine_Take": 1,
+                    "Vaccine_Type": "AcquisitionBlocking",
+                    "Waning_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect" : 1.0
+                    }
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 3,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 0.88,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Ignore_Immunity": 1
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 5,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 0.8,
+                "COMMENT": "This should distribute SimpleDiagnostic to 80% of population in group Accessibility:Hard",
+                "Targeting_Config": {
+                    "class": "HasIP",
+                    "Is_Equal_To": 1,
+                    "IP_Key_Value": "Accessibility:Hard"
+                },
+                "Intervention_Config": {
+                    "class":"SimpleDiagnostic",
+                    "Base_Sensitivity":1.0,
+                    "Base_Specificity":1.0,
+                    "Cost_To_Consumer":0,
+                    "Days_To_Diagnosis":0.0,
+                    "Dont_Allow_Duplicates":0,
+                    "Event_Or_Config":"Event",
+                    "Positive_Diagnosis_Event":"TestedPositive_Hard",
+                    "Intervention_Name":"Diagnostic_Sample",
+                    "Treatment_Fraction":1.0
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 5,
+            "Nodeset_Config": {
+                 "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 0.7,
+                "COMMENT": "This should distribute SimpleDiagnostic to 70% of population where QualityOfCare is not Low (High and Medium)",
+                "Targeting_Config": {
+                    "class": "HasIP",
+                    "Is_Equal_To": 0,
+                    "IP_Key_Value": "QualityOfCare:Low"
+                },
+                "Intervention_Config": {
+                    "class":"SimpleDiagnostic",
+                    "Base_Sensitivity":1.0,
+                    "Base_Specificity":1.0,
+                    "Cost_To_Consumer":0,
+                    "Days_To_Diagnosis":0.0,
+                    "Dont_Allow_Duplicates":0,
+                    "Event_Or_Config":"Event",
+                    "Positive_Diagnosis_Event":"TestedPositive_High_Medium",
+                    "Intervention_Name":"Diagnostic_Sample",
+                    "Treatment_Fraction":1.0
+                }
+            }
+        }
+    ],
+    "Use_Defaults": 1
+}

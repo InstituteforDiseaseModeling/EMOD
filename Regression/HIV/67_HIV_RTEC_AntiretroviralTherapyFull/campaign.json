@@ -1,0 +1,66 @@
+{
+    "Use_Defaults": 1, 
+    "Events": [
+        {
+            "class": "CampaignEventByYear",
+            "Start_Year": 1961, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Target_Demographic": "ExplicitGender", 
+                "Target_Gender": "Male", 
+                "Demographic_Coverage": 0.25, 
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual", 
+                    "Antigen": 0, 
+                    "Genome": 0, 
+                    "Incubation_Period_Override": 1
+                }
+            }
+        }, 
+        {
+            "class": "CampaignEventByYear",
+            "Start_Year": 1962, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "ReferenceTrackingEventCoordinatorHIV",
+                "Update_Period": 30.41667, 
+                "End_Year": 1966, 
+                "Target_Demographic": "Everyone", 
+                "Target_Disease_State": "HIV_Positive", 
+                "Time_Value_Map": {
+                    "Times": [
+                        1962,
+                        1962.99,
+                        1963,
+                        1963.99,
+                        1964,
+                        1964.99,
+                        1965
+                    ], 
+                    "Values": [
+                        0.1,
+                        0.1,
+                        0.3,
+                        0.3,
+                        0.5,
+                        0.5,
+                        0.7
+                    ]
+                },
+                "Intervention_Config": {
+                    "class": "AntiretroviralTherapyFull",
+                    "Intervention_Name" : "Persistant_ART",
+                    "Cost_To_Consumer" : 1,
+                    "Time_On_ART_Distribution" : "CONSTANT_DISTRIBUTION",
+                    "Time_On_ART_Constant": 730.0,
+                    "Stop_ART_Event" : "Stopped_Using_ART"
+                }
+            }
+        }
+    ]
+}

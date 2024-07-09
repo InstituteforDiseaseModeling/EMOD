@@ -1,0 +1,46 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Individual_Selection_Type": "TARGET_NUM_INDIVIDUALS",
+                "Target_Num_Individuals": 1,
+                "Intervention_Config": {
+                    "Insecticides": [
+                        {
+                            "Insecticide_Name": "carbamate",
+                            "Repelling_Config": {
+                                "class": "WaningEffectConstant",
+                                "Initial_Effect": 1
+                            },
+                            "Blocking_Config": {
+                                "Initial_Effect": 0,
+                                "class": "WaningEffectConstant"
+                            },
+                            "Killing_Config": {
+                                "Initial_Effect": 0,
+                                "class": "WaningEffectConstant"
+                            }
+                        }
+                    ],
+                    "Expiration_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Expiration_Period_Constant": 500,
+                    "Usage_Config_List": [
+                        {
+                            "Initial_Effect": 1.0,
+                            "class": "WaningEffectConstant"
+                        }
+                    ],
+                    "class": "MultiInsecticideUsageDependentBednet"
+                }
+            }
+        }
+    ]
+}

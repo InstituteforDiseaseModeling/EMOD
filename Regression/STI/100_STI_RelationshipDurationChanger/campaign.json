@@ -1,0 +1,94 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender", 
+                "Target_Gender" : "FEMALE",
+                "Demographic_Coverage": 0.01,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Incubation_Period_Override": 0
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 360,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "RelationshipDurationChanger",
+                    "Intervention_Name":"RelationshipDurationChanger-TRANSITORY",
+                    "Relationship_Type": "TRANSITORY",
+                    "COMMENT1": "Significantly increase the duration of transitory relationships",
+                    "Overriding_Duration_Weibull_Heterogeneity": 0.6,
+                    "Overriding_Duration_Weibull_Scale": 22.0
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 720,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "RelationshipDurationChanger",
+                    "Intervention_Name":"RelationshipDurationChanger-TRANSITORY",
+                    "Relationship_Type": "TRANSITORY",
+                    "COMMENT1": "Significantly decrease the duration of transitory relationships",
+                    "Overriding_Duration_Weibull_Heterogeneity": 0.4,
+                    "Overriding_Duration_Weibull_Scale": 0.01
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1080,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "RelationshipDurationChanger",
+                    "Intervention_Name":"RelationshipDurationChanger-TRANSITORY",
+                    "Relationship_Type": "TRANSITORY",
+                    "COMMENT1": "Reset the duration of transitory relationships",
+                    "Overriding_Duration_Weibull_Heterogeneity": 0.833333333,
+                    "Overriding_Duration_Weibull_Scale": 0.956774771214
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1080,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "RelationshipDurationChanger",
+                    "Intervention_Name":"RelationshipDurationChanger-COMMERCIAL",
+                    "Relationship_Type": "COMMERCIAL",
+                    "COMMENT1": "Significantly increase the duration of transitory relationships",
+                    "Overriding_Duration_Weibull_Heterogeneity": 0.6,
+                    "Overriding_Duration_Weibull_Scale": 22.0
+                }
+            }
+        }
+    ]
+}

@@ -51,7 +51,7 @@
                 "class": "StandardInterventionDistributionEventCoordinator",
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
-                    "class": "ARTBasic"
+                    "class": "AntiretroviralTherapy"
                 }
             }
         },
@@ -68,7 +68,7 @@
                 "Intervention_Config": {
                     "class": "BirthTriggeredIV",
                     "Actual_IndividualIntervention_Config": {
-                        "class": "ARTBasic"
+                        "class": "AntiretroviralTherapy"
                     }
                 }
             }

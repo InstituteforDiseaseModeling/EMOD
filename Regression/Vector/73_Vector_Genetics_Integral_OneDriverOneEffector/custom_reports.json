@@ -1,0 +1,29 @@
+{
+    "Reports": [
+        {
+            "Gender": "VECTOR_FEMALE",
+            "Species": "arabiensis",
+            "Stratify_By": "GENOME",
+            "class": "ReportVectorGenetics"
+        },
+        {
+            "Allele_Combinations_For_Stratification": [
+                [
+                    "a0",
+                    "b0"
+                ],
+                [
+                    "a1",
+                    "b1"
+                ]
+            ],
+            "Gender": "VECTOR_FEMALE",
+            "Include_Vector_State_Columns": 0,
+            "Include_Death_By_State_Columns": 1,
+            "Species": "arabiensis",
+            "Stratify_By": "ALLELE",
+            "class": "ReportVectorGenetics"
+        }
+    ],
+    "Use_Defaults": 1
+}

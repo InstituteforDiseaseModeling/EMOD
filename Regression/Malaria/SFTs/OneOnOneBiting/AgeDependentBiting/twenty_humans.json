@@ -1,0 +1,39 @@
+{
+    "Metadata": {
+        "DateCreated": "Sun Sep 25 23:19:55 2011", 
+        "Tool": "convertdemog.py", 
+        "Author": "dbridenbecker", 
+        "IdReference": "Gridded world grump2.5arcmin", 
+        "Resolution": 150,
+        "NodeCount": 1
+    }, 
+    "Nodes": [
+        {
+            "NodeID": 340461476, 
+            "IndividualAttributes": {
+                "PrevalenceDistributionFlag": 0, 
+                "PrevalenceDistribution1": 0, 
+                "PrevalenceDistribution2": 0,
+                "AgeDistributionFlag": 1,
+                "AgeDistribution1": 1,
+                "AgeDistribution2": 8000
+            },
+            "IndividualProperties": [ 
+                { 
+                    "Property": "Accessibility",
+                    "Values": [ "NONE", "GM_1", "GM_2" ],
+                    "Initial_Distribution": [ 1.0, 0.0, 0.0 ],
+                    "Transitions": []
+                }
+            ],
+            "NodeAttributes": 
+            { 
+                "InitialPopulation": 20,
+                "InitialVectorsPerSpecies": {
+                    "SillySkeeter": 10000
+                }
+                
+            }
+        }
+    ]
+}

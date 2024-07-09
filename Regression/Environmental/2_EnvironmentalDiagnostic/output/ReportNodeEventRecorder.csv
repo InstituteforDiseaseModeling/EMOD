@@ -1,6 +1,0 @@
-Time,NodeID,NodeEventName,NumIndividuals,NumInfected
-10,340461476,Negative_Event_Node,1000,0
-120,340461476,Negative_Event_Node,997,116
-350,340461476,Negative_Event_Node,1001,0
-420,340461476,Positive_Event_Node,1002,201
-700,340461476,Negative_Event_Node,1004,0

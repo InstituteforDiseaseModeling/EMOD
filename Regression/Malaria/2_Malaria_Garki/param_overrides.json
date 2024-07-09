@@ -1,5 +1,7 @@
 {
+    "Default_Config_Path": "../../defaults/malaria_default_config.json",
     "CLIMATE": {
+        "Enable_Climate_Stochasticity": 1,
         "FILENAMES": {
             "Air_Temperature_Filename": "Garki_30arcsec_air_temperature_daily.bin",
             "Land_Temperature_Filename": "Garki_30arcsec_land_temperature_daily.bin",
@@ -14,49 +16,51 @@
         ],
         "Enable_Initial_Prevalence": 1
     },
-    "Default_Config_Path": "../../defaults/malaria_default_config.json",
     "EXECUTION": {
-        "CLUSTER": {
-            "LOAD_BALANCING": {
-                "Load_Balance_Filename": "Garki_30arcsec_load_balancing_32procs.bin"
-            },
-            "Num_Cores": 32
-        }
+        "Load_Balance_Filename": "Garki_30arcsec_load_balancing_32procs.bin",
+        "Num_Cores": 32
     },
     "GENERAL_DISEASE": {
         "Infection_Updates_Per_Timestep": 24
     },
     "MIGRATION": {
+        "AA" : {
+            "Enable_Migration_Heterogeneity": 0,
+            "Migration_Model": "FIXED_RATE_MIGRATION",
+            "Migration_Pattern": "WAYPOINTS_HOME",
+            "Roundtrip_Waypoints": 10
+        },
         "AIR": {
             "Air_Migration_Filename": "",
-            "Enable_Air_Migration": 0
+            "Enable_Air_Migration": 0,
+            "x_Air_Migration": 1
         },
-        "Enable_Family_Migration": 0,
-        "Enable_Migration_Heterogeneity": 0,
-        "Family_Migration_Filename": "",
+        "FAMILY" : {
+            "Enable_Family_Migration": 0,
+            "Family_Migration_Filename": "",
+            "x_Family_Migration": 1
+        },
         "LOCAL": {
             "Enable_Local_Migration": 1,
-            "Local_Migration_Filename": "Garki_30arcsec_local_migration.bin"
+            "Local_Migration_Filename": "Garki_30arcsec_local_migration.bin",
+            "x_Local_Migration": 1
         },
-        "Migration_Model": "FIXED_RATE_MIGRATION",
-        "Migration_Pattern": "WAYPOINTS_HOME",
         "REGIONAL": {
             "Enable_Regional_Migration": 0,
-            "Regional_Migration_Filename": ""
+            "Regional_Migration_Filename": "",
+            "x_Regional_Migration": 1
         },
-        "Roundtrip_Waypoints": 10,
         "SEA": {
             "Enable_Sea_Migration": 0,
-            "Sea_Migration_Filename": ""
-        },
-        "x_Family_Migration": 1
+            "Sea_Migration_Filename": "",
+            "x_Sea_Migration": 1
+        }
     },
     "OUTPUT": {
         "Enable_Spatial_Output": 1,
         "Spatial_Output_Channels": [
             "Population",
             "Prevalence",
-            "New_Diagnostic_Prevalence",
             "Daily_EIR"
         ]
     },
@@ -70,10 +74,11 @@
     "SAMPLING": {
         "Base_Individual_Sample_Rate": 0.1
     },
-    "Vector_Species_Params": {
-        "arabiensis": {
+    "Vector_Species_Params": [
+        {
+            "Name": "arabiensis",
             "Indoor_Feeding_Fraction": 1
         }
-    },
+    ],
     "logLevel_VectorPopulation": "WARNING"
 }

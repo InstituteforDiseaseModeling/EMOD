@@ -1,0 +1,16 @@
+{
+    "Reports": [
+        {
+            "Age_Bins": [],
+            "Stratify_By_Gender": 0,
+            "class": "ReportNodeDemographicsMalaria"
+        },
+        {
+            "COMMENT": "You cannot really see much in the report but 40-50 keeps it small.",
+            "class" : "ReportDrugStatus",
+            "Start_Day" : 40,
+            "End_Day" : 50
+        }
+    ],
+    "Use_Defaults": 1
+}

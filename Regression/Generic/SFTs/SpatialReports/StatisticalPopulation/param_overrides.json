@@ -1,0 +1,33 @@
+{
+    "parameters": {
+        "DEMOGRAPHICS": {
+            "Demographics_Filenames": [
+                "../Inputs/Balboa_demographics.json"
+            ],
+            "Enable_Spatial_Output": 1,
+            "Spatial_Output_Channels": ["Population", "Campaign_Cost", "Births"],
+            "x_Base_Population": 1.0
+        },
+        "DISEASE": {
+            "INFECTIOUSNESS": {
+                "Base_Infectivity": 1e-10,
+                "Infectious_Period_Constant": 1,
+                "Infectious_Period_Distribution": "CONSTANT_DISTRIBUTION"
+            }
+        },
+        "PRIMARY": {
+            "Config_Name": "SpatialReports/StatisticalPopulation_Births_CampaignCost",
+            "Geography": "",
+            "Simulation_Duration": 365,
+            "Enable_Natural_Mortality": 0,
+            "Enable_Vital_Dynamics": 1,
+            "Enable_Birth": 1,
+            "Birth_Rate_Dependence": "FIXED_BIRTH_RATE"
+        },
+        "LOGLEVEL": {
+            "logLevel_Individual": "INFO",
+            "logLevel_Susceptibility": "INFO"
+        }
+    },
+    "Default_Config_Path": "defaults/generic_science_config.json"
+}

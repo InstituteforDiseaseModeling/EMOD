@@ -3,15 +3,13 @@
         {
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
-                    "Larval_Habitat_Multiplier": {
-                        "LarvalHabitatMultiplier": [
-                            {
-                                "Factor": 0.05,
-                                "Habitat": "TEMPORARY_RAINFALL",
-                                "Species": "ALL_SPECIES"
-                            }
-                        ]
-                    },
+                    "Larval_Habitat_Multiplier": [
+                        {
+                            "Factor": 0.05,
+                            "Habitat": "TEMPORARY_RAINFALL",
+                            "Species": "ALL_SPECIES"
+                        }
+                    ],
                     "class": "ScaleLarvalHabitat"
                 },
                 "class": "StandardInterventionDistributionEventCoordinator"

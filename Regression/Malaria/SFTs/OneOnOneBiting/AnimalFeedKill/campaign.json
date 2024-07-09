@@ -1,0 +1,24 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List":[340461476]
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "Killing_Config": {
+                        "Initial_Effect": 1,
+                        "Box_Duration": 3,
+                        "class": "WaningEffectBox"
+                    },
+                    "class": "AnimalFeedKill"
+                }
+            }
+        }
+    ]
+}

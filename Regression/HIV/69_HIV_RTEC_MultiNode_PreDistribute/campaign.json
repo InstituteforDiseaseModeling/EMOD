@@ -1,0 +1,147 @@
+{
+    "Events": [
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 0.2,
+                "Intervention_Config": {
+                    "Incubation_Period_Override": 0,
+                    "class": "OutbreakIndividual"
+                },
+                "Target_Demographic": "Everyone",
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Year": 2005,
+            "class": "CampaignEventByYear"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "Actual_IndividualIntervention_Config": {
+                        "Disqualifying_Properties": [
+                        ],
+                        "Distributed_Event_Trigger": "PrEP_Initiated",
+                        "Duration_To_Wait_Before_Revaccination": 0,
+                        "Expired_Event_Trigger": "PrEP_Expired",
+                        "Intervention_Name": "PrEP",
+                        "New_Property_Value": "",
+                        "Vaccine_Take": 1,
+                        "Vaccine_Type": "AcquisitionBlocking",
+                        "Waning_Config": {
+                            "class": "WaningEffectMapLinear",
+                            "Initial_Effect" : 0.75,
+                            "Expire_At_Durability_Map_End" : 1,
+                            "Durability_Map" :
+                            {
+                                "Times"  : [   0,  90 ],
+                                "Values" : [ 1.0, 1.0 ]
+                            }
+                        },
+                        "class": "ControlledVaccine"
+                    },
+                    "Trigger_Condition_List": [
+                        "Initiate_PrEP"
+                    ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Year": 2000,
+            "class": "CampaignEventByYear"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "Actual_IndividualIntervention_Config": {
+                        "ART_Is_Active_Against_Mortality_And_Transmission": 1,
+                        "Intervention_Name": "On_ART",
+                        "class": "AntiretroviralTherapy"
+                    },
+                    "Trigger_Condition_List": [
+                        "Refer_to_ART"
+                    ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Year": 2000,
+            "class": "CampaignEventByYear"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "Event_or_Config": "Event",
+                    "Negative_Diagnosis_Event": "Initiate_PrEP",
+                    "Positive_Diagnosis_Event": "Refer_to_ART",
+                    "class": "HIVRapidHIVDiagnostic"
+                },
+                "Target_Age_Max": 49,
+                "Target_Age_Min": 18,
+                "Target_Demographic": "ExplicitAgeRanges",
+                "Targeting_Config": {
+                    "Logic": [
+                        [
+                            {
+                                "Intervention_Name": "PrEP",
+                                "Is_Equal_To": 0,
+                                "class": "HasIntervention"
+                            },
+                            {
+                                "With_Partner_Who": {
+                                    "Logic": [
+                                        [
+                                            {
+                                                "Is_Equal_To": 0,
+                                                "class": "IsHivPositive"
+                                            }
+                                        ],
+                                        [
+                                            {
+                                                "Is_Equal_To": 1,
+                                                "class": "IsHivPositive"
+                                            }
+                                        ]
+                                    ],
+                                    "class": "TargetingLogic"
+                                },
+                                "class": "HasRelationship"
+                            }
+                        ]
+                    ],
+                    "class": "TargetingLogic"
+                },
+                "Time_Value_Map": {
+                    "Times": [
+                        2010,
+                        2015,
+                        2020
+                    ],
+                    "Values": [
+                        0,
+                        0.1,
+                        0.4
+                    ],
+                    "Values__KP__PrEP_scaleup_female": "<==marker"
+                },
+                "Update_Period": 30.4166666666667,
+                "End_Year": 2020,
+                "class": "ReferenceTrackingEventCoordinator"
+            },
+            "Event_Name": "Distribute HIV Testing to Women for PrEP Screening",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Year": 2010,
+            "class": "CampaignEventByYear"
+        }
+    ],
+    "Use_Defaults": 1
+}

@@ -3,9 +3,13 @@
      "Events": [
           {
                "Event_Coordinator_Config": {
+                    "Tracking_Config": {
+                        "class": "IsCircumcised",
+                        "Is_Equal_To": 1
+                    },
                     "Intervention_Config": {
                          "class": "MaleCircumcision",
-                         "Cost_To_Consumer": 10.0, 
+                         "Cost_To_Consumer": 0.0, 
                          "Circumcision_Reduced_Acquire": 0.6,
                          "Distributed_Event_Trigger" : "VMMC_1"
                     }, 
@@ -24,20 +28,23 @@
                             ]
 
                     },
-                    "class": "ReferenceTrackingEventCoordinator"
+                    "class": "ReferenceTrackingEventCoordinatorTrackingConfig"
                }, 
                "Nodeset_Config": {
                     "class": "NodeSetAll"
                }, 
                "Start_Year": 1960, 
                "class": "CampaignEventByYear"
-          }
-,
+          },
           {
                "Event_Coordinator_Config": {
+                    "Tracking_Config": {
+                        "class": "IsCircumcised",
+                        "Is_Equal_To": 1
+                    },
                     "Intervention_Config": {
                          "class": "MaleCircumcision",
-                         "Cost_To_Consumer": 10.0, 
+                         "Cost_To_Consumer": 0.0, 
                          "Circumcision_Reduced_Acquire": 0.6,
                          "Distributed_Event_Trigger" : "VMMC_2"
                     }, 
@@ -55,7 +62,7 @@
                                 1
                             ]
                     },
-                    "class": "ReferenceTrackingEventCoordinator"
+                    "class": "ReferenceTrackingEventCoordinatorTrackingConfig"
                }, 
                "Nodeset_Config": {
                     "class": "NodeSetAll"

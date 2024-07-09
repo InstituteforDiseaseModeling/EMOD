@@ -1,0 +1,47 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1000,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1.0,
+              "Intervention_Config": {
+                "class": "IndividualNonDiseaseDeathRateModifier",
+                "Cost_To_Consumer": 1,
+                "Duration_To_Modifier": {
+                  "Times": [ 0.0 ],
+                  "Values": [ 0.0 ]
+                },
+                "Expiration_Duration_Distribution": "CONSTANT_DISTRIBUTION",
+                "Expiration_Duration_Constant": 1000,
+                "Expiration_Event": "PFA_NoPartnerFound"
+              }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 3000,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "IndividualNonDiseaseDeathRateModifier",
+                    "Cost_To_Consumer": 1,
+                    "Duration_To_Modifier" : {
+                        "Times" : [  0.0, 400.0, 600.0, 1000.0 ],
+                        "Values": [ 10.0,   0.0,   0.0,   20.0 ]
+                    },
+                    "Expiration_Duration_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Expiration_Duration_Constant": 1000,
+                    "Expiration_Event": "PFA_NoPartnerFound"
+                }
+            }
+        }
+    ]
+}

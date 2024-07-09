@@ -1,18 +1,19 @@
 {
     "Events": [
         {
+            "COMMENT": "All attraction causes vectors to not die while feeding but no humans get bit.",
             "Event_Coordinator_Config": {
-	        "Demographic_Coverage": 0.7, 
+            "Demographic_Coverage": 1.0, 
                 "Intervention_Config": {
                     "Cost_To_Consumer": 3.75, 
                     "Attract_Config": {
-                        "Box_Duration": 3650, 
-                        "Initial_Effect": 0.6, 
+                        "Box_Duration": 50, 
+                        "Initial_Effect": 1.0, 
                         "class": "WaningEffectBox"
                     }, 
                     "Killing_Config": {
-                        "Box_Duration": 3650, 
-                        "Initial_Effect": 0.9, 
+                        "Box_Duration": 50, 
+                        "Initial_Effect": 0.0, 
                         "class": "WaningEffectBox"
                     }, 
                     "class": "HumanHostSeekingTrap"
@@ -23,33 +24,88 @@
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             }, 
-            "Start_Day": 140, 
+            "Start_Day": 150, 
             "class": "CampaignEvent"
-        }, 
+        },
         {
+            "COMMENT": "No attraction and all killing means vectors are not impacted because they do not go to the trap.",
             "Event_Coordinator_Config": {
+            "Demographic_Coverage": 1.0, 
                 "Intervention_Config": {
-                    "Blocking_Config": {
-                        "Box_Duration": 3650, 
-                        "Initial_Effect": 0.8, 
-                        "class": "WaningEffectBox"
-                    }, 
                     "Cost_To_Consumer": 3.75, 
-                    "Habitat_Target": "ALL_HABITATS", 
-                    "Killing_Config": {
-                        "Box_Duration": 3650, 
+                    "Attract_Config": {
+                        "Box_Duration": 50, 
                         "Initial_Effect": 0.0, 
                         "class": "WaningEffectBox"
                     }, 
-                    "class": "Larvicides"
+                    "Killing_Config": {
+                        "Box_Duration": 50, 
+                        "Initial_Effect": 1.0, 
+                        "class": "WaningEffectBox"
+                    }, 
+                    "class": "HumanHostSeekingTrap"
                 }, 
-                "Number_Repetitions": 1, 
+                "Target_Demographic": "Everyone", 
                 "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             }, 
-            "Start_Day": 450, 
+            "Start_Day": 250, 
+            "class": "CampaignEvent"
+        },
+        {
+            "COMMENT": "We see vectors die due to having non-zero killing.  There is biting because not all are attracted.",
+            "Event_Coordinator_Config": {
+            "Demographic_Coverage": 1.0, 
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 3.75, 
+                    "Attract_Config": {
+                        "Box_Duration": 50, 
+                        "Initial_Effect": 0.5, 
+                        "class": "WaningEffectBox"
+                    }, 
+                    "Killing_Config": {
+                        "Box_Duration": 50, 
+                        "Initial_Effect": 0.5, 
+                        "class": "WaningEffectBox"
+                    }, 
+                    "class": "HumanHostSeekingTrap"
+                }, 
+                "Target_Demographic": "Everyone", 
+                "class": "StandardInterventionDistributionEventCoordinator"
+            }, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Start_Day": 350, 
+            "class": "CampaignEvent"
+        },
+        {
+            "COMMENT": "We see vectors die due to having non-zero killing.  There is biting because not all are attracted.",
+            "Event_Coordinator_Config": {
+            "Demographic_Coverage": 1.0, 
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 3.75, 
+                    "Attract_Config": {
+                        "Box_Duration": 50, 
+                        "Initial_Effect": 1.0, 
+                        "class": "WaningEffectBox"
+                    }, 
+                    "Killing_Config": {
+                        "Box_Duration": 50, 
+                        "Initial_Effect": 1.0, 
+                        "class": "WaningEffectBox"
+                    }, 
+                    "class": "HumanHostSeekingTrap"
+                }, 
+                "Target_Demographic": "Everyone", 
+                "class": "StandardInterventionDistributionEventCoordinator"
+            }, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Start_Day": 500, 
             "class": "CampaignEvent"
         }
     ], 

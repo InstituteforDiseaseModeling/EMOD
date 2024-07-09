@@ -144,7 +144,6 @@
                             ]
                         },
                         "Cost_To_Consumer": 10,
-                        "Days_To_Diagnosis": 5,
                         "Disqualifying_Properties": [
                             "InterventionStatus:InterventionStatus_1",
                             "InterventionStatus:InterventionStatus_2",

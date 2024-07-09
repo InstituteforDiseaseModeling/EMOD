@@ -62,6 +62,7 @@
 
         "____________REPORTING___________": "",
         "Enable_Demographics_Reporting": 0,
+        "Inset_Chart_Include_Coital_Acts": 1,
         "Report_HIV_ByAgeAndGender": 1,
         "Report_HIV_ByAgeAndGender_Start_Year" : 1900,
         "Report_HIV_ByAgeAndGender_Stop_Year" : 2100,
@@ -79,6 +80,7 @@
             90, 91, 92, 93, 94, 95, 96, 97, 98, 99
         ],
         "Report_HIV_ByAgeAndGender_Collect_HIV_Data"           : 0,
+        "Report_HIV_ByAgeAndGender_Collect_HIV_Stage_Data"     : 0,
         "Report_HIV_ByAgeAndGender_Collect_On_Art_Data"        : 0,
         "Report_HIV_ByAgeAndGender_Collect_Circumcision_Data"  : 0,
         "Report_HIV_ByAgeAndGender_Collect_IP_Data"            : ["Accessibility"],

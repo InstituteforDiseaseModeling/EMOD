@@ -1,0 +1,127 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender", 
+                "Target_Gender" : "FEMALE",
+                "Demographic_Coverage": 0.20,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Antigen": 0, 
+                    "Genome": 0, 
+                    "Incubation_Period_Override": 0
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition_List": [
+                        "Relationship_Created"
+                    ],
+                    "Demographic_Coverage": 1.0,
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "PropertyValueChanger",
+                        "Target_Property_Key" : "StartNew",
+                        "Target_Property_Value" : "CREATED",
+                        ".Revert" : 25
+                    }
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 100, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender", 
+                "Target_Gender" : "MALE",
+                "Property_Restrictions_Within_Node": [ { "StartNew": "NA" } ], 
+                "Demographic_Coverage": 0.5,
+                "Intervention_Config": {
+                    "class": "StartNewRelationship",
+                    "Relationship_Type": "COMMERCIAL",
+                    "Partner_Has_IP" : "StartNew:NA",
+                    "Relationship_Created_Event": "Relationship_Created"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 200, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender", 
+                "Target_Gender" : "FEMALE",
+                "Property_Restrictions_Within_Node": [ { "StartNew": "NA" } ], 
+                "Demographic_Coverage": 0.5,
+                "Intervention_Config": {
+                    "class": "StartNewRelationship",
+                    "Relationship_Type": "INFORMAL",
+                    "Partner_Has_IP" : "StartNew:NA",
+                    "Relationship_Created_Event": "Relationship_Created"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 300, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender", 
+                "Target_Gender" : "FEMALE",
+                "Property_Restrictions_Within_Node": [ { "StartNew": "NA" } ], 
+                "Demographic_Coverage": 0.5,
+                "Intervention_Config": {
+                    "class": "StartNewRelationship",
+                    "Relationship_Type": "MARITAL",
+                    "Partner_Has_IP" : "StartNew:NA",
+                    "Relationship_Created_Event": "Relationship_Created"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 400, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender", 
+                "Target_Gender" : "MALE",
+                "Property_Restrictions_Within_Node": [ { "StartNew": "NA" } ], 
+                "Demographic_Coverage": 0.5,
+                "Intervention_Config": {
+                    "class": "StartNewRelationship",
+                    "Relationship_Type": "TRANSITORY",
+                    "Partner_Has_IP" : "StartNew:NA",
+                    "Relationship_Created_Event": "Relationship_Created"
+                }
+            }
+        }
+    ]
+}

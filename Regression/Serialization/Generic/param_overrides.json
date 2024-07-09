@@ -22,6 +22,7 @@
             "Serialization_Time_Steps": [
                 0
             ],
+            "Serialization_Mask_Node_Write": 0,
             "Serialized_Population_Filename": "population.dtk",
             "Simulation_Duration": 90
         }

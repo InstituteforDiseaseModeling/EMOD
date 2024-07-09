@@ -1,0 +1,20 @@
+{
+    "parameters": {
+        "Config_Name": "InsetChart/New_Pregnancies_Channel",
+        "Age_Initialization_Distribution_Type": "DISTRIBUTION_COMPLEX",
+        "Birth_Rate_Dependence": "INDIVIDUAL_PREGNANCIES_BY_AGE_AND_YEAR",
+        "Custom_Individual_Events": [
+            "Use_Some_Contraception",
+            "Test_Distribution_Expired"
+        ],
+        "Demographics_Filenames": [
+            "demographics.json",
+            "IP_Overlay.json"
+        ],
+        "Enable_Natural_Mortality": 0,
+        "Simulation_Duration": 730,
+        "Simulation_Timestep": 1,
+        "Inset_Chart_Include_Pregnancies": 1
+    },
+    "Default_Config_Path": "defaults/generic_science_config.json"
+}

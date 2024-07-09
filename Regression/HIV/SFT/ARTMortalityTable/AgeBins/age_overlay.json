@@ -1,0 +1,41 @@
+{
+    "Metadata":     
+    { 
+        "DateCreated": "Tue Oct 22, 2019",
+        "Tool": "notepad",
+        "Author": "Ye Chen",
+        "IdReference": "0",
+        "NodeCount" : 1
+    },
+
+    "Defaults": 
+    { 
+        
+        "IndividualAttributes": 
+        { 
+            "AgeDistribution": 
+            { 
+                "NumDistributionAxes": 0,
+                "ResultUnits": "years",
+                "ResultScaleFactor": 365,
+                "ResultValues": [ 1, 1.9, 20, 20.9, 30, 30.9, 40, 40.9, 50, 50.9, 60, 60.9, 70, 70.9],
+                "DistributionValues": [ 0, 0.15, 0.15, 0.3, 0.3, 0.45, 0.45, 0.60, 0.60, 0.75, 0.75, 0.9, 0.9, 1]
+            }
+        }
+     },
+    "Nodes": [ 
+        { 
+            "NodeID": 1,
+            "NodeAttributes": 
+            { 
+                "NOT_LGA_Name": "Base_Dem",
+                "InitialPopulation": 17396000,
+
+                "NOTE": "The following parameters are required, but not used",
+                "Latitude": 0,
+                "Longitude": 0,
+                "Altitude": 0
+            }
+        }
+    ]
+}

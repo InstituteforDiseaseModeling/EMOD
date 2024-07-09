@@ -1,0 +1,17 @@
+{
+    "tests": [
+        { "path": "Generic/92_Generic_TargetHasIntervention" },
+        { "path": "Generic/93_Generic_TargetingLogic" },
+        { "path": "STI/91_STI_TargetIsCircumcised" },
+        { "path": "STI/92_STI_TargetNumPartners" },
+        { "path": "STI/93_STI_TargetMultiplePartnersLastNumMonths" },
+        { "path" : "HIV/59_HIV_TargetingOnIndividuals" },
+        { "path" : "HIV/60_HIV_TargetingTriggered" },
+        { "path" : "HIV/61_HIV_ARTMortalityTable" },
+        { "path" : "HIV/62_HIV_TargetIsOnART" },
+        { "path" : "HIV/63_HIV_TargetHasBeenOnArt" },
+        { "path" : "HIV/64_HIV_TargetIsHivPositive" },
+        { "path" : "HIV/65_HIV_TargetHasCd4Between" },
+        { "path" : "HIV/66_HIV_TargetRecentlyEnded" }
+    ]
+}

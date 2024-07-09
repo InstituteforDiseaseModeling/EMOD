@@ -4,11 +4,13 @@
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
                     "Cost_To_Consumer": 3.75, 
-                    "Killing_Config": {
+                    "Killing_Config" : {
                         "Decay_Time_Constant": 2190, 
                         "Initial_Effect": 0.1, 
                         "class": "WaningEffectExponential"
-                    }, 
+                    },
+                    "Expiration_Distribution" : "CONSTANT_DISTRIBUTION",
+                    "Expiration_Constant" : 1000,
                     "class": "SugarTrap"
                 }, 
                 "Target_Demographic": "Everyone", 

@@ -1,0 +1,61 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 1 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Number_Repetitions": 30,
+                "Timesteps_Between_Repetitions": 150,
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividualMalariaVarGenes",
+                    "MSP_Type": 1,
+                    "IRBC_Type": [ 
+                        1,74,147,220,293,366,439,512,585,658,731,804,877,950,23,96,169,242,315,388,461,534,
+                        607,680,753,826,899,972,45,118,191,264,337,410,483,556,629,702,775,848,921,994,67,
+                        140,213,286,359,432,505,578
+                    ],
+                    "Minor_Epitope_Type": [ 
+                        2,1,1,4,3,0,2,1,0,2,3,3,1,3,4,1,4,
+                        1,1,4,3,1,4,4,1,4,1,1,1,0,1,2,3,0,
+                        2,0,0,2,2,2,3,2,3,1,4,4,1,0,1,2
+                    ]
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 2 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Number_Repetitions": 30,
+                "Timesteps_Between_Repetitions": 150,
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividualMalariaVarGenes",
+                    "MSP_Type": 2,
+                    "IRBC_Type": [ 
+                        2,75,148,221,294,367,440,513,586,659,732,805,878,951,24,97,170,
+                        243,316,389,462,535,608,681,754,827,900,973,46,119,192,265,338,
+                        411,484,557,630,703,776,849,922,995,68,141,214,287,360,433,506,579
+                    ],
+                    "Minor_Epitope_Type": [ 
+                        2,0,3,3,1,2,3,3,0,1,3,2,1,3,0,1,1,2,4,0,1,1,0,4,0,1,1,4,4,0,2,0,4,1,2,1,1,0,1,3,3,1,2,4,2,4,4,3,2,4
+                    ]
+                }
+            }
+        }
+    ]
+}

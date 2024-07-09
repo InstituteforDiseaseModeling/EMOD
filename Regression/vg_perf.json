@@ -1,0 +1,36 @@
+{
+    "tests": [
+        { "path": "Vector/genetic_perf/01_VGP_Baseline" },
+        { "path": "Vector/genetic_perf/02_VGP_1Gene_2Allele" },
+        { "path": "Vector/genetic_perf/03_VGP_1Gene_4Allele" },
+        { "path": "Vector/genetic_perf/04_VGP_1Gene_8Allele" },
+        { "path": "Vector/genetic_perf/05_VGP_2Gene_2Allele" },
+        { "path": "Vector/genetic_perf/06_VGP_2Gene_4Allele" },
+        { "path": "Vector/genetic_perf/07_VGP_2Gene_8Allele" },
+        { "path": "Vector/genetic_perf/08_VGP_3Gene_2Allele" },
+        { "path": "Vector/genetic_perf/09_VGP_3Gene_4Allele" }
+    ],
+    "all_tests": [
+        { "path": "Vector/genetic_perf/01_VGP_Baseline" },
+        { "path": "Vector/genetic_perf/02_VGP_1Gene_2Allele" },
+        { "path": "Vector/genetic_perf/03_VGP_1Gene_4Allele" },
+        { "path": "Vector/genetic_perf/04_VGP_1Gene_8Allele" },
+        { "path": "Vector/genetic_perf/05_VGP_2Gene_2Allele" },
+        { "path": "Vector/genetic_perf/06_VGP_2Gene_4Allele" },
+        { "path": "Vector/genetic_perf/07_VGP_2Gene_8Allele" },
+        { "path": "Vector/genetic_perf/08_VGP_3Gene_2Allele" },
+        { "path": "Vector/genetic_perf/09_VGP_3Gene_4Allele" },
+    
+    
+        { "path": "Vector/genetic_perf/10_VGP_3Gene_8Allele" },
+        { "path": "Vector/genetic_perf/11_VGP_4Gene_2Allele" },
+        { "path": "Vector/genetic_perf/12_VGP_4Gene_4Allele" },
+        { "path": "Vector/genetic_perf/13_VGP_4Gene_8Allele" },
+        { "path": "Vector/genetic_perf/14_VGP_5Gene_2Allele" },
+        { "path": "Vector/genetic_perf/15_VGP_5Gene_4Allele" },
+        { "path": "Vector/genetic_perf/16_VGP_5Gene_8Allele" },
+        { "path": "Vector/genetic_perf/17_VGP_6Gene_2Allele" },
+        { "path": "Vector/genetic_perf/18_VGP_6Gene_4Allele" },
+        { "path": "Vector/genetic_perf/19_VGP_6Gene_8Allele" }
+    ]
+}

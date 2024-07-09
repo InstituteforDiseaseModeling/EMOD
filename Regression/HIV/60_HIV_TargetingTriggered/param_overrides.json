@@ -1,0 +1,45 @@
+{
+    "Default_Config_Path": "defaults/hiv_scenario_default_config.json",
+    "parameters": {
+        "Maternal_Infection_Transmission_Probability": 0,
+        "____________DEMOGRAPHICS___________": {
+            "Age_Initialization_Distribution_Type": "DISTRIBUTION_SIMPLE",
+            "x_Base_Population": 1,
+            "Birth_Rate_Dependence": "POPULATION_DEP_RATE",
+            "Death_Rate_Dependence": "NONDISEASE_MORTALITY_BY_AGE_AND_GENDER",
+            "Demographics_Filenames": [
+                "uniform_demographics.json",
+                "pfa_simple.json",
+                "PFA_overlay_rates_03.json",
+                "long_transitory.json"
+            ],
+            "Enable_Natural_Mortality": 1,
+            "Custom_Individual_Events": [
+                "PartnerGotInfected"
+            ]
+        },
+        "____________INTRAHOST___________": {
+            "Male_To_Female_Relative_Infectivity_Ages": [
+                0
+            ],
+            "Male_To_Female_Relative_Infectivity_Multipliers": [
+                1
+            ]
+        },
+        "____________NETWORK___________": {
+            "Min_Days_Between_Adding_Relationships": 0
+        },
+        "____________RARELY_CHANGED___________": {
+            "Config_Name": "60_HIV_TargetingTriggered"
+        },
+        "____________REPORTING___________": {
+            "Report_HIV_ByAgeAndGender": 1,
+            "Report_HIV_ByAgeAndGender_Start_Year": 2022,
+            "Report_HIV_ByAgeAndGender_Stop_Year": 2050
+        },
+        "____________SIMULATION___________": {
+            "Base_Year": 2020,
+            "Simulation_Timestep": 30.41667
+        }
+    }
+}

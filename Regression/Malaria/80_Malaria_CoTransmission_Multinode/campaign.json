@@ -1,0 +1,77 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+       {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 0.5,
+                "Intervention_Config": {
+                    "Repelling_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect": 0.0
+                    },
+                    "Blocking_Config": {
+                        "Box_Duration": 175,
+                        "Initial_Effect": 1,
+                        "class": "WaningEffectBox"
+                    },
+                    "Cost_To_Consumer": 1,
+                    "Killing_Config": {
+                        "Box_Duration": 175,
+                        "Initial_Effect": 0.1,
+                        "class": "WaningEffectBox"
+                    },
+                    "Usage_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect": 1.0
+                    },
+                    "class": "SimpleBednet"
+                },
+                "Property_Restrictions": [],
+                "Target_Demographic": "Everyone",
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 10,
+            "class": "CampaignEvent"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "Antigen": 0,
+                    "Genome": 0,
+                    "class": "OutbreakIndividual"
+                },
+                "Demographic_Coverage": 0.2,
+                "Target_Demographic": "Everyone",
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "Outbreak",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 100,
+            "class": "CampaignEvent"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 0.8,
+                "Number_Repetitions": 12,
+                "Timesteps_Between_Repetitions": 45,
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 3.75,
+                    "Drug_Type": "Chloroquine",
+                    "class": "AntimalarialDrug"
+                },
+                "Target_Demographic": "Everyone",
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 3000.0,
+            "class": "CampaignEvent"
+        }
+    ]
+}

@@ -2,25 +2,18 @@
     "Default_Config_Path": "../../defaults/vector_default_config.json",
     "parameters": {
         "CLIMATE": {
-            "AIR": {
-                "Air_Temperature_Filename": "Namawala_single_node_air_temperature_daily.bin"
-            },
-            "HUMIDITY": {
-                "Relative_Humidity_Filename": "Namawala_single_node_relative_humidity_daily.bin"
-            },
-            "LAND_TEMP": {
-                "Land_Temperature_Filename": "Namawala_single_node_land_temperature_daily.bin"
-            },
-            "RAINFALL": {
-                "Rainfall_Filename": "Namawala_single_node_rainfall_daily.bin"
-            }
+            "Climate_Model": "CLIMATE_CONSTANT",
+            "Enable_Climate_Stochasticity": 0,
+            "Enable_Rainfall_Stochasticity": 0
         },
         "DEMOGRAPHICS": {
             "Birth_Rate_Dependence": "DEMOGRAPHIC_DEP_RATE",
             "Demographics_Filenames": [
                 "Namawala_single_node_demographics.json"
             ],
-            "Enable_Initial_Prevalence": 1
+            "Enable_Birth": 0,
+            "Enable_Initial_Prevalence": 1,
+            "Enable_Vital_Dynamics": 0
         },
         "PRIMARY": {
             "Config_Name": "4_Vector_Namawala_SugarTrap_EmergeFeed",
@@ -29,8 +22,22 @@
             "Simulation_Duration": 730
         },
         "VECTOR": {
+            "x_Temporary_Larval_Habitat": 0.1,
             "Vector_Sampling_Type": "TRACK_ALL_VECTORS",
-            "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_ON_EMERGENCE_ONLY"
+            "Vector_Species_Params": [
+                {
+                    "Name": "arabiensis",
+                    "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_ON_EMERGENCE_ONLY"
+                },
+                {
+                    "Name": "funestus",
+                    "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_ON_EMERGENCE_ONLY"
+                },
+                {
+                    "Name": "gambiae",
+                    "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_ON_EMERGENCE_ONLY"
+                }
+            ]
         }
     }
 }

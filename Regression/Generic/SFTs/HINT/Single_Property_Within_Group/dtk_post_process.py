@@ -189,7 +189,7 @@ def create_report_file(param_obj, campaign_obj, stdout_df, property_df, property
                                   line=True, alpha=0.5, overlap=True)
 
                 # skip the first time step(outbreak start day) for new infection channel
-                sft.plot_data(new_infection.ix[1:, 0].tolist(), expected_new_infection_list,
+                sft.plot_data(new_infection.iloc[1:, 0].tolist(), expected_new_infection_list,
                                   label1='from property report',
                                   label2="calculated data",
                                   title="new infections for {}".format(group),

@@ -1,0 +1,14 @@
+{
+    "parameters": {
+        "Config_Name": "InsetChart/InsetChart_Has_IP",
+        "Demographics_Filenames": [
+            "../../demographics.json",
+            "IP_Overlay.json"
+        ],
+        "Enable_Vital_Dynamics": 0,
+        "Simulation_Duration": 2,
+        "Enable_Interventions":0,
+        "Inset_Chart_Has_IP":  ["Health", "FiftyFifty"]
+    },
+    "Default_Config_Path": "defaults/generic_science_config.json"
+}

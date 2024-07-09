@@ -1,0 +1,18 @@
+{
+    "Default_Config_Path": "../../../defaults/generic_science_config.json",
+    "parameters": {
+        "Config_Name": "Generic::SFT::TargetNumIndividuals",
+        "Custom_Reports_Filename": "custom_reports.json",
+        "Enable_Vital_Dynamics": 0,
+        "Geography": "NONE",
+        "Simulation_Duration": 80,
+        "Run_Number": 1,
+        "x_Base_Population": 1.0,
+        "Demographics_Filenames": [
+            "demographics.json"
+        ],
+        "Infectious_Period_Distribution": "CONSTANT_DISTRIBUTION",
+        "Infectious_Period_Constant": 1
+    }
+}
+

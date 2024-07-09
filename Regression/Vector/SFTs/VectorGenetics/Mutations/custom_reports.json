@@ -1,0 +1,11 @@
+{
+    "Reports": [
+        {
+            "Gender": "VECTOR_BOTH_GENDERS",
+            "Species": "TestVector",
+            "Stratify_By": "ALLELE_FREQ",
+            "class": "ReportVectorGenetics"
+        }
+    ],
+    "Use_Defaults": 1
+}

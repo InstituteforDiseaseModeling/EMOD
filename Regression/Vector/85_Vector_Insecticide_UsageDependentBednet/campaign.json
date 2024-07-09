@@ -1,0 +1,186 @@
+{
+    "Events": [
+        {
+            "COMMENT1": "Test that one bed net is distributed, is used every day for 50 days, and discarded on day 150.",
+            "COMMENT2": "Verify by looking at ReportEventRecorder.csv",
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "Repelling_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect": 0.0
+                    }, 
+                    "Blocking_Config": {
+                        "Initial_Effect": 1.0,
+                        "class": "WaningEffectConstant"
+                    },
+                    "Cost_To_Consumer": 5,
+                    "Discard_Event": "Bednet_Discarded",
+                    "Expiration_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Expiration_Period_Constant": 50,
+                    "NOTE": "It is used for 50 days because it is used the first day it obtained and used the same day it is discared.",
+                    "Killing_Config": {
+                        "Initial_Effect": 0.5,
+                        "class": "WaningEffectConstant"
+                    },
+                    "Received_Event": "Bednet_Got_New_One",
+                    "Usage_Config_List": [
+                        {
+                            "Initial_Effect": 1.0,
+                            "class": "WaningEffectConstant"
+                        }
+                    ],
+                    "Using_Event": "Bednet_Using",
+                    "Insecticide_Name": "pyrethroid",
+                    "class": "UsageDependentBednet"
+                },
+                "Number_Repetitions": 1,
+                "Target_Demographic": "Everyone",
+                "Timesteps_Between_Repetitions": 0,
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 101,
+            "class": "CampaignEvent"
+        },
+        {
+            "COMMENT1": "Test that one bed net is distributed, is used about 0.5 = 0.707107*0.707107, and is discared.",
+            "COMMENT2": "Verify by looking at ReportEventRecorder.csv",
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "Repelling_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect": 0.0
+                    }, 
+                    "Blocking_Config": {
+                        "Initial_Effect": 1.0,
+                        "class": "WaningEffectConstant"
+                    },
+                    "Cost_To_Consumer": 5,
+                    "Discard_Event": "Bednet_Discarded",
+                    "Expiration_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Expiration_Period_Constant": 50,
+                    "Killing_Config": {
+                        "Initial_Effect": 0.5,
+                        "class": "WaningEffectConstant"
+                    },
+                    "Received_Event": "Bednet_Got_New_One",
+                    "Usage_Config_List": [
+                        {
+                            "Initial_Effect": 0.707107,
+                            "class": "WaningEffectConstant"
+                        },
+                        {
+                            "Initial_Effect": 0.707107,
+                            "class": "WaningEffectConstant"
+                        }
+                    ],
+                    "Using_Event": "Bednet_Using",
+                    "Insecticide_Name": "carbamate",
+                    "class": "UsageDependentBednet"
+                },
+                "Number_Repetitions": 1,
+                "Target_Demographic": "Everyone",
+                "Timesteps_Between_Repetitions": 0,
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 201,
+            "class": "CampaignEvent"
+        },
+        {
+            "COMMENT1": "Test that one bed net is distributed, is used every day, and is discared - due to the next bed net replacing this one.",
+            "COMMENT2": "Verify by looking at ReportEventRecorder.csv",
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "Repelling_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect": 0.0
+                    }, 
+                    "Blocking_Config": {
+                        "Initial_Effect": 1.0,
+                        "class": "WaningEffectConstant"
+                    },
+                    "Cost_To_Consumer": 5,
+                    "Discard_Event": "Bednet_Discarded",
+                    "Expiration_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Killing_Config": {
+                        "Initial_Effect": 0.5,
+                        "class": "WaningEffectConstant"
+                    },
+                    "Received_Event": "Bednet_Got_New_One",
+                    "Usage_Config_List": [
+                        {
+                            "Initial_Effect": 1.0,
+                            "class": "WaningEffectConstant"
+                        }
+                    ],
+                    "Using_Event": "Bednet_Using",
+                    "Insecticide_Name": "organochlorines",
+                    "class": "UsageDependentBednet",
+                    "Expiration_Period_Constant": 50
+                },
+                "Number_Repetitions": 1,
+                "Target_Demographic": "Everyone",
+                "Timesteps_Between_Repetitions": 0,
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 301,
+            "class": "CampaignEvent"
+        },
+        {
+            "COMMENT1": "Test that this bed net replaces the previous one at time 320 and is discared at 359 instead of the original expected 350.",
+            "COMMENT2": "Verify by looking at ReportEventRecorder.csv",
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "Repelling_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect": 0.0
+                    }, 
+                    "Blocking_Config": {
+                        "Initial_Effect": 1.0,
+                        "class": "WaningEffectConstant"
+                    },
+                    "Cost_To_Consumer": 5,
+                    "Discard_Event": "Bednet_Discarded",
+                    "Expiration_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Expiration_Period_Constant": 40,
+                    "Killing_Config": {
+                        "Initial_Effect": 0.5,
+                        "class": "WaningEffectConstant"
+                    },
+                    "Received_Event": "Bednet_Got_New_One",
+                    "Usage_Config_List": [
+                        {
+                            "Initial_Effect": 1.0,
+                            "class": "WaningEffectConstant"
+                        }
+                    ],
+                    "Using_Event": "Bednet_Using_Num_2",
+                    "Insecticide_Name": "carbamate",
+                    "class": "UsageDependentBednet"
+                },
+                "Number_Repetitions": 1,
+                "Target_Demographic": "Everyone",
+                "Timesteps_Between_Repetitions": 0,
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 320,
+            "class": "CampaignEvent"
+        }
+    ],
+    "Use_Defaults": 1
+}

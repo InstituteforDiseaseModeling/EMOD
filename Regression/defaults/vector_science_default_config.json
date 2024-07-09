@@ -1,0 +1,253 @@
+{
+    "parameters": {
+        "CAMPAIGNS": {
+            "Campaign_Filename": "campaign.json",
+            "Custom_Coordinator_Events": [],
+            "Custom_Individual_Events": [],
+            "Custom_Node_Events": [],
+            "Enable_Interventions": 1
+        },
+        "CLIMATE": {
+            "AIR": {
+                "Air_Temperature_Filename": "",
+                "Air_Temperature_Variance": 5,
+                "Base_Air_Temperature": 30
+            },
+            "Climate_Model": "CLIMATE_CONSTANT",
+            "Climate_Update_Resolution": "CLIMATE_UPDATE_DAY",
+            "Enable_Climate_Stochasticity": 0,
+            "HUMIDITY": {
+                "Base_Relative_Humidity": 0.5,
+                "Relative_Humidity_Filename": "",
+                "Relative_Humidity_Variance": 0.05
+            },
+            "LAND_TEMP": {
+                "Base_Land_Temperature": 30,
+                "Land_Temperature_Filename": "",
+                "Land_Temperature_Variance": 2
+            },
+            "RAINFALL": {
+                "Base_Rainfall": 100,
+                "Enable_Rainfall_Stochasticity": 0,
+                "Rainfall_Filename": ""
+            }
+        },
+        "DEMOGRAPHICS": {
+            "Age_Initialization_Distribution_Type": "DISTRIBUTION_SIMPLE",
+            "Birth_Rate_Dependence": "POPULATION_DEP_RATE",
+            "Birth_Rate_Time_Dependence": "NONE",
+            "Default_Geography_Initial_Node_Population": 1000,
+            "Default_Geography_Torus_Size": 10,
+            "Demographics_Filenames": [
+                "Vector_single_node_demographics.json"
+            ],
+            "Enable_Aging": 0,
+            "Enable_Birth": 0,
+            "Enable_Demographics_Birth": 0,
+            "Enable_Demographics_Builtin": 0,
+            "Enable_Demographics_Reporting": 0,
+            "Enable_Demographics_Risk": 0,
+            "Enable_Initial_Prevalence": 0,
+            "Enable_Initial_Susceptibility_Distribution": 0,
+            "Enable_Maternal_Protection": 0,
+            "Enable_Susceptibility_Scaling": 0,
+            "Enable_Vital_Dynamics": 0,
+            "IMMUNITY": {
+                "Acquisition_Blocking_Immunity_Decay_Rate": 0.01,
+                "Acquisition_Blocking_Immunity_Duration_Before_Decay": 90,
+                "Enable_Immune_Decay": 0,
+                "Enable_Immunity": 0,
+                "Post_Infection_Acquisition_Multiplier": 1,
+                "Post_Infection_Transmission_Multiplier": 1,
+                "Susceptibility_Initialization_Distribution_Type": "DISTRIBUTION_OFF",
+                "Susceptibility_Scale_Type": "CONSTANT_SUSCEPTIBILITY",
+                "Transmission_Blocking_Immunity_Decay_Rate": 0.01,
+                "Transmission_Blocking_Immunity_Duration_Before_Decay": 90
+            },
+            "MORTALITY": {
+                "Base_Mortality": 0,
+                "Death_Rate_Dependence": "NONDISEASE_MORTALITY_BY_AGE_AND_GENDER",
+                "Enable_Disease_Mortality": 0,
+                "Enable_Natural_Mortality": 0,
+                "Mortality_Blocking_Immunity_Decay_Rate": 0.001,
+                "Mortality_Blocking_Immunity_Duration_Before_Decay": 90,
+                "Mortality_Time_Course": "DAILY_MORTALITY",
+                "Post_Infection_Mortality_Multiplier": 1
+            },
+            "Minimum_Adult_Age_Years": 15,
+            "Population_Density_C50": 30,
+            "Population_Scale_Type": "USE_INPUT_FILE",
+            "SAMPLING": {
+                "Base_Individual_Sample_Rate": 1,
+                "Individual_Sampling_Type": "TRACK_ALL",
+                "Max_Node_Population_Samples": 40,
+                "Sample_Rate_0_18mo": 1,
+                "Sample_Rate_10_14": 1,
+                "Sample_Rate_15_19": 1,
+                "Sample_Rate_18mo_4yr": 1,
+                "Sample_Rate_20_Plus": 1,
+                "Sample_Rate_5_9": 1,
+                "Sample_Rate_Birth": 2
+            },
+            "x_Base_Population": 1
+        },
+        "DISEASE": {
+            "Number_Basestrains": 1,
+            "Number_Substrains": 1,
+            "Enable_Infectivity_Reservoir": 0,
+            "Enable_Superinfection": 0,
+            "INCUBATION": {
+                "Incubation_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                "Incubation_Period_Constant": 5
+            },
+            "INFECTIOUSNESS": {
+                "Base_Infectivity": 1,
+                "Infectious_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                "Infectious_Period_Constant": 7,
+                "Infectivity_Scale_Type": "CONSTANT_INFECTIVITY",
+                "Population_Density_Infectivity_Correction": "CONSTANT_INFECTIVITY"
+            },
+            "Infection_Updates_Per_Timestep": 1,
+            "Max_Individual_Infections": 2,
+            "TRANSMISSION": {
+                "Enable_Maternal_Infection_Transmission": 0,
+                "Maternal_Infection_Transmission_Probability": 0
+            }
+        },
+        "FUDGE_FACTORS": {
+            "x_Air_Migration": 1,
+            "x_Birth": 1,
+            "x_Local_Migration": 1,
+            "x_Other_Mortality": 1,
+            "x_Regional_Migration": 1,
+            "x_Sea_Migration": 1,
+            "x_Temporary_Larval_Habitat": 1
+        },
+        "HPC": {
+            "Load_Balance_Filename": "",
+            "Local_Simulation": 0,
+            "Num_Cores": 1
+        },
+        "MIGRATION": {
+            "Migration_Model": "NO_MIGRATION"
+        },
+        "OUTPUT": {
+            "Custom_Reports_Filename": "",
+            "Enable_Default_Reporting": 1,
+            "Enable_Property_Output": 0,
+            "Enable_Spatial_Output": 0,
+            "Inset_Chart_Include_Pregnancies": 0,
+            "Inset_Chart_Has_Interventions": [],
+            "Inset_Chart_Has_IP": [],
+            "Report_Coordinator_Event_Recorder": 0,
+            "Report_Event_Recorder": 0,
+            "Report_Node_Event_Recorder": 0,
+            "Report_Surveillance_Event_Recorder": 0
+        },
+        "PRIMARY": {
+            "Python_Script_Path": "SHARED",
+            "Config_Name": "NO_DEFAULT_CONFIG_NAME",
+            "Enable_Termination_On_Zero_Total_Infectivity": 0,
+            "Enable_Absolute_Time": "NO",
+            "Geography": "",
+            "Memory_Usage_Halting_Threshold_Working_Set_MB": 4000,
+            "Memory_Usage_Warning_Threshold_Working_Set_MB": 3500,
+            "Node_Grid_Size": 0.042,
+            "Run_Number": 1,
+            "Simulation_Duration": 300,
+            "Simulation_Timestep": 1,
+            "Simulation_Type": "VECTOR_SIM",
+            "Start_Time": 0
+        },
+        "SERIALIZATION": {
+            "Serialized_Population_Writing_Type": "NONE",
+            "Serialized_Population_Reading_Type": "NONE",
+            "Serialization_Precision" : "REDUCED",
+            "Serialization_Time_Steps":[]
+        },
+        "VECTOR": {
+            "Age_Dependent_Biting_Risk_Type": "OFF",
+            "EGGS": {
+                "Egg_Hatch_Delay_Distribution": "EXPONENTIAL_DISTRIBUTION",
+                "Egg_Hatch_Density_Dependence": "DENSITY_DEPENDENCE",
+                "Egg_Saturation_At_Oviposition": "SATURATION_AT_OVIPOSITION",
+                "Enable_Egg_Mortality": 0,
+                "Enable_Drought_Egg_Hatch_Delay": 0,
+                "Enable_Temperature_Dependent_Egg_Hatching":0,
+                "Mean_Egg_Hatch_Delay": 1,
+                "Drought_Egg_Hatch_Delay": 0.22,
+                "Egg_Arrhenius1": 61599956.864,
+                "Egg_Arrhenius2": 5754.033
+            },
+            "Enable_Vector_Aging": 0,
+            "Enable_Vector_Migration": 0,
+            "Enable_Vector_Migration_Human": 0,
+            "Enable_Vector_Migration_Local": 0,
+            "Enable_Vector_Migration_Wind": 0,
+            "Enable_Vector_Mortality": 1,
+            "Enable_Vector_Species_Report": 0,
+            "HABITAT": {
+                "Air_Temperature_Offset": 0,
+                "Land_Temperature_Offset": 0,
+                "Rainfall_Scale_Factor": 1,
+                "Relative_Humidity_Scale_Factor": 1,
+                "Semipermanent_Habitat_Decay_Rate": 0.01,
+                "Temporary_Habitat_Decay_Factor": 0.05
+            },
+            "Human_Feeding_Mortality": 0,
+            "Insecticides":[],
+            "Larval_Density_Dependence": "UNIFORM_WHEN_OVERPOPULATION",
+            "Mosquito_Weight": 1,
+            "Rainfall_In_mm_To_Fill_Swamp": 1000.0,
+            "SPECIES": {
+                "Vector_Species_Params": [
+                    {
+                        "Name": "TestVector",
+                        "Acquire_Modifier": 0.2,
+                        "Adult_Life_Expectancy": 15,
+                        "Male_Life_Expectancy": 15,
+                        "Anthropophily": 0.95,
+                        "Aquatic_Arrhenius_1": 84200000000,
+                        "Aquatic_Arrhenius_2": 8328,
+                        "Aquatic_Mortality_Rate": 0.1,
+                        "Cycle_Arrhenius_1": 40905790000.0,
+                        "Cycle_Arrhenius_2": 7740.23,
+                        "Cycle_Arrhenius_Reduction_Factor": 1,
+                        "Days_Between_Feeds": 3,
+                        "Egg_Batch_Size": 100,
+                        "Egg_Survival_Rate": 0.99,
+                        "Immature_Duration": 4,
+                        "Indoor_Feeding_Fraction": 0.5,
+                        "Infected_Arrhenius_1": 117000000000,
+                        "Infected_Arrhenius_2": 8336,
+                        "Infected_Egg_Batch_Factor": 0.8,
+                        "Infectious_Human_Feed_Mortality_Factor": 1.5,
+                        "Habitats": [
+                            {
+                                "Habitat_Type": "CONSTANT",
+                                "Max_Larval_Capacity": 100000000.0
+                            }
+                        ],
+                        "Gene_To_Trait_Modifiers": [],
+                        "Genes": [],
+                        "Microsporidia": [],
+                        "Temperature_Dependent_Feeding_Cycle": "NO_TEMPERATURE_DEPENDENCE",
+                        "Transmission_Rate": 0.5,
+                        "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_NONE"
+                    }
+                ],
+                "Vector_Larval_Rainfall_Mortality": "NONE",
+                "Vector_Sampling_Type": "VECTOR_COMPARTMENTS_NUMBER",
+                "Wolbachia_Infection_Modification": 1.0,
+                "Wolbachia_Mortality_Modification": 1.0
+            }
+        },
+        "LOGGING": {
+            "logLevel_VectorPopulation": "WARNING",
+            "logLevel_VectorPopulationIndividual": "WARNING",
+            "logLevel_VectorCohort": "WARNING",
+            "logLevel_VectorHabitat": "WARNING",
+            "logLevel_VectorGene":"WARNING"
+        }
+    }
+}

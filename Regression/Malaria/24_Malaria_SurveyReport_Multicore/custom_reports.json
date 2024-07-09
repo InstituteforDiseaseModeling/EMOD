@@ -1,207 +1,539 @@
 {
-    "Custom_Reports" : 
-    {
-        "Use_Explicit_Dlls" : 1,
-        "MalariaSurveyJSONAnalyzer" :
+    "Reports": [
         {
-            "Enabled" : 1,
-            "Reports" :
-            [
-                {
-                    "Pretty_Format" : 1,
-                    "Start_Day": 0,
-                    "Duration_Days" : 10000,
-                    "Nodeset_Config": {
-                         "class": "NodeSetAll"
-                    }, 
-                    "Event_Trigger_List" :
-                    [
-                        "NewClinicalCase"
-                    ],
-                    "Max_Number_Reports": 2,
-                    "Report_Description": "XXX",
-                    "Reporting_Interval": 40
-                }
+            "class": "MalariaPatientJSONReport",
+            "Filename_Suffix": "Nodes2n7",
+            "Start_Day": 10,
+            "End_Day": 20,
+            "Node_IDs_Of_Interest": [2,7],
+            "Min_Age_Years": 0.0,
+            "Max_Age_Years": 10.0,
+            "Must_Have_IP_Key_Value": "",
+            "Must_Have_Intervention": ""
+        },
+        {
+            "class": "MalariaSurveyJSONAnalyzer",
+            "Filename_Suffix": "XXX",
+            "Start_Day": 0,
+            "End_Day": 10000,
+            "Node_IDs_Of_Interest": [1,2,7,8],
+            "Min_Age_Years": 10.0,
+            "Max_Age_Years": 1000.0,
+            "Must_Have_IP_Key_Value": "",
+            "Must_Have_Intervention": "",
+            "Event_Trigger_List": [
+                "NewClinicalCase"
+            ],
+            "Pretty_Format": 1,
+            "Max_Number_Reports": 2,
+            "Reporting_Interval": 40
+        },
+        {
+            "class": "MalariaSummaryReport",
+            "Filename_Suffix": "YYY",
+            "Start_Day": 0,
+            "COMMENT": "Simulation_Duration is 85.  I want the situation where the report has data but it didnt write it during EndTimestep.",
+            "End_Day": 10000,
+            "Node_IDs_Of_Interest": [],
+            "Must_Have_IP_Key_Value": "",
+            "Must_Have_Intervention": "",
+            "Pretty_Format": 1,
+            "Max_Number_Reports": 3,
+            "Reporting_Interval": 30,
+            "Age_Bins": [
+                10,
+                20,
+                30,
+                40,
+                50,
+                60,
+                70,
+                80,
+                90,
+                100,
+                125
+            ],
+            "Parasitemia_Bins": [
+                -1,
+                50,
+                500,
+                5000,
+                50000,
+                3.402823466385e+38
             ]
         },
-        "MalariaSummaryReport" :
         {
-            "Enabled" : 1,
-            "Reports" :
-            [
-                {
-                    "Pretty_Format" : 1,
-                    "Age_Bins" : [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 125 ],
-                    "Parasitemia_Bins" : [ -1, 50, 500, 5000, 50000, 3.402823466385e+38 ],
-                    "Start_Day": 0,
-                    "Duration_Days" : 10000,
-                    "Nodeset_Config": {
-                         "class": "NodeSetAll"
-                    }, 
-                    "Event_Trigger_List" :
-                    [
-                        "EveryUpdate"
-                    ],
-                    "Report_Description": "YYY",
-                    "COMMENT" : "Simulation_Duration is 85.  I want the situation where the report has data but it didnt write it during EndTimestep.",
-                    "Max_Number_Reports": 3,
-                    "Reporting_Interval": 30
-                }
+            "COMMENT": "GH-2830. One report per node and data is written until Finalize (i.e. Max_Number_Reports > Simualtion_Duration/Reporting_Interval.",
+            "class": "MalariaSummaryReport",
+            "Filename_Suffix": "GH2830_Node1",
+            "Start_Day": 0,
+            "End_Day": 10000,
+            "Node_IDs_Of_Interest": [ 1 ],
+            "Must_Have_IP_Key_Value": "",
+            "Must_Have_Intervention": "",
+            "Pretty_Format": 1,
+            "Max_Number_Reports": 10000,
+            "Reporting_Interval": 30,
+            "Age_Bins": [
+                10,
+                20,
+                30,
+                40,
+                50,
+                60,
+                70,
+                80,
+                90,
+                100,
+                125
+            ],
+            "Parasitemia_Bins": [
+                -1,
+                50,
+                500,
+                5000,
+                50000,
+                3.402823466385e+38
             ]
         },
-        "MalariaImmunityReport" :
         {
-            "Enabled" : 1,
-            "Reports" :
-            [
-                {
-                    "Pretty_Format" : 1,
-                    "Age_Bins" : [20, 40, 60, 80, 100, 125 ],
-                    "Start_Day": 0,
-                    "Duration_Days" : 10000,
-                    "Nodeset_Config": {
-                         "class": "NodeSetAll"
-                    }, 
-                    "Event_Trigger_List" :
-                    [
-                        "EveryUpdate"
-                    ],
-                    "Report_Description": "ZZZ",
-                    "COMMENT" : "Simulation_Duration is 85.  I want the situation where the report has data but it didnt write it during EndTimestep.",
-                    "Max_Number_Reports": 4,
-                    "Reporting_Interval": 25
-                }
+            "COMMENT": "GH-2830. One report per node and data is written until Finalize (i.e. Max_Number_Reports > Simualtion_Duration/Reporting_Interval.",
+            "class": "MalariaSummaryReport",
+            "Filename_Suffix": "GH2830_Node2",
+            "Start_Day": 0,
+            "End_Day": 10000,
+            "Node_IDs_Of_Interest": [ 2 ],
+            "Must_Have_IP_Key_Value": "",
+            "Must_Have_Intervention": "",
+            "Pretty_Format": 1,
+            "Max_Number_Reports": 10000,
+            "Reporting_Interval": 30,
+            "Age_Bins": [
+                10,
+                20,
+                30,
+                40,
+                50,
+                60,
+                70,
+                80,
+                90,
+                100,
+                125
+            ],
+            "Parasitemia_Bins": [
+                -1,
+                50,
+                500,
+                5000,
+                50000,
+                3.402823466385e+38
             ]
         },
-        "SpatialReportMalariaFiltered" :
         {
-            "Enabled" : 1,
-            "Reports" :
-            [
-                {
-                    "Report_File_Name" : "SpatialReportMalariaFiltered_dt85_time00to34_nodes1234",
-                    "Start_Day" : 0,
-                    "End_Day" : 34,
-                    "Reporting_Interval" : 8.5,
-                    "Spatial_Output_Channels" : [
-                        "Population",
-                        "New_Infections",
-                        "Prevalence",
-                        "Adult_Vectors",
-                        "New_Diagnostic_Prevalence", 
-                        "New_Clinical_Cases"
-                    ],
-                    "Node_IDs_Of_Interest" : [ 1, 2, 3, 4 ]
-                },
-                {
-                    "Report_File_Name" : "SpatialReportMalariaFiltered_dt85_time34to85_nodes1234",
-                    "Start_Day" : 34,
-                    "End_Day" : 85,
-                    "Reporting_Interval" : 8.5,
-                    ".Spatial_Output_Channels" : [
-                        "Adult_Vectors"
-                    ],
-                    "Spatial_Output_Channels" : [
-                        "Population",
-                        "New_Infections",
-                        "Prevalence",
-                        "Adult_Vectors",
-                        "New_Diagnostic_Prevalence", 
-                        "New_Clinical_Cases"
-                    ],
-                    "Node_IDs_Of_Interest" : [ 1, 2, 3, 4 ]
-                },
-                {
-                    "Report_File_Name" : "SpatialReportMalariaFiltered_dt85_time00to85_nodes1234",
-                    "Start_Day" : 0,
-                    "End_Day" : 85,
-                    "Reporting_Interval" : 8.5,
-                    "Spatial_Output_Channels" : [
-                        "Population",
-                        "New_Infections",
-                        "Prevalence",
-                        "Adult_Vectors",
-                        "New_Diagnostic_Prevalence", 
-                        "New_Clinical_Cases"
-                    ],
-                    "Node_IDs_Of_Interest" : [ 1, 2, 3, 4 ]
-                },
-                {
-                    "Report_File_Name" : "SpatialReportMalariaFiltered_dt85_time00to34_nodes5678",
-                    "Start_Day" : 0,
-                    "End_Day" : 34,
-                    "Reporting_Interval" : 8.5,
-                    "Spatial_Output_Channels" : [
-                        "Population",
-                        "New_Infections",
-                        "Prevalence",
-                        "Adult_Vectors",
-                        "New_Diagnostic_Prevalence", 
-                        "New_Clinical_Cases"
-                    ],
-                    "Node_IDs_Of_Interest" : [ 5, 6, 7, 8 ]
-                },
-                {
-                    "Report_File_Name" : "SpatialReportMalariaFiltered_dt85_time34to85_nodes5678",
-                    "Start_Day" : 34,
-                    "End_Day" : 85,
-                    "Reporting_Interval" : 8.5,
-                    "Spatial_Output_Channels" : [
-                        "Population",
-                        "New_Infections",
-                        "Prevalence",
-                        "Adult_Vectors",
-                        "New_Diagnostic_Prevalence", 
-                        "New_Clinical_Cases"
-                    ],
-                    "Node_IDs_Of_Interest" : [ 5, 6, 7, 8 ]
-                },
-                {
-                    "Report_File_Name" : "SpatialReportMalariaFiltered_dt85_time00to85_nodes5678",
-                    "Start_Day" : 0,
-                    "End_Day" : 85,
-                    "Reporting_Interval" : 8.5,
-                    "Spatial_Output_Channels" : [
-                        "Population",
-                        "New_Infections",
-                        "Prevalence",
-                        "Adult_Vectors",
-                        "New_Diagnostic_Prevalence", 
-                        "New_Clinical_Cases"
-                    ],
-                    "Node_IDs_Of_Interest" : [ 5, 6, 7, 8 ]
-                },
-                {
-                    "Report_File_Name" : "SpatialReportMalariaFiltered_dt85_time00to85_nodesAll",
-                    "Start_Day" : 0,
-                    "End_Day" : 85,
-                    "Reporting_Interval" : 8.5,
-                    "Spatial_Output_Channels" : [
-                        "Population",
-                        "New_Infections",
-                        "Prevalence",
-                        "Adult_Vectors",
-                        "New_Diagnostic_Prevalence", 
-                        "New_Clinical_Cases"
-                    ],
-                    "Node_IDs_Of_Interest" : [ 1, 2, 3, 4, 5, 6, 7, 8 ]
-                },
-                {
-                    "Report_File_Name" : "SpatialReportMalariaFiltered_dt1_time00to85_nodesAll",
-                    "Start_Day" : 0,
-                    "End_Day" : 85,
-                    "Reporting_Interval" : 1,
-                    "Spatial_Output_Channels" : [
-                        "Population",
-                        "New_Infections",
-                        "Prevalence",
-                        "Adult_Vectors",
-                        "New_Diagnostic_Prevalence", 
-                        "New_Clinical_Cases"
-                    ],
-                    "Node_IDs_Of_Interest" : [ 1, 2, 3, 4, 5, 6, 7, 8 ]
-                }
+            "COMMENT": "GH-2830. One report per node and data is written until Finalize (i.e. Max_Number_Reports > Simualtion_Duration/Reporting_Interval.",
+            "class": "MalariaSummaryReport",
+            "Filename_Suffix": "GH2830_Node3",
+            "Start_Day": 0,
+            "End_Day": 10000,
+            "Node_IDs_Of_Interest": [ 3 ],
+            "Must_Have_IP_Key_Value": "",
+            "Must_Have_Intervention": "",
+            "Pretty_Format": 1,
+            "Max_Number_Reports": 10000,
+            "Reporting_Interval": 30,
+            "Age_Bins": [
+                10,
+                20,
+                30,
+                40,
+                50,
+                60,
+                70,
+                80,
+                90,
+                100,
+                125
+            ],
+            "Parasitemia_Bins": [
+                -1,
+                50,
+                500,
+                5000,
+                50000,
+                3.402823466385e+38
             ]
+        },
+        {
+            "COMMENT": "GH-2830. One report per node and data is written until Finalize (i.e. Max_Number_Reports > Simualtion_Duration/Reporting_Interval.",
+            "class": "MalariaSummaryReport",
+            "Filename_Suffix": "GH2830_Node4",
+            "Start_Day": 0,
+            "End_Day": 10000,
+            "Node_IDs_Of_Interest": [ 4 ],
+            "Must_Have_IP_Key_Value": "",
+            "Must_Have_Intervention": "",
+            "Pretty_Format": 1,
+            "Max_Number_Reports": 10000,
+            "Reporting_Interval": 30,
+            "Age_Bins": [
+                10,
+                20,
+                30,
+                40,
+                50,
+                60,
+                70,
+                80,
+                90,
+                100,
+                125
+            ],
+            "Parasitemia_Bins": [
+                -1,
+                50,
+                500,
+                5000,
+                50000,
+                3.402823466385e+38
+            ]
+        },
+        {
+            "COMMENT": "GH-2830. One report per node and data is written until Finalize (i.e. Max_Number_Reports > Simualtion_Duration/Reporting_Interval.",
+            "class": "MalariaSummaryReport",
+            "Filename_Suffix": "GH2830_Node5",
+            "Start_Day": 0,
+            "End_Day": 10000,
+            "Node_IDs_Of_Interest": [ 5 ],
+            "Must_Have_IP_Key_Value": "",
+            "Must_Have_Intervention": "",
+            "Pretty_Format": 1,
+            "Max_Number_Reports": 10000,
+            "Reporting_Interval": 30,
+            "Age_Bins": [
+                10,
+                20,
+                30,
+                40,
+                50,
+                60,
+                70,
+                80,
+                90,
+                100,
+                125
+            ],
+            "Parasitemia_Bins": [
+                -1,
+                50,
+                500,
+                5000,
+                50000,
+                3.402823466385e+38
+            ]
+        },
+        {
+            "COMMENT": "GH-2830. One report per node and data is written until Finalize (i.e. Max_Number_Reports > Simualtion_Duration/Reporting_Interval.",
+            "class": "MalariaSummaryReport",
+            "Filename_Suffix": "GH2830_Node6",
+            "Start_Day": 0,
+            "End_Day": 10000,
+            "Node_IDs_Of_Interest": [ 6 ],
+            "Must_Have_IP_Key_Value": "",
+            "Must_Have_Intervention": "",
+            "Pretty_Format": 1,
+            "Max_Number_Reports": 10000,
+            "Reporting_Interval": 30,
+            "Age_Bins": [
+                10,
+                20,
+                30,
+                40,
+                50,
+                60,
+                70,
+                80,
+                90,
+                100,
+                125
+            ],
+            "Parasitemia_Bins": [
+                -1,
+                50,
+                500,
+                5000,
+                50000,
+                3.402823466385e+38
+            ]
+        },
+        {
+            "COMMENT": "GH-2830. One report per node and data is written until Finalize (i.e. Max_Number_Reports > Simualtion_Duration/Reporting_Interval.",
+            "class": "MalariaSummaryReport",
+            "Filename_Suffix": "GH2830_Node7",
+            "Start_Day": 0,
+            "End_Day": 10000,
+            "Node_IDs_Of_Interest": [ 7 ],
+            "Must_Have_IP_Key_Value": "",
+            "Must_Have_Intervention": "",
+            "Pretty_Format": 1,
+            "Max_Number_Reports": 10000,
+            "Reporting_Interval": 30,
+            "Age_Bins": [
+                10,
+                20,
+                30,
+                40,
+                50,
+                60,
+                70,
+                80,
+                90,
+                100,
+                125
+            ],
+            "Parasitemia_Bins": [
+                -1,
+                50,
+                500,
+                5000,
+                50000,
+                3.402823466385e+38
+            ]
+        },
+        {
+            "COMMENT": "GH-2830. One report per node and data is written until Finalize (i.e. Max_Number_Reports > Simualtion_Duration/Reporting_Interval.",
+            "class": "MalariaSummaryReport",
+            "Filename_Suffix": "GH2830_Node8",
+            "Start_Day": 0,
+            "End_Day": 10000,
+            "Node_IDs_Of_Interest": [ 8 ],
+            "Must_Have_IP_Key_Value": "",
+            "Must_Have_Intervention": "",
+            "Pretty_Format": 1,
+            "Max_Number_Reports": 10000,
+            "Reporting_Interval": 30,
+            "Age_Bins": [
+                10,
+                20,
+                30,
+                40,
+                50,
+                60,
+                70,
+                80,
+                90,
+                100,
+                125
+            ],
+            "Parasitemia_Bins": [
+                -1,
+                50,
+                500,
+                5000,
+                50000,
+                3.402823466385e+38
+            ]
+        },
+        {
+            "COMMENT": "Simulation_Duration is 85.  I want the situation where the report has data but it didnt write it during EndTimestep.",
+            "class": "MalariaImmunityReport",
+            "Filename_Suffix": "ZZZ",
+            "Start_Day": 0,
+            "End_Day": 10000,
+            "Node_IDs_Of_Interest": [],
+            "Must_Have_IP_Key_Value": "",
+            "Must_Have_Intervention": "",
+            "Pretty_Format": 1,
+            "Max_Number_Reports": 4,
+            "Reporting_Interval": 25,
+            "Age_Bins": [
+                20,
+                40,
+                60,
+                80,
+                100,
+                125
+            ]
+        },
+        {
+            "End_Day": 34,
+            "Node_IDs_Of_Interest": [
+                1,
+                2,
+                3,
+                4
+            ],
+            "Filename_Suffix": "dt85_time00to34_nodes1234",
+            "Reporting_Interval": 8.5,
+            "Spatial_Output_Channels": [
+                "Population",
+                "New_Infections",
+                "Prevalence",
+                "Adult_Vectors",
+                "PCR_Parasite_Prevalence",
+                "New_Clinical_Cases"
+            ],
+            "Start_Day": 0,
+            "class": "SpatialReportMalariaFiltered"
+        },
+        {
+            ".Spatial_Output_Channels": [
+                "Adult_Vectors"
+            ],
+            "End_Day": 85,
+            "Node_IDs_Of_Interest": [
+                1,
+                2,
+                3,
+                4
+            ],
+            "Filename_Suffix": "dt85_time34to85_nodes1234",
+            "Reporting_Interval": 8.5,
+            "Spatial_Output_Channels": [
+                "Population",
+                "New_Infections",
+                "Prevalence",
+                "Adult_Vectors",
+                "PCR_Parasite_Prevalence",
+                "New_Clinical_Cases"
+            ],
+            "Start_Day": 34,
+            "class": "SpatialReportMalariaFiltered"
+        },
+        {
+            "End_Day": 85,
+            "Node_IDs_Of_Interest": [
+                1,
+                2,
+                3,
+                4
+            ],
+            "Filename_Suffix": "dt85_time00to85_nodes1234",
+            "Reporting_Interval": 8.5,
+            "Spatial_Output_Channels": [
+                "Population",
+                "New_Infections",
+                "Prevalence",
+                "Adult_Vectors",
+                "PCR_Parasite_Prevalence",
+                "New_Clinical_Cases"
+            ],
+            "Start_Day": 0,
+            "class": "SpatialReportMalariaFiltered"
+        },
+        {
+            "End_Day": 34,
+            "Node_IDs_Of_Interest": [
+                5,
+                6,
+                7,
+                8
+            ],
+            "Filename_Suffix": "dt85_time00to34_nodes5678",
+            "Reporting_Interval": 8.5,
+            "Spatial_Output_Channels": [
+                "Population",
+                "New_Infections",
+                "Prevalence",
+                "Adult_Vectors",
+                "PCR_Parasite_Prevalence",
+                "New_Clinical_Cases"
+            ],
+            "Start_Day": 0,
+            "class": "SpatialReportMalariaFiltered"
+        },
+        {
+            "End_Day": 85,
+            "Node_IDs_Of_Interest": [
+                5,
+                6,
+                7,
+                8
+            ],
+            "Filename_Suffix": "dt85_time34to85_nodes5678",
+            "Reporting_Interval": 8.5,
+            "Spatial_Output_Channels": [
+                "Population",
+                "New_Infections",
+                "Prevalence",
+                "Adult_Vectors",
+                "PCR_Parasite_Prevalence",
+                "New_Clinical_Cases"
+            ],
+            "Start_Day": 34,
+            "class": "SpatialReportMalariaFiltered"
+        },
+        {
+            "End_Day": 85,
+            "Node_IDs_Of_Interest": [
+                5,
+                6,
+                7,
+                8
+            ],
+            "Filename_Suffix": "dt85_time00to85_nodes5678",
+            "Reporting_Interval": 8.5,
+            "Spatial_Output_Channels": [
+                "Population",
+                "New_Infections",
+                "Prevalence",
+                "Adult_Vectors",
+                "PCR_Parasite_Prevalence",
+                "New_Clinical_Cases"
+            ],
+            "Start_Day": 0,
+            "class": "SpatialReportMalariaFiltered"
+        },
+        {
+            "End_Day": 85,
+            "Node_IDs_Of_Interest": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8
+            ],
+            "Filename_Suffix": "dt85_time00to85_nodesAll",
+            "Reporting_Interval": 8.5,
+            "Spatial_Output_Channels": [
+                "Population",
+                "New_Infections",
+                "Prevalence",
+                "Adult_Vectors",
+                "PCR_Parasite_Prevalence",
+                "New_Clinical_Cases"
+            ],
+            "Start_Day": 0,
+            "class": "SpatialReportMalariaFiltered"
+        },
+        {
+            "End_Day": 85,
+            "Node_IDs_Of_Interest": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8
+            ],
+            "Filename_Suffix": "dt1_time00to85_nodesAll",
+            "Reporting_Interval": 1,
+            "Spatial_Output_Channels": [
+                "Population",
+                "New_Infections",
+                "Prevalence",
+                "Adult_Vectors",
+                "PCR_Parasite_Prevalence",
+                "New_Clinical_Cases"
+            ],
+            "Start_Day": 0,
+            "class": "SpatialReportMalariaFiltered"
         }
-    }
+    ],
+    "Use_Defaults": 1
 }

@@ -1,0 +1,20 @@
+{
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 100, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 0.01, 
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual"
+                }
+            }
+        }
+    ], 
+    "Use_Defaults": 1
+}

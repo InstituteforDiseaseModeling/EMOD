@@ -1,0 +1,59 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 0.01,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividualMalaria",
+                    "Antigen": 0,
+                    "Genome_Markers": [
+                        "gm1"
+                    ]
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 0.01,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividualMalaria",
+                    "Antigen": 0,
+                    "Genome_Markers": [
+                        "gm2"
+                    ]
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 0.01,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividualMalaria",
+                    "Antigen": 0,
+                    "Genome_Markers": [
+                        "gm3"
+                    ]
+                }
+            }
+        }
+    ]
+}

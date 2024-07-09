@@ -1,0 +1,35 @@
+{
+    "Metadata": {
+        "Author": "dbridenbecker", 
+        "NodeCount": 1, 
+        "Tool": "notepad", 
+        "IdReference": "0", 
+        "DateCreated": "2015-3-21"
+    },
+    "Defaults": {
+        "IndividualProperties": [ 
+            { 
+                "Property": "InterventionStatus",
+                "Values": [
+                    "NONE", 
+                    "STOP_VACCINATING"
+                ],
+                "Initial_Distribution": [ 
+                    1, 
+                    0
+                ],
+                "Transitions": []
+            }
+        ],
+        "Society" : {
+            "TRANSITORY" :
+            {
+                "Relationship_Parameters" :
+                {
+                    "Duration_Weibull_Heterogeneity": 0.1, 
+                    "Duration_Weibull_Scale": 1051025.709
+                }
+            }
+        }
+    }
+}

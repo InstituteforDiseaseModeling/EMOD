@@ -28,8 +28,6 @@
                     {
                         "class": "HIVSigmoidByYearAndSexDiagnostic",
 
-                        "Days_To_Diagnosis": 0,
-
                         "Disqualifying_Properties": [],
                         "New_Property_Value": "InterventionStatus:None",
 

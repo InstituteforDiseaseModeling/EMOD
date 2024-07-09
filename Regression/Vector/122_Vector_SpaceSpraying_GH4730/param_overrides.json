@@ -1,0 +1,85 @@
+{
+    "parameters": {
+        "CAMPAIGNS": {
+            "Enable_Interventions": 1
+        },
+        "DEMOGRAPHICS": {
+            "Demographics_Filenames": [
+                "../SFTs/Input/Vector_single_node_demographics.json",
+                "../SFTs/Input/10000_vectors_overlay.spreadrisk.json"
+            ]
+        },
+        "PRIMARY": {
+            "Config_Name": "122_Vector_SpaceSraying_GH4730",
+            "Custom_Reports_Filename": "custom_reports.json",
+            "Simulation_Duration": 50
+        },
+        "VECTOR": {
+            "Vector_Sampling_Type": "VECTOR_COMPARTMENTS_NUMBER",
+            ".Vector_Sampling_Type": "TRACK_ALL_VECTORS",
+            "Insecticides": [
+                {
+                    "COMMENT": "It is supposed to kill females, so we modify it to NOT kill males.",
+                    "Name": "FemaleVectorInsecticide",
+                    "Resistances": [
+                        {
+                            "Allele_Combinations": [
+                                [
+                                    "X",
+                                    "Y"
+                                ]
+                            ],
+                            "Blocking_Modifier": 1.0,
+                            "Killing_Modifier": 0.0,
+                            "Larval_Killing_Modifier": 1.0,
+                            "Repelling_Modifier": 1.0,
+                            "Species": "TestVector"
+                        }
+                    ]
+                }
+            ],
+            "Enable_Vector_Aging": 1,
+            "Vector_Species_Params": [
+                {
+                    "Acquire_Modifier": 0.2,
+                    "Adult_Life_Expectancy": 730,
+                    "Anthropophily": 1,
+                    "Aquatic_Arrhenius_1": 84200000000,
+                    "Aquatic_Arrhenius_2": 8328,
+                    "Aquatic_Mortality_Rate": 0.1,
+                    "Cycle_Arrhenius_1": 40905790000.0,
+                    "Cycle_Arrhenius_2": 7740.23,
+                    "Cycle_Arrhenius_Reduction_Factor": 1,
+                    "Days_Between_Feeds": 2,
+                    "Egg_Batch_Size": 0,
+                    "Egg_Survival_Rate": 0.99,
+                    "Gene_To_Trait_Modifiers": [],
+                    "Genes": [],
+                    "Habitats": [
+                        {
+                            "Habitat_Type": "CONSTANT",
+                            "Max_Larval_Capacity": 100000000.0
+                        }
+                    ],
+                    "Immature_Duration": 4,
+                    "Indoor_Feeding_Fraction": 0.5,
+                    "Infected_Arrhenius_1": 117000000000,
+                    "Infected_Arrhenius_2": 8336,
+                    "Infected_Egg_Batch_Factor": 0.8,
+                    "Infectious_Human_Feed_Mortality_Factor": 1.5,
+                    "Male_Life_Expectancy": 17,
+                    "Microsporidia": [],
+                    "Name": "TestVector",
+                    "Temperature_Dependent_Feeding_Cycle": "NO_TEMPERATURE_DEPENDENCE",
+                    "Transmission_Rate": 0.5,
+                    "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_NONE"
+                }
+            ]
+        },
+        "LOGGING": {
+            "logLevel_VectorPopulation": "WARNING",
+            "logLevel_VectorPopulationIndividual": "WARNING"
+        },
+        "Default_Config_Path": "defaults/vector_science_default_config.json"
+    }
+}

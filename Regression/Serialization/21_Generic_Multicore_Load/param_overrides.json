@@ -28,7 +28,10 @@
                 "state-00010-000.dtk",
                 "state-00010-001.dtk"
             ],
-            "Serialized_Population_Path": "../20_Generic_Multicore_Save/output"
+            "Serialized_Population_Path": "../20_Generic_Multicore_Save/output",
+            "Serialized_Population_Reading_Type": "READ",
+            "Serialization_Mask_Node_Read": 0,
+            "Enable_Random_Generator_From_Serialized_Population": 0
         }
     }
 }

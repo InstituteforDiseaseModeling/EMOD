@@ -1,5 +1,5 @@
 {
-    "Campaign_Name": "ARTBasic intervention test",
+    "Campaign_Name": "AntiretroviralTherapy intervention test",
     "Use_Defaults": 1,
     "Events": [
         {
@@ -39,8 +39,8 @@
                     ],
                     "Demographic_Coverage": 1.0,
                     "Actual_IndividualIntervention_Config": {
-                        "class": "ARTBasic",
-                        "Viral_Suppression": 1,
+                        "class": "AntiretroviralTherapy",
+                        "ART_Is_Active_Against_Mortality_And_Transmission": 1,
                         "Days_To_Achieve_Viral_Suppression": 1000000
                     }
                 }

@@ -32,7 +32,6 @@
         "Base_Infectivity": 1,
         "Base_Land_Temperature": 26.0,
         "Base_Mortality": 0,
-        "Base_Population_Scale_Factor": 0.5,
         "Base_Rainfall": 10.0,
         "Base_Relative_Humidity": 0.75,
         "Base_Sporozoite_Survival_Fraction": 0.25,
@@ -73,7 +72,7 @@
         "Default_Geography_Initial_Node_Population": 100,
         "Default_Geography_Torus_Size": 10,
         "Demographics_Filenames": [
-            "LHM_Restructure/Munyumbwe_households_all_demographics_MN.json"
+            "LHM_Restructure_Munyumbwe_households_all_demographics_MN.json"
         ],
         "Egg_Hatch_Delay_Distribution": "NO_DELAY",
         "Egg_Saturation_At_Oviposition": "SATURATION_AT_OVIPOSITION",
@@ -129,9 +128,6 @@
         "Fever_Severe_Threshold": 3.8719,
         "Gametocyte_Stage_Survival_Rate": 0.82,
         "Geography": "Test",
-        "HEG_Fecundity_Limiting": 0.0,
-        "HEG_Homing_Rate": 0.0,
-        "HEG_Model": "OFF",
         "Human_Feeding_Mortality": 0.1,
         "Immunity_Initialization_Distribution_Type": "DISTRIBUTION_OFF",
         "Incubation_Period_Constant": 7,
@@ -152,8 +148,10 @@
         "Local_Migration_Roundtrip_Duration": 3.0,
         "Local_Migration_Roundtrip_Probability": 1.0,
         "MSP1_Merozoite_Kill_Fraction": 0.43,
-        "Malaria_Drug_Params": {
-            "Artemether": {
+        "Malaria_Drug_Params": [
+            {
+                "Name": "Artemether",
+                "PKPD_Model": "CONCENTRATION_VERSUS_TIME",
                 "Bodyweight_Exponent": 1,
                 "Drug_Adherence_Rate": 1.0,
                 "Drug_Cmax": 114,
@@ -183,7 +181,9 @@
                 ],
                 "Max_Drug_IRBC_Kill": 8.9
             },
-            "DHA": {
+            {
+                "Name": "DHA",
+                "PKPD_Model": "CONCENTRATION_VERSUS_TIME",
                 "Bodyweight_Exponent": 1,
                 "Drug_Adherence_Rate": 1.0,
                 "Drug_Cmax": 200,
@@ -221,7 +221,9 @@
                 ],
                 "Max_Drug_IRBC_Kill": 9.2
             },
-            "Lumefantrine": {
+            {
+                "Name": "Lumefantrine",
+                "PKPD_Model": "CONCENTRATION_VERSUS_TIME",
                 "Bodyweight_Exponent": 0.35,
                 "Drug_Adherence_Rate": 1.0,
                 "Drug_Cmax": 1017,
@@ -251,7 +253,9 @@
                 ],
                 "Max_Drug_IRBC_Kill": 4.8
             },
-            "Piperaquine": {
+            {
+                "Name": "Piperaquine",
+                "PKPD_Model": "CONCENTRATION_VERSUS_TIME",
                 "Bodyweight_Exponent": 0,
                 "Drug_Adherence_Rate": 1.0,
                 "Drug_Cmax": 30,
@@ -289,7 +293,9 @@
                 ],
                 "Max_Drug_IRBC_Kill": 4.6
             },
-            "Primaquine": {
+            {
+                "Name": "Primaquine",
+                "PKPD_Model": "CONCENTRATION_VERSUS_TIME",
                 "Bodyweight_Exponent": 1,
                 "Drug_Adherence_Rate": 1.0,
                 "Drug_Cmax": 75,
@@ -319,7 +325,9 @@
                 ],
                 "Max_Drug_IRBC_Kill": 0.0
             },
-            "Vehicle": {
+            {
+                "Name": "Vehicle",
+                "PKPD_Model": "CONCENTRATION_VERSUS_TIME",
                 "Bodyweight_Exponent": 0,
                 "Drug_Cmax": 10,
                 "Drug_Decay_T1": 1,
@@ -335,7 +343,7 @@
                 "Fractional_Dose_By_Upper_Age": [],
                 "Max_Drug_IRBC_Kill": 0.0
             }
-        },
+        ],
         "Malaria_Model": "MALARIA_MECHANISTIC_MODEL",
         "Malaria_Strain_Model": "FALCIPARUM_RANDOM_STRAIN",
         "Maternal_Antibodies_Type": "SIMPLE_WANING",
@@ -368,13 +376,12 @@
         "Number_Of_Asexual_Cycles_Without_Gametocytes": 1,
         "Number_Substrains": 1,
         "PCR_Sensitivity": 20,
-        "PKPD_Model": "CONCENTRATION_VERSUS_TIME",
         "Parasite_Mortality_Inverse_Width": 100,
         "Parasite_Mortality_Threshold": 3000000.0,
         "Parasite_Severe_Inverse_Width": 7.931,
         "Parasite_Severe_Threshold": 317351.0,
-        "Parasite_Smear_Sensitivity": 0.1,
-        "Parasite_Switch_Type": "RATE_PER_PARASITE_7VARS",
+        "Report_Parasite_Smear_Sensitivity": 0.1,
+        "Report_Parasite_Switch_Type": "RATE_PER_PARASITE_7VARS",
         "Population_Density_C50": 30,
         "Population_Density_Infectivity_Correction": "CONSTANT_INFECTIVITY",
         "Population_Scale_Type": "FIXED_SCALING",
@@ -429,14 +436,13 @@
         "Simulation_Timestep": 1,
         "Simulation_Type": "MALARIA_SIM",
         "Spatial_Output_Channels": [
-            "Population",
-            "New_Diagnostic_Prevalence",
-            "Adult_Vectors",
+            "Population", 
+            "PCR_Prevalence", 
+            "Adult_Vectors", 
             "Daily_EIR"
         ],
         "Start_Time": 0,
         "Susceptibility_Scale_Type": "CONSTANT_SUSCEPTIBILITY",
-        "Temperature_Dependent_Feeding_Cycle": "NO_TEMPERATURE_DEPENDENCE",
         "Temporary_Habitat_Decay_Factor": 0.05,
         "Transmission_Blocking_Immunity_Decay_Rate": 0.01,
         "Transmission_Blocking_Immunity_Duration_Before_Decay": 90,
@@ -448,95 +454,76 @@
         "Vector_Migration_Modifier_Equation": "EXPONENTIAL",
         "Vector_Migration_Stay_Put_Modifier": 10,
         "Vector_Sampling_Type": "TRACK_ALL_VECTORS",
-        "Vector_Species_Names": [
-            "arabiensis",
-            "funestus"
-        ],
-        "Vector_Species_Params": {
-            "arabiensis": {
+        "Vector_Species_Params": [
+            {
+                "Name": "arabiensis2",
                 "Acquire_Modifier": 0.8,
                 "Adult_Life_Expectancy": 10,
+                "Male_Life_Expectancy": 10,
                 "Anthropophily": 0.95,
                 "Aquatic_Arrhenius_1": 84200000000,
                 "Aquatic_Arrhenius_2": 8328,
                 "Aquatic_Mortality_Rate": 0.1,
                 "Days_Between_Feeds": 3,
                 "Egg_Batch_Size": 100,
-                "Habitat_Type": [
-                    "TEMPORARY_RAINFALL",
-                    "CONSTANT"
-                ],
                 "Immature_Duration": 2,
                 "Indoor_Feeding_Fraction": 0.5,
                 "Infected_Arrhenius_1": 117000000000,
                 "Infected_Arrhenius_2": 8336,
                 "Infected_Egg_Batch_Factor": 0.8,
                 "Infectious_Human_Feed_Mortality_Factor": 1.5,
-                "Larval_Habitat_Types": {
-                    "CONSTANT": 2000000.0,
-                    "TEMPORARY_RAINFALL": 10000000000.0
-                },
+                "Habitats": [
+                    {
+                        "Habitat_Type": "CONSTANT",
+                        "Max_Larval_Capacity": 2000000.0
+                    },
+                    {
+                        "Habitat_Type": "TEMPORARY_RAINFALL",
+                        "Max_Larval_Capacity": 10000000000.0
+                    }
+                ],
                 "Required_Habitat_Factor": [
                     800000000.0,
                     80000000.0
                 ],
-                "Transmission_Rate": 0.9
+                "Microsporidia": [],
+                "Temperature_Dependent_Feeding_Cycle": "NO_TEMPERATURE_DEPENDENCE",
+                "Transmission_Rate": 0.9,
+                "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_NONE"
             },
-            "funestus": {
+            {
+                "Name": "funestus2",
                 "Acquire_Modifier": 0.8,
                 "Adult_Life_Expectancy": 10,
+                "Male_Life_Expectancy": 10,
                 "Anthropophily": 0.95,
                 "Aquatic_Arrhenius_1": 84200000000,
                 "Aquatic_Arrhenius_2": 8328,
                 "Aquatic_Mortality_Rate": 0.1,
                 "Days_Between_Feeds": 3,
                 "Egg_Batch_Size": 100,
-                "Habitat_Type": [
-                    "WATER_VEGETATION"
-                ],
                 "Immature_Duration": 2,
                 "Indoor_Feeding_Fraction": 0.95,
                 "Infected_Arrhenius_1": 117000000000,
                 "Infected_Arrhenius_2": 8336,
                 "Infected_Egg_Batch_Factor": 0.8,
                 "Infectious_Human_Feed_Mortality_Factor": 1.5,
-                "Larval_Habitat_Types": {
-                    "WATER_VEGETATION": 2000000.0
-                },
-                "Required_Habitat_Factor": [
-                    20000000.0
+                "Habitats": [
+                    {
+                        "Habitat_Type": "WATER_VEGETATION",
+                        "Max_Larval_Capacity": 2000000.0
+                    }
                 ],
-                "Transmission_Rate": 0.9
-            },
-            "gambiae": {
-                "Acquire_Modifier": 0.8,
-                "Adult_Life_Expectancy": 10,
-                "Anthropophily": 0.95,
-                "Aquatic_Arrhenius_1": 84200000000,
-                "Aquatic_Arrhenius_2": 8328,
-                "Aquatic_Mortality_Rate": 0.1,
-                "Days_Between_Feeds": 3,
-                "Egg_Batch_Size": 100,
-                "Habitat_Type": [
-                    "TEMPORARY_RAINFALL",
-                    "CONSTANT"
-                ],
-                "Immature_Duration": 2,
-                "Indoor_Feeding_Fraction": 0.95,
-                "Infected_Arrhenius_1": 117000000000,
-                "Infected_Arrhenius_2": 8336,
-                "Infected_Egg_Batch_Factor": 0.8,
-                "Infectious_Human_Feed_Mortality_Factor": 1.5,
-                "Required_Habitat_Factor": [
-                    800000000.0,
-                    80000000.0
-                ],
-                "Transmission_Rate": 0.9
+                "Microsporidia": [],
+                "Temperature_Dependent_Feeding_Cycle": "NO_TEMPERATURE_DEPENDENCE",
+                "Transmission_Rate": 0.9,
+                "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_NONE"
             }
-        },
-        "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_NONE",
+        ],
         "Wolbachia_Infection_Modification": 1.0,
         "Wolbachia_Mortality_Modification": 1.0,
+        ".logLevel_Memory": "DEBUG",
+        "logLevel_LarvalHabitatMultiplier": "WARNING",
         "logLevel_JsonConfigurable": "WARNING",
         "logLevel_MosquitoRelease": "WARNING",
         "logLevel_NodeEventContext": "WARNING",
@@ -546,8 +533,10 @@
         "logLevel_SimulationEventContext": "WARNING",
         "logLevel_StandardEventCoordinator": "WARNING",
         "logLevel_VectorHabitat": "ERROR",
+        "logLevel_VectorPopulation": "WARNING",
         "logLevel_VectorPopulationIndividual": "WARNING",
         "x_Air_Migration": 1,
+        "x_Base_Population": 0.5,
         "x_Birth": 1,
         "x_Family_Migration": 1,
         "x_Local_Migration": 0.1,

@@ -1,0 +1,96 @@
+{
+    "Default_Config_Path": "../../defaults/hiv_default_config.json", 
+    "parameters": {
+        "____________SIMULATION___________": "",
+        "Base_Year": 2000,
+        "Simulation_Duration": 7300, 
+        "Simulation_Timestep": 30.4166666666667,
+        "logLevel_default": "INFO",
+        
+        "x_Base_Population": 0.01,
+        "Enable_Birth": 0,
+        "Demographics_Filenames": [
+            "../input/SA_UN_demographics_extrapolated_WithProperties_Smoothed_4_Nodes.json", 
+            "../input/InterventionStatus_Accessibility_overlay_4_Nodes.json",
+            "../input/PFA_overlay.json",
+            "PFA_overlay_migration.json"
+        ], 
+
+        "Custom_Individual_Events": [
+            "PrEP_Initiated",
+            "PrEP_Expired",
+            "Initiate_PrEP",
+            "Refer_to_ART"
+        ],
+        
+        "____________MIGRATION___________": "",
+        ".Migration_Model": "NO_MIGRATION", 
+        "Migration_Model": "FIXED_RATE_MIGRATION",
+        "Migration_Pattern": "SINGLE_ROUND_TRIPS",
+        "Enable_Migration_Heterogeneity": 1, 
+
+        "Local_Migration_Roundtrip_Duration"       : 100.0,
+        "Local_Migration_Roundtrip_Probability"    : 1.0,
+        "Regional_Migration_Roundtrip_Duration"    : 0.0,
+        "Regional_Migration_Roundtrip_Probability" : 0.0,
+        "Sea_Migration_Roundtrip_Duration"         : 0.0,
+        "Sea_Migration_Roundtrip_Probability"      : 0.0,
+        "Air_Migration_Roundtrip_Duration"         : 0.0,
+        "Air_Migration_Roundtrip_Probability"      : 0.0,
+        "Family_Migration_Roundtrip_Duration"      : 0.0,
+
+        ".Enable_Migration_Heterogeneity": 1,
+
+        "Enable_Local_Migration": 1,
+        "Local_Migration_Filename": "LocalMigration_4_Nodes.bin",
+        "x_Local_Migration": 1, 
+
+        "Enable_Regional_Migration": 0,
+        "Regional_Migration_Filename": "",
+        "x_Regional_Migration": 1, 
+
+        "Enable_Sea_Migration": 0,
+        "Sea_Migration_Filename": "",
+        "x_Sea_Migration": 1, 
+
+        "Enable_Air_Migration": 0,
+        "Air_Migration_Filename": "",
+        "x_Air_Migration": 1, 
+
+        "Enable_Family_Migration" : 0,
+        "Family_Migration_Filename" : "",
+        "x_Family_Migration" : 1,
+
+        "____________REPORTING___________": "",
+        "Enable_Demographics_Reporting": 0,
+        "Report_HIV_ByAgeAndGender": 0,
+        "Report_HIV_ByAgeAndGender_Start_Year" : 1900,
+        "Report_HIV_ByAgeAndGender_Stop_Year" : 2100,
+        "Report_HIV_ByAgeAndGender_Collect_Gender_Data" : 0,
+        "Report_HIV_ByAgeAndGender_Collect_Age_Bins_Data" : [ ],
+        "Report_HIV_ByAgeAndGender_Collect_HIV_Data"           : 0,
+        "Report_HIV_ByAgeAndGender_Collect_HIV_Stage_Data"     : 0,
+        "Report_HIV_ByAgeAndGender_Collect_On_Art_Data"        : 0,
+        "Report_HIV_ByAgeAndGender_Collect_Circumcision_Data"  : 0,
+        "Report_HIV_ByAgeAndGender_Collect_IP_Data"            : [],
+        "Report_HIV_ByAgeAndGender_Collect_Intervention_Data"  : ["PrEP"],
+        "Report_HIV_ByAgeAndGender_Add_Transmitters"           : 1,
+        "Report_HIV_ByAgeAndGender_Add_Relationships"          : 0,
+        "Report_HIV_ByAgeAndGender_Add_Concordant_Relationships" : 0,
+        "Report_HIV_ByAgeAndGender_Stratify_Infected_By_CD4"   : 0,
+        "Report_HIV_ByAgeAndGender_Has_Intervention_With_Name" : "",
+        "Report_HIV_ByAgeAndGender_Event_Counter_List"         : [],
+        
+        "Report_HIV_Event_Channels_List": [
+            "PrEP_Initiated",
+            "PrEP_Expired",
+            "Initiate_PrEP",
+            "Refer_to_ART"
+        ],
+
+
+        "____________RARELY_CHANGED___________": "",
+        "Config_Name": "69_HIV_RTEC_MultiNode_PreDistribute",
+        "Geography": "MigrationTest"
+    }
+}

@@ -1,0 +1,169 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "Setting_Type" : "USER_SPECIFIED",
+                    "Age_Years" : 25,                    
+                    "Distributed_Event_Trigger": "All_SetSexualDebutAge_Event",
+                    "class": "SetSexualDebutAge"
+                },
+                "Target_Demographic": "Everyone",
+                "Target_Gender": "All",
+                "Travel_Linked": 0,
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "SexDebut",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 0,
+            "class": "CampaignEvent"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "Actual_IndividualIntervention_Config": {
+                        "Setting_Type" : "USER_SPECIFIED",
+                        "Age_Years" : 25,                    
+                        "Distributed_Event_Trigger": "Birth_SetSexualDebutAge_Event",
+                        "class": "SetSexualDebutAge"
+                    },
+                    "Trigger_Condition_List": [
+                        "Births"
+                    ],
+                    "class": "NodeLevelHealthTriggeredIV"
+                },
+                "Target_Demographic": "Everyone",
+                "Target_Gender": "All",
+                "Travel_Linked": 0,
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "SexDebut",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 0,
+            "class": "CampaignEvent"
+        },
+        {
+            "class": "CampaignEventByYear",
+            "Start_Year": 1960.5, 
+            "Nodeset_Config": {
+                    "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "ReferenceTrackingEventCoordinatorTrackingConfig",
+                "End_Year": 2050,
+                "Update_Period": 30.416667,
+                "Time_Value_Map": {
+                    "Times":  [ 1960.5, 1999, 2000, 2001, 2003, 2004, 2005, 2007, 2009, 2010, 2012, 2014, 2016, 2017 ],
+                    "Values": [ 0.768916155, 0.768916155, 0.774891775, 0.799460432, 0.801633606, 0.805107527, 0.68401487, 0.663687151, 0.581445523, 0.545454545, 0.571059432, 0.499619772, 0.483751846, 0.397669337]
+                },
+                "Target_Demographic": "ExplicitAgeRangesAndGender",
+                "Target_Gender": "Female",
+                "Target_Age_Min":  15,
+                "Target_Age_Max":  20,
+                "Tracking_Config": {
+                    "class": "IsPostDebut",
+                    "Is_Equal_To": 1
+                },
+                "Intervention_Config": {
+                    "Distributed_Event_Trigger": "Female_tracking_SetSexualDebutAge_Event",
+                    "class": "SetSexualDebutAge",
+                    "Setting_Type " : "CURRENT_AGE"
+                }
+            }
+        },
+        {
+            "class": "CampaignEventByYear",
+            "Start_Year": 1960.5,
+            "Nodeset_Config": {
+                    "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "ReferenceTrackingEventCoordinatorTrackingConfig",
+                "End_Year": 2050,
+                "Update_Period": 30.416667,
+                "Time_Value_Map": {
+                    "Times":  [ 1960.5, 1999, 2000, 2001, 2003, 2004, 2005, 2007, 2009, 2010, 2012, 2014, 2016, 2017 ],
+                    "Values": [ 0.665211063, 0.665211063, 0.677925211, 0.691513761, 0.664133739, 0.654263566, 0.623529412, 0.549700599, 0.488764045, 0.44140625, 0.440336134, 0.428791378, 0.429424944, 0.361735089]
+                },
+                "Target_Demographic": "ExplicitAgeRangesAndGender",
+                "Target_Gender": "Male",
+                "Target_Age_Min":  15,
+                "Target_Age_Max":  20,
+                "Tracking_Config": {
+                    "class": "IsPostDebut",
+                    "Is_Equal_To": 1
+                },
+                "Intervention_Config": {
+                    "Distributed_Event_Trigger": "Male_tracking_SetSexualDebutAge_Event",
+                    "class": "SetSexualDebutAge",
+                    "Setting_Type " : "CURRENT_AGE"
+                }
+            }
+        },
+                {
+            "class": "CampaignEventByYear",
+            "Start_Year": 1960.5, 
+            "Nodeset_Config": {
+                    "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "ReferenceTrackingEventCoordinatorTrackingConfig",
+                "End_Year": 2050,
+                "Update_Period": 30.416667,
+                "Time_Value_Map": {
+                    "Times":  [ 1960.5, 1999, 2000, 2001, 2003, 2004, 2005, 2007, 2009, 2010, 2012, 2014, 2016, 2017 ],
+                    "Values": [ 0.988976378, 0.988976378, 0.989751098, 0.986442866, 0.985086342, 0.994043187, 0.980769231, 0.982101167, 0.983130272, 0.978995434, 0.98066512, 0.965591398, 0.968325792, 0.957627119]
+                },
+                "Target_Demographic": "ExplicitAgeRangesAndGender",
+                "Target_Gender": "Female",
+                "Target_Age_Min":  20,
+                "Target_Age_Max":  25,
+                "Tracking_Config": {
+                    "class": "IsPostDebut",
+                    "Is_Equal_To": 1
+                },
+                "Intervention_Config": {
+                    "Distributed_Event_Trigger": "Female_tracking_SetSexualDebutAge_Event",
+                    "class": "SetSexualDebutAge",
+                    "Setting_Type " : "CURRENT_AGE"
+                }
+            }
+        },
+        {
+            "class": "CampaignEventByYear",
+            "Start_Year": 1960.5,
+            "Nodeset_Config": {
+                    "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "ReferenceTrackingEventCoordinatorTrackingConfig",
+                "End_Year": 2050,
+                "Update_Period": 30.416667,
+                "Time_Value_Map": {
+                    "Times":  [ 1960.5, 1999, 2000, 2001, 2003, 2004, 2005, 2007, 2009, 2010, 2012, 2014, 2016, 2017 ],
+                    "Values": [ 0.955583756, 0.955583756, 0.958695652, 0.959016393, 0.954059829, 0.960912052, 0.954545455, 0.942216981, 0.927573062, 0.926143025, 0.929240375, 0.914367269, 0.911380597, 0.897196262]
+                },
+                "Target_Demographic": "ExplicitAgeRangesAndGender",
+                "Target_Gender": "Male",
+                "Target_Age_Min":  20,
+                "Target_Age_Max":  25,
+                "Tracking_Config": {
+                    "class": "IsPostDebut",
+                    "Is_Equal_To": 1
+                },
+                "Intervention_Config": {
+                    "Distributed_Event_Trigger": "Male_tracking_SetSexualDebutAge_Event",
+                    "class": "SetSexualDebutAge",
+                    "Setting_Type " : "CURRENT_AGE"
+                }
+            }
+        }
+    ]
+}

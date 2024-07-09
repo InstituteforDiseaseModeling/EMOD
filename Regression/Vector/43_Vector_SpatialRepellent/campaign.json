@@ -3,13 +3,14 @@
         {
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
-                    "Repellency_Config": {
+                    "Repelling_Config": {
                         "Box_Duration": 100, 
                         "Decay_Time_Constant": 150, 
                         "Initial_Effect": 0.4, 
                         "class": "WaningEffectBoxExponential"
                     }, 
                     "Cost_To_Consumer": 1.0, 
+                    "Spray_Coverage": 0.75,
                     "class": "SpatialRepellent"
                 }, 
                 "class": "StandardInterventionDistributionEventCoordinator"

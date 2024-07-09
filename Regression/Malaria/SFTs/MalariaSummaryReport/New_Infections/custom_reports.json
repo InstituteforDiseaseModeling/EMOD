@@ -1,0 +1,91 @@
+{
+    "Reports": [
+        {
+            "class": "MalariaSummaryReport",
+            "Filename_Suffix": "node1",
+            "Start_Day": 20,
+            "End_Day": 100000,
+            "Node_IDs_Of_Interest": [ 1 ],
+            "Must_Have_IP_Key_Value": "",
+            "Must_Have_Intervention": "",
+            "Pretty_Format": 1,
+            "Max_Number_Reports": 100,
+            "Reporting_Interval": 11,
+            "Age_Bins": [
+                5.0,
+                10,
+                45,
+                100.0
+            ],
+            "Infectiousness_Bins": [
+                0.0,
+                50.0,
+                100.0
+            ],
+            "Parasitemia_Bins": [
+                0.0,
+                40.0,
+                4000000.0
+            ]
+        },
+        {
+            "class": "MalariaSummaryReport",
+            "Filename_Suffix": "arm1",
+            "Start_Day": 15,
+            "End_Day": 100000,
+            "Node_IDs_Of_Interest": [ 1, 3, 4 ],
+            "Must_Have_IP_Key_Value": "StudyGroups:arm1",
+            "Must_Have_Intervention": "",
+            "Pretty_Format": 1,
+            "Max_Number_Reports": 100,
+            "Reporting_Interval": 3,
+            "COMMENT": "Notice second bin is different in Age_Bins",
+            "Age_Bins": [
+                5,
+                15,
+                45,
+                100
+            ],
+            "Infectiousness_Bins": [
+                0.0,
+                50.0,
+                100.0
+            ],
+            "Parasitemia_Bins": [
+                0.0,
+                40.0,
+                4000000.0
+            ]
+        },
+        {
+            "class": "MalariaSummaryReport",
+            "Filename_Suffix": "total",
+            "Start_Day": 7,
+            "End_Day": 100000,
+            "Node_IDs_Of_Interest": [ ],
+            "Must_Have_IP_Key_Value": "StudyGroups:arm1",
+            "Must_Have_Intervention": "",
+            "Pretty_Format": 1,
+            "Max_Number_Reports": 100,
+            "Reporting_Interval": 8,
+            "COMMENT": "Notice third bin is different in Age_Bins",
+            "Age_Bins": [
+                5.0,
+                10,
+                40,
+                100.0
+            ],
+            "Infectiousness_Bins": [
+                0.0,
+                50.0,
+                100.0
+            ],
+            "Parasitemia_Bins": [
+                0.0,
+                40.0,
+                4000000.0
+            ]
+        }
+    ],
+    "Use_Defaults": 1
+}

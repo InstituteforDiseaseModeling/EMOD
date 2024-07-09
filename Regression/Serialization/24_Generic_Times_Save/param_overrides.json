@@ -21,7 +21,7 @@
             ],
             "Geography": "",
             "Run_Number": 1,
-            "Serialization_Type": "TIME",
+            "Serialized_Population_Writing_Type": "TIME",
             "Serialization_Times": [
                 0,
                 -1,

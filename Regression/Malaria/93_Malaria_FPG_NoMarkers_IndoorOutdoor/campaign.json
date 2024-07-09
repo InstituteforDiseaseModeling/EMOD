@@ -1,0 +1,78 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 200,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                ".Individual_Selection_Type": "TARGET_NUM_INDIVIDUALS",
+                ".Target_Num_Individuals": 2,
+                "Intervention_Config": {
+                    "Blocking_Config": {
+                        "Initial_Effect": 0.0,
+                        "class": "WaningEffectConstant"
+                    },
+                    "Cost_To_Consumer": 1,
+                    "Killing_Config": {
+                        "Initial_Effect": 0.0,
+                        "class": "WaningEffectConstant"
+                    },
+                    "Repelling_Config": {
+                        "Initial_Effect": 1,
+                        "class": "WaningEffectConstant"
+                    },
+                    "Usage_Config": {
+                        "Initial_Effect": 1.0,
+                        "Box_Duration": 1000,
+                        "class": "WaningEffectBox"
+                    },
+                    "class": "SimpleBednet"
+                }
+            }
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 1.0, 
+                "Intervention_Config": {
+                    "Repelling_Config": {
+                        "Box_Duration": 110, 
+                        "Initial_Effect": 1.0, 
+                        "class": "WaningEffectBox"
+                    }, 
+                    "Cost_To_Consumer": 10.0, 
+                    "class": "SimpleIndividualRepellent"
+                }, 
+                "Target_Demographic": "Everyone", 
+                "class": "StandardInterventionDistributionEventCoordinator"
+            }, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Start_Day": 200, 
+            "class": "CampaignEvent"
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 300,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Individual_Selection_Type": "TARGET_NUM_INDIVIDUALS",
+                "Target_Num_Individuals": 10,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividualMalariaGenetics",
+                    "Create_Nucleotide_Sequence_From": "BARCODE_STRING",
+                    "Barcode_String": "AAAAAAAAAAAAAAAAAAAAAAAA"
+                }
+            }
+        }
+    ]
+}

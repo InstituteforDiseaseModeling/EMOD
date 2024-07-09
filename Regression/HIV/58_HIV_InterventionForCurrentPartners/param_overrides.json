@@ -1,0 +1,28 @@
+{
+    "parameters": {
+        "Incubation_Period_Constant": 1,
+        "Base_Infectivity": 10.0,
+        "Base_Mortality": 0.01,
+        "x_Base_Population": 0.0001,
+        "Config_Name": "58_HIV_InterventionForCurrentPartners",
+        "Custom_Individual_Events": [],
+        "Demographics_Filenames": [
+            "../input/SA_UN_demographics.json",
+            "../input/PFA_overlay.json",
+            "PFA_Concurrency.json"
+        ],
+        "Enable_Natural_Mortality": 0,
+        "Individual_Sampling_Type": "TRACK_ALL",
+        "Min_Days_Between_Adding_Relationships": 1,
+        "Report_Event_Recorder": 1,
+        "Report_Event_Recorder_Events": [
+            "HIVTestedNegative",
+            "HIVTestedPositive"
+        ],
+        "Report_Relationship_End": 1,
+        "Report_Relationship_Start": 1,
+        "Run_Number": 122,
+        "Simulation_Duration": 366
+    },
+    "Default_Config_Path": "defaults/hiv_default_config.json"
+}

@@ -25,6 +25,7 @@
         },
         "PRIMARY": {
             "Config_Name": "44_STI_PFA_Report",
+            "Custom_Reports_Filename" : "custom_reports.json",
             "Simulation_Duration": 1500
         },
         "STI": {

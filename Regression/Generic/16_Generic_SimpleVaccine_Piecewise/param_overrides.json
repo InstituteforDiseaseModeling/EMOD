@@ -2,6 +2,9 @@
     "Default_Config_Path": "../../defaults/generic_scenario_default_config.json",
     "parameters": {
         "DEMOGRAPHICS": {
+            "COMMENT":"More people make this test less noisy.",
+            "Population_Scale_Type": "FIXED_SCALING",
+            "x_Base_Population": 4,
             "Birth_Rate_Dependence": "POPULATION_DEP_RATE",
             "Demographics_Filenames": [
                 "generic_scenarios_individualproperties_demographics.json"

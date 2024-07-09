@@ -1,0 +1,16 @@
+{
+    "Reports": [
+        {
+            "Stratify_By_Species" : 1,
+            "Include_Wolbachia_Columns" : 0,
+            "Include_Gestation_Columns" : 0,
+            "Species_List": [
+                "pyrethroid_resistant",
+                "carbamate_resistant",
+                "organochlorines_resistant"
+            ],
+            "class": "ReportVectorStats"
+        }
+    ],
+    "Use_Defaults": 1
+}

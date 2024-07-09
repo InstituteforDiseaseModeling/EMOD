@@ -66,6 +66,60 @@
                     }
                 }
             }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 50,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Number_Repetitions": 1,
+                "Target_Demographic": "ExplicitGender",
+                "Target_Gender": "MALE",
+                "Targeting_Config": {
+                    "class": "IsPostDebut",
+                    "Is_Equal_To": 1
+                },
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "MaleCircumcision",
+                    "Cost_To_Consumer": 1.0,
+                    "Circumcision_Reduced_Acquire": 1.0,
+                    "Distributed_Event_Trigger" : "",
+                    "Apply_If_Higher_Reduced_Acquire" : 1
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 75,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Number_Repetitions": 1,
+                "Target_Demographic": "ExplicitGender",
+                "Target_Gender": "FEMALE",
+                "Targeting_Config": {
+                    "class": "IsPostDebut",
+                    "Is_Equal_To": 1
+                },
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "FemaleContraceptive",
+                    "Cost_To_Consumer" : 1,
+                    "Waning_Config": {
+                       "Initial_Effect": 1.0,
+                       "class": "WaningEffectConstant"
+                    },
+                    "Usage_Duration_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Usage_Duration_Constant": 1000,
+                    "Usage_Expiration_Event": ""
+                }
+            }
         }
     ]
 }

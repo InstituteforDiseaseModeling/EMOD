@@ -1,0 +1,52 @@
+{
+   "Metadata": {
+      "Author": "dbridenbecker",
+      "DateCreated": "15-Dec-2022",
+      "IdReference": "0",
+      "NodeCount": 4,
+      "Tool": "Notepad++"
+   },
+   "Defaults": {
+     "IndividualProperties": [
+        {
+           "Initial_Distribution": [
+              0.60,
+              0.35,
+              0.05
+           ],
+           "Property": "Risk",
+           "Transitions": [],
+           "Values": [
+              "LOW",
+              "MEDIUM",
+              "HIGH"
+           ]
+        }
+      ]
+   },
+   "NodeProperties": [
+       {
+           "Property": "DiscoMatangaStatus",
+           "Values": [ "OPEN", "BUSY"],
+           "Initial_Distribution": [ 1.0, 0.0 ]
+       }
+   ],
+   "Nodes": [
+      {
+
+         "NodeID": 1
+      },
+      {
+
+         "NodeID": 2
+      },
+      {
+
+         "NodeID": 3
+      },
+      {
+
+         "NodeID": 4
+      }
+   ]
+}

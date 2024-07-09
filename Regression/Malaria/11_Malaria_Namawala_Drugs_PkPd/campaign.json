@@ -5,10 +5,16 @@
                "Event_Coordinator_Config": {
                     "Demographic_Coverage": 0.8, 
                     "Intervention_Config": {
-                         "Cost_To_Consumer": 3.75, 
-                         "Dosing_Type": "FullTreatmentWhenSymptom", 
-                         "Drug_Type": "Chloroquine", 
-                         "class": "AntimalarialDrug"
+                        "class": "MalariaDiagnostic",
+                        "Cost_To_Consumer": 0, 
+                        "Diagnostic_Type": "FEVER", 
+                        "Detection_Threshold": 1, 
+                        "Event_Or_Config": "Config", 
+                        "Positive_Diagnosis_Config": {
+                            "class": "AntimalarialDrug",
+                            "Cost_To_Consumer": 3.75, 
+                            "Drug_Type": "Chloroquine"
+                        }
                     }, 
                     "Target_Demographic": "Everyone", 
                     "class": "StandardInterventionDistributionEventCoordinator"
@@ -23,10 +29,17 @@
                "Event_Coordinator_Config": {
                     "Demographic_Coverage": 0.8, 
                     "Intervention_Config": {
-                         "Cost_To_Consumer": 3.75, 
-                         "Dosing_Type": "FullTreatmentParasiteDetect", 
-                         "Drug_Type": "Chloroquine", 
-                         "class": "AntimalarialDrug"
+                        "class": "MalariaDiagnostic",
+                        "Cost_To_Consumer": 0, 
+                        "Diagnostic_Type": "BLOOD_SMEAR_PARASITES", 
+                        "Measurement_Sensitivity" : 0.1,
+                        "Detection_Threshold": 0, 
+                        "Event_Or_Config": "Config", 
+                        "Positive_Diagnosis_Config": {
+                            "class": "AntimalarialDrug",
+                            "Cost_To_Consumer": 3.75, 
+                            "Drug_Type": "Chloroquine"
+                        }
                     }, 
                     "Target_Demographic": "Everyone", 
                     "class": "StandardInterventionDistributionEventCoordinator"

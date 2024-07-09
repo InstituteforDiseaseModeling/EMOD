@@ -1,5 +1,6 @@
 {
     "CLIMATE": {
+        "Enable_Climate_Stochasticity": 1,
         "FILENAMES": {
             "Air_Temperature_Filename": "Namawala_single_node_air_temperature_daily.bin",
             "Land_Temperature_Filename": "Namawala_single_node_land_temperature_daily.bin",

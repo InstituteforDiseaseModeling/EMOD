@@ -1,0 +1,25 @@
+{
+    "Default_Config_Path": "../../defaults/malaria_default_config.json",
+    "CLIMATE": {
+        "Enable_Climate_Stochasticity": 0,
+        "Climate_Model": "CLIMATE_CONSTANT"
+    },
+    "DEMOGRAPHICS": {
+        "Enable_Birth": 0,
+        "Demographics_Filenames": [
+            "demographics.json"
+        ]
+    },
+    "PRIMARY": {
+        "Config_Name": "102_Malaria_MalariaChallenge",
+        "Enable_Demographics_Reporting": 0,
+        "Geography": "SamplesInput",
+        "Run_Number": 1,
+        "Simulation_Duration": 250
+    },
+    "VECTOR": {
+        "Base_Sporozoite_Survival_Fraction": 0.5,
+        "Mean_Sporozoites_Per_Bite": 10,
+        "x_Temporary_Larval_Habitat": 0.0
+    }
+}

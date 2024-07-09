@@ -1,0 +1,7 @@
+{
+     "science": [
+        { "path" : "Generic/SFTs/Serialization/01_write_file_singlenode" },
+        { "path" : "Generic/SFTs/Serialization/02_read_file_singlenode" },
+        { "path" : "Generic/SFTs/Serialization/03_infections_remain" }
+    ]
+}

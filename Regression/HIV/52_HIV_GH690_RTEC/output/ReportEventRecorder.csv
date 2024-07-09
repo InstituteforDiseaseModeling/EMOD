@@ -1,1 +1,1 @@
-Year,Node_ID,Event_Name,Individual_ID,Age,Gender,Infected,Infectiousness,HasHIV,OnART,CD4,WHO_Stage,InterventionStatus
+Time,Year,Node_ID,Event_Name,Individual_ID,Age,Gender,Infected,Infectiousness,HasHIV,OnART,CD4,WHO_Stage,HIV_Stage,InterventionStatus

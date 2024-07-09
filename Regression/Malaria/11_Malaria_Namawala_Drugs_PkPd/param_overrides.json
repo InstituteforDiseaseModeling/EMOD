@@ -20,10 +20,15 @@
     },
     "Default_Config_Path": "../../defaults/malaria_default_config.json",
     "GENERAL_DISEASE": {
-        "Infection_Updates_Per_Timestep": 24,
-        "PKPD_Model": "CONCENTRATION_VERSUS_TIME"
+        "Infection_Updates_Per_Timestep": 24
     },
     "MALARIA": {
+        "Malaria_Drug_Params": [
+            {
+                "Name": "Chloroquine",
+                "PKPD_Model": "CONCENTRATION_VERSUS_TIME"
+            }
+        ],
         "Min_Adapted_Response": 0.01
     },
     "PRIMARY": {
@@ -32,15 +37,18 @@
         "Run_Number": 57,
         "Simulation_Duration": 365
     },
-    "Vector_Species_Params": {
-        "arabiensis": {
+    "Vector_Species_Params": [
+        {
+            "Name": "arabiensis",
             "Acquire_Modifier": 0.2
         },
-        "funestus": {
+        {
+            "Name": "funestus",
             "Acquire_Modifier": 0.2
         },
-        "gambiae": {
+        {
+            "Name": "gambiae",
             "Acquire_Modifier": 0.2
         }
-    }
+    ]
 }

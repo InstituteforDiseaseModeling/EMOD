@@ -1,0 +1,44 @@
+{
+    "Metadata": {
+          "DateCreated": "Fri Aug 20, 2014",
+          "Tool": "Hand",
+          "Author": "dklein",
+          "RegionName": "South Africa: Single Node",
+          "DataSource": "UN Population Division, 2012 Estimates",
+
+          "IdReference": "0",
+          "NodeCount": 1
+     }, 
+
+    "Defaults": 
+    { 
+        
+        "IndividualAttributes": 
+        { 
+            "AgeDistribution": 
+            { 
+                "NumDistributionAxes": 0,
+                "ResultUnits": "years",
+                "ResultScaleFactor": 365,
+                "AxisScaleFactors":  1,
+                "ResultValues": [ 1, 1.9, 20, 20.9, 40, 40.9, 60, 60.9, 80, 80.9],
+                "DistributionValues": [ 0.0, 0.2, 0.2, 0.4, 0.4, 0.6, 0.6, 0.8, 0.8, 1]
+            }
+        }
+     },
+    "Nodes": [ 
+        { 
+            "NodeID": 1,
+            "NodeAttributes": 
+            { 
+                "NOT_LGA_Name": "Base_Dem",
+                "InitialPopulation": 17396000,
+
+                "NOTE": "The following parameters are required, but not used",
+                "Latitude": 0,
+                "Longitude": 0,
+                "Altitude": 0
+            }
+        }
+    ]
+}

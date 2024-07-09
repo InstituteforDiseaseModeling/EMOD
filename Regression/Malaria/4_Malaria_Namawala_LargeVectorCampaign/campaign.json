@@ -4,7 +4,7 @@
             "Event_Coordinator_Config": {
                 "Demographic_Coverage": 0.5, 
                 "Intervention_Config": {
-                    "Blocking_Config": {
+                    "Repelling_Config": {
                         "Box_Duration": 3650, 
                         "Initial_Effect": 0.0, 
                         "class": "WaningEffectBox"
@@ -31,6 +31,10 @@
             "Event_Coordinator_Config": {
                 "Demographic_Coverage": 0.5, 
                 "Intervention_Config": {
+                    "Repelling_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect": 0.0
+                    }, 
                     "Blocking_Config": {
                         "Box_Duration": 3650, 
                         "Initial_Effect": 1, 

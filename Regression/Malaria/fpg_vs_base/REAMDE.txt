@@ -1,0 +1,19 @@
+September 24, 2020
+fpg_vs_base
+
+The purpose of this set of tests is:
+
+1) Provide sweeps over the main interventions
+2) Provide a simple way to compare the base malaria model with full parasite genetics version
+
+The set of tests were created using the files in create_tests.py.
+
+All of the tests have the same dtk_post_process.py file.
+An improvement would be to refactor this so that the amount
+of code duplication is reduced.
+
+To compare fpg vs base, one just needs to change the Malaria_Model
+paramter in the default_config.json file and re-run the tests.
+The dtk_post_process.py will convert the ReportVectorStats.csv file
+to a json file so that we can compare and plot this data.  With this,
+one should be able to quickly and easily see the difference in the two models.

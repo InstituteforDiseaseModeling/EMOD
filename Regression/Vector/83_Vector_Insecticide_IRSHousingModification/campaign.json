@@ -1,0 +1,59 @@
+{
+    "Events": [
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 1.0, 
+                "Intervention_Config": {
+                    "Repelling_Config": {
+                        "Box_Duration": 300, 
+                        "Initial_Effect": 0.25, 
+                        "class": "WaningEffectBox"
+                    }, 
+                    "Cost_To_Consumer": 1.0, 
+                    "Killing_Config": {
+                        "Box_Duration": 300, 
+                        "Initial_Effect": 1.0, 
+                        "class": "WaningEffectBox"
+                    }, 
+                    "Insecticide_Name": "pyrethroid",
+                    "class": "IRSHousingModification"
+                }, 
+                "Target_Demographic": "Everyone", 
+                "class": "StandardInterventionDistributionEventCoordinator"
+            }, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Start_Day": 100, 
+            "class": "CampaignEvent"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 1.0, 
+                "Intervention_Config": {
+                    "Repelling_Config": {
+                        "Box_Duration": 300, 
+                        "Initial_Effect": 0.25, 
+                        "class": "WaningEffectBox"
+                    }, 
+                    "Cost_To_Consumer": 1.0, 
+                    "Killing_Config": {
+                        "Box_Duration": 300, 
+                        "Initial_Effect": 1.0, 
+                        "class": "WaningEffectBox"
+                    }, 
+                    "Insecticide_Name": "carbamate",
+                    "class": "IRSHousingModification"
+                }, 
+                "Target_Demographic": "Everyone", 
+                "class": "StandardInterventionDistributionEventCoordinator"
+            }, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Start_Day": 500, 
+            "class": "CampaignEvent"
+        }
+    ], 
+    "Use_Defaults": 1
+}

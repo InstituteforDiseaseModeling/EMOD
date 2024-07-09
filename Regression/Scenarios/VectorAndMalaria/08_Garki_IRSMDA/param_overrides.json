@@ -43,12 +43,7 @@
         "MOSQUITO": {
             "Egg_Hatch_Density_Dependence": "NO_DENSITY_DEPENDENCE",
             "Enable_Egg_Mortality": 0,
-            "Enable_Temperature_Dependent_Egg_Hatching": 0,
-            "Vector_Species_Names": [
-                "arabiensis",
-                "funestus",
-                "gambiae"
-            ]
+            "Enable_Temperature_Dependent_Egg_Hatching": 0
         },
         "PRIMARY": {
             "Config_Name": "VectorAndMalaria_8_Garki_IRSMDA",

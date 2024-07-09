@@ -1,0 +1,23 @@
+{
+    "Metadata": {
+        "DateCreated": "Sun Sep 25 23:19:55 2011", 
+        "Tool": "None", 
+        "Author": "dklein", 
+        "IdReference": "0", 
+        "NodeCount": 1,
+        "Resolution": 150
+    }, 
+    "Defaults": {
+    },
+    "Nodes": [
+        {
+            "NodeID": 1,  
+            "IndividualAttributes": {
+                "AgeDistributionFlag": 1, 
+                "AgeDistribution1": 7300, 
+                "AgeDistribution2": 20075
+
+            }
+        }
+    ]
+}

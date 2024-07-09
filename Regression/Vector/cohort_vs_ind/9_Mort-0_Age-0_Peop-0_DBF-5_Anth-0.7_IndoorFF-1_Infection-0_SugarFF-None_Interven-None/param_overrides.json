@@ -1,0 +1,18 @@
+{
+    "Default_Config_Path": "Vector/cohort_vs_ind/default_config.json",
+    "parameters": {
+        "Config_Name": "9_Mort-0_Age-0_Peop-0_DBF-5_Anth-0.7_IndoorFF-1_Infection-0_SugarFF-None_Interven-None",
+        "Enable_Vector_Aging": 0,
+        "Enable_Vector_Mortality": 0,
+        "Python_Script_Path": "SHARED",
+        "Simulation_Duration": 20.0,
+        "Vector_Species_Params": [
+            {
+                "Name": "arabiensis",
+                "Anthropophily": 0.7,
+                "Days_Between_Feeds": 5.0,
+                "Indoor_Feeding_Fraction": 1.0
+            }
+        ]
+    }
+}

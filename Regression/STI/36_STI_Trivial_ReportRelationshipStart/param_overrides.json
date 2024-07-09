@@ -23,7 +23,14 @@
             "Simulation_Duration": 150
         },
         "STI": {
-            "Report_Relationship_Start": 1
+            "Report_Relationship_Start": 1,
+            "Report_Relationship_Start_Start_Year": 1960.6,
+            "Report_Relationship_Start_End_Year" : 1960.9,
+            "Report_Relationship_Start_Min_Age_Years": 16.0,
+            "Report_Relationship_Start_Max_Age_Years": 50.0,
+            "Report_Relationship_Start_Must_Have_IP_Key_Value": "",
+            "Report_Relationship_Start_Must_Have_Intervention": "",
+            "Report_Relationship_Start_Node_IDs_Of_Interest": []
         }
     }
 }

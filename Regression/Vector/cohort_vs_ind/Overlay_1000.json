@@ -1,0 +1,19 @@
+{
+    "Metadata": {
+        "DateCreated": "Tue Jun 30 07:00:42 2015",
+        "Tool": "Eradication.exe",
+        "Author": "DTK",
+        "IdReference": "0",
+        "NodeCount": 1
+    },
+    "Defaults": {
+        "NodeAttributes": {
+            "InitialPopulation": 1000
+        }
+    },
+    "Nodes": [
+        {
+            "NodeID": 1
+        }
+    ]
+}

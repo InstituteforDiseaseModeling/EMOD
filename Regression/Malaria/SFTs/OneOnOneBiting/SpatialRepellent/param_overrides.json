@@ -1,0 +1,33 @@
+{
+    "Default_Config_Path": "defaults/malaria_genetics_science_default_config.json",
+    "DEMOGRAPHICS": {
+        "Demographics_Filenames": [
+            "Namawala_two_node_demographics.json",
+            "one_humans.json"
+        ]
+    },
+    "PRIMARY": {
+        "Enable_Aging": 0,
+        "Enable_Vector_Mortality": 0,
+        "Human_Feeding_Mortality": 0,
+        "Age_Dependent_Biting_Risk_Type": "SURFACE_AREA_DEPENDENT",
+        "Config_Name": "Vector::SFTs::OneOnOneBiting::SpatialRepellent",
+        "Geography": "Namawala",
+        "Run_Number": 1,
+        "Simulation_Duration": 40
+    },
+    "STRAIN_TRACKING": {
+        "logLevel_NodeMalariaGenetics": "VALID",
+        "logLevel_IndividualMalariaGenetics": "VALID"
+    },
+    "VECTOR": {
+        "x_Temporary_Larval_Habitat": 0.1,
+        "Vector_Species_Params": [
+            {
+                "Name": "SillySkeeter",
+                "Egg_Batch_Size": 0,
+                "Indoor_Feeding_Fraction": 0.7
+            }
+        ]
+    }
+}

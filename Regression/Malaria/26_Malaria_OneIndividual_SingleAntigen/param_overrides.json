@@ -39,7 +39,7 @@
         "Falciparum_PfEMP1_Variants": 1
     },
     "MOSQUITO": {
-        "Vector_Species_Names": []
+        "Vector_Species_Params": []
     },
     "PRIMARY": {
         "Config_Name": "26_Malaria_OneIndividual_SingleAntigen",

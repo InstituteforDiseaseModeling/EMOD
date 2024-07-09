@@ -1,0 +1,33 @@
+{
+    "CLIMATE": {
+        "Enable_Climate_Stochasticity": 1,
+        "FILENAMES": {
+            "Air_Temperature_Filename": "Namawala_single_node_air_temperature_daily.bin",
+            "Land_Temperature_Filename": "Namawala_single_node_land_temperature_daily.bin",
+            "Rainfall_Filename": "Namawala_single_node_rainfall_daily.bin",
+            "Relative_Humidity_Filename": "Namawala_single_node_relative_humidity_daily.bin"
+        }
+    },
+    "DEMOGRAPHICS": {
+        "Demographics_Filenames": [
+            "Namawala_single_node_demographics.json"
+        ],
+        "Enable_Initial_Prevalence": 1
+    },
+    "Default_Config_Path": "../../defaults/malaria_default_config.json",
+    "PRIMARY": {
+        "Config_Name": "81_Malaria_Serialization_Sandbox",
+        "Geography": "Namawala",
+        "Run_Number": 28,
+        "Simulation_Duration": 1825,
+        "COMMENT": "Do not include because we cannot have a queue of previous days infections when starting from serialized file.",
+        "Inset_Chart_Reporting_Include_30Day_Avg_Infection_Duration": 0
+    },
+    "SERIALIZATION" : {
+        "Serialization_Test" : 1,
+        "Serialized_Population_Writing_Type" : "TIME",
+        "Serialization_Mask_Node_Write": 0,
+        "Serialization_Precision" : "FULL",
+        "Serialization_Times" : [ 1480 ]
+    }
+}

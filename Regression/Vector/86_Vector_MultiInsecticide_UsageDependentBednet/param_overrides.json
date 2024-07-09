@@ -1,0 +1,232 @@
+{
+    "Default_Config_Path": "../../defaults/vector_default_config.json",
+    "parameters": {
+        "CLIMATE": {
+            "Climate_Model": "CLIMATE_CONSTANT",
+            "Enable_Climate_Stochasticity": 0,
+            "Enable_Rainfall_Stochasticity": 0
+        },
+        "DEMOGRAPHICS": {
+            "Birth_Rate_Dependence": "DEMOGRAPHIC_DEP_RATE",
+            "Demographics_Filenames": [
+                "Namawala_single_node_demographics.json"
+            ],
+            "Enable_Initial_Prevalence": 1
+        },
+        "PRIMARY": {
+            "Config_Name": "86_Vector_MultiInsecticide_UsageDependentBednet",
+            "Custom_Reports_Filename": "custom_reports.json",
+            "Geography": "Namawala",
+            "Custom_Individual_Events": [
+                "Bednet_Got_New_One",
+                "Bednet_Using",
+                "Bednet_Discarded",
+                "Bednet_Using_Num_2"
+            ],
+            "Enable_Demographics_Reporting": 0,
+            "Report_Event_Recorder": 1,
+            "Report_Event_Recorder_Events": [
+                "Bednet_Got_New_One",
+                "Bednet_Using",
+                "Bednet_Discarded",
+                "Bednet_Using_Num_2"
+            ],
+            "Report_Event_Recorder_Start_Day": 0,
+            "Report_Event_Recorder_End_Day" : 100000,
+            "Report_Event_Recorder_Min_Age_Years": 0.0,
+            "Report_Event_Recorder_Max_Age_Years": 1000.0,
+            "Report_Event_Recorder_Must_Have_IP_Key_Value": "",
+            "Report_Event_Recorder_Must_Have_Intervention": "",
+            "Report_Event_Recorder_Node_IDs_Of_Interest": [],
+            "Report_Event_Recorder_Ignore_Events_In_List" : 0,
+            "Report_Event_Recorder_Individual_Properties": [],
+            "Report_Event_Recorder_PropertyChange_IP_Key_Of_Interest" : "",
+            "Run_Number": 1,
+            "Simulation_Duration": 400,
+            "x_Base_Population": 0.1,
+            "x_Temporary_Larval_Habitat": 0.025
+        },
+        "Insecticides" : [
+            {
+                "Name" : "pyrethroid",
+                "Resistances" : [
+                    {
+                        "Species" : "pyrethroid_resistant",
+                        "Allele_Combinations" : [
+                            [ "a0", "a0" ]
+                        ],  
+                        "Larval_Killing_Modifier" : 1.0,
+                        "Repelling_Modifier" : 1.0,
+                        "Blocking_Modifier": 1.0,
+                        "Killing_Modifier": 0.0
+                    }
+                ]
+            },
+            {
+                "Name" : "carbamate",
+                "Resistances" : [
+                    {
+                        "Species" : "carbamate_resistant",
+                        "Allele_Combinations" : [
+                            [ "b0", "b0" ]
+                        ],
+                        "Larval_Killing_Modifier" : 1.0,
+                        "Repelling_Modifier" : 1.0,
+                        "Blocking_Modifier": 1.0,
+                        "Killing_Modifier": 0.0
+                    }
+                ]
+            },
+            {
+                "Name" : "organochlorines",
+                "Resistances" : [
+                    {
+                        "Species" : "organochlorines_resistant",
+                        "Allele_Combinations" : [
+                            [ "c0", "c0" ]
+                        ],
+                        "Larval_Killing_Modifier" : 1.0,
+                        "Repelling_Modifier" : 1.0,
+                        "Blocking_Modifier": 1.0,
+                        "Killing_Modifier": 0.0
+                    }
+                ]
+            }
+        ],
+        "NOTE": "The three species are the same except the name.  This is so we see just the impact of the insecticide.",
+        "Vector_Species_Params": [
+            {
+                "Name": "pyrethroid_resistant",
+                "Acquire_Modifier": 0.2,
+                "Adult_Life_Expectancy": 10,
+                "Anthropophily": 0.95,
+                "Aquatic_Arrhenius_1": 84200000000,
+                "Aquatic_Arrhenius_2": 8328,
+                "Aquatic_Mortality_Rate": 0.1,
+                "Cycle_Arrhenius_1": 0,
+                "Cycle_Arrhenius_2": 0,
+                "Cycle_Arrhenius_Reduction_Factor": 0,
+                "Days_Between_Feeds": 3,
+                "Egg_Batch_Size": 100,
+                "Genes": [
+                    {
+                        "Is_Gender_Gene": 0,
+                        "Alleles": [
+                            {
+                                "Name": "a0",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 1.0
+                            }
+                        ],
+                        "Mutations": []
+                    }
+                ],
+                "Immature_Duration": 4,
+                "Indoor_Feeding_Fraction": 0.5,
+                "Infected_Arrhenius_1": 117000000000,
+                "Infected_Arrhenius_2": 8336,
+                "Infected_Egg_Batch_Factor": 0.8,
+                "Infectious_Human_Feed_Mortality_Factor": 1.5,
+                "Habitats": [
+                    {
+                        "Habitat_Type": "TEMPORARY_RAINFALL",
+                        "Max_Larval_Capacity": 11250000000.0
+                    }
+                ],
+                "Microsporidia": [],
+                "Male_Life_Expectancy": 10,
+                "Temperature_Dependent_Feeding_Cycle": "NO_TEMPERATURE_DEPENDENCE",
+                "Transmission_Rate": 0.5,
+                "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_NONE"
+            },
+            {
+                "Name": "carbamate_resistant",
+                "Acquire_Modifier": 0.2,
+                "Adult_Life_Expectancy": 10,
+                "Anthropophily": 0.95,
+                "Aquatic_Arrhenius_1": 84200000000,
+                "Aquatic_Arrhenius_2": 8328,
+                "Aquatic_Mortality_Rate": 0.1,
+                "Cycle_Arrhenius_1": 0,
+                "Cycle_Arrhenius_2": 0,
+                "Cycle_Arrhenius_Reduction_Factor": 0,
+                "Days_Between_Feeds": 3,
+                "Egg_Batch_Size": 100,
+                "Genes": [
+                    {
+                        "Is_Gender_Gene": 0,
+                        "Alleles": [
+                            {
+                                "Name": "b0",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 1.0
+                            }
+                        ],
+                        "Mutations": []
+                    }
+                ],
+                "Immature_Duration": 4,
+                "Indoor_Feeding_Fraction": 0.5,
+                "Infected_Arrhenius_1": 117000000000,
+                "Infected_Arrhenius_2": 8336,
+                "Infected_Egg_Batch_Factor": 0.8,
+                "Infectious_Human_Feed_Mortality_Factor": 1.5,
+                "Habitats": [
+                    {
+                        "Habitat_Type": "TEMPORARY_RAINFALL",
+                        "Max_Larval_Capacity": 11250000000.0
+                    }
+                ],
+                "Microsporidia": [],
+                "Male_Life_Expectancy": 10,
+                "Temperature_Dependent_Feeding_Cycle": "NO_TEMPERATURE_DEPENDENCE",
+                "Transmission_Rate": 0.5,
+                "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_NONE"
+            },
+            {
+                "Name": "organochlorines_resistant",
+                "Acquire_Modifier": 0.2,
+                "Adult_Life_Expectancy": 10,
+                "Anthropophily": 0.95,
+                "Aquatic_Arrhenius_1": 84200000000,
+                "Aquatic_Arrhenius_2": 8328,
+                "Aquatic_Mortality_Rate": 0.1,
+                "Cycle_Arrhenius_1": 0,
+                "Cycle_Arrhenius_2": 0,
+                "Cycle_Arrhenius_Reduction_Factor": 0,
+                "Days_Between_Feeds": 3,
+                "Egg_Batch_Size": 100,
+                "Genes": [
+                    {
+                        "Is_Gender_Gene": 0,
+                        "Alleles": [
+                            {
+                                "Name": "c0",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 1.0
+                            }
+                        ],
+                        "Mutations": []
+                    }
+                ],
+                "Immature_Duration": 4,
+                "Indoor_Feeding_Fraction": 0.5,
+                "Infected_Arrhenius_1": 117000000000,
+                "Infected_Arrhenius_2": 8336,
+                "Infected_Egg_Batch_Factor": 0.8,
+                "Infectious_Human_Feed_Mortality_Factor": 1.5,
+                "Habitats": [
+                    {
+                        "Habitat_Type": "TEMPORARY_RAINFALL",
+                        "Max_Larval_Capacity": 11250000000.0
+                    }
+                ],
+                "Microsporidia": [],
+                "Male_Life_Expectancy": 10,
+                "Temperature_Dependent_Feeding_Cycle": "NO_TEMPERATURE_DEPENDENCE",
+                "Transmission_Rate": 0.5,
+                "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_NONE"
+            }
+        ]
+    }
+}

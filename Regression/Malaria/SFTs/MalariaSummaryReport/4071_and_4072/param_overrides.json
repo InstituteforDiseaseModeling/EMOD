@@ -1,0 +1,27 @@
+{
+     "Default_Config_Path": "defaults/malaria_science_default_config.json", 
+     "parameters": {
+          "CLIMATE": {
+               "Base_Air_Temperature": 25.0,
+               "Enable_Climate_Stochasticity": 0,
+               "Climate_Model": "CLIMATE_CONSTANT"
+          }, 
+          "DEMOGRAPHICS": {
+               "Age_Initialization_Distribution_Type": "DISTRIBUTION_COMPLEX",
+               "Demographics_Filenames": ["Demographics.json"]
+          }, 
+          "MIGRATION": {
+               "Migration_Model": "NO_MIGRATION"
+          }, 
+          "PRIMARY": {
+               "Config_Name": "Malaria:SFTs:MalariaSummaryReport:4071", 
+               "Num_Cores": 1,
+               "Geography": "MigrationTest", 
+               "Listed_Events": [], 
+               "Custom_Reports_Filename" : "custom_reports.json",
+               "Report_Event_Recorder": 0, 
+               "Run_Number": 1, 
+               "Simulation_Duration": 70
+          }
+     }
+}

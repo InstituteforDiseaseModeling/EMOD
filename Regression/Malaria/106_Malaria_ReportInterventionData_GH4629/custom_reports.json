@@ -1,0 +1,14 @@
+{
+    "Reports": [
+        {
+            "class": "ReportInterventionPopAvg",
+            "Start_Day": 100,
+            "Duration_Days": 1000,
+            "Report_Description": "test",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }
+        }
+    ],
+    "Use_Defaults": 1
+}

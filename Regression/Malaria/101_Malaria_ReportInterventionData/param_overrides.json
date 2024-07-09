@@ -1,0 +1,77 @@
+{
+    "CLIMATE": {
+        "Climate_Model": "CLIMATE_CONSTANT",
+        "Enable_Climate_Stochasticity": 0
+    },
+    "DEMOGRAPHICS": {
+        "Demographics_Filenames": [
+            "demographics.json"
+        ],
+        "Enable_Vital_Dynamics": 0,
+        "Enable_Initial_Prevalence": 0
+    },
+    "Default_Config_Path": "../../defaults/malaria_default_config.json",
+    "PRIMARY": {
+        "Custom_Individual_Events": [
+            "Bednet_Discarded",
+            "Bednet_Using",
+            "Bednet_Got_New_One"
+        ],
+        "Enable_Demographics_Reporting": 0,
+        "Custom_Reports_Filename": "custom_reports.json",
+        "Inset_Chart_Has_Interventions": [
+            "SimpleBednet",
+            "IRSHousingModification",
+            "ScreeningHousingModification",
+            "SimpleHousingModification",
+            "SpatialRepellentHousingModification",
+            "HumanHostSeekingTrap",
+            "SimpleIndividualRepellent",
+            "Ivermectin",
+            "AntimalarialDrug",
+            "MultiPackComboDrug-Lumefantrine+Artemether",
+            "AdherentDrug-Piperaquine",
+            "UsageDependentBednet"
+        ],
+
+
+        "Config_Name": "101_Malaria_ReportInterventionData",
+        "Geography": "Namawala",
+        "Run_Number": 1,
+        "Simulation_Duration": 365
+    },
+    "COMMENT": "Change to CONCENTRATION_VERSUS_TIME so we see DrugConcentration change. decay faster so we see chloroquine expire",
+    "Malaria_Drug_Params": [
+        {
+            "Name": "Chloroquine",
+            "PKPD_Model": "CONCENTRATION_VERSUS_TIME",
+            "Drug_Decay_T1": 1,
+            "Drug_Decay_T2": 5
+        },
+        {
+            "Name": "Lumefantrine",
+            "PKPD_Model": "CONCENTRATION_VERSUS_TIME"
+        },
+        {
+            "Name": "Piperaquine",
+            "PKPD_Model": "CONCENTRATION_VERSUS_TIME"
+        }
+    ],
+    "VECTORS": {
+        "x_Temporary_Larval_Habitat": 0.1,
+        "Vector_Species_Params": [
+            {
+                "Name": "arabiensis",
+                "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_EVERY_FEED"
+            },
+            {
+                "Name": "funestus",
+                "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_EVERY_FEED"
+            },
+            {
+                "Name": "gambiae",
+                "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_EVERY_FEED"
+            }
+        ]
+    }
+}

@@ -1,0 +1,101 @@
+{
+    "parameters": {
+        "CAMPAIGNS": {
+            "Enable_Interventions": 1
+        },
+        "DEMOGRAPHICS": {
+            "Demographics_Filenames": [
+                "../../Input/Vector_single_node_demographics.json",
+                "../../Input/0_vectors_overlay.spreadrisk.json"
+            ]
+        },
+        "PRIMARY": {
+            "Config_Name": "Vector:SFT:Microsporidia:Male_To_Egg_Transmission_multistrain_compartments",
+            "Simulation_Duration": 50,
+            "Comment": "Lower temperature slows down larval development allowing larvicides to work better",
+            "Base_Air_Temperature": 20
+        },
+        "VECTOR": {
+            "Vector_Sampling_Type": "VECTOR_COMPARTMENTS_NUMBER",
+            ".Vector_Sampling_Type": "TRACK_ALL_VECTORS",
+            "Custom_Reports_Filename": "custom_reports.json",
+            "Enable_Vector_Aging": 0,
+            "SPECIES": {
+                "Vector_Species_Params": [
+                    {
+                        "Name": "TestVector",
+                        "Days_Between_Feeds": 2,
+                        "Egg_Batch_Size": 100,
+                        "Adult_Life_Expectancy":730,
+                        "Male_Life_Expectancy": 730,
+                        "Microsporidia": [
+                            {
+                                "Strain_Name":  "Strain_A",
+                                "Female_Mortality_Modifier": 1,
+                                "Female_To_Egg_Transmission_Probability": 0.77,
+                                "Male_To_Egg_Transmission_Probability":0.66,
+                                "Female_To_Male_Transmission_Probability": 0,
+                                "Larval_Growth_Modifier": 1,
+                                "Male_Mortality_Modifier": 1,
+                                "Male_To_Female_Transmission_Probability": 0,
+                                "Duration_To_Disease_Acquisition_Modification": {
+                                    "Times": [
+                                        0,
+                                        9
+                                    ],
+                                    "Values": [
+                                        1.0,
+                                        0
+                                    ]
+                                },
+                                "Duration_To_Disease_Transmission_Modification": {
+                                    "Times": [
+                                        0
+                                    ],
+                                    "Values": [
+                                        1.0
+                                    ]
+                                }
+                            },
+                            {
+                                "Strain_Name":  "Strain_B",
+                                "Female_Mortality_Modifier": 1,
+                                "Female_To_Egg_Transmission_Probability": 0.76,
+                                "Male_To_Egg_Transmission_Probability": 0.87,
+                                "Female_To_Male_Transmission_Probability": 0,
+                                "Larval_Growth_Modifier": 1,
+                                "Male_Mortality_Modifier": 1,
+                                "Male_To_Female_Transmission_Probability": 0,
+                                "Duration_To_Disease_Acquisition_Modification": {
+                                    "Times": [
+                                        0,
+                                        9
+                                    ],
+                                    "Values": [
+                                        1.0,
+                                        0
+                                    ]
+                                },
+                                "Duration_To_Disease_Transmission_Modification": {
+                                    "Times": [
+                                        0
+                                    ],
+                                    "Values": [
+                                        1.0
+                                    ]
+                                }
+                            }
+                        ],
+                        "Anthropophily": 1,
+                        "Indoor_Feeding_Fraction": 0
+                    }
+                ]
+            }
+        },
+        "LOGGING": {
+            "logLevel_VectorPopulation": "VALID",
+            "logLevel_VectorPopulationIndividual": "VALID"
+        },
+        "Default_Config_Path": "defaults/vector_science_default_config.json"
+    }
+}

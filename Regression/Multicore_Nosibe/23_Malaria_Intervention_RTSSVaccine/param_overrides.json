@@ -26,29 +26,37 @@
             "Num_Cores": 8
         },
         "MIGRATION": {
+            "AA" : {
+                "Enable_Migration_Heterogeneity": 0,
+                "Migration_Model": "FIXED_RATE_MIGRATION",
+                "Migration_Pattern": "WAYPOINTS_HOME",
+                "Roundtrip_Waypoints": 5
+            },
             "AIR": {
                 "Air_Migration_Filename": "",
-                "Enable_Air_Migration": 0
+                "Enable_Air_Migration": 0,
+                "x_Air_Migration" : 1.0
             },
-            "Enable_Family_Migration": 0,
-            "Enable_Migration_Heterogeneity": 0,
-            "Family_Migration_Filename": "",
+            "FAMILY" : {
+                "Enable_Family_Migration": 0,
+                "Family_Migration_Filename": "",
+                "x_Family_Migration": 1.0
+            },
             "LOCAL": {
                 "Enable_Local_Migration": 1,
-                "Local_Migration_Filename": "Madagascar_Nosibe_2.5arcmin_local_migration.bin"
+                "Local_Migration_Filename": "Madagascar_Nosibe_2.5arcmin_local_migration.bin",
+                "x_Local_Migration" : 1.0
             },
-            "Migration_Model": "FIXED_RATE_MIGRATION",
-            "Migration_Pattern": "WAYPOINTS_HOME",
             "REGIONAL": {
                 "Enable_Regional_Migration": 0,
-                "Regional_Migration_Filename": ""
+                "Regional_Migration_Filename": "",
+                "x_Regional_Migration" : 1.0
             },
-            "Roundtrip_Waypoints": 5,
             "SEA": {
                 "Enable_Sea_Migration": 0,
-                "Sea_Migration_Filename": ""
-            },
-            "x_Family_Migration": 1
+                "Sea_Migration_Filename": "",
+                "x_Sea_Migration" : 1.0
+            }
         },
         "PRIMARY": {
             "Config_Name": "23_Malaria_Intervention_RTSSVaccine -- multicore -- Madagascar_Nosibe",

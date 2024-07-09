@@ -40,6 +40,8 @@
                         "STIDebut"
                     ],
                     "Demographic_Coverage": 0.3,
+                    "Target_Demographic": "ExplicitGender",
+                    "Target_Gender": "Male",
                     "Actual_IndividualIntervention_Config": {
                         "class": "STIBarrier",
                         "Cost_To_Consumer": 1.0,
@@ -47,7 +49,10 @@
                         "Rate": 1,
                         "Early": 1.0,
                         "Late": 1.0,
-                        "MidYear": 1960.5
+                        "MidYear": 1960.5,
+                        "Usage_Duration_Distribution": "CONSTANT_DISTRIBUTION",
+                        "Usage_Duration_Constant": 10000,
+                        "Usage_Expiration_Event": "NewMalariaInfectionObject"
                     }
                 }
             }

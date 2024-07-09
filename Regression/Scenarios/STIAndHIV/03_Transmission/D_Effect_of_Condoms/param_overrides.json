@@ -29,6 +29,7 @@
             "Config_Name": "03D_Effect_of_Condoms"
         },
         "____________REPORTING___________": {
+            "Inset_Chart_Include_Coital_Acts": 1,
             "Report_HIV_ByAgeAndGender": 1,
             "Report_HIV_ByAgeAndGender_Start_Year": 2020,
             "Report_HIV_ByAgeAndGender_Stop_Year": 2050

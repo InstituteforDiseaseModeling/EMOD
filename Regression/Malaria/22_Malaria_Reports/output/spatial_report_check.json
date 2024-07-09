@@ -1,0 +1,24 @@
+{
+    "messages": [
+        "============= CompareData ===============",
+        "exp_fn=output/SpatialReport_Adult_Vectors.bin  act_fn=output/SpatialReportMalariaFiltered_Adult_Vectors.bin",
+        "!!!!!!!!!!!!!!!!!! PASSED !!!!!!!!!!!!!!!!!!!!!!!",
+        "============= CompareData ===============",
+        "exp_fn=output/SpatialReport_New_Clinical_Cases.bin  act_fn=output/SpatialReportMalariaFiltered_New_Clinical_Cases.bin",
+        "!!!!!!!!!!!!!!!!!! PASSED !!!!!!!!!!!!!!!!!!!!!!!",
+        "============= CompareData ===============",
+        "exp_fn=output/SpatialReport_New_Infections.bin  act_fn=output/SpatialReportMalariaFiltered_New_Infections.bin",
+        "!!!!!!!!!!!!!!!!!! PASSED !!!!!!!!!!!!!!!!!!!!!!!",
+        "============= CompareData ===============",
+        "exp_fn=output/SpatialReport_Population.bin  act_fn=output/SpatialReportMalariaFiltered_Population.bin",
+        "!!!!!!!!!!!!!!!!!! PASSED !!!!!!!!!!!!!!!!!!!!!!!",
+        "============= CompareData ===============",
+        "exp_fn=output/SpatialReport_PCR_Parasite_Prevalence.bin  act_fn=output/SpatialReportMalariaFiltered_PCR_Parasite_Prevalence.bin",
+        "!!!!!!!!!!!!!!!!!! PASSED !!!!!!!!!!!!!!!!!!!!!!!",
+        "============= CompareData ===============",
+        "exp_fn=output/SpatialReport_Prevalence.bin  act_fn=output/SpatialReportMalariaFiltered_Prevalence.bin",
+        "!!!!!!!!!!!!!!!!!! PASSED !!!!!!!!!!!!!!!!!!!!!!!",
+        "!!!!!!!!!!!!!!!!!! Compare InsetChartData !!!!!!!!!!!!!!!!!!!!!!!",
+        "!!!!!!!!!!!!!!!!!! PASSED !!!!!!!!!!!!!!!!!!!!!!!"
+    ]
+}

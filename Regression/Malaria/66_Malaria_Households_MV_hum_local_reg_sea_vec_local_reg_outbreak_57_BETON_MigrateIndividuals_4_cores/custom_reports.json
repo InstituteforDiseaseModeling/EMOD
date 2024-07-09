@@ -1,16 +1,16 @@
 {
-    "Custom_Reports" : 
-    {
-        "Use_Explicit_Dlls" : 1,
-        "ReportVectorStats" :
+    "Reports": [
         {
-            "Enabled" : 1,
-            "Reports" : [ {} ]
+            "Species_List": [
+                "arabiensis",
+                "funestus",
+                "gambiae"
+            ],
+            "class": "ReportVectorStats"
         },
-        "ReportNodeDemographics" :
         {
-            "Enabled" : 1,
-            "Reports" : [ {} ]
+            "class": "ReportNodeDemographics"
         }
-    }
+    ],
+    "Use_Defaults": 1
 }

@@ -1,0 +1,20 @@
+{
+    "Reports": [
+        {
+            "Allele_Combinations_For_Stratification": [],
+            "Gender": "VECTOR_MALE",
+            "Include_Vector_State_Columns": 1,
+            "Species": "gambiae2",
+            "Stratify_By": "GENOME",
+            "class": "ReportVectorGenetics"
+        },
+        {
+            "Species_List": [
+                "gambiae2"
+            ],
+            "Stratify_By_Species": 1,
+            "class": "ReportVectorStats"
+        }
+    ],
+    "Use_Defaults": 1
+}

@@ -1,0 +1,243 @@
+{
+    "Default_Config_Path": "Vector/genetic_perf/default_config.json",
+    "parameters": {
+        "Config_Name": "16_VGP_5Gene_8Allele",
+        "Vector_Species_Params": [
+            {
+                "Name": "arabiensis",
+                "Genes": [
+                    {
+                        "Is_Gender_Gene": 0,
+                        "Alleles": [
+                            {
+                                "Name": "A1",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.125
+                            },
+                            {
+                                "Name": "A2",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.125
+                            },
+                            {
+                                "Name": "A3",
+                                "Initial_Allele_Frequency": 0.125
+                                "Is_Y_Chromosome" : 0,
+                            },
+                            {
+                                "Name": "A4",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.125
+                            },
+                            {
+                                "Name": "A5",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.125
+                            },
+                            {
+                                "Name": "A6",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.125
+                            },
+                            {
+                                "Name": "A7",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.125
+                            },
+                            {
+                                "Name": "A8",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.125
+                            }
+                        ],
+                        "Mutations": []
+                    },
+                    {
+                        "Is_Gender_Gene": 0,
+                        "Alleles": [
+                            {
+                                "Name": "B1",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.125
+                            },
+                            {
+                                "Name": "B2",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.125
+                            },
+                            {
+                                "Name": "B3",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.125
+                            },
+                            {
+                                "Name": "B4",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.125
+                            },
+                            {
+                                "Name": "B5",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.125
+                            },
+                            {
+                                "Name": "B6",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.125
+                            },
+                            {
+                                "Name": "B7",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.125
+                            },
+                            {
+                                "Name": "B8",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.125
+                            }
+                        ],
+                        "Mutations": []
+                    },
+                    {
+                        "Is_Gender_Gene": 0,
+                        "Alleles": [
+                            {
+                                "Name": "C1",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.125
+                            },
+                            {
+                                "Name": "C2",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.125
+                            },
+                            {
+                                "Name": "C3",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.125
+                            },
+                            {
+                                "Name": "C4",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.125
+                            },
+                            {
+                                "Name": "C5",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.125
+                            },
+                            {
+                                "Name": "C6",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.125
+                            },
+                            {
+                                "Name": "C7",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.125
+                            },
+                            {
+                                "Name": "C8",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.125
+                            }
+                        ],
+                        "Mutations": []
+                    },
+                    {
+                        "Is_Gender_Gene": 0,
+                        "Alleles": [
+                            {
+                                "Name": "D1",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.125
+                            },
+                            {
+                                "Name": "D2",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.125
+                            },
+                            {
+                                "Name": "D3",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.125
+                            },
+                            {
+                                "Name": "D4",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.125
+                            },
+                            {
+                                "Name": "D5",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.125
+                            },
+                            {
+                                "Name": "D6",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.125
+                            },
+                            {
+                                "Name": "D7",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.125
+                            },
+                            {
+                                "Name": "D8",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.125
+                            }
+                        ],
+                        "Mutations": []
+                    },
+                    {
+                        "Is_Gender_Gene": 0,
+                        "Alleles": [
+                            {
+                                "Name": "E1",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.125
+                            },
+                            {
+                                "Name": "E2",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.125
+                            },
+                            {
+                                "Name": "E3",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.125
+                            },
+                            {
+                                "Name": "E4",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.125
+                            },
+                            {
+                                "Name": "E5",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.125
+                            },
+                            {
+                                "Name": "E6",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.125
+                            },
+                            {
+                                "Name": "E7",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.125
+                            },
+                            {
+                                "Name": "E8",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.125
+                            }
+                        ],
+                        "Mutations": []
+                    }
+                ]
+            }
+        ]
+    }
+}

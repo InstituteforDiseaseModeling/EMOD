@@ -12,32 +12,41 @@
                "x_Temporary_Larval_Habitat": 0.1
           }, 
           "MIGRATION": {
+               "AA" : {
+                    "Enable_Migration_Heterogeneity": 0, 
+                    "Migration_Model": "FIXED_RATE_MIGRATION", 
+                    "Migration_Pattern": "WAYPOINTS_HOME",
+                    "Roundtrip_Waypoints": 5
+               },
                "AIR" : {
                     "Enable_Air_Migration": 0,
-                    "Air_Migration_Filename": ""
+                    "Air_Migration_Filename": "",
+                    "x_Air_Migration" : 1.0
                },
-               "Enable_Migration_Heterogeneity": 0, 
-               "Enable_Family_Migration": 0, 
-               "Family_Migration_Filename": "", 
-               "x_Family_Migration": 1,
+               "FAMILY" : {
+                    "Enable_Family_Migration": 0,
+                    "Family_Migration_Filename": "",
+                    "x_Family_Migration": 1
+                },
                "LOCAL": {
                     "Enable_Local_Migration": 0,
-                    "Local_Migration_Filename": ""
+                    "Local_Migration_Filename": "",
+                    "x_Local_Migration" : 1.0
                }, 
-               "Migration_Model": "FIXED_RATE_MIGRATION", 
-               "Migration_Pattern": "WAYPOINTS_HOME", 
                "REGIONAL": {
                     "Enable_Regional_Migration": 0,
-                    "Regional_Migration_Filename": ""
+                    "Regional_Migration_Filename": "",
+                    "x_Regional_Migration" : 1.0
                }, 
-               "Roundtrip_Waypoints": 5, 
                "SEA": {
                     "Enable_Sea_Migration": 0,
-                    "Sea_Migration_Filename": ""
+                    "Sea_Migration_Filename": "",
+                    "x_Sea_Migration": 1
                }
           }, 
           "PRIMARY": {
                "Config_Name": "68_Malaria_Default_Geography_AES", 
+               "Enable_Vector_Species_Report" : 1,
                "Geography": "auto-generated", 
                "Node_Grid_Size": 0.009, 
                "Run_Number": 33, 

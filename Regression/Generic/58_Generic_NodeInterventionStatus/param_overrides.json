@@ -8,6 +8,9 @@
         "Base_Infectivity": 0.5,
         "Config_Name": "58_Generic_NodeInterventionStatus",
         "Custom_Reports_Filename": "custom_reports.json",
+        "COMMENT":"More people makes InsetChart less noisy.",
+        "Population_Scale_Type": "FIXED_SCALING",
+        "x_Base_Population": 100,
         "DEMOGRAPHICS": {
             "Enable_Initial_Prevalence": 1
         },

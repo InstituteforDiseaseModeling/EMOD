@@ -1,0 +1,90 @@
+{
+    "Reports": [{
+            "class": "MalariaSummaryReport",
+            "Filename_Suffix": "test_1",
+            "Start_Day": 20,
+            "End_Day": 70,
+            "Node_IDs_Of_Interest": [ 1 ],
+            "Min_Age_Years": 0.0,
+            "Max_Age_Years": 1000.0,
+            "Must_Have_IP_Key_Value": "",
+            "Must_Have_Intervention": "",
+            "Pretty_Format": 1,
+            "Max_Number_Reports": 100,
+            "Reporting_Interval": 5,
+            "Age_Bins": [
+                5.0,
+                10,
+                45,
+                100.0
+            ],
+            "Infectiousness_Bins": [
+                0.0,
+                50.0,
+                100.0
+            ],
+            "Parasitemia_Bins": [
+                0.0,
+                40.0,
+                4000000.0
+            ]
+        },
+        {
+            "class": "MalariaSummaryReport",
+            "Filename_Suffix": "test_2",
+            "Start_Day": 20,
+            "End_Day": 5000,
+            "Node_IDs_Of_Interest": [],
+            "Must_Have_IP_Key_Value": "",
+            "Must_Have_Intervention": "",
+            "Pretty_Format": 1,
+            "Max_Number_Reports": 100,
+            "Reporting_Interval": 10,
+            "Age_Bins": [
+                5.0,
+                10,
+                45,
+                100.0
+            ],
+            "Infectiousness_Bins": [
+                0.0,
+                50.0,
+                100.0
+            ],
+            "Parasitemia_Bins": [
+                0.0,
+                40.0,
+                4000000.0
+            ]
+        }, 
+        {
+            "class": "MalariaSummaryReport",
+            "Filename_Suffix": "test_3",
+            "Start_Day": 20,
+            "End_Day": 50,
+            "Node_IDs_Of_Interest": [],
+            "Must_Have_IP_Key_Value": "",
+            "Must_Have_Intervention": "",
+            "Pretty_Format": 1,
+            "Max_Number_Reports": 3,
+            "Reporting_Interval": 3,
+            "Age_Bins": [
+                5.0,
+                10,
+                45,
+                100.0
+            ],
+            "Infectiousness_Bins": [
+                0.0,
+                50.0,
+                100.0
+            ],
+            "Parasitemia_Bins": [
+                0.0,
+                40.0,
+                4000000.0
+            ]
+        }
+    ],
+    "Use_Defaults": 1
+}

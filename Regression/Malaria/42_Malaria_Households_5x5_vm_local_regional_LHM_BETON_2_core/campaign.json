@@ -71,11 +71,17 @@
                     "Blackout_On_First_Occurrence":0,
                     "Actual_IndividualIntervention_Config":
                     {
-                         "class": "AntimalarialDrug",
-                         "Cost_To_Consumer": 10, 
-                         "Dosing_Type": "FullTreatmentParasiteDetect", 
-                         "Drug_Type": "Chloroquine", 
-                         "Dont_Allow_Duplicates" : 1
+                        "class": "MalariaDiagnostic",
+                        "Cost_To_Consumer": 0, 
+                        "Diagnostic_Type": "BLOOD_SMEAR_PARASITES", 
+                        "Detection_Threshold": 0, 
+                        "Event_Or_Config": "Config", 
+                        "Positive_Diagnosis_Config": {
+                            "class": "AntimalarialDrug",
+                            "Dont_Allow_Duplicates" : 1,
+                            "Cost_To_Consumer": 10, 
+                            "Drug_Type": "Chloroquine"
+                        }
                     }
                 }
             }

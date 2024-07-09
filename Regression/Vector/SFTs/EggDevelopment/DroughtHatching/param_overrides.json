@@ -1,0 +1,43 @@
+{
+    "parameters": {
+        "CAMPAIGNS": {
+            "Campaign_Filename": "../../Input/space_spraying_day_one.json"
+        },
+        "DEMOGRAPHICS": {
+            "Demographics_Filenames": [
+                "../../Input/Vector_single_node_demographics.json"
+            ],
+            "x_Base_Population": 1e-05
+        },
+        "PRIMARY": {
+            "Config_Name": "Vector:SFT:EggDevelopment:DroughtHatching",
+            "Simulation_Duration": 500
+        },
+        "VECTOR": {
+            "x_Temporary_Larval_Habitat": 0.00001,
+            "EGGS": {
+                "Egg_Hatch_Delay_Distribution": "EXPONENTIAL_DISTRIBUTION",
+                "Egg_Saturation_At_Oviposition": "NO_SATURATION",
+                "Enable_Drought_Egg_Hatch_Delay": 1,
+                "Enable_Temperature_Dependent_Egg_Hatching": 1,
+                "Egg_Hatch_Density_Dependence": "NO_DENSITY_DEPENDENCE"
+            },
+            "SPECIES": {
+                "Vector_Species_Params": [
+                    {
+                        "Name":"TestVector",
+                        "Days_Between_Feeds": 1
+                    }
+                ],
+                "Vector_Sampling_Type": "TRACK_ALL_VECTORS"
+            }
+        },
+        "LOGGING": {
+            "logLevel_VectorPopulation": "VALID",
+            "logLevel_VectorCohort": "VALID",
+            "logLevel_VectorHabitat": "VALID"
+        }
+    },
+    "Default_Config_Path": "defaults/vector_science_default_config.json"
+}
+

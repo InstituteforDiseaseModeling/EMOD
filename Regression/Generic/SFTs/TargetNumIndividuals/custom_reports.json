@@ -1,0 +1,13 @@
+{
+    "Reports": [
+        {
+            "Age_Bins": [
+                25, 50, 75, 125.0
+            ],
+            "Stratify_By_Gender": 1,
+            "class": "ReportNodeDemographics"
+        }
+    ],
+    "Use_Defaults": 1
+}
+

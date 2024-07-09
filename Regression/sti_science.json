@@ -1,0 +1,35 @@
+{
+    "science": [
+        { "path": "STI/SFTs/Choice_Of_Partner_Age" },
+        { "path": "STI/SFTs/Relationship_Reporter" },
+        { "path": "STI/SFTs/Relationship_Types_and_Durations" },
+        { "path": "STI/SFTs/InterventionForCurrentPartners/CHOSEN_AT_RANDOM" },
+        { "path": "STI/SFTs/InterventionForCurrentPartners/LONGER_TIME_IN_RELATIONSHIP" },
+        { "path": "STI/SFTs/InterventionForCurrentPartners/SHORTER_TIME_IN_RELATIONSHIP" },
+        { "path": "STI/SFTs/InterventionForCurrentPartners/OLDER_AGE" },
+        { "path": "STI/SFTs/InterventionForCurrentPartners/YOUNGER_AGE" },
+        { "path": "STI/SFTs/InterventionForCurrentPartners/RELATIONSHIP_TYPE/RELATIONSHIP_TYPE_1" },
+        { "path": "STI/SFTs/InterventionForCurrentPartners/RELATIONSHIP_TYPE/RELATIONSHIP_TYPE_2" },
+        { "path": "STI/SFTs/InterventionForCurrentPartners/RELATIONSHIP_TYPE/RELATIONSHIP_TYPE_3" },
+        { "path": "STI/SFTs/InterventionForCurrentPartners/RELATIONSHIP_TYPE/RELATIONSHIP_TYPE_4" },
+        { "path": "STI/SFTs/InterventionForCurrentPartners/Min_Duration" },
+        { "path": "STI/SFTs/InterventionForCurrentPartners/MaleCircumcision" },
+        { "path": "STI/SFTs/InterventionForCurrentPartners/Max_Partners" },
+        { "path": "STI/SFTs/Relationship_Targeting/HasRelationship" },
+        { "path": "STI/SFTs/Relationship_Targeting/HasRelationship_Marital" },
+        { "path": "STI/SFTs/Relationship_Targeting/HasRelationship_Recently_Ended" },
+        { "path": "STI/SFTs/Relationship_Targeting/HasRelationship_Recently_Started" },
+        { "path": "STI/SFTs/Relationship_Targeting/TargetIsCircumcised" },
+        { "path": "STI/SFTs/Relationship_Targeting/TargetMultiplePartnersLastNumMonths" },
+        { "path": "STI/SFTs/Relationship_Targeting/TargetNumPartners" },
+        { "path": "STI/SFTs/Wife_Inheritance/StartNewRelationship" },
+        { "path": "STI/SFTs/Wife_Inheritance/WifeInheritanceCycle" },
+        { "path": "STI/SFTs/Wife_Inheritance/WifeInheritanceXLTimeSteps" }
+    ],
+    "Disable_GH3658" : [
+        { "path": "STI/SFTs/InterventionForCurrentPartners/NO_PRIORITIZATION" }
+    ],
+    "Disable_GH4111" : [
+        { "path": "STI/SFTs/Relationship_Targeting/HasRelationship_Is_Using_Condoms" }
+    ]
+}

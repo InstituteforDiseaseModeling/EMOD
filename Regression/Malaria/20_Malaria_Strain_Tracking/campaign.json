@@ -26,7 +26,6 @@
                     "Timesteps_Between_Repetitions": 45, 
                     "Intervention_Config": {
                          "Cost_To_Consumer": 3.75, 
-                         "Dosing_Type": "FullTreatmentCourse", 
                          "Drug_Type": "Chloroquine", 
                          "class": "AntimalarialDrug"
                     }, 

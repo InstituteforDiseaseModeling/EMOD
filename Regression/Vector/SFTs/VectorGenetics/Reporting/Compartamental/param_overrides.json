@@ -1,0 +1,91 @@
+{
+    "parameters": {
+        "DEMOGRAPHICS": {
+            "Demographics_Filenames": [
+                "../../../Input/Vector_single_node_demographics.json"
+            ]
+        },
+        "FUDGE_FACTORS": {
+            "x_Temporary_Larval_Habitat": 0.2
+        },
+        "OUTPUT": {
+            "Custom_Reports_Filename": "custom_reports.json"
+        },
+        "PRIMARY": {
+            "Config_Name": "Vector:SFT:VectorGenetics:Reporting:Track_All_Vectors",
+            "Simulation_Duration": 56
+        },
+        "SERIALIZATION": {
+            "Serialized_Population_Writing_Type": "TIMESTEP",
+            "Serialization_Mask_Node_Write": 0,
+            "Serialization_Time_Steps": [
+                10,
+                45,
+                55
+            ]
+        },
+        "VECTOR": {
+            "Egg_Hatch_Delay_Distribution": "NO_DELAY",
+            "Egg_Hatch_Density_Dependence": "NO_DENSITY_DEPENDENCE",
+            "Enable_Drought_Egg_Hatch_Delay": 0,
+            "Enable_Temperature_Dependent_Egg_Hatching": 0,
+            "SPECIES": {
+                "Vector_Species_Params": [
+                    {
+                        "Name" : "TestVector",
+                        "Egg_Batch_Size": 40,
+                        "Genes": [
+                            {
+                                "Is_Gender_Gene": 0,
+                                "Alleles": [
+                                    {
+                                        "Name": "a0",
+                                        "Is_Y_Chromosome" : 0,
+                                        "Initial_Allele_Frequency": 0.2
+                                    },
+                                    {
+                                        "Name": "a1",
+                                        "Is_Y_Chromosome" : 0,
+                                        "Initial_Allele_Frequency": 0.6
+                                    },
+                                    {
+                                        "Name": "a3",
+                                        "Is_Y_Chromosome" : 0,
+                                        "Initial_Allele_Frequency": 0.2
+                                    }
+                                ],
+                                "Mutations": []
+                            },
+                            {
+                                "Is_Gender_Gene": 0,
+                                "Alleles": [
+                                    {
+                                        "Name": "b0",
+                                        "Is_Y_Chromosome" : 0,
+                                        "Initial_Allele_Frequency": 0.2
+                                    },
+                                    {
+                                        "Name": "b1",
+                                        "Is_Y_Chromosome" : 0,
+                                        "Initial_Allele_Frequency": 0.7
+                                    },
+                                    {
+                                        "Name": "b2",
+                                        "Is_Y_Chromosome" : 0,
+                                        "Initial_Allele_Frequency": 0.1
+                                    }
+                                ],
+                                "Mutations": []
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        "LOGGING": {
+            "logLevel_VectorGene": "VALID"
+        }
+    },
+    "Default_Config_Path": "defaults/vector_science_default_config.json"
+}
+

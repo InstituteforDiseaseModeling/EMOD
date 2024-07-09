@@ -1,0 +1,225 @@
+{
+    "Metadata": {
+        "Author": "dklein", 
+        "NodeCount": 1, 
+        "Tool": "vim", 
+        "IdReference": "0", 
+        "DateCreated": "2015-4-11"
+    },
+    "Defaults": {
+
+        "Society" : {
+            "TRANSITORY" :
+            {   "Concurrency_Parameters" :
+                {
+                    "NONE": 
+                    {
+                        "Max_Simultaneous_Relationships_Female": 1,
+                        "Max_Simultaneous_Relationships_Male"  : 10,
+                        "Prob_Extra_Relationship_Female"       : 0.5,
+                        "Prob_Extra_Relationship_Male"         : 1
+                    }
+                },         
+                "Relationship_Parameters" :
+                {
+                    "Coital_Act_Rate" : 0.33,                    
+                    "Duration_Weibull_Heterogeneity": 0.1,
+                    "Duration_Weibull_Scale": 22.154455184937,
+                    "Migration_Actions" : [ "TERMINATE" ],
+                    "Migration_Actions_Distribution" : [ 1.0 ],
+                    "Condom_Usage_Probability" :
+                    {
+                        "Min": 0.0,
+                        "Max": 0.0,
+                        "Mid": 2000,
+                        "Rate": 0
+                    }
+                },
+                "Pair_Formation_Parameters" :
+                {
+                    "Formation_Rate_Type" : "CONSTANT",
+                    "Formation_Rate_Constant": 1.0,
+                    "Update_Period" : 1,
+                    "Extra_Relational_Rate_Ratio_Male": 1,
+                    "Extra_Relational_Rate_Ratio_Female": 1,
+                    "Number_Age_Bins_Male"   : 3,
+                    "Number_Age_Bins_Female" : 3,
+                    "Age_of_First_Bin_Edge_Male"   : 20,
+                    "Age_of_First_Bin_Edge_Female" : 20,
+                    "Years_Between_Bin_Edges_Male"   : 10,
+                    "Years_Between_Bin_Edges_Female" : 10,
+                    "Assortivity" :
+                    {
+                        "Group" : "NO_GROUP"
+                    },
+                    "Joint_Probabilities" :
+                    [
+                        [ 0.0, 0.0, 0.0],
+                        [ 1.0, 1.0, 1.0],
+                        [ 0.0, 0.0, 0.0]
+                    ]
+                }
+            },
+            "INFORMAL" :
+            {   "Concurrency_Parameters" :
+                {
+                    "NONE": 
+                    {
+                        "Max_Simultaneous_Relationships_Female": 1,
+                        "Max_Simultaneous_Relationships_Male"  : 10,
+                        "Prob_Extra_Relationship_Female"       : 0.5,
+                        "Prob_Extra_Relationship_Male"         : 1
+                    }
+                },
+                "Relationship_Parameters" :
+                {
+                    "Coital_Act_Rate" : 0.33,
+                    "Duration_Weibull_Heterogeneity": 0.1,
+                    "Duration_Weibull_Scale": 22.154455184937,
+                    "Migration_Actions" : [ "TERMINATE" ],
+                    "Migration_Actions_Distribution" : [ 1.0 ],
+                    "Condom_Usage_Probability" :
+                    {
+                        "Min": 0.0,
+                        "Max": 0.0,
+                        "Mid": 2000,
+                        "Rate": 0
+                    }
+                },
+                "Pair_Formation_Parameters" :
+                {
+                    "Formation_Rate_Type" : "CONSTANT",
+                    "Formation_Rate_Constant": 1.0,
+                    "Update_Period" : 1,
+                    "Extra_Relational_Rate_Ratio_Male": 1,
+                    "Extra_Relational_Rate_Ratio_Female": 1,
+                    "Number_Age_Bins_Male"   : 3,
+                    "Number_Age_Bins_Female" : 3,
+                    "Age_of_First_Bin_Edge_Male"   : 30,
+                    "Age_of_First_Bin_Edge_Female" : 20,
+                    "Years_Between_Bin_Edges_Male"   : 10,
+                    "Years_Between_Bin_Edges_Female" : 10,
+                    "Assortivity" :
+                    {
+                        "Group" : "NO_GROUP"
+                    },
+                    "Joint_Probabilities" :
+                    [
+                        [ 0.0, 0.0, 0.0],
+                        [ 1.0, 1.0, 1.0],
+                        [ 0.0, 0.0, 0.0]
+                    ]
+                }
+            },
+            "MARITAL" :
+            {
+                "Concurrency_Parameters" :
+                {
+                    "NONE": 
+                    {
+                        "Max_Simultaneous_Relationships_Female": 1,
+                        "Max_Simultaneous_Relationships_Male"  : 10,
+                        "Prob_Extra_Relationship_Female"       : 0.5,
+                        "Prob_Extra_Relationship_Male"         : 1
+                    }
+                },
+                "Relationship_Parameters" :
+                {
+                    "Coital_Act_Rate" : 0.33,
+                    "Duration_Weibull_Heterogeneity": 0.1,
+                    "Duration_Weibull_Scale": 22.154455184937,
+                    "Migration_Actions" : [ "TERMINATE" ],
+                    "Migration_Actions_Distribution" : [ 1.0 ],
+                    "Condom_Usage_Probability" :
+                    {
+                        "Min": 0.0,
+                        "Max": 0.0,
+                        "Mid": 2000,
+                        "Rate": 0
+                    }
+                },
+                "Pair_Formation_Parameters" :
+                {
+                    "Formation_Rate_Type" : "CONSTANT",
+                    "Formation_Rate_Constant": 1.0,
+                    "Update_Period" : 1,
+                    "Extra_Relational_Rate_Ratio_Male": 1,
+                    "Extra_Relational_Rate_Ratio_Female": 1,
+                    "Number_Age_Bins_Male"   : 3,
+                    "Number_Age_Bins_Female" : 3,
+                    "Age_of_First_Bin_Edge_Male"   : 40,
+                    "Age_of_First_Bin_Edge_Female" : 20,
+                    "Years_Between_Bin_Edges_Male"   : 10,
+                    "Years_Between_Bin_Edges_Female" : 10,
+                    "Assortivity" :
+                    {
+                        "Group" : "NO_GROUP"
+                    },
+                    "Joint_Probabilities" :
+                    [
+                        [ 0.0, 0.0, 0.0],
+                        [ 1.0, 1.0, 1.0],
+                        [ 0.0, 0.0, 0.0]
+                    ]
+                }
+            },
+            "COMMERCIAL" :
+            {
+                "Concurrency_Parameters" :
+                {
+                    "NONE": 
+                    {
+                        "Max_Simultaneous_Relationships_Female": 1,
+                        "Max_Simultaneous_Relationships_Male"  : 10,
+                        "Prob_Extra_Relationship_Female"       : 0.5,
+                        "Prob_Extra_Relationship_Male"         : 1
+                    }
+                },
+                "Relationship_Parameters" :
+                {
+                    "Coital_Act_Rate" : 0.33,                
+                    "Duration_Weibull_Heterogeneity": 0.1,
+                    "Duration_Weibull_Scale": 22.154455184937,
+                    "Migration_Actions" : [ "TERMINATE" ],
+                    "Migration_Actions_Distribution" : [ 1.0 ],
+                    "Condom_Usage_Probability" :
+                    {
+                        "Min": 0.0,
+                        "Max": 0.0,
+                        "Mid": 2000,
+                        "Rate": 0
+                    }
+                },
+                "Pair_Formation_Parameters" :
+                {
+                    "Formation_Rate_Type" : "CONSTANT",
+                    "Formation_Rate_Constant": 1.0,
+                    "Update_Period" : 1,
+                    "Extra_Relational_Rate_Ratio_Male": 1,
+                    "Extra_Relational_Rate_Ratio_Female": 1,
+                    "Number_Age_Bins_Male"   : 3,
+                    "Number_Age_Bins_Female" : 3,
+                    "Age_of_First_Bin_Edge_Male"   : 50,
+                    "Age_of_First_Bin_Edge_Female" : 20,
+                    "Years_Between_Bin_Edges_Male"   : 10,
+                    "Years_Between_Bin_Edges_Female" : 10,
+                    "Assortivity" :
+                    {
+                        "Group" : "NO_GROUP"
+                    },
+                    "Joint_Probabilities" :
+                    [
+                        [ 0.0, 0.0, 0.0],
+                        [ 1.0, 1.0, 1.0],
+                        [ 0.0, 0.0, 0.0]
+                    ]
+                }
+            }
+        }
+    }, 
+    "Nodes": [
+        {
+            "NodeID": 1
+        }
+    ]
+}

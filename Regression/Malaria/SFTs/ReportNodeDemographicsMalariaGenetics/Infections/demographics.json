@@ -1,0 +1,47 @@
+{
+    "Defaults": {
+        "IndividualAttributes": {
+            "AgeDistribution1": 18250,
+            "AgeDistribution2": 18250,
+            "AgeDistributionFlag": 1,
+            "InitialPrevalence": 0,
+            "PrevalenceDist_Description": "No initial prevalence",
+            "RiskDist_Description": "LogNormal distributed risk",
+            "RiskDistribution1": 0.0,
+            "RiskDistribution2": 1.6,
+            "RiskDistributionFlag": 5
+        },
+        "IndividualProperties": [],
+        "NodeAttributes": {
+            "Airport": 1,
+            "Altitude": 0,
+            "BirthRate": 0.0,
+            "InitialVectorsPerSpecies": {
+                "SillySkeeter": 0
+            },
+            "Region": 1,
+            "Seaport": 1
+        }
+    },
+    "Metadata": {
+        "Author": "svetlanati",
+        "DateCreated": "02/16/2023",
+        "IdReference": "from_params",
+        "NodeCount": 1,
+        "Tool": "emod-api"
+    },
+    "Nodes": [
+        {
+            "IndividualAttributes": {},
+            "NodeAttributes": {
+                "InitialPopulation": 500,
+                "InitialVectorsPerSpecies": {
+                    "SillySkeeter": 50
+                },
+                "Latitude": 0,
+                "Longitude": 0
+            },
+            "NodeID": 1
+        }
+    ]
+}

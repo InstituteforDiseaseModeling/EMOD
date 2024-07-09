@@ -1,0 +1,67 @@
+{
+    "parameters": {
+        "CAMPAIGNS": {
+            "Enable_Interventions": 1
+        },
+        "CLIMATE": {
+            "Enable_Climate_Stochasticity": 1
+        },
+        "DEMOGRAPHICS": {
+            "Demographics_Filenames": [
+                "../../Input/Vector_single_node_demographics.json"
+            ],
+            "x_Base_Population": 1e-04
+        },
+        "PRIMARY": {
+            "Config_Name": "Vector:SFT:VectorFeedingCycle:AnimalFeedKill",
+            "Simulation_Duration": 300
+        },
+        "LOGGING": {
+        "logLevel_VectorCohort": "WARNING",
+        "logLevel_VectorGene": "WARNING",
+        "logLevel_VectorHabitat": "WARNING",
+        "logLevel_VectorPopulation": "VALID",
+        "logLevel_VectorPopulationIndividual": "WARNING"
+        },
+        "Vector_Species_Params": [
+            {
+                "Acquire_Modifier": 0.2,
+                "Adult_Life_Expectancy": 15,
+                "Anthropophily": 0.5,
+                "Aquatic_Arrhenius_1": 84200000000,
+                "Aquatic_Arrhenius_2": 8328,
+                "Aquatic_Mortality_Rate": 0.1,
+                "Cycle_Arrhenius_1": 40905790000.0,
+                "Cycle_Arrhenius_2": 7740.23,
+                "Cycle_Arrhenius_Reduction_Factor": 1,
+                "Days_Between_Feeds": 3,
+                "Egg_Batch_Size": 100,
+                "Egg_Survival_Rate": 0.99,
+                "Gene_To_Trait_Modifiers": [],
+                "Genes": [],
+                "Immature_Duration": 4,
+                "Indoor_Feeding_Fraction": 0.5,
+                "Infected_Arrhenius_1": 117000000000,
+                "Infected_Arrhenius_2": 8336,
+                "Infected_Egg_Batch_Factor": 0.8,
+                "Infectious_Human_Feed_Mortality_Factor": 1.5,
+                "Habitats": [
+                    {
+                        "Habitat_Type": "CONSTANT",
+                        "Max_Larval_Capacity": 100000000.0
+                    }
+                ],
+                "Microsporidia": [],
+                "Male_Life_Expectancy": 15,
+                "Name": "TestVector",
+                "Temperature_Dependent_Feeding_Cycle": "NO_TEMPERATURE_DEPENDENCE",
+                "Transmission_Rate": 0.5,
+                "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_NONE"
+            }
+        ]
+    },
+    "Default_Config_Path": "defaults/vector_science_default_config.json"
+}
+
+
+

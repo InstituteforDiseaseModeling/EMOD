@@ -5,17 +5,12 @@
                 "Intervention_Config": {
                     "Cost_To_Consumer": 3.75, 
                     "Habitat_Target": "ALL_HABITATS", 
-                    "Killing_Config": {
+                    "Spray_Coverage" : 1.0,
+                    "Larval_Killing_Config": {
                         "Box_Duration": 3650, 
                         "Initial_Effect": 0.1, 
                         "class": "WaningEffectBox"
                     }, 
-                    "Blocking_Config": {
-                        "Box_Duration": 0, 
-                        "Initial_Effect": 0.0, 
-                        "class": "WaningEffectBox"
-                    }, 
-                    "Reduction": 0, 
                     "class": "Larvicides"
                 }, 
                 "class": "StandardInterventionDistributionEventCoordinator"

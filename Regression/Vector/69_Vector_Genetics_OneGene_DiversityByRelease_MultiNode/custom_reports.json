@@ -1,0 +1,51 @@
+{
+    "Reports": [
+        {
+            "Gender": "VECTOR_FEMALE",
+            "Species": "arabiensis",
+            "Stratify_By": "GENOME",
+            "class": "ReportVectorGenetics"
+        },
+        {
+            "Start_Day": 0,
+            "End_Day": 366,
+            "Filename_Suffix": "0_to_365",
+            "Node_IDs_Of_Interest":[],
+            "Gender": "VECTOR_FEMALE",
+            "Species": "arabiensis",
+            "Stratify_By": "GENOME",
+            "class": "ReportVectorGenetics"
+        },
+        {
+            "Start_Day": 366,
+            "End_Day": 730,
+            "Filename_Suffix": "366_to_730",
+            "Node_IDs_Of_Interest":[],
+            "Gender": "VECTOR_FEMALE",
+            "Species": "arabiensis",
+            "Stratify_By": "GENOME",
+            "class": "ReportVectorGenetics"
+        },
+        {
+            "Start_Day": 0,
+            "End_Day": 730,
+            "Filename_Suffix": "Node_1_to_13",
+            "Node_IDs_Of_Interest": [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 ],
+            "Gender": "VECTOR_FEMALE",
+            "Species": "arabiensis",
+            "Stratify_By": "GENOME",
+            "class": "ReportVectorGenetics"
+        },
+        {
+            "Start_Day": 0,
+            "End_Day": 730,
+            "Filename_Suffix": "Node_14_to_26",
+            "Node_IDs_Of_Interest": [ 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26 ],
+            "Gender": "VECTOR_FEMALE",
+            "Species": "arabiensis",
+            "Stratify_By": "GENOME",
+            "class": "ReportVectorGenetics"
+        }
+    ],
+    "Use_Defaults": 1
+}

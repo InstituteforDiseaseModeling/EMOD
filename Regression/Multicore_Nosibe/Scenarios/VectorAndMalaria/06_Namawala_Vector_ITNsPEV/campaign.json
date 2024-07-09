@@ -5,6 +5,10 @@
                 "Demographic_Coverage": 0.7, 
                 "Intervention_Config": {
                     "Bednet_Type": "ITN", 
+                    "Repelling_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect": 0.0
+                    }, 
                     "Blocking_Config": {
                         "Decay_Time_Constant": 730, 
                         "Initial_Effect": 0.9, 

@@ -1,0 +1,85 @@
+{
+    "Default_Config_Path": "Vector/ImperialCollege/default_config.json",
+    "parameters": {
+        "Config_Name": "04_Imperial_DriverAndEffector",
+        "Python_Script_Path": "LOCAL",
+        "Vector_Species_Params": [
+            {
+                "Name": "arabiensis",
+                "Indoor_Feeding_Fraction": 1,
+                "Genes": [
+                    {
+                        "Is_Gender_Gene": 0,
+                        "Alleles": [
+                            {
+                                "Name": "Aw",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 1.0
+                            },
+                            {
+                                "Name": "Ad",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.0
+                            }
+                        ],
+                        "Mutations": []
+                    },
+                    {
+                        "Is_Gender_Gene": 0,
+                        "Alleles": [
+                            {
+                                "Name": "Bw",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 1.0
+                            },
+                            {
+                                "Name": "Be",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.0
+                            }
+                        ],
+                        "Mutations": []
+                    }
+                ],
+                "Gene_To_Trait_Modifiers" : [
+                ],
+                "Drivers" : [
+                    {
+                        "Driver_Type" : "INTEGRAL_AUTONOMOUS",
+                        "Driving_Allele" : "Ad",
+                        "Alleles_Driven" : [
+                            {
+                                "Allele_To_Copy"    : "Ad",
+                                "Allele_To_Replace" : "Aw",
+                                "Copy_To_Likelihood" : [
+                                    {
+                                        "Copy_To_Allele" : "Aw",
+                                        "Likelihood" : 0.3
+                                    },
+                                    {
+                                        "Copy_To_Allele" : "Ad",
+                                        "Likelihood" : 0.7
+                                    }
+                                ]
+                            },
+                            {
+                                "Allele_To_Copy"    : "Be",
+                                "Allele_To_Replace" : "Bw",
+                                "Copy_To_Likelihood" : [
+                                    {
+                                        "Copy_To_Allele" : "Bw",
+                                        "Likelihood" : 0.1
+                                    },
+                                    {
+                                        "Copy_To_Allele" : "Be",
+                                        "Likelihood" : 0.9
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

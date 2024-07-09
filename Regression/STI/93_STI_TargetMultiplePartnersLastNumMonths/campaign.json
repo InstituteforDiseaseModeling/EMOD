@@ -1,0 +1,194 @@
+{
+     "Use_Defaults": 1,
+     "Campaign_Name": "Generic Seattle Regression Campaign", 
+     "Events": [
+          {
+               "class": "CampaignEvent",
+               "Start_Day": 1, 
+               "Nodeset_Config": {
+                    "class": "NodeSetAll"
+               }, 
+               "Event_Coordinator_Config": {
+                    "class": "StandardInterventionDistributionEventCoordinator",
+                    "Target_Demographic": "ExplicitAgeRanges", 
+                    "Target_Age_Min": 15,
+                    "Target_Age_Max": 20,
+                    "Demographic_Coverage": 0.9,
+                    "Intervention_Config": {
+                         "class": "OutbreakIndividual",
+                         "Antigen": 0, 
+                         "Genome": 0, 
+                         "Incubation_Period_Override": 0
+                    }
+               }
+          },
+          {
+            "class": "CampaignEvent",
+            "Start_Day": 200, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1.0,
+                "Targeting_Config": {
+                    "class" : "HasHadMultiplePartnersInLastNumMonths",
+                    "Num_Months_Type": "SIX_MONTHS",
+                    "Of_Relationship_Type": "INFORMAL"
+                },
+                "Intervention_Config": {
+                    "class": "SimpleVaccine",
+                    "Intervention_Name" : "MyVaccine",
+                    "Cost_To_Consumer": 1,
+                    "Vaccine_Take": 1,
+                    "Vaccine_Type": "AcquisitionBlocking",
+                    "Waning_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect" : 1.0
+                    }
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 300, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1.0,
+                "Targeting_Config": {
+                    "class" : "HasHadMultiplePartnersInLastNumMonths",
+                    "Num_Months_Type": "THREE_MONTHS",
+                    "Of_Relationship_Type": "TRANSITORY"
+                },
+                "Intervention_Config": {
+                    "class": "SimpleVaccine",
+                    "Intervention_Name" : "MyVaccine",
+                    "Cost_To_Consumer": 1,
+                    "Vaccine_Take": 1,
+                    "Vaccine_Type": "AcquisitionBlocking",
+                    "Waning_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect" : 1.0
+                    }
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 400, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1.0,
+                "Targeting_Config": {
+                    "class" : "HasHadMultiplePartnersInLastNumMonths",
+                    "Num_Months_Type": "THREE_MONTHS",
+                    "Of_Relationship_Type": "NA"
+                },
+                "Intervention_Config": {
+                    "class": "SimpleVaccine",
+                    "Intervention_Name" : "MyVaccine",
+                    "Cost_To_Consumer": 1,
+                    "Vaccine_Take": 1,
+                    "Vaccine_Type": "AcquisitionBlocking",
+                    "Waning_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect" : 1.0
+                    }
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 500, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1.0,
+                "Targeting_Config": {
+                    "class" : "HasHadMultiplePartnersInLastNumMonths",
+                    "Num_Months_Type": "SIX_MONTHS",
+                    "Of_Relationship_Type": "NA"
+                },
+                "Intervention_Config": {
+                    "class": "SimpleVaccine",
+                    "Intervention_Name" : "MyVaccine",
+                    "Cost_To_Consumer": 1,
+                    "Vaccine_Take": 1,
+                    "Vaccine_Type": "AcquisitionBlocking",
+                    "Waning_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect" : 1.0
+                    }
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 600, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1.0,
+                "Targeting_Config": {
+                    "class" : "HasHadMultiplePartnersInLastNumMonths",
+                    "Num_Months_Type": "NINE_MONTHS",
+                    "Of_Relationship_Type": "NA"
+                },
+                "Intervention_Config": {
+                    "class": "SimpleVaccine",
+                    "Intervention_Name" : "MyVaccine",
+                    "Cost_To_Consumer": 1,
+                    "Vaccine_Take": 1,
+                    "Vaccine_Type": "AcquisitionBlocking",
+                    "Waning_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect" : 1.0
+                    }
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 700, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1.0,
+                "Targeting_Config": {
+                    "class" : "HasHadMultiplePartnersInLastNumMonths",
+                    "Num_Months_Type": "TWELVE_MONTHS",
+                    "Of_Relationship_Type": "NA"
+                },
+                "Intervention_Config": {
+                    "class": "SimpleVaccine",
+                    "Intervention_Name" : "MyVaccine",
+                    "Cost_To_Consumer": 1,
+                    "Vaccine_Take": 1,
+                    "Vaccine_Type": "AcquisitionBlocking",
+                    "Waning_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect" : 1.0
+                    }
+                }
+            }
+        }
+    ]
+}

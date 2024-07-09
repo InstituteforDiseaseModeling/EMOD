@@ -1,0 +1,19 @@
+{
+    "Default_Config_Path": "../../defaults/malaria_default_config.json",
+    
+    "Config_Name": "105_Malaria_Innate_Immune_Variation",
+    ".Innate_Immune_Variation_Type": "NONE",
+    "Innate_Immune_Variation_Type": "PYROGENIC_THRESHOLD",
+    "Geography": "Namawala",
+    "Run_Number": 1,
+    "Simulation_Duration": 730,
+    
+    "Climate_Model": "CLIMATE_CONSTANT",
+    "Enable_Climate_Stochasticity": 0,
+    "Enable_Initial_Prevalence": 0,
+    "Enable_Demographics_Reporting": 0,
+    "Demographics_Filenames": [
+        "demographics_with_innate_immune.json"
+    ],
+    "x_Temporary_Larval_Habitat": 0.1
+}

@@ -3,20 +3,13 @@
         {
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
-                    "Mated_Genetics": {
-                        "HEG": "NotMated", 
-                        "Pesticide_Resistance": "NotMated"
-                    }, 
-                    "Released_Gender": "VECTOR_FEMALE", 
-                    "Released_Genetics": {
-                        "HEG": "WILD", 
-                        "Pesticide_Resistance": "WILD"
-                    }, 
+                    "class": "MosquitoRelease",
                     "Released_Number": 10000, 
                     "Released_Species": "gambiae", 
-                    "Released_Sterility": "VECTOR_FERTILE", 
                     "Released_Wolbachia": "VECTOR_WOLBACHIA_A", 
-                    "class": "MosquitoRelease"
+                    "Released_Genome" : [
+                        [ "X", "X" ]
+                    ]
                 }, 
                 "class": "StandardInterventionDistributionEventCoordinator"
             }, 

@@ -1,0 +1,20 @@
+{
+    "Reports": [
+        {
+            "Gender": "VECTOR_BOTH_GENDERS",
+            "Include_Vector_State_Columns": 1,
+            "Species": "arabiensis",
+            "Stratify_By": "GENOME",
+            "class": "ReportVectorGenetics"
+        },
+        {
+            "Include_Gestation_Columns": 1,
+            "Species_List": [
+                "arabiensis"
+            ],
+            "Stratify_By_Species": 0,
+            "class": "ReportVectorStats"
+        }
+    ],
+    "Use_Defaults": 1
+}

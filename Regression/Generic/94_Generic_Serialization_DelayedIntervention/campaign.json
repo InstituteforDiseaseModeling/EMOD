@@ -1,0 +1,203 @@
+{
+    "COMMENT1": "The goal here is to have people with a DelayedIntervention that is distributing",
+    "COMMENT2": "another intervention after it is deserialized.",
+    "Use_Defaults": 1,
+    "Events": 
+    [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 30,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 0.25,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Antigen": 0, 
+                    "Genome": 0, 
+                    "Outbreak_Source": "PrevalenceIncrease", 
+                    "Incubation_Period_Override": 1
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 15,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1.0, 
+                "Intervention_Config": {
+                    "class": "DelayedIntervention",
+                    "Coverage": 1,
+                    "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Delay_Period_Constant": 75.0,
+                    "Actual_IndividualIntervention_Configs": [
+                        {
+                            "class": "PropertyValueChanger",
+                            "Cost_To_Consumer": 1.0,
+                            "Target_Property_Key": "Accessibility",
+                            "Target_Property_Value": "Hard",
+                            "Daily_Probability": 1.0,
+                            "Maximum_Duration": 0,
+                            "Revert": 50
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 20,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1.0, 
+                "Intervention_Config": {
+                    "class": "DelayedIntervention",
+                    "Coverage": 1,
+                    "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Delay_Period_Constant": 75.0,
+                    "Actual_IndividualIntervention_Configs": [
+                        {
+                            "class": "SimpleDiagnostic",
+                            "Cost_To_Consumer": 1.0,
+                            "Event_Or_Config": "Event",
+                            "Positive_Diagnosis_Event": "SimpleDiagnostic_Positive",
+                            "Negative_Diagnosis_Event": "SimpleDiagnostic_Negative"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 25,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1.0, 
+                "Intervention_Config": {
+                    "class": "DelayedIntervention",
+                    "Coverage": 1,
+                    "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Delay_Period_Constant": 75.0,
+                    "Actual_IndividualIntervention_Configs": [
+                        {
+                            "class": "ControlledVaccine",
+                            "Intervention_Name" : "VaccineA",
+                            "Cost_To_Consumer": 1,
+                            "Vaccine_Type": "AcquisitionBlocking",
+                            "Vaccine_Take": 1.0,
+                            "Waning_Config": {
+                                "class": "WaningEffectMapLinear",
+                                "Initial_Effect" : 1.0,
+                                "Expire_At_Durability_Map_End" : 1,
+                                "Durability_Map" :
+                                {
+                                    "Times"  : [   0,  25, 55 ],
+                                    "Values" : [ 1.0, 1.0, 0.0 ]
+                                }
+                            },
+                            "Distributed_Event_Trigger" : "VaccinatedA",
+                            "Expired_Event_Trigger"     : "VaccineExpiredA",
+                            "Duration_To_Wait_Before_Revaccination" : 400
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 40,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1.0, 
+                "Intervention_Config": {
+                    "class": "DelayedIntervention",
+                    "Coverage": 1,
+                    "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Delay_Period_Constant": 75.0,
+                    "Actual_IndividualIntervention_Configs": [
+                        {
+                            "class": "StandardDiagnostic",
+                            "Base_Sensitivity": 1.0,
+                            "Base_Specificity": 1.0,
+                            "Cost_To_Consumer": 1.0,
+                            "Days_To_Diagnosis": 0.0,
+                            "Treatment_Fraction": 1.0,
+                            "Event_Or_Config": "Config",
+                            "Positive_Diagnosis_Config": {
+                                "class": "BroadcastEvent",
+                                "Broadcast_Event" : "TestedPositive"
+                            },
+                            "Negative_Diagnosis_Config": {
+                                "class": "SimpleVaccine",
+                                "Cost_To_Consumer": 1,
+                                "Vaccine_Take": 1,
+                                "Vaccine_Type": "AcquisitionBlocking",
+                                "Waning_Config": {
+                                    "class": "WaningEffectBox",
+                                    "Box_Duration": 40, 
+                                    "Initial_Effect": 0.75
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 50,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1.0, 
+                "Intervention_Config": {
+                    "class": "DelayedIntervention",
+                    "Coverage": 1,
+                    "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Delay_Period_Constant": 75.0,
+                    "Actual_IndividualIntervention_Configs": [
+                        {
+                            "class": "SimpleVaccine",
+                            "Cost_To_Consumer": 1,
+                            "Vaccine_Take": 1,
+                            "Vaccine_Type": "AcquisitionBlocking",
+                            "Waning_Config": {
+                                "class": "WaningEffectMapLinear",
+                                "Initial_Effect" : 1.0,
+                                "Expire_At_Durability_Map_End" : 0,
+                                "Durability_Map" :
+                                {
+                                    "Times"  : [   0,  25, 55 ],
+                                    "Values" : [ 1.0, 1.0, 0.0 ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}

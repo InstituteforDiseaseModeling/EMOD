@@ -1,0 +1,51 @@
+{
+    "Default_Config_Path": "defaults/malaria_genetics_science_default_config.json",
+    "CLIMATE": {
+        "Enable_Climate_Stochasticity": 0
+    },
+    "DEMOGRAPHICS": {
+        "Demographics_Filenames": [
+            "Namawala_single_node_demographics.json"
+        ],
+        "x_Base_Population": 0.1
+    },
+    "PRIMARY": {
+        "Config_Name": "Malaria::SFTs::SporozoitesTests::OocystCreationGenetics",
+        "Geography": "Namawala",
+        "Simulation_Duration": 60
+    },
+    "REPORTS": {
+        "Enable_Demographics_Reporting": 0
+    },
+    "STRAIN_TRACKING": {
+        "Malaria_Drug_Params": [
+            {
+                "Name": "Chloroquine",
+                "PKPD_Model": "FIXED_DURATION_CONSTANT_EFFECT",
+                "Bodyweight_Exponent": 0,
+                "Drug_Cmax": 1000,
+                "Drug_Decay_T1": 4,
+                "Drug_Decay_T2": 15,
+                "Drug_Dose_Interval": 1,
+                "Drug_Fulltreatment_Doses": 1,
+                "Drug_Gametocyte02_Killrate": 1,
+                "Drug_Gametocyte34_Killrate": 1,
+                "Drug_GametocyteM_Killrate": 1,
+                "Drug_Hepatocyte_Killrate": 1,
+                "Drug_PKPD_C50": 100,
+                "Drug_Vd": 3,
+                "Max_Drug_IRBC_Kill": 3000.45
+            }
+        ],
+        "logLevel_VectorCohortIndividualMalariaGenetics": "VALID",
+        ".Malaria_Model": "MALARIA_MECHANISTIC_MODEL",
+        "Malaria_Model": "MALARIA_MECHANISTIC_MODEL_WITH_PARASITE_GENETICS",
+        "Parasite_Genetics": {
+            "Crossover_Gamma_K": 2,
+            "Crossover_Gamma_Theta": 0.38
+        }
+    },
+    "VECTOR": {
+        "x_Temporary_Larval_Habitat": 0.1
+    }
+}

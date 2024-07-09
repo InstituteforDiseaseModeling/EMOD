@@ -1,0 +1,123 @@
+{
+    "CLIMATE": {
+        "Enable_Climate_Stochasticity": 0,
+        "FILENAMES": {
+            "Air_Temperature_Filename": "Namawala_single_node_air_temperature_daily.bin",
+            "Land_Temperature_Filename": "Namawala_single_node_land_temperature_daily.bin",
+            "Rainfall_Filename": "Namawala_single_node_rainfall_daily.bin",
+            "Relative_Humidity_Filename": "Namawala_single_node_relative_humidity_daily.bin"
+        }
+    },
+    "DEMOGRAPHICS": {
+        "Death_Rate_Dependence": "NONDISEASE_MORTALITY_BY_AGE_AND_GENDER",
+        "Demographics_Filenames": [
+            "Namawala_single_node_demographics.json",
+            "Namawala_single_node_demographics_complex_mortality.json"
+        ],
+        "Enable_Birth": 1,
+        "Enable_Initial_Prevalence": 1,
+        "Enable_Natural_Mortality": 1
+    },
+    "Default_Config_Path": "../../defaults/malaria_default_config.json",
+    "GENERAL_DISEASE": {
+        "Infection_Updates_Per_Timestep": 8
+    },
+    "MALARIA": {
+        "Antibody_Memory_Level": 0.3,
+        "Antigen_Switch_Rate": 5e-09,
+        "Base_Gametocyte_Production_Rate": 0.1,
+        "Falciparum_MSP_Variants": 8,
+        "Falciparum_Nonspecific_Types": 5,
+        "Falciparum_PfEMP1_Variants": 200,
+        "Custom_Individual_Events": [ "Received_Treatment", "Received_RCD_Drugs"]
+    },
+    "Malaria_Drug_Params": [
+        {
+            "Name": "DHA",
+            "PKPD_Model": "CONCENTRATION_VERSUS_TIME",
+            "Bodyweight_Exponent": 1,
+            "Drug_Cmax": 200,
+            "Drug_Decay_T1": 0.12,
+            "Drug_Decay_T2": 0.12,
+            "Drug_Dose_Interval": 1,
+            "Drug_Fulltreatment_Doses": 3,
+            "Drug_Gametocyte02_Killrate": 2.3,
+            "Drug_Gametocyte34_Killrate": 0,
+            "Drug_GametocyteM_Killrate": 0,
+            "Drug_Hepatocyte_Killrate": 0,
+            "Drug_PKPD_C50": 6,
+            "Drug_Vd": 1,
+            "Fractional_Dose_By_Upper_Age": [
+                {
+                    "Fraction_Of_Adult_Dose": 0.17,
+                    "Upper_Age_In_Years": 2
+                },
+                {
+                    "Fraction_Of_Adult_Dose": 0.33,
+                    "Upper_Age_In_Years": 6
+                },
+                {
+                    "Fraction_Of_Adult_Dose": 0.67,
+                    "Upper_Age_In_Years": 11
+                }
+            ],
+            "Max_Drug_IRBC_Kill": 9.2
+        },
+        {
+            "Name": "Piperaquine",
+            "PKPD_Model": "CONCENTRATION_VERSUS_TIME",
+            "Bodyweight_Exponent": 0,
+            "Drug_Cmax": 30,
+            "Drug_Decay_T1": 0.17,
+            "Drug_Decay_T2": 41,
+            "Drug_Dose_Interval": 1,
+            "Drug_Fulltreatment_Doses": 3,
+            "Drug_Gametocyte02_Killrate": 0,
+            "Drug_Gametocyte34_Killrate": 0,
+            "Drug_GametocyteM_Killrate": 0,
+            "Drug_Hepatocyte_Killrate": 0,
+            "Drug_PKPD_C50": 5,
+            "Drug_Vd": 49,
+            "Fractional_Dose_By_Upper_Age": [
+                {
+                    "Fraction_Of_Adult_Dose": 0.17,
+                    "Upper_Age_In_Years": 2
+                },
+                {
+                    "Fraction_Of_Adult_Dose": 0.33,
+                    "Upper_Age_In_Years": 6
+                },
+                {
+                    "Fraction_Of_Adult_Dose": 0.67,
+                    "Upper_Age_In_Years": 11
+                }
+            ],
+            "Max_Drug_IRBC_Kill": 4.6
+        }
+    ],
+    "OUTPUT": {
+        "Python_Script_Path": "SHARED",
+        "Enable_Spatial_Output": 1,
+        "Spatial_Output_Channels": [
+            "Population",
+            "New_Infections",
+            "Prevalence",
+            "Adult_Vectors",
+            "PCR_Parasite_Prevalence", 
+            "New_Clinical_Cases"
+        ]
+    },
+    "PRIMARY": {
+        "Config_Name": "22_Malaria_Reports",
+        "Custom_Reports_Filename": "custom_reports.json",
+        "Enable_Interventions": 1,
+        "Geography": "Namawala",
+        "Run_Number": 3,
+        "Simulation_Duration": 1095,
+        "logLevel_JsonConfigurable" : "WARNING"
+    },
+    "VECTOR": {
+        "Vector_Sampling_Type": "TRACK_ALL_VECTORS",
+        "x_Temporary_Larval_Habitat": 0.02
+    }
+}

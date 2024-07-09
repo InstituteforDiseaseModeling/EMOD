@@ -34,7 +34,8 @@
                 "Intervention_Config": {
                     "class": "StiCoInfectionDiagnostic",
                     "Treatment_Fraction": 1.0,
-                    "Event_Or_Config": "Config",
+                    "COMMENT" : "Commenting out Event_Or_Config to test that Positve_Diagnosis_Config is read since it is the default.",
+                    ".Event_Or_Config": "Config",
                     "Positive_Diagnosis_Config":
                     {
                         "class": "ModifyStiCoInfectionStatus",

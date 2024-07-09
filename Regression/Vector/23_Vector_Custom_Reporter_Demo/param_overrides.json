@@ -24,6 +24,7 @@
         "PRIMARY": {
             "Config_Name": "23_Vector_Custom_Reporter_Demo",
             "Custom_Reports_Filename": "custom_reports.json",
+            "Enable_Vector_Species_Report" : 1,
             "Geography": "Namawala",
             "Simulation_Duration": 730
         }

@@ -1,0 +1,9 @@
+{
+    "Reports": [
+        {
+            "class": "ReportNodeDemographics",
+            "Age_Bins": []
+        }
+    ],
+    "Use_Defaults": 1
+}

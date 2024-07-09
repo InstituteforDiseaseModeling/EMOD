@@ -1,0 +1,48 @@
+{
+    "parameters": {
+        "CAMPAIGNS": {
+            "Campaign_Filename": "../../Input/space_spraying_day_one.json"
+        },
+        "DEMOGRAPHICS": {
+            "Demographics_Filenames": [
+                "../../Input/Vector_single_node_demographics.json",
+                "../../Input/Demographics_Larval_Habitat_Overlay.spreadrisk.json"
+            ],
+            "x_Base_Population": 1e-05,
+            "Enable_Climate_Stochasticity": 1
+        },
+        "PRIMARY": {
+            "Config_Name": "Vector:SFT:EggDevelopment:ArrheniusRate",
+            "Simulation_Duration": 730
+        },
+        "VECTOR": {
+            "x_Temporary_Larval_Habitat":0.0001,
+            "EGGS": {
+                "Egg_Hatch_Delay_Distribution": "EXPONENTIAL_DISTRIBUTION",
+                "Egg_Hatch_Density_Dependence": "DENSITY_DEPENDENCE",
+                "Enable_Egg_Mortality": 1,
+                "Enable_Drought_Egg_Hatch_Delay": 1,
+                "Enable_Temperature_Dependent_Egg_Hatching": 1,
+                "Mean_Egg_Hatch_Delay": 3
+            },
+            "Human_Feeding_Mortality": 0,
+            "SPECIES": {
+                "Vector_Species_Params": [
+                     {
+                        "Name" :"TestVector",
+                        "Days_Between_Feeds": 1
+                    }
+                ],
+                "Vector_Sampling_Type": "TRACK_ALL_VECTORS"
+            }
+        },
+        "LOGGING": {
+            "logLevel_VectorPopulation": "VALID",
+            "logLevel_VectorCohort": "VALID",
+            "logLevel_VectorHabitat": "VALID"
+        }
+    },
+    "Default_Config_Path": "defaults/vector_science_default_config.json"
+}
+
+

@@ -19,10 +19,20 @@
         
         "Report_Relationship_End": 1, 
         "Report_Relationship_Start": 1, 
+        "Report_Relationship_Start_Individual_Properties": [
+            "Accessibility",
+            "CascadeState",
+            "HasSTI",
+            "OnDrug",
+            "PrEPWilling",
+            "Risk",
+            "VMMC",
+            "WillingToStartARTFromPrEPCampaign"
+        ],
+        "Report_Relationship_Start_Include_Other_Relationship_Statistics": 0,
       
-        "Disable_IP_Whitelist": 1,
         "Age_Initialization_Distribution_Type": "DISTRIBUTION_COMPLEX",         
-        "x_Base_Population": 0.001,         
+
         "Death_Rate_Dependence": "NONDISEASE_MORTALITY_BY_YEAR_AND_AGE_FOR_EACH_GENDER", 
         "Enable_Maternal_Transmission": 1, 
         "Male_To_Female_Relative_Infectivity_Ages": [
@@ -40,6 +50,7 @@
         "Sexual_Debut_Age_Male_Weibull_Heterogeneity": 0.05, 
         "Sexual_Debut_Age_Male_Weibull_Scale": 16.946729660034, 
         "Sexual_Debut_Age_Min": 13,
+        "x_Base_Population": 0.001,
         "x_Birth": 1, 
         "x_Other_Mortality": 1        
     }

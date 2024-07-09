@@ -1,0 +1,186 @@
+{
+    "Campaign_Name": "Targeting Intervention test",
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [1, 3]
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 0.9,
+                "COMMENT1": "This should distibute a SimpleVaccine to 90% of population in node 1 and 3",
+                "COMMENT2": "A BroadcastEvent is targeting this intervention at day 6",
+                "Intervention_Config": {
+                    "class": "SimpleVaccine",
+                    "Intervention_Name" : "MyVaccine_1",
+                    "Cost_To_Consumer": 1,
+                    "Vaccine_Take": 1,
+                    "Vaccine_Type": "AcquisitionBlocking",
+                    "Waning_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect" : 1.0
+                    }
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [2, 3]
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 0.8,
+                "COMMENT1": "This should distibute a DelayedIntervention to 80% of population in node 2 and 3 with a Delay_Period set to 20",
+                "COMMENT2": "they will not receive the SimpleVaccine when the BroadcastEvent happens at day 11",
+                "Intervention_Config": {
+                    "class": "DelayedIntervention",
+                    "Intervention_Name" : "MyDelayedVaccine",
+                    "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Delay_Period_Constant": 20,
+                    "Actual_IndividualIntervention_Configs": [
+                        {
+                            "class": "SimpleVaccine",
+                            "Intervention_Name" : "MyVaccine_2",
+                            "Cost_To_Consumer": 1,
+                            "Vaccine_Take": 1,
+                            "Vaccine_Type": "AcquisitionBlocking",
+                            "Waning_Config": {
+                                "class": "WaningEffectConstant",
+                                "Initial_Effect" : 1.0
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [4]
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 0.4,
+                "COMMENT1": "This should distibute a DelayedIntervention to 40% of population in node 4",
+                "COMMENT2": "2 days later they should receive a SimpleVaccine",
+                "Intervention_Config": {
+                    "class": "DelayedIntervention",
+                    "Intervention_Name" : "MyDelayedVaccine",
+                    "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Delay_Period_Constant": 2,
+                    "Actual_IndividualIntervention_Configs": [
+                        {
+                            "class": "SimpleVaccine",
+                            "Intervention_Name" : "MyVaccine_2",
+                            "Cost_To_Consumer": 1,
+                            "Vaccine_Take": 1,
+                            "Vaccine_Type": "AcquisitionBlocking",
+                            "Waning_Config": {
+                                "class": "WaningEffectConstant",
+                                "Initial_Effect" : 1.0
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 5,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Intervention_Name" : "OutbreakIndividual",
+                    "Ignore_Immunity": 0
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 6,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 0.6,
+                "COMMENT1": "This should broadcast MyVaccine_1 to 60% of population in Node 1 and Node 3",
+                "COMMENT2": "who doesn't receive the SimpleVaccine MyVaccine_1.",
+                "Targeting_Config": {
+                    "class": "HasIntervention",
+                    "Is_Equal_To": 0,
+                    "Intervention_Name": "MyVaccine_1"
+                },
+                "Intervention_Config": {
+                    "class": "BroadcastEvent",
+                    "Broadcast_Event": "MyVaccine_1"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 8,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 0.7,
+                "COMMENT1": "This should broadcast MyDelayedVaccine to 70% of population in Node 2 and Node 3",
+                "COMMENT2": "who does receive the DelayedIntervention MyDelayedVaccine.",
+                "Targeting_Config": {
+                    "class": "HasIntervention",
+                    "Is_Equal_To": 1,
+                    "Intervention_Name": "MyDelayedVaccine"
+                },
+                "Intervention_Config": {
+                    "class": "BroadcastEvent",
+                    "Broadcast_Event": "MyDelayedVaccine"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 11,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 0.9,
+                "COMMENT1": "This should broadcast MyVaccine_2 to 90% of population in Node 4",
+                "COMMENT2": "who does receive the SimpleVaccine MyVaccine_2.",
+                "Targeting_Config": {
+                    "class": "HasIntervention",
+                    "Is_Equal_To": 1,
+                    "Intervention_Name": "MyVaccine_2"
+                },
+                "Intervention_Config": {
+                    "class": "BroadcastEvent",
+                    "Broadcast_Event": "MyVaccine_2"
+                }
+            }
+        }
+    ],
+    "Use_Defaults": 1
+}

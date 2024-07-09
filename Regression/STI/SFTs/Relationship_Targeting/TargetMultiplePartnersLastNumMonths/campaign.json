@@ -1,0 +1,135 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 400, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1.0,
+                "Targeting_Config": {                
+                    "class" : "HasHadMultiplePartnersInLastNumMonths",
+                    "Num_Months_Type": "THREE_MONTHS",
+                    "Of_Relationship_Type": "INFORMAL"
+                },
+                "Intervention_Config": {
+                    "class": "BroadcastEvent",
+                    "Broadcast_Event": "3_INFORMAL",
+                    "Intervention_Name": "Intervention Under Test"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 400, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1.0,
+                "Targeting_Config": {                
+                    "class" : "HasHadMultiplePartnersInLastNumMonths",
+                    "Num_Months_Type": "SIX_MONTHS",
+                    "Of_Relationship_Type": "TRANSITORY"
+                },
+                "Intervention_Config": {
+                    "class": "BroadcastEvent",
+                    "Broadcast_Event": "6_TRANSITORY",
+                    "Intervention_Name": "Intervention Under Test"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 400, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1.0,
+                "Targeting_Config": {                
+                    "class" : "HasHadMultiplePartnersInLastNumMonths",
+                    "Num_Months_Type": "NINE_MONTHS",
+                    "Of_Relationship_Type": "NA"
+                },
+                "Intervention_Config": {
+                    "class": "BroadcastEvent",
+                    "Broadcast_Event": "9_NA",
+                    "Intervention_Name": "Intervention Under Test"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 400, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1.0,
+                "Targeting_Config": {                
+                    "class" : "HasHadMultiplePartnersInLastNumMonths",
+                    "Num_Months_Type": "TWELVE_MONTHS",
+                    "Of_Relationship_Type": "MARITAL"
+                },
+                "Intervention_Config": {
+                    "class": "BroadcastEvent",
+                    "Broadcast_Event": "12_MARITAL",
+                    "Intervention_Name": "Intervention Under Test"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 400, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1.0,
+                "Targeting_Config": {                
+                    "class" : "HasHadMultiplePartnersInLastNumMonths",
+                    "Num_Months_Type": "SIX_MONTHS",
+                    "Of_Relationship_Type": "COMMERCIAL"
+                },
+                "Intervention_Config": {
+                    "class": "BroadcastEvent",
+                    "Broadcast_Event": "6_COMMERCIAL",
+                    "Intervention_Name": "Intervention Under Test"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 400, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1.0,
+                "Targeting_Config": {                
+                    "class" : "HasHadMultiplePartnersInLastNumMonths"
+                },
+                "Intervention_Config": {
+                    "class": "BroadcastEvent",
+                    "Broadcast_Event": "3_NA",
+                    "Intervention_Name": "Intervention Under Test"
+                }
+            }
+        }
+    ]
+}

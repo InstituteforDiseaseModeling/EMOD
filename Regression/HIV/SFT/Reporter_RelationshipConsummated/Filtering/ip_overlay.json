@@ -1,0 +1,68 @@
+{
+    "Metadata": {
+          "DateCreated": "Fri Aug 20, 2014",
+          "Tool": "Hand",
+          "Author": "Ye Chen",
+          "RegionName": "South Africa: Single Node",
+          "DataSource": "UN Population Division, 2012 Estimates",
+          "IdReference": "0",
+          "NodeCount": 2
+     }, 
+
+    "Defaults": 
+    { 
+        
+        "IndividualProperties": [
+                {
+                    "Property": "Risk",
+                    "Values": [
+                        "LOW",
+                        "HIGH"
+                    ],
+                    "Initial_Distribution": [ 0.5, 0.5]
+                },
+                {
+                    "Property": "QualityOfCare",
+                    "Values": [
+                        "Good",
+                        "Bad"
+                    ],
+                    "Initial_Distribution": [ 0.9, 0.1]
+                },
+                {
+                    "Property": "InterventionStatus",
+                    "Values": [
+                        "Monitor",
+                        "NONE"
+                    ],
+                    "Initial_Distribution": [ 0.5, 0.5]
+                }
+            ]
+     },
+    "Nodes": [ 
+        { 
+            "NodeID": 1,
+            "NodeAttributes": 
+            { 
+                "NOT_LGA_Name": "Base_Dem",
+                "InitialPopulation": 1739600,
+                "NOTE": "The following parameters are required, but not used",
+                "Latitude": 0,
+                "Longitude": 0,
+                "Altitude": 0
+            }
+        },
+        { 
+            "NodeID": 2,
+            "NodeAttributes": 
+            { 
+                "NOT_LGA_Name": "Base_Dem",
+                "InitialPopulation": 1739600,
+                "NOTE": "The following parameters are required, but not used",
+                "Latitude": 0,
+                "Longitude": 1,
+                "Altitude": 0
+            }
+        }
+    ]
+}

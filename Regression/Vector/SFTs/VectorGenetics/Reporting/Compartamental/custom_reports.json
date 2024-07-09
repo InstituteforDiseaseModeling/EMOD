@@ -1,0 +1,11 @@
+{
+    "Reports": [
+        {
+            "Gender": "VECTOR_BOTH_GENDERS",
+            "Species": "TestVector",
+            "Stratify_By": "GENOME",
+            "class": "ReportVectorGenetics"
+        }
+    ],
+    "Use_Defaults": 1
+}

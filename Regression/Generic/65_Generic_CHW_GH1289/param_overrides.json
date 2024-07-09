@@ -7,7 +7,6 @@
         "Demographics_Filenames": [
             "demographics.json"
         ],
-        "Disable_IP_Whitelist": 1,
         "Enable_Immune_Decay": 0,
         "Enable_Natural_Mortality": 0,
         "Enable_Property_Output": 1,

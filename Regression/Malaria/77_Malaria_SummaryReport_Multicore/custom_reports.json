@@ -1,0 +1,121 @@
+{
+    "Reports": [
+        {
+            "Age_Bins": [
+                0,
+                2,
+                10,
+                100
+            ],
+            "IP_Key_To_Collect": "StudyGroups",
+            "Stratify_By_Gender": 0,
+            "Stratify_By_Has_Clinical_Symptoms" : 1,
+            "class": "ReportNodeDemographicsMalaria"
+        },
+        {
+            "class": "MalariaSummaryReport",
+            "Filename_Suffix": "Monthly_Report_arm1",
+            "Start_Day": 5,
+            "End_Day": 100000,
+            "Node_IDs_Of_Interest": [ 1 ],
+            "Must_Have_IP_Key_Value": "StudyGroups:arm1",
+            "Must_Have_Intervention": "",
+            "Pretty_Format": 1,
+            "Max_Number_Reports": 6,
+            "Reporting_Interval": 20.0,
+            "Age_Bins": [
+                10.0,
+                100.0
+            ],
+            "Infectiousness_Bins": [
+                0.0,
+                50.0,
+                100.0
+            ],
+            "Parasitemia_Bins": [
+                0.0,
+                40.0,
+                4000000.0
+            ]
+        },
+        {
+            "class": "MalariaSummaryReport",
+            "Filename_Suffix": "Monthly_Report_arm2",
+            "Start_Day": 5,
+            "End_Day": 100000,
+            "Node_IDs_Of_Interest": [ 2 ],
+            "Must_Have_IP_Key_Value": "StudyGroups:arm2",
+            "Must_Have_Intervention": "",
+            "Pretty_Format": 1,
+            "Max_Number_Reports": 6,
+            "Reporting_Interval": 20.0,
+            "Age_Bins": [
+                10.0,
+                100.0
+            ],
+            "Infectiousness_Bins": [
+                0.0,
+                50.0,
+                100.0
+            ],
+            "Parasitemia_Bins": [
+                0.0,
+                40.0,
+                4000000.0
+            ]
+        },
+        {
+            "class": "MalariaSummaryReport",
+            "Filename_Suffix": "Monthly_Report_arm3",
+            "Start_Day": 5,
+            "End_Day": 100000,
+            "Node_IDs_Of_Interest": [ 3 ],
+            "Must_Have_IP_Key_Value": "StudyGroups:arm3",
+            "Must_Have_Intervention": "",
+            "Pretty_Format": 1,
+            "Max_Number_Reports": 6,
+            "Reporting_Interval": 20.0,
+            "Age_Bins": [
+                10.0,
+                100.0
+            ],
+            "Infectiousness_Bins": [
+                0.0,
+                50.0,
+                100.0
+            ],
+            "Parasitemia_Bins": [
+                0.0,
+                40.0,
+                4000000.0
+            ]
+        },
+        {
+            "class": "MalariaSummaryReport",
+            "Filename_Suffix": "Monthly_Report_total",
+            "Start_Day": 5,
+            "End_Day": 100000,
+            "Node_IDs_Of_Interest": [ 1, 2, 3, 4 ],
+            "Must_Have_IP_Key_Value": "",
+            "Must_Have_Intervention": "",
+            "Pretty_Format": 1,
+            "Max_Number_Reports": 6,
+            "Reporting_Interval": 20.0,
+            "Age_Bins": [
+                10.0,
+                100.0
+            ],
+            "Infectiousness_Bins": [
+                0.0,
+                50.0,
+                100.0
+            ],
+            "Parasitemia_Bins": [
+                0.0,
+                40.0,
+                4000000.0
+            ]
+        }
+    ],
+    "Use_Defaults": 1
+}

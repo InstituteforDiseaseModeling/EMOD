@@ -1,0 +1,84 @@
+{
+    "Default_Config_Path": "defaults/malaria_genetics_science_default_config.json",
+    "CLIMATE": {
+        "Climate_Model": "CLIMATE_CONSTANT",
+        "Enable_Climate_Stochasticity": 0
+    },
+    "DEMOGRAPHICS": {
+        "Demographics_Filenames": [
+            "Namawala_single_node_demographics.json"
+        ],
+        "x_Base_Population": 0.5
+    },
+    "PRIMARY": {
+        "Config_Name": "Vector::SFTs::SporozoitesTests::oocyst_progression",
+        "Geography": "Namawala",
+        "Simulation_Duration": 700
+    },
+    "REPORTS": {
+        "Custom_Reports_Filename": "custom_reports.json",
+        "Enable_Demographics_Reporting": 0
+    },
+    "STRAIN_TRACKING": {
+        "Parasite_Genetics" : {
+            "Barcode_Genome_Locations": [
+                311500,
+                21690000
+            ],
+            "Sporozoites_Per_Oocyst_Distribution": "CONSTANT_DISTRIBUTION",
+            "Sporozoites_Per_Oocyst_Constant": 1000,
+            "Sporozoite_Life_Expectancy": 10,
+            "Crossover_Gamma_K": 2.0,
+            "Crossover_Gamma_Theta": 0.38
+        }
+    },
+    "VECTOR": {
+        "x_Temporary_Larval_Habitat": 0.1,
+
+        "Vector_Species_Params": [
+            {
+                "Name": "SillySkeeter",
+                "Genes": [
+                    {
+                        "Is_Gender_Gene": 0,
+                        "Alleles": [
+                            {
+                                "Name": "a",
+                                "Is_Y_Chromosome": 0,
+                                "Initial_Allele_Frequency": 0.5
+                            },
+                            {
+                                "Name": "b",
+                                "Is_Y_Chromosome": 0,
+                                "Initial_Allele_Frequency": 0.5
+                            }
+                        ],
+                        "Mutations": []
+                    }
+                ],
+                "Gene_To_Trait_Modifiers": [
+                    {
+                        "Allele_Combinations": [
+                            [
+                                "X",
+                                "X"
+                            ],
+                            [
+                                "b",
+                                "b"
+                            ]
+                        ],
+                        "Trait_Modifiers": [
+                            {
+                                "Modifier": 0.87,
+                                "Gametocyte_A_Barcode_String": "AA",
+                                "Gametocyte_B_Barcode_String": "AA",
+                                "Trait": "OOCYST_PROGRESSION"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

@@ -1,0 +1,15 @@
+{
+    "Reports": [
+        {
+            "Include_Gestation_Columns": 0,
+            "Species_List": [
+                "arabiensis",
+                "funestus",
+                "gambiae"
+            ],
+            "Stratify_By_Species": 0,
+            "class": "ReportVectorStats"
+        }
+    ],
+    "Use_Defaults": 1
+}

@@ -45,23 +45,27 @@ def Clear():
     sum_population_by_agebin.fill(0)
     sum_MSP_by_agebin.fill(0)
 
-def GetAgeBin( age, rAges ):
+def GetAgeBin(age, rAges, debug=False):
     age_years = age / DAYSPERYEAR
     if age_years > rAges[-1]:
-        print( "Age_Bins not large enough for population, found age(years)=", age_years," and Age_Bin.end=", rAges[-1], ".  Putting in last bin." )
+        if debug:
+            print( "Age_Bins not large enough for population, found age(years)=", age_years," and Age_Bin.end=", rAges[-1], ".  Putting in last bin." )
         return len(rAges)-1
     else:
         return numpy.digitize([age_years], rAges, right=True)
 
-def GenerateReportDataFromPopSerialization(output):
+
+def GenerateReportDataFromPopSerialization(output, debug=False):
     with open(output + '/MalariaImmunityReport.json', 'r') as f:
         malaria_immunity_report = json.load(f)
         age_bins = malaria_immunity_report['Age Bins']
 
+    messages = []
     Init(len(age_bins))
 
     for day in range(Start_Day, End_Day):
-        print( "day: ", day )
+        if debug:
+            print("day: ", day)
         serialized_file = "state-" + str(day).zfill(5) + ".dtk"
         dtk = dft.read(output + '/' + serialized_file)
 
@@ -69,25 +73,41 @@ def GenerateReportDataFromPopSerialization(output):
         individualHumans = dtk.nodes[0].individualHumans
 
         for ind in individualHumans:
-            sum_population_by_agebin[GetAgeBin(ind.m_age, age_bins)] += ind.m_mc_weight
+            sum_population_by_agebin[GetAgeBin(ind.m_age, age_bins, debug)] += ind.m_mc_weight
 
         for ind in individualHumans:
-            msp = ind.susceptibility.m_antibodies_to_n_variations[MSP1]/Falciparum_MSP_Variants
+            msp = ind.susceptibility.m_antibodies_to_n_variations[MSP1] / Falciparum_MSP_Variants
             mspw = ind.m_mc_weight * msp
-            sum_MSP_by_agebin[GetAgeBin(ind.m_age, age_bins)] += mspw
+            sum_MSP_by_agebin[GetAgeBin(ind.m_age, age_bins, debug)] += mspw
 
-        if day%reporting_interval == 0:
+        if day % reporting_interval == 0:
             MSP_mean_by_agebin.append(sum_MSP_by_agebin / sum_population_by_agebin)
             Clear()
 
     # compare report with serialization
-    comparison_MSP_mean_by_agebin = numpy.allclose(MSP_mean_by_agebin, numpy.array(malaria_immunity_report["MSP Mean by Age Bin"][Start_idx:End_idx]) , atol=1e-6)
+    summary_array = numpy.array(malaria_immunity_report["MSP Mean by Age Bin"][Start_idx:End_idx])
+    comparison_MSP_mean_by_agebin = numpy.allclose(MSP_mean_by_agebin, summary_array, atol=1e-6)
+    if not comparison_MSP_mean_by_agebin:
+        messages.append(f'\tSomething fishy in MSP Mean by Age Bin report.\n')
+        compare_index = 0
+        while compare_index < len(MSP_mean_by_agebin):
+            if all(numpy.isclose(MSP_mean_by_agebin[compare_index], summary_array[compare_index])):
+                messages.append(
+                    f'\t\tOK: Bin at index {compare_index} checks out.\n')
+            else:
+                messages.append(
+                    f'\t\tBAD: Bin at index {compare_index} has issues.\n')
+            compare_index += 1
 
     # print( "malaria_immunity_report[MSP Mean by Age Bin][2:6]: ", malaria_immunity_report["MSP Mean by Age Bin"][Start_idx:End_idx] )
     # print( "sum_population_by_agebin: ",     sum_population_by_agebin )
     # print( "MSP_mean_by_agebin: ",     MSP_mean_by_agebin )
 
-    return  {"comparison_MSP_mean_by_agebin" : str(comparison_MSP_mean_by_agebin)}
+    json_comparison = {"comparison_MSP_mean_by_agebin": str(comparison_MSP_mean_by_agebin)}
+    if debug:
+        with open('DEBUG_compare_report_serialization_immunity.json', 'w') as outfile:
+            json.dump(json_comparison, outfile, sort_keys=True, indent=4)
+    return json_comparison, messages
 
 def application(output):
     GenerateReportDataFromPopSerialization(output)

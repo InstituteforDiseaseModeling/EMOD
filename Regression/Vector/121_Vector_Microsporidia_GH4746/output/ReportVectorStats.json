@@ -1,0 +1,504 @@
+{
+    "Channels": {
+        "Population": {
+            "Units": "",
+            "Data": [
+                1000.0,
+                1000.0,
+                1000.0,
+                1000.0,
+                1000.0
+            ]
+        },
+        "VectorPopulation": {
+            "Units": "",
+            "Data": [
+                0.0,
+                9493.0,
+                9005.0,
+                8571.0,
+                8119.0
+            ]
+        },
+        "STATE_INFECTIOUS": {
+            "Units": "",
+            "Data": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "STATE_INFECTED": {
+            "Units": "",
+            "Data": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "STATE_ADULT": {
+            "Units": "",
+            "Data": [
+                0.0,
+                9493.0,
+                9005.0,
+                8571.0,
+                8119.0
+            ]
+        },
+        "STATE_MALE": {
+            "Units": "",
+            "Data": [
+                0.0,
+                14323.0,
+                13603.0,
+                12947.0,
+                12325.0
+            ]
+        },
+        "STATE_IMMATURE": {
+            "Units": "",
+            "Data": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "STATE_LARVA": {
+            "Units": "",
+            "Data": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                132160.0
+            ]
+        },
+        "STATE_EGG": {
+            "Units": "",
+            "Data": [
+                0.0,
+                0.0,
+                0.0,
+                1714200.0,
+                0.0
+            ]
+        },
+        "NewEggsCount": {
+            "Units": "",
+            "Data": [
+                0.0,
+                0.0,
+                0.0,
+                857100.0,
+                0.0
+            ]
+        },
+        "IndoorBitesCount": {
+            "Units": "",
+            "Data": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "IndoorBitesCount-Infectious": {
+            "Units": "",
+            "Data": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "OutdoorBitesCount": {
+            "Units": "",
+            "Data": [
+                0.0,
+                9493.0,
+                0.0,
+                8571.0,
+                0.0
+            ]
+        },
+        "OutdoorBitesCount-Infectious": {
+            "Units": "",
+            "Data": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "NewAdults": {
+            "Units": "",
+            "Data": [
+                0.0,
+                10000.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "UnmatedAdults": {
+            "Units": "",
+            "Data": [
+                0.0,
+                9493.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "DiedBeforeFeeding": {
+            "Units": "",
+            "Data": [
+                0.0,
+                507.0,
+                488.0,
+                434.0,
+                452.0
+            ]
+        },
+        "DiedDuringFeedingIndoor": {
+            "Units": "",
+            "Data": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "DiedDuringFeedingOutdoor": {
+            "Units": "",
+            "Data": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "NumDiedInfectious": {
+            "Units": "",
+            "Data": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "NumDiedInfected": {
+            "Units": "",
+            "Data": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "NumDiedAdults": {
+            "Units": "",
+            "Data": [
+                0.0,
+                507.0,
+                488.0,
+                434.0,
+                452.0
+            ]
+        },
+        "NumDiedMale": {
+            "Units": "",
+            "Data": [
+                0.0,
+                677.0,
+                720.0,
+                656.0,
+                622.0
+            ]
+        },
+        "AvgAgeAtDeathInfectious": {
+            "Units": "",
+            "Data": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "AvgAgeAtDeathInfected": {
+            "Units": "",
+            "Data": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "AvgAgeAtDeathAdults": {
+            "Units": "",
+            "Data": [
+                0.0,
+                1.0,
+                2.0,
+                3.0,
+                4.0
+            ]
+        },
+        "AvgAgeAtDeathMale": {
+            "Units": "",
+            "Data": [
+                0.0,
+                1.0,
+                2.0,
+                3.0,
+                4.0
+            ]
+        },
+        "AvgDurationLarvaeToImmature ": {
+            "Units": "",
+            "Data": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "HasMicrosporidia-STATE_INFECTIOUS": {
+            "Units": "",
+            "Data": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "HasMicrosporidia-STATE_INFECTED": {
+            "Units": "",
+            "Data": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "HasMicrosporidia-STATE_ADULT": {
+            "Units": "",
+            "Data": [
+                0.0,
+                0.0,
+                5036.0,
+                4796.0,
+                4547.0
+            ]
+        },
+        "HasMicrosporidia-STATE_MALE": {
+            "Units": "",
+            "Data": [
+                0.0,
+                14323.0,
+                13603.0,
+                12947.0,
+                12325.0
+            ]
+        },
+        "HasMicrosporidia-STATE_IMMATURE": {
+            "Units": "",
+            "Data": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "HasMicrosporidia-STATE_LARVA": {
+            "Units": "",
+            "Data": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "HasMicrosporidia-STATE_EGG": {
+            "Units": "",
+            "Data": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "NoMicrosporidia-STATE_INFECTIOUS": {
+            "Units": "",
+            "Data": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "NoMicrosporidia-STATE_INFECTED": {
+            "Units": "",
+            "Data": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "NoMicrosporidia-STATE_ADULT": {
+            "Units": "",
+            "Data": [
+                0.0,
+                9493.0,
+                3969.0,
+                3775.0,
+                3572.0
+            ]
+        },
+        "NoMicrosporidia-STATE_MALE": {
+            "Units": "",
+            "Data": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "NoMicrosporidia-STATE_IMMATURE": {
+            "Units": "",
+            "Data": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "NoMicrosporidia-STATE_LARVA": {
+            "Units": "",
+            "Data": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                132160.0
+            ]
+        },
+        "NoMicrosporidia-STATE_EGG": {
+            "Units": "",
+            "Data": [
+                0.0,
+                0.0,
+                0.0,
+                1714200.0,
+                0.0
+            ]
+        },
+        "MigrationFromCountLocal": {
+            "Units": "",
+            "Data": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "MigrationFromCountRegional": {
+            "Units": "",
+            "Data": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "TestVector_AvailableHabitat": {
+            "Units": "",
+            "Data": [
+                88200.0,
+                88200.0,
+                88200.0,
+                88200.0,
+                -43960.0
+            ]
+        },
+        "TestVector_EggCrowdingCorrection": {
+            "Units": "",
+            "Data": [
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+                0.22
+            ]
+        },
+        "NumInfectousBitesGiven": {
+            "Units": "",
+            "Data": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "NumInfectousBitesReceived": {
+            "Units": "",
+            "Data": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        },
+        "InfectiousBitesGivenMinusReceived": {
+            "Units": "",
+            "Data": [
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0
+            ]
+        }
+    },
+    "Header": {
+        "DateTime": "Unknown",
+        "DTK_Version": "Unknown",
+        "Report_Type": "InsetChart",
+        "Report_Version": "1.0",
+        "Start_Time": "0",
+        "Simulation_Timestep": 1,
+        "Timesteps": 5,
+        "Channels": 49
+    }
+}

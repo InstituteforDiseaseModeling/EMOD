@@ -24,6 +24,7 @@
         },
         "PRIMARY": {
             "Config_Name": "7_Vector_Namawala_Larvicides",
+            "Enable_Vector_Species_Report" : 1,
             "Geography": "Namawala",
             "Run_Number": 11,
             "Simulation_Duration": 730

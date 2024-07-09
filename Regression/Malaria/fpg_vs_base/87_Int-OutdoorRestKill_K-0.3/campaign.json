@@ -1,0 +1,41 @@
+{
+    "Events": [
+        {
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Individual_Selection_Type": "TARGET_NUM_INDIVIDUALS",
+                "Target_Num_Individuals": 100,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividualMalariaGenetics",
+                    "Create_Nucleotide_Sequence_From": "BARCODE_STRING",
+                    "Barcode_String": "AAAAAAAAAAAAAAAAAAAAAAAA"
+                }                
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 100,
+            "class": "CampaignEvent"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 1.0, 
+                    "Killing_Config": {
+                        "Initial_Effect": 0.3, 
+                        "class": "WaningEffectConstant"
+                    }, 
+                    "class": "OutdoorRestKill"
+                }, 
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 400,
+            "class": "CampaignEvent"
+        }
+    ],
+    "Use_Defaults": 1
+}

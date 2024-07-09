@@ -1,0 +1,47 @@
+{
+    "Events": [
+        {
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 1.0, 
+                    "Killing_Config": {
+                        "Box_Duration": 50, 
+                        "Decay_Time_Constant": 25, 
+                        "Initial_Effect": 0.9, 
+                        "class": "WaningEffectBoxExponential"
+                    }, 
+                    "Insecticide_Name" : "carbamate",
+                    "class": "OutdoorRestKill"
+                }, 
+                "class": "StandardInterventionDistributionEventCoordinator"
+            }, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Start_Day": 100, 
+            "class": "CampaignEvent"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 1.0, 
+                    "Killing_Config": {
+                        "Box_Duration": 125, 
+                        "Decay_Time_Constant": 25, 
+                        "Initial_Effect": 0.9, 
+                        "class": "WaningEffectBoxExponential"
+                    }, 
+                    "Insecticide_Name" : "pyrethroid",
+                    "class": "OutdoorRestKill"
+                }, 
+                "class": "StandardInterventionDistributionEventCoordinator"
+            }, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Start_Day": 300, 
+            "class": "CampaignEvent"
+        }
+    ], 
+    "Use_Defaults": 1
+}

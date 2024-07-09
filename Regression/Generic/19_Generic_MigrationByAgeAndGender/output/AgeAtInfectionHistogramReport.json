@@ -1,0 +1,46 @@
+{
+	"Header" : {
+		"DateTime" : "Fri Jan 13 15:55:42 2023",
+		"DTK_Version" : "0 unknown-branch (unknown) Jan 13 2023 14:11:18",
+		"Report_Version" : "3",
+		"Timesteps" : 10
+	},
+	"Channels" : {
+		"ReportingInterval" : {
+			"Units" : "Years",
+			"Data" : 1
+		},
+		"Age_Bin_Upper_Edges" : {
+			"Units" : "Years",
+			"Data" : [
+				0.5,
+				1,
+				1.5,
+				2,
+				2.5,
+				3,
+				3.5,
+				4,
+				4.5,
+				10000
+			]
+		},
+		"Accumulated_Binned_Infection_Counts" : {
+			"Units" : "Number of Infected",
+			"Data" : [
+				[
+					1,
+					1,
+					0,
+					0,
+					0,
+					0,
+					0,
+					0,
+					0,
+					2992
+				]
+			]
+		}
+	}
+}

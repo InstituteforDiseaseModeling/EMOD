@@ -4,7 +4,7 @@
             "Event_Coordinator_Config": {
                 "Demographic_Coverage": 0.0, 
                 "Intervention_Config": {
-                    "Blocking_Config": {
+                    "Repelling_Config": {
                         "Box_Duration": 365, 
                         "Initial_Effect": 0.0, 
                         "class": "WaningEffectBox"
@@ -31,6 +31,10 @@
                 "Demographic_Coverage": 0.0, 
                 "Intervention_Config": {
                     "Bednet_Type": "ITN", 
+                    "Repelling_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect": 0.0
+                    }, 
                     "Blocking_Config": {
                         "Decay_Time_Constant": 730, 
                         "Initial_Effect": 0.9, 

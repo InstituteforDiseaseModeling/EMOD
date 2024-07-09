@@ -1,13 +1,11 @@
 {
     "tests": [
         { "path" : "Multicore_Nosibe/20_Generic_SimpleDiagnostic" },    
-        { "path" : "Multicore_Nosibe/1_Environmental_Namawala" },
         { "path" : "Multicore_Nosibe/12_Vector_Namawala_HostSeekingTrap" },        
         { "path" : "Multicore_Nosibe/28_Vector_ScaleLarvalHabitat" },            
         { "path" : "Multicore_Nosibe/29_Vector_IRS_Ivermectin" },
         { "path" : "Multicore_Nosibe/35_Vector_Ivermectin" },    
         { "path" : "Multicore_Nosibe/42_Vector_SimpleIndividualRepellent" },            
-        { "path" : "Multicore_Nosibe/45_Vector_DrivingYHEGs" },    
         { "path" : "Multicore_Nosibe/23_Malaria_Intervention_RTSSVaccine" },    
         { "path" : "Multicore_Nosibe/Scenarios/Generic/01_SIR" },
         { "path" : "Multicore_Nosibe/Scenarios/Generic/02_SIR_Vaccinations/A_BaselineOutbreak" },
@@ -19,14 +17,6 @@
         { "path" : "Multicore_Nosibe/Scenarios/Generic/06_SEIRS" },
         { "path" : "Multicore_Nosibe/Scenarios/Generic/08_SIS" },
         { "path" : "Multicore_Nosibe/Scenarios/Generic/09_DensityScaling" },
-        { "path" : "Multicore_Nosibe/Scenarios/HINT/01_RiskGroups" },
-        { "path" : "Multicore_Nosibe/Scenarios/HINT/02_SchoolClosure" },
-        { "path" : "Multicore_Nosibe/Scenarios/HINT/03_AgeAndAccess/A_BaselineOutbreak" },
-        { "path" : "Multicore_Nosibe/Scenarios/HINT/03_AgeAndAccess/B_AgeTargetedVaccine" },
-        { "path" : "Multicore_Nosibe/Scenarios/HINT/03_AgeAndAccess/C_AccessTargetedVaccine" },
-        { "path" : "Multicore_Nosibe/Scenarios/HINT/04_WAPertussis/A_BaselineOutbreak" },
-        { "path" : "Multicore_Nosibe/Scenarios/HINT/04_WAPertussis/B_TargetVaccineRefusers" },
-        { "path" : "Multicore_Nosibe/Scenarios/HINT/05_SeattleCommuting" },
         { "path" : "Multicore_Nosibe/Scenarios/VectorAndMalaria/01_A_Namawala3Vectors_lowEIR" },        
         { "path" : "Multicore_Nosibe/Scenarios/VectorAndMalaria/01_B_Namawala3Vectors_highEIR" },                       
         { "path" : "Multicore_Nosibe/Scenarios/VectorAndMalaria/03_A_Namawala_Vector" },        
@@ -36,7 +26,6 @@
         { "path" : "Multicore_Nosibe/Scenarios/VectorAndMalaria/06_Namawala_Vector_ITNsPEV" },        
         { "path" : "Multicore_Nosibe/Scenarios/VectorAndMalaria/07_Namawala_Vector_SSV" },        
         { "path" : "Multicore_Nosibe/Scenarios/VectorAndMalaria/09_Namawala_Vector_SugarBaitedTraps" },
-        { "path" : "Multicore_Nosibe/Scenarios/VectorAndMalaria/10_InsectKillingFence" },
         { "path" : "Multicore_Nosibe/Scenarios/VectorAndMalaria/11_MultipleLarvalHabitats" }
     ],
     "long tests": [

@@ -23,11 +23,51 @@ version_string = None
 
 def recursive_json_overrider( ref_json, flat_input_json ):
     for val in ref_json:
+        is_special =  val == "Malaria_Drug_Params" \
+                   or val == "TB_Drug_Params" \
+                   or val == "HIV_Drug_Params" \
+                   or val == "STI_Network_Params_By_Property" \
+                   or val == "Parasite_Genetics"
         #if not leaf, call recursive_json_leaf_reader
-        if json.dumps( ref_json[val] ).startswith( "{" ) and val != "Vector_Species_Params" and val != "Malaria_Drug_Params" and val != "TB_Drug_Params" and val != "HIV_Drug_Params" and val != "STI_Network_Params_By_Property" and val != "TBHIV_Drug_Params":
+        if json.dumps( ref_json[val] ).startswith( "{" ) and not is_special:
             recursive_json_overrider( ref_json[val], flat_input_json )
-        # do VSP and MDP as special case. Sigh sigh sigh. Also TBHIV params now, also sigh.
-        elif val == "Vector_Species_Params" or val == "Malaria_Drug_Params" or val == "TB_Drug_Params" or val == "HIV_Drug_Params" or val == "STI_Network_Params_By_Property" or val == "TBHIV_Drug_Params" :
+        elif (val == "Vector_Species_Params") or (val == "Malaria_Drug_Params"):
+            # Vector_Speceis_Params/Malaria_Drug_Params is an ARRAY of Vector_Species_Param/Malaria_Drug_Params objects so we have
+            # to do overriding differently.  The code below implements the following rules:
+            # 1) Array exists in param_overrides but is empty = no vectors wanted
+            # 2) A species is defined in the param_overrides that is not defined
+            #    in the defaults = use only species in param_overrides
+            # 3) No parameter exists in param_overrides = use default
+            # 4) param_overrides has an element for one or more of the species in default
+            #    = keep all species in default but override the parameters in the element
+            
+            no_vectors_wanted = (val in flat_input_json) and (len(flat_input_json[val]) == 0)
+
+            if val not in flat_input_json:
+                flat_input_json[val] = []
+
+            species_in_override_not_ref = True
+            for flat_vsp_obj in flat_input_json[val]:
+                for ref_vsp_obj in ref_json[val]:
+                    if ref_vsp_obj["Name"] == flat_vsp_obj["Name"]:
+                        species_in_override_not_ref = False
+            
+            if no_vectors_wanted or (species_in_override_not_ref and (len(flat_input_json[val]) > 0)):
+                #keep what is in override
+                continue
+            else:
+                vsp_list = []
+                for ref_vsp_obj in ref_json[val]:
+                    for flat_vsp_obj in flat_input_json[val]:
+                        if ref_vsp_obj["Name"] == flat_vsp_obj["Name"]:
+                            for key in flat_vsp_obj:
+                                if key != "Name":
+                                    ref_vsp_obj[key] = flat_vsp_obj[key]
+                    vsp_list.append( ref_vsp_obj )
+                flat_input_json[val] = vsp_list
+
+        # do MDP as special case. Sigh sigh sigh.
+        elif is_special:
             # could "genericize" this if we need to... happens to work for now, since both VSP and MDP are 3-levels deep...
             if val not in flat_input_json:
                 flat_input_json[val] = { }
@@ -38,6 +78,12 @@ def recursive_json_overrider( ref_json, flat_input_json ):
             #    ref_json[val].pop( "NONE" )
 
             for species in ref_json[val]:
+                # Check the value in the dictionary to see if it is not another dictionary.
+                # If not, then copy the value if not there
+                if( not isinstance( ref_json[val][species], dict ) ):
+                    if species not in flat_input_json[val]:
+                        flat_input_json[val][species] = ref_json[val][species]
+                    continue
                 if species not in flat_input_json[val]:
                     if( isinstance( ref_json[val][species], dict ) ):
                         flat_input_json[val][species] = { }
@@ -58,14 +104,17 @@ def flattenConfig( configjson_path, new_config_name="config" ):
         return None
 
     configjson_flat = {}
-    #print( "configjson_path = " + configjson_path )
     configjson = load_json(configjson_path)
-
     recursive_json_overrider( configjson, configjson_flat )
 
     # get defaults from config.json and synthesize output from default and overrides
     if "Default_Config_Path" in configjson_flat:
         default_config_path = configjson_flat["Default_Config_Path"]
+        stripped_path = default_config_path.strip()
+        if stripped_path != default_config_path:
+            print("Warning: config parameter 'Default_Config_Path' has leading or trailing whitespace in value \"{0}\"."
+                  " Trimming whitespace and continuing.".format(default_config_path))
+            default_config_path = stripped_path
 
         try:
             # This code has always worked by treating the default_configpath as relative the Regression directory.
@@ -74,10 +123,17 @@ def flattenConfig( configjson_path, new_config_name="config" ):
             simdir = Path( configjson_path ).parent
             default_config_json = None
             if Path( os.path.join( str( simdir ), default_config_path) ).exists():
-                default_config_json = load_json(os.path.join( str(simdir), default_config_path))
+                default_config_path = os.path.join( str(simdir), default_config_path)
             else:
-                default_config_json = load_json(os.path.join( '.', default_config_path))
+                default_config_path = os.path.join( '.', default_config_path)
+
+            if os.path.exists( default_config_path ) == False:
+                print( "Didn't find file at 'Default_Config_Path' = '{0}'".format( default_config_path ) )
+                raise Exception( "Bad Default_Config_Path!!!" )
+
+            default_config_json = load_json( default_config_path )
             recursive_json_overrider( default_config_json, configjson_flat ) 
+
         except Exception as ex:
             print( "Exception opening default config: " + str( ex ) )
             raise ex
@@ -164,12 +220,14 @@ def areTheseJsonFilesTheSame( file1, file2, key = None ):
     
     return False if test_hash != ref_hash else True
 
+# this implementation handles files created on either Windows or Linux
+# os.path.getsize() does not work
 def file_len(fname):
+    i = -1 # needed incase file is empty
     with open(fname) as f:
         for i, l in enumerate(f):
             pass
     return i + 1
-
 
 def make_event_map(json_in):
     event_map = {}
@@ -340,6 +398,7 @@ def touch_file(filename):
     """Update a file's last modification date by opening/closing it"""
     with open(filename, "a"):
         os.utime(filename, None)
+
 
 def files_are_identical(source, target):
     """

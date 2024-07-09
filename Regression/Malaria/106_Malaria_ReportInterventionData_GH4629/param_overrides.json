@@ -1,0 +1,43 @@
+{
+    "CLIMATE": {
+        "Climate_Model": "CLIMATE_CONSTANT",
+        "Enable_Climate_Stochasticity": 0
+    },
+    "DEMOGRAPHICS": {
+        "Demographics_Filenames": [
+            "demographics.json"
+        ],
+        "Enable_Vital_Dynamics": 0,
+        "Enable_Initial_Prevalence": 0
+    },
+    "Default_Config_Path": "../../defaults/malaria_default_config.json",
+    "PRIMARY": {
+        "Custom_Individual_Events": [
+            "Bednet_Discarded",
+            "Bednet_Using",
+            "Bednet_Got_New_One"
+        ],
+        "Enable_Demographics_Reporting": 0,
+        "Custom_Reports_Filename": "custom_reports.json",
+        "Inset_Chart_Has_Interventions": [
+            "AdherentDrug-Piperaquine",
+            "SimpleBednet",
+            "UsageDependentBednet"
+        ],
+
+
+        "Config_Name": "106_Malaria_ReportInterventionData_GH4629",
+        "Geography": "Namawala",
+        "Run_Number": 1,
+        "Simulation_Duration": 350,
+        
+        "COMMENT": "Change to CONCENTRATION_VERSUS_TIME so we see DrugConcentration change.",
+        "Malaria_Drug_Params": [
+            {
+                "Name": "Piperaquine",
+                "Drug_Decay_T2": 15,
+                "PKPD_Model": "CONCENTRATION_VERSUS_TIME"
+            }
+        ]
+    }
+}
