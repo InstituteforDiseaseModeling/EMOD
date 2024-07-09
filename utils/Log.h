@@ -2,10 +2,10 @@
 #pragma once
 #include "stdafx.h"
 
-#include "IdmApi.h"
-
 #include <map>
+#include <cstring>
 
+#include "IdmApi.h"
 #include "Sugar.h"
 
 namespace Logger
