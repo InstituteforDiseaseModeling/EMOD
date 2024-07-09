@@ -16,7 +16,7 @@
 
 #define VA_Name_DESC_TEXT "The name of an allele at this locus.  It must be unique for a given species of vector."
 #define VA_Frequency_DESC_TEXT "This is frequency of the allele at this locus in the population at initialization."
-#define VA_Is_Y_Chromosome_DESC_TEXT "True implies that this allele represents the Y chromosome.  This can only be used when 'Is_Gender_Allele' is also true."
+#define VA_Is_Y_Chromosome_DESC_TEXT "True implies that this allele represents the Y chromosome.  This can only be used when 'Is_Gender_Gene' is also true."
 
 #define VAM_Mutate_From_DESC_TEXT "If the allele in the gamete that could mutate."
 #define VAM_Mutate_To_DESC_TEXT "The allele that this locus will change to during gamete generation."

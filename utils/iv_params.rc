@@ -309,7 +309,7 @@
 #define SB_Usage_Config_DESC_TEXT "The user-defined WaningEffects to determine when and if an individual is using a bed net."
 #define UDBednet_Usage_Config_List_DESC_TEXT "The list of WaningEffects whose effects are multiplied together to get the usage effect."
 #define UDBednet_Using_Event_DESC_TEXT "This parameter broadcasts each time step in which a bed net is used."
-#define SV_Vaccine_Take_DESC_TEXT "The rate at which delivered vaccines will successfully stimulate an immune response and achieve the desired efficacy."
+#define SV_Vaccine_Take_DESC_TEXT "Probability vaccine will successfully be applied at the specified effect."
 #define SV_Vaccine_Type_DESC_TEXT "The type of vaccine to distribute in a vaccine intervention."
 #define Interpolated_Value_Map_Value_DESC_TEXT "An array of values to match the defined Times."
 #define Node_Polygon_Vertices_DESC_TEXT "Comma-separated list of latitude/longitude points that bound a polygon."
