@@ -77,11 +77,11 @@ namespace Kernel
         const Configuration * inputJson
     )
     {
-        initConfigTypeMap( "Cost_To_Consumer", &cost_per_unit, STI_Barrier_Cost_DESC_TEXT,         0.0,   999999,   10.0 );
-        initConfigTypeMap( "Early",            &early,         STI_Barrier_Early_DESC_TEXT,        0.0,      1.0,    1.0 );
-        initConfigTypeMap( "Late",             &late,          STI_Barrier_Late_DESC_TEXT,         0.0,      1.0,    1.0 );
-        initConfigTypeMap( "MidYear",          &midyear,       STI_Barrier_MidYear_DESC_TEXT, MIN_YEAR, MAX_YEAR, 2000.0 );
-        initConfigTypeMap( "Rate",             &rate,          STI_Barrier_Rate_DESC_TEXT,      -100.0,    100.0,    1.0 );
+        initConfigTypeMap( "Cost_To_Consumer", &cost_per_unit, STI_Barrier_Cost_To_Consumer_DESC_TEXT, 0.0,   999999,   10.0 );
+        initConfigTypeMap( "Early",            &early,         STI_Barrier_Early_DESC_TEXT,            0.0,      1.0,    1.0 );
+        initConfigTypeMap( "Late",             &late,          STI_Barrier_Late_DESC_TEXT,             0.0,      1.0,    1.0 );
+        initConfigTypeMap( "MidYear",          &midyear,       STI_Barrier_MidYear_DESC_TEXT,     MIN_YEAR, MAX_YEAR, 2000.0 );
+        initConfigTypeMap( "Rate",             &rate,          STI_Barrier_Rate_DESC_TEXT,                    -100.0,    100.0,    1.0 );
 
         initConfig( "Relationship_Type",
                     rel_type,

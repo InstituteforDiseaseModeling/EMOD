@@ -34,8 +34,8 @@ namespace Kernel
 
     bool WaningEffectBoxExponential::Configure( const Configuration * pInputJson )
     {
-        initConfigTypeMap("Box_Duration",        &boxDuration,       WEBE_Box_Duration_DESC_TEXT,        0, 100000, 100);
-        initConfigTypeMap("Decay_Time_Constant", &decayTimeConstant, WEBE_Decay_Time_Constant_DESC_TEXT, 0, 100000, 100);
+        initConfigTypeMap("Box_Duration",        &boxDuration,       WEB_Box_Duration_DESC_TEXT,       0, 100000, 100);
+        initConfigTypeMap("Decay_Time_Constant", &decayTimeConstant, WEE_Decay_Time_Constant_DESC_TEXT, 0, 100000, 100);
         return WaningEffectConstant::Configure( pInputJson );
     }
 

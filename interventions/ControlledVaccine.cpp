@@ -21,9 +21,9 @@ namespace Kernel
         const Configuration * inputJson
     )
     {
-        initConfigTypeMap( "Distributed_Event_Trigger",             &m_DistributedEventTrigger,           RV_Distributed_Event_Trigger_DESC_TEXT );
-        initConfigTypeMap( "Expired_Event_Trigger",                 &m_ExpiredEventTrigger,               RV_Expired_Event_Trigger_DESC_TEXT     );
-        initConfigTypeMap( "Duration_To_Wait_Before_Revaccination", &m_DurationToWaitBeforeRevaccination, RV_Duration_To_Wait_Before_Revaccination_DESC_TEXT, 0, FLT_MAX, FLT_MAX);
+        initConfigTypeMap( "Distributed_Event_Trigger",             &m_DistributedEventTrigger,           Distributed_Event_Trigger_DESC_TEXT );
+        initConfigTypeMap( "Expired_Event_Trigger",                 &m_ExpiredEventTrigger,               CV_Expired_Event_Trigger_DESC_TEXT     );
+        initConfigTypeMap( "Duration_To_Wait_Before_Revaccination", &m_DurationToWaitBeforeRevaccination, CV_Duration_To_Wait_Before_Revaccination_DESC_TEXT, 0, FLT_MAX, FLT_MAX);
 
         bool configured = SimpleVaccine::Configure( inputJson );
         return configured;

@@ -56,7 +56,7 @@ namespace Kernel
 
     bool IndividualNonDiseaseDeathRateModifier::Configure( const Configuration * inputJson )
     {
-        initConfigTypeMap("Cost_To_Consumer", &cost_per_unit, INDDRM_Cost_To_Consumer_DESC_TEXT, 0, 999999, 0.0);
+        initConfigTypeMap("Cost_To_Consumer", &cost_per_unit, IV_Cost_To_Consumer_DESC_TEXT, 0, 999999, 0.0);
         initConfigTypeMap("Duration_To_Modifier",  &m_DurationToModifier, INDDRM_Duration_To_Modifier_DESC_TEXT );
 
         DistributionFunction::Enum expiration_function( DistributionFunction::CONSTANT_DISTRIBUTION );

@@ -78,7 +78,7 @@ namespace Kernel
         initConfigTypeMap("Num_Partners", &m_NumPartners, AR_Num_Partners_DESC_TEXT, 0, 62, 0);
         initConfig( "Of_Relationship_Type", m_OfRelationshipType, config,
                     MetadataDescriptor::Enum("Relationship_Type",
-                                              AR_Relationship_Type_DESC_TEXT,
+                                              AR_Of_Relationship_Type_DESC_TEXT,
                                               MDD_ENUM_ARGS(TargetRelationshipType)) );
         initConfig( "More_Or_Less", m_MoreOrLess, config,
                     MetadataDescriptor::Enum("More_Or_Less",
@@ -148,7 +148,7 @@ namespace Kernel
                                               MDD_ENUM_ARGS(NumMonthsType)) );
         initConfig( "Of_Relationship_Type", m_OfRelationshipType, config,
                     MetadataDescriptor::Enum("Relationship_Type",
-                                              AR_Relationship_Type_DESC_TEXT,
+                                              AR_Of_Relationship_Type_DESC_TEXT,
                                               MDD_ENUM_ARGS(TargetRelationshipType)) );
 
         return AdditionalRestrictionsAbstract::Configure( config );

@@ -57,7 +57,7 @@ namespace Kernel
     , waning_effect( nullptr )
     , ivc( nullptr )
     {
-        initConfigTypeMap("Cost_To_Consumer", &cost_per_unit, SV_Cost_To_Consumer_DESC_TEXT, 0, 999999, 10.0);
+        initConfigTypeMap("Cost_To_Consumer", &cost_per_unit, IV_Cost_To_Consumer_DESC_TEXT, 0, 999999, 10.0);
     }
 
     SimpleVaccine::SimpleVaccine( const SimpleVaccine& master )

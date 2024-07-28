@@ -54,7 +54,7 @@ namespace Kernel
     {
         bool configured = true;
 
-        initConfigTypeMap( "Cost_To_Consumer", &cost_per_unit, SB_Cost_To_Consumer_DESC_TEXT, 0, 999999, 3.75 );
+        initConfigTypeMap( "Cost_To_Consumer", &cost_per_unit, IV_Cost_To_Consumer_DESC_TEXT, 0, 999999, 3.75 );
 
         if( configured || JsonConfigurable::_dryrun )
         {
@@ -81,7 +81,7 @@ namespace Kernel
 
         initConfigComplexType( "Killing_Config", &killing_config, SB_Killing_Config_DESC_TEXT );
         initConfigComplexType( "Blocking_Config", &blocking_config, SB_Blocking_Config_DESC_TEXT );
-        initConfigComplexType( "Repelling_Config", &repelling_config, SB_Repelling_Config_DESC_TEXT );
+        initConfigComplexType( "Repelling_Config", &repelling_config, Repelling_Config_DESC_TEXT );
         initConfigTypeMap( "Insecticide_Name", &name, INT_Insecticide_Name_DESC_TEXT );
 
         bool configured = BaseIntervention::Configure( inputJson );

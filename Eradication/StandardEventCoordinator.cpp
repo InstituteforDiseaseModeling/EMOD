@@ -83,7 +83,7 @@ namespace Kernel
 
         demographic_restrictions.ConfigureRestrictions( this, inputJson );
 
-        initConfigComplexType( "Node_Property_Restrictions", &node_property_restrictions, Node_Property_Restriction_DESC_TEXT );
+        initConfigComplexType( "Node_Property_Restrictions", &node_property_restrictions, Node_Property_Restrictions_DESC_TEXT );
 
         bool retValue = JsonConfigurable::Configure( inputJson );
         if( retValue && !JsonConfigurable::_dryrun)

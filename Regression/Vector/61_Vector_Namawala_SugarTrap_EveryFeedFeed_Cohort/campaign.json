@@ -9,8 +9,8 @@
                         "Initial_Effect": 0.3, 
                         "class": "WaningEffectExponential"
                     },
-                    "Expiration_Distribution" : "CONSTANT_DISTRIBUTION",
-                    "Expiration_Constant" : 360,
+                    "Expiration_Period_Distribution" : "CONSTANT_DISTRIBUTION",
+                    "Expiration_Period_Constant" : 360,
                     "class": "SugarTrap"
                 }, 
                 "class": "StandardInterventionDistributionEventCoordinator"

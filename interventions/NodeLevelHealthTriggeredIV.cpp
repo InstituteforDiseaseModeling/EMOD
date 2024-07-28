@@ -120,10 +120,10 @@ namespace Kernel
         initConfigTypeMap("Duration", &max_duration, BT_Duration_DESC_TEXT, -1.0f, FLT_MAX, -1.0f ); // -1 is a convention for indefinite duration
 
         initConfigTypeMap( "Blackout_Period", &blackout_period, Blackout_Period_DESC_TEXT, 0.0f, FLT_MAX, 0.0f );
-        initConfigTypeMap( "Blackout_Event_Trigger", &blackout_event_trigger, Blackout_Event_Trigger_DESC_TEXT );
+        initConfigTypeMap( "Blackout_Event_Trigger", &blackout_event_trigger, NLHTIV_Blackout_Event_Trigger_DESC_TEXT );
         initConfigTypeMap( "Blackout_On_First_Occurrence", &blackout_on_first_occurrence, Blackout_On_First_Occurrence_DESC_TEXT, false );
 
-        initConfigComplexType( "Node_Property_Restrictions", &node_property_restrictions, Node_Property_Restriction_DESC_TEXT );
+        initConfigComplexType( "Node_Property_Restrictions", &node_property_restrictions, Node_Property_Restrictions_DESC_TEXT );
 
         demographic_restrictions.ConfigureRestrictions( this, inputJson );
 

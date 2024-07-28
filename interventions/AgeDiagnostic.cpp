@@ -139,7 +139,7 @@ namespace Kernel
     {
         // not sure that AgeDiagnostic and CD4Diagnostic should have a default cost
         // but tests are depending on it
-        initConfigTypeMap( "Cost_To_Consumer", &cost_per_unit, SD_Cost_To_Consumer_DESC_TEXT );
+        initConfigTypeMap( "Cost_To_Consumer", &cost_per_unit, IV_Cost_To_Consumer_DESC_TEXT );
 
         ConfigureRangeThresholds( inputJson );
 

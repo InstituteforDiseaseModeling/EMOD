@@ -63,7 +63,7 @@ namespace Kernel
         WaningConfig waning_config;
         initConfigComplexType("Waning_Config",  &waning_config, FC_Waning_Config_DESC_TEXT );
 
-        initConfigTypeMap("Cost_To_Consumer", &cost_per_unit, FC_Cost_To_Consumer_DESC_TEXT, 0, 999999, 0.0);
+        initConfigTypeMap("Cost_To_Consumer", &cost_per_unit, IV_Cost_To_Consumer_DESC_TEXT, 0, 999999, 0.0);
 
         DistributionFunction::Enum usage_function( DistributionFunction::CONSTANT_DISTRIBUTION );
         initConfig( "Usage_Duration_Distribution",

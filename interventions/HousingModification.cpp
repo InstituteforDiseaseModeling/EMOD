@@ -42,7 +42,7 @@ namespace Kernel
     , m_pIHMC(nullptr)
     {
         initSimTypes( 2, "VECTOR_SIM", "MALARIA_SIM" );
-        initConfigTypeMap("Cost_To_Consumer", &cost_per_unit, HM_Cost_To_Consumer_DESC_TEXT, 0, 999999, 8.0);
+        initConfigTypeMap("Cost_To_Consumer", &cost_per_unit, IV_Cost_To_Consumer_DESC_TEXT, 0, 999999, 8.0);
     }
 
     SimpleHousingModification::SimpleHousingModification( const SimpleHousingModification& master )
@@ -98,7 +98,7 @@ namespace Kernel
 
     void SimpleHousingModification::initConfigRepelling( WaningConfig* pRepellingConfig )
     {
-        initConfigComplexType( "Repelling_Config", pRepellingConfig, HM_Repelling_Config_DESC_TEXT );
+        initConfigComplexType( "Repelling_Config", pRepellingConfig, Repelling_Config_DESC_TEXT );
     }
 
     void SimpleHousingModification::initConfigKilling( WaningConfig* pKillingConfig )

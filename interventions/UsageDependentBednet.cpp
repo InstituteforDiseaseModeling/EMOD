@@ -155,7 +155,7 @@ namespace Kernel
     bool UsageDependentBednet::ConfigureEvents( const Configuration * inputJson )
     {
         DistributionFunction::Enum expiration_function( DistributionFunction::CONSTANT_DISTRIBUTION );
-        initConfig("Expiration_Period_Distribution", expiration_function, inputJson, MetadataDescriptor::Enum("Expiration_Period_Distribution", UDBednet_Expiration_Distribution_Type_DESC_TEXT, MDD_ENUM_ARGS(DistributionFunction)));                 
+        initConfig("Expiration_Period_Distribution", expiration_function, inputJson, MetadataDescriptor::Enum("Expiration_Period_Distribution", Expiration_Period_Distribution_DESC_TEXT, MDD_ENUM_ARGS(DistributionFunction)));                 
         m_ExpirationDuration = DistributionFactory::CreateDistribution( this, expiration_function, "Expiration_Period", inputJson );
 
         initConfigTypeMap( "Received_Event", &m_TriggerReceived, UDBednet_Received_Event_DESC_TEXT );

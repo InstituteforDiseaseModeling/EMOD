@@ -59,7 +59,6 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Eradication.rc" />
-    <ResourceCompile Include="..\baseReportLib\missing_report_params.rc" />
     <ResourceCompile Include="..\baseReportLib\report_params.rc" />
     <ResourceCompile Include="..\utils\demographic_params.rc" />
   </ItemGroup>
@@ -69,7 +68,5 @@
     </None>
     <None Include="..\utils\iv_params.rc" />
     <None Include="..\utils\config_params.rc" />
-    <None Include="..\utils\missing_config_params.rc" />
-    <None Include="..\utils\missing_iv_params.rc" />
   </ItemGroup>
 </Project>

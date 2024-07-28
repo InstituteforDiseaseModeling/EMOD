@@ -38,9 +38,9 @@
                     "Cost_To_Consumer": 1,
                     "Acquisition_Multiplier" : 0.0,
                     "Transmission_Multiplier" : 0.0,
-                    "Expiration_Distribution" : "CONSTANT_DISTRIBUTION",
-                    "Expiration_Constant" : 10,
-                    "Expiration_Event_Trigger" : "Twice_Likely_To_Acquire_Expired"
+                    "Expiration_Period_Distribution" : "CONSTANT_DISTRIBUTION",
+                    "Expiration_Period_Constant" : 10,
+                    "Expiration_Period_Event_Trigger" : "Twice_Likely_To_Acquire_Expired"
                 }
             }
         },
@@ -62,9 +62,9 @@
                     "Cost_To_Consumer": 1,
                     "Acquisition_Multiplier" : 1.5,
                     "Transmission_Multiplier" : 1.5,
-                    "Expiration_Distribution" : "CONSTANT_DISTRIBUTION",
-                    "Expiration_Constant" : 100,
-                    "Expiration_Event_Trigger" : "Twice_Likely_To_Acquire_Expired"
+                    "Expiration_Period_Distribution" : "CONSTANT_DISTRIBUTION",
+                    "Expiration_Period_Constant" : 100,
+                    "Expiration_Period_Event_Trigger" : "Twice_Likely_To_Acquire_Expired"
                 }
             }
         }

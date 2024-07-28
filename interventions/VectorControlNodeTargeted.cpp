@@ -76,7 +76,7 @@ namespace Kernel
         //       in particular, for spatial repellents where there is reduction but not killing,
         //       the primary constant is un-used in BOX and DECAY (but not BOXDECAY)
         //       whereas, oviposition traps only have a killing effect.  (ERAD-599)
-        initConfigTypeMap("Cost_To_Consumer", &cost_per_unit, VCN_Cost_To_Consumer_DESC_TEXT, 0, 999999, 10.0);
+        initConfigTypeMap("Cost_To_Consumer", &cost_per_unit, IV_Cost_To_Consumer_DESC_TEXT, 0, 999999, 10.0);
 
         bool configured = ConfigureKilling( inputJson );
 
@@ -246,7 +246,7 @@ namespace Kernel
     {
         initConfig( "Habitat_Target", m_HabitatTarget, inputJson, MetadataDescriptor::Enum("Habitat_Target", LV_Habitat_Target_DESC_TEXT, MDD_ENUM_ARGS(VectorHabitatType)) );
         initConfigComplexType("Larval_Killing_Config", &m_LarvalKillingConfig, LV_Larval_Killing_Config_DESC_TEXT );
-        initConfigTypeMap("Spray_Coverage", &m_Coverage, LV_Spray_Coverage_DESC_TEXT, 0.0f, 1.0f, 1.0f);
+        initConfigTypeMap("Spray_Coverage", &m_Coverage, Spray_Coverage_DESC_TEXT, 0.0f, 1.0f, 1.0f);
 
         bool configured = SimpleVectorControlNode::Configure( inputJson );
         if( configured && !JsonConfigurable::_dryrun )
@@ -305,7 +305,7 @@ namespace Kernel
             throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__,
                                              "'Spray_Kill_Target' is no longer supported.  Use 'InsecticideResistance'." );
         }
-        initConfigTypeMap("Spray_Coverage", &m_Coverage, SS_Spray_Coverage_DESC_TEXT, 0.0f, 1.0f, 1.0f);
+        initConfigTypeMap("Spray_Coverage", &m_Coverage, Spray_Coverage_DESC_TEXT, 0.0f, 1.0f, 1.0f);
 
         bool configured = SimpleVectorControlNode::Configure( inputJson );
 
@@ -386,7 +386,7 @@ namespace Kernel
 
     bool IndoorSpaceSpraying::Configure( const Configuration * inputJson )
     {
-        initConfigTypeMap("Spray_Coverage", &m_Coverage, ISS_Spray_Coverage_DESC_TEXT, 0.0f, 1.0f, 1.0f);
+        initConfigTypeMap("Spray_Coverage", &m_Coverage, Spray_Coverage_DESC_TEXT, 0.0f, 1.0f, 1.0f);
 
         bool configured = SimpleVectorControlNode::Configure( inputJson );
         return configured;
@@ -465,8 +465,8 @@ namespace Kernel
 
     void SpatialRepellent::initConfigRepelling()
     {
-        initConfigTypeMap("Spray_Coverage", &m_Coverage, SR_Spray_Coverage_DESC_TEXT, 0.0f, 1.0f, 1.0f);
-        initConfigComplexType("Repelling_Config", &m_RepellingConfig, SR_Repelling_Config_DESC_TEXT );
+        initConfigTypeMap("Spray_Coverage", &m_Coverage, Spray_Coverage_DESC_TEXT, 0.0f, 1.0f, 1.0f);
+        initConfigComplexType("Repelling_Config", &m_RepellingConfig, Repelling_Config_DESC_TEXT );
     }
 
     void SpatialRepellent::initConfigKilling()
@@ -610,13 +610,13 @@ namespace Kernel
     bool SugarTrap::Configure( const Configuration * inputJson )
     {
         DistributionFunction::Enum expiration_distribution_type( DistributionFunction::CONSTANT_DISTRIBUTION );
-        initConfig( "Expiration_Distribution",
+        initConfig( "Expiration_Period_Distribution",
                     expiration_distribution_type,
                     inputJson,
-                    MetadataDescriptor::Enum( "Expiration_Distribution",
-                                              SugarTrap_Expiration_Distribution_Type_DESC_TEXT,
+                    MetadataDescriptor::Enum( "Expiration_Period_Distribution",
+                                              Expiration_Period_Distribution_DESC_TEXT,
                                               MDD_ENUM_ARGS( DistributionFunction ) ) );
-        m_pExpirationDistribution = DistributionFactory::CreateDistribution( this, expiration_distribution_type, "Expiration", inputJson );
+        m_pExpirationDistribution = DistributionFactory::CreateDistribution( this, expiration_distribution_type, "Expiration_Period", inputJson );
 
         bool configured = SimpleVectorControlNode::Configure( inputJson );
         if( configured && !JsonConfigurable::_dryrun )
@@ -714,7 +714,7 @@ namespace Kernel
         WaningConfig killing_config;
 
         initConfig( "Habitat_Target", m_HabitatTarget, inputJson, MetadataDescriptor::Enum("Habitat_Target", OT_Habitat_Target_DESC_TEXT, MDD_ENUM_ARGS(VectorHabitatType)) );
-        initConfigComplexType("Killing_Config",  &killing_config, OT_Killing_DESC_TEXT  );
+        initConfigComplexType("Killing_Config",  &killing_config, OT_Killing_Config_DESC_TEXT  );
 
         bool configured = SimpleVectorControlNode::Configure( inputJson );
         if( configured && !JsonConfigurable::_dryrun )

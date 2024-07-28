@@ -40,7 +40,7 @@ namespace Kernel
     bool HIVDelayedIntervention::Configure( const Configuration * inputJson )
     {
         // should be lifted to HIVIntervention class later
-        initConfigTypeMap("Expiration_Period", &days_remaining, HIV_Delayed_Intervention_Expiration_Period_DESC_TEXT, 0, FLT_MAX, FLT_MAX);
+        initConfigTypeMap("Expiration_Period", &days_remaining, HIV_DI_Expiration_Period_DESC_TEXT, 0, FLT_MAX, FLT_MAX);
 
         // DelayedIntervention::Configure split into PreConfigure and MainConfigure to separate initConfig's from initConfigTypeMap-depends-on, and postpone JsonConfigurable::Configure
         DelayedIntervention::PreConfigure(inputJson);
@@ -49,8 +49,8 @@ namespace Kernel
         initConfig( "Delay_Period_Distribution", delay_function, inputJson, MetadataDescriptor::Enum( "Delay_Distribution", Delay_Period_Distribution_DESC_TEXT, MDD_ENUM_ARGS( DistributionFunction ) ) );
         delay_distribution = DistributionFactory::CreateDistribution( this, delay_function, "Delay_Period", inputJson );
 
-        initConfigTypeMap( "Broadcast_Event", &broadcast_event, HIV_Delayed_Intervention_Broadcast_Event_DESC_TEXT );
-        initConfigTypeMap( "Broadcast_On_Expiration_Event", &broadcast_on_expiration_event, HIV_Delayed_Intervention_Broadcast_On_Expiration_Event_DESC_TEXT );
+        initConfigTypeMap( "Broadcast_Event", &broadcast_event, HIV_DI_Broadcast_Event_DESC_TEXT );
+        initConfigTypeMap( "Broadcast_On_Expiration_Event", &broadcast_on_expiration_event, HIV_DI_Broadcast_On_Expiration_Event_DESC_TEXT );
 
         // skip DelayedIntervention::Configure() because we don't want those variables.
 

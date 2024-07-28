@@ -258,7 +258,6 @@
     <ClInclude Include="microsoft.hpc.scheduler.tlh" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\baseReportLib\missing_report_params.rc" />
     <ResourceCompile Include="..\baseReportLib\report_params.rc" />
     <ResourceCompile Include="..\utils\demographic_params.rc" />
     <ResourceCompile Include="Eradication.rc">
@@ -268,9 +267,7 @@
   <ItemGroup>
     <None Include="..\cajun\include\cast.inl" />
     <None Include="..\utils\config_params.rc" />
-    <None Include="..\utils\missing_config_params.rc" />
     <None Include="..\utils\iv_params.rc" />
-    <None Include="..\utils\missing_iv_params.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

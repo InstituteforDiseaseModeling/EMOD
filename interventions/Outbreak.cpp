@@ -67,7 +67,7 @@ namespace Kernel
 
     void Outbreak::ExtraConfiguration()
     {
-        initConfigTypeMap( "Number_Cases_Per_Node",  &num_cases_per_node,  Num_Import_Cases_Per_Node_DESC_TEXT, 0, INT_MAX, 1 );
+        initConfigTypeMap( "Number_Cases_Per_Node",  &num_cases_per_node,  Number_Cases_Per_Node_DESC_TEXT, 0, INT_MAX, 1 );
         initConfigTypeMap( "Probability_Of_Infection", &prob_infection, Probability_Of_Infection_DESC_TEXT, 1.0 );
     }
 

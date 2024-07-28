@@ -32,8 +32,8 @@
                         "Initial_Effect": 0.125, 
                         "class": "WaningEffectConstant"
                     },
-                    "Expiration_Distribution" : "CONSTANT_DISTRIBUTION",
-                    "Expiration_Constant" : 1000
+                    "Expiration_Period_Distribution" : "CONSTANT_DISTRIBUTION",
+                    "Expiration_Period_Constant" : 1000
                 }
             }
         }

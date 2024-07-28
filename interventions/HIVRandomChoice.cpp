@@ -43,7 +43,7 @@ namespace Kernel
         std::vector<float> values;
 
         // I hate that the default is 1, but keeping it for backward compatibility.
-        initConfigTypeMap( "Cost_To_Consumer",     &cost_per_unit, HIV_Random_Choise_Cost_To_Consumer_DESC_TEXT, 0.0f, FLT_MAX, 1.0f );
+        initConfigTypeMap( "Cost_To_Consumer",     &cost_per_unit, IV_Cost_To_Consumer_DESC_TEXT, 0.0f, FLT_MAX, 1.0f );
         initConfigTypeMap( "Choice_Names",         &names,         HIV_Random_Choice_Names_DESC_TEXT );
         initConfigTypeMap( "Choice_Probabilities", &values,        HIV_Random_Choice_Probabilities_DESC_TEXT, 0.0f, 1.0f );
 

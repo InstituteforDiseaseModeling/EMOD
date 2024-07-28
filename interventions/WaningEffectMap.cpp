@@ -64,7 +64,7 @@ namespace Kernel
 
         if( configured || JsonConfigurable::_dryrun )
         {
-            initConfigTypeMap( "Durability_Map", &m_DurationMap, WEM_Durability_Map_End_DESC_TEXT );
+            initConfigTypeMap( "Durability_Map", &m_DurationMap, WEM_Durability_Map_DESC_TEXT );
 
             configured = WaningEffectConstant::Configure( pInputJson );
             if( configured && !JsonConfigurable::_dryrun )
@@ -88,7 +88,7 @@ namespace Kernel
 
     bool WaningEffectMapAbstract::ConfigureReferenceTimer( const Configuration * pInputJson )
     {
-        initConfigTypeMap( "Reference_Timer", &m_RefTime, WEM_Reference_Time_DESC_TEXT, 0 );
+        initConfigTypeMap( "Reference_Timer", &m_RefTime, WEM_Reference_Timer_DESC_TEXT, 0 );
         return true;
     }
 

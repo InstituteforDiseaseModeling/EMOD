@@ -33,8 +33,8 @@ namespace Kernel
         const Configuration * inputJson
     )
     {
-        initConfigTypeMap( "Cost_To_Consumer", &cost_per_unit, RV_Cost_To_Consumer_DESC_TEXT, 0, 999999, 3.75 );
-        initConfigTypeMap( "Boosted_Antibody_Concentration", &boosted_antibody_concentration, RV_Boosted_Antibody_Concentration_DESC_TEXT, 0.0, FLT_MAX, 1.0 );
+        initConfigTypeMap( "Cost_To_Consumer", &cost_per_unit, IV_Cost_To_Consumer_DESC_TEXT, 0, 999999, 3.75 );
+        initConfigTypeMap( "Boosted_Antibody_Concentration", &boosted_antibody_concentration, Boosted_Antibody_Concentration_DESC_TEXT, 0.0, FLT_MAX, 1.0 );
 
         // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         // !!! Commented these out because only CSP is supported.

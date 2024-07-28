@@ -39,7 +39,7 @@ namespace Kernel
 
         if( use_event_or_config == EventOrConfig::Config || JsonConfigurable::_dryrun )
         {
-            initConfigComplexType( "Actual_IndividualIntervention_Config", &actual_intervention_config, Actual_IndividualIntervention_Config_DESC_TEXT );
+            initConfigComplexType( "Actual_IndividualIntervention_Config", &actual_intervention_config, HSB_Actual_IndividualIntervention_Config_DESC_TEXT );
         }
 
         initConfigTypeMap( "Tendency", &probability_of_seeking, HSB_Tendency_DESC_TEXT, 0.0, 1.0, 1.0 );

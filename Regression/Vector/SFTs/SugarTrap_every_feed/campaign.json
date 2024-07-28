@@ -16,8 +16,8 @@
                         "class": "WaningEffectBox",
                         "Box_Duration": 3
                     },
-                    "Expiration_Distribution" : "CONSTANT_DISTRIBUTION",
-                    "Expiration_Constant" : 1000,
+                    "Expiration_Period_Distribution" : "CONSTANT_DISTRIBUTION",
+                    "Expiration_Period_Constant" : 1000,
                     "class": "SugarTrap"
                 }
             }

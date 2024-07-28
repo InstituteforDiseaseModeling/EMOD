@@ -61,15 +61,15 @@ namespace Kernel
 
     bool CoitalActRiskFactors::Configure( const Configuration * inputJson )
     {
-        initConfigTypeMap( "Cost_To_Consumer", &cost_per_unit, STI_Barrier_Cost_DESC_TEXT, 0, 999999, 10.0 );
+        initConfigTypeMap( "Cost_To_Consumer", &cost_per_unit, IV_Cost_To_Consumer_DESC_TEXT, 0, 999999, 10.0 );
 
         initConfigTypeMap( "Acquisition_Multiplier",  &m_AcquisitionMultiplier,  CARF_Acquisition_Multiplier_DESC_TEXT,  0.0f, 100.0f, 1.0f );
         initConfigTypeMap( "Transmission_Multiplier", &m_TransmissionMultiplier, CARF_Transmission_Multiplier_DESC_TEXT, 0.0f, 100.0f, 1.0f );
 
         DistributionFunction::Enum expiration_type( DistributionFunction::CONSTANT_DISTRIBUTION );
-        initConfig( "Expiration_Distribution", expiration_type, inputJson, MetadataDescriptor::Enum( "Expiration_Distribution", CARF_Expiration_Distribution_DESC_TEXT, MDD_ENUM_ARGS( DistributionFunction ) ) );
+        initConfig( "Expiration_Period_Distribution", expiration_type, inputJson, MetadataDescriptor::Enum( "Expiration_Period_Distribution", Expiration_Period_Distribution_DESC_TEXT, MDD_ENUM_ARGS( DistributionFunction ) ) );
 
-        m_pExpirationDuration = DistributionFactory::CreateDistribution( this, expiration_type, "Expiration", inputJson );
+        m_pExpirationDuration = DistributionFactory::CreateDistribution( this, expiration_type, "Expiration_Period", inputJson );
 
         initConfigTypeMap("Expiration_Event_Trigger", &m_ExpirationTrigger, CARF_Expiration_Event_Trigger_DESC_TEXT );
 

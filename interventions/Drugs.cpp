@@ -26,19 +26,19 @@ namespace Kernel
         const Configuration * inputJson
     )
     {
-        initConfigTypeMap("Cost_To_Consumer",            &cost_per_unit,                          DRUG_Cost_To_Consumer_DESC_TEXT,               0, 99999);
-        initConfigTypeMap("Remaining_Doses",             &remaining_doses,                        DRUG_Remaining_Doses_DESC_TEXT,               -1, 999999);
-        initConfigTypeMap("Dose_Interval",               &time_between_doses,                     DRUG_Dose_Interval_DESC_TEXT,               0.0f, 99999.0f, 1.0f);
-        initConfigTypeMap("Primary_Decay_Time_Constant", &p_drug_model->fast_decay_time_constant, DRUG_Primary_Decay_Time_Constant_DESC_TEXT,    0, 999999);
-        initConfigTypeMap("Fraction_Defaulters",         &p_drug_model->fraction_defaulters,      DRUG_Fraction_Defaulters_DESC_TEXT,         0.0f, 1.0f, 0.0f);
+        initConfigTypeMap("Cost_To_Consumer",            &cost_per_unit,                          IV_Cost_To_Consumer_DESC_TEXT,               0, 99999);
+        initConfigTypeMap("Remaining_Doses",             &remaining_doses,                        GD_Remaining_Doses_DESC_TEXT,               -1, 999999);
+        initConfigTypeMap("Dose_Interval",               &time_between_doses,                     GD_Dose_Interval_DESC_TEXT,               0.0f, 99999.0f, 1.0f);
+        initConfigTypeMap("Primary_Decay_Time_Constant", &p_drug_model->fast_decay_time_constant, GD_Primary_Decay_Time_Constant_DESC_TEXT,    0, 999999);
+        initConfigTypeMap("Fraction_Defaulters",         &p_drug_model->fraction_defaulters,      GD_Fraction_Defaulters_DESC_TEXT,         0.0f, 1.0f, 0.0f);
 
-        initConfig( "Durability_Profile", p_drug_model->durability_time_profile, inputJson, MetadataDescriptor::Enum("Durability_Profile", DRUG_Durability_Profile_DESC_TEXT, MDD_ENUM_ARGS(PKPDModel)) );
+        initConfig( "Durability_Profile", p_drug_model->durability_time_profile, inputJson, MetadataDescriptor::Enum("Durability_Profile", GD_Durability_Profile_DESC_TEXT, MDD_ENUM_ARGS(PKPDModel)) );
         if (p_drug_model->durability_time_profile == PKPDModel::CONCENTRATION_VERSUS_TIME || JsonConfigurable::_dryrun)
         {
-            initConfigTypeMap("Secondary_Decay_Time_Constant", &p_drug_model->slow_decay_time_constant, DRUG_Secondary_Decay_Time_Constant_DESC_TEXT, 0, 999999);
-            initConfigTypeMap("Drug_CMax",                     &p_drug_model->Cmax,                     DRUG_Drug_CMax_DESC_TEXT,                     0, 10000);
-            initConfigTypeMap("Drug_Vd",                       &p_drug_model->Vd,                       DRUG_Drug_Vd_DESC_TEXT,                       0, 10000);
-            initConfigTypeMap("Drug_PKPD_C50",                 &p_drug_model->drug_c50,                 DRUG_Drug_PKPD_C50_DESC_TEXT,                 0, 5000);
+            initConfigTypeMap("Secondary_Decay_Time_Constant", &p_drug_model->slow_decay_time_constant, GD_Secondary_Decay_Time_Constant_DESC_TEXT, 0, 999999);
+            initConfigTypeMap("Drug_CMax",                     &p_drug_model->Cmax,                     GD_Drug_CMax_DESC_TEXT,                     0, 10000);
+            initConfigTypeMap("Drug_Vd",                       &p_drug_model->Vd,                       GD_Drug_Vd_DESC_TEXT,                       0, 10000);
+            initConfigTypeMap("Drug_PKPD_C50",                 &p_drug_model->drug_c50,                 GD_Drug_PKPD_C50_DESC_TEXT,                 0, 5000);
         }
 
         bool configured = BaseIntervention::Configure( inputJson );

@@ -74,7 +74,7 @@ namespace Kernel
         // --- read like you'd expect.
         // -----------------------------------------------------------------------------------------------
         initSimTypes( 2, "VECTOR_SIM", "MALARIA_SIM" );
-        initConfigTypeMap( "Cost_To_Consumer",     &cost_per_unit, MR_Cost_To_Consumer_DESC_TEXT, 0, 999999, 0.0f );
+        initConfigTypeMap( "Cost_To_Consumer",     &cost_per_unit, IV_Cost_To_Consumer_DESC_TEXT, 0, 999999, 0.0f );
         initConfigTypeMap( "Released_Species",     &m_ReleasedSpecies, MR_Released_Species_DESC_TEXT );
         initConfig(        "Released_Type",        release_type, inputJson, MetadataDescriptor::Enum("Released_Type", MR_Released_Type_DESC_TEXT, MDD_ENUM_ARGS(MosquitoReleaseType)) );
         initConfigTypeMap( "Released_Number",      &m_TotalToRelease,  MR_Released_Number_DESC_TEXT, 1, 1e8, 10000 ); // see NOTE above

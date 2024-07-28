@@ -9,8 +9,8 @@
                         "Initial_Effect": 0.7, 
                         "class": "WaningEffectExponential"
                     },
-                    "Expiration_Distribution" : "CONSTANT_DISTRIBUTION",
-                    "Expiration_Constant" : 150,
+                    "Expiration_Period_Distribution" : "CONSTANT_DISTRIBUTION",
+                    "Expiration_Period_Constant" : 150,
                     "Insecticide_Name" : "carbamate",
                     "class": "SugarTrap"
                 }, 
@@ -31,8 +31,8 @@
                         "Initial_Effect": 0.7, 
                         "class": "WaningEffectExponential"
                     },
-                    "Expiration_Distribution" : "CONSTANT_DISTRIBUTION",
-                    "Expiration_Constant" : 150,
+                    "Expiration_Period_Distribution" : "CONSTANT_DISTRIBUTION",
+                    "Expiration_Period_Constant" : 150,
                     "Insecticide_Name" : "pyrethroid",
                     "class": "SugarTrap"
                 }, 

@@ -96,7 +96,7 @@ namespace Kernel
     bool CoverageByNodeEventCoordinator::Configure( const Configuration * inputJson )
     {
         NodeIdAndCoverageList coverage_by_node;
-        initConfigComplexCollectionType("Coverage_By_Node", &coverage_by_node, Coverage_By_Node_DESC_TEXT );
+        initConfigComplexCollectionType("Coverage_By_Node", &coverage_by_node, CBNEC_Coverage_By_Node_DESC_TEXT );
 
         bool configured = StandardInterventionDistributionEventCoordinator::Configure(inputJson);
 

@@ -481,7 +481,7 @@ namespace Kernel
         initConfigTypeMap( "Barcodes",                &m_Barcodes,             RNDMG_Barcodes_DESC_TEXT );
         initConfigTypeMap( "Drug_Resistant_Strings",  &m_DrugResistantStrings, RNDMG_Drug_Resistant_Strings_DESC_TEXT );
         initConfigTypeMap( "HRP_Strings",             &m_HrpStrings,           RNDMG_HRP_Strings_DESC_TEXT );
-        initConfigTypeMap( "Include_Identity_By_XXX", &m_IncludeIdentityBy,    RNDMB_Include_Identity_By_XXX_DESC_TEXT, false, nullptr, nullptr );
+        initConfigTypeMap( "Include_Identity_By_XXX", &m_IncludeIdentityBy,    RNDMG_Include_Identity_By_XXX_DESC_TEXT, false, nullptr, nullptr );
 
 
         initConfig( "Drug_Resistant_And_HRP_Statistic_Type",

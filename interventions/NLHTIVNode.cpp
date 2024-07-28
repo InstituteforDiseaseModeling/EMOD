@@ -86,10 +86,10 @@ namespace Kernel
         initConfigTypeMap("Duration", &max_duration, BT_Duration_DESC_TEXT, -1.0f, FLT_MAX, -1.0f ); // -1 is a convention for indefinite duration
 
         initConfigTypeMap( "Blackout_Period", &blackout_period, Blackout_Period_DESC_TEXT, 0.0f, FLT_MAX, 0.0f );
-        initConfigTypeMap( "Blackout_Event_Trigger", &blackout_event_trigger, Blackout_Event_Trigger_DESC_TEXT );
+        initConfigTypeMap( "Blackout_Event_Trigger", &blackout_event_trigger, NLHTIVNode_Blackout_Event_Trigger_DESC_TEXT );
         initConfigTypeMap( "Blackout_On_First_Occurrence", &blackout_on_first_occurrence, Blackout_On_First_Occurrence_DESC_TEXT, false );
 
-        initConfigComplexType( "Node_Property_Restrictions", &node_property_restrictions, NLHTIVNode_Node_Property_Restriction_DESC_TEXT );
+        initConfigComplexType( "Node_Property_Restrictions", &node_property_restrictions, NLHTIVNode_Node_Property_Restrictions_DESC_TEXT );
 
         // --------------------------------------------------------------------------------------------------------------------
         // --- Phase 0 - Pre V2.0 - Trigger_Condition was an enum and users had to have all indivual events in the enum list.
@@ -100,7 +100,7 @@ namespace Kernel
         // ---                      Trigger_Condition_String for backward compatibility (and I'm lazy).
         // --- Phase 3 - 11/9/16    Consolidate so that the user only defines Trigger_Condition_List
         // --------------------------------------------------------------------------------------------------------------------
-        initConfigTypeMap( "Trigger_Condition_List", &m_trigger_conditions, NLHTI_Trigger_Condition_List_DESC_TEXT );
+        initConfigTypeMap( "Trigger_Condition_List", &m_trigger_conditions, NLHTINode_Trigger_Condition_List_DESC_TEXT );
 
         bool retValue = BaseNodeIntervention::Configure( inputJson );
 

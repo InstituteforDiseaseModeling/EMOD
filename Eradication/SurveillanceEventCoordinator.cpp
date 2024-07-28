@@ -90,7 +90,7 @@ namespace Kernel
     {
         initConfigTypeMap( "Start_Trigger_Condition_List", &m_StartTriggerConditionList, SEC_Start_Trigger_Condition_List_DESC_TEXT );
         initConfigTypeMap( "Stop_Trigger_Condition_List", &m_StopTriggerConditionList, SEC_Stop_Trigger_Condition_List_DESC_TEXT );
-        initConfigTypeMap( "Duration", &m_Duration, SEC_Duration_DESC_TEXT, -1.0f, FLT_MAX, -1.0f );
+        initConfigTypeMap( "Duration", &m_Duration, DEC_Duration_DESC_TEXT, -1.0f, FLT_MAX, -1.0f );
 
         bool retValue = IncidenceEventCoordinator::Configure( inputJson );
 

@@ -49,7 +49,7 @@ namespace Kernel
     {
         initConfig( OF_RELATIONSHIP_TYPE, m_OfRelationshipType, config,
                     MetadataDescriptor::Enum(OF_RELATIONSHIP_TYPE,
-                                              AR_Relationship_Type_DESC_TEXT,
+                                              AR_Of_Relationship_Type_DESC_TEXT,
                                               MDD_ENUM_ARGS(TargetRelationshipType)) );
 
         initConfig( THAT_RECENTLY, m_ThatRecently, config,

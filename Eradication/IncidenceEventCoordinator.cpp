@@ -46,7 +46,7 @@ namespace Kernel
     bool Action::Configure( const Configuration * inputJson )
     {
         initConfigTypeMap( "Threshold", &m_Threshold, ICE_Action_Threshold_DESC_TEXT, 0.0, FLT_MAX, 0.0 );
-        initConfig("Event_Type", m_EventType, inputJson, MetadataDescriptor::Enum("Event_Type", ICE_Event_Type_DESC_TEXT, MDD_ENUM_ARGS( EventType )));
+        initConfig("Event_Type", m_EventType, inputJson, MetadataDescriptor::Enum("Event_Type", ICE_Action_Event_Type_DESC_TEXT, MDD_ENUM_ARGS( EventType )));
         initConfigTypeMap( "Event_To_Broadcast", &m_EventToBroadcast, ICE_Action_Event_To_Broadcast_DESC_TEXT );
 
         bool ret = JsonConfigurable::Configure( inputJson );
@@ -291,7 +291,7 @@ namespace Kernel
         : JsonConfigurable()
         , m_Count(0)
         , m_NodePropertyRestrictions()
-        , m_DemographicRestrictions()
+        , m_DemographicRestrictions(ICE_Demographic_Coverage_DESC_TEXT)
         , m_TriggerConditionListIndividual()
         , m_CountEventsForNumTimeSteps(1)
         , m_NumTimeStepsCounted(-1)
@@ -307,7 +307,7 @@ namespace Kernel
     bool IncidenceCounter::Configure( const Configuration * inputJson )
     {
         initConfigTypeMap( "Count_Events_For_Num_Timesteps", &m_CountEventsForNumTimeSteps, ICE_Count_Events_For_Num_Timesteps_DESC_TEXT, 1, INT_MAX, 1 );
-        initConfigComplexType( "Node_Property_Restrictions", &m_NodePropertyRestrictions, Node_Property_Restriction_DESC_TEXT );
+        initConfigComplexType( "Node_Property_Restrictions", &m_NodePropertyRestrictions, Node_Property_Restrictions_DESC_TEXT );
         
         m_DemographicRestrictions.ConfigureRestrictions( this, inputJson );
         ConfigureTriggers( inputJson );
@@ -531,8 +531,8 @@ namespace Kernel
 
     void IncidenceEventCoordinator::ConfigureRepetitions( const Configuration * inputJson )
     {
-        initConfigTypeMap( "Number_Repetitions", &m_NumReps, ICE_Number_Repetitions_DESC_TEXT, -1, 10000, 1 );
-        initConfigTypeMap( "Timesteps_Between_Repetitions", &m_NumTimestepsBetweenReps, ICE_Timesteps_Between_Repetitions_DESC_TEXT, -1, 10000, -1 );
+        initConfigTypeMap( "Number_Repetitions", &m_NumReps, Number_Repetitions_DESC_TEXT, -1, 10000, 1 );
+        initConfigTypeMap( "Timesteps_Between_Repetitions", &m_NumTimestepsBetweenReps, Timesteps_Between_Repetitions_DESC_TEXT, -1, 10000, -1 );
     }
 
     void IncidenceEventCoordinator::CheckConfigureRepetitions()

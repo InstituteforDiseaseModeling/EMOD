@@ -35,7 +35,7 @@ namespace Kernel
             (node_selection_type == NodeSelectionType::DISTANCE_AND_MIGRATION) ||
             JsonConfigurable::_dryrun )
         {
-            initConfigTypeMap( "Max_Distance_To_Other_Nodes_Km", &max_distance_km, BETON_Distance_DESC_TEXT, 0, FLT_MAX, FLT_MAX );
+            initConfigTypeMap( "Max_Distance_To_Other_Nodes_Km", &max_distance_km, BETON_Max_Distance_To_Other_Nodes_Km_DESC_TEXT, 0, FLT_MAX, FLT_MAX );
         }
 
         bool ret = BaseIntervention::Configure( inputJson );

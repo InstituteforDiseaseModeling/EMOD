@@ -84,7 +84,7 @@ namespace Kernel
 
         initConfigTypeMap( "Trigger_Condition_List", &m_TriggerConditionList, CHW_Trigger_Condition_List_DESC_TEXT );
 
-        initConfigComplexType( "Node_Property_Restrictions", &m_NodePropertyRestrictions, Node_Property_Restriction_DESC_TEXT );
+        initConfigComplexType( "Node_Property_Restrictions", &m_NodePropertyRestrictions, Node_Property_Restrictions_DESC_TEXT );
 
         InterventionConfig intervention_config;
         initConfigComplexType( "Intervention_Config", &intervention_config, Intervention_Config_DESC_TEXT );

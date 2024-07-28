@@ -34,10 +34,10 @@ namespace Kernel
         }
 
         initConfigTypeMap( "NodeID_To_Migrate_To", &destination_external_node_id,NodeID_To_Migrate_To_DESC_TEXT, 0, UINT_MAX, 0 );
-        initConfigTypeMap( "Is_Moving", &is_moving, Is_Moving_DESC_TEXT, false );
+        initConfigTypeMap( "Is_Moving", &is_moving, MF_Is_Moving_DESC_TEXT, false );
 
         DistributionFunction::Enum before_leaving_function( DistributionFunction::CONSTANT_DISTRIBUTION );
-        initConfig( "Duration_Before_Leaving_Distribution", before_leaving_function, inputJson, MetadataDescriptor::Enum( "Duration_Before_Leaving_Distribution", Duration_Before_Leaving_Distribution_DESC_TEXT, MDD_ENUM_ARGS( DistributionFunction ) ) );
+        initConfig( "Duration_Before_Leaving_Distribution", before_leaving_function, inputJson, MetadataDescriptor::Enum( "Duration_Before_Leaving_Distribution", MF_Duration_Before_Leaving_Distribution_DESC_TEXT, MDD_ENUM_ARGS( DistributionFunction ) ) );
         duration_before_leaving = DistributionFactory::CreateDistribution( this, before_leaving_function, "Duration_Before_Leaving", inputJson );
 
         DistributionFunction::Enum at_node_function( DistributionFunction::CONSTANT_DISTRIBUTION );

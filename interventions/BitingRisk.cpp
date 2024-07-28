@@ -42,7 +42,7 @@ namespace Kernel
     {
         float param1_risk = 0.0, param2_risk = 0.0;
         DistributionFunction::Enum risk_distribution_function(DistributionFunction::CONSTANT_DISTRIBUTION);
-        initConfig("Risk_Distribution", risk_distribution_function, inputJson, MetadataDescriptor::Enum("Risk_Distribution", BR_Risk_Distribution_Type_DESC_TEXT, MDD_ENUM_ARGS(DistributionFunction)));
+        initConfig("Risk_Distribution", risk_distribution_function, inputJson, MetadataDescriptor::Enum("Risk_Distribution", BR_Risk_Distribution_DESC_TEXT, MDD_ENUM_ARGS(DistributionFunction)));
         m_Distribution = DistributionFactory::CreateDistribution( this, risk_distribution_function, "Risk", inputJson );
        
         return BaseIntervention::Configure( inputJson );

@@ -40,7 +40,7 @@ namespace Kernel
     bool AbstractDecision::Configure( const Configuration *inputJson )
     {
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        initConfigTypeMap( "Cost_To_Consumer", &cost_per_unit, SD_Cost_To_Consumer_DESC_TEXT, 0 );
+        initConfigTypeMap( "Cost_To_Consumer", &cost_per_unit, IV_Cost_To_Consumer_DESC_TEXT, 0 );
         //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         ConfigureResponsePositive( inputJson );

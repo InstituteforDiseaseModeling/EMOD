@@ -31,9 +31,9 @@ namespace Kernel
 
     bool SetSexualDebutAge::Configure( const Configuration * inputJson )
     {
-        initConfig( "Setting_Type", m_setting_type, inputJson, MetadataDescriptor::Enum( "setting_type", Sexual_Debut_Age_Setting_Type_DESC_TEXT, MDD_ENUM_ARGS( SettingType ) ) );
-        initConfigTypeMap( "Age_Years", &m_age, Male_Circumcision_Cost_To_Consumer_DESC_TEXT, 0.0f, FLT_MAX, MAX_HUMAN_AGE, "Setting_Type", "USER_SPECIFIED" );
-        initConfigTypeMap( "Distributed_Event_Trigger", &m_DistrbutedEventTrigger, Set_Sexual_Debut_Age_Distributed_Event_Trigger_DESC_TEXT );
+        initConfig( "Setting_Type", m_setting_type, inputJson, MetadataDescriptor::Enum( "setting_type", SSDA_Setting_Type_DESC_TEXT, MDD_ENUM_ARGS( SettingType ) ) );
+        initConfigTypeMap( "Age_Years", &m_age, SSDA_Age_Years_DESC_TEXT, 0.0f, FLT_MAX, MAX_HUMAN_AGE, "Setting_Type", "USER_SPECIFIED" );
+        initConfigTypeMap( "Distributed_Event_Trigger", &m_DistrbutedEventTrigger, Distributed_Event_Trigger_DESC_TEXT );
 
         bool is_configured = BaseIntervention::Configure( inputJson );
         if( !JsonConfigurable::_dryrun && is_configured )

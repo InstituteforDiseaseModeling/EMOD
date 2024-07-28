@@ -38,7 +38,7 @@ namespace Kernel
     {
         if( use_event_or_config == EventOrConfig::Event || JsonConfigurable::_dryrun )
         {
-            initConfigTypeMap( "Positive_Diagnosis_Event", &positive_diagnosis_event, SD_Positive_Diagnosis_Config_Event_DESC_TEXT );
+            initConfigTypeMap( "Positive_Diagnosis_Event", &positive_diagnosis_event, Positive_Diagnosis_Event_DESC_TEXT );
         }
     }
     
@@ -86,7 +86,7 @@ namespace Kernel
         ConfigureSensitivitySpecificity( inputJson );
         ConfigureOther( inputJson );
 
-        initConfigTypeMap( "Cost_To_Consumer", &cost_per_unit, SD_Cost_To_Consumer_DESC_TEXT, 0 );
+        initConfigTypeMap( "Cost_To_Consumer", &cost_per_unit, IV_Cost_To_Consumer_DESC_TEXT, 0 );
 
         ConfigureEventsConfigs( inputJson );
 

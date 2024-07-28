@@ -24,7 +24,7 @@ namespace Kernel
         const Configuration * inputJson
     )
     {
-        initConfigTypeMap( "Broadcast_Event", &broadcast_event, HIV_Broadcast_Event_DESC_TEXT );
+        initConfigTypeMap( "Broadcast_Event", &broadcast_event, Broadcast_Event_DESC_TEXT );
 
         bool ret = BaseIntervention::Configure( inputJson );
 

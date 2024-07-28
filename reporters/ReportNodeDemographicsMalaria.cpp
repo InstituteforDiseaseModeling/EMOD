@@ -127,7 +127,7 @@ GetReportInstantiator( Kernel::instantiator_function_t* pif )
 
     bool ReportNodeDemographicsMalaria::Configure( const Configuration * inputJson )
     {
-        initConfigTypeMap( "Stratify_By_Has_Clinical_Symptoms", &m_StratifyBySymptoms, RNDM_Stratify_By_Stratify_By_Has_Clinical_Symptoms_DESC_TEXT, false );
+        initConfigTypeMap( "Stratify_By_Has_Clinical_Symptoms", &m_StratifyBySymptoms, RNDM_Stratify_By_Has_Clinical_Symptoms_DESC_TEXT, false );
         bool ret = ReportNodeDemographics::Configure( inputJson );
 
         if( ret )

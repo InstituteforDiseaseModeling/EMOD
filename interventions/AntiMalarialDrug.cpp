@@ -75,7 +75,7 @@ namespace Kernel
             tmp_drug_name.constraint_param = &(MalariaDrugTypeCollection::GetInstance()->GetDrugNames() );
         }
 
-        initConfigTypeMap( "Drug_Type", &tmp_drug_name, AMDRUG_Drug_Type_DESC_TEXT );
+        initConfigTypeMap( "Drug_Type", &tmp_drug_name, Drug_Type_DESC_TEXT );
     }
 
     void AntimalarialDrug::CheckConfigureDrugType( const Configuration *inputJson )
@@ -93,7 +93,7 @@ namespace Kernel
 
     bool AntimalarialDrug::Configure( const Configuration * inputJson )
     {
-        initConfigTypeMap("Cost_To_Consumer", &cost_per_unit, AMDRUG_Cost_To_Consumer_DESC_TEXT, 0, 999999, 10);
+        initConfigTypeMap("Cost_To_Consumer", &cost_per_unit, IV_Cost_To_Consumer_DESC_TEXT, 0, 999999, 10);
         ConfigureDrugType( inputJson );
 
         bool ret = BaseIntervention::Configure( inputJson );

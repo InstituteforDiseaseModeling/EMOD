@@ -131,7 +131,7 @@ namespace Kernel
         AgeAndProbabilityList age_prob_list;
         initConfigTypeMap("Dropout", &dropout, CAL_Dropout_DESC_TEXT, false);
         initConfigComplexCollectionType("Calendar", &age_prob_list, CAL_Calendar_DESC_TEXT);
-        initConfigComplexType("Actual_IndividualIntervention_Configs", &actual_intervention_config, CAL_Actual_Intervention_Configs_DESC_TEXT);
+        initConfigComplexType("Actual_IndividualIntervention_Configs", &actual_intervention_config, CAL_Actual_IndividualIntervention_Configs_DESC_TEXT);
 
         bool ret = BaseIntervention::Configure( inputJson );
         if( ret && !JsonConfigurable::_dryrun )

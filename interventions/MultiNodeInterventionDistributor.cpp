@@ -20,7 +20,7 @@ namespace Kernel
     bool MultiNodeInterventionDistributor::Configure( const Configuration * inputJson )
     {
         NodeInterventionConfig intervention_list;
-        initConfigComplexType( "Node_Intervention_List", &intervention_list, MNID_Intervention_List_DESC_TEXT );
+        initConfigComplexType( "Node_Intervention_List", &intervention_list, MNID_Node_Intervention_List_DESC_TEXT );
 
         bool ret = BaseNodeIntervention::Configure( inputJson );
         if( ret & !JsonConfigurable::_dryrun )

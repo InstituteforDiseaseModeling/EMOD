@@ -19,7 +19,8 @@ namespace Kernel
     public:
         DemographicRestrictions( bool age_restrictions = true,
                                  TargetDemographicType::Enum defaultTargetDemographic = TargetDemographicType::Everyone,
-                                 bool use_coverage = true );
+                                 bool use_coverage = true,
+                                 const char* pDemographicCoverageDescText = Demographic_Coverage_DESC_TEXT );
         virtual ~DemographicRestrictions() { } 
 
         void ConfigureRestrictions( JsonConfigurable* pParent, const Configuration * inputJson );
@@ -40,6 +41,7 @@ namespace Kernel
         bool allow_age_restrictions;
         bool use_demographic_coverage;
         float demographic_coverage;
+        const char* p_demographic_coverage_desc_text;
         TargetDemographicType::Enum default_target_demographic;
         TargetDemographicType::Enum target_demographic;
         float target_age_min_years;

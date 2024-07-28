@@ -14,10 +14,12 @@ namespace Kernel
 {
     DemographicRestrictions::DemographicRestrictions( bool age_restrictions,
                                                       TargetDemographicType::Enum defaultTargetDemographic,
-                                                      bool use_coverage )
+                                                      bool use_coverage,
+                                                      const char* pDemographicCoverageDescText )
     : allow_age_restrictions(age_restrictions)
     , use_demographic_coverage( use_coverage )
     , demographic_coverage(DEFAULT_DEMOGRAPHIC_COVERAGE)
+    , p_demographic_coverage_desc_text(pDemographicCoverageDescText)
     , default_target_demographic(defaultTargetDemographic)
     , target_demographic(default_target_demographic)
     , target_age_min_years(0)
@@ -39,7 +41,7 @@ namespace Kernel
         {
             pParent->initConfigTypeMap( "Demographic_Coverage", 
                                         &demographic_coverage,
-                                        Demographic_Coverage_DESC_TEXT,
+                                        p_demographic_coverage_desc_text,
                                         0.0, 
                                         1.0, 
                                         DEFAULT_DEMOGRAPHIC_COVERAGE/*, 

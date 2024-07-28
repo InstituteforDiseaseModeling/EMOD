@@ -62,13 +62,13 @@ namespace Kernel
                                               MDD_ENUM_ARGS(RelationshipType) ) );
 
         initConfigTypeMap( "Partner_Has_IP", &has_ip_parameter, SNR_Partner_Has_IP_DESC_TEXT );
-        initConfigTypeMap( "Relationship_Created_Event", &m_RelationshipCreatedEvent, SNR_Relationship_Created_DESC_TEXT );
+        initConfigTypeMap( "Relationship_Created_Event", &m_RelationshipCreatedEvent, SNR_Relationship_Created_Event_DESC_TEXT );
 
         initConfig( "Condom_Usage_Parameters_Type",
                     m_CondomUsageParametersType,
                     inputJson,
                     MetadataDescriptor::Enum( "CondomUsageParametersType",
-                                               SNR_Condoum_Usage_Parameters_Type_DESC_TEXT,
+                                               SNR_Condom_Usage_Parameters_Type_DESC_TEXT,
                                                MDD_ENUM_ARGS(CondomUsageParametersType) ) );
 
         initConfigTypeMap( "Condom_Usage_Sigmoid", &m_CondumUsageSigmoid, SNR_Condom_Usage_Sigmoid_DESC_TEXT, "Condom_Usage_Parameters_Type", "SPECIFY_USAGE");

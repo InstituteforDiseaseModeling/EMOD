@@ -74,7 +74,7 @@ namespace Kernel
         std::string tmp_name = default_name;
         initConfigTypeMap( "Intervention_Name", &tmp_name, Intervention_Name_DESC_TEXT, default_name );
 
-        initConfigTypeMap( "Dont_Allow_Duplicates", &dont_allow_duplicates, Dont_Allow_Duplicates_DESC_TEXT, false );
+        initConfigTypeMap( "Dont_Allow_Duplicates", &dont_allow_duplicates, IND_Dont_Allow_Duplicates_DESC_TEXT, false );
 
         IPKeyValueParameter ip_key_value;
         jsonConfigurable::tDynamicStringSet tmp_disqualifying_properties;
@@ -268,7 +268,7 @@ namespace Kernel
         std::string tmp_name = default_name;
 
         initConfigTypeMap( "Intervention_Name", &tmp_name, Intervention_Name_DESC_TEXT, default_name );
-        initConfigTypeMap( "Dont_Allow_Duplicates", &dont_allow_duplicates, Dont_Allow_Duplicates_DESC_TEXT, false );
+        initConfigTypeMap( "Dont_Allow_Duplicates", &dont_allow_duplicates, NODE_Dont_Allow_Duplicates_DESC_TEXT, false );
 
         NPKeyValueParameter np_key_value;
         jsonConfigurable::tDynamicStringSet tmp_disqualifying_properties;

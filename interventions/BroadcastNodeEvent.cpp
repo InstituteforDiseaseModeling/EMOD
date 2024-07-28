@@ -37,7 +37,7 @@ namespace Kernel
     bool BroadcastNodeEvent::Configure( const Configuration * inputJson )
     {
         initConfigTypeMap( "Broadcast_Event", &m_EventToBroadcast, BNE_Broadcast_Event_DESC_TEXT );
-        initConfigTypeMap( "Cost_To_Consumer", &cost_per_unit, BNE_Cost_To_Consumer_DESC_TEXT, 0.0f, 999999, 0.0f );
+        initConfigTypeMap( "Cost_To_Consumer", &cost_per_unit, IV_Cost_To_Consumer_DESC_TEXT, 0.0f, 999999, 0.0f );
 
         bool retValue = BaseNodeIntervention::Configure( inputJson );
 

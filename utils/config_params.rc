@@ -51,7 +51,6 @@
 #define Birth_Rate_Sinusoidal_Forcing_Amplitude_DESC_TEXT "The amplitude of sinusoidal variations in birth rate."
 #define Birth_Rate_Sinusoidal_Forcing_Phase_DESC_TEXT "The phase of sinusoidal variations in birth rate."
 #define Birth_Rate_Time_Dependence_DESC_TEXT "A scale factor for BirthRate that allows it to be altered by time or season."
-#define Bodyweight_Exponent_DESC_TEXT "Effect of bodyweight on maximum drug concentration in an individual patient."
 #define Campaign_Filename_DESC_TEXT "The path to the campaign file."
 #define CD4_At_Death_LogLogistic_Heterogeneity_DESC_TEXT "The inverse shape parameter of a Weibull distribution that represents the at-death CD4 cell count."
 #define CD4_At_Death_LogLogistic_Scale_DESC_TEXT "The scale parameter of a Weibull distribution that represents the at-death CD4 cell count."
@@ -81,17 +80,36 @@
 #define Default_Geography_Initial_Node_Population_DESC_TEXT "When using the built-in demographics for default geography, the initial number of individuals in each node."
 #define Default_Geography_Torus_Size_DESC_TEXT "When using the built-in demographics for default geography, the square root of the number of nodes in the simulation. For migration, the nodes are assumed to be a torus."
 #define Demographics_Filenames_DESC_TEXT "An array of the paths to demographics files containing information on the identity and demographics of the region to simulate."
+#define Distribution_Constant_DESC_TEXT "Each instance will receive this constant/fixed value."
+#define Distribution_Dual_Constant_Peak_2_Value_DESC_TEXT "The value to assign to the remaining individuals/instances."
+#define Distribution_Dual_Constant_Proportion_0_DESC_TEXT "The proportion of individuals/instances to assign a value of zero."
+#define Distribution_DualExponential_Mean_1_DESC_TEXT "The mean of the first exponential distribution."
+#define Distribution_DualExponential_Mean_2_DESC_TEXT "The mean of the second exponential distribution."
+#define Distribution_DualExponential_Proportion_1_DESC_TEXT "The proportion of individuals/instances in the first exponential distribution."
+#define Distribution_Exponential_DESC_TEXT "The mean for an exponential distribution."
+#define Distribution_Gaussian_Mean_DESC_TEXT "The mean for a Gaussian distribution."
+#define Distribution_Gaussian_Std_Dev_DESC_TEXT "The standard deviation for a Gaussian distribution."
+#define Distribution_LogNormal_Mu_DESC_TEXT "The mean for a log-normal distribution."
+#define Distribution_LogNormal_Sigma_DESC_TEXT "The width for a log-normal distribution."
+#define Distribution_PiecewiseConstant_DESC_TEXT "The **Times** and **Values** that define a stair step distribution."
+#define Distribution_PiecewiseLinear_DESC_TEXT "The **Times** and **Values** that define a distribution where linear interpolation is used to find the value when the time is inbetween 'Times'."
+#define Distribution_Poisson_Mean_DESC_TEXT "The mean for a Poisson distribution."
+#define Distribution_Uniform_Max_DESC_TEXT "The maximum of the uniform distribution."
+#define Distribution_Uniform_Min_DESC_TEXT "The minimum of the uniform distribution."
+#define Distribution_Weibull_Kappa_DESC_TEXT "The shape value in a Weibull distribution."
+#define Distribution_Weibull_Lambda_DESC_TEXT "The scale value in a Weibull distribution."
 #define Drought_Egg_Hatch_Delay_DESC_TEXT "Proportion of regular egg hatching that still occurs when habitat dries up."
-#define Drug_Cmax_DESC_TEXT "The maximum drug concentration used."
+#define DRUG_Bodyweight_Exponent_DESC_TEXT "Effect of bodyweight on maximum drug concentration in an individual patient."
+#define Drug_Cmax_DESC_TEXT "The maximum drug concentration that can be used, and is in the same units as **Drug_PKPD_C50**. Since drug concentrations and C50 values are often specified with different unit systems, these two parameters have been designed to be flexible provided that the units are the same for each. This parameter is used when **Durability_Profile** is set to CONCENTRATION_VERSUS_TIME."
 #define Drug_Decay_T1_DESC_TEXT "The primary drug decay rate, in days."
 #define Drug_Decay_T2_DESC_TEXT "The secondary drug decay rate, in days."
-#define Drug_Dose_Interval_DESC_TEXT "The interval between doses, in days."
+#define Drug_Dose_Interval_DESC_TEXT "The number of days to wait between does."
 #define Drug_Fulltreatment_Doses_DESC_TEXT "The number of doses for a full treatment."
 #define Drug_Gametocyte02_Killrate_DESC_TEXT "The log reduction per day in early-stage :term:`gametocytes`."
 #define Drug_Gametocyte34_Killrate_DESC_TEXT "The log reduction per day in late-stage :term:`gametocytes`."
 #define Drug_GametocyteM_Killrate_DESC_TEXT "The log reduction per day in mature gametocytes at saturated drug concentration."
 #define Drug_Hepatocyte_Killrate_DESC_TEXT "The log reduction in hepatocytes per day."
-#define Drug_PKPD_C50_DESC_TEXT "The concentration at which drug killing rates are half of maximum."
+#define Drug_PKPD_C50_DESC_TEXT "The concentration at which drug killing rates are half of the maximum. Must use the same units as **Drug_Cmax**. This parameter is used when **Durability_Profile** is set to CONCENTRATION_VERSUS_TIME."
 #define Drug_Vd_DESC_TEXT "The volume of drug distribution in a pharmacokinetic two compartment model. This value is the ratio of the volume of the second compartment to that of the first."
 #define Egg_Arrhenius1_DESC_TEXT "The temperature-independent scale factor in the Arrhenius equation for egg hatching rate."
 #define Egg_Arrhenius2_DESC_TEXT "The temperature-dependent scale factor in the Arrhenius equation for egg hatching rate."
@@ -338,6 +356,7 @@
 #define Sexual_Debut_Age_Male_Weibull_Heterogeneity_DESC_TEXT "Inverse shape of Weibull for male debut age."
 #define Sexual_Debut_Age_Male_Weibull_Scale_DESC_TEXT "Scale of Weibull for male debut age."
 #define Sexual_Debut_Age_Min_DESC_TEXT "Minimum debut age."
+#define Sexual_Debut_Age_Setting_Type_DESC_TEXT "The **WEIBULL** setting will initialize the debut age of each person using a Weibull distribution according to their gender with the **Sexual_Debut_Age_XXX_Weibull_Heterogeneity** and **Sexual_Debut_Age_XXX_Weibull_Scale** parameters. If the **FROM_INTERVENTION** setting is used, the individual's debut age will not be set unless it is set by the **SetSexualDebutAge** intervention.  See the **SetSexualDebutAge** intervention for more details."
 #define Sigmoid_Max_DESC_TEXT "The maximum value for defining a sigmoidal curve."
 #define Sigmoid_Mid_DESC_TEXT "The mid value for defining a sigmoidal curve."
 #define Sigmoid_Min_DESC_TEXT "The minimum value for defining a sigmoidal curve."
@@ -381,4 +400,166 @@
 #define x_Temporary_Larval_Habitat_DESC_TEXT "Scale factor for the habitat size for all mosquito populations."
 #define x_Vector_Migration_Local_DESC_TEXT "Scale factor for the rate of vector migration to adjacent nodes."
 #define x_Vector_Migration_Regional_DESC_TEXT "Scale factor for the rate of vector migration to non-adjacent nodes."
-#include "missing_config_params.rc"
+#define Drug_Name_DESC_TEXT "The unique name of the drug."
+
+#define Report_Parasite_Smear_Sensitivity_DESC_TEXT   "For reports only.  The number of microliters of blood tested to find single parasites in a traditional smear (corresponds to inverse parasites/microliters sensitivity)."
+#define Report_Gametocyte_Smear_Sensitivity_DESC_TEXT "For reports only.  The number of microliters of blood tested to find single gametocytes in a traditional smear (corresponds to inverse gametocytes/microliters sensitivity)."
+
+#define Report_Detection_Threshold_Blood_Smear_Parasites_DESC_TEXT   "parsites/microliter-For each person in the sim, the BLOOD_SMEAR_PARASITES diagnostic must have more parasites than this threshold to be counted as detected.  This impacts all reports keeping track of this stat for the population."
+#define Report_Detection_Threshold_Blood_Smear_Gametocytes_DESC_TEXT "gametocytes/microliter-For each person in the sim, the BLOOD_SMEAR_GAMETOCYTES diagnostic must have more gametocytes than this threshold to be counted as detected.  This impacts all reports keeping track of this stat for the population."
+#define Report_Detection_Threshold_PCR_Parasites_DESC_TEXT           "parasites/microliter-For each person in the sim, the PCR_PARASITES diagnostic must have more parasites than this threshold to be counted as detected.  This impacts all reports keeping track of this stat for the population."
+#define Report_Detection_Threshold_PCR_Gametocytes_DESC_TEXT         "gametocytes/microliter-For each person in the sim, the PCR_GAMETOCYTES diagnostic must have more gametocytes than this threshold to be counted as detected.  This impacts all reports keeping track of this stat for the population."
+#define Report_Detection_Threshold_PfHRP2_DESC_TEXT                  "picograms/microliter-For each person in the sim, the PF_HRP2 diagnostic must have more PfHRP2 protein than this threshold to be counted as detected.  This impacts all reports keeping track of this stat for the population."
+#define Report_Detection_Threshold_True_Parasite_Density_DESC_TEXT   "parasites/microliter-For each person in the sim, the TRUE_PARASITE_DENSITY diagnostic must have more parasites than this threshold to be counted as detected.  This impacts all reports keeping track of this stat for the population."
+#define Report_Detection_Threshold_Fever_DESC_TEXT                   "Level of body temperature above normal, in degrees Celsius, corresponding to detectable fever.  Normal body temperature is defined as 37 degrees Celsius."
+
+#define PfHRP2_Boost_Rate_DESC_TEXT "The rate at which PfHRP2 protein is being added to the blood stream by the infected red blood cells. - pg/iRBC/day: 1.4e-13 grams per 48h / 2 (48h cycle to daily)"
+#define PfHRP2_Decay_Rate_DESC_TEXT "The fraction of the protein decaying each day (based on 3.67 day half-life)"
+
+#define VA_Name_DESC_TEXT "The name of an allele at this locus.  It must be unique for a given species of vector."
+#define VA_Frequency_DESC_TEXT "This is frequency of the allele at this locus in the population at initialization."
+#define VA_Is_Y_Chromosome_DESC_TEXT "True implies that this allele represents the Y chromosome.  This can only be used when 'Is_Gender_Gene' is also true."
+
+#define VAM_Mutate_From_DESC_TEXT "If the allele in the gamete that could mutate."
+#define VAM_Mutate_To_DESC_TEXT "The allele that this locus will change to during gamete generation."
+#define VAM_Probability_Of_Mutation_DESC_TEXT "The probability that the allele will mutate from one allele to the other during the creation of the gametes."
+
+#define TM_Trait_DESC_TEXT "The trait to be modified of vectors with the given allele combination."
+#define TM_Modifier_DESC_TEXT "The multiplier to use to modify the given trait for vectors with the given allele combination."
+
+#define VTM_Allele_Combinations_DESC_TEXT "This defines a possible subset of allele pairs that a vector could have.  Each pair are alleles from one gene.  If the vector has this subset, then the associated traits will be adjusted.  Order does not matter.  '*' is allowed when only the occurrence of one allele is important."
+#define VTM_Trait_Modifiers_DESC_TEXT "This is an array of trait-modifier pairs.  Vectors with the associated allele combination will have this set of traits modified."
+
+#define VG_Allele_DESC_TEXT "This is an array of allele name-initial allele frequency pairs.  The initial frequencies of the alleles must add to one.  All possible allele of a gene must be defined here.  Allele names must be unique across all genes.  A gene can have a max of 8 alleles."
+#define VG_Mutations_DESC_TEXT "(Germline Mutation) This is an array of elements that define allele mutations that occur during the creation of the gametes. An allele cannot mutate into itself."
+#define VG_Is_Gender_Gene_DESC_TEXT "True implies that the alleles of this gene are for gender.  If defining the gender gene, X & Y must be defined.  One can have 4 alleles of a particular gender type."
+
+
+#define CTAL_Copy_To_Allele_DESC_TEXT "The name of the allele to be copied.  It must be an allele of the same gene as the 'Allele_To_Copy' and 'Allele_To_Repleace'."
+#define CTAL_Likelihood_DESC_TEXT "The likelihood that the copy process will produce this allele.  If you give the 'Allele_To_Replace', you are defining the likelihood the copy fails.  If you give the 'Allele_To_Copy', you are specifying the likelihood of success.  Definitions for other alleles define possible mutations."
+
+#define Genes_DESC_TEXT "This is an array of Gene elements.  Each element defines all the possible allele for the gene and possible allele mutations.  Every vector will have two of the alleles of every gene.  There will be a max of 10 genes.  By default, one of the 10 genes is the gender 'gene' that has two alleles - X and Y.  This allows the user to use the X & Y alleles in Gene_To_Trait_Modifiers."
+#define Gene_To_Trait_Modifiers_DESC_TEXT "This object defines that if a vector has a particular set of allele pairs, then some of their traits will be modified.  In most cases, this will consist of a single pair of allele associated with impact of one trait.  We provide support for the many-to-many case for when things aren't simple."
+#define Drivers_DESC_TEXT "This is an array of Driver elements.  They change the likelihood that other alleles will be propagated from one parent's gamete to the other parent's gamete when the cells merge."
+
+#define VGD_Driver_Type_DESC_TEXT "This indicates the type of driver.  CLASSIC-The driver can only drive if the one gamete has the driving allele and the other has a specific allele to be replaced; INTEGRAL_AUTONOMOUS-At least one of the gametes must have the driver.  Alleles can still be driven if the driving allele is in both gametes or even if the driving allele cannot replace the allele in the other gamete.  X_SHRED can be used to reduce the number of female eggs produced while Y_SHRED does the opposite and reduced the number of male eggs produced.  DAISY_CHAIN can be used for drives that do not drive themselves but can be driven by another allele."
+#define VGD_Driving_Allele_DESC_TEXT "This is the allele that is known as the driver."
+#define VGD_Alleles_Driven_DESC_TEXT "If the drive can be activated, then these elements define the probabilities of how alleles are copied."
+#define VGD_Driving_Allele_Params_DESC_TEXT "If the drive is X_SHRED or Y_SHRED and it can be activiated, then these parameters define how the driver is copied."
+#define VGD_Shredding_Alleles_DESC_TEXT "If the drive is X_SHRED or Y_SHRED and it can be activated, then these parameters define how gender alleles are shredded."
+
+#define SA_Allele_Required_DESC_TEXT "The genome must have this gender allele in order for shredding to occur. If the driver is X_SHRED, then the allele must be designated as a Y chromosome. If the driver is Y_SHRED, then the allele must NOT be designated as a Y chromosome."
+#define SA_Allele_To_Shred_DESC_TEXT "The genome must have this gender allele in order for shredding to occur. If the driver is X_SHRED, then the allele must NOT be designated as a Y chromosome. If the driver is Y_SHRED, then the allele must be designated as a Y chromosome."
+#define SA_Allele_To_Shread_To_DESC_TEXT "This is a gender allele that the 'shredding' will change the Allele_To_Shred into. It can be a temporary allele that never exists in the output or could be something that appears due to resistance/failures."
+#define SA_Allele_Shredding_Fraction_DESC_TEXT "This is the fraction of the Alleles_To_Shred that will be converted to Allele_To_Shred_To.  If this value is less than one, then some of the Allele_To_Shred will remain and be part of the gametes."
+#define SA_Allele_To_Shred_To_Surviving_Fraction_DESC_TEXT "A trait modifier will automatically generated for [ Allele_To_Shred_To, * ], the trait ADJUST_FERTILE_EGGS, and this value as its modifier. A value of 0 implies perfect shredding such that no Allele_To_Shred_To survive in the eggs. A value of 1 means all of the 'shredded' alleles survive."
+
+#define AlleleDriven_Allele_To_Copy_DESC_TEXT "The main allele to be copied."
+#define AlleleDriven_Allele_To_Replace_DESC_TEXT "The allele that must exist and will be replaced by the copy."
+#define AlleleDrive_Copy_To_Likelihood_DESC_TEXT "This is a dictionary of allele-to-likelihood.  If the other gamete has the 'Allele_To_Replace', this is the likelihood that it will result in one of the specified values.  Notice that you can specify the 'Allele_To_Copy' to indicate the probability that the copy failed or other alleles to account for mutation in the copy process."
+
+#define Adult_Life_Expectancy_DESC_TEXT    "Number of days an average female mosquito survives. The daily female mortality rate is 1 / (value of this parameter)."
+#define Male_Life_Expectancy_DESC_TEXT     "Number of days an average male mosquito survives. The daily male mortality rate is 1 / (value of this parameter)."
+
+#define VECTOR_Enable_Vector_Species_Report_DESC_TEXT "A value of one will cause the VectorSpeciesReport.json file to be created."
+
+#define Capacity_Distribution_Number_Of_Years_DESC_TEXT "The total length of time in years for the scaling.  If the simulation goes longer than this time, the pattern will repeat.  Ideally, this value times 365 is the last value in 'Capacity_Distribution_Over_Time'."
+#define Capacity_Distribution_Over_Time_DESC_TEXT       "This allows one to scale the larval capacity over time.  The Times and Values arrays must be the same length where Times is in days and Values are a scale factor per degrees squared.  The value is multiplied times the max capacity and 'Node_Grid_Size' squared/4. Ideally, you want the last value  to equal the first value if they are one day apart.  A point will be added if not."
+
+#define VSP_Name_DESC_TEXT "Name of this species of vectors"
+
+#define Vector_Species_Params_DESC_TEXT "A list of JSON object where each object contains the parameters for a specific species of vectors."
+
+// mask reading/writing from/to serialized population file
+#define SerializationMask_Node_Read_DESC_TEXT   "A control that determines what data is read from the serialized file. If the control is set, the configuration file is used. For example, a value of 0 implies that the Larval Habitat data is read from the serialized file while a value of 16 implies that the habitats are configured using the data from the configuration file (i.e. config.json)."
+#define SerializationMask_Node_Write_DESC_TEXT  "A control that determines what data is written to the serialized file letting the user reduce the file size.  If the mask is set, the data of the masked module is not written to the file. For example, a value of 0 implies that the Larval Habitat data is written to the serialized file while a value of 16 implies that the habitats are not saved."
+#define Serialized_Population_Reading_Type_DESC_TEXT "Set to READ to enable reading from a serialized population file, set to NONE otherwise."
+#define Serialized_Population_Writing_Type_DESC_TEXT "The type of serialization to perform. NONE for no serialization, TIME to use definition from Serialization_Times, and TIMESTEP to use definition from Serialization_Time_Steps."
+
+#define Insecticides_DESC_TEXT                        "An Array of insecticides and their resistance modifiers"
+#define Insecticide_Species_Name_DESC_TEXT            "Name of the species of vectors.  Must be defined in <config.Vector_Species_Params>"
+#define Insecticide_Allele_Combinations_DESC_TEXT     "The combination of alleles that vectors must have in order to be resistant.  These alleles must be defined in <config.Vector_Species_Params.Genes.Alleles> for the associated species."
+#define Insecticide_Blocking_Modifier_DESC_TEXT       "The value used to modify (multiply) the blocking effectivity of an intervention"
+#define Insecticide_Killing_Modifier_DESC_TEXT        "The value used to modify (multiply) the killing effectivity of an intervention"
+#define Insecticide_Larval_Killing_Modifier_DESC_TEXT "The value used to modify (multiply) the larval killing effectivity of an intervention"
+#define Insecticide_Repelling_Modifier_DESC_TEXT      "The value used to modify (multiply) the repelling effectivity of an intervention"
+#define Insecticide_Name_DESC_TEXT                    "Name of insecticide"
+#define Insecticide_Resistance_DESC_TEXT              "An array of resistance modifier objects that define how to modify the efficacy of the insecticide for particular vector genomes."
+
+#define Serialization_Precision_DESC_TEXT "Default is REDUCED to reduce the size of the serialized file.  FULL gives more floating point precision but creates larger files."
+
+#define Inset_Chart_Reporting_Include_30Day_Avg_Infection_Duration_DESC_TEXT "If true the '30-Day Avg Infection Duration' channel is included in the InsetChart.json report."
+
+#define Enable_Temperature_Dependent_Egg_Hatching_DESC_TEXT "Controls whether or not temperature has an effect on egg hatching, defined by Egg_Arrhenius1 and Egg_Arrhenius2."
+
+
+#define DM_Drug_Resistant_String_DESC_TEXT "A series of nucleotide base letters (A, C, G, T) that represent the drug resistant values at locations in the genome.  There must be one character for each location defined in <config>.Parasite_Genetics.Drug_Resistant_Genome_Locations."
+#define DM_PKPD_C50_Modifier_DESC_TEXT "If the parasite has this drug resistant string, this value will be multiplied times the 'Drug_PKPD_C50' value of the drug.  Genomes with multiple matching strings will be simply multiplied together."
+#define DM_Max_IRBC_Kill_Modifier_DESC_TEXT "If the parasite has this drug resistant string, this value will be multiplied times the 'Max_Drug_IRBC_Kill' value of the drug.  Genomes with multiple matching strings will be simply multiplied together."
+
+#define Habitats_DESC_TEXT "A measure of the habitat type and scale factors used to estimate larval population.  Use each element in the array to specify a habitat type and max larval capacity. LINEAR_SPLINE has a more detailed scaling configuration.  See the documentation for more information."
+
+#define VH_Habitat_Type_DESC_TEXT "The type of habitat that this species of vectors use for eggs.  Each species can have at most one of each type.  You cannot use ALL_HABITATS."
+
+#define Parasite_Genetics_DESC_TEXT                    "The set of parameters needed for modeling the genetics of plasmodium falciparum."
+#define Enable_FPG_Similarity_To_Base_DESC_TEXT        "If true the Full Parasite Genetics model will simulate the base model.  That is, a person can only get one infection per timestep, only adult vectors can get infected, and a vectors is always infected once it becomes infected."
+#define Sporozoite_Life_Expectancy_DESC_TEXT           "The number of days sporozoite survives in the mosquito.  The mortality rate will be the inverse of this parameter."
+#define Sporozoites_Per_Oocyst_Distribution_DESC_TEXT  "Determines the number of sporozoites to create for each oocyst."
+#define Num_Sporozoites_In_Bite_Fail_DESC_TEXT         "Used in a negative binomial to the number of sporozoites delivered to the human in a bite from a mosquito-number of failures"
+#define Probability_Sporozoite_In_Bite_Fails_DESC_TEXT "BD-Used in a negative binomial to the number of sporozoites delivered to the human in a bite from a mosquito-probability of failure"
+#define Num_Oocyst_From_Bite_Fail_DESC_TEXT            "Used to determine the number of oocyst to generate in the mosquito from an infectious bite-number of failures.  The genome of the oocyst depend on the gametocytes in the bite."
+#define Probability_Oocyst_From_Bite_Fails_DESC_TEXT   "Used to determine the number of oocyst to generate in the mosquito from an infectious bite-probability of failure."
+#define Crossove_Gamma_K_DESC_TEXT                     "The 'K' or shape parameter of the gamma distribution used to select the secondary crossover points.  Remember the mean is K*Theta and variance is K*Theta*Theta.  Output of the distribution is assumed to be in centimorgans which is internally converted to genome locations/base pairs."
+#define Crossove_Gamma_Theta_DESC_TEXT                 "The 'Theta' or scale parameter of the gamma distribution used to select the secondary crossover points.  Remember the mean is K*Theta and variance is K*Theta*Theta.  Output of the distribution is assumed to be in centimorgans which is internally converted to genome locations/base pairs."
+
+#define Barcode_Genome_Locations_DESC_TEXT "This is an array of genome locations where each barcode allele is found.  Its length determines how many values are in the barcode.  That is, if you want a 24-SNP barcode, then there should be 24 locations. This can be initialized to be empty if there are no Barcode positions to be tracked."
+#define Drug_Resistant_Locations_DESC_TEXT "This is an array of genome locations where each drug resistant allele is found.  Its length determines the total number of possible drug related markers.  These locations and possible values can be used in Malaria_Drug_Params.Resistances to indicate when the effect of a drug should be modified."
+#define HRP_Locations_DESC_TEXT "This is an array of genome locations where each HRP allele is found.  Its length determines the total number of possible HRP related markers.  A value of 'A' implies that the HRP marker is not present.  A non-'A' value implies that HRP is present."
+#define MSP_Genome_Location_DESC_TEXT "This is a single genome location representing where the merozoite surface protein (MSP) gene is found in the genome.  The initial value of the MSP will be set randomly by the model, but we define its location in the genome here. This cannot be empty as it is required for the immune model."
+#define PfEMP1_Variants_Genome_Locations_DESC_TEXT "This is an array of genome locations representing where the major epitopes, PfEMP1 variants, are found in the genome.  The initial values will be set randomly by the model, but we define the locations here.  There must be 50 locations defined. This cannot be empty as it is required for the immune model."
+#define Neighborhood_Size_MSP_DESC_TEXT "The number of MSP variants to randomly select the MSP variant.  This is an 'neighborhood' around a number based on the barcode."
+#define Neighborhood_Size_PfEMP1_DESC_TEXT "The number of PfEMP1 variants to randomly select for the i'th PfEMP1 variant.  This is an 'neighborhood' around a number based on the barcode."
+
+#define Var_Gene_Randomness_Type_DESC_TEXT "This controls how random the var genes are in each new infection.  FIXED_NEIGHBORHOOD implies that the are set when the genome is created and each infection with this genome gets the same set of var genes.  FIXED_MSP implies that the MSP var gene is fixed but the PfEMP1 Major var genes are random for every infection.  ALL_RANDOM implies that the MPS and PfEMP1 Major var genes are random with every infection.  The minor epitopes are always random."
+
+#define Inset_Chart_Has_Interventions_DESC_TEXT "A channel is added to InsetChart for each InterventionName provided.  The channel name will be Has_<InterventionName> and will be the fraction of the population that has that intervention.  The 'Intervention_Name' in the campaign should be the values in this parameter."
+#define Inset_Chart_Has_IP_DESC_TEXT "A channel is added to InsetChart for each value of each IP provided.  The channel name will be HasIP_<Key:Value> and will be the fraction of the population that has that value for that IPKey."
+#define Inset_Chart_Include_Pregnancies_DESC_TEXT "If true, channels are added about pregnancies and possible mothers."
+
+#define Temporary_Habitat_Decay_Factor_DESC_TEXT "Factor to convert raw evaporation rate (ignoring boundary layer effects) to the daily rate of larval habitat loss for temporary habitats (Habitats set to TEMPORARY_RAINFALL). Units are (larval carrying capacity per day) / (kg per square meter per second)."
+#define Semipermanent_Habitat_Decay_Rate_DESC_TEXT "Daily rate of larval habitat loss for semi-permanent habitats with Habitats parameter value of WATER_VEGETATION or BRACKISH_SWAMP."
+#define Rainfall_In_mm_To_Fill_Swamp_DESC_TEXT "Millimeters of rain to fill larval habitat to capacity. Only used for vector species with Habitats set to BRACKISH_SWAMP."
+
+
+#define Report_HIV_ByAgeAndGender_Collect_HIV_Stage_Data_DESC_TEXT "Stratify the data by HIV Infection Stage (NOT_INFECTED, ACUTE, LATENT, AIDS, ON_ART)."
+
+#define RCA_Has_Intervention_With_Name_DESC_TEXT "An array of intervention names where a column is added for each name.  1 if the person has the intervention, else 0."
+#define RCA_Individual_Properties_DESC_TEXT "An array of Individual Property keys where a column is added for each key.  The value of the key for that person will be in the row."
+#define RCA_Relationship_Type_DESC_TEXT "If not NA, it indicates that data will be collected only on coital acts in relationships of this type."
+#define RCA_Partners_With_IP_Key_Value_DESC_TEXT "For each IP key:value pair in the list, two columns will be added - one for each partner indicating the number of partners with the given IP key:value."
+
+#define RelStart_Individual_Properties_DESC_TEXT "An array of Individual Property keys where a column is added for each key.  The value of the key for that person will be in the row."
+#define RelStart_Include_Other_Relationship_Statistics_DESC_TEXT "Set to 1 implies include the columns that provide data on other relationships.  Set to 0 means do not include these columns."
+#define RelStart_Include_HIV_Disease_Statistics_DESC_TEXT "Set to 1 implies include the following columns: A_CD4_count, B_CD4_count, A_viral_load, B_viral_load, A_HIV_disease_stage, B_HIV_disease_stage, A_HIV_Tested_Positive, B_HIV_Tested_Positive, A_HIV_Received_Results, B_HIV_Received_Results.  Set to 0 means do not include them."
+
+#define Report_Event_Recorder_PropertyChange_IP_Key_Of_Interest_DESC_TEXT "If the string is not empty, then the recorder will add the PropertyChange event to the list of events that the report is listening to. However, it will only record the events where the property changed the value of the given key."
+
+#define Enable_Initial_Susceptibility_Distribution_DESC_TEXT "Controls whether or not individuals in the population have immunity at the beginning of the simulation. If set to 0, individuals are not initialized with immunity but may acquire immunity. If set to 1, you must indicate the type of distribution to use for immunity in the configuration parameter Susceptibility_Initialization_Distribution_Type and the distribution values in the demographics file."
+
+#define VSP_Microsporidia_DESC_TEXT "A list of microsporidia parameters for each strain that this species can get."
+#define Microsporidia_Strain_Name_DESC_TEXT "The name/identifier of the collection of transmission parameters. Cannot be empty string."
+#define Microsporidia_Female_To_Egg_Transmission_Probability_DESC_TEXT "The probability an infected female will infect her eggs when laying them."
+#define Microsporidia_Male_To_Egg_Transmission_Probability_DESC_TEXT "The probability a female that mated with an infected male will infect her eggs when laying them, independent of her being infected and transmitting to her offspring."
+#define Microsporidia_Female_To_Male_Transmission_Probability_DESC_TEXT "The probability an infected female will infect an uninfected male during mating."
+#define Microsporidia_Male_To_Female_Transmission_Probability_DESC_TEXT "The probability an infected male will infect an uninfected female during mating."
+#define Microsporidia_Larval_Growth_Modifier_DESC_TEXT "A modifier to the daily, temperature dependent, larval growth progression to immature."
+#define Microsporidia_Female_Mortality_Modifier_DESC_TEXT "A modifier on the death rate for female vectors due to general life expectancy, age, and dry heat"
+#define Microsporidia_Male_Mortality_Modifier_DESC_TEXT "A modifier on the death rate for male vectors due to general life expectancy, age, and dry heat"
+#define Microsporidia_Disease_Acq_DESC_TEXT "A modifier is selected based on the duration of the age of the microsporidia infection.  The modifier is used to modify the probability the vector aquires the disease (i.e. malaria)."
+#define Microsporidia_Disease_Tran_DESC_TEXT "A modifier is selected based on the duration of the age of the microsporidia infection.  The modifier is used to modify the probability the vector transmit the disease (i.e. malaria)."
+
+#define Report_STI_Include_Coital_Acts_DESC_TEXT "If true, include channles about the number of coital acts per relationship type per dt and those using condoms."
+
+#define TM_Sporozoite_Barcode_String_DESC_TEXT "If the trait modifier is 'SPOROZOITE_MORTALITY', then you must define this parameter with a valid parasite barcode.  If the mosquito satisfies the vector genetics and has at least one sporozoite with this barcode, the modifier will be applied to the mortality of the mosquito's sporozoites with that barcode."
+#define TM_Gametocyte_A_Barcode_String_DESC_TEXT "If the trait modifier is 'OOCYST_PROGRESSION', then you must define this parameter with a valid parasite barcode.  If the mosquito satisfies the vector genetics and has at least one gametocyte that has the 'A' barcode and the 'B' barcode, then the modifier will be applied to the progression of the oocysts with the barcodes in the satisfying mosquito."
+#define TM_Gametocyte_B_Barcode_String_DESC_TEXT "If the trait modifier is 'OOCYST_PROGRESSION', then you must define this parameter with a valid parasite barcode.  If the mosquito satisfies the vector genetics and has at least one gametocyte that has the 'A' barcode and the 'B' barcode, then the modifier will be applied to the progression of the oocysts with the barcodes in the satisfying mosquito."

@@ -59,8 +59,8 @@ namespace Kernel
             p_name_set = &(MalariaDrugTypeCollection::GetInstance()->GetDrugNames());
         }
 
-        initConfigTypeMap( "Doses",         &m_DosesNames,   MPCDrug_Doses_DESC_TEXT,        nullptr, *p_name_set );
-        initConfigTypeMap( "Dose_Interval", &m_DoseInterval, MPCDrug_DoseInterval_DESC_TEXT, 0.0f, 100000.0f, 1.0f );
+        initConfigTypeMap( "Doses",         &m_DosesNames,   MPCDrug_Doses_DESC_TEXT,         nullptr, *p_name_set );
+        initConfigTypeMap( "Dose_Interval", &m_DoseInterval, MPCDrug_Dose_Interval_DESC_TEXT, 0.0f, 100000.0f, 1.0f );
     }
 
     void MultiPackComboDrug::CheckConfigureDrugType( const Configuration *inputJson )

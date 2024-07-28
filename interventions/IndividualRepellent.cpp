@@ -52,8 +52,8 @@ namespace Kernel
         InsecticideName name;
         WaningConfig   repelling_config;
 
-        initConfigTypeMap("Cost_To_Consumer", &cost_per_unit, SIR_Cost_To_Consumer_DESC_TEXT, 0, 999999, 8.0);
-        initConfigComplexType("Repelling_Config", &repelling_config, SIR_Repelling_Config_DESC_TEXT );
+        initConfigTypeMap("Cost_To_Consumer", &cost_per_unit, IV_Cost_To_Consumer_DESC_TEXT, 0, 999999, 8.0);
+        initConfigComplexType("Repelling_Config", &repelling_config, Repelling_Config_DESC_TEXT );
         initConfigTypeMap( "Insecticide_Name", &name, INT_Insecticide_Name_DESC_TEXT );
 
         bool configured = BaseIntervention::Configure( inputJson );

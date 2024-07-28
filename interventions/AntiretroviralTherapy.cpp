@@ -90,7 +90,7 @@ namespace Kernel
         const Configuration * inputJson
     )
     {
-        initConfigTypeMap( "Cost_To_Consumer", &cost_per_unit, DRUG_Cost_To_Consumer_DESC_TEXT, 0, 99999, 1 );
+        initConfigTypeMap( "Cost_To_Consumer", &cost_per_unit, IV_Cost_To_Consumer_DESC_TEXT, 0, 99999, 1 );
         initConfigTypeMap( "ART_Multiplier_On_Transmission_Prob_Per_Act",             &m_MultiplierOnTransmission, ART_Multiplier_On_Transmission_Prob_Per_Act_DESC_TEXT,             0.0f,     1.0f,     DEFAULT_MULTIPLIER_ON_TRANSMISSION    );
         initConfigTypeMap( "ART_Is_Active_Against_Mortality_And_Transmission",        &m_IsActiveViralSuppression, ART_Is_Active_Against_Mortality_And_Transmission_DESC_TEXT, true );
         initConfigTypeMap( "Days_To_Achieve_Viral_Suppression",                       &m_DaysToAchieveSuppression, ART_Days_To_Achieve_Viral_Suppression_DESC_TEXT,                   0.0f,      FLT_MAX,   DEFAULT_DAYS_TO_ACHIEVE_SUPPRESSION   , "ART_Is_Active_Against_Mortality_And_Transmission" );

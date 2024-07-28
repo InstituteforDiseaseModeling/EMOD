@@ -42,7 +42,7 @@ namespace Kernel
         , update_mortality(0.0f)
     {
         expired = false;
-        initConfigTypeMap("Cost_To_Consumer", &cost_per_unit, SV_Cost_To_Consumer_DESC_TEXT, 0, 999999, 1.0);
+        initConfigTypeMap("Cost_To_Consumer", &cost_per_unit, IV_Cost_To_Consumer_DESC_TEXT, 0, 999999, 1.0);
     }
 
     IndividualImmunityChanger::~IndividualImmunityChanger()

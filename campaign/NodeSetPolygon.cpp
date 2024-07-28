@@ -19,8 +19,8 @@ namespace Kernel
     bool
     NodeSetPolygon::Configure(const Configuration * inputJson)
     {
-        initConfigTypeMap( "Vertices", &vertices_raw, Node_Polygon_Vertices_DESC_TEXT );
-        initConfig( "Polygon_Format", polygon_format, inputJson, MetadataDescriptor::Enum("polygon_format", Node_Polygon_Format_DESC_TEXT, MDD_ENUM_ARGS(PolygonFormatType) ) );
+        initConfigTypeMap( "Vertices", &vertices_raw, NSP_Vertices_DESC_TEXT );
+        initConfig( "Polygon_Format", polygon_format, inputJson, MetadataDescriptor::Enum("polygon_format", NSP_Polygon_Format_DESC_TEXT, MDD_ENUM_ARGS(PolygonFormatType) ) );
         return JsonConfigurable::Configure( inputJson );
     }
 
