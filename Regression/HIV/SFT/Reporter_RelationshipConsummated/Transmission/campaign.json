@@ -14,8 +14,8 @@
                     "class": "CoitalActRiskFactors",
                     "Transmission_Multiplier": 0.3,
                     "Acquisition_Multiplier": 0.85,
-                    "Expiration_Distribution": "CONSTANT_DISTRIBUTION",
-                    "Expiration_Constant": 2000
+                    "Expiration_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Expiration_Period_Constant": 2000
                 }
             }
         },
