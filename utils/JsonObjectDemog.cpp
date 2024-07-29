@@ -421,7 +421,7 @@ namespace Kernel {
     float JsonObjectDemog::GetFloat(const char* key) const
     {
         double val = GetDouble( key );
-        float f_val = val ;
+        float f_val = float(val) ;
         return f_val ;
     }
 
@@ -527,7 +527,7 @@ namespace Kernel {
 
     float JsonObjectDemog::AsFloat() const 
     { 
-        return AsDouble();
+        return float(AsDouble());
     }
 
     double JsonObjectDemog::AsDouble() const 
@@ -795,7 +795,7 @@ namespace Kernel {
         assert( r_value.IsArray() );
 
         rapidjson::Value value_to_add;
-        value_to_add.SetString( rStr.c_str(), rStr.length(), r_doc.GetAllocator() );
+        value_to_add.SetString( rStr.c_str(), rapidjson::SizeType(rStr.length()), r_doc.GetAllocator() );
 
         r_value.PushBack( value_to_add, r_doc.GetAllocator() );
     }
@@ -950,7 +950,7 @@ namespace Kernel {
         OutputStringStream os;
         rapidjson::PrettyWriter<OutputStringStream> writer(os);
         doc.Accept(writer);
-        int len = os.str().size();
+        size_t len = os.str().size();
         if (len > 0)
         {
             prettyString = (char*) malloc(len + 1);
