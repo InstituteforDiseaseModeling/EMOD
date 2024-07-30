@@ -1,0 +1,55 @@
+{
+    "Campaign_Name": "Initial Seeding",
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 0.01,
+                "Intervention_Config": {
+                    "Antigen": 0,
+                    "Genome": 0,
+                    "class": "OutbreakIndividual"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 10,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Number_Repetitions": 5,
+                "Timesteps_Between_Repetitions": 20,
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 0.2,
+                "COMMENT1": "This should distribute increasingly less than without the extra tareting",
+                "COMMENT2": "since it will be taking 20% of a smaller and smaller population.",
+                "Targeting_Config": {
+                    "class": "HasIntervention",
+                    "Is_Equal_To": 0,
+                    "Intervention_Name": "MyVaccine"
+                },
+                "Intervention_Config": {
+                    "class": "SimpleVaccine",
+                    "Intervention_Name" : "MyVaccine",
+                    "Cost_To_Consumer": 1,
+                    "Vaccine_Take": 1,
+                    "Vaccine_Type": "AcquisitionBlocking",
+                    "Waning_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect" : 1.0
+                    }
+                }
+            }
+        }
+    ],
+    "Use_Defaults": 1
+}

@@ -39,10 +39,10 @@
         "Falciparum_PfEMP1_Variants": 1000
     },
     "MOSQUITO": {
-        "Vector_Species_Names": []
+        "Vector_Species_Params": []
     },
     "PRIMARY": {
-        "Config_Name": "27_Malaria_OneIndividual_MultipleAntigens",
+        "Config_Name": "69_Malaria_OneIndividual_MultipleAntigens_hdf5_sql",
         "Custom_Reports_Filename": "custom_reports.json",
         "Geography": "Namawala",
         "Python_Script_Path": "SHARED",

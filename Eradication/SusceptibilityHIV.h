@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 #include "SusceptibilitySTI.h" 
@@ -38,12 +30,8 @@ namespace Kernel
         static float disease_death_CD4_alpha;
         static float disease_death_CD4_inverse_beta;
 
-        // TBHIV
         static float days_between_symptomatic_and_death_lambda;
         static float days_between_symptomatic_and_death_inv_kappa;
-
-        static int num_cd4_time_steps;
-        static float cd4_time_step;
     };
 
     //---------------------------- SusceptibilityHIV ----------------------------------------
@@ -64,11 +52,12 @@ namespace Kernel
 
         // disease specific functions 
         virtual float GetCD4count() const override;
-        virtual std::vector <float> Generate_forward_CD4(bool ARTYesNo) override;
         virtual void  FastForward( const IInfectionHIV * const, float dt ) override;
         virtual void  ApplyARTOnset() override;
         virtual ProbabilityNumber GetPrognosisCompletedFraction() const override;
         virtual void  TerminateSuppression(float days_till_death) override;
+        virtual float GetDaysBetweenSymptomaticAndDeath() const override;
+        virtual bool IsSymptomatic() const override;
 
     protected:
         //disease specific params 
@@ -82,6 +71,7 @@ namespace Kernel
         void UpdateSymptomaticPresentationTime();
 
         // additional members of SusceptibilityHIV (params)
+        bool is_symptomatic;
         float days_between_symptomatic_and_death;   // Days before death to broadcast NewlySymptomatic
 
         float sqrtCD4_Current;          // Current sqrt( CD4count )

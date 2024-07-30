@@ -17,7 +17,7 @@
         "Custom_Coordinator_Events": [],
         "Custom_Individual_Events": [],
         "Custom_Node_Events": [],
-        "Custom_Reports_Filename": "NoCustomReports",
+        "Custom_Reports_Filename": "",
         "Death_Rate_Dependence": "SimpleBoosterVaccine_Acquisition",
         "Default_Geography_Initial_Node_Population": 1000,
         "Default_Geography_Torus_Size": 10,
@@ -57,6 +57,9 @@
         "Infection_Updates_Per_Timestep": 1,
         "Infectious_Period_Distribution": "CONSTANT_DISTRIBUTION",
         "Infectivity_Scale_Type": "CONSTANT_INFECTIVITY",
+        "Inset_Chart_Include_Pregnancies": 0,
+        "Inset_Chart_Has_Interventions": [],
+        "Inset_Chart_Has_IP": [],
         "Job_Node_Groups": "Chassis08",
         "Job_Priority": "BELOWNORMAL",
         "Load_Balance_Filename": "",
@@ -75,7 +78,6 @@
         "Num_Cores": 1,
         "Number_Basestrains": 1,
         "Number_Substrains": 1,
-        "PKPD_Model": "FIXED_DURATION_CONSTANT_EFFECT",
         "Population_Density_C50": 30,
         "Population_Density_Infectivity_Correction": "CONSTANT_INFECTIVITY",
         "Population_Scale_Type": "FIXED_SCALING",
@@ -96,7 +98,7 @@
         "Sample_Rate_5_9": 1,
         "Sample_Rate_Birth": 2,
         "Serialization_Test_Cycles": 0,
-        "Serialization_Type": "NONE",
+        "Serialized_Population_Writing_Type": "NONE",
         "Simulation_Duration": 15,
         "Simulation_Timestep": 1,
         "Simulation_Type": "GENERIC_SIM",
@@ -116,6 +118,7 @@
         "x_Sea_Migration": 1,
         "x_Temporary_Larval_Habitat": 1,
         "Incubation_Period_Constant": 0,
-        "Infectious_Period_Constant": 2
+        "Infectious_Period_Constant": 2,
+        "Serialized_Population_Reading_Type": "NONE"
     }
 }

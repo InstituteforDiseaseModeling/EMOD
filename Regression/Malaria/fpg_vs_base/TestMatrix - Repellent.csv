@@ -1,0 +1,11 @@
+Int,Tgt,R
+Repellent,100,1
+Repellent,300,1
+Repellent,500,1
+Repellent,700,1
+Repellent,900,1
+Repellent,1000,0.9
+Repellent,1000,0.7
+Repellent,1000,0.5
+Repellent,1000,0.3
+Repellent,1000,0.1

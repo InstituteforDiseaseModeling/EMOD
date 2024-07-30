@@ -1,0 +1,32 @@
+{
+    "Default_Config_Path": "defaults/generic_scenario_default_config.json", 
+    "parameters": {
+        "DEMOGRAPHICS": {
+            "Birth_Rate_Dependence": "POPULATION_DEP_RATE", 
+            "Demographics_Filenames": [
+                "generic_scenarios_individualproperties_demographics.json",
+                "risk_overlay.json"
+            ],
+            "Enable_Vital_Dynamics": 0,
+            "Sample_Rate_Birth": 1
+        }, 
+        "DISEASE": {
+            "Enable_Immune_Decay": 0,
+            "Incubation_Period_Constant": 5,
+            "Incubation_Period_Distribution": "CONSTANT_DISTRIBUTION",
+            "Infectious_Period_Distribution": "EXPONENTIAL_DISTRIBUTION",
+            "Infectious_Period_Exponential": 6,
+            "Base_Infectivity": 0.4
+        }, 
+        "PRIMARY": {
+            "Run_Number": 1, 
+            "Simulation_Duration": 120, 
+            "Config_Name": "93_Generic_TargetingLogic", 
+            "Geography": "SamplesInput"
+        }, 
+        "OUTPUT": {
+            "Enable_Demographics_Reporting": 0,
+            "Enable_Property_Output": 0
+        }
+    }
+}

@@ -1,0 +1,49 @@
+
+{ 
+    "Metadata": 
+    { 
+        "DateCreated": "June 9, 2015",
+        "Tool": "Notepad",
+        "Author": "Daniel Bridenbecker",
+        "RegionName": "RegressionTest",
+        "DataSource": "NA",
+        "IdReference": "0",
+        "NodeCount": 1
+    },
+    "Defaults": 
+    { 
+        "IndividualProperties": [ 
+            { 
+                "Property": "Transportation",
+                "Values": [ "YES", "NO" ],
+                "Initial_Distribution": [ 0.3, 0.7 ],
+                "Transitions": []
+            },
+            { 
+                "Property": "Knowledge",
+                "Values": [ "YES", "NO" ],
+                "Initial_Distribution": [ 0.7, 0.3 ],
+                "Transitions": []
+            },
+            { 
+                "Property": "CurrentStatus",
+                "Values": [
+                    "NONE",
+                    "PREGNANT",
+                    "Using_Some_Contraception"
+                ],
+                "Initial_Distribution": [
+                    1.0, 
+                    0.0,
+                    0.0
+                ],
+                "Transitions": []
+            }
+        ]
+    },
+    "Nodes": [ 
+        { 
+            "NodeID": 1
+        } 
+    ]
+}

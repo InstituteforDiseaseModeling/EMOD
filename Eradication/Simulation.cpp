@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "Simulation.h"
@@ -39,6 +31,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "RandomNumberGeneratorFactory.h"
 
 #include "DllLoader.h"
+#include "ReportFactory.h"
 
 #include "JsonRawWriter.h"
 #include "JsonRawReader.h"
@@ -46,6 +39,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IdmMpi.h"
 #include "Properties.h"
 #include "NodeProperties.h"
+#include "SerializationParameters.h"
+#include "PythonSupport.h"
 
 #ifdef _DEBUG
 #include "BinaryArchiveReader.h"
@@ -59,16 +54,11 @@ using namespace std;
 
 SETUP_LOGGING( "Simulation" )
 
-
-#define RUN_ALL_CUSTOM_REPORTS "RunAllCustomReports"
-#define NO_CUSTOM_REPORTS "NoCustomReports"
-
 namespace Kernel
 {
     // Enable querying of interfaces from Simulation objects
     GET_SCHEMA_STATIC_WRAPPER_IMPL(Simulation,Simulation)
     BEGIN_QUERY_INTERFACE_BODY(Simulation)
-        HANDLE_INTERFACE(IGlobalContext)
         HANDLE_INTERFACE(ISimulation)
         HANDLE_INTERFACE(ISimulationContext)
         HANDLE_ISUPPORTS_VIA(ISimulationContext)
@@ -81,16 +71,17 @@ namespace Kernel
     //------------------------------------------------------------------
 
     Simulation::Simulation()
-        : serializationMask(SerializationFlags(uint32_t(SerializationFlags::Population) | uint32_t(SerializationFlags::Parameters)))
+        : serializationFlags( SerializationBitMask_t{}.set( SerializationFlags::Population )
+                            | SerializationBitMask_t{}.set( SerializationFlags::Parameters ) )           
         , nodes()
         , nodeRankMap()
         , node_events_added()
         , node_events_to_be_processed()
         , node_event_context_list()
         , nodeid_suid_map()
+        , nodeid_suid_map_full()
         , migratingIndividualQueues()
         , m_simConfigObj((const SimulationConfig*)Environment::getSimulationConfig())
-        , m_interventionFactoryObj(nullptr)
         , demographicsContext(nullptr)
         , infectionSuidGenerator(EnvPtr->MPI.Rank, EnvPtr->MPI.NumTasks)
         , nodeSuidGenerator(EnvPtr->MPI.Rank, EnvPtr->MPI.NumTasks)
@@ -123,12 +114,12 @@ namespace Kernel
         , enable_surveillance_event_report( false )
         , enable_termination_on_zero_total_infectivity(false)
         , campaign_filename()
-        , custom_reports_filename( RUN_ALL_CUSTOM_REPORTS )
+        , custom_reports_filename()
         , loadbalance_filename()
         , can_support_family_trips( false )
-        , m_IPWhiteListEnabled(true)
         , demographics_factory(nullptr)
         , m_pRngFactory( new RandomNumberGeneratorFactory() )
+        , m_MemoryGauge()
         , min_sim_endtime(0.0f)
         , new_node_observers()
     {
@@ -145,14 +136,6 @@ namespace Kernel
         surveillanceEventReportClassCreator = ReportSurveillanceEventRecorder::CreateReport;
 
         nodeRankMap.SetNodeInfoFactory( this );
-
-        if( (EnvPtr != nullptr) &&
-            (EnvPtr->Config != nullptr) &&
-            EnvPtr->Config->Exist( "Disable_IP_Whitelist" ) &&
-            (*(EnvPtr->Config))[ "Disable_IP_Whitelist" ].As<json::Number>() == 1 )
-        {
-            m_IPWhiteListEnabled = false;
-        }
 
         // Initialize node demographics from file
         if( !JsonConfigurable::_dryrun )
@@ -173,9 +156,9 @@ namespace Kernel
 
             ExternalNodeId_t first_node_id = demographics_factory->GetNodeIDs()[ 0 ];
             JsonObjectDemog json_for_first_node = demographics_factory->GetJsonForNode( first_node_id );
-            IPFactory::GetInstance()->Initialize( first_node_id, json_for_first_node, m_IPWhiteListEnabled );
+            IPFactory::GetInstance()->Initialize( first_node_id, json_for_first_node );
 
-            NPFactory::GetInstance()->Initialize( demographics_factory->GetNodePropertiesJson(), m_IPWhiteListEnabled );
+            NPFactory::GetInstance()->Initialize( demographics_factory->GetNodePropertiesJson() );
         }
     }
 
@@ -217,38 +200,21 @@ namespace Kernel
         initConfigTypeMap( "Enable_Spatial_Output",          &enable_spatial_output,          Enable_Spatial_Output_DESC_TEXT,          false );
         initConfigTypeMap( "Report_Event_Recorder",          &enable_event_report,            Report_Event_Recorder_DESC_TEXT,          false );
 
-        initConfigTypeMap( ReportEventRecorder::GetEnableParameterName().c_str(),             &enable_event_report,              Report_Event_Recorder_DESC_TEXT,             false );
-        initConfigTypeMap( ReportEventRecorderNode::GetEnableParameterName().c_str(),         &enable_node_event_report,         Report_Node_Event_Recorder_DESC_TEXT,        false );
-        initConfigTypeMap( ReportEventRecorderCoordinator::GetEnableParameterName().c_str(),  &enable_coordinator_event_report,  Report_Coordinator_Event_Recorder_DESC_TEXT, false );
-        initConfigTypeMap( ReportSurveillanceEventRecorder::GetEnableParameterName().c_str(), &enable_surveillance_event_report, Report_Coordinator_Event_Recorder_DESC_TEXT, false );        
+        initConfigTypeMap( ReportEventRecorder::GetEnableParameterName().c_str(),             &enable_event_report,              Report_Event_Recorder_DESC_TEXT,              false );
+        initConfigTypeMap( ReportEventRecorderNode::GetEnableParameterName().c_str(),         &enable_node_event_report,         Report_Node_Event_Recorder_DESC_TEXT,         false );
+        initConfigTypeMap( ReportEventRecorderCoordinator::GetEnableParameterName().c_str(),  &enable_coordinator_event_report,  Report_Coordinator_Event_Recorder_DESC_TEXT,  false );
+        initConfigTypeMap( ReportSurveillanceEventRecorder::GetEnableParameterName().c_str(), &enable_surveillance_event_report, Report_Surveillance_Event_Recorder_DESC_TEXT, false );        
         
-        initConfigTypeMap( "Campaign_Filename",       &campaign_filename,      Campaign_Filename_DESC_TEXT, "", "Enable_Interventions" );
-        initConfigTypeMap( "Load_Balance_Filename",   &loadbalance_filename,   Load_Balance_Filename_DESC_TEXT ); 
-        initConfigTypeMap( "Minimum_End_Time",        &min_sim_endtime,        Minimum_End_Time_DESC_TEXT, 0.0f, 1000000.0f, 0.0f, "Enable_Termination_On_Zero_Total_Infectivity" );
-
-        if( JsonConfigurable::_dryrun || EnvPtr->Config->Exist( "Custom_Reports_Filename" ) )
-        {
-            initConfigTypeMap( "Custom_Reports_Filename", &custom_reports_filename, Custom_Reports_Filename_DESC_TEXT, RUN_ALL_CUSTOM_REPORTS );
-        }
-
-        bool create_rng_from_serialized_data = false;
-        if( JsonConfigurable::_dryrun || EnvPtr->Config->Exist( "Enable_Random_Generator_From_Serialized_Population" ) )
-        {
-            initConfigTypeMap( "Enable_Random_Generator_From_Serialized_Population", &create_rng_from_serialized_data, Enable_Random_Generator_From_Serialized_Population_DESC_TEXT, false );
-        }
+        initConfigTypeMap( "Campaign_Filename",       &campaign_filename,       Campaign_Filename_DESC_TEXT, "", "Enable_Interventions" );
+        initConfigTypeMap( "Load_Balance_Filename",   &loadbalance_filename,    Load_Balance_Filename_DESC_TEXT ); 
+        initConfigTypeMap( "Minimum_End_Time",        &min_sim_endtime,         Minimum_End_Time_DESC_TEXT, 0.0f, 1000000.0f, 0.0f, "Enable_Termination_On_Zero_Total_Infectivity" );
+        initConfigTypeMap( "Custom_Reports_Filename", &custom_reports_filename, Custom_Reports_Filename_DESC_TEXT, std::string("") );
 
         bool ret = JsonConfigurable::Configure( inputJson );
         if( ret || JsonConfigurable::_dryrun )
         {
-            if( create_rng_from_serialized_data && !inputJson->Exist( "Serialized_Population_Filenames" ) )
-            {
-                throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__,
-                                                        "Serialized_Population_Filenames", "<not exist>",
-                                                        "Enable_Random_Generator_From_Serialized_Population", "1",
-                                                        "'Enable_Random_Generator_From_Serialized_Population' can only be enabled if using a serialized population.");
-            }
-            m_pRngFactory->CreateFromSerializeData( create_rng_from_serialized_data );
-            if( JsonConfigurable::_dryrun || !create_rng_from_serialized_data )
+            m_pRngFactory->CreateFromSerializeData( SerializationParameters::GetInstance()->GetCreateRngFromSerializedData() );
+            if( JsonConfigurable::_dryrun || !SerializationParameters::GetInstance()->GetCreateRngFromSerializedData() )
             {
                 m_pRngFactory->Configure( inputJson );
             }
@@ -308,6 +274,7 @@ namespace Kernel
     Simulation *Simulation::CreateSimulation(const ::Configuration *config)
     {
         Simulation *newsimulation = _new_ Simulation();
+
         if (newsimulation)
         {
             // This sequence is important: first
@@ -344,10 +311,7 @@ namespace Kernel
     {
         Configure( config );
         IndividualHuman::InitializeStatics( config );
-        MemoryGauge mg;
-        mg.Configure( config );
-
-        m_interventionFactoryObj = InterventionFactory::getInstance();
+        m_MemoryGauge.Configure( config );
 
         setupMigrationQueues();
         setupEventContextHost();
@@ -586,25 +550,40 @@ namespace Kernel
 
     void Simulation::Reports_CreateCustom()
     {
-        // -------------------------------------------------------------
-        // --- Allow the user to indicate that they do not want to use
-        // --- any custom reports even if DLL's are present.
-        // -------------------------------------------------------------
-        if( custom_reports_filename.empty() || (custom_reports_filename == NO_CUSTOM_REPORTS) )
+        if( !custom_reports_filename.empty() )
         {
-            return ;
-        }
+            LOG_INFO_F( "Looking for custom reports file = %s\n", custom_reports_filename.c_str() );
+            if( !FileSystem::FileExists( custom_reports_filename ) )
+            {
+                throw FileNotFoundException( __FILE__, __LINE__, __FUNCTION__, true, custom_reports_filename .c_str() );
+            }
 
-        ReportInstantiatorMap report_instantiator_map ;
-        SimType::Enum st_enum = m_simConfigObj->sim_type;
-#ifdef WIN32
-        DllLoader dllLoader(SimType::pairs::lookup_key(st_enum));
-        if( !dllLoader.LoadReportDlls( report_instantiator_map ) )
-        {
-            LOG_WARN_F("Failed to load reporter emodules for SimType: %s from path: %s\n" , SimType::pairs::lookup_key(st_enum), dllLoader.GetEModulePath(REPORTER_EMODULES).c_str());
+            // -----------------------------------------------------------
+            // --- Find any custom/DLL reports and add them to the factory
+            // -----------------------------------------------------------
+            support_spec_map_t report_instantiator_map;
+            SimType::Enum st_enum = m_simConfigObj->sim_type;
+            DllLoader dllLoader(SimType::pairs::lookup_key(st_enum));
+            if( !dllLoader.LoadReportDlls( report_instantiator_map ) )
+            {
+                LOG_WARN_F("Failed to load reporter emodules for SimType: %s from path: %s\n" ,
+                            SimType::pairs::lookup_key(st_enum),
+                            dllLoader.GetEModulePath(REPORTER_EMODULES).c_str());
+            }
+            else
+            {
+                for( auto entry : report_instantiator_map )
+                {
+                    ReportFactory::getInstance()->Register( entry.first.c_str(), entry.second );
+                }
+            }
+
+            // -------------------------------------------------------
+            // --- Instantiate the reports defined in the report file.
+            // -------------------------------------------------------
+            std::vector<IReport*> custom_list = ReportFactory::getInstance()->Load( custom_reports_filename );
+            reports.insert( reports.end(), custom_list.begin(), custom_list.end() );
         }
-#endif
-        Reports_Instantiate( report_instantiator_map );
     }
 
     void Simulation::Reports_FindReportsCollectingIndividualData( float currentTime, float dt )
@@ -622,93 +601,6 @@ namespace Kernel
                 individual_data_reports.push_back( report );
             }
         }
-    }
-
-    Configuration* Simulation::Reports_GetCustomReportConfiguration()
-    {
-        Configuration* p_cr_config = nullptr ;
-
-        // ------------------------------------------------------------------------------
-        // --- If the user does not define the custom_reports_filename input parameter,
-        // --- then they want to run all reports.  Returning null will do this.
-        // ------------------------------------------------------------------------------
-        if( !custom_reports_filename.empty() && (custom_reports_filename != RUN_ALL_CUSTOM_REPORTS) )
-        {
-            LOG_INFO_F("Looking for custom reports file = %s\n", custom_reports_filename.c_str());
-            if( FileSystem::FileExists( custom_reports_filename ) )
-            {
-                LOG_INFO_F("Found custom reports file = %s\n", custom_reports_filename.c_str());
-                // it is extremely unlikely that this will return null.  It will throw an exception if an error occurs.
-                Configuration* p_config = Configuration::Load( custom_reports_filename );
-                if( !p_config ) 
-                {
-                    throw Kernel::InitializationException( __FILE__, __LINE__, __FUNCTION__, custom_reports_filename.c_str() );
-                }
-                p_cr_config = Configuration::CopyFromElement( (*p_config)["Custom_Reports"], p_config->GetDataLocation() );
-                delete p_config ;
-            }
-        }
-
-        return p_cr_config ;
-    }
-
-    void Simulation::Reports_Instantiate( ReportInstantiatorMap& rReportInstantiatorMap )
-    {
-        Configuration* p_cr_config = Reports_GetCustomReportConfiguration();
-
-        bool load_all_reports = (p_cr_config == nullptr) ||
-                                !p_cr_config->Exist( "Use_Explicit_Dlls" ) ||
-                                (int(p_cr_config->operator[]( "Use_Explicit_Dlls" ).As<json::Number>()) != 1) ;
-
-        LOG_INFO_F("Found %d Custom Report DLL's to consider loading, load_all_reports=%d\n", rReportInstantiatorMap.size(), load_all_reports );
-        for( auto ri_entry : rReportInstantiatorMap )
-        {
-            std::string class_name = ri_entry.first ;
-            try
-            {
-                if( (p_cr_config != nullptr) && p_cr_config->Exist( class_name ) )
-                {
-                    LOG_INFO_F("Found custom report data for %s\n", class_name.c_str());
-                    json::QuickInterpreter dll_data = p_cr_config->operator[]( class_name ).As<json::Object>() ;
-                    if( int(dll_data["Enabled"].As<json::Number>()) != 0 )
-                    {
-                        json::Array report_data = dll_data["Reports"].As<json::Array>() ;
-                        for( int i = 0 ; i < report_data.Size() ; i++ )
-                        {
-                            LOG_INFO_F( "Created instance #%d of %s\n", (i+1),class_name.c_str() );
-                            Configuration* p_cfg = Configuration::CopyFromElement( report_data[i], p_cr_config->GetDataLocation() );
-
-                            IReport* p_cr = ri_entry.second(); // creates report object
-                            p_cr->Configure( p_cfg );
-                            reports.push_back( p_cr );
-                            delete p_cfg ;
-                            p_cfg = nullptr;
-                        }
-                    }
-                }
-                else if( load_all_reports )
-                {
-                    LOG_WARN_F("Did not find report configuration for report DLL %s.  Creating report with defaults.\n", class_name.c_str());
-
-                    json::Object empty_json_obj ;
-                    Configuration* p_cfg = Configuration::CopyFromElement( empty_json_obj, "no file" );
-
-                    IReport* p_cr = ri_entry.second();  // creates report object
-                    p_cr->Configure( p_cfg );
-                    reports.push_back( p_cr );
-                    delete p_cfg ;
-                    p_cfg = nullptr;
-                }
-            }
-            catch( json::Exception& e )
-            {
-                std::stringstream ss ;
-                ss << "Error occured reading report data for " << class_name << ".  Error: " << e.what() << std::endl ;
-                throw InitializationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
-            }
-        }
-        delete p_cr_config;
-        p_cr_config = nullptr;
     }
 
     void Simulation::Reports_UpdateEventRegistration( float _currentTime, float dt )
@@ -768,7 +660,6 @@ namespace Kernel
 
     void Simulation::WriteReportsData()
     {
-        //std::cout << "There are " << reports.size() << " reports to finalize." << std::endl;
         for (auto report : reports)
         {
             report->Reduce();
@@ -851,6 +742,7 @@ namespace Kernel
         // -------------------
         // --- Increment Time
         // -------------------
+        float time_for_python = currentTime.time;
         currentTime.Update( dt );
 
         // ----------------------------------------------------------
@@ -860,8 +752,40 @@ namespace Kernel
 
         Reports_EndTimestep( currentTime.time, dt );
 
-        // Unconditionally checking against potential memory blowup with minimum cost
-        MemoryGauge::CheckMemoryFailure( false );
+        // Everyone waits until report writing (if any) is done
+        EnvPtr->MPI.p_idm_mpi->Barrier();
+
+        // ---------------------
+        // --- Python In-Process
+        // ---------------------
+        // Call out to embedded python in-processing script
+        std::string py_input_string, new_campaign_filename; 
+        py_input_string       = std::to_string(time_for_python);
+        new_campaign_filename = Kernel::PythonSupport::RunPyFunction( py_input_string, Kernel::PythonSupport::SCRIPT_IN_PROCESS );
+
+        // Ensure all processes have the same new_campaign_filename
+        int fname_tmp_size = new_campaign_filename.size() + 1;
+        EnvPtr->MPI.p_idm_mpi->BroadcastInteger(&fname_tmp_size, 1, 0);
+        char* fname_tmp = static_cast<char*>(malloc(fname_tmp_size*sizeof(char)));
+        std::strcpy(fname_tmp, new_campaign_filename.c_str());
+        EnvPtr->MPI.p_idm_mpi->BroadcastChar(fname_tmp, fname_tmp_size, 0);
+        new_campaign_filename = fname_tmp;
+        free(fname_tmp); fname_tmp = nullptr;
+
+        // In-process call returns input string if no python, empty string if no new campaign;
+        if( new_campaign_filename != py_input_string && !new_campaign_filename.empty() )
+        {
+            const vector<ExternalNodeId_t>& nodeIDs = demographics_factory->GetNodeIDs();
+            loadCampaignFromFile(new_campaign_filename, nodeIDs);
+        }
+
+        // ----------------
+        // --- Memory Check
+        // ----------------
+        CheckMemoryFailure( false );
+
+
+        return;
     }
 
     //------------------------------------------------------------------
@@ -887,7 +811,7 @@ namespace Kernel
 //            LOG_INFO_F("Rank %d map contents:\n%s\n", EnvPtr->MPI.Rank, nodeRankMap.ToString().c_str());
 //        else 
 //            LOG_INFO("(Rank map contents not displayed due to large (> 500) number of entries.)\n");
-        LOG_INFO("Rank map contents not displayed until NodeRankMap::ToString() (re)implemented.\n");
+        LOG_INFO("Rank map contents not displayed until NodeRankMap::toString() (re)implemented.\n");
 
         // We'd like to be able to run even if a processor has no nodes, but there are other issues.
         // So for now just bail...
@@ -993,7 +917,7 @@ namespace Kernel
 
             if ( !FileSystem::FileExists( campaignfilename ) )
             {
-                throw FileNotFoundException( __FILE__, __LINE__, __FUNCTION__, campaignfilename );
+                throw FileNotFoundException( __FILE__, __LINE__, __FUNCTION__, true, campaignfilename );
             }
             else 
             {
@@ -1037,7 +961,7 @@ namespace Kernel
 
                 if ( !FileSystem::FileExists( transitions_file_path ) )
                 {
-                    throw FileNotFoundException( __FILE__, __LINE__, __FUNCTION__, transitions_file_path.c_str() );
+                    throw FileNotFoundException( __FILE__, __LINE__, __FUNCTION__, true, transitions_file_path.c_str() );
                 }
 
                 // Load the Individual Property Transitions
@@ -1095,7 +1019,7 @@ namespace Kernel
                     LOG_DEBUG_F( "Creating/adding new node: external_node_id = %lu, node_suid = %lu\n", external_node_id, node_suid.data );
                     nodeid_suid_map.insert( nodeid_suid_pair( external_node_id, node_suid ) );
 
-                    addNewNodeFromDemographics( external_node_id, node_suid, demographics_factory, climate_factory, m_IPWhiteListEnabled );
+                    addNewNodeFromDemographics( external_node_id, node_suid, demographics_factory, climate_factory );
                 }
                 ++node_index;
             }
@@ -1107,8 +1031,9 @@ namespace Kernel
                 auto& suid = entry.first;
                 auto node = entry.second;
                 nodeid_suid_map.insert( nodeid_suid_pair( node->GetExternalID(), suid ) );
+                node->SetupEventContextHost(); // called in Node::Initialize() for normal path
                 node->SetContextTo(this);
-                initializeNode( node, demographics_factory, climate_factory, m_IPWhiteListEnabled );
+                initializeNode( node, demographics_factory, climate_factory );
             }
         }
 
@@ -1118,8 +1043,7 @@ namespace Kernel
         }
 
         // Merge nodeid<->suid bimaps
-        nodeid_suid_map_t merged_map;
-        MergeNodeIdSuidBimaps( nodeid_suid_map, merged_map );
+        MergeNodeIdSuidBimaps( nodeid_suid_map, nodeid_suid_map_full );
 
         // Initialize migration structure from file
         IMigrationInfoFactory * migration_factory = CreateMigrationInfoFactory( idreference, 
@@ -1144,7 +1068,7 @@ namespace Kernel
         for (auto& entry : nodes)
         {
             release_assert(entry.second);
-            (entry.second)->SetupMigration( migration_factory, m_simConfigObj->migration_structure, merged_map );
+            (entry.second)->SetupMigration( migration_factory, m_simConfigObj->migration_structure, nodeid_suid_map_full );
         } 
 
         LoadInterventions(campaignfilename, nodeIDs);
@@ -1165,17 +1089,15 @@ namespace Kernel
     void Kernel::Simulation::addNewNodeFromDemographics( ExternalNodeId_t externalNodeId,
                                                          suids::suid node_suid, 
                                                          NodeDemographicsFactory *nodedemographics_factory, 
-                                                         ClimateFactory *climate_factory,
-                                                         bool white_list_enabled )
+                                                         ClimateFactory *climate_factory )
     {
         Node *node = Node::CreateNode(this, externalNodeId, node_suid);
-        addNode_internal( node, nodedemographics_factory, climate_factory, white_list_enabled );
+        addNode_internal( node, nodedemographics_factory, climate_factory );
     }
 
     void Kernel::Simulation::addNode_internal( INodeContext *node,
                                                NodeDemographicsFactory *nodedemographics_factory,
-                                               ClimateFactory *climate_factory,
-                                               bool white_list_enabled )
+                                               ClimateFactory *climate_factory )
     {
 
         release_assert(node);
@@ -1187,10 +1109,10 @@ namespace Kernel
         node->SetRng( m_pRngFactory->CreateRng( node->GetExternalID() ) );
 
         // Node initialization 
-        node->SetParameters( nodedemographics_factory, climate_factory, white_list_enabled );
+        node->SetParameters( nodedemographics_factory, climate_factory );
 
         // Populate node
-        node->PopulateFromDemographics();
+        node->PopulateFromDemographics( nodedemographics_factory );
 
         // Add node to the map
         nodes.insert( std::pair<suids::suid, INodeContext*>(node->GetSuid(), node) );
@@ -1202,8 +1124,7 @@ namespace Kernel
 
     void Kernel::Simulation::initializeNode( INodeContext* node, 
                                              NodeDemographicsFactory* nodedemographics_factory, 
-                                             ClimateFactory* climate_factory,
-                                             bool white_list_enabled )
+                                             ClimateFactory* climate_factory )
     {
         release_assert( node );
         release_assert( nodedemographics_factory );
@@ -1211,7 +1132,7 @@ namespace Kernel
         release_assert( climate_factory );
 #endif
 
-        node->SetParameters( nodedemographics_factory, climate_factory, white_list_enabled );
+        node->SetParameters( nodedemographics_factory, climate_factory );
 
         // node->PopulateFromDemographics();    // Skip this, node already is populated.
         node->InitializeTransmissionGroupPopulations();
@@ -1250,7 +1171,26 @@ namespace Kernel
 
         WithSelfFunc to_self_func = [this](int myRank) 
         { 
-#ifndef _DEBUG
+#ifdef _DEBUG
+            //if( migratingIndividualQueues[ myRank ].size() > 0 )
+            //{
+            //    auto writer = make_shared<BinaryArchiveWriter>();
+            //    (*static_cast<IArchive*>(writer.get())) & migratingIndividualQueues[ myRank ];
+
+            //    for( auto& individual : migratingIndividualQueues[ myRank ] )
+            //        delete individual; // individual->Recycle();
+
+            //    migratingIndividualQueues[ myRank ].clear();
+
+            //    //if ( EnvPtr->Log->CheckLogLevel(Logger::VALIDATION, _module) ) {
+            //    //    _write_json( int(currentTime.time), EnvPtr->MPI.Rank, myRank, "self", static_cast<IArchive*>(writer.get())->GetBuffer(), static_cast<IArchive*>(writer.get())->GetBufferSize() );
+            //    //}
+
+            //    auto reader = make_shared<BinaryArchiveReader>( static_cast<IArchive*>(writer.get())->GetBuffer(), static_cast<IArchive*>(writer.get())->GetBufferSize() );
+            //    (*static_cast<IArchive*>(reader.get())) & migratingIndividualQueues[ myRank ];
+            //}
+#endif
+
             // Don't bother to serialize locally
             // for (auto individual : migratingIndividualQueues[destination_rank]) // Note the direction of iteration below!
             for (auto iterator = migratingIndividualQueues[myRank].rbegin(); iterator != migratingIndividualQueues[myRank].rend(); ++iterator)
@@ -1264,31 +1204,7 @@ namespace Kernel
                     delete individual;
                 }
             }
-#else
-            if ( migratingIndividualQueues[myRank].size() > 0 )
-            {
-                auto writer = make_shared<BinaryArchiveWriter>();
-                (*static_cast<IArchive*>(writer.get())) & migratingIndividualQueues[myRank];
-
-                for (auto& individual : migratingIndividualQueues[myRank])
-                    delete individual; // individual->Recycle();
-
-                migratingIndividualQueues[myRank].clear();
-
-                //if ( EnvPtr->Log->CheckLogLevel(Logger::VALIDATION, _module) ) {
-                //    _write_json( int(currentTime.time), EnvPtr->MPI.Rank, myRank, "self", static_cast<IArchive*>(writer.get())->GetBuffer(), static_cast<IArchive*>(writer.get())->GetBufferSize() );
-                //}
-
-                auto reader = make_shared<BinaryArchiveReader>(static_cast<IArchive*>(writer.get())->GetBuffer(), static_cast<IArchive*>(writer.get())->GetBufferSize());
-                (*static_cast<IArchive*>(reader.get())) & migratingIndividualQueues[myRank];
-                for (auto individual : migratingIndividualQueues[myRank])
-                {
-                    IMigrate* immigrant = individual->GetIMigrate();
-                    immigrant->ImmigrateTo( nodes[immigrant->GetMigrationDestination()] );
-                }
-            }
-#endif
-        }; 
+        };
 
         SendToOthersFunc to_others_func = [this](IArchive* writer, int toRank)
         {
@@ -1358,6 +1274,21 @@ namespace Kernel
         return currentTime;
     }
 
+    void Simulation::CheckMemoryFailure( bool onlyCheckForFailure )
+    {
+        m_MemoryGauge.CheckMemoryFailure( onlyCheckForFailure );
+    }
+
+    const ProcessMemoryInfo& Simulation::GetProcessMemory()
+    {
+        return m_MemoryGauge.GetProcessMemory();
+    }
+
+    const SystemMemoryInfo& Simulation::GetSystemMemory()
+    {
+        return m_MemoryGauge.GetSystemMemory();
+    }
+
     int Simulation::GetSimulationTimestep() const
     {
         return currentTime.timestep;
@@ -1399,6 +1330,11 @@ namespace Kernel
         return individual_data_reports ;
     }
 
+    uint32_t Simulation::GetNumNodesInSim() const
+    {
+        return nodeRankMap.GetRankMap().size();
+    }
+
     int Simulation::getInitialRankFromNodeId( ExternalNodeId_t node_id )
     {
         return nodeRankMap.GetInitialRankFromNodeId(node_id); // R: leave as a wrapper call to nodeRankMap.GetInitialRankFromNodeId()
@@ -1418,33 +1354,22 @@ namespace Kernel
         }
     }
 
-    // IGlobalContext inferface for all the other components 
-    const SimulationConfig* Simulation::GetSimulationConfigObj() const
-    {
-        return m_simConfigObj;
-    }
-
-    const IInterventionFactory* Simulation::GetInterventionFactory() const
-    {
-        return m_interventionFactoryObj;
-    }
-
     REGISTER_SERIALIZABLE(Simulation);
 
     void Simulation::serialize(IArchive& ar, Simulation* obj)
     {
         Simulation& sim = *obj;
-        ar.labelElement("serializationMask") & (uint32_t&)sim.serializationMask;
+        ar.labelElement("serializationFlags") & (uint32_t&)sim.serializationFlags;
 
-        if (((sim.serializationMask & SerializationFlags::Population) != 0) ||
-            ((sim.serializationMask & SerializationFlags::Properties) != 0))
+        if ((sim.serializationFlags.test(SerializationFlags::Population)) ||
+            (sim.serializationFlags.test(SerializationFlags::Properties)))
         {
             ar.labelElement("infectionSuidGenerator") & sim.infectionSuidGenerator;
             ar.labelElement("m_RngFactory") & sim.m_pRngFactory;
             ar.labelElement( "rng" ) & sim.rng;
         }
 
-        if ((sim.serializationMask & SerializationFlags::Population) != 0) {
+        if (sim.serializationFlags.test(SerializationFlags::Population)) {
             if (ar.IsReader()) {
                 // Read the nodes element in case it's a version 1 serialized file which includes
                 // the nodes in the nodes element.
@@ -1459,7 +1384,7 @@ namespace Kernel
             }
         }
 
-        if ((sim.serializationMask & SerializationFlags::Parameters) != 0) {
+        if (sim.serializationFlags.test(SerializationFlags::Parameters)) {
             ar.labelElement( "campaignFilename" ) & sim.campaignFilename;
             ar.labelElement( "custom_reports_filename" ) & sim.custom_reports_filename;
 
@@ -1476,7 +1401,7 @@ namespace Kernel
             ar.labelElement("loadbalance_filename") & sim.loadbalance_filename;
         }
 
-        if ((sim.serializationMask & SerializationFlags::Properties) != 0) {
+        if (sim.serializationFlags.test(SerializationFlags::Properties)) {
 // clorton          ar.labelElement("nodeRankMap") & sim.nodeRankMap;
 // clorton          ar.labelElement("node_event_context_list") & sim.node_event_context_list;
 // clorton          ar.labelElement("nodeid_suid_map") & sim.nodeid_suid_map;

@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -20,6 +12,7 @@ namespace Kernel
     
     public: 
         MultiInterventionDistributor();
+        MultiInterventionDistributor( const MultiInterventionDistributor& rMaster );
         virtual ~MultiInterventionDistributor();
 
         bool Configure( const Configuration* config );
@@ -32,6 +25,6 @@ namespace Kernel
     protected:
         virtual void Expire();
 
-        IndividualInterventionConfig intervention_list;
+        std::vector<IDistributableIntervention*> m_Interventions;
     };
 }

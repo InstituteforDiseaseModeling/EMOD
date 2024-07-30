@@ -20,7 +20,7 @@
         },
         "MIGRATION": {
             "Enable_Local_Migration": 1,
-            "Local_Migration_Filename": "3X3_Age_Gender_Local.bin",
+            "Local_Migration_Filename": "3x3_Age_Gender_Local.bin",
             "Migration_Model": "FIXED_RATE_MIGRATION"
         },
         "OUTPUT": {
@@ -32,6 +32,7 @@
             "Run_Number": 1,
             "Simulation_Duration": 400
         },
-        "Serialization_Type": "NONE"
+        "Serialized_Population_Writing_Type": "NONE",
+        "Serialized_Population_Reading_Type": "NONE"
     }
 }

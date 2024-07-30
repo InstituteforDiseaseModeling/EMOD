@@ -1,0 +1,13 @@
+{
+    "Default_Config_Path": "Malaria/fpg_vs_base/default_config.json",
+    "parameters": {
+        "Config_Name": "5_Int-Bednet_Tgt-100_R-1_B-0_K-0",
+        "Python_Script_Path": "SHARED",
+        "Vector_Species_Params": [
+            {
+                "Infectious_Human_Feed_Mortality_Factor": 1.0,
+                "Name": "SillySkeeter"
+            }
+        ]
+    }
+}

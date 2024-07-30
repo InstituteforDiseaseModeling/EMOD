@@ -1,0 +1,23 @@
+{
+   "Use_Defaults": 1,
+   "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 1,2,3,4 ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Property_Restrictions_Within_Node": [ ], 
+                "Demographic_Coverage": 0.1,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Antigen": 0, 
+                    "Genome": 0
+                }
+            }
+        }
+    ]
+}

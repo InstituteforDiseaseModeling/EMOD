@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
@@ -42,8 +34,8 @@ namespace Kernel
 
     bool WaningEffectBoxExponential::Configure( const Configuration * pInputJson )
     {
-        initConfigTypeMap("Box_Duration",        &boxDuration,       WEBE_Box_Duration_DESC_TEXT,        0, 100000, 100);
-        initConfigTypeMap("Decay_Time_Constant", &decayTimeConstant, WEBE_Decay_Time_Constant_DESC_TEXT, 0, 100000, 100);
+        initConfigTypeMap("Box_Duration",        &boxDuration,       WEB_Box_Duration_DESC_TEXT,       0, 100000, 100);
+        initConfigTypeMap("Decay_Time_Constant", &decayTimeConstant, WEE_Decay_Time_Constant_DESC_TEXT, 0, 100000, 100);
         return WaningEffectConstant::Configure( pInputJson );
     }
 

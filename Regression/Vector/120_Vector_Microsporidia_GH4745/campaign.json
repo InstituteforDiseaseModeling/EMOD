@@ -1,0 +1,70 @@
+{
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Number_Repetitions" : 1,
+                "Timesteps_Between_Repetitions" : 20,
+                "Intervention_Config": {
+                    "class": "MosquitoRelease",
+                    "Cost_To_Consumer": 200, 
+                    "Released_Number": 10000, 
+                    "Released_Species": "TestVector", 
+                    "Released_Microsporidia_Strain": "Strain_A",
+                    "Released_Infectious":0,
+                    "Released_Genome" : [
+                        [ "X", "X" ]
+                    ]
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day":1, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Number_Repetitions" : 1,
+                "Timesteps_Between_Repetitions" : 20,
+                "Intervention_Config": {
+                    "class": "MosquitoRelease",
+                    "Cost_To_Consumer": 200, 
+                    "Released_Number": 10000, 
+                    "Released_Species": "TestVector", 
+                    "Released_Microsporidia_Strain": "Strain_A",
+                    "Released_Infectious":0,
+                    "Released_Genome" : [
+                        [ "X", "Y" ]
+                    ]
+                }
+            }
+        },
+                {
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 1.0, 
+                    "Killing_Config": {
+                        "Box_Duration": 2, 
+                        "Initial_Effect": 1, 
+                        "class": "WaningEffectBox"
+                    }, 
+                    "class": "SpaceSpraying"
+                }, 
+                "class": "StandardInterventionDistributionEventCoordinator"
+            }, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Start_Day": 3, 
+            "class": "CampaignEvent"
+        }
+    ], 
+    "Use_Defaults": 1
+}

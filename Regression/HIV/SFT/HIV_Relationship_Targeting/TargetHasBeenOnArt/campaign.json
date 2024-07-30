@@ -1,0 +1,125 @@
+{
+    "Campaign_Name": "TargetHasBeenOnArt test",
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 0.1,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Antigen": 0, 
+                    "Genome": 0, 
+                    "Incubation_Period_Override": 0,
+                    "Ignore_Immunity": 1
+                }
+            }
+        },
+        {          
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1.0,
+                "Number_Repetitions": 100,
+                "Timesteps_Between_Repetitions": 30, 
+                "Intervention_Config": {
+                    "class": "HIVRapidHIVDiagnostic",
+                    "Cost_To_Consumer": 0.0,
+                    "Positive_Diagnosis_Event": "HasHIV_GiveART"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition_List": [
+                        "HasHIV_GiveART"
+                    ],
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "AntiretroviralTherapy",
+                        "Cost_To_Consumer" : 1,
+                        "ART_Multiplier_On_Transmission_Prob_Per_Act"             : 0.08,
+                        "ART_Is_Active_Against_Mortality_And_Transmission"        : 1,
+                        "Days_To_Achieve_Viral_Suppression"                       : 183.0,
+                        "ART_CD4_at_Initiation_Saturating_Reduction_in_Mortality" : 350.0,
+                        "ART_Survival_Baseline_Hazard_Weibull_Shape"              : 0.34,
+                        "ART_Survival_Baseline_Hazard_Weibull_Scale"              : 123.83,
+                        "ART_Survival_Hazard_Ratio_Female"                        : 0.6775,
+                        "ART_Survival_Hazard_Ratio_Age_Over_40Yr"                 : 1.4309,
+                        "ART_Survival_WHO_Stage_Threshold_For_Cox"                : 3,
+                        "ART_Survival_Hazard_Ratio_WHO_Stage_3Plus"               : 2.7142,
+                        "ART_Survival_Hazard_Ratio_CD4_Slope"                     : -0.00758256281931556,
+                        "ART_Survival_Hazard_Ratio_CD4_Intercept"                 : 0.282851687024819,
+                        "ART_Survival_Hazard_Ratio_Body_Weight_Kg_Slope"          : -0.0731529900006081,
+                        "ART_Survival_Hazard_Ratio_Body_Weight_Kg_Intercept"      : 3.05043211490958
+                    }
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 15,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Targeting_Config": {
+                    "class" : "HasBeenOnArtMoreOrLessThanNumMonths",
+                    "Is_Equal_To": 1,
+                    "More_Or_Less": "MORE",
+                    "Num_Months": 6
+                },
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "BroadcastEvent",
+                    "Broadcast_Event": "OnARTMoreThan6Months",
+                    "Intervention_Name": "Intervention Under Test"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 200,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Targeting_Config": {
+                    "class" : "HasBeenOnArtMoreOrLessThanNumMonths",
+                    "Is_Equal_To": 1,
+                    "More_Or_Less": "MORE",
+                    "Num_Months": 6
+                },
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "BroadcastEvent",
+                    "Broadcast_Event": "OnARTMoreThan6Months",
+                    "Intervention_Name": "Intervention Under Test"
+                }
+            }
+        }
+    ]
+}

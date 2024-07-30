@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "CalendarEventCoordinator.h"
@@ -34,16 +26,17 @@ namespace Kernel
     {
         std::vector<int> distribution_times;
         std::vector<float> distribution_coverages;
-        initConfigTypeMap("Distribution_Times", &distribution_times, Distribution_Times_DESC_TEXT, 1, INT_MAX, 0 );
-        initConfigTypeMap("Distribution_Coverages", &distribution_coverages, Distribution_Coverages_DESC_TEXT, 0.0f, 1.0f, 0.0f );
+        initConfigTypeMap("Distribution_Times",     &distribution_times,     Distribution_Times_DESC_TEXT,        1, INT_MAX, true,  nullptr, nullptr );
+        initConfigTypeMap("Distribution_Coverages", &distribution_coverages, Distribution_Coverages_DESC_TEXT, 0.0f,    1.0f, false, nullptr, nullptr );
 
         bool retValue = StandardInterventionDistributionEventCoordinator::Configure( inputJson );
 
         if( retValue && !JsonConfigurable::_dryrun )
         {
-            if(distribution_times.size() != distribution_coverages.size())
+            if( (distribution_times.size() != distribution_coverages.size()) || (distribution_times.size() == 0) )
             {
-                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, "In a Calendar Event Coordinator, vector of distribution coverages must match vector of distribution times" );
+                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__,
+                                                     "Arrays of 'Distribution_Coverages' and 'Distribution_Times' must have the same number of elements and cannot be empty." );
             }
 
             BuildDistributionCalendar(distribution_times, distribution_coverages);
@@ -54,27 +47,15 @@ namespace Kernel
     void CalendarEventCoordinator::BuildDistributionCalendar(
         std::vector<int> distribution_times,
         std::vector<float> distribution_coverages
-    )  
+    )
     {
-        NaturalNumber last_time = 0;
         while (!distribution_times.empty())
         {
             NaturalNumber time = distribution_times.front();
-            if( time == last_time )
-            {
-                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, ( std::string( "Duplicate distribution time entries: " ) + std::to_string( time ) ).c_str() );
-            }
-            else if( time < last_time )
-            {
-                std::stringstream msg;
-                msg << "Distribution time mis-ordered: " << (int) last_time << " > " << (int) time << std::endl;
-                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
-            }
             Fraction coverage = distribution_coverages.front();
             distribution_times.erase( distribution_times.begin() );
             distribution_coverages.erase( distribution_coverages.begin() );
             times_and_coverages.insert( std::make_pair( time, coverage ) );
-            last_time = time;
         }
     }
 

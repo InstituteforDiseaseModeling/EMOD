@@ -1,0 +1,11 @@
+{
+    "Serialization_Time_Steps" : [
+        -1,
+        0,
+        1,
+        2
+    ],
+    "Serialization_Precision" : "REDUCED",
+    "Serialized_Population_Writing_Type" : "TIMESTEP",
+    "Serialized_Population_Reading_Type" : "NONE"
+}

@@ -1,0 +1,304 @@
+{    
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 0.25,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Incubation_Period_Override": 0
+                }
+            }
+        },
+        { 
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": 
+            {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": 
+            { 
+                "class": "FirstNodeWithNodePropertyEventCoordinator",
+                "Start_Trigger_Condition_List": [ "Select_Node_For_Vaccination" ],
+                "Node_Property_Key_Value_To_Have" : "HasNodeBeenVaccinated:NO",
+                "Node_ID_To_Coordinator_Event_List": [
+                    { "Node_ID":  1, "Coordinator_Event_To_Broadcast": "Vaccinate_Node_1" },
+                    { "Node_ID":  2, "Coordinator_Event_To_Broadcast": "Vaccinate_Node_2" },
+                    { "Node_ID":  3, "Coordinator_Event_To_Broadcast": "Vaccinate_Node_3" },
+                    { "Node_ID":  4, "Coordinator_Event_To_Broadcast": "Vaccinate_Node_4" }
+                ]
+            }
+        },
+        
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 1 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "TriggeredEventCoordinator",
+                "Coordinator_Name": "TEC-Vaccinate Node 1",
+                "Start_Trigger_Condition_List": [ "Vaccinate_Node_1" ],
+                "Stop_Trigger_Condition_List": [],
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 1,
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                   "class": "SimpleVaccine",
+                   "Cost_To_Consumer": 1,
+                   "Vaccine_Take": 1,
+                   "Vaccine_Type": "AcquisitionBlocking",
+                   "Waning_Config": {
+                      "class": "WaningEffectConstant",
+                      "Initial_Effect": 1.0
+                   }
+                },
+                "Completion_Event": "Done_Vaccinating_Node_1"
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 1 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "TriggeredEventCoordinator",
+                "Coordinator_Name": "TEC-Change NP Node 1",
+                "Start_Trigger_Condition_List": [ "Vaccinate_Node_1" ],
+                "Stop_Trigger_Condition_List": [],
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 1,
+                "Intervention_Config": {
+                    "class": "NodePropertyValueChanger",
+                    "Target_NP_Key_Value" : "HasNodeBeenVaccinated:YES"
+                },
+                "Completion_Event": "Changed_IP_For_Node_1"
+            }
+        },
+        
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 2 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "TriggeredEventCoordinator",
+                "Coordinator_Name": "TEC-Vaccinate Node 2",
+                "Start_Trigger_Condition_List": [ "Vaccinate_Node_2" ],
+                "Stop_Trigger_Condition_List": [],
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 1,
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                   "class": "SimpleVaccine",
+                   "Cost_To_Consumer": 1,
+                   "Vaccine_Take": 1,
+                   "Vaccine_Type": "AcquisitionBlocking",
+                   "Waning_Config": {
+                      "class": "WaningEffectConstant",
+                      "Initial_Effect": 1.0
+                   }
+                },
+                "Completion_Event": "Done_Vaccinating_Node_2"
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 2 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "TriggeredEventCoordinator",
+                "Coordinator_Name": "TEC-Change NP Node 2",
+                "Start_Trigger_Condition_List": [ "Vaccinate_Node_2" ],
+                "Stop_Trigger_Condition_List": [],
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 1,
+                "Intervention_Config": {
+                    "class": "NodePropertyValueChanger",
+                    "Target_NP_Key_Value" : "HasNodeBeenVaccinated:YES"
+                },
+                "Completion_Event": "Changed_IP_For_Node_2"
+            }
+        },
+        
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 3 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "TriggeredEventCoordinator",
+                "Coordinator_Name": "TEC-Vaccinate Node 3",
+                "Start_Trigger_Condition_List": [ "Vaccinate_Node_3" ],
+                "Stop_Trigger_Condition_List": [],
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 1,
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                   "class": "SimpleVaccine",
+                   "Cost_To_Consumer": 1,
+                   "Vaccine_Take": 1,
+                   "Vaccine_Type": "AcquisitionBlocking",
+                   "Waning_Config": {
+                      "class": "WaningEffectConstant",
+                      "Initial_Effect": 1.0
+                   }
+                },
+                "Completion_Event": "Done_Vaccinating_Node_3"
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 3 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "TriggeredEventCoordinator",
+                "Coordinator_Name": "TEC-Change NP Node 1",
+                "Start_Trigger_Condition_List": [ "Vaccinate_Node_3" ],
+                "Stop_Trigger_Condition_List": [],
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 1,
+                "Intervention_Config": {
+                    "class": "NodePropertyValueChanger",
+                    "Target_NP_Key_Value" : "HasNodeBeenVaccinated:YES"
+                },
+                "Completion_Event": "Changed_IP_For_Node_3"
+            }
+        },
+        
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 4 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "TriggeredEventCoordinator",
+                "Coordinator_Name": "TEC-Vaccinate Node 1",
+                "Start_Trigger_Condition_List": [ "Vaccinate_Node_4" ],
+                "Stop_Trigger_Condition_List": [],
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 1,
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                   "class": "SimpleVaccine",
+                   "Cost_To_Consumer": 1,
+                   "Vaccine_Take": 1,
+                   "Vaccine_Type": "AcquisitionBlocking",
+                   "Waning_Config": {
+                      "class": "WaningEffectConstant",
+                      "Initial_Effect": 1.0
+                   }
+                },
+                "Completion_Event": "Done_Vaccinating_Node_4"
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 4 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "TriggeredEventCoordinator",
+                "Coordinator_Name": "TEC-Change NP Node 4",
+                "Start_Trigger_Condition_List": [ "Vaccinate_Node_4" ],
+                "Stop_Trigger_Condition_List": [],
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 1,
+                "Intervention_Config": {
+                    "class": "NodePropertyValueChanger",
+                    "Target_NP_Key_Value" : "HasNodeBeenVaccinated:YES"
+                },
+                "Completion_Event": "Changed_IP_For_Node_4"
+            }
+        },
+        
+        
+        
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 25,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "BroadcastCoordinatorEvent",
+                "Coordinator_Name" : "Start_Coordnator_1",
+                "Cost_To_Consumer" : 100,
+                "Broadcast_Event" : "Select_Node_For_Vaccination"
+            }
+        },
+        {
+            "COMMENT": "This will test that node 2 has the IP set and will not be selected.",
+            "class": "CampaignEvent",
+            "Start_Day": 50,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "BroadcastCoordinatorEvent",
+                "Coordinator_Name" : "Start_Coordnator_2",
+                "Cost_To_Consumer" : 100,
+                "Broadcast_Event" : "Select_Node_For_Vaccination"
+            }
+        },
+        {
+            "COMMENT1": "This event and the next happen during the same time step to test that internally",
+            "COMMENT2": "the coordinator keeps track of who it has selected.",
+            "class": "CampaignEvent",
+            "Start_Day": 100,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "BroadcastCoordinatorEvent",
+                "Coordinator_Name" : "Start_Coordnator_3",
+                "Cost_To_Consumer" : 100,
+                "Broadcast_Event" : "Select_Node_For_Vaccination"
+            }
+        },
+        {
+            "COMMENT": "See comment above",
+            "class": "CampaignEvent",
+            "Start_Day": 100,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "BroadcastCoordinatorEvent",
+                "Coordinator_Name" : "Start_Coordnator_4",
+                "Cost_To_Consumer" : 100,
+                "Broadcast_Event" : "Select_Node_For_Vaccination"
+            }
+        }
+    ],
+    "Use_Defaults": 1
+}

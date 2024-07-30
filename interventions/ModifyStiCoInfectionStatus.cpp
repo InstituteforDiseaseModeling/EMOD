@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
@@ -34,7 +26,7 @@ namespace Kernel
         , set_flag_to( false )
     {
         initSimTypes( 2, "STI_SIM", "HIV_SIM" );
-        initConfigTypeMap( "New_STI_CoInfection_Status", &set_flag_to, MSCIS_New_STI_Co_Status_DESC_TEXT, false );
+        initConfigTypeMap( "New_STI_CoInfection_Status", &set_flag_to, MSCIS_New_STI_CoInfection_Status_DESC_TEXT, false );
     }
 
     bool

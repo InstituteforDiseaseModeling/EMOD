@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
@@ -18,13 +10,16 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "NodeEventContext.h"
 #include "IIndividualHumanSTI.h"
 #include "INodeContext.h"
+#include "ReportUtilitiesSTI.h"
 
-SETUP_LOGGING( "RelationshipStartReporter" )
+SETUP_LOGGING( "StiRelationshipStartReporter" )
 
 using namespace std;
 
 namespace Kernel
 {
+    GET_SCHEMA_STATIC_WRAPPER_IMPL( StiRelationshipStartReporter, StiRelationshipStartReporter )
+
     IReport* StiRelationshipStartReporter::Create(ISimulation* simulation)
     {
         return new StiRelationshipStartReporter(simulation);
@@ -34,13 +29,52 @@ namespace Kernel
         : BaseTextReport("RelationshipStart.csv")
         , simulation(sim)
         , report_data()
+        , m_IPKeyNames()
+        , m_IPKeys()
+        , m_IncludeOther( true )
+        , m_ReportFilter( "Report_Relationship_Start", "Report_Relationship_Start" )
     {
-        simulation->RegisterNewNodeObserver(this, [&](INodeContext* node){ this->onNewNode(node); });
+        if( simulation != nullptr )
+        {
+            simulation->RegisterNewNodeObserver( this, [ & ]( INodeContext* node ) { this->onNewNode( node ); } );
+        }
     }
 
     StiRelationshipStartReporter::~StiRelationshipStartReporter()
     {
         simulation->UnregisterNewNodeObserver(this);
+    }
+
+    bool StiRelationshipStartReporter::Configure( const Configuration* inputJson )
+    {
+        m_ReportFilter.ConfigureParameters( *this, inputJson );
+
+        initConfigTypeMap( "Report_Relationship_Start_Individual_Properties", &m_IPKeyNames, RelStart_Individual_Properties_DESC_TEXT, nullptr, JsonConfigurable::empty_set, "Report_Relationship_Start" );
+        initConfigTypeMap( "Report_Relationship_Start_Include_Other_Relationship_Statistics", &m_IncludeOther, RelStart_Include_Other_Relationship_Statistics_DESC_TEXT, true,"Report_Relationship_Start" );
+        
+        bool ret = JsonConfigurable::Configure( inputJson );
+
+        if( ret && !JsonConfigurable::_dryrun )
+        {
+            m_ReportFilter.CheckParameters( inputJson );
+        }
+        return ret;
+    }
+
+    void StiRelationshipStartReporter::Initialize( unsigned int nrmSize )
+    {
+        for( auto name : m_IPKeyNames )
+        {
+            IPKey key( name );
+            m_IPKeys.push_back( key );
+        }
+        m_ReportFilter.Initialize();
+        BaseTextReport::Initialize( nrmSize );
+    }
+
+    void StiRelationshipStartReporter::CheckForValidNodeIDs( const std::vector<ExternalNodeId_t>& demographicNodeIds )
+    {
+        m_ReportFilter.CheckForValidNodeIDs( "RelationshipStart.csv", demographicNodeIds );
     }
 
     void StiRelationshipStartReporter::onNewNode(INodeContext* node)
@@ -58,6 +92,11 @@ namespace Kernel
 
     void StiRelationshipStartReporter::onNewRelationship(IRelationship* relationship)
     {
+        if( !m_ReportFilter.IsValidRelationship( relationship ) )
+        {
+            return;
+        }
+
         LOG_DEBUG_F("%s: rel id = %d, male id = %d, female id = %d\n", __FUNCTION__,
                     relationship->GetSuid().data,
                     relationship->MalePartner()->GetSuid().data,
@@ -68,15 +107,12 @@ namespace Kernel
 
         if (male_partner && female_partner)
         {
-            // get set of relationships in order to count the number for each type
-            RelationshipSet_t &his_relationships =  male_partner->GetRelationships();
-            RelationshipSet_t &her_relationships =  female_partner->GetRelationships();
-
             RelationshipStartInfo info;
             info.id                 = relationship->GetSuid().data;
             info.start_time         = relationship->GetStartTime();
             info.scheduled_end_time = relationship->GetScheduledEndTime();
             info.relationship_type  = (unsigned int)relationship->GetType();
+            info.is_outside_pfa     = relationship->IsOutsidePFA();
 
             IIndividualHumanEventContext* individual = nullptr;
 
@@ -88,64 +124,18 @@ namespace Kernel
             // --------------------------------------------------------
             // --- Assuming that the individuals in a relationship
             // --- must be in the same node.
-            //release_assert( false );
             // --------------------------------------------------------
             info.original_node_id = relationship->GetOriginalNodeId();
             info.current_node_id  = individual->GetNodeEventContext()->GetNodeContext()->GetExternalID();
 
-            info.participant_a.id                                = male_partner->GetSuid().data;
-            info.participant_a.is_infected                       = male_partner->IsInfected();
-            info.participant_a.gender                            = individual->GetGender();
-            info.participant_a.age                               = individual->GetAge()/365;
-            info.participant_a.active_relationship_count         = male_partner->GetRelationships().size();
-            info.participant_a.props                             = GetPropertyString( individual ) ;
-
-            for( int i = 0 ; i < RelationshipType::COUNT ; ++i )
-            {
-                info.participant_a.relationship_count[ i ] = 0 ;
-            }
-
-            for (auto relationship : his_relationships)
-            {
-                info.participant_a.relationship_count[ int(relationship->GetType()) ]++;
-            }
-
-            info.participant_a.cumulative_lifetime_relationships = male_partner->GetLifetimeRelationshipCount();
-            info.participant_a.relationships_in_last_six_months  = male_partner->GetLast6MonthRels();
-            info.participant_a.extrarelational_flags             = male_partner->GetExtrarelationalFlags();
-            info.participant_a.is_circumcised                    = male_partner->IsCircumcised();
-            info.participant_a.has_sti                           = male_partner->HasSTICoInfection();
-            info.participant_a.is_superspreader                  = male_partner->IsBehavioralSuperSpreader();
-
+            ExtractPartnerData( individual, male_partner, info.participant_a );
 
             if (female_partner->QueryInterface(GET_IID(IIndividualHumanEventContext), (void**)&individual) != s_OK)
             {
                 throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "female_partner", "IIndividualHumanContext", "IIndividualHumanSTI*" );
             }
 
-            info.participant_b.id                                = female_partner->GetSuid().data;
-            info.participant_b.is_infected                       = female_partner->IsInfected();
-            info.participant_b.gender                            = individual->GetGender();
-            info.participant_b.age                               = individual->GetAge()/365;
-            info.participant_b.active_relationship_count         = female_partner->GetRelationships().size();
-            info.participant_b.props                             = GetPropertyString( individual ) ;
-
-            for( int i = 0 ; i < RelationshipType::COUNT ; ++i )
-            {
-                info.participant_b.relationship_count[ i ] = 0 ;
-            }
-
-            for (auto relationship : her_relationships)
-            {
-                info.participant_b.relationship_count[ int(relationship->GetType()) ]++;
-            }
-
-            info.participant_b.cumulative_lifetime_relationships = female_partner->GetLifetimeRelationshipCount();
-            info.participant_b.relationships_in_last_six_months  = female_partner->GetLast6MonthRels();
-            info.participant_b.extrarelational_flags             = female_partner->GetExtrarelationalFlags();
-            info.participant_b.is_circumcised                    = female_partner->IsCircumcised();
-            info.participant_b.has_sti                           = female_partner->HasSTICoInfection();
-            info.participant_b.is_superspreader                  = female_partner->IsBehavioralSuperSpreader();
+            ExtractPartnerData( individual, female_partner, info.participant_b );
 
             CollectOtherData( info.id, male_partner, female_partner );
 
@@ -157,67 +147,91 @@ namespace Kernel
         }
     }
 
+    void StiRelationshipStartReporter::ExtractPartnerData( IIndividualHumanEventContext* pHuman,
+                                                           IIndividualHumanSTI* pHumanSTI,
+                                                           ParticipantInfo& rParticipant )
+    {
+        rParticipant.id                        = pHumanSTI->GetSuid().data;
+        rParticipant.is_infected               = pHumanSTI->IsInfected();
+        rParticipant.gender                    = pHuman->GetGender();
+        rParticipant.age                       = pHuman->GetAge() / 365;
+        rParticipant.previous_coita_acts_count = pHumanSTI->GetTotalCoitalActs();
+        rParticipant.active_relationship_count = pHumanSTI->GetRelationships().size();
+
+        for( auto& r_key : m_IPKeys )
+        {
+            rParticipant.props.push_back( pHuman->GetProperties()->Get( r_key ).GetValueAsString() );
+        }
+
+        for( int i = 0; i < RelationshipType::COUNT; ++i )
+        {
+            rParticipant.relationship_count[ i ] = 0;
+        }
+
+        for( auto relationship : pHumanSTI->GetRelationships() )
+        {
+            rParticipant.relationship_count[ int( relationship->GetType() ) ]++;
+        }
+
+        rParticipant.cumulative_lifetime_relationships = pHumanSTI->GetLifetimeRelationshipCount();
+        rParticipant.relationships_in_last_six_months  = pHumanSTI->GetLast6MonthRels();
+        rParticipant.extrarelational_flags             = pHumanSTI->GetExtrarelationalFlags();
+        rParticipant.is_circumcised                    = pHumanSTI->IsCircumcised();
+        rParticipant.has_sti                           = pHumanSTI->HasSTICoInfection();
+        rParticipant.is_superspreader                  = pHumanSTI->IsBehavioralSuperSpreader();
+    }
+
     std::string StiRelationshipStartReporter::GetHeader() const
     {
         std::stringstream header ;
-        header 
+        header
             << "Rel_ID,"
             << "Rel_start_time,"
-            << "Rel_scheduled_end_time,";
-
-        header << "Rel_type (";
-        for( int i = 0 ; i < RelationshipType::COUNT ; ++i )
-        {
-            header << i << " = " << RelationshipType::pairs::get_keys()[i];
-            if( (i+1) < RelationshipType::COUNT )
-            {
-                header << "; ";
-            }
-        }
-        header << "),";
-
-        header 
+            << "Rel_scheduled_end_time,"
+            << ReportUtilitiesSTI::GetRelationshipTypeColumnHeader() << ","
+            << "Is_rel_outside_PFA,"
             << "Original_node_ID,"
-            << "Current_node_ID,"
-            << "A_ID,"
-            << "A_is_infected,"
-            << "A_gender,"
-            << "A_age,"
-            << "A_total_num_active_rels,";
+            << "Current_node_ID";
 
-        for( int i = 0 ; i < RelationshipType::COUNT ; ++i )
-        {
-            header << "A_num_active_" << RelationshipType::pairs::get_keys()[i] << "_rels,";
-        }
+        AddPartnerColumnHeaders( "A", header );
+        AddPartnerColumnHeaders( "B", header );
 
-        header
-            << "A_num_lifetime_rels,"
-            << "A_num_rels_last_6_mo,"
-            << "A_extra_relational_bitmask,"
-            << "A_is_circumcised,"
-            << "A_has_STI_coinfection,"
-            << "A_is_superspreader,"
-            << "B_ID,"
-            << "B_is_infected,"
-            << "B_gender,"
-            << "B_age,"
-            << "B_total_num_active_rels,";
-
-        for( int i = 0 ; i < RelationshipType::COUNT ; ++i )
-        {
-            header << "B_num_active_" << RelationshipType::pairs::get_keys()[i] << "_rels,";
-        }
-
-        header
-            << "B_num_lifetime_rels,"
-            << "B_num_rels_last_6_mo,"
-            << "B_extra_relational_bitmask,"
-            << "B_is_circumcised,"
-            << "B_has_STI_coinfection,"
-            << "B_is_superspreader,"
-            << "A_IndividualProperties,"
-            << "B_IndividualProperties" ;
         return header.str();
+    }
+
+    void StiRelationshipStartReporter::AddPartnerColumnHeaders( const char* pPartnerLabel, std::stringstream& rHeader ) const
+    {
+        rHeader
+            << "," << pPartnerLabel << "_ID"
+            << "," << pPartnerLabel << "_is_infected"
+            << "," << pPartnerLabel << "_gender"
+            << "," << pPartnerLabel << "_age";
+
+        for( auto& r_key : m_IPKeys )
+        {
+            rHeader << "," << pPartnerLabel << "_IP='" << r_key.ToString() << "'";
+        }
+
+        if( m_IncludeOther )
+        {
+            rHeader
+                << "," << pPartnerLabel << "_previous_num_coital_acts"
+                << "," << pPartnerLabel << "_total_num_active_rels";
+
+            for( int i = 0; i < RelationshipType::COUNT; ++i )
+            {
+                rHeader << "," << pPartnerLabel << "_num_active_" << RelationshipType::pairs::get_keys()[ i ] << "_rels";
+            }
+
+            rHeader
+                << "," << pPartnerLabel << "_num_lifetime_rels"
+                << "," << pPartnerLabel << "_num_rels_last_6_mo"
+                << "," << pPartnerLabel << "_extra_relational_bitmask";
+        }
+        rHeader
+            << "," << pPartnerLabel << "_is_circumcised"
+            << "," << pPartnerLabel << "_has_STI_coinfection"
+            << "," << pPartnerLabel << "_is_superspreader";
     }
 
     void StiRelationshipStartReporter::BeginTimestep()
@@ -232,92 +246,61 @@ namespace Kernel
         // TODO - per time step data reduction (if multi-core)
         for (auto& entry : report_data)
         {
-            GetOutputStream() << entry.id << ','
-                              << entry.start_time << ','
-                              << entry.scheduled_end_time << ','
-                              << entry.relationship_type << ','
-                              << entry.original_node_id << ','
-                              << entry.current_node_id << ','
-                              << entry.participant_a.id << ','
-                              << entry.participant_a.is_infected << ','
-                              << entry.participant_a.gender << ','
-                              << entry.participant_a.age << ','
-                              << entry.participant_a.active_relationship_count << ',';
+            GetOutputStream()
+                << entry.id
+                << "," << entry.start_time
+                << "," << entry.scheduled_end_time
+                << "," << entry.relationship_type
+                << "," << (entry.is_outside_pfa ? 'T' : 'F')
+                << "," << entry.original_node_id
+                << "," << entry.current_node_id;
 
-            for( int i = 0 ; i < RelationshipType::COUNT ; ++i )
-            {
-                GetOutputStream() << entry.participant_a.relationship_count[i] << ',';
-            }
+            WriteParticipant( entry.participant_a );
+            WriteParticipant( entry.participant_b );
 
-            GetOutputStream() << entry.participant_a.cumulative_lifetime_relationships << ','
-                              << entry.participant_a.relationships_in_last_six_months << ','
-                              << entry.participant_a.extrarelational_flags << ','
-                              << entry.participant_a.is_circumcised << ','
-                              << entry.participant_a.has_sti << ','
-                              << entry.participant_a.is_superspreader << ','
-                              << entry.participant_b.id << ','
-                              << entry.participant_b.is_infected << ','
-                              << entry.participant_b.gender << ','
-                              << entry.participant_b.age << ','
-                              << entry.participant_b.active_relationship_count << ',';
-
-            for( int i = 0 ; i < RelationshipType::COUNT ; ++i )
-            {
-                GetOutputStream() << entry.participant_b.relationship_count[i] << ',';
-            }
-
-            GetOutputStream() << entry.participant_b.cumulative_lifetime_relationships << ','
-                              << entry.participant_b.relationships_in_last_six_months << ','
-                              << entry.participant_b.extrarelational_flags << ','
-                              << entry.participant_b.is_circumcised << ','
-                              << entry.participant_b.has_sti << ','
-                              << entry.participant_b.is_superspreader << ','
-                              << entry.participant_a.props << ','
-                              << entry.participant_b.props 
-                              << GetOtherData( entry.id )
+            GetOutputStream() << GetOtherData( entry.id )
                               << endl;
         }
 
         BaseTextReport::EndTimestep( currentTime, dt );
     }
 
+    void StiRelationshipStartReporter::WriteParticipant( ParticipantInfo& rParticipant )
+    {
+        GetOutputStream()
+            << "," << rParticipant.id
+            << "," << rParticipant.is_infected
+            << "," << rParticipant.gender
+            << "," << rParticipant.age;
+
+        for( auto value : rParticipant.props )
+        {
+            GetOutputStream() << "," << value;
+        }
+
+        if( m_IncludeOther )
+        {
+            GetOutputStream() << "," << rParticipant.previous_coita_acts_count;
+            GetOutputStream() << "," << rParticipant.active_relationship_count;
+
+            for( int i = 0; i < RelationshipType::COUNT; ++i )
+            {
+                GetOutputStream() << "," << rParticipant.relationship_count[ i ];
+            }
+
+            GetOutputStream()
+                << "," << rParticipant.cumulative_lifetime_relationships
+                << "," << rParticipant.relationships_in_last_six_months
+                << "," << rParticipant.extrarelational_flags;
+        }
+        GetOutputStream()
+            << "," << rParticipant.is_circumcised
+            << "," << rParticipant.has_sti
+            << "," << rParticipant.is_superspreader;
+    }
+
     void StiRelationshipStartReporter::ClearData()
     {
         report_data.clear();
     }
-
-    std::string StiRelationshipStartReporter::GetPropertyString( IIndividualHumanEventContext* individual )
-    {
-        std::string propertyString;
-        IPKeyValueContainer* p_props = individual->GetProperties();
-        for( auto kv : *p_props )
-        {
-            const std::string& key   = kv.GetKeyAsString();
-            const std::string& value = kv.GetValueAsString();
-
-            // ------------------------------------------------------------------
-            // --- Do not include the auto-generated Relationship property.
-            // --- (If find() returns zero, then the key stats with "Relationship")
-            // ------------------------------------------------------------------
-            if( key.find("Relationship") != 0 )
-            {
-                propertyString += key + "-" + value + ";" ;
-            }
-        }
-
-        if( propertyString.empty() )
-        {
-            propertyString = "None" ;
-        }
-        else
-        {
-#ifdef WIN32
-            propertyString.pop_back();
-#else
-            propertyString.resize(propertyString.size() - 1);
-#endif
-        }
-        return propertyString ;
-    }
-
 }

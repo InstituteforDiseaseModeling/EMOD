@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "HIVMuxer.h"
@@ -30,6 +22,7 @@ namespace Kernel
     , max_entries(1)
     , muxer_name("")
     , firstUpdate(true)
+    , ihcs( nullptr )
     {
     }
 
@@ -38,6 +31,7 @@ namespace Kernel
     , max_entries(master.max_entries)
     , muxer_name(master.muxer_name)
     , firstUpdate(master.firstUpdate)
+    , ihcs( nullptr )
     {
     }
 
@@ -59,7 +53,7 @@ namespace Kernel
         {
             if( (delay_distribution->GetType() == DistributionFunction::CONSTANT_DISTRIBUTION) && (delay_distribution->GetParam1() == 0.0) )
             {
-                throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Delay_Period_Distribution", "CONSTANT_DISTRIBUTION", "Delay_Period", "0" );
+                throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Delay_Period_Distribution", "CONSTANT_DISTRIBUTION", "Delay_Period_Constant", "0" );
             }
             else if( delay_distribution->GetType() == DistributionFunction::GAUSSIAN_DISTRIBUTION )
             {
@@ -96,7 +90,6 @@ namespace Kernel
         bool distributed = HIVDelayedIntervention::Distribute(context, pICCO);
         if( distributed )
         {
-            IHIVCampaignSemaphores *ihcs = nullptr;
             if ( s_OK != context->QueryInterface(GET_IID(IHIVCampaignSemaphores), (void **)&ihcs) )
             {
                 throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context", "IHIVCampaignSemaphores", "IIndividualHumanInterventionsContext" );
@@ -113,12 +106,14 @@ namespace Kernel
 
     void HIVMuxer::Update(float dt)
     {
-        IHIVCampaignSemaphores *ihcs = nullptr;
-        if ( s_OK != parent->GetInterventionsContext()->QueryInterface(GET_IID(IHIVCampaignSemaphores), (void **)&ihcs) )
+        if( ihcs == nullptr )
         {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetInterventionsContext()", 
-                                                                             "IHIVCampaignSemaphores", 
-                                                                             "IIndividualHumanInterventionsContext" );
+            if ( s_OK != parent->GetInterventionsContext()->QueryInterface(GET_IID(IHIVCampaignSemaphores), (void **)&ihcs) )
+            {
+                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent->GetInterventionsContext()", 
+                                                                                 "IHIVCampaignSemaphores", 
+                                                                                 "IIndividualHumanInterventionsContext" );
+            }
         }
 
         if (firstUpdate)

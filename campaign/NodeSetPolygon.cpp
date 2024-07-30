@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "NodeSet.h"
@@ -27,8 +19,8 @@ namespace Kernel
     bool
     NodeSetPolygon::Configure(const Configuration * inputJson)
     {
-        initConfigTypeMap( "Vertices", &vertices_raw, Node_Polygon_Vertices_DESC_TEXT );
-        initConfig( "Polygon_Format", polygon_format, inputJson, MetadataDescriptor::Enum("polygon_format", Node_Polygon_Format_DESC_TEXT, MDD_ENUM_ARGS(PolygonFormatType) ) );
+        initConfigTypeMap( "Vertices", &vertices_raw, NSP_Vertices_DESC_TEXT );
+        initConfig( "Polygon_Format", polygon_format, inputJson, MetadataDescriptor::Enum("polygon_format", NSP_Polygon_Format_DESC_TEXT, MDD_ENUM_ARGS(PolygonFormatType) ) );
         return JsonConfigurable::Configure( inputJson );
     }
 

@@ -1,0 +1,79 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 100,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [
+                    1
+                ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Individual_Selection_Type": "TARGET_NUM_INDIVIDUALS",
+                "Target_Num_Individuals": 5,
+                "Property_Restrictions_Within_Node" : [ { "Accessibility": "NONE" } ],
+                "Intervention_Config": {
+                    "class": "MultiInterventionDistributor",
+                    "Intervention_List": [
+                        {
+                            "class": "OutbreakIndividualMalariaGenetics",
+                            "Create_Nucleotide_Sequence_From": "BARCODE_STRING",
+                            "Barcode_String": "AAAAAAAAAAAAAAAAAAAAAAAA",
+                            "COMMENT1":"Remember for drugs 'A' is no resistance",
+                            "COMMENT2":"while 'A' means HRP is present.  IT is opposite so be careful.",
+                            "Drug_Resistant_String" : "A",
+                            "HRP_String" : "A"
+                        },
+                        {
+                            "COMMENT": "Just want to set the property.  Do not care about the event being broadcast.",
+                            "class": "BroadcastEvent",
+                            "New_Property_Value": "Accessibility:GM_1",
+                            "Broadcast_Event": "PFA_NoPartnerFound"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 100,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [
+                    1
+                ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Individual_Selection_Type": "TARGET_NUM_INDIVIDUALS",
+                "Target_Num_Individuals": 5,
+                "Property_Restrictions_Within_Node" : [ { "Accessibility": "NONE" } ],
+                "Intervention_Config": {
+                    "class": "MultiInterventionDistributor",
+                    "Intervention_List": [
+                        {
+                            "class": "OutbreakIndividualMalariaGenetics",
+                            "Create_Nucleotide_Sequence_From": "BARCODE_STRING",
+                            "Barcode_String": "TAAAAAAAAAAAAAAAAAAAAAAT",
+                            "COMMENT1":"Remember for drugs 'A' is no resistance",
+                            "COMMENT2":"while 'A' means HRP is present.  IT is opposite so be careful.",
+                            "COMMENT3":"Hence, below we have drug resistance present and HRP missing.",
+                            "Drug_Resistant_String" : "T",
+                            "HRP_String" : "G"
+                        },
+                        {
+                            "class": "BroadcastEvent",
+                            "New_Property_Value": "Accessibility:GM_2",
+                            "Broadcast_Event": "PFA_NoPartnerFound"
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}

@@ -1,17 +1,11 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 #include "IdmApi.h"
 #include "ISerializable.h"
 #include "suids.hpp"
-#include "ITransmissionGroups.h"
+#include "TransmissionGroupMembership.h"
+#include "IntranodeTransmissionTypes.h"
+#include "Properties.h"
 #include "SimulationEnums.h"
 #include "EventTrigger.h"
 #include "ExternalNodeId.h"
@@ -32,6 +26,9 @@ namespace Kernel
     struct IIndividualHuman;
     struct ISimulationContext;
     class NPKeyValueContainer;
+    struct IStrainIdentity;
+
+    typedef std::vector<std::string> RouteList_t;
 
     struct IDMAPI INodeContext : ISerializable
     {
@@ -58,9 +55,10 @@ namespace Kernel
                                      MigrationStructure::Enum ms,
                                      const boost::bimap<ExternalNodeId_t, suids::suid>& rNodeIdSuidMap ) = 0;
 
+        virtual void SetupEventContextHost() = 0;
         virtual void SetContextTo( ISimulationContext* ) = 0;
-        virtual void SetParameters( NodeDemographicsFactory *demographics_factory, ClimateFactory *climate_factory, bool white_list_enabled ) = 0;
-        virtual void PopulateFromDemographics() = 0;
+        virtual void SetParameters( NodeDemographicsFactory *demographics_factory, ClimateFactory *climate_factory ) = 0;
+        virtual void PopulateFromDemographics (NodeDemographicsFactory *demographics_factory ) = 0;
         virtual void InitializeTransmissionGroupPopulations() = 0;
 
         virtual suids::suid GetNextInfectionSuid() = 0;
@@ -74,19 +72,15 @@ namespace Kernel
         // heterogeneous intra-node transmission
         virtual void ExposeIndividual(IInfectable* candidate, TransmissionGroupMembership_t individual, float dt) = 0;
         virtual void DepositFromIndividual( const IStrainIdentity& strain_IDs, float contagion_quantity, TransmissionGroupMembership_t individual, TransmissionRoute::Enum route = TransmissionRoute::TRANSMISSIONROUTE_CONTACT) = 0;
-        virtual void GetGroupMembershipForIndividual(const RouteList_t& route, const tProperties& properties, TransmissionGroupMembership_t& membershipOut ) = 0;
-        virtual void UpdateTransmissionGroupPopulation(const tProperties& properties, float size_changes,float mc_weight) = 0;
+        virtual void GetGroupMembershipForIndividual(const RouteList_t& route, const IPKeyValueContainer& properties, TransmissionGroupMembership_t& membershipOut ) = 0;
+        virtual void UpdateTransmissionGroupPopulation(const IPKeyValueContainer& properties, float size_changes,float mc_weight) = 0;
         virtual std::map< std::string, float > GetContagionByRoute() const = 0; // developed for Typhoid/Environmental
         virtual float GetTotalContagion( void ) = 0;
-        virtual ITransmissionGroups* GetTransmissionGroups() const = 0;
         virtual const RouteList_t& GetTransmissionRoutes( ) const = 0;
         virtual float GetContagionByRouteAndProperty( const std::string& route, const IPKeyValue& property_value ) = 0;
 
         virtual float getSinusoidalCorrection(float sinusoidal_amplitude, float sinusoidal_phase) const = 0;
         virtual float getBoxcarCorrection(float boxcar_amplitude, float boxcar_start_time, float boxcar_end_time) const = 0;
-
-        // Discrete HINT contagion
-        virtual act_prob_vec_t DiscreteGetTotalContagion( void ) = 0;
 
         virtual IMigrationInfo* GetMigrationInfo() = 0;
         virtual const NodeDemographics* GetDemographics() const = 0;
@@ -102,7 +96,6 @@ namespace Kernel
         virtual float       GetBirths()        const = 0;
         virtual float       GetCampaignCost()  const = 0;
         virtual float       GetInfectivity()   const = 0;
-        virtual float       GetInfectionRate() const = 0;
         virtual float       GetSusceptDynamicScaling() const = 0;
         virtual const Climate* GetLocalWeather() const = 0;
         virtual long int GetPossibleMothers()  const = 0;

@@ -1,0 +1,18 @@
+{
+    "Default_Config_Path": "../../defaults/hiv_default_config.json",
+    "parameters": {
+        "Config_Name": "1_HIV_AntiretroviralTherapy",
+        "Custom_Individual_Events": [
+            "OnART1"
+        ],
+        "Simulation_Duration": 100,
+        "x_Base_Population": 0.001,
+        "____________DEMOGRAPHICS___________": "",
+        "____________INTRAHOST___________": "",
+        "____________NETWORK___________": "",
+        "____________RARELY_CHANGED___________": "",
+        "____________REPORTING___________": "",
+        "____________SIMULATION___________": "",
+        "____________TRANSMISSION___________": ""
+    }
+}

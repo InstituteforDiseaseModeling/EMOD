@@ -4,9 +4,8 @@
         "OnART1"
     ],
     "parameters": {
-        "ART_Viral_Suppression_Multiplier": 0.3,
-        "x_Base_Population": 0.0001,
         "Config_Name": "19_HIV_ViralSuppression",
+        "x_Base_Population": 0.0001,
         "Simulation_Duration": 2000,
         "____________DEMOGRAPHICS___________": "",
         "____________INTRAHOST___________": "",

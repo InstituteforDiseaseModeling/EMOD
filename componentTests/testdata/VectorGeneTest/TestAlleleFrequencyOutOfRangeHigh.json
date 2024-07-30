@@ -1,0 +1,21 @@
+{
+    "Genes" : [
+        {
+            "Is_Gender_Gene": 0,
+            "Alleles": [
+                {
+                    "Name": "a1",
+                    "Is_Y_Chromosome" : 0,
+                    "COMMENT" : "a1 has frequency out of range",
+                    "Initial_Allele_Frequency": 6.6
+                },
+                {
+                    "Name": "a2",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.4
+                }
+            ],
+            "Mutations": []
+        }
+    ]
+}

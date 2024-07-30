@@ -1,6 +1,6 @@
 {
     "class" : "WaningEffectCombo",
-    "Add_Effects" : 0,
+    "Add_Effects" : 1,
     "Expires_When_All_Expire" : 1,
     "Effect_List" : [
         {

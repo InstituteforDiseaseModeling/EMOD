@@ -1,0 +1,42 @@
+{
+    "parameters": {
+        "CAMPAIGNS": {
+            "Enable_Interventions": 0
+        },
+        "CLIMATE": {
+            "Enable_Climate_Stochasticity": 1
+        },
+        "DEMOGRAPHICS": {
+            "Demographics_Filenames": [
+                "../../Input/Vector_single_node_demographics.json",
+                "../../Input/500_vectors_overlay.spreadrisk.json"
+            ],
+            "x_Base_Population": 1e-05
+        },
+        "PRIMARY": {
+            "Config_Name": "Vector:SFT:VectorFeedingCycle:ArrheniusRate_Variable_Temp",
+            "Simulation_Duration": 20
+        },
+        "VECTOR": {
+            "Human_Feeding_Mortality": 0,
+            "SPECIES": {
+                "Vector_Species_Params": [
+                     {
+                        "Name" :"TestVector",
+                        "Temperature_Dependent_Feeding_Cycle": "ARRHENIUS_DEPENDENCE",
+                        "Adult_Life_Expectancy": 730,
+                        "Male_Life_Expectancy": 730,
+                        "Egg_Batch_Size": 0
+                    }
+                ],
+                "Vector_Sampling_Type": "TRACK_ALL_VECTORS"
+            }
+        },
+        "LOGGING": {
+            "logLevel_VectorPopulationIndividual": "VALID",
+            "logLevel_VectorCohort": "VALID"
+        }
+    },
+    "Default_Config_Path": "defaults/vector_science_default_config.json"
+}
+

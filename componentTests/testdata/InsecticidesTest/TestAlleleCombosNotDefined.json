@@ -1,0 +1,51 @@
+{
+    "COMMENT1": "Testing that the user cannot configure the insecticide like this.",
+    "COMMENT2": "If they want this they need to define the interesecting combinations.",
+    "Insecticides" : [
+        {
+            "Name" : "pyrethroid",
+            "Resistances" : [
+                {
+                    "Species" : "arabiensis",
+                    "Allele_Combinations" : [
+                        [ "a0", "*" ]
+                    ],
+                    "Larval_Killing_Modifier": 0.0,
+                    "Repelling_Modifier": 1.0,
+                    "Blocking_Modifier": 0.1,
+                    "Killing_Modifier": 0.2
+                },
+                {
+                    "Species" : "arabiensis",
+                    "Allele_Combinations" : [
+                        [ "b0", "*" ]
+                    ],
+                    "Larval_Killing_Modifier": 0.2,
+                    "Repelling_Modifier": 1.0,
+                    "Blocking_Modifier": 0.3,
+                    "Killing_Modifier": 0.4
+                },
+                {
+                    "Species" : "funestus",
+                    "Allele_Combinations" : [
+                        [ "c0", "*" ]
+                    ],
+                    "Larval_Killing_Modifier": 0.4,
+                    "Repelling_Modifier": 1.0,
+                    "Blocking_Modifier": 0.5,
+                    "Killing_Modifier": 0.6
+                },
+                {
+                    "Species" : "funestus",
+                    "Allele_Combinations" : [
+                        [ "c1", "*" ]
+                    ],
+                    "Larval_Killing_Modifier": 0.6,
+                    "Repelling_Modifier": 1.0,
+                    "Blocking_Modifier": 0.7,
+                    "Killing_Modifier": 0.8
+                }
+            ]
+        }
+    ]
+}

@@ -1,33 +1,28 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
 #include <set>
-#include "BoostLibWrapper.h"
 #include "NodeHIV.h"
 #include "IndividualSTI.h"
 #include "IIndividualHumanHIV.h"
 
 namespace Kernel
 {
+    class HIVInterventionsContainer;
+
+
     class IndividualHumanHIVConfig : public IndividualHumanSTIConfig
     {
         GET_SCHEMA_STATIC_WRAPPER( IndividualHumanHIVConfig )
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()  
         DECLARE_QUERY_INTERFACE()
+        virtual bool Configure( const Configuration* config ) override; // public for pymod
+
     protected:
         friend class IndividualHumanHIV;
 
         static float maternal_transmission_ART_multiplier;
 
-        virtual bool Configure( const Configuration* config ) override;
     };
 
     class IHIVInfection;
@@ -51,11 +46,16 @@ namespace Kernel
         // Infections and Susceptibility
         virtual void CreateSusceptibility( float imm_mod=1.0f, float risk_mod=1.0f ) override;
 
+        virtual bool IsSymptomatic() const override;
+
         virtual bool HasHIV() const override;
 
         virtual IInfectionHIV* GetHIVInfection() const override;
         virtual ISusceptibilityHIV* GetHIVSusceptibility() const override;
         virtual IHIVInterventionsContainer* GetHIVInterventionsContainer() const override;
+        virtual IIndividualHumanSTI* GetIndividualHumanSTI() override;
+        virtual IHIVMedicalHistory* GetMedicalHistory() const override;
+
         virtual bool UpdatePregnancy(float dt=1) override;
         virtual ProbabilityNumber getProbMaternalTransmission() const override;
 
@@ -72,7 +72,11 @@ namespace Kernel
         
         virtual IInfection* createInfection(suids::suid _suid) override;
         virtual void setupInterventionsContainer() override;
+        virtual bool ImmunityEnabled() const override;
+
         ISusceptibilityHIV * hiv_susceptibility;
+        IInfectionHIV* m_pHIVInfection;
+        HIVInterventionsContainer* m_pHIVInterventionsContainer;
 
         // from HIVPerson (HIV branch), kto: clean up these comments later
         // individual characteristics, node-agnostic for now.
@@ -83,6 +87,7 @@ namespace Kernel
         // variables for reporting
         unsigned int pos_num_partners_while_CD4500plus;
         unsigned int neg_num_partners_while_CD4500plus;
+
 
         DECLARE_SERIALIZABLE(IndividualHumanHIV);
     };

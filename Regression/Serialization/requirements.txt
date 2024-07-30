@@ -1,0 +1,4 @@
+lz4
+python-snappy
+-i https://packages.idmod.org/api/pypi/pypi-production/simple
+emod-api 

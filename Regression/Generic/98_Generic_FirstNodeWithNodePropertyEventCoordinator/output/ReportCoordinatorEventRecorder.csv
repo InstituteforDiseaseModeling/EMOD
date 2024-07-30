@@ -1,0 +1,17 @@
+Time,Coordinator_Name,Event_Name
+25,Start_Coordnator_1,Select_Node_For_Vaccination
+25,FirstNodeWithNodePropertyEventCoordinator,Vaccinate_Node_1
+26,TEC-Vaccinate Node 1,Done_Vaccinating_Node_1
+26,TEC-Change NP Node 1,Changed_IP_For_Node_1
+50,Start_Coordnator_2,Select_Node_For_Vaccination
+50,FirstNodeWithNodePropertyEventCoordinator,Vaccinate_Node_2
+51,TEC-Vaccinate Node 2,Done_Vaccinating_Node_2
+51,TEC-Change NP Node 2,Changed_IP_For_Node_2
+100,Start_Coordnator_3,Select_Node_For_Vaccination
+100,FirstNodeWithNodePropertyEventCoordinator,Vaccinate_Node_3
+100,Start_Coordnator_4,Select_Node_For_Vaccination
+100,FirstNodeWithNodePropertyEventCoordinator,Vaccinate_Node_4
+101,TEC-Vaccinate Node 3,Done_Vaccinating_Node_3
+101,TEC-Change NP Node 1,Changed_IP_For_Node_3
+101,TEC-Vaccinate Node 1,Done_Vaccinating_Node_4
+101,TEC-Change NP Node 4,Changed_IP_For_Node_4

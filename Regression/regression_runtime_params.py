@@ -56,6 +56,7 @@ class RuntimeParameters:
         print( "[arg] Skip emodule test:          ", self.sec )
         print( "[arg] Config constraints:         ", self.constraints_dict )
         print( "[arg] Run sims locally:           ", self.local_execution )
+        print( "[arg] Run Linux binary:           ", self.linux )
         # print( "", self.config2 )
         print( "[cfg] HPC head node/group:         {0} / {1}".format(self.hpc_head_node, self.hpc_node_group) )
         print( "[cfg] HPC user/password:           {0} / {1}".format(self.hpc_user if self.hpc_user else 'empty', self.hpc_password if self.hpc_password else 'empty') )
@@ -67,7 +68,7 @@ class RuntimeParameters:
         print( "[cfg] Shared input:               ", self.shared_input )
         print( "[cfg] User input:                 ", self.user_input )
         print( "[cfg] Use user input:             ", self.use_user_input_root )
-        print( "[cfg] Python input:               ", self.py_input )
+        #print( "[cfg] Python input:               ", self.py_input )
         print( "[cfg] Sim root:                   ", self.sim_root )
 
         print( "[cfg] Local bin root:             ", self.local_bin_root )
@@ -215,12 +216,14 @@ class RuntimeParameters:
         else:
             return self.config2.get('ENVIRONMENT', 'home_input')
         
+    """
     @property
     def py_input(self):
         if self.local_execution or os.name=="posix":
             return self.config2.get(self.os_type, 'py_input')
         else:
             return self.config2.get('ENVIRONMENT', 'py_input')
+    """
         
     @property
     def use_user_input_root(self):
@@ -260,7 +263,7 @@ class RuntimeParameters:
         try:
             src_root = self.config2.get('LOCAL-ENVIRONMENT', 'src_root')
         except Exception as ex:
-            src_root = ".\\.."
+            src_root = "./.."
         return src_root
 
     @property
@@ -296,3 +299,8 @@ class RuntimeParameters:
     @property
     def local_execution(self):
         return self.args.local
+
+    @property
+    def linux(self):
+        return self.args.linux
+

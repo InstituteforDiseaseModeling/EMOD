@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "IncidenceCounterSurveillance.h"
@@ -45,7 +37,7 @@ namespace Kernel
         m_CounterPeriod_current = m_CounterPeriod;
         m_Count = 0;
         m_PercentageEventsCounted = 0;
-        LOG_INFO_F( "StartCounting(),  m_CounterPeriod_current = %f m_Count = %f\n", m_CounterPeriod_current, m_Count );
+        LOG_INFO_F( "StartCounting(),  m_CounterPeriod_current = %f m_Count = %d\n", m_CounterPeriod_current, m_Count );
     }
 
     void IncidenceCounterSurveillance::Update( float dt )
@@ -243,7 +235,7 @@ namespace Kernel
 
     bool IncidenceCounterSurveillance::notifyOnEvent( IIndividualHumanEventContext *pEntity, const EventTrigger& trigger )
     {
-        LOG_INFO_F( "notifyOnEvent received: %s\n", trigger.ToString().c_str() );
+        LOG_DEBUG_F( "notifyOnEvent received: %s\n", trigger.ToString().c_str() );
         if ( m_NodePropertyRestrictions.Qualifies(pEntity->GetNodeEventContext()->GetNodeContext()->GetNodeProperties() ) &&
             m_DemographicRestrictions.IsQualified(pEntity) &&
             !IsDoneCounting() )
@@ -255,7 +247,7 @@ namespace Kernel
             if( Find( m_TriggerConditionListIndividual, trigger ) )
             {
                 ++m_Count;
-                LOG_INFO_F( "notifyOnEvent received: %s   m_Count: %d\n", trigger.ToString().c_str(), m_Count );
+                LOG_DEBUG_F( "notifyOnEvent received: %s   m_Count: %d\n", trigger.ToString().c_str(), m_Count );
             }
         }
         return true;

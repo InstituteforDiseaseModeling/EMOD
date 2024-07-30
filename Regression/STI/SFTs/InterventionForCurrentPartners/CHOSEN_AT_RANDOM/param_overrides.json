@@ -1,0 +1,45 @@
+{
+    "Default_Config_Path": "defaults/sti_science_default_config.json", 
+    "parameters": {
+        "Config_Name": "ICP_CHOSEN_AT_RANDOM",
+        "Simulation_Duration": 200, 
+        ".logLevel_SocietyImpl" : "INFO",
+        
+        "x_Base_Population": 0.0001, 
+        "Enable_Vital_Dynamics": 0,
+        "Demographics_Filenames": [
+            "../../../../HIV/input/SA_UN_demographics.json",
+            "../../../../HIV/input/PFA_overlay.json",
+            "../../Inputs/pfa_joint_probabilities.json",
+            "../../Inputs/PFA_Concurrency.json"
+        ],
+        "Custom_Individual_Events" : [
+            "Reduced_Acquire_Lowest",
+            "OLDER_AGE",
+            "CHOSEN_AT_RANDOM",
+            "YOUNGER_AGE",
+            "NO_PRIORITIZATION",
+            "LONGER_TIME_IN_RELATIONSHIP",
+            "SHORTER_TIME_IN_RELATIONSHIP",
+            "RELATIONSHIP_TYPE"        ],
+        "Enable_Disease_Mortality": 0,
+        "Base_Mortality": 0.01, 
+        "Base_Infectivity": 10.0, 
+        "Infectious_Period_Gaussian_Mean": 120,
+        "Incubation_Period_Constant": 1,
+        "Min_Days_Between_Adding_Relationships": 1, 
+        "Report_Event_Recorder": 1,
+        "Report_Event_Recorder_Events": [
+            "OLDER_AGE",
+            "CHOSEN_AT_RANDOM", 
+            "YOUNGER_AGE",
+            "NO_PRIORITIZATION",
+            "LONGER_TIME_IN_RELATIONSHIP",
+            "SHORTER_TIME_IN_RELATIONSHIP",
+            "RELATIONSHIP_TYPE"],
+        "Report_Relationship_End": 1,
+        "Report_Relationship_Start": 1,
+        "Python_Script_Path": "SHARED",
+        "Run_Number": 1
+    }
+}

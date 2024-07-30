@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "NodePropertyValueChanger.h"
@@ -58,14 +50,16 @@ namespace Kernel
 
     bool NodePropertyValueChanger::Configure( const Configuration * inputJson )
     {
-        initConfigTypeMap("Target_NP_Key_Value", &m_TargetKeyValue, NPC_Target_NP_Key_Value_DESC_TEXT );
-        initConfigTypeMap("Daily_Probability",   &probability,      PC_Daily_Probability_DESC_TEXT, 0.0f, 1.0f );
-        initConfigTypeMap("Maximum_Duration",    &max_duration,     PC_Maximum_Duration_DESC_TEXT, -1.0f, FLT_MAX, FLT_MAX);
-        initConfigTypeMap("Revert",              &revert,           PC_Revert_DESC_TEXT,            0.0f, FLT_MAX, 0.0f );
+        NPKeyValueParameter np_key_value;
+        initConfigTypeMap("Target_NP_Key_Value", &np_key_value, NPC_Target_NP_Key_Value_DESC_TEXT );
+        initConfigTypeMap("Daily_Probability",   &probability,  NPC_Daily_Probability_DESC_TEXT, 0.0f, 1.0f );
+        initConfigTypeMap("Maximum_Duration",    &max_duration, NPC_Maximum_Duration_DESC_TEXT, -1.0f, FLT_MAX, FLT_MAX);
+        initConfigTypeMap("Revert",              &revert,       NPC_Revert_DESC_TEXT,            0.0f, FLT_MAX, 0.0f );
 
         bool ret = BaseNodeIntervention::Configure( inputJson );
         if( ret && !JsonConfigurable::_dryrun )
         {
+            m_TargetKeyValue = np_key_value;
             if( !m_TargetKeyValue.IsValid() )
             {
                 throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, "You must specify 'Target_NP_Key_Value'" );

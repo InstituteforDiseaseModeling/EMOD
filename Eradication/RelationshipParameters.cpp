@@ -1,24 +1,12 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "RelationshipParameters.h"
+#include "demographic_params.rc"
 
 SETUP_LOGGING( "RelationshipParameters" )
 
-namespace Kernel {
-
-#define Condom_Usage_DESC_TEXT "Min=Left-asymptote of the sigmoidally-varying condom usage probability;\
- Max=Right-asymptote of the sigmoidally-varying condom usage probability;\
- Mid=Year in which the sigmoidally-varying condom usage probability reaches an inflection point half way between the early and late values;\
- Rate=Governs the speed of transition between early and late values of the condom usage sigmoid for relationship. The slope at the mid-year is proportional to the rate."
-
+namespace Kernel 
+{
     RelationshipParameters::RelationshipParameters( RelationshipType::Enum type )
         : JsonConfigurable()
         , m_Type( type )
@@ -28,6 +16,10 @@ namespace Kernel {
         , m_CondomUsage()
         , m_MigrationActions()
         , m_MigrationActionsCDF()
+        , m_OverrideCoitalActRate( -1.0 )
+        , m_pOverrideCondomUsage( nullptr )
+        , m_OverrideDurationWeibullHeterogeneity( -1.0 )
+        , m_OverrideDurationWeibullScale( -1.0 )
     {
     }
 
@@ -48,7 +40,7 @@ namespace Kernel {
         initConfigTypeMap( "Migration_Actions_Distribution", &ma_dist,    Migration_Actions_Distribution_DESC_TEXT, 0, 1 );
 
         bool ret = JsonConfigurable::Configure( config );
-        if( ret )
+        if( ret && !JsonConfigurable::_dryrun )
         {
             if( ma_strings.size() != ma_dist.size() )
             {
@@ -103,5 +95,84 @@ namespace Kernel {
             m_MigrationActionsCDF[ m_MigrationActionsCDF.size()-1 ] = 1.0 ;
         }
         return ret;
+    }
+
+    RelationshipType::Enum RelationshipParameters::GetType() const 
+    {
+        return m_Type;
+    }
+
+    float RelationshipParameters::GetCoitalActRate() const
+    {
+        if( m_OverrideCoitalActRate >= 0.0 )
+        {
+            return m_OverrideCoitalActRate;
+        }
+        else
+        {
+            return m_CoitalActRate;
+        }
+    }
+
+    float RelationshipParameters::GetDurationWeibullHeterogeneity() const
+    {
+        if( m_OverrideDurationWeibullHeterogeneity >= 0.0 )
+        {
+            return m_OverrideDurationWeibullHeterogeneity;
+        }
+        else
+        {
+            return m_DurationWeibullHeterogeneity;
+        }
+    }
+
+    float RelationshipParameters::GetDurationWeibullScale() const
+    {
+        if( m_OverrideDurationWeibullScale >= 0.0 )
+        {
+            return m_OverrideDurationWeibullScale;
+        }
+        else
+        {
+            return m_DurationWeibullScale;
+        }
+    }
+
+    const Sigmoid& RelationshipParameters::GetCondomUsage() const
+    {
+        if( m_pOverrideCondomUsage != nullptr )
+        {
+            return *m_pOverrideCondomUsage;
+        }
+        else
+        {
+            return m_CondomUsage;
+        }
+    }
+
+    const std::vector<RelationshipMigrationAction::Enum>& RelationshipParameters::GetMigrationActions() const
+    {
+        return m_MigrationActions;
+    }
+
+    const std::vector<float>& RelationshipParameters::GetMigrationActionsCDF() const
+    {
+        return m_MigrationActionsCDF;
+    }
+
+    void RelationshipParameters::SetOverrideCoitalActRate( float overrideRate )
+    {
+        m_OverrideCoitalActRate = overrideRate;
+    }
+
+    void RelationshipParameters::SetOverrideCondomUsageProbability( const Sigmoid* pOverride )
+    {
+        m_pOverrideCondomUsage = pOverride;
+    }
+
+    void RelationshipParameters::SetOverrideRelationshipDuration( float heterogeniety, float scale )
+    {
+        m_OverrideDurationWeibullHeterogeneity = heterogeniety;
+        m_OverrideDurationWeibullScale         = scale;
     }
 }

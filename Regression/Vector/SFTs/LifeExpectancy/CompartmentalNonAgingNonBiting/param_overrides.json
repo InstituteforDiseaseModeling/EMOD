@@ -1,0 +1,48 @@
+{
+    "parameters": {
+        "CAMPAIGNS": {
+            "Enable_Interventions": 0
+        },
+        "DEMOGRAPHICS": {
+            "Demographics_Filenames": [
+                "../../Input/Vector_single_node_demographics.json"
+            ]
+        },
+        "FUDGE_FACTORS": {
+            "x_Temporary_Larval_Habitat": 0.1
+        },
+        "PRIMARY": {
+            "Config_Name": "Vector:SFT:LifeExpectancy:CompartamentalNonAgingNonBiting",
+            "Simulation_Duration": 500
+        },
+        "VECTOR": {
+            "Human_Feeding_Mortality": 0,
+            "SPECIES": {
+                "Vector_Species_Params": [
+                    {
+                        "Name":"TestVector",
+                        "Adult_Life_Expectancy": 25,
+                        "Male_Life_Expectancy": 17,
+                        "Anthropophily": 0,
+                        "Days_Between_Feeds": 10,
+                        "Egg_Batch_Size": 0,
+                        "Indoor_Feeding_Fraction": 0,
+                        "Infectious_Human_Feed_Mortality_Factor": 0,
+                        "Habitats": [
+                            {
+                                "Habitat_Type": "CONSTANT",
+                                "Max_Larval_Capacity": 11250000000.0
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        "LOGGING": {
+            "logLevel_VectorPopulation": "VALID"
+        }
+    },
+    "Default_Config_Path": "defaults/vector_science_default_config.json"
+}
+
+

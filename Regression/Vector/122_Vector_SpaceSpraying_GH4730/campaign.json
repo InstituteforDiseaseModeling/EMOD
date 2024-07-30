@@ -1,0 +1,59 @@
+{
+    "Campaign_Name": "Unnamed Campaign",
+    "Events": [{
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 1.0,
+                    "Killing_Config": {
+                        "Box_Duration": 1,
+                        "Initial_Effect": 1,
+                        "class": "WaningEffectBox"
+                    },
+                    "Insecticide_Name": "FemaleVectorInsecticide",
+                    "class": "SpaceSpraying"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 3,
+            "class": "CampaignEvent"
+        }, {
+            "class": "CampaignEvent",
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Individual_Selection_Type": "DEMOGRAPHIC_COVERAGE",
+                "Intervention_Config": {
+                    "class": "MosquitoRelease",
+                    "Cost_To_Consumer": 0,
+                    "Disqualifying_Properties": [],
+                    "Dont_Allow_Duplicates": 0,
+                    "Intervention_Name": "MosquitoRelease",
+                    "New_Property_Value": "",
+                    "Released_Genome": [["X", "X"]],
+                    "Released_Infectious": 0,
+                    "Released_Microsporidia_Strain": "",
+                    "Released_Number": 10000,
+                    "Released_Species": "TestVector",
+                    "Released_Type": "FIXED_NUMBER",
+                    "Released_Wolbachia": "VECTOR_WOLBACHIA_FREE"
+                },
+                "Node_Property_Restrictions": [],
+                "Number_Repetitions": 1,
+                "Property_Restrictions": [],
+                "Property_Restrictions_Within_Node": [],
+                "Target_Demographic": "Everyone",
+                "Target_Gender": "All",
+                "Target_Residents_Only": 0,
+                "Timesteps_Between_Repetitions": 365
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 30
+        }
+    ],
+    "Use_Defaults": 1
+}

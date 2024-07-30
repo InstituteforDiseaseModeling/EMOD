@@ -1,0 +1,10 @@
+{
+    "LarvalHabitatMultiplier" : 
+    [
+        {
+            "Habitat" : "BRACKISH_SWAMP",
+            "Species" : "gambiae",
+            "Factor" : 2.0
+        }
+    ]
+}

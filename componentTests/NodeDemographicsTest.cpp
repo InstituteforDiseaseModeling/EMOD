@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "UnitTest++.h"
@@ -284,15 +276,27 @@ SUITE(NodeDemographicsTest)
         }
         catch( FileNotFoundException& fnfe )
         {
+            std::string exp_msg;
+            exp_msg  = "Could not find file unknown_demographics.json.\n";
+            exp_msg += "Received the following system error messages while checking for the existance\n";
+            exp_msg += "of the file at the following locations:\n";
+            exp_msg += "testdata/NodeDemographicsTest/unknown_demographics.json - 'No such file or directory'";
+
             std::string msg = fnfe.GetMsg();
-            CHECK( msg.find( "Could not find file testdata/NodeDemographicsTest/unknown_demographics.json" ) != string::npos );
+            bool passed = msg.find( exp_msg ) != string::npos;
+            if( !passed )
+            {
+                PrintDebug( exp_msg );
+                PrintDebug( msg );
+                CHECK( passed );
+            }
         }
     }
 
     TEST_FIXTURE(NodeDemographicsFactoryFixture, TestNoMetadata)
     {
         TestHelper_FormatException( __LINE__, "demographics_TestNoMetadata.json", 
-                                              "Failed to parse incoming text. Name of an object member must be a string at character=2 / line number=1" );
+                                              "Failed to parse incoming text. Name of an object member must be a string" );
     }
 
     TEST_FIXTURE(NodeDemographicsFactoryFixture, TestNoNodeCount)
@@ -589,29 +593,10 @@ SUITE(NodeDemographicsTest)
 
         unique_ptr<NodeDemographics> p_node_demo( factory->CreateNodeDemographics(&ncf) );
 
-        unique_ptr<NodeDemographicsDistribution> p_ndd_age    ( NodeDemographicsDistribution::CreateDistribution( (*p_node_demo)["IndividualAttributes"]["AgeDistribution"                       ] ) );
-        unique_ptr<NodeDemographicsDistribution> p_ndd_suscep ( NodeDemographicsDistribution::CreateDistribution( (*p_node_demo)["IndividualAttributes"]["SusceptibilityDistribution"            ] ) );
-        unique_ptr<NodeDemographicsDistribution> p_ndd_fert   ( NodeDemographicsDistribution::CreateDistribution( (*p_node_demo)["IndividualAttributes"]["FertilityDistribution"                 ], "urban",  "age") );
-        unique_ptr<NodeDemographicsDistribution> p_ndd_mort   ( NodeDemographicsDistribution::CreateDistribution( (*p_node_demo)["IndividualAttributes"]["MortalityDistribution"                 ], "gender", "age") );
-        unique_ptr<NodeDemographicsDistribution> p_ndd_antm_m ( NodeDemographicsDistribution::CreateDistribution( (*p_node_demo)["IndividualAttributes"]["MSP_mean_antibody_distribution"        ], "age") );
-        unique_ptr<NodeDemographicsDistribution> p_ndd_antm_v ( NodeDemographicsDistribution::CreateDistribution( (*p_node_demo)["IndividualAttributes"]["MSP_variance_antibody_distribution"    ], "age") );
-        unique_ptr<NodeDemographicsDistribution> p_ndd_antn_m ( NodeDemographicsDistribution::CreateDistribution( (*p_node_demo)["IndividualAttributes"]["nonspec_mean_antibody_distribution"    ], "age") );
-        unique_ptr<NodeDemographicsDistribution> p_ndd_antn_v ( NodeDemographicsDistribution::CreateDistribution( (*p_node_demo)["IndividualAttributes"]["nonspec_variance_antibody_distribution"], "age") );
-        unique_ptr<NodeDemographicsDistribution> p_ndd_antp_m ( NodeDemographicsDistribution::CreateDistribution( (*p_node_demo)["IndividualAttributes"]["PfEMP1_mean_antibody_distribution"     ], "age") );
-        unique_ptr<NodeDemographicsDistribution> p_ndd_antp_v ( NodeDemographicsDistribution::CreateDistribution( (*p_node_demo)["IndividualAttributes"]["PfEMP1_variance_antibody_distribution" ], "age") );
-        unique_ptr<NodeDemographicsDistribution> p_ndd_mat1   ( NodeDemographicsDistribution::CreateDistribution( (*p_node_demo)["IndividualAttributes"]["maternal_antibody_distribution1"       ]) );
-        unique_ptr<NodeDemographicsDistribution> p_ndd_mat2   ( NodeDemographicsDistribution::CreateDistribution( (*p_node_demo)["IndividualAttributes"]["maternal_antibody_distribution2"       ]) );
-        unique_ptr<NodeDemographicsDistribution> p_ndd_mat3   ( NodeDemographicsDistribution::CreateDistribution( (*p_node_demo)["IndividualAttributes"]["maternal_antibody_distribution3"       ]) );
-        unique_ptr<NodeDemographicsDistribution> p_ndd_muc1   ( NodeDemographicsDistribution::CreateDistribution( (*p_node_demo)["IndividualAttributes"]["mucosal_memory_distribution1"          ], "age") );
-        unique_ptr<NodeDemographicsDistribution> p_ndd_muc2   ( NodeDemographicsDistribution::CreateDistribution( (*p_node_demo)["IndividualAttributes"]["mucosal_memory_distribution2"          ], "age") );
-        unique_ptr<NodeDemographicsDistribution> p_ndd_muc3   ( NodeDemographicsDistribution::CreateDistribution( (*p_node_demo)["IndividualAttributes"]["mucosal_memory_distribution3"          ], "age") );
-        unique_ptr<NodeDemographicsDistribution> p_ndd_hum1   ( NodeDemographicsDistribution::CreateDistribution( (*p_node_demo)["IndividualAttributes"]["humoral_memory_distribution1"          ], "age", "mucosal_memory") );
-        unique_ptr<NodeDemographicsDistribution> p_ndd_hum2   ( NodeDemographicsDistribution::CreateDistribution( (*p_node_demo)["IndividualAttributes"]["humoral_memory_distribution2"          ], "age", "mucosal_memory") );
-        unique_ptr<NodeDemographicsDistribution> p_ndd_hum3   ( NodeDemographicsDistribution::CreateDistribution( (*p_node_demo)["IndividualAttributes"]["humoral_memory_distribution3"          ], "age", "mucosal_memory") );
-        unique_ptr<NodeDemographicsDistribution> p_ndd_fake   ( NodeDemographicsDistribution::CreateDistribution( (*p_node_demo)["IndividualAttributes"]["fake_time_since_infection_distribution"], "age") );
-        unique_ptr<NodeDemographicsDistribution> p_ndd_hivc   ( NodeDemographicsDistribution::CreateDistribution( (*p_node_demo)["IndividualAttributes"]["HIVCoinfectionDistribution"            ], "gender", "time", "age") );
-        unique_ptr<NodeDemographicsDistribution> p_ndd_hivm   ( NodeDemographicsDistribution::CreateDistribution( (*p_node_demo)["IndividualAttributes"]["HIVMortalityDistribution"              ], "gender", "time", "age") );
-
+        unique_ptr<NodeDemographicsDistribution> p_ndd_age    ( NodeDemographicsDistribution::CreateDistribution( (*p_node_demo)["IndividualAttributes"]["AgeDistribution"           ] ) );
+        unique_ptr<NodeDemographicsDistribution> p_ndd_suscep ( NodeDemographicsDistribution::CreateDistribution( (*p_node_demo)["IndividualAttributes"]["SusceptibilityDistribution"] ) );
+        unique_ptr<NodeDemographicsDistribution> p_ndd_fert   ( NodeDemographicsDistribution::CreateDistribution( (*p_node_demo)["IndividualAttributes"]["FertilityDistribution"     ], "urban",  "age") );
+        unique_ptr<NodeDemographicsDistribution> p_ndd_mort   ( NodeDemographicsDistribution::CreateDistribution( (*p_node_demo)["IndividualAttributes"]["MortalityDistribution"     ], "gender", "age") );
     }
 
     TEST_FIXTURE( NodeDemographicsFactoryFixture, TestDistSuscepMissingDistValues )
@@ -705,34 +690,6 @@ SUITE(NodeDemographicsTest)
                                                            "FertilityDistribution for NodeID=1 has invalid 'ResultValues' array.  ResultValues[1] has 4 elements when it should have 9." );
     }
 
-    TEST_FIXTURE(NodeDemographicsFactoryFixture, TestDistMspMeanDistInvalidPopGroupsA)
-    {
-        std::vector<std::string> axis_names ;
-        axis_names.push_back( "age" );
-
-        TestHelper_DistributionFormatException( __LINE__, "demographics_TestDistMspMeanDistInvalidPopGroupsA.json", "MSP_mean_antibody_distribution", axis_names,
-                                                           "MSP_mean_antibody_distribution for NodeID=1 has 'PopulationGroups' with 2 array(s).  It must have one array for each axis." );
-    }
-
-    TEST_FIXTURE(NodeDemographicsFactoryFixture, TestDistMspMeanDistInvalidPopGroupsB)
-    {
-        std::vector<std::string> axis_names ;
-        axis_names.push_back( "age" );
-
-        TestHelper_DistributionFormatException( __LINE__, "demographics_TestDistMspMeanDistInvalidPopGroupsB.json", "MSP_mean_antibody_distribution", axis_names,
-                                                           "MSP_mean_antibody_distribution for NodeID=1 has invalid 'ResultValues' array.  ResultValues has 11 elements when it should have 2.  The number of elements must match that in 'PopulationGroups'." );
-                                                            
-    }
-
-    TEST_FIXTURE(NodeDemographicsFactoryFixture, TestDistMspMeanDistInvalidResultValues)
-    {
-        std::vector<std::string> axis_names ;
-        axis_names.push_back( "age" );
-
-        TestHelper_DistributionFormatException( __LINE__, "demographics_TestDistMspMeanDistInvalidResultValues.json", "MSP_mean_antibody_distribution", axis_names,
-                                                           "MSP_mean_antibody_distribution for NodeID=1 has invalid 'ResultValues' array.  ResultValues has 1 elements when it should have 11." );
-    }
-
     TEST_FIXTURE(NodeDemographicsFactoryFixture, TestDistHumoralResultValuesDontMatchDistValuesA)
     {
         std::vector<std::string> axis_names ;
@@ -761,51 +718,6 @@ SUITE(NodeDemographicsTest)
 
         TestHelper_DistributionFormatException( __LINE__, "demographics_TestDistHumoralResultValuesDontMatchDistValuesC.json", "humoral_memory_distribution1", axis_names,
                                                            "humoral_memory_distribution1 for NodeID=1 has invalid 'DistributionValues' array.  DistributionValues[1][2] has 2 elements when it should have 3.  The outer number of arrays must match that in 'PopulationGroups' with the inner most arrays having the same number of elements as the 'ResultValues'." );
-    }
-
-    TEST_FIXTURE(NodeDemographicsFactoryFixture, TestDistHivCoinDistInvalidPopGroups)
-    {
-        std::vector<std::string> axis_names ;
-        axis_names.push_back( "gender" );
-        axis_names.push_back( "time" );
-        axis_names.push_back( "age" );
-
-        TestHelper_DistributionFormatException( __LINE__, "demographics_TestDistHivCoinDistInvalidPopGroups.json", "HIVCoinfectionDistribution", axis_names,
-                                                           "HIVCoinfectionDistribution for NodeID=1 has 'PopulationGroups' with 2 array(s).  It must have one array for each axis." );
-    }
-
-    TEST_FIXTURE(NodeDemographicsFactoryFixture, TestDistHivCoinDistInvalidResultsValue)
-    {
-        std::vector<std::string> axis_names ;
-        axis_names.push_back( "gender" );
-        axis_names.push_back( "time" );
-        axis_names.push_back( "age" );
-
-        TestHelper_DistributionFormatException( __LINE__, "demographics_TestDistHivCoinDistInvalidResultsValue.json", "HIVCoinfectionDistribution", axis_names,
-                                                           "HIVCoinfectionDistribution for NodeID=1 has invalid 'ResultValues' array.  ResultValues[1][1] has 4 elements when it should have 8.  The number of elements must match that in 'PopulationGroups'." );
-    }
-
-    TEST_FIXTURE(NodeDemographicsFactoryFixture, TestDistHivCoinDistNotArray)
-    {
-        std::vector<std::string> axis_names ;
-        axis_names.push_back( "gender" );
-        axis_names.push_back( "time" );
-        axis_names.push_back( "age" );
-
-        TestHelper_DistributionFormatException( __LINE__, "demographics_TestDistHivCoinDistNotArray.json", "HIVCoinfectionDistribution", axis_names,
-                                                           "Failed to interpret value on the demographics attribute [ 'HIVCoinfectionDistribution' ][ 'ResultValues' ] for nodeID=1.  The attribute is supposed to be a 'array' but is a 'String'." );
-
-    }
-
-    TEST_FIXTURE(NodeDemographicsFactoryFixture, TestDistHivCoinDistNotDouble)
-    {
-        std::vector<std::string> axis_names ;
-        axis_names.push_back( "gender" );
-        axis_names.push_back( "time" );
-        axis_names.push_back( "age" );
-
-        TestHelper_DistributionFormatException( __LINE__, "demographics_TestDistHivCoinDistNotDouble.json", "HIVCoinfectionDistribution", axis_names,
-                                                           "Failed to interpret value on the demographics attribute [ 'HIVCoinfectionDistribution' ][ 'ResultScaleFactor' ] for nodeID=1.  The attribute is supposed to be a 'double' but is a 'String'." );
     }
 
     TEST(TestNodeDemographicsEquality)
@@ -1048,12 +960,12 @@ SUITE(NodeDemographicsTest)
         dist_str += "\"AxisScaleFactors\": [ 1, 365 ],";
         dist_str += "\"PopulationGroups\": [";
         dist_str += "    [ 0, 1 ]," ;
-        dist_str += "    [ 0, 100, 2000 ]";
+        dist_str += "    [ 0, 10, 20 ]";
         dist_str += "],";
         dist_str += "\"ResultScaleFactor\": 0.1,";
         dist_str += "\"ResultValues\": [";
-        dist_str += "    [ 0, 20.0, 400.0 ],";
-        dist_str += "    [ 0, 30.0, 500.0 ]";
+        dist_str += "    [ 0, 2.0, 40.0 ],";
+        dist_str += "    [ 0, 3.0, 50.0 ]";
         dist_str += "]" ;
         dist_str += "}" ;
 
@@ -1086,14 +998,14 @@ SUITE(NodeDemographicsTest)
         num_pop_groups.push_back( 3 );
 
         std::vector<double> x_axis ;
-        x_axis.push_back( 0.0 );
-        x_axis.push_back( 1.0 );
+        x_axis.push_back( 0.0 * 1.0 ); // * 1.0 becasuse that is the 1 from the AxisScaleFactors
+        x_axis.push_back( 1.0 * 1.0 );
 
         // Notice how the AxisScaleFactors have been applied
         std::vector<double> y_axis ;
-        y_axis.push_back(      0.0 );
-        y_axis.push_back(  36500.0 );
-        y_axis.push_back( 730000.0 );
+        y_axis.push_back(  0.0 * 365.0 ); // * 1.0 becasuse that is the 365 from the AxisScaleFactors
+        y_axis.push_back( 10.0 * 365.0 );
+        y_axis.push_back( 20.0 * 365.0 );
 
         std::vector< std::vector<double> > pop_groups;
         pop_groups.push_back( x_axis );
@@ -1101,12 +1013,12 @@ SUITE(NodeDemographicsTest)
 
         // Notice how the ResultScaleFactor has been applied
         std::vector<double> result_values ;
-        result_values.push_back(  0.0 );
-        result_values.push_back(  0.0 );
-        result_values.push_back(  2.0 );
-        result_values.push_back(  3.0 );
-        result_values.push_back( 40.0 );
-        result_values.push_back( 50.0 );
+        result_values.push_back(  0.0 * 0.1 ); // * 0.1 becasuse that is the ResultScaleFactor
+        result_values.push_back(  0.0 * 0.1 );
+        result_values.push_back(  2.0 * 0.1 );
+        result_values.push_back(  3.0 * 0.1 );
+        result_values.push_back( 40.0 * 0.1 );
+        result_values.push_back( 50.0 * 0.1 );
 
         std::vector< std::vector<double> > dist_values ;
 
@@ -1117,12 +1029,18 @@ SUITE(NodeDemographicsTest)
         // --------------------------------------------------------------
         // --- Test that DrawResultValue() returns the expected results
         // --------------------------------------------------------------
-        float val_m = p_dist->DrawResultValue( 0, 7300.0 ); // 7300-days=20-years
-        CHECK_CLOSE( 0.4, val_m, 0.00001 );
-        float val_f = p_dist->DrawResultValue( 1, 7300.0 ); // 7300-days=20-years
-        CHECK_CLOSE( 0.6, val_f, 0.00001 );
-        float val_b = p_dist->DrawResultValue( 1, 0.1 ); // 7300-days=20-years
-        CHECK_CLOSE( 0.000008, val_b, 0.000001 );
+        CHECK_CLOSE( 0.000, p_exp_dist->DrawResultValue( 0.0,    0.0 ), 0.00001 );
+        CHECK_CLOSE( 0.000, p_exp_dist->DrawResultValue( 1.0,    0.0 ), 0.00001 );
+        CHECK_CLOSE( 0.200, p_exp_dist->DrawResultValue( 0.0, 3650.0 ), 0.00001 );
+        CHECK_CLOSE( 0.250, p_exp_dist->DrawResultValue( 0.5, 3650.0 ), 0.00001 );
+        CHECK_CLOSE( 0.300, p_exp_dist->DrawResultValue( 1.0, 3650.0 ), 0.00001 );
+        CHECK_CLOSE( 4.000, p_exp_dist->DrawResultValue( 0.0, 7300.0 ), 0.00001 );
+        CHECK_CLOSE( 4.500, p_exp_dist->DrawResultValue( 0.5, 7300.0 ), 0.00001 );
+        CHECK_CLOSE( 5.000, p_exp_dist->DrawResultValue( 1.0, 7300.0 ), 0.00001 );
+
+        CHECK_CLOSE( 2.100, p_exp_dist->DrawResultValue( 0.0, 5475.0 ), 0.00001 );
+        CHECK_CLOSE( 2.375, p_exp_dist->DrawResultValue( 0.5, 5475.0 ), 0.00001 );
+        CHECK_CLOSE( 2.650, p_exp_dist->DrawResultValue( 1.0, 5475.0 ), 0.00001 );
     }
 
     TEST(TestDistDrawFromDistribution)
@@ -1701,9 +1619,6 @@ SUITE(NodeDemographicsTest)
         CHECK_EQUAL( 2, r_pop_groups_a[0].size() );
         CHECK_EQUAL( 3, r_pop_groups_a[1].size() );
 
-        // check that we didn't get the distribution from the third file (".immunity.")
-        CHECK_THROW( NodeDemographicsDistribution::CreateDistribution( (*p_node_demo_a)["MSP_mean_antibody_distribution"], "age"), NodeDemographicsFormatErrorException );
-
         // ----------------------------------------------------------------------------------------
         // --- Test that adding the overlay overrides the distribution found in the first/base file
         // ----------------------------------------------------------------------------------------
@@ -1720,29 +1635,5 @@ SUITE(NodeDemographicsTest)
         CHECK_EQUAL( 2, r_pop_groups_b.size() );
         CHECK_EQUAL( 2, r_pop_groups_b[0].size() );
         CHECK_EQUAL( 5, r_pop_groups_b[1].size() );
-
-        // check that we didn't get the distribution from the third file (".immunity.")
-        CHECK_THROW( NodeDemographicsDistribution::CreateDistribution( (*p_node_demo_b)["MSP_mean_antibody_distribution"], "age"), NodeDemographicsFormatErrorException );
-
-
-        // ----------------------------------------------------------------------------------------
-        // --- Test that adding the overlay overrides the distribution found in the first/base file
-        // ----------------------------------------------------------------------------------------
-        NodeDemographicsFactory::SetDemographicsFileList( NodeDemographicsFactory::ConvertLegacyStringToSet("Namawala_single_node_demographics.json;Namawala_single_node_demographics_complex_mortality.json;Namawala_single_node_demographics.immunity.json") ) ;
-
-        unique_ptr<NodeDemographicsFactory> factory_c( NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config, true, 10, 1000 ) );
-        const vector<uint32_t>& nodeIDs_c = factory_c->GetNodeIDs();
-        CHECK_EQUAL(1, nodeIDs_c.size());
-        CHECK_EQUAL(340461476, nodeIDs_c[0]);
-
-        unique_ptr<NodeDemographics> p_node_demo_c( factory_c->CreateNodeDemographics(&ncf) );
-        unique_ptr<NodeDemographicsDistribution> p_ndd_mort_c( NodeDemographicsDistribution::CreateDistribution( (*p_node_demo_c)["IndividualAttributes"]["MortalityDistribution"], "gender", "age") );
-        const std::vector< std::vector<double> >& r_pop_groups_c = p_ndd_mort_c->GetPopGroups();
-        CHECK_EQUAL( 2, r_pop_groups_c.size() );
-        CHECK_EQUAL( 2, r_pop_groups_c[0].size() );
-        CHECK_EQUAL( 5, r_pop_groups_c[1].size() );
-
-        // check that we cam get the distribution from the third file (".immunity.") without throwing an exception
-        unique_ptr<NodeDemographicsDistribution> p_ndd_msp_c( NodeDemographicsDistribution::CreateDistribution( (*p_node_demo_c)["MSP_mean_antibody_distribution"], "age") );
     }
 }

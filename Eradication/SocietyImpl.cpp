@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "SocietyImpl.h"
@@ -129,10 +121,10 @@ namespace Kernel {
             RelationshipParameters* p_rel_params = new RelationshipParameters( rel_type );
             p_rel_params->Configure( config_rel );
 
-            RelationshipCreator rc = [this,pRNG,pIdGen,p_rel_params](IIndividualHumanSTI*male,IIndividualHumanSTI*female) 
+            RelationshipCreator rc = [this,pRNG,pIdGen,p_rel_params]( IIndividualHumanSTI*male, IIndividualHumanSTI*female, bool isOutsidePFA, Sigmoid* pCondomUsage ) 
             { 
                 suids::suid rel_id = pIdGen->GetNextRelationshipSuid();
-                IRelationship* p_rel = RelationshipFactory::CreateRelationship( pRNG, rel_id, relationship_manager, p_rel_params, male, female );
+                IRelationship* p_rel = RelationshipFactory::CreateRelationship( pRNG, rel_id, p_rel_params, male, female, isOutsidePFA, pCondomUsage );
                 relationship_manager->AddRelationship( p_rel, true );
             }; 
 
@@ -173,34 +165,40 @@ namespace Kernel {
         for( int irel = 0; irel < RelationshipType::COUNT; irel++ )
         {
             stats[ irel ]->ResetEligible();
+            pfa[ irel ]->BeginUpdate();
         }
+    }
+
+    IPairFormationFlowController* SocietyImpl::GetController( RelationshipType::Enum irel )
+    {
+        return controller[irel];
     }
 
     void
     SocietyImpl::UpdatePairFormationRates( const IdmDateTime& rCurrentTime, float dt )
     {
-        LOG_INFO_F( "%s: --------------------========== START society->UpdatePairFormationRates() ==========--------------------\n", __FUNCTION__ );
+        LOG_DEBUG_F( "%s: --------------------========== START society->UpdatePairFormationRates() ==========--------------------\n", __FUNCTION__ );
         LOG_DEBUG_F("%s()\n", __FUNCTION__);
         for( int irel = 0; irel < RelationshipType::COUNT; irel++ )
         {
             controller[ irel ]->UpdateEntryRates( rCurrentTime, dt );
         }
-        LOG_INFO_F( "%s: --------------------========== society->UpdatePairFormationRates() FINISH ==========--------------------\n", __FUNCTION__ );
+        LOG_DEBUG_F( "%s: --------------------========== society->UpdatePairFormationRates() FINISH ==========--------------------\n", __FUNCTION__ );
     }
 
     void
     SocietyImpl::UpdatePairFormationAgents( const IdmDateTime& rCurrentTime, float dt )
     {
-        LOG_INFO_F( "%s: --------------------========== START society->UpdatePairFormationAgents() ==========--------------------\n", __FUNCTION__ );
+        LOG_DEBUG_F( "%s: --------------------========== START society->UpdatePairFormationAgents() ==========--------------------\n", __FUNCTION__ );
         LOG_DEBUG_F("%s()\n", __FUNCTION__);
         for( int irel = 0; irel < RelationshipType::COUNT; irel++ )
         {
             pfa[ irel ]->Update( rCurrentTime, dt );
         }
-        LOG_INFO_F( "%s: --------------------========== society->UpdatePairFormationAgents() FINISH ==========--------------------\n", __FUNCTION__ );
+        LOG_DEBUG_F( "%s: --------------------========== society->UpdatePairFormationAgents() FINISH ==========--------------------\n", __FUNCTION__ );
 
 
-        if (LOG_LEVEL(INFO)) 
+        if (LOG_LEVEL(DEBUG)) 
         {
             for( int irel = 0; irel < RelationshipType::COUNT; irel++ )
             {
@@ -227,5 +225,25 @@ namespace Kernel {
     IConcurrency* SocietyImpl::GetConcurrency()
     {
         return p_concurrency;
+    }
+
+    void SocietyImpl::SetOverrideRelationshipFormationRate( RelationshipType::Enum relType, float rate )
+    {
+        form_params[ relType ]->SetOverrideRelationshipFormationRate( rate );
+    }
+
+    void SocietyImpl::SetOverrideCoitalActRate( RelationshipType::Enum relType, float rate )
+    {
+        rel_params[ relType ]->SetOverrideCoitalActRate( rate );
+    }
+
+    void SocietyImpl::SetOverrideCondomUsageProbability( RelationshipType::Enum relType, const Sigmoid* pOverride )
+    {
+        rel_params[ relType ]->SetOverrideCondomUsageProbability( pOverride );
+    }
+
+    void SocietyImpl::SetOverrideRelationshipDuration( RelationshipType::Enum relType, float heterogeniety, float scale )
+    {
+        rel_params[ relType ]->SetOverrideRelationshipDuration( heterogeniety, scale );
     }
 }

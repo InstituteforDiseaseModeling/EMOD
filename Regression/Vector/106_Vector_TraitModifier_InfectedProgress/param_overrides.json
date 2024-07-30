@@ -1,0 +1,111 @@
+{
+    "Default_Config_Path": "defaults/vector_default_config.json",
+    "parameters": {
+        "CLIMATE": {
+           "Base_Air_Temperature": 25.0,
+           "Climate_Model": "CLIMATE_CONSTANT",
+           "Enable_Climate_Stochasticity": 0
+        },
+        "DEMOGRAPHICS": {
+            "Enable_Vital_Dynamics": 0,
+            "Demographics_Filenames": [
+                "Demographics.json"
+            ],
+            "Enable_Initial_Prevalence": 0
+        },
+        "PRIMARY": {
+            "Config_Name": "106_Vector_TraitModifier_InfectedProgress",
+            "Custom_Reports_Filename": "custom_reports.json",
+            "Enable_Demographics_Reporting": 0,
+            "Geography": "Namawala",
+            "Python_Script_Path": "SHARED",
+            "Run_Number": 1,
+            "Simulation_Duration": 365
+        },
+        "VECTOR" : {
+            "Enable_Vector_Aging": 1, 
+            "Enable_Vector_Mortality": 1, 
+            
+            "Enable_Vector_Migration": 0, 
+            
+            "Vector_Sampling_Type": "VECTOR_COMPARTMENTS_NUMBER",
+            
+            "x_Temporary_Larval_Habitat": 0.05
+        },
+        "Vector_Species_Params": [
+            {
+                "Name": "arabiensis",
+                "Indoor_Feeding_Fraction": 0,
+                "Habitats": [
+                    {
+                        "COMMENT": "Make habitat the same for each species so we get same population.",
+                        "Max_Larval_Capacity": 11250000000.0,
+                        "Habitat_Type": "TEMPORARY_RAINFALL"
+                    }
+                ],
+                "Gene_To_Trait_Modifiers" : [
+                    {
+                        "Allele_Combinations" : [
+                            [  "X",  "X" ]
+                        ],
+                        "Trait_Modifiers" : [
+                            {
+                                "COMMENT": "Smaller number causes slower progression to infectious",
+                                "Trait" : "INFECTED_PROGRESS",
+                                "Modifier": 0.8
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "Name": "funestus",
+                "Indoor_Feeding_Fraction": 1,
+                "Habitats": [
+                    {
+                        "Max_Larval_Capacity": 11250000000.0,
+                        "Habitat_Type": "TEMPORARY_RAINFALL"
+                    }
+                ],
+                "Gene_To_Trait_Modifiers" : [
+                    {
+                        "Allele_Combinations" : [
+                            [  "X",  "X" ]
+                        ],
+                        "Trait_Modifiers" : [
+                            {
+                                "COMMENT": "Bigger number causes faster progression to infectious",
+                                "Trait" : "INFECTED_PROGRESS",
+                                "Modifier": 1.5
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "Name": "gambiae",
+                "Indoor_Feeding_Fraction": 1,
+                "Habitats": [
+                    {
+                        "Max_Larval_Capacity": 11250000000.0,
+                        "Habitat_Type": "TEMPORARY_RAINFALL"
+                    }
+                ],
+                "Gene_To_Trait_Modifiers" : [
+                    {
+                        "Allele_Combinations" : [
+                            [  "X",  "X" ]
+                        ],
+                        "Trait_Modifiers" : [
+                            {
+                                "COMMENT": "Zero means they get infected but cannot progress to infectious",
+                                "Trait" : "INFECTED_PROGRESS",
+                                "Modifier": 0.0
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

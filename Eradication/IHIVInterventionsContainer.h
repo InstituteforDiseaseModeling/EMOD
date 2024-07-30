@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -91,7 +83,10 @@ namespace Kernel
 
         virtual void ApplyProbMaternalTransmissionModifier( const ProbabilityNumber &probReduction ) = 0;
 
-        virtual void GoOnART( bool viralSupression, float daysToAchieveSuppression ) = 0;
+        virtual void GoOnART( bool viralSupression, 
+                              float daysToAchieveSuppression,
+                              float durationFromEnrollmentToArtAidsDeath,
+                              float artMultiplierOnTransmissionProbPerAct ) = 0;
         virtual void GoOffART() = 0;
     };
 
@@ -110,6 +105,5 @@ namespace Kernel
         virtual const ProbabilityNumber GetInfectivitySuppression() const = 0;
         virtual float GetDurationSinceLastStartingART() const = 0;
         virtual const ProbabilityNumber& GetProbMaternalTransmissionModifier() const = 0;
-        virtual void BroadcastNewHIVInfection() = 0;
     };
 }

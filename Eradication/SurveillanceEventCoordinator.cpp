@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "SurveillanceEventCoordinator.h"
@@ -32,8 +24,6 @@ namespace Kernel
     ResponderSurveillance::~ResponderSurveillance()
     {
     }
-
-#define SEC_Percentage_Events_To_Count_DESC_TEXT "TBD"
 
     bool ResponderSurveillance::Configure( const Configuration * inputJson )
     {
@@ -86,9 +76,9 @@ namespace Kernel
         , m_IsStopping( false )
         , m_Duration( -1.0f )
         , m_DurationExpired ( false )
-        , m_CoordinatorName("SurveillanceEventCoordinator")
     {
         initSimTypes( 1, "*" );
+        m_CoordinatorName = "SurveillanceEventCoordinator";
     }
 
     SurveillanceEventCoordinator::~SurveillanceEventCoordinator()
@@ -100,8 +90,7 @@ namespace Kernel
     {
         initConfigTypeMap( "Start_Trigger_Condition_List", &m_StartTriggerConditionList, SEC_Start_Trigger_Condition_List_DESC_TEXT );
         initConfigTypeMap( "Stop_Trigger_Condition_List", &m_StopTriggerConditionList, SEC_Stop_Trigger_Condition_List_DESC_TEXT );
-        initConfigTypeMap( "Duration", &m_Duration, SEC_Duration_DESC_TEXT, -1.0f, FLT_MAX, -1.0f );
-        initConfigTypeMap( "Coordinator_Name", &m_CoordinatorName, SEC_Coordinator_Name_DESC_TEXT, "SurveillanceEventCoordinator" );
+        initConfigTypeMap( "Duration", &m_Duration, DEC_Duration_DESC_TEXT, -1.0f, FLT_MAX, -1.0f );
 
         bool retValue = IncidenceEventCoordinator::Configure( inputJson );
 
@@ -159,12 +148,22 @@ namespace Kernel
         {
             m_IsStarting = false;
             m_IsActive = true;
+            LOG_INFO_F( "%s: Starting, so Registering for events\n", m_CoordinatorName.c_str() );
+            for( auto pNEC : m_CachedNodes )
+            {
+                m_pIncidenceCounter->RegisterForEvents( pNEC );
+            }
             m_pIncidenceCounter->StartCounting();
         }
         if( m_IsStopping )
         {
             m_IsStopping = false;
             m_IsActive = false;
+            LOG_INFO_F( "%s: Stopping, so Unregistering for events\n", m_CoordinatorName.c_str() );
+            for( auto pNEC : m_CachedNodes )
+            {
+                m_pIncidenceCounter->UnregisterForEvents( pNEC );
+            }
         }
 
         if( !m_IsActive ) return;
@@ -238,20 +237,19 @@ namespace Kernel
         }
     }
 
+    void SurveillanceEventCoordinator::AddNode( const suids::suid& node_suid )
+    {
+        INodeEventContext* pNEC = m_Parent->GetNodeEventContext( node_suid );
+        m_CachedNodes.push_back( pNEC );
+
+        //don't register counter events now
+        //m_pIncidenceCounter->RegisterForEvents( pNEC );
+    }
+
     void SurveillanceEventCoordinator::UpdateNodes(float dt)
     {
         if( !m_IsActive ) return; 
         ConsiderResponding();
-    }
-
-    const std::string& SurveillanceEventCoordinator::GetName() const
-    {
-        return m_CoordinatorName;
-    }
-
-    const IdmDateTime& SurveillanceEventCoordinator::GetTime() const
-    {
-        return m_Parent->GetSimulationTime();
     }
 
     void SurveillanceEventCoordinator::CollectStats( ReportStatsByIP& rStats )

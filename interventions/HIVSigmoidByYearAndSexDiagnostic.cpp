@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "HIVSigmoidByYearAndSexDiagnostic.h"
@@ -32,35 +24,56 @@ namespace Kernel
     IMPLEMENT_FACTORY_REGISTERED(HIVSigmoidByYearAndSexDiagnostic)
 
     HIVSigmoidByYearAndSexDiagnostic::HIVSigmoidByYearAndSexDiagnostic()
-    : rampMin(0)     // initialized below by initConfigTypeMap
-    , rampMax(1)
-    , rampMidYear(2000)
-    , rampRate(1)
-    , femaleMultiplier(1)
+        : AbstractDecision( true )
+        , rampMin(0)
+        , rampMax(1)
+        , rampMidYear(2000)
+        , rampRate(1)
+        , femaleMultiplier(1)
     {
         initSimTypes(1, "HIV_SIM" ); // just limiting this to HIV for release
-        initConfigTypeMap("Ramp_Min", &rampMin, HIV_Ramp_Min_DESC_TEXT , -1, 1, 0);
-        initConfigTypeMap("Ramp_Max", &rampMax, HIV_Ramp_Max_DESC_TEXT , -1, 1, 1);
-        initConfigTypeMap("Ramp_MidYear", &rampMidYear, HIV_Ramp_MidYear_DESC_TEXT , MIN_YEAR, MAX_YEAR, 2000);
-        initConfigTypeMap("Ramp_Rate", &rampRate, HIV_Ramp_Rate_DESC_TEXT , -100, 100, 1);
-        initConfigTypeMap("Female_Multiplier", &femaleMultiplier, HIV_Female_Multiplier_DESC_TEXT , 0, FLT_MAX, 1);
     }
 
     HIVSigmoidByYearAndSexDiagnostic::HIVSigmoidByYearAndSexDiagnostic( const HIVSigmoidByYearAndSexDiagnostic& master )
-        : HIVSimpleDiagnostic( master )
+        : AbstractDecision( master )
+        , rampMin( master.rampMin )
+        , rampMax( master.rampMax )
+        , rampMidYear( master.rampMidYear )
+        , rampRate( master.rampRate )
+        , femaleMultiplier( master.femaleMultiplier )
     {
-        rampMin = master.rampMin;
-        rampMax = master.rampMax;
-        rampMidYear = master.rampMidYear;
-        rampRate = master.rampRate;
-        femaleMultiplier = master.femaleMultiplier;
     }
 
-    bool
-    HIVSigmoidByYearAndSexDiagnostic::positiveTestResult()
+    bool HIVSigmoidByYearAndSexDiagnostic::Configure( const Configuration* inputJson )
     {
-        //LOG_DEBUG_F("About to issue positiveTestResult\n");
 
+        // This used to be available.  I saw it used in test but never by researchers
+        // This is just a double check
+        if( inputJson->Exist( "Days_To_Diagnosis" ) )
+        {
+            std::stringstream ss;
+            ss << "'Days_To_Diagnosis' is no longer supported.\n";
+            throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+        }
+
+        if( inputJson->Exist( "Event_Or_Config" ) )
+        {
+            std::stringstream ss;
+            ss << "'Event_Or_Config' is no longer needed.  Only events are supported.";
+            throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+        }
+
+        initConfigTypeMap( "Ramp_Min", &rampMin, HIV_Ramp_Min_DESC_TEXT, -1, 1, 0 );
+        initConfigTypeMap( "Ramp_Max", &rampMax, HIV_Ramp_Max_DESC_TEXT, -1, 1, 1 );
+        initConfigTypeMap( "Ramp_MidYear", &rampMidYear, HIV_Ramp_MidYear_DESC_TEXT, MIN_YEAR, MAX_YEAR, 2000 );
+        initConfigTypeMap( "Ramp_Rate", &rampRate, HIV_Ramp_Rate_DESC_TEXT, -100, 100, 1 );
+        initConfigTypeMap( "Female_Multiplier", &femaleMultiplier, HIV_Female_Multiplier_DESC_TEXT, 0, FLT_MAX, 1 );
+
+        return AbstractDecision::Configure( inputJson );
+    }
+
+    bool HIVSigmoidByYearAndSexDiagnostic::MakeDecision( float dt )
+    {
         float year = parent->GetEventContext()->GetNodeEventContext()->GetTime().Year();
         auto gender = parent->GetEventContext()->GetGender();
 
@@ -81,7 +94,7 @@ namespace Kernel
 
     void HIVSigmoidByYearAndSexDiagnostic::serialize(IArchive& ar, HIVSigmoidByYearAndSexDiagnostic* obj)
     {
-        HIVSimpleDiagnostic::serialize( ar, obj );
+        AbstractDecision::serialize( ar, obj );
         HIVSigmoidByYearAndSexDiagnostic& diag = *obj;
 
         ar.labelElement("rampMin"         ) & diag.rampMin;

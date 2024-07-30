@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
@@ -30,6 +22,11 @@ namespace Kernel
     {
     }
 
+    BaseTextReportEvents::BaseTextReportEvents( const BaseTextReportEvents& rThat )
+        : BaseTextReportEventsTemplate( rThat )
+    {
+    }
+
     BaseTextReportEvents::~BaseTextReportEvents()
     {
     }
@@ -44,13 +41,19 @@ namespace Kernel
             for( auto pNEC : rNodeEventContextList )
             {
                 release_assert( pNEC );
-                IIndividualEventBroadcaster* broadcaster = pNEC->GetIndividualEventBroadcaster();
-                UpdateRegistration( broadcaster, true );
-                broadcaster_list.push_back( broadcaster );
+                if( IsValidNode( pNEC ) )
+                {
+                    IIndividualEventBroadcaster* broadcaster = pNEC->GetIndividualEventBroadcaster();
+                    UpdateRegistration( broadcaster, true );
+                    broadcaster_list.push_back( broadcaster );
+                }
             }
             is_registered = true;
         }
     }
 
-
+    bool BaseTextReportEvents::IsValidNode( INodeEventContext* pNEC ) const
+    {
+        return true;
+    }
 }

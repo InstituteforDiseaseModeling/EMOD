@@ -1,8 +1,29 @@
 {
-     "science": [
+     "randomly_fail_too_much": [
         { "path" : "Generic/SFTs/ImportPressure/SingleNode" },
         { "path" : "Generic/SFTs/ImportPressure/SingleNode_LongDurations" },
-        { "path" : "Generic/SFTs/ImportPressure/MultipleNodes" },
+        { "path" : "Generic/SFTs/ImportPressure/MultipleNodes" }
+     ],
+     "science": [
+        { "path" : "Generic/SFTs/Contraception/usage_distribution/CONSTANT_DISTRIBUTION" },
+        { "path" : "Generic/SFTs/Contraception/usage_distribution/EXPONENTIAL_DISTRIBUTION" },
+        { "path" : "Generic/SFTs/Contraception/usage_distribution/GAUSSIAN_DISTRIBUTION" },
+        { "path" : "Generic/SFTs/Contraception/waning_effect/Box" },
+        { "path" : "Generic/SFTs/Contraception/waning_effect/BoxExponential" },
+        { "path" : "Generic/SFTs/Contraception/waning_effect/Constant" },
+        { "path" : "Generic/SFTs/Contraception/waning_effect/Exponential" },
+        { "path" : "Generic/SFTs/Contraception/waning_effect/Linear" },
+        { "path" : "Generic/SFTs/Contraception/waning_effect/Linear_ExpireAtEnd" },
+        { "path" : "Generic/SFTs/Contraception/waning_effect/LinearPiecewise" },
+        { "path" : "Generic/SFTs/Contraception/waning_effect/LinearSeasonal" },
+        { "path" : "Generic/SFTs/Contraception/waning_effect/RandomBox" },
+        { "path" : "Generic/SFTs/InsetChart/New_Pregnancies_Channel" },
+        { "path" : "Generic/SFTs/InsetChart/InsetChart_Has_IP" },
+        { "path" : "Generic/SFTs/IndividualNonDiseaseDeathRateModifier/Duration_To_Modifier" },
+        { "path" : "Generic/SFTs/IndividualNonDiseaseDeathRateModifier/Expiration_Duration/CONSTANT" },
+        { "path" : "Generic/SFTs/IndividualNonDiseaseDeathRateModifier/Expiration_Duration/EXPONENTIAL" },
+        { "path" : "Generic/SFTs/IndividualNonDiseaseDeathRateModifier/Expiration_Duration/GAUSSIAN" },
+        { "path" : "Generic/SFTs/SpatialReports/StatisticalPopulation" },
         { "path" : "Generic/SFTs/InfectivityScalingExponential/TimeStep_.5_days" },
         { "path" : "Generic/SFTs/InfectivityScalingExponential/TimeStep_1_days_1" },
         { "path" : "Generic/SFTs/InfectivityScalingExponential/TimeStep_1_days_2" },
@@ -51,10 +72,15 @@
         { "path" : "Generic/SFTs/HINT/Single_Property_Between_Groups" },
         { "path" : "Generic/SFTs/HINT/Multiple_Properties_Between_Groups" },
         { "path" : "Generic/SFTs/HINT/Multiple_Properties_Within_Group" },
+        { "path" : "Generic/SFTs/PythonInProcess/Honors_Timestep" },
         { "path" : "Generic/SFTs/Serialization/01_write_file_singlenode" },
         { "path" : "Generic/SFTs/Serialization/02_read_file_singlenode" },
         { "path" : "Generic/SFTs/Serialization/03_infections_remain" },
-        { "path" : "Generic/SFTs/MigrationModel/Migration_AgeAndGender" }
+        { "path" : "Generic/SFTs/MigrationModel/Migration_AgeAndGender" },
+        { "path" : "Generic/SFTs/TargetNumIndividuals" },
+        { "path" : "Generic/SFTs/Targeting/TargetHasIntervention" },
+        { "path" : "Generic/SFTs/Targeting/TargetHasIP" },
+        { "path" : "Generic/SFTs/Targeting/TargetingLogic" }
     ],
      "skipped": [
         { "path" : "Generic/SFTs/MigrationModel/9Nodes_stationary_dist_1x20000_LocalMigration_AllInfected" },

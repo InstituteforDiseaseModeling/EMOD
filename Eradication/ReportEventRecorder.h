@@ -1,17 +1,11 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
 #include <vector>
 
 #include "BaseReportEventRecorder.h"
+#include "Properties.h"
+#include "ReportFilter.h"
 
 namespace Kernel
 {
@@ -30,25 +24,31 @@ namespace Kernel
         static IReport* CreateReport();
 
     public:
-        ReportEventRecorder();
+        ReportEventRecorder( bool useYear=false );
         virtual ~ReportEventRecorder();
 
         // ------------
         // --- IReport
         // ------------
         virtual void Initialize( unsigned int nrmSize ) override;
+        virtual void CheckForValidNodeIDs( const std::vector<ExternalNodeId_t>& demographicNodeIds ) override;
         virtual void UpdateEventRegistration( float currentTime,
                                               float dt,
                                               std::vector<INodeEventContext*>& rNodeEventContextList,
                                               ISimulationEventContext* pSimEventContext ) override;
+        virtual bool notifyOnEvent( IIndividualHumanEventContext *pEntity, const EventTrigger& trigger ) override;
 
         virtual std::string GetHeader() const override;
 
     protected:
         virtual void ConfigureOther( const Configuration* inputJson ) override;
+        virtual void CheckOther( const Configuration* inputJson ) override;
         virtual std::string GetOtherData( IIndividualHumanEventContext *context, const EventTrigger& trigger ) override;
-        virtual float GetTime( IIndividualHumanEventContext* pEntity ) const override;
+        virtual std::string GetTime( IIndividualHumanEventContext* pEntity ) const override;
 
-        jsonConfigurable::tDynamicStringSet properties_to_report;
+        jsonConfigurable::tDynamicStringSet m_PropertiesToReport;
+        std::string m_PropertyChangeIPKeyString;
+        IPKey m_PropertyChangeIPKey;
+        ReportFilter m_ReportFilter;
     };
 }

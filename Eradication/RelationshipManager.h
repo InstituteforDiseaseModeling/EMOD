@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -15,8 +7,10 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 namespace Kernel
 {
-    class RelationshipGroups;
     class ReportSTI;
+    struct ISTISimulationContext;
+    struct IRelationship;
+
     class RelationshipManager : public IRelationshipManager
     {
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING();
@@ -25,33 +19,32 @@ namespace Kernel
         friend class ReportSTI;
     public:
         RelationshipManager( INodeContext* parent = nullptr );
-        virtual void Update( list<IIndividualHuman*>& individualHumans, ITransmissionGroups* groups, float dt ) override; 
+        virtual void Update( float dt ) override; 
         virtual IRelationship * GetRelationshipById( unsigned int relId ) override;
         virtual const tNodeRelationshipType& GetNodeRelationships() const override;
         virtual INodeContext* GetNode() const override; // is this a good idea? Adding for RelationshipGroups to be node aware
         virtual void AddRelationship( IRelationship*, bool isNewRelationship ) override;
-        virtual void RemoveRelationship( IRelationship*, bool leavingNode ) override;
-        virtual void ConsummateRelationship( IRelationship* relationship, unsigned int acts ) override;
+        virtual void RemoveRelationship( IRelationship*, bool isLeavingNode, bool addToDelete ) override;
+        virtual void ConsummateRelationship( IRelationship* relationship, const CoitalAct& rCoitalAct ) override;
 
-        virtual IRelationship* Emigrate( IRelationship* ) override;
-        virtual IRelationship* Immigrate( IRelationship* ) override;
+        virtual suids::suid GetNextCoitalActSuid() override;
+
+        virtual void Emigrate( IRelationship* ) override;
+        virtual void Immigrate( IRelationship* ) override;
 
         virtual void RegisterNewRelationshipObserver(IRelationshipManager::callback_t observer) override;
         virtual void RegisterRelationshipTerminationObserver(IRelationshipManager::callback_t observer) override;
-        virtual void RegisterRelationshipConsummationObserver(IRelationshipManager::callback_t observer) override;
+        virtual void RegisterRelationshipConsummationObserver(IRelationshipManager::consummated_callback_t observer) override;
 
     protected:
-        virtual void AddToPrimaryRelationships( IRelationship* relationship );
-        virtual void RemoveFromPrimaryRelationships( IRelationship* relationship );
-
-        tNodeRelationshipType nodeRelationships;
-        std::map< std::string, list<uint32_t> > relationshipListsForMP;
-        INodeContext* _node;
-        RelationshipGroups * nodePools;
-        std::list<IRelationshipManager::callback_t> new_relationship_observers;
-        std::list<IRelationshipManager::callback_t> relationship_termination_observers;
-        std::list<IRelationshipManager::callback_t> relationship_consummation_observers;
-        std::map< std::string, std::list<unsigned int> > dead_relationships_by_type;
+        tNodeRelationshipType m_NodeRelationships;
+        std::set<IRelationship*> m_NodeRelationshipsToDelete;
+        INodeContext* m_pNode;
+        ISTISimulationContext* m_pStiSim;
+        std::list<IRelationshipManager::callback_t> m_RelationshipObserversNew;
+        std::list<IRelationshipManager::callback_t> m_RelationshipObserversTerminated;
+        std::list<IRelationshipManager::consummated_callback_t> m_RelationshipObserversConsummated;
+        std::map< std::string, std::list<unsigned int> > m_DeadRelationshipsByType;
 
         void notifyObservers(std::list<IRelationshipManager::callback_t>&, IRelationship*);
 

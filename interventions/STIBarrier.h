@@ -1,19 +1,9 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
 #include <string>
 #include <list>
 #include <vector>
-
-#include "BoostLibWrapper.h"
 
 #include "Interventions.h"
 #include "Configuration.h"
@@ -22,15 +12,13 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "FactorySupport.h"
 #include "Configure.h"
 #include "IRelationship.h"
+#include "EventTrigger.h"
+#include "Timers.h"
 
 namespace Kernel
 {
     struct ISTIBarrierConsumer; 
-
-    /* Keep around as an identity solution??? */
-    struct ISTIBarrier : public ISupports
-    {
-    };
+    struct IDistribution;
 
     class STIBarrier : public BaseIntervention
     {
@@ -38,7 +26,8 @@ namespace Kernel
 
     public:
         STIBarrier();
-        virtual ~STIBarrier() { }
+        STIBarrier( const STIBarrier& rMaster );
+        virtual ~STIBarrier();
 
         virtual bool Configure( const Configuration * config ) override;
 
@@ -49,11 +38,19 @@ namespace Kernel
         virtual void Update(float dt) override;
 
     protected:
+
+        void TimerCallback( float dt );
+
         float early;
         float late;
         float midyear;
         float rate;
         RelationshipType::Enum rel_type;
+
+        IDistribution* m_pUsageDurationDistribution;
+        CountdownTimer m_UsageTimer;
+        EventTrigger   m_UsageExpirationEvent;
+
         ISTIBarrierConsumer *ibc;
 
         DECLARE_SERIALIZABLE(STIBarrier);

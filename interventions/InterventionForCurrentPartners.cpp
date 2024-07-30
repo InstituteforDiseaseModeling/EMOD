@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "InterventionForCurrentPartners.h"
@@ -15,10 +7,11 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IIndividualHumanContext.h"
 #include "InterventionEnums.h"
 #include "InterventionFactory.h"
-#include "InterventionValidator.h"
 #include "IndividualEventContext.h"
 #include "NodeEventContext.h"
 #include "IIndividualHumanSTI.h"
+#include "INodeContext.h"
+#include "INodeSTI.h"
 #include "Common.h"
 #include "RANDOM.h"
 
@@ -43,7 +36,7 @@ namespace Kernel
         , m_MaximumPartners( 1000.0f )
         , m_UseEventOrConfig( EventOrConfig::Event )
         , m_EventToBroadcast()
-        , m_InterventionConfig()
+        , m_di( nullptr )
     {
         initSimTypes( 2, "STI_SIM", "HIV_SIM" );
     }
@@ -57,12 +50,17 @@ namespace Kernel
         , m_MaximumPartners(      rMaster.m_MaximumPartners )
         , m_UseEventOrConfig(     rMaster.m_UseEventOrConfig )
         , m_EventToBroadcast(     rMaster.m_EventToBroadcast )
-        , m_InterventionConfig(   rMaster.m_InterventionConfig )
+        , m_di( nullptr )
     {
+        if( rMaster.m_di != nullptr )
+        {
+            m_di = rMaster.m_di->Clone();
+        }
     }
 
     InterventionForCurrentPartners::~InterventionForCurrentPartners()
     {
+        delete m_di;
     }
 
     bool InterventionForCurrentPartners::Configure( const Configuration * inputJson )
@@ -77,8 +75,16 @@ namespace Kernel
         initConfig( "Prioritize_Partners_By", m_PrioritizePartnersBy, inputJson, MetadataDescriptor::Enum( "Prioritize_Partners_By", IFCP_Prioritize_Partners_By_DESC_TEXT, MDD_ENUM_ARGS( PartnerPrioritizationType ) ) );
 
         initConfig( "Event_Or_Config", m_UseEventOrConfig, inputJson, MetadataDescriptor::Enum( "EventOrConfig", Event_Or_Config_DESC_TEXT, MDD_ENUM_ARGS( EventOrConfig ) ) );
-        initConfigTypeMap( "Broadcast_Event", &m_EventToBroadcast, IFCP_Broadcast_Event_DESC_TEXT, "Event_Or_Config", "Event" );
-        initConfigComplexType( "Intervention_Config", &m_InterventionConfig, IFCP_Intervention_Config_DESC_TEXT, "Event_Or_Config", "Config" );
+        if( m_UseEventOrConfig == EventOrConfig::Event || JsonConfigurable::_dryrun )
+        {
+            initConfigTypeMap( "Broadcast_Event", &m_EventToBroadcast, IFCP_Broadcast_Event_DESC_TEXT );
+        }
+
+        IndividualInterventionConfig intervention_config;
+        if( m_UseEventOrConfig == EventOrConfig::Config || JsonConfigurable::_dryrun )
+        {
+            initConfigComplexType( "Intervention_Config", &intervention_config, IFCP_Intervention_Config_DESC_TEXT );
+        }
 
         bool ret = BaseIntervention::Configure( inputJson );
         if( ret && !JsonConfigurable::_dryrun )
@@ -90,17 +96,17 @@ namespace Kernel
             }
             if( m_UseEventOrConfig == EventOrConfig::Config )
             {
-                if( m_InterventionConfig._json.Type() == ElementType::NULL_ELEMENT )
+                if( intervention_config._json.Type() == ElementType::NULL_ELEMENT )
                 {
                     throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__,
                                                             "If you set 'Event_Or_Config' = 'Config', then you must define 'Intervention_Config'" );
                 }
                 else
                 {
-                    InterventionValidator::ValidateIntervention( GetTypeName(),
-                                                                 InterventionTypeValidation::INDIVIDUAL,
-                                                                 m_InterventionConfig._json,
-                                                                 inputJson->GetDataLocation() );
+                    m_di = InterventionFactory::getInstance()->CreateIntervention( intervention_config._json,
+                                                                                   inputJson->GetDataLocation(),
+                                                                                   "Intervention_Config",
+                                                                                   true );
                 }
             }
             m_RelationshipTypes = ConvertStringsToRelationshipTypes( "Relationship_Types", rel_type_strings );
@@ -121,7 +127,7 @@ namespace Kernel
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "IIndividualHumanSTI", "IIndividualHumanContext" );
         }
 
-        RelationshipSet_t relationships = p_human_sti->GetRelationships();
+        const std::vector<IRelationship*>& relationships = p_human_sti->GetRelationships();
 
         std::vector<IRelationship*> reduced_relationships = SelectRelationships( relationships );
 
@@ -140,7 +146,7 @@ namespace Kernel
     }
 
     std::vector<IRelationship*> 
-        InterventionForCurrentPartners::SelectRelationships( const RelationshipSet_t& rRelationships )
+        InterventionForCurrentPartners::SelectRelationships( const std::vector<IRelationship*>& rRelationships )
     {
         // --------------------------------------------------------------------------
         // --- Only include relationships whose duration is greater than the minimum
@@ -203,14 +209,7 @@ namespace Kernel
         for( auto p_rel : reducedRelationships )
         {
             IIndividualHumanSTI* p_human_sti_partner = p_rel->GetPartner( pHumanStiSelf );
-            IIndividualHumanEventContext* p_human_event = nullptr;
-            if( p_human_sti_partner->QueryInterface( GET_IID( IIndividualHumanEventContext ), (void**)&p_human_event ) != s_OK )
-            {
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__,
-                                               "p_human_sti_partner",
-                                               "IIndividualHumanEventContext",
-                                               "IIndividualHumanSTI" );
-            }
+            IIndividualHumanEventContext* p_human_event = p_human_sti_partner->GetIndividualHuman()->GetEventContext();
             partners.push_back( p_human_event );
         }
         return partners;
@@ -231,7 +230,7 @@ namespace Kernel
 
     bool LongerTime( IRelationship* pRelA, IRelationship* pRelB )
     {
-        return pRelA->GetDuration() < pRelB->GetDuration();
+        return pRelA->GetDuration() > pRelB->GetDuration();
     }
 
     std::vector<IIndividualHumanEventContext*>
@@ -245,7 +244,7 @@ namespace Kernel
 
     bool ShorterTime( IRelationship* pRelA, IRelationship* pRelB )
     {
-        return pRelA->GetDuration() > pRelB->GetDuration();
+        return pRelA->GetDuration() < pRelB->GetDuration();
     }
 
     std::vector<IIndividualHumanEventContext*>
@@ -259,7 +258,26 @@ namespace Kernel
 
     bool OlderAge( IIndividualHumanEventContext* pHumanA, IIndividualHumanEventContext* pHumanB )
     {
-        return pHumanA->GetAge() < pHumanB->GetAge();
+        // --------------------------------------------------------------------------------------------
+        // --- We had to using SimDayBorn (i.e. birthday) because it is set when the person is created.
+        // --- Age on the other hand depends on when it is updated.  This fixes a bug were the age of
+        // --- some of the partners were updated and some were not.
+        // --------------------------------------------------------------------------------------------
+
+        IIndividualHumanSTI* p_human_sti_A = nullptr;
+        if( s_OK != pHumanA->QueryInterface( GET_IID( IIndividualHumanSTI ), (void**)&p_human_sti_A ) )
+        {
+            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "pHumanA", "IIndividualHumanSTI", "IIndividualHumanEventContext" );
+        }
+
+        IIndividualHumanSTI* p_human_sti_B = nullptr;
+        if( s_OK != pHumanB->QueryInterface( GET_IID( IIndividualHumanSTI ), (void**)&p_human_sti_B ) )
+        {
+            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "pHumanB", "IIndividualHumanSTI", "IIndividualHumanEventContext" );
+        }
+
+        // you are older if your birthday was longer ago
+        return p_human_sti_A->GetSimDayBorn() < p_human_sti_B->GetSimDayBorn();
     }
 
     std::vector<IIndividualHumanEventContext*>
@@ -273,7 +291,22 @@ namespace Kernel
 
     bool YoungerAge( IIndividualHumanEventContext* pHumanA, IIndividualHumanEventContext* pHumanB )
     {
-        return pHumanA->GetAge() > pHumanB->GetAge();
+        // SEE COMMENT IN OlderAge()
+
+        IIndividualHumanSTI* p_human_sti_A = nullptr;
+        if( s_OK != pHumanA->QueryInterface( GET_IID( IIndividualHumanSTI ), (void**)&p_human_sti_A ) )
+        {
+            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "pHumanA", "IIndividualHumanSTI", "IIndividualHumanEventContext" );
+        }
+
+        IIndividualHumanSTI* p_human_sti_B = nullptr;
+        if( s_OK != pHumanB->QueryInterface( GET_IID( IIndividualHumanSTI ), (void**)&p_human_sti_B ) )
+        {
+            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "pHumanB", "IIndividualHumanSTI", "IIndividualHumanEventContext" );
+        }
+
+        // you are younger if your birthday was more recent
+        return p_human_sti_A->GetSimDayBorn() > p_human_sti_B->GetSimDayBorn();
     }
 
     std::vector<IIndividualHumanEventContext*>
@@ -343,35 +376,42 @@ namespace Kernel
 
     void InterventionForCurrentPartners::DistributeToPartnersEvent( const std::vector<IIndividualHumanEventContext*>& partners )
     {
-        IIndividualEventBroadcaster* broadcaster = parent->GetEventContext()->GetNodeEventContext()->GetIndividualEventBroadcaster();
+        INodeSTI* p_node_sti = nullptr;
+        if( parent->GetEventContext()->GetNodeEventContext()->GetNodeContext()->QueryInterface( GET_IID( INodeSTI ), (void**)&p_node_sti ) != s_OK )
+        {
+            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__,
+                                           "parent->GetEventContext()->GetNodeEventContext()",
+                                           "INodeSTI",
+                                           "INodeEventContext" );
+        }
+
+        // Stage the events to avoid issues where the order of the
+        // individuals being updated changes the results.
+        IActionStager* p_stager = p_node_sti->GetActionStager();
         for( auto p_human_event : partners )
         {
-            broadcaster->TriggerObservers( p_human_event, m_EventToBroadcast );
+            p_stager->StageEvent( p_human_event, m_EventToBroadcast );
         }
     }
 
     void InterventionForCurrentPartners::DistributeToPartnersIntervention( const std::vector<IIndividualHumanEventContext*>& partners )
     {
-        ICampaignCostObserver* pICCO;
-        if( parent->GetEventContext()->GetNodeEventContext()->QueryInterface( GET_IID( ICampaignCostObserver ), (void**)&pICCO ) != s_OK )
+        INodeSTI* p_node_sti = nullptr;
+        if( parent->GetEventContext()->GetNodeEventContext()->GetNodeContext()->QueryInterface( GET_IID( INodeSTI ), (void**)&p_node_sti ) != s_OK )
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__,
                                            "parent->GetEventContext()->GetNodeEventContext()",
-                                           "ICampaignCostObserver",
+                                           "INodeSTI",
                                            "INodeEventContext" );
         }
 
-        auto config = Configuration::CopyFromElement( (m_InterventionConfig._json), "campaign" );
-        IDistributableIntervention *di = InterventionFactory::getInstance()->CreateIntervention( config );
-        delete config;
-        config = nullptr;
-
+        // Stage the distribution of the interventions to avoid issues where
+        // the order of the individuals being updated changes the results.
+        IActionStager* p_stager = p_node_sti->GetActionStager();
         for( auto p_human_event : partners )
         {
-            IDistributableIntervention *clone_di = di->Clone();
-            clone_di->AddRef();
-            clone_di->Distribute( p_human_event->GetInterventionsContext(), pICCO );
-            clone_di->Release();
+            IDistributableIntervention *clone_di = m_di->Clone();
+            p_stager->StageIntervention( p_human_event, clone_di );
         }
     }
 
@@ -395,11 +435,7 @@ namespace Kernel
         ar.labelElement( "m_MaximumPartners"      ) & ifcp.m_MaximumPartners;
         ar.labelElement( "m_UseEventOrConfig"     ) & (uint32_t&)ifcp.m_UseEventOrConfig;
         ar.labelElement( "m_EventToBroadcast"     ) & ifcp.m_EventToBroadcast;
-        //ar.labelElement( "m_InterventionConfig"   ) & ifcp.m_InterventionConfig;
-
-        // Haven't tested this so assert if someone tries it but I don't think this will
-        // ever be serialized in practice.
-        release_assert( ifcp.m_InterventionConfig._json.Type() == ElementType::NULL_ELEMENT );
+        ar.labelElement( "m_di"                   ) & ifcp.m_di;
 
         ifcp.m_RelationshipTypes.clear();
         for( auto irel : rel_types )

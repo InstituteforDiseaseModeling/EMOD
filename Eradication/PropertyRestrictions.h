@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -13,10 +5,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <map>
 #include <vector>
 
-#include "BoostLibWrapper.h"
 #include "Configure.h"
 #include "Properties.h"
-#include "PropertiesString.h"
 #include "NodeProperties.h"
 
 namespace Kernel
@@ -36,14 +26,11 @@ namespace Kernel
 
         int Size() const;
         void Add( std::map< std::string, std::string >& rMap );
-        bool Qualifies( const Container& rPropertiesContainer );
-        bool Qualifies( const tProperties* pPropsMap );
+        void Add(KeyValue& kv);
+        bool Qualifies( const Container& rPropertiesContainer ) const;
         std::string GetAsString() const;
 
     private:
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         std::list< Container > _restrictions;
-#pragma warning( pop )
     };
 }

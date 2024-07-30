@@ -6,11 +6,9 @@
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Days_To_Diagnosis": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever"
                         ],
-                        "Event_Or_Config": "Event",
                         "Female_Multiplier": 1,
                         "Interpolation_Order": 0,
                         "Negative_Diagnosis_Event": "HCTUptakePostDebut3",
@@ -46,11 +44,9 @@
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Days_To_Diagnosis": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever"
                         ],
-                        "Event_Or_Config": "Event",
                         "Female_Multiplier": 1,
                         "Interpolation_Order": 0,
                         "Negative_Diagnosis_Event": "LostForever0",
@@ -127,7 +123,6 @@
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Days_To_Diagnosis": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -137,7 +132,6 @@
                             "InterventionStatus:ARTStaging",
                             "InterventionStatus:HCTTestingLoop"
                         ],
-                        "Event_Or_Config": "Event",
                         "Female_Multiplier": 1,
                         "Interpolation_Order": 0,
                         "Negative_Diagnosis_Event": "HCTUptakePostDebut1",
@@ -173,7 +167,6 @@
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Days_To_Diagnosis": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -182,7 +175,6 @@
                             "InterventionStatus:LinkingToPreART",
                             "InterventionStatus:ARTStaging"
                         ],
-                        "Event_Or_Config": "Event",
                         "Female_Multiplier": 1,
                         "Interpolation_Order": 0,
                         "Negative_Diagnosis_Event": "ARTStaging1",
@@ -218,7 +210,6 @@
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Days_To_Diagnosis": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -227,7 +218,6 @@
                             "InterventionStatus:LinkingToPreART",
                             "InterventionStatus:ARTStaging"
                         ],
-                        "Event_Or_Config": "Event",
                         "Female_Multiplier": 1,
                         "Interpolation_Order": 0,
                         "New_Property_Value": "InterventionStatus:TestingOnSymptomatic",
@@ -722,7 +712,6 @@
                             "InterventionStatus:LinkingToPreART",
                             "InterventionStatus:ARTStaging"
                         ],
-                        "Event_Or_Config": "Event",
                         "Interpolation_Order": 0,
                         "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear",
                         "New_Property_Value": "InterventionStatus:VMMC",
@@ -1205,7 +1194,6 @@
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Days_To_Diagnosis": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -1214,7 +1202,6 @@
                             "InterventionStatus:LinkingToPreART",
                             "InterventionStatus:ARTStaging"
                         ],
-                        "Event_Or_Config": "Event",
                         "Female_Multiplier": 1.0,
                         "Negative_Diagnosis_Event": "HCTUptakePostDebut1",
                         "New_Property_Value": "InterventionStatus:HCTUptakeAtDebut",
@@ -1352,8 +1339,6 @@
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        ".Ramp_Max": 0.0,
-                        "Days_To_Diagnosis": 0,
                         "Default_Value": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
@@ -1364,7 +1349,6 @@
                             "InterventionStatus:ARTStaging",
                             "InterventionStatus:HCTTestingLoop"
                         ],
-                        "Event_Or_Config": "Event",
                         "Female_Multiplier": 0.5495442179366443,
                         "Negative_Diagnosis_Event": "HCTUptakePostDebut7",
                         "New_Property_Value": "InterventionStatus:HCTUptakePostDebut",
@@ -1542,7 +1526,6 @@
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Days_To_Diagnosis": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -1551,7 +1534,6 @@
                             "InterventionStatus:LinkingToPreART",
                             "InterventionStatus:ARTStaging"
                         ],
-                        "Event_Or_Config": "Event",
                         "Female_Multiplier": 1,
                         "Negative_Diagnosis_Event": "ARTStaging8",
                         "New_Property_Value": "InterventionStatus:TestingOnSymptomatic",
@@ -1592,7 +1574,6 @@
                             "InterventionStatus:ARTStaging",
                             "InterventionStatus:TestingOnSymptomatic"
                         ],
-                        "Event_Or_Config": "Event",
                         "New_Property_Value": "InterventionStatus:TestingOnANC",
                         "Positive_Diagnosis_Event": "Needs_PMTCT_Diagnostic_Test",
                         "Ramp_Max": 0.915,
@@ -1703,7 +1684,6 @@
                             "InterventionStatus:ARTStaging",
                             "InterventionStatus:TestingOnSymptomatic"
                         ],
-                        "Event_Or_Config": "Event",
                         "Negative_Diagnosis_Event": "Needs_Combination_PMTCT",
                         "New_Property_Value": "InterventionStatus:TestingOnANC",
                         "Positive_Diagnosis_Event": "Needs_sdNVP_PMTCT",
@@ -1761,7 +1741,6 @@
                             "InterventionStatus:ARTStaging",
                             "InterventionStatus:TestingOnSymptomatic"
                         ],
-                        "Event_Or_Config": "Event",
                         "Interpolation_Order": 0,
                         "Negative_Diagnosis_Event": "Needs_Option_A",
                         "New_Property_Value": "InterventionStatus:TestingOnANC",
@@ -1840,7 +1819,6 @@
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Days_To_Diagnosis": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -1850,7 +1828,6 @@
                             "InterventionStatus:ARTStaging",
                             "InterventionStatus:TestingOnSymptomatic"
                         ],
-                        "Event_Or_Config": "Event",
                         "Female_Multiplier": 1,
                         "Interpolation_Order": 1,
                         "New_Property_Value": "InterventionStatus:TestingOnChild6w",
@@ -2096,7 +2073,6 @@
                             "InterventionStatus:OnPreART",
                             "InterventionStatus:LinkingToPreART"
                         ],
-                        "Event_Or_Config": "Event",
                         "NOTE1": "Threshold for adult vs child guidelines",
                         "Negative_Diagnosis_Event": "ARTStaging5",
                         "New_Property_Value": "InterventionStatus:ARTStaging",
@@ -2167,7 +2143,6 @@
                             "InterventionStatus:OnPreART",
                             "InterventionStatus:LinkingToPreART"
                         ],
-                        "Event_Or_Config": "Event",
                         "If_Active_TB": {
                             "Times": [
                                 2005.917808
@@ -2222,14 +2197,12 @@
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Days_To_Diagnosis": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
                             "InterventionStatus:LinkingToART",
                             "InterventionStatus:OnPreART"
                         ],
-                        "Event_Or_Config": "Event",
                         "Female_Multiplier": 1,
                         "Negative_Diagnosis_Event": "HCTUptakePostDebut9",
                         "New_Property_Value": "InterventionStatus:LinkingToPreART",
@@ -2391,7 +2364,6 @@
                             "InterventionStatus:OnART",
                             "InterventionStatus:LinkingToART"
                         ],
-                        "Event_Or_Config": "Event",
                         "NOTE1": "Threshold for adult vs child guidelines",
                         "Negative_Diagnosis_Event": "OnPreART3",
                         "New_Property_Value": "InterventionStatus:OnPreART",
@@ -2452,7 +2424,6 @@
                             "InterventionStatus:OnART",
                             "InterventionStatus:LinkingToART"
                         ],
-                        "Event_Or_Config": "Event",
                         "If_Active_TB": {
                             "Times": [
                                 2005.917808
@@ -2507,12 +2478,10 @@
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Days_To_Diagnosis": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART"
                         ],
-                        "Event_Or_Config": "Event",
                         "Female_Multiplier": 1,
                         "Negative_Diagnosis_Event": "HCTUptakePostDebut3",
                         "New_Property_Value": "InterventionStatus:LinkingToART",
@@ -2575,7 +2544,7 @@
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "class": "ARTBasic"
+                        "class": "AntiretroviralTherapy"
                     },
                     "Trigger_Condition_List": [
                         "OnART1"
@@ -2584,7 +2553,7 @@
                 },
                 "class": "StandardInterventionDistributionEventCoordinator"
             },
-            "Event_Name": "OnART: state 1 (run ARTBasic)",
+            "Event_Name": "OnART: state 1 (run AntiretroviralTherapy)",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
@@ -2727,7 +2696,6 @@
                             "InterventionStatus:LinkingToPreART",
                             "InterventionStatus:ARTStaging"
                         ],
-                        "Event_Or_Config": "Event",
                         "Interpolation_Order": 0,
                         "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear",
                         "New_Property_Value": "InterventionStatus:VMMC",
@@ -2793,7 +2761,6 @@
                             "InterventionStatus:LinkingToPreART",
                             "InterventionStatus:ARTStaging"
                         ],
-                        "Event_Or_Config": "Event",
                         "Interpolation_Order": 0,
                         "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear",
                         "New_Property_Value": "InterventionStatus:VMMC",
@@ -2859,7 +2826,6 @@
                             "InterventionStatus:LinkingToPreART",
                             "InterventionStatus:ARTStaging"
                         ],
-                        "Event_Or_Config": "Event",
                         "Interpolation_Order": 0,
                         "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear",
                         "New_Property_Value": "InterventionStatus:VMMC",
@@ -2925,7 +2891,6 @@
                             "InterventionStatus:LinkingToPreART",
                             "InterventionStatus:ARTStaging"
                         ],
-                        "Event_Or_Config": "Event",
                         "Interpolation_Order": 0,
                         "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear",
                         "New_Property_Value": "InterventionStatus:VMMC",
@@ -2991,7 +2956,6 @@
                             "InterventionStatus:LinkingToPreART",
                             "InterventionStatus:ARTStaging"
                         ],
-                        "Event_Or_Config": "Event",
                         "Interpolation_Order": 0,
                         "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear",
                         "New_Property_Value": "InterventionStatus:VMMC",
@@ -3057,7 +3021,6 @@
                             "InterventionStatus:LinkingToPreART",
                             "InterventionStatus:ARTStaging"
                         ],
-                        "Event_Or_Config": "Event",
                         "Interpolation_Order": 0,
                         "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear",
                         "New_Property_Value": "InterventionStatus:VMMC",
@@ -3123,7 +3086,6 @@
                             "InterventionStatus:LinkingToPreART",
                             "InterventionStatus:ARTStaging"
                         ],
-                        "Event_Or_Config": "Event",
                         "Interpolation_Order": 0,
                         "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear",
                         "New_Property_Value": "InterventionStatus:VMMC",
@@ -3189,7 +3151,6 @@
                             "InterventionStatus:LinkingToPreART",
                             "InterventionStatus:ARTStaging"
                         ],
-                        "Event_Or_Config": "Event",
                         "Interpolation_Order": 0,
                         "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear",
                         "New_Property_Value": "InterventionStatus:VMMC",
@@ -3255,7 +3216,6 @@
                             "InterventionStatus:LinkingToPreART",
                             "InterventionStatus:ARTStaging"
                         ],
-                        "Event_Or_Config": "Event",
                         "Interpolation_Order": 0,
                         "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear",
                         "New_Property_Value": "InterventionStatus:VMMC",
@@ -3321,7 +3281,6 @@
                             "InterventionStatus:LinkingToPreART",
                             "InterventionStatus:ARTStaging"
                         ],
-                        "Event_Or_Config": "Event",
                         "Interpolation_Order": 0,
                         "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear",
                         "New_Property_Value": "InterventionStatus:VMMC",
@@ -3387,7 +3346,6 @@
                             "InterventionStatus:LinkingToPreART",
                             "InterventionStatus:ARTStaging"
                         ],
-                        "Event_Or_Config": "Event",
                         "Interpolation_Order": 0,
                         "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear",
                         "New_Property_Value": "InterventionStatus:VMMC",
@@ -3453,7 +3411,6 @@
                             "InterventionStatus:LinkingToPreART",
                             "InterventionStatus:ARTStaging"
                         ],
-                        "Event_Or_Config": "Event",
                         "Interpolation_Order": 0,
                         "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear",
                         "New_Property_Value": "InterventionStatus:VMMC",
@@ -3519,7 +3476,6 @@
                             "InterventionStatus:LinkingToPreART",
                             "InterventionStatus:ARTStaging"
                         ],
-                        "Event_Or_Config": "Event",
                         "Interpolation_Order": 0,
                         "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear",
                         "New_Property_Value": "InterventionStatus:VMMC",
@@ -3585,7 +3541,6 @@
                             "InterventionStatus:LinkingToPreART",
                             "InterventionStatus:ARTStaging"
                         ],
-                        "Event_Or_Config": "Event",
                         "Interpolation_Order": 0,
                         "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear",
                         "New_Property_Value": "InterventionStatus:VMMC",
@@ -3651,7 +3606,6 @@
                             "InterventionStatus:LinkingToPreART",
                             "InterventionStatus:ARTStaging"
                         ],
-                        "Event_Or_Config": "Event",
                         "Interpolation_Order": 0,
                         "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear",
                         "New_Property_Value": "InterventionStatus:VMMC",
@@ -3717,7 +3671,6 @@
                             "InterventionStatus:LinkingToPreART",
                             "InterventionStatus:ARTStaging"
                         ],
-                        "Event_Or_Config": "Event",
                         "Interpolation_Order": 0,
                         "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear",
                         "New_Property_Value": "InterventionStatus:VMMC",
@@ -3783,7 +3736,6 @@
                             "InterventionStatus:LinkingToPreART",
                             "InterventionStatus:ARTStaging"
                         ],
-                        "Event_Or_Config": "Event",
                         "Interpolation_Order": 0,
                         "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear",
                         "New_Property_Value": "InterventionStatus:VMMC",
@@ -3849,7 +3801,6 @@
                             "InterventionStatus:LinkingToPreART",
                             "InterventionStatus:ARTStaging"
                         ],
-                        "Event_Or_Config": "Event",
                         "Interpolation_Order": 0,
                         "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear",
                         "New_Property_Value": "InterventionStatus:VMMC",
@@ -3915,7 +3866,6 @@
                             "InterventionStatus:LinkingToPreART",
                             "InterventionStatus:ARTStaging"
                         ],
-                        "Event_Or_Config": "Event",
                         "Interpolation_Order": 0,
                         "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear",
                         "New_Property_Value": "InterventionStatus:VMMC",
@@ -3981,7 +3931,6 @@
                             "InterventionStatus:LinkingToPreART",
                             "InterventionStatus:ARTStaging"
                         ],
-                        "Event_Or_Config": "Event",
                         "Interpolation_Order": 0,
                         "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear",
                         "New_Property_Value": "InterventionStatus:VMMC",
@@ -4047,7 +3996,6 @@
                             "InterventionStatus:LinkingToPreART",
                             "InterventionStatus:ARTStaging"
                         ],
-                        "Event_Or_Config": "Event",
                         "Interpolation_Order": 0,
                         "Negative_Diagnosis_Event": "NoVMMCUptakeThisYear",
                         "New_Property_Value": "InterventionStatus:VMMC",

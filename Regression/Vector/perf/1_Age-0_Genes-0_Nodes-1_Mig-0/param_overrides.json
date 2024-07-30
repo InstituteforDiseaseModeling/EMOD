@@ -1,0 +1,11 @@
+{
+    "Default_Config_Path": "Vector/perf/default_config.json",
+    "parameters": {
+        "Config_Name": "1_Age-0_Genes-0_Nodes-1_Mig-0",
+        "Demographics_Filenames": [
+            "../Demographics_1.json"
+        ],
+        "Enable_Vector_Aging": 0,
+        "Python_Script_Path": "LOCAL"
+    }
+}

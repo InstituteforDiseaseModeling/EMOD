@@ -1,0 +1,189 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Intervention_Config": {
+                    "class": "OutbreakIndividualMalariaGenetics",
+                    "Create_Nucleotide_Sequence_From": "NUCLEOTIDE_SEQUENCE",
+                    "Barcode_String": "CCCCCC",
+                    "HRP_String": "A",
+                    "comment2": "this is HPR-positive outbreak",
+                    "comment": "A means HRP-positive, any other letter (CTG) is HRP-negative",
+                    "PfEMP1_Variants_Values": [
+                        201,
+                        202,
+                        203,
+                        204,
+                        205,
+                        206,
+                        207,
+                        208,
+                        209,
+                        210,
+                        211,
+                        212,
+                        213,
+                        214,
+                        215,
+                        216,
+                        217,
+                        218,
+                        219,
+                        220,
+                        221,
+                        222,
+                        223,
+                        224,
+                        225,
+                        226,
+                        227,
+                        228,
+                        229,
+                        230,
+                        231,
+                        232,
+                        233,
+                        234,
+                        235,
+                        236,
+                        237,
+                        238,
+                        239,
+                        240,
+                        241,
+                        242,
+                        243,
+                        244,
+                        245,
+                        246,
+                        247,
+                        248,
+                        249,
+                        250
+                    ],
+                    "MSP_Variant_Value": 3
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Individual_Selection_Type": "TARGET_NUM_INDIVIDUALS",
+                "Target_Num_Individuals": 300,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividualMalariaGenetics",
+                    "Create_Nucleotide_Sequence_From": "NUCLEOTIDE_SEQUENCE",
+                    "Barcode_String": "CCCCCC",
+                    "HRP_String": "C",
+                    "comment2": "this is HPR-negative outbreak",
+                    "comment": "A means HRP-positive, any other letter (CTG) is HRP-negative",
+                    "PfEMP1_Variants_Values": [
+                        201,
+                        202,
+                        203,
+                        204,
+                        205,
+                        206,
+                        207,
+                        208,
+                        209,
+                        210,
+                        211,
+                        212,
+                        213,
+                        214,
+                        215,
+                        216,
+                        217,
+                        218,
+                        219,
+                        220,
+                        221,
+                        222,
+                        223,
+                        224,
+                        225,
+                        226,
+                        227,
+                        228,
+                        229,
+                        230,
+                        231,
+                        232,
+                        233,
+                        234,
+                        235,
+                        236,
+                        237,
+                        238,
+                        239,
+                        240,
+                        241,
+                        242,
+                        243,
+                        244,
+                        245,
+                        246,
+                        247,
+                        248,
+                        249,
+                        250
+                    ],
+                    "MSP_Variant_Value": 3
+                }
+            }
+        },
+                {
+            "class": "CampaignEvent",
+            "Start_Day": 19,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Intervention_Config": {
+                        "class": "MalariaDiagnostic",
+                        "Cost_To_Consumer": 0, 
+                        "Diagnostic_Type": "BLOOD_SMEAR_PARASITES", 
+                        "Detection_Threshold": 0, 
+                        "Event_Or_Config": "Event", 
+                        "Positive_Diagnosis_Event": "BLOOD_SMEAR_PARASITES_FOUND"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 19,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Intervention_Config": {
+                        "class": "MalariaDiagnostic",
+                        "Cost_To_Consumer": 0, 
+                        "Diagnostic_Type": "PF_HRP2", 
+                        "Detection_Threshold": 0, 
+                        "Event_Or_Config": "Event", 
+                        "Positive_Diagnosis_Event":  "HRP2_FOUND"
+                }
+            }
+        }
+    ]
+}

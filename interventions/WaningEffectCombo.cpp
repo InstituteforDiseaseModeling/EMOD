@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
@@ -53,16 +45,17 @@ namespace Kernel
         // Temporary object created so we can 'operate' on json with the desired tools
         auto p_config = Configuration::CopyFromElement( (*inputJson)[ key ], inputJson->GetDataLocation() );
 
+        int i = 0;
         const auto& json_array = json_cast<const json::Array&>((*p_config));
         for( auto data = json_array.Begin(); data != json_array.End(); ++data )
         {
-            Configuration* p_object_config = Configuration::CopyFromElement( *data, inputJson->GetDataLocation() );
-
-            WaningConfig waning_config( p_object_config );
-            IWaningEffect* p_iwe = WaningEffectFactory::CreateInstance( waning_config );
+            std::stringstream param_name;
+            param_name << "WaningEffectCollection[" << i << "]";
+            IWaningEffect* p_iwe = WaningEffectFactory::getInstance()->CreateInstance( *data,
+                                                                                       inputJson->GetDataLocation(),
+                                                                                       param_name.str().c_str() );
             Add( p_iwe );
-
-            delete p_object_config;
+            ++i;
         }
         delete p_config;
     }

@@ -1,0 +1,23 @@
+{
+    "Reports": [
+        {
+            "Combine_Similar_Genomes": 0,
+            "Gender": "VECTOR_BOTH_GENDERS",
+            "Include_Vector_State_Columns": 1,
+            "Include_Death_By_State_Columns": 1,
+            "Species": "SillySkeeter",
+            "Stratify_By": "GENOME",
+            "class": "ReportVectorGenetics"
+        },
+        {
+            "Allele_Combinations_For_Stratification": [],
+            "Gender": "VECTOR_BOTH_GENDERS",
+            "Include_Vector_State_Columns": 0,
+            "Include_Death_By_State_Columns": 1,
+            "Species": "SillySkeeter",
+            "Stratify_By": "ALLELE_FREQ",
+            "class": "ReportVectorGenetics"
+        }
+    ],
+    "Use_Defaults": 1
+}

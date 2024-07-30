@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -39,76 +31,74 @@ namespace Kernel
         virtual int Release() override;
 
         // IBednetConsumer
-        virtual void UpdateProbabilityOfBlocking( float prob ) override;
-        virtual void UpdateProbabilityOfKilling( float prob ) override;
+        virtual void UpdateProbabilityOfBlocking( const GeneticProbability& prob ) override;
+        virtual void UpdateProbabilityOfKilling( const GeneticProbability& prob ) override;
 
         // IHousingModificationConsumer
-        virtual void ApplyHouseBlockingProbability( float prob ) override;
-        virtual void UpdateProbabilityOfScreenKilling( float prob ) override;
+        virtual void UpdateProbabilityOfHouseRepelling( const GeneticProbability& prob ) override;
+        virtual void UpdateProbabilityOfHouseKilling( const GeneticProbability& prob ) override;
 
         // IIndividualRepellentConsumer
-        virtual void UpdateProbabilityOfIndRepBlocking( float prob ) override;
-        virtual void UpdateProbabilityOfIndRepKilling( float prob ) override;
+        virtual void UpdateProbabilityOfIndRep( const GeneticProbability& prob ) override;
 
         // IVectorInterventionEffectsSetter
-        virtual void UpdatePhotonicFenceKillingRate( float rate ) override;
         virtual void UpdateArtificialDietAttractionRate( float rate ) override;
         virtual void UpdateArtificialDietKillingRate( float rate ) override;
-        virtual void UpdateInsecticidalDrugKillingProbability( float prob ) override;
+        virtual void UpdateInsecticidalDrugKillingProbability( const GeneticProbability& prob ) override;
 
         virtual void InfectiousLoopUpdate( float dt ) override; 
         virtual void Update( float dt ) override; // update non-infectious loop update interventions once per time step
 
         // IVectorInterventionEffects
-        virtual float GetDieBeforeFeeding() override;
-        virtual float GetHostNotAvailable() override;
-        virtual float GetDieDuringFeeding() override;
-        virtual float GetDiePostFeeding() override;
-        virtual float GetSuccessfulFeedHuman() override;
-        virtual float GetSuccessfulFeedAD() override;
-        virtual float GetOutdoorDieBeforeFeeding() override;
-        virtual float GetOutdoorHostNotAvailable() override;
-        virtual float GetOutdoorDieDuringFeeding() override;
-        virtual float GetOutdoorDiePostFeeding() override;
-        virtual float GetOutdoorSuccessfulFeedHuman() override;
-        virtual float GetblockIndoorVectorAcquire() override;
-        virtual float GetblockIndoorVectorTransmit() override;
-        virtual float GetblockOutdoorVectorAcquire() override;
-        virtual float GetblockOutdoorVectorTransmit() override;
+        virtual uint32_t GetHumanID() const override;
+        virtual const GeneticProbability& GetDieBeforeFeeding() override;
+        virtual const GeneticProbability& GetHostNotAvailable() override;
+        virtual const GeneticProbability& GetDieDuringFeeding() override;
+        virtual const GeneticProbability& GetDiePostFeeding() override;
+        virtual const GeneticProbability& GetSuccessfulFeedHuman() override;
+        virtual const GeneticProbability& GetSuccessfulFeedAD() override;
+        virtual float                     GetOutdoorDieBeforeFeeding() override;
+        virtual const GeneticProbability& GetOutdoorHostNotAvailable() override;
+        virtual const GeneticProbability& GetOutdoorDieDuringFeeding() override;
+        virtual const GeneticProbability& GetOutdoorDiePostFeeding() override;
+        virtual const GeneticProbability& GetOutdoorSuccessfulFeedHuman() override;
+        virtual const GeneticProbability& GetblockIndoorVectorAcquire() override;
+        virtual const GeneticProbability& GetblockIndoorVectorTransmit() override;
+        virtual const GeneticProbability& GetblockOutdoorVectorAcquire() override;
+        virtual const GeneticProbability& GetblockOutdoorVectorTransmit() override;
 
         // IBitingRisk
         virtual void UpdateRelativeBitingRate( float rate ) override;
 
     protected:
         // These are calculated from the values set by the interventions and returned to the model
-        float p_block_net;
-        float p_kill_ITN;
-        float p_penetrate_housingmod;
-        float p_kill_IRSprefeed;
-        float p_kill_IRSpostfeed;
-        float p_block_indrep;
-        float p_kill_indrep;
-        float p_kill_PFH;
-        float p_attraction_ADIH;
-        float p_kill_ADIH;
-        float p_survive_insecticidal_drug;
+        GeneticProbability p_block_net;
+        GeneticProbability p_kill_ITN;
+        GeneticProbability p_penetrate_housingmod;
+        float              p_kill_IRSprefeed;
+        bool               is_using_housingmod;
+        GeneticProbability p_survive_housingmod;
+        GeneticProbability p_indrep;
+        float              p_attraction_ADIH;
+        float              p_kill_ADIH;
+        GeneticProbability p_survive_insecticidal_drug;
 
         // These are set by interventions
-        float pDieBeforeFeeding;
-        float pHostNotAvailable;
-        float pDieDuringFeeding;
-        float pDiePostFeeding;
-        float pSuccessfulFeedHuman;
-        float pSuccessfulFeedAD;
-        float pOutdoorDieBeforeFeeding;
-        float pOutdoorHostNotAvailable;
-        float pOutdoorDieDuringFeeding;
-        float pOutdoorDiePostFeeding;
-        float pOutdoorSuccessfulFeedHuman;
-        float blockIndoorVectorAcquire;
-        float blockIndoorVectorTransmit;
-        float blockOutdoorVectorAcquire;
-        float blockOutdoorVectorTransmit;
+        GeneticProbability pDieBeforeFeeding;
+        GeneticProbability pHostNotAvailable;
+        GeneticProbability pDieDuringFeeding;
+        GeneticProbability pDiePostFeeding;
+        GeneticProbability pSuccessfulFeedHuman;
+        GeneticProbability pSuccessfulFeedAD;
+        float              pOutdoorDieBeforeFeeding;
+        GeneticProbability pOutdoorHostNotAvailable;
+        GeneticProbability pOutdoorDieDuringFeeding;
+        GeneticProbability pOutdoorDiePostFeeding;
+        GeneticProbability pOutdoorSuccessfulFeedHuman;
+        GeneticProbability blockIndoorVectorAcquire;
+        GeneticProbability blockIndoorVectorTransmit;
+        GeneticProbability blockOutdoorVectorAcquire;
+        GeneticProbability blockOutdoorVectorTransmit;
 
         DECLARE_SERIALIZABLE(VectorInterventionsContainer);
     };

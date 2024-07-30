@@ -1,0 +1,24 @@
+{
+    "Default_Config_Path": "../../defaults/malaria_genetics_default_config.json",
+    "DEMOGRAPHICS": {
+        "Demographics_Filenames": [
+            "Namawala_single_node_demographics.json",
+            "Namawala_no_prevalence.json"
+        ]
+    },
+    "PRIMARY": {
+        "Config_Name": "91_Malaria_FPG_8Markers",
+        "Geography": "Namawala",
+        "Run_Number": 1,
+        "Simulation_Duration": 730
+    },
+    "STRAIN_TRACKING": {
+        "Max_Individual_Infections": 100,
+        "Falciparum_MSP_Variants": 16,
+        "Falciparum_Nonspecific_Types": 16,
+        "Falciparum_PfEMP1_Variants": 500
+    },
+    "VECTOR": {
+        "x_Temporary_Larval_Habitat": 0.1
+    }
+}

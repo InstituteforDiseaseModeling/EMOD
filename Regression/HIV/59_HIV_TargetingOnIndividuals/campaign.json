@@ -1,0 +1,163 @@
+{
+    "Use_Defaults": 1,
+    "Comment": "See Campaign Cost for evidence of the individual Targeting_Config effect. As more vaccine repetitions occur, there are more individuals put on the vaccine, but the number of additional individuals given the vaccine tapers over time. This is evidence of the targeting logic narrowing down who gets vaccinated.",
+    "Events": [
+        {
+            "Description": "Circumcise all of the men so that they cannot acquire HIV",
+            
+            "class": "CampaignEvent",
+            "Start_Day": 100,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1.0,
+                "Target_Demographic": "ExplicitGender",
+                "Target_Gender": "Male",
+                "Intervention_Config": {
+                    "class": "MaleCircumcision",
+                    "Cost_To_Consumer": 1.0,
+                    "Circumcision_Reduced_Acquire": 1.0,
+                    ".Distributed_Event_Trigger" : "Reduced_Acquire_Lowest",
+                    "Apply_If_Higher_Reduced_Acquire" : 1
+                }
+            }
+        },
+        {
+            "Description": "Infect all women but they cannot infect the men",
+            
+            "class": "CampaignEvent",
+            "Start_Day": 110,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1.0,
+                "Target_Demographic": "ExplicitGender",
+                "Target_Gender": "Female",
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Incubation_Period_Override": 1,
+                    "Outbreak_Source": "PrevalenceIncrease"
+                }
+            }
+        },
+        {
+            "Description": "Test everyone so that we can look for people who have been tested",
+            
+            "class": "CampaignEvent",
+            "Start_Day": 120,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "HIVRapidHIVDiagnostic",
+                    "Cost_To_Consumer": 1.0,
+                    "Positive_Diagnosis_Event": "HasHIV",
+                    "Negative_Diagnosis_Event": "NoHIV"
+                }
+            }
+        },
+        {
+            "Description": "Give ART to all of them women BUT do it by check for people that have been tested to have HIV",
+            "NOTE": "ART has been modified so that we can stop the women from dying.",
+            
+            "class": "CampaignEvent",
+            "Start_Day": 130,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1.0,
+                "Targeting_Config" :
+                {
+                    "class" : "IsHivPositive",
+                    "Is_Equal_To" : 1,
+                    "And_Has_Ever_Been_Tested": "YES",
+                    "And_Has_Ever_Tested_Positive": "YES",
+                    "And_Has_Received_Positive_Results": "NA"
+                },
+                "Intervention_Config": {
+                    "class": "AntiretroviralTherapy",
+                    "Cost_To_Consumer" : 1,
+                    "ART_Multiplier_On_Transmission_Prob_Per_Act"             : 0.08,
+                    "ART_Is_Active_Against_Mortality_And_Transmission"        : 1,
+                    "Days_To_Achieve_Viral_Suppression"                       : 0.0,
+                    "ART_CD4_at_Initiation_Saturating_Reduction_in_Mortality" : 350.0,
+                    "ART_Survival_Baseline_Hazard_Weibull_Shape"              : 1.0,
+                    "ART_Survival_Baseline_Hazard_Weibull_Scale"              : 100000.0,
+                    "ART_Survival_Hazard_Ratio_Female"                        : 0.6775,
+                    "ART_Survival_Hazard_Ratio_Age_Over_40Yr"                 : 1.4309,
+                    "ART_Survival_WHO_Stage_Threshold_For_Cox"                : 3,
+                    "ART_Survival_Hazard_Ratio_WHO_Stage_3Plus"               : 2.7142,
+                    "ART_Survival_Hazard_Ratio_CD4_Slope"                     : -0.00758256281931556,
+                    "ART_Survival_Hazard_Ratio_CD4_Intercept"                 : 0.282851687024819,
+                    "ART_Survival_Hazard_Ratio_Body_Weight_Kg_Slope"          : -0.0731529900006081,
+                    "ART_Survival_Hazard_Ratio_Body_Weight_Kg_Intercept"      : 3.05043211490958
+                }
+            }
+        },
+        {
+            "Description1": "The point of this is to give the men a vaccine BUT we do it by targeting people who are",
+            "Description2": "HIV Negative, Not on PrEP, and have a partner that has been diagnosted to have HIV.",
+            
+            "class": "CampaignEvent",
+            "Start_Day": 140,
+            "Nodeset_Config": { "class": "NodeSetAll" }, 
+            "Event_Coordinator_Config": 
+            {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Number_Repetitions": -1,
+                "Timesteps_Between_Repetitions": 10,
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 0.2,
+                "Targeting_Config" :
+                {
+                    "class" : "TargetingLogic",
+                    "Logic":
+                    [
+                        [ 
+                            {
+                                "class" : "IsHivPositive",
+                                "Is_Equal_To" : 0,
+                                "And_Has_Ever_Been_Tested": "YES",
+                                "And_Has_Ever_Tested_Positive": "NO",
+                                "And_Has_Received_Positive_Results": "NA"
+                            },
+                            {
+                                "class" : "HasIntervention",
+                                "Intervention_Name" : "PrEP",
+                                "Is_Equal_To" : 0
+                            },
+                            {
+                                "class" : "HasRelationship",
+                                "Is_Equal_To": 1,
+                                "Of_Relationship_Type":  "NA",
+                                "That_Recently":  "NA",
+                                "Is_Using_Condoms":  "NA",
+                                "With_Partner_Who" : {
+                                    "class" : "IsHivPositive",
+                                    "Is_Equal_To" : 1,
+                                    "And_Has_Ever_Been_Tested": "YES",
+                                    "And_Has_Ever_Tested_Positive": "YES",
+                                    "And_Has_Received_Positive_Results": "NA"
+                                }                                        
+                            }
+                        ]
+                    ]
+                },
+                "Intervention_Config":
+                {
+                    "class": "SimpleVaccine",
+                    "Cost_To_Consumer" : 1,
+                    "Vaccine_Type" : "Generic",
+                    "Intervention_Name" : "PrEP",
+                    "Waning_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect" : 1
+                    }
+                }
+            }
+        }
+    ]
+}

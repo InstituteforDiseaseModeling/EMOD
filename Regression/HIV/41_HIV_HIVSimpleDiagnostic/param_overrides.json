@@ -11,7 +11,8 @@
         "Custom_Individual_Events": [
             "Tested_Negative_Because_No_Oubreak_Yet",
             "So_Far_So_Good",
-            "There_It_Is"
+            "There_It_Is",
+            "Should_Not_Boadcast_This"
         ],
         "Run_Number": 2,
         "Simulation_Duration": 50

@@ -1,4 +1,4 @@
-Time, NodeID, Gender, AgeYears, NumIndividuals, NumInfected
+Time,NodeID,Gender,AgeYears,NumIndividuals,NumInfected
 0,4,M,40,0,0
 0,4,M,80,0,0
 0,4,M,125,0,0

@@ -1,17 +1,9 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
 #include "IIndividualHumanContext.h"
 #include "Interventions.h"
-#include "IHIVInterventionsContainer.h"
+#include "HIVInterventionsContainer.h"
 #include "MalariaInterventionsContainerContexts.h"
 
 using namespace Kernel;
@@ -20,7 +12,8 @@ class IndividualHumanInterventionsContextFake : public IIndividualHumanIntervent
                                                 public IInterventionConsumer,
                                                 public IHIVMedicalHistory,
                                                 public IMalariaDrugEffectsApply,
-                                                public IMalariaDrugEffects
+                                                public IMalariaDrugEffects,
+                                                public IHIVDrugEffectsApply
 {
 public:
     IndividualHumanInterventionsContextFake()
@@ -36,6 +29,8 @@ public:
         , m_ReceivedTestResultForHIV(ReceivedTestResultsType::UNKNOWN)
         , m_WhoStage(0.0)
         , m_MalariaDrugEffects()
+        , m_InterventionsContainer( nullptr )
+        , m_InterventionsList()
     {
     }
     virtual ~IndividualHumanInterventionsContextFake() {}
@@ -58,7 +53,7 @@ public:
         throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented.");
     }
 
-    virtual std::list<IDistributableIntervention*> GetInterventionsByName(const std::string &intervention_name)
+    virtual std::list<IDistributableIntervention*> GetInterventionsByName(const InterventionName& intervention_name)
     { 
         throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented.");
     }
@@ -78,6 +73,11 @@ public:
         throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented.");
     }
 
+    virtual const std::vector<IDistributableIntervention*>& GetInterventions() const override
+    {
+        throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." );
+    }
+
     virtual void ChangeProperty( const char *property, const char* new_value ) override
     {
         if( m_Parent != nullptr )
@@ -87,11 +87,32 @@ public:
         }
     }
 
-    virtual bool ContainsExistingByName( const std::string &name )
+    uint32_t GetNumInterventions() const override
+    {
+        return 0;
+    }
+
+    uint32_t GetNumInterventionsAdded() override
+    {
+        return 0;
+    }
+
+    virtual bool ContainsExistingByName( const InterventionName& name ) override
+    {
+        for( auto p_iv : m_InterventionsList )
+        {
+            if( p_iv->GetName() == name )
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    virtual IPKeyValue& GetLastIPChange() const override
     {
         throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." );
     }
-
     virtual void CheckSTINetworkParams(const char *prop = nullptr, const char* new_value = nullptr) {}
 
     // ---------------------
@@ -100,14 +121,16 @@ public:
     virtual QueryResult QueryInterface(iid_t iid, void **ppvObject)
     {
         *ppvObject = nullptr ;
-        if ( iid == GET_IID(IInterventionConsumer)) 
+        if (iid == GET_IID(IInterventionConsumer))
             *ppvObject = static_cast<IInterventionConsumer*>(this);
-        else if ( iid == GET_IID(IHIVMedicalHistory)) 
+        else if (iid == GET_IID(IHIVMedicalHistory))
             *ppvObject = static_cast<IHIVMedicalHistory*>(this);
-        else if( iid == GET_IID( IMalariaDrugEffectsApply ) )
+        else if (iid == GET_IID(IMalariaDrugEffectsApply))
             *ppvObject = static_cast<IMalariaDrugEffectsApply*>(this);
-        else if( iid == GET_IID( IMalariaDrugEffects ) )
+        else if (iid == GET_IID(IMalariaDrugEffects))
             *ppvObject = static_cast<IMalariaDrugEffects*>(this);
+        else if (iid == GET_IID(IHIVDrugEffectsApply))
+            *ppvObject = static_cast<IHIVDrugEffectsApply*>(m_InterventionsContainer);
 
         if( *ppvObject != nullptr )
         {
@@ -131,6 +154,7 @@ public:
     // ------------------------------
     virtual bool GiveIntervention( IDistributableIntervention * pIV )
     {
+        m_InterventionsList.push_back( pIV );
         return true ;
     }
 
@@ -267,12 +291,30 @@ public:
         m_MalariaDrugEffects.erase( it );
     }
 
+    //IHIVDrugEffectsApply
+    virtual void ApplyDrugConcentrationAction(std::string, float current_concentration) {}
+    virtual void ApplyDrugVaccineReducedAcquireEffect(float rate) {}
+    virtual void ApplyDrugVaccineReducedTransmitEffect(float rate) {}
+    virtual void ApplyDrugInactivationRateEffect(float rate) {}
+    virtual void ApplyDrugClearanceRateEffect(float rate) {}
+    virtual void ApplyProbMaternalTransmissionModifier(const ProbabilityNumber &probReduction) {}
+    virtual void GoOnART(bool viralSupression,
+        float daysToAchieveSuppression,
+        float durationFromEnrollmentToArtAidsDeath,
+        float artMultiplierOnTransmissionProbPerAct) {}
+    virtual void GoOffART() {}
+
     // --------------------
     // --- Other Methods
     // --------------------
     bool HasDrugEffects() const
     {
         return (m_MalariaDrugEffects.size() > 0);
+    }
+
+    void SetInterventionsContainer(HIVInterventionsContainer* container)
+    {
+        m_InterventionsContainer = container;
     }
 
 private:
@@ -287,4 +329,6 @@ private:
     ReceivedTestResultsType::Enum m_ReceivedTestResultForHIV ;
     float m_WhoStage ;
     std::vector<IMalariaDrugEffects*> m_MalariaDrugEffects;
+    HIVInterventionsContainer* m_InterventionsContainer;
+    std::vector<IDistributableIntervention*> m_InterventionsList;
 };

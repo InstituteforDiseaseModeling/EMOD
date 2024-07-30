@@ -48,11 +48,9 @@
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Days_To_Diagnosis": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever"
                         ],
-                        "Event_Or_Config": "Event",
                         "Female_Multiplier": 1,
                         "Interpolation_Order": 1,
                         "Negative_Diagnosis_Event": "OnART5",

@@ -1,0 +1,22 @@
+{
+    "Reports": [
+        {
+            "class": "MalariaSurveyJSONAnalyzer",
+            "Filename_Suffix": "HRP2",
+            "Start_Day": 18,
+            "End_Day": 20,
+            "Node_IDs_Of_Interest": [],
+            "Min_Age_Years": 0.0,
+            "Max_Age_Years": 1000.0,
+            "Must_Have_IP_Key_Value": "",
+            "Must_Have_Intervention": "",
+            "Pretty_Format": 1,
+            "Event_Trigger_List": [
+                "EveryUpdate"
+            ],
+            "Max_Number_Reports": 15,
+            "Reporting_Interval": 1
+        }
+    ],
+    "Use_Defaults": 1
+}

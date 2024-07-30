@@ -1,0 +1,9 @@
+{
+    "Serialization_Mask_Node_Read": 0,
+    "Serialized_Population_Filenames": [
+        "testing/does_not_exist.dtk"
+    ],
+    "Serialized_Population_Path": ".",
+    "Serialized_Population_Reading_Type": "READ",
+    "Serialized_Population_Writing_Type": "NONE"
+}

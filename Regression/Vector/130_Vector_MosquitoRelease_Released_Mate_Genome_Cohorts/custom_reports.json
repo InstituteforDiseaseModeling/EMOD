@@ -1,0 +1,20 @@
+{
+	"Reports": [
+		{
+			"Include_Gestation_Columns": 1,
+			"Species_List": [
+				"SillySkeeter"
+			],
+			"Stratify_By_Species": 0,
+			"class": "ReportVectorStats"
+		},
+		{
+			"Gender": "VECTOR_BOTH_GENDERS",
+			"Species": "SillySkeeter",
+			"Stratify_By": "GENOME",
+			"Combine_Similar_Genomes": 1,
+			"class": "ReportVectorGenetics"
+		}
+	],
+	"Use_Defaults": 1
+}

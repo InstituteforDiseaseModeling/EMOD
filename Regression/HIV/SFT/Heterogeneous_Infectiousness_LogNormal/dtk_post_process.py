@@ -9,6 +9,7 @@ import numpy as np
 class Param_keys:
     LOGNORMAL_SCALE = "Heterogeneous_Infectiousness_LogNormal_Scale"
     BASE_INFECTIVITY = "Base_Infectivity"
+    SIMULATION_TIMESTEPS = "Simulation_Duration"
 
 matches = ["heterogeneity multiplier = ", "infectiousness from HIV = "]
 
@@ -33,16 +34,30 @@ def load_emod_parameters(config_filename="config.json", debug = False):
     param_obj = {}
     param_obj[Param_keys.LOGNORMAL_SCALE] = cdj[Param_keys.LOGNORMAL_SCALE]
     param_obj[Param_keys.BASE_INFECTIVITY] = cdj[Param_keys.BASE_INFECTIVITY]
+    param_obj[Param_keys.SIMULATION_TIMESTEPS] = cdj[Param_keys.SIMULATION_TIMESTEPS]
     if debug:
         print( param_obj )
     return param_obj
 
-def parse_output_file(output_filename="test.txt", debug=False):
+def parse_output_file(output_filename="test.txt", sim_timesteps=2, debug=False):
     """
     creates an object which contains the heterogeneity multiplier and infectiousness
     :param output_filename: file to parse (test.txt)
     :return:                output_obj:  heterogeneity multiplier and infectiousness for each infection
     """
+
+    update_match = "Update():"
+    found_last_timestep = False
+    while not found_last_timestep:
+        with open(output_filename) as timefile:
+            update_lines = []
+            for line in timefile:
+                if update_match in line:
+                    update_lines.append(line)
+            if len(update_lines) >= sim_timesteps:
+                found_last_timestep = True
+
+
     filtered_lines = []
     output_obj= {}
     for match in matches:
@@ -143,9 +158,11 @@ def application( output_folder="output", stdout_filename="test.txt",
         print( "report_name: " + report_name + "\n" )
         print( "debug: " + str(debug) + "\n" )
 
-    sft.wait_for_done()
+    # sft.wait_for_done()
     param_obj = load_emod_parameters(config_filename,debug)
-    output_obj = parse_output_file(stdout_filename, debug)
+    output_obj = parse_output_file(output_filename=stdout_filename,
+                                   sim_timesteps=param_obj[Param_keys.SIMULATION_TIMESTEPS],
+                                   debug=debug)
     multipliers = output_obj[matches[0]]
     infectiousness = output_obj[matches[1]]
 

@@ -1,0 +1,47 @@
+{
+    "parameters": {
+        "CAMPAIGNS": {
+            "Enable_Interventions": 0
+        },
+        "DEMOGRAPHICS": {
+            "Demographics_Filenames": [
+                "../../Input/Vector_single_node_demographics.json",
+                "../../Input/Demographics_Larval_Habitat_Overlay.spreadrisk.json"
+            ],
+            "x_Base_Population": 1e-05
+        },
+        "PRIMARY": {
+            "Config_Name": "Vector:SFT:EggMortality:Overcrowding_NaturalMortality",
+            "Simulation_Duration": 50
+        },
+        "STRAIN_TRACKING": {
+            "Number_Basestrains": 4
+        },
+        "VECTOR": {
+            "x_Temporary_Larval_Habitat": 0.001,
+            "EGGS": {
+                "Egg_Hatch_Delay_Distribution": "EXPONENTIAL_DISTRIBUTION",
+                "Egg_Hatch_Density_Dependence": "DENSITY_DEPENDENCE",
+                "Enable_Egg_Mortality": 1,
+                "Enable_Drought_Egg_Hatch_Delay": 1,
+                "Enable_Temperature_Dependent_Egg_Hatching": 1,
+                "Mean_Egg_Hatch_Delay": 3
+            },
+            "SPECIES": {
+                "Vector_Sampling_Type": "TRACK_ALL_VECTORS",
+                "Vector_Species_Params": [
+                    {
+                        "Name": "TestVector",
+                        "Temperature_Dependent_Feeding_Cycle": "ARRHENIUS_DEPENDENCE"
+                    }
+                ]
+            }
+        },
+        "LOGGING": {
+            "logLevel_VectorPopulation": "VALID",
+            "logLevel_VectorHabitat": "VALID"
+        }
+    },
+    "Default_Config_Path": "defaults/vector_science_default_config.json"
+}
+

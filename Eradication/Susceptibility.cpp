@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
@@ -150,8 +142,12 @@ namespace Kernel
         // Currently (May2018) implemented for maternal protection only, but other functionality is expected to follow.
         initConfig( "Susceptibility_Type", susceptibility_type, config, MetadataDescriptor::Enum("Susceptibility_Type", Susceptibility_Type_DESC_TEXT, MDD_ENUM_ARGS(SusceptibilityType)), "Enable_Maternal_Protection");
 
-        initConfigTypeMap( "Enable_Initial_Susceptibility_Distribution",   &enable_initial_susceptibility_distribution,     Enable_Initial_Susceptibility_Distribution_DESC_TEXT, false, "Enable_Immunity" );
-        initConfig( "Susceptibility_Initialization_Distribution_Type",     susceptibility_initialization_distribution_type, config, MetadataDescriptor::Enum("Susceptibility_Initialization_Distribution_Type", Susceptibility_Initialization_Distribution_Type_DESC_TEXT, MDD_ENUM_ARGS(DistributionType)), "Enable_Initial_Susceptibility_Distribution");
+        initConfigTypeMap( "Enable_Initial_Susceptibility_Distribution", &enable_initial_susceptibility_distribution, Enable_Initial_Susceptibility_Distribution_DESC_TEXT, false, "Enable_Immunity" );
+        initConfig( "Susceptibility_Initialization_Distribution_Type",
+                    susceptibility_initialization_distribution_type,
+                    config,
+                    MetadataDescriptor::Enum("Susceptibility_Initialization_Distribution_Type", Susceptibility_Initialization_Distribution_Type_DESC_TEXT, MDD_ENUM_ARGS(DistributionType)),
+                    "Enable_Initial_Susceptibility_Distribution");
 
         bool bRet = JsonConfigurable::Configure( config );
 

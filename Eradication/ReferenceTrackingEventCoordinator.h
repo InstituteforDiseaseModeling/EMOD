@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "StandardEventCoordinator.h"
 #include "InterpolatedValueMap.h"
@@ -25,16 +17,19 @@ namespace Kernel
         ReferenceTrackingEventCoordinator();
         virtual ~ReferenceTrackingEventCoordinator() { } 
 
+        virtual void SetContextTo(ISimulationEventContext *isec) override;
         virtual void Update(float dt) override;
-        virtual void preDistribute() override;
         virtual void CheckStartDay( float campaignStartDay ) const override;
 
     protected:
         virtual void InitializeRepetitions( const Configuration* inputJson ) override;
-        virtual bool TargetedIndividualIsCovered(IIndividualHumanEventContext *ihec) override;
+        virtual void preDistribute() override;
+        virtual void DistributeInterventionsToIndividuals( INodeEventContext* event_context ) override;
 
-        InterpolatedValueMap year2ValueMap;
-        float end_year;
-        std::vector< suids::suid_data_t > haves;
+        InterpolatedValueMap m_Year2ValueMap;
+        float m_EndYear;
+        float m_NumQualifiedWithout;
+        float m_NumQualifiedNeeding;
+        std::map<INodeEventContext*,std::vector<IIndividualHumanEventContext*>> m_QualifiedPeopleWithoutMap;
     };
 }

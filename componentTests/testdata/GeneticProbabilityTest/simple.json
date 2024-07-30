@@ -1,0 +1,17 @@
+{
+    "Genes" : [
+        {
+            "Alleles": [
+                {
+                    "Name": "a0",
+                    "Initial_Allele_Frequency": 0.5
+                },
+                {
+                    "Name": "a1",
+                    "Initial_Allele_Frequency": 0.5
+                }
+            ],
+            "Mutations": []
+        }
+    ]
+}

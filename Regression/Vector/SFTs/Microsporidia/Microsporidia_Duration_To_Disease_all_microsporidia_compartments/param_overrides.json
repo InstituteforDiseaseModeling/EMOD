@@ -1,0 +1,84 @@
+{
+    "parameters": {
+        "CAMPAIGNS": {
+            "Enable_Interventions": 1
+        },
+        "DEMOGRAPHICS": {
+            "Demographics_Filenames": [
+                "../../Input/Vector_single_node_demographics.json",
+                "../../Input/0_vectors_overlay.spreadrisk.json"
+            ]
+        },
+        "PRIMARY": {
+            "Config_Name": "Vector:SFT:Microsporidia:Duration_To_Disease_all_microsporidia_compartments",
+            "Simulation_Duration": 100,
+            "Infectious_Period_Distribution": "EXPONENTIAL_DISTRIBUTION",
+            "Infectious_Period_Exponential": 180
+        },
+        "VECTOR": {
+            "Vector_Sampling_Type": "VECTOR_COMPARTMENTS_NUMBER",
+            ".Vector_Sampling_Type": "TRACK_ALL_VECTORS",
+            "Egg_Hatch_Delay_Distribution": "NO_DELAY",
+            "Egg_Hatch_Density_Dependence": "NO_DENSITY_DEPENDENCE",
+            "Custom_Reports_Filename": "custom_reports.json",
+            "Enable_Vector_Aging": 0,
+            "x_Temporary_Larval_Habitat": 0.1,
+            "Enable_Initial_Prevalence": 1,
+            "SPECIES": {
+                "Vector_Species_Params": [
+                    {
+                        "Name": "TestVector",
+                        "Adult_Life_Expectancy": 50,
+                        "Male_Life_Expectancy": 50,
+                        "Days_Between_Feeds": 2,
+                        "Egg_Batch_Size": 100,
+                        "Microsporidia": [
+                            {
+                                "Strain_Name":  "Strain_A",
+                                "Female_Mortality_Modifier": 1,
+                                "Female_To_Egg_Transmission_Probability": 1,
+                                "Male_To_Egg_Transmission_Probability": 0,
+                                "Female_To_Male_Transmission_Probability": 1,
+                                "Larval_Growth_Modifier": 1,
+                                "Male_Mortality_Modifier": 1,
+                                "Male_To_Female_Transmission_Probability": 1,
+                                "Duration_To_Disease_Acquisition_Modification": {
+                                    "Times": [
+                                        0,
+                                        9
+                                    ],
+                                    "Values": [
+                                        1.0,
+                                        0
+                                    ]
+                                },
+                                "Duration_To_Disease_Transmission_Modification": {
+                                    "Times": [
+                                        0
+                                    ],
+                                    "Values": [
+                                        1.0
+                                    ]
+                                }
+                            }
+                        ],
+                        "Anthropophily": 1,
+                        "Indoor_Feeding_Fraction": 1,
+                        "Acquire_Modifier": 1,
+                        "Habitats": [
+                            {
+                                "Habitat_Type": "TEMPORARY_RAINFALL",
+                                "Max_Larval_Capacity": 1250000000.0
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        "LOGGING": {
+            "logLevel_VectorPopulation": "VALID",
+            "logLevel_VectorPopulationIndividual": "VALID"
+        },
+        "Default_Config_Path": "defaults/vector_science_default_config.json"
+    }
+}

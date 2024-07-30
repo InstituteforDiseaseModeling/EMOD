@@ -1,16 +1,8 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
 #include "IndividualMalaria.h"
-#include "NodeVector.h"
+#include "INodeContext.h"
 #include "SusceptibilityMalaria.h"
 #include "InfectionMalaria.h"
 #include "Debug.h"
@@ -20,10 +12,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "MalariaInterventionsContainer.h"
 #include "SimulationConfig.h"
 #include "MathFunctions.h"
-#include "GenomeMarkers.h"
-#include "MalariaParameters.h"
 #include "EventTrigger.h"
 #include "Vector.h"
+#include "ReportUtilitiesMalaria.h" // NASBADensityWithUncertainty() in MakeDiagnosticMeasurement()
 #include "RANDOM.h"
 #include "Exceptions.h"
 
@@ -38,11 +29,11 @@ namespace Kernel
     GET_SCHEMA_STATIC_WRAPPER_IMPL(Malaria.Individual,IndividualHumanMalariaConfig)
 
     // ----------------- IndividualHumanMalariaConfig ---------------
-    MalariaModel::Enum    IndividualHumanMalariaConfig::malaria_model                     = MalariaModel::MALARIA_MECHANISTIC_MODEL;
     float                 IndividualHumanMalariaConfig::mean_sporozoites_per_bite         = 0.0f;
     float                 IndividualHumanMalariaConfig::base_sporozoite_survival_fraction = 0.0f;
     float                 IndividualHumanMalariaConfig::antibody_csp_killing_threshold    = 0.0f;
     float                 IndividualHumanMalariaConfig::antibody_csp_killing_invwidth     = 0.0f;
+    std::vector<float>    IndividualHumanMalariaConfig::measurement_sensitivity;
 
     BEGIN_QUERY_INTERFACE_BODY(IndividualHumanMalariaConfig)
     END_QUERY_INTERFACE_BODY(IndividualHumanMalariaConfig)
@@ -52,21 +43,29 @@ namespace Kernel
         LOG_DEBUG( "Configure\n" );
         IndividualHumanConfig::enable_immunity = true;
 
-        initConfig( "Malaria_Model", malaria_model, config, MetadataDescriptor::Enum("malaria_model", Malaria_Model_DESC_TEXT, MDD_ENUM_ARGS(MalariaModel)) );
-        
-        if (malaria_model != MalariaModel::MALARIA_MECHANISTIC_MODEL)
-        {
-            std::ostringstream errMsg;
-            errMsg << "Malaria model " << malaria_model << " not yet implemented.";
-            throw NotYetImplementedException(  __FILE__, __LINE__, __FUNCTION__, errMsg.str().c_str() );
-        }
-
         initConfigTypeMap( "Mean_Sporozoites_Per_Bite",          &mean_sporozoites_per_bite,         Mean_Sporozoites_Per_Bite_DESC_TEXT,          0.0f,  1000.0f, DEFAULT_SPOROZOITES_PER_BITE );
         initConfigTypeMap( "Base_Sporozoite_Survival_Fraction",  &base_sporozoite_survival_fraction, Base_Sporozoite_Survival_Fraction_DESC_TEXT,  0.0f,  1.0f,    DEFAULT_SPOROZOITE_SURVIVAL_FRACTION );
         initConfigTypeMap( "Antibody_CSP_Killing_Threshold",     &antibody_csp_killing_threshold,    Antibody_CSP_Killing_Threshold_DESC_TEXT,     1e-6f, 1e6f,    DEFAULT_ANTIBODY_CSP_KILLING_THRESHOLD );
         initConfigTypeMap( "Antibody_CSP_Killing_Inverse_Width", &antibody_csp_killing_invwidth,     Antibody_CSP_Killing_Inverse_Width_DESC_TEXT, 1e-6f, 1e6f,    DEFAULT_ANTIBODY_CSP_KILLING_INVWIDTH );
 
-        return JsonConfigurable::Configure( config );
+        float parasiteSmearSensitivity = 0.1f;
+        float gametocyteSmearSensitivity = 0.1f;
+        initConfigTypeMap( "Report_Parasite_Smear_Sensitivity",   &(parasiteSmearSensitivity),   Report_Parasite_Smear_Sensitivity_DESC_TEXT,   0.0001f, 100.0f, 0.1f );
+        initConfigTypeMap( "Report_Gametocyte_Smear_Sensitivity", &(gametocyteSmearSensitivity), Report_Gametocyte_Smear_Sensitivity_DESC_TEXT, 0.0001f, 100.0f, 0.1f );
+
+        bool ret = JsonConfigurable::Configure( config );
+        if( ret && !JsonConfigurable::_dryrun )
+        {
+            measurement_sensitivity.push_back( parasiteSmearSensitivity   );
+            measurement_sensitivity.push_back( gametocyteSmearSensitivity );
+            measurement_sensitivity.push_back( 1.0 );
+            measurement_sensitivity.push_back( 1.0 );
+            measurement_sensitivity.push_back( 1.0 );
+            measurement_sensitivity.push_back( 1.0 );
+            measurement_sensitivity.push_back( 1.0 );
+            release_assert( measurement_sensitivity.size() == MalariaDiagnosticType::pairs::count() );
+        }
+        return ret;
     }
 
     void IndividualHumanMalaria::InitializeStaticsMalaria( const Configuration * config )
@@ -88,35 +87,37 @@ namespace Kernel
     IndividualHumanMalaria::IndividualHumanMalaria(suids::suid _suid, double monte_carlo_weight, double initial_age, int gender)
     : IndividualHumanVector(_suid, monte_carlo_weight, initial_age, gender)
     , malaria_susceptibility(nullptr)
-    , m_inv_microliters_blood(INV_MICROLITERS_BLOOD_ADULT)
     , m_male_gametocytes(0)
     , m_female_gametocytes(0)
     , m_female_gametocytes_by_strain()
-    , m_parasites_detected_by_blood_smear(0.0)
-    , m_parasites_detected_by_new_diagnostic(0.0)
     , m_gametocytes_detected(0.0)
-    //, m_clinical_symptoms()
-    , m_CSP_antibody(nullptr)
+    //, m_clinical_symptoms_new()
+    //, m_clinical_symptoms_continuing()
     , m_initial_infected_hepatocytes(0)
+    , m_DiagnosticMeasurement()
+    , m_CSP_antibody( nullptr )
+    , m_MaxedInfDuration(0.0f)
     {
         ResetClinicalSymptoms();
+        m_DiagnosticMeasurement.resize( MalariaDiagnosticType::pairs::count(), 0.0 );
     }
 
     IndividualHumanMalaria::IndividualHumanMalaria(INodeContext *context)
     : IndividualHumanVector(context)
     , malaria_susceptibility(nullptr)
-    , m_inv_microliters_blood(INV_MICROLITERS_BLOOD_ADULT)
     , m_male_gametocytes(0)
     , m_female_gametocytes(0)
     , m_female_gametocytes_by_strain()
-    , m_parasites_detected_by_blood_smear(0.0)
-    , m_parasites_detected_by_new_diagnostic(0.0)
     , m_gametocytes_detected(0.0)
-    //, m_clinical_symptoms()
-    , m_CSP_antibody(nullptr)
+    //, m_clinical_symptoms_new()
+    //, m_clinical_symptoms_continuing()
     , m_initial_infected_hepatocytes(0)
+    , m_DiagnosticMeasurement()
+    , m_CSP_antibody( nullptr )
+    , m_MaxedInfDuration( 0.0f )
     {
         ResetClinicalSymptoms();
+        m_DiagnosticMeasurement.resize( MalariaDiagnosticType::pairs::count(), 0.0 );
     }
 
     IndividualHumanMalaria *IndividualHumanMalaria::CreateHuman(INodeContext *context, suids::suid id, double weight, double initial_age, int gender)
@@ -191,8 +192,7 @@ namespace Kernel
         }
     }
 
-
-    IInfection* IndividualHumanMalaria::createInfection(suids::suid _suid)
+    int IndividualHumanMalaria::GetInitialHepatocytes()
     {
         // If m_initial_infected_hepatocytes=0, this function is being called from initial infections at t=0 or an Outbreak intervention.
         // In that case, default to the mean number of infected hepatocytes.
@@ -209,16 +209,30 @@ namespace Kernel
         // Reset initial infected hepatocyte variable for next time steps
         m_initial_infected_hepatocytes = 0;
 
+        return initial_hepatocytes;
+    }
+
+    IInfection* IndividualHumanMalaria::createInfection(suids::suid _suid)
+    {
+        int initial_hepatocytes = GetInitialHepatocytes();
+
         return InfectionMalaria::CreateInfection(dynamic_cast<IIndividualHumanContext*>(this), _suid, initial_hepatocytes);
     }
 
 
     void IndividualHumanMalaria::ExposeToInfectivity(float dt, TransmissionGroupMembership_t transmissionGroupMembership)
     {
+        INodeVector* p_node_vector = nullptr;
+        if ( s_OK != parent->QueryInterface(GET_IID(INodeVector), (void**)&p_node_vector) )
+        {
+            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "INodeVector", "INodeContext" );
+        }
+
         // Here we track exposure in the antibody_capacity to CSP.  This is not used at the moment to reduce bite probability of success, but it could in the future as knowledge improves
 
         // Is there any exposure at all from mosquitoes?
-        double infectivity = parent->GetTotalContagion();
+        double infectivity = p_node_vector->GetTotalContagionGP( TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_INDOOR  ).GetSum()
+                           + p_node_vector->GetTotalContagionGP( TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_OUTDOOR ).GetSum();
 
         // If so, mark its presence and provide a slow increase in antibodies to CSP over time and exposure.
         // This is just a proxy for exposure with an approximately 3-year time constant.
@@ -237,31 +251,16 @@ namespace Kernel
         IndividualHumanVector::ExposeToInfectivity( dt, dummy );
     }
 
-    void IndividualHumanMalaria::ApplyTotalBitingExposure()
+    bool IndividualHumanMalaria::DidReceiveInfectiousBite()
     {
-        // Unlike for vector sims, don't do the draw on probability of *any* infectious bites, i.e. EXPCDF(-m_total_exposure)
-        // We will instead do a Poisson draw on how many infectious bites, with the equivalent behavior for zero bites.
-        // Downstream (in createInfection), we will use the number of infected hepatocytes to initialize new infections.
-
         // First calculate number of infectious bites
-        int n_infectious_bites = CalculateInfectiousBites();
-        if ( n_infectious_bites == 0 ) return;
+        // Downstream (in createInfection), we will use the number of infected hepatocytes to initialize new infections.
+        bool was_bit = IndividualHumanVector::DidReceiveInfectiousBite();
 
         // Then do sporozoite challenge (caching inital infected hepatocyte count for createInfection)
-        if ( ChallengeWithBites( n_infectious_bites ) )
-        {
-            // If there is a non-zero number of initial infected hepatocytes,
-            // choose a strain based on a weighted draw over values from all vector-to-human pools and acquire infection
-            float strain_cdf_draw = GetRng()->e() * m_total_exposure;
-            std::vector<strain_exposure_t>::iterator it = std::lower_bound( m_strain_exposure.begin(), m_strain_exposure.end(), strain_cdf_draw, compare_strain_exposure_float_less()); 
-            IStrainIdentity * pSI = &(it->first);
-            AcquireNewInfection( pSI );
-        }
-    }
+        bool was_infected = was_bit && ChallengeWithBites( m_num_infectious_bites );
 
-    int IndividualHumanMalaria::CalculateInfectiousBites()
-    {
-        return GetRng()->Poisson( m_total_exposure );
+        return was_infected;
     }
 
     bool IndividualHumanMalaria::ChallengeWithBites( int n_infectious_bites )
@@ -285,45 +284,71 @@ namespace Kernel
         if ( anti_csp_concentration > 0 )
         {
             // TODO: is this an adequate functional form?
-            sporozoite_survival_prob *= ( 1.0f - Sigmoid::variableWidthSigmoid( log10(anti_csp_concentration), log10(IndividualHumanMalariaConfig::antibody_csp_killing_threshold), IndividualHumanMalariaConfig::antibody_csp_killing_invwidth ) ); 
+            sporozoite_survival_prob *= ( 1.0f - Sigmoid::variableWidthSigmoid( log10(anti_csp_concentration),
+                                                                                log10(IndividualHumanMalariaConfig::antibody_csp_killing_threshold),
+                                                                                IndividualHumanMalariaConfig::antibody_csp_killing_invwidth ) ); 
         }
 
         m_initial_infected_hepatocytes = GetRng()->Poisson( n_sporozoites * sporozoite_survival_prob );
         return ( m_initial_infected_hepatocytes > 0 ) ? true : false;
     }
 
+    void IndividualHumanMalaria::Update( float currenttime, float dt )
+    {
+        if( HasMaxInfections() )
+        {
+            m_MaxedInfDuration += dt;
+        }
+
+        IndividualHumanVector::Update( currenttime, dt );
+
+        // ---------------------------------------------------------
+        // --- Make diagnostic measurements to be used by reports
+        // --- We make them once so all reports use the same values
+        // ---------------------------------------------------------
+        CalculateDiagnosticMeasurementsForReports();
+
+        if( !HasMaxInfections() )
+        {
+            m_MaxedInfDuration = 0.0;
+        }
+    }
+
+    void IndividualHumanMalaria::ReportInfectionState()
+    {
+        IndividualHumanVector::ReportInfectionState();
+        broadcaster->TriggerObservers( GetEventContext(), EventTrigger::NewMalariaInfectionObject );
+    }
+
     void IndividualHumanMalaria::UpdateInfectiousness(float dt)
     {
-        if (dt > 0) // N.B. the old pattern where dt=0 was for retrieval has been superceded by GetInfectiousness.  at t=0, though, UpdateInfectivity is called with dt=0.
-        {
-            UpdateGametocyteCounts(dt);
-            infectiousness = 0;
-        }
-        if (m_female_gametocytes <= 0)
-        {
-            // this individual has no gametocytes and is not infectious.
-            infectiousness = 0;
-        }
-        else
-        {
-            // infectiousness calculated based on total gametocytes
-            // contagion deposited by outcrossing of strains proportional to relative concentrations
-            DepositInfectiousnessFromGametocytes();
-        }
+        UpdateGametocyteCounts(dt);
+
+        // infectiousness calculated based on total gametocytes
+        infectiousness = CalculateInfectiousness();
+
+        // contagion deposited by outcrossing of strains proportional to relative concentrations
+        DepositInfectiousnessFromGametocytes();
     }
 
     void IndividualHumanMalaria::UpdateGametocyteCounts(float dt)
     {
+        m_male_gametocytes = 0;
+        m_female_gametocytes = 0;
+        m_female_gametocytes_by_strain.clear();
+
+        if( dt == 0 )
+        {
+            // during initialization, this method can be called with dt = 0
+            return;
+        }
+
         // Check for mature gametocyte drug killing
         IMalariaDrugEffects* imde = nullptr;
         if (s_OK != GetInterventionsContext()->QueryInterface(GET_IID(IMalariaDrugEffects), (void **)&imde))
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "GetInterventionsContext()", "IMalariaDrugEffects", "IIndividualHumanInterventionsContext" );
         }
-
-        m_male_gametocytes = 0;
-        m_female_gametocytes = 0;
-        m_female_gametocytes_by_strain.clear();
 
         // Loop over infections and add newly matured male and female gametocytes by strain
         for (auto infection : infections)
@@ -342,9 +367,8 @@ namespace Kernel
 
             // Decay half-life--Sinden, R. E., G. A. Butcher, et al. (1996). "Regulation of Infectivity of Plasmodium to the Mosquito Vector." Advances in Parasitology 38: 53-117.
             // Smalley, M. E. and R. E. Sinden (1977). "Plasmodium falciparum gametocytes: their longevity and infectivity." Parasitology 74(01): 1-8.
-            StrainIdentity strain;
-            infection->GetInfectiousStrainID( &strain );
-            float drugGametocyteKill = imde->get_drug_gametocyteM( strain );
+            const IStrainIdentity& r_strain_id = infection->GetInfectiousStrainID();
+            float drugGametocyteKill = imde->get_drug_gametocyteM( r_strain_id );
             double pkill = EXPCDF( -dt * (0.277 + drugGametocyteKill) ); // half-life of 2.5 days corresponds to a decay time constant of 3.6 days, 0.277 = 1/3.6
 
             // apply kill probability to mature gametocytes, including effect of gametocytocidal drugs
@@ -353,51 +377,86 @@ namespace Kernel
             // No mature gametocytes
             if ( (tmp_male_gametocytes == 0) && (tmp_female_gametocytes == 0) ) continue;
 
-            // Add new gametocytes to those carried over (and not killed) from the previous time steps
-            StrainIdentity tmp_strainIDs;
-            infection->GetInfectiousStrainID( &tmp_strainIDs );
+            StoreGametocyteCounts( r_strain_id, tmp_female_gametocytes, tmp_male_gametocytes );
 
-            m_female_gametocytes_by_strain[tmp_strainIDs] += tmp_female_gametocytes;
             m_female_gametocytes += tmp_female_gametocytes;
-
             m_male_gametocytes += tmp_male_gametocytes;
         }
     }
 
-    void IndividualHumanMalaria::DepositInfectiousnessFromGametocytes()
+    void IndividualHumanMalaria::StoreGametocyteCounts( const IStrainIdentity& rStrain,
+                                                        int64_t femaleMatureGametocytes,
+                                                        int64_t maleMatureGametocytes )
     {
-        release_assert( malaria_susceptibility );
-        m_inv_microliters_blood = malaria_susceptibility->get_inv_microliters_blood();
+        // !!! DanB - I don't think the comment below applies anymore because this map is cleared each time step !!!
+        // Add new gametocytes to those carried over (and not killed) from the previous time steps
 
-        // Now add a factor to limit inactivation of gametocytes by inflammatory cytokines
-        // Important for slope of infectivity v. gametocyte counts
-        double fever_effect = malaria_susceptibility->get_cytokines();
-        fever_effect = Sigmoid::basic_sigmoid(SusceptibilityMalariaConfig::cytokine_gametocyte_inactivation, float(fever_effect));
-        // fever_effect*=0.95;
+        if( femaleMatureGametocytes > 0 )
+        {
+            StrainIdentity tmp_strainIDs;
+            tmp_strainIDs.SetAntigenID( rStrain.GetAntigenID() );
+            tmp_strainIDs.SetGeneticID( rStrain.GetGeneticID() );
+            m_female_gametocytes_by_strain[ tmp_strainIDs ] += femaleMatureGametocytes;
+        }
+    }
 
-        // Infectivity is reviewed by Sinden, R. E., G. A. Butcher, et al. (1996). "Regulation of Infectivity of Plasmodium to the Mosquito Vector." Advances in Parasitology 38: 53-117.
-        // model based on data from Jeffery, G. M. and D. E. Eyles (1955). "Infectivity to Mosquitoes of Plasmodium Falciparum as Related to Gametocyte Density and Duration of Infection." Am J Trop Med Hyg 4(5): 781-789.
-        // and Schneider, P., J. T. Bousema, et al. (2007). "Submicroscopic Plasmodium falciparum gametocyte densities frequently result in mosquito infection." Am J Trop Med Hyg 76(3): 470-474.
-        // 2 due to bloodmeal and other factor due to conservative estimate for macrogametocyte ookinete transition, can be a higher reduction due to immune response
-        // that factor also includes effect of successful fertilization with male gametocytes
-        infectiousness = float(EXPCDF(-double(m_female_gametocytes) * m_inv_microliters_blood * MICROLITERS_PER_BLOODMEAL * SusceptibilityMalariaConfig::base_gametocyte_mosquito_survival * (1.0 - fever_effect))); //temp function, see vector_parameter_scratch.xlsx
+    float IndividualHumanMalaria::CalculateInfectiousness() const
+    {
+        float tmp_infectiousness = 0.0;
+        if( m_female_gametocytes > 0 )
+        {
+            release_assert( malaria_susceptibility );
+            float inv_microliters_blood = malaria_susceptibility->get_inv_microliters_blood();
 
-        LOG_DEBUG_F("Gametocytes: %lld (male) %lld (female).  Infectiousness=%0.2g\n", m_male_gametocytes, m_female_gametocytes, infectiousness);
+            // Now add a factor to limit inactivation of gametocytes by inflammatory cytokines
+            // Important for slope of infectivity v. gametocyte counts
+            double fever_effect = malaria_susceptibility->get_cytokines();
+            fever_effect = Sigmoid::basic_sigmoid( SusceptibilityMalariaConfig::cytokine_gametocyte_inactivation, float( fever_effect ) );
+            // fever_effect*=0.95;
 
-        // Effects of transmission-reducing immunity.  N.B. interventions on vector success are not here, since they depend on vector-population-specific behavior
-        float modtransmit = susceptibility->getModTransmit() * interventions->GetInterventionReducedTransmit();
-        infectiousness *= modtransmit;
+            // Infectivity is reviewed by Sinden, R. E., G. A. Butcher, et al. (1996). "Regulation of Infectivity of Plasmodium to the Mosquito Vector." Advances in Parasitology 38: 53-117.
+            // model based on data from Jeffery, G. M. and D. E. Eyles (1955). "Infectivity to Mosquitoes of Plasmodium Falciparum as Related to Gametocyte Density and Duration of Infection." Am J Trop Med Hyg 4(5): 781-789.
+            // and Schneider, P., J. T. Bousema, et al. (2007). "Submicroscopic Plasmodium falciparum gametocyte densities frequently result in mosquito infection." Am J Trop Med Hyg 76(3): 470-474.
+            // 2 due to bloodmeal and other factor due to conservative estimate for macrogametocyte ookinete transition, can be a higher reduction due to immune response
+            // that factor also includes effect of successful fertilization with male gametocytes
+            tmp_infectiousness = float( EXPCDF( -double( m_female_gametocytes ) 
+                                                * inv_microliters_blood * MICROLITERS_PER_BLOODMEAL
+                                                * SusceptibilityMalariaConfig::base_gametocyte_mosquito_survival
+                                                * (1.0 - fever_effect) ) ); //temp function, see vector_parameter_scratch.xlsx
 
+            LOG_DEBUG_F( "Gametocytes: %lld (male) %lld (female).  Infectiousness=%0.2g\n", m_male_gametocytes, m_female_gametocytes, infectiousness );
+
+            // Effects of transmission-reducing immunity.  N.B. interventions on vector success are not here, since they depend on vector-population-specific behavior
+            float modtransmit = susceptibility->getModTransmit() * interventions->GetInterventionReducedTransmit();
+            tmp_infectiousness *= modtransmit;
+        }
+        return tmp_infectiousness;
+    }
+
+    float IndividualHumanMalaria::GetWeightedInfectiousness()
+    {
         // Host weight is the product of MC weighting and relative biting
         float host_vector_weight = float(GetMonteCarloWeight() * GetRelativeBitingRate());
         float weighted_infectiousnesss = host_vector_weight * infectiousness;
 
+        return weighted_infectiousnesss;
+    }
+
+    uint32_t FromOutcrossing( RANDOMBASE* pRNG, uint32_t id1, uint32_t id2 )
+    {
+        uint32_t mask = pRNG->ul();
+
+        uint32_t child_strain = (id1 & mask) | (id2 & ~mask);
+        LOG_DEBUG_F( "%d + %d with mask=%d --> %d\n", id1, id2, mask, child_strain );
+        return child_strain;
+    }
+
+    void IndividualHumanMalaria::DepositInfectiousnessFromGametocytes()
+    {
+        float weighted_infectiousnesss = GetWeightedInfectiousness();
+
         // Effects from vector intervention container
-        IVectorInterventionsEffects* ivie = nullptr;
-        if ( s_OK !=  interventions->QueryInterface(GET_IID(IVectorInterventionsEffects), (void**)&ivie) )
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "interventions", "IVectorInterventionsEffects", "IndividualHumanVector" );
-        }
+        IVectorInterventionsEffects* ivie = GetVectorInterventionEffects();
 
         // Here we deposit human-to-vector infectiousness based on proportional outcrossing of strain IDs
         gametocytes_strain_map_t::const_iterator gc1,gc2,end=m_female_gametocytes_by_strain.end();
@@ -423,7 +482,7 @@ namespace Kernel
                 if ( geneticID != gc2->first.GetGeneticID() ) 
                 {
                     // One outcrossing realization if genetic IDs are different
-                    geneticID = GenomeMarkers::FromOutcrossing( GetRng(), geneticID, gc2->first.GetGeneticID() );
+                    geneticID = FromOutcrossing( GetRng(), geneticID, gc2->first.GetGeneticID() );
                     LOG_DEBUG_F("Crossing geneticID %d + %d --> %d\n", gc1->first.GetGeneticID(), gc2->first.GetGeneticID(), geneticID);
                 }
 
@@ -446,14 +505,23 @@ namespace Kernel
 
     void IndividualHumanMalaria::DepositFractionalContagionByStrain(float weight, IVectorInterventionsEffects* ivie, float antigenID, float geneticID)
     {
-        StrainIdentity id = StrainIdentity(antigenID, geneticID);
-        parent->DepositFromIndividual( id, weight*ivie->GetblockIndoorVectorTransmit(),  NodeVector::human_indoor,  TransmissionRoute::TRANSMISSIONROUTE_HUMAN_TO_VECTOR_INDOOR );
-        parent->DepositFromIndividual( id, weight*ivie->GetblockOutdoorVectorTransmit(), NodeVector::human_outdoor, TransmissionRoute::TRANSMISSIONROUTE_HUMAN_TO_VECTOR_OUTDOOR );
+        INodeVector* p_node_vector = nullptr;
+        if ( s_OK != parent->QueryInterface(GET_IID(INodeVector), (void**)&p_node_vector) )
+        {
+            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "INodeVector", "INodeContext" );
+        }
+
+        StrainIdentity id;
+        id.SetAntigenID( antigenID );
+        id.SetGeneticID( geneticID );
+        p_node_vector->DepositFromIndividual( id, ivie->GetblockIndoorVectorTransmit() *weight, TransmissionRoute::TRANSMISSIONROUTE_HUMAN_TO_VECTOR_INDOOR );
+        p_node_vector->DepositFromIndividual( id, ivie->GetblockOutdoorVectorTransmit()*weight, TransmissionRoute::TRANSMISSIONROUTE_HUMAN_TO_VECTOR_OUTDOOR );
     }
 
     void IndividualHumanMalaria::ResetClinicalSymptoms()
     {
-        ZERO_ARRAY(m_clinical_symptoms);
+        ZERO_ARRAY( m_clinical_symptoms_new );
+        ZERO_ARRAY( m_clinical_symptoms_continuing );
     }
  
     void IndividualHumanMalaria::ClearNewInfectionState()
@@ -462,24 +530,38 @@ namespace Kernel
          ResetClinicalSymptoms();
     }
 
-    void IndividualHumanMalaria::AddClinicalSymptom(ClinicalSymptomsEnum::Enum symptom)
+    void IndividualHumanMalaria::AddClinicalSymptom( ClinicalSymptomsEnum::Enum symptom, bool isNew )
     {
-        m_clinical_symptoms[symptom] = true;
+        // ---------------------------------------------------------------------------------------------
+        // --- "Or" the isNew status because we just care that it become new during this time step.
+        // --- m_clinicanl_systems_XXX gets cleared once per time step, but this method could be called
+        // --- multiple times due to the infectious update loop being done multiple times per time step.
+        // ---------------------------------------------------------------------------------------------
+        m_clinical_symptoms_new[ symptom ] |= isNew;
+        m_clinical_symptoms_continuing[ symptom ] = true;
 
-        // Trigger observers of new clinical and severe malaria episodes
-        if ( symptom == ClinicalSymptomsEnum::CLINICAL_DISEASE )
+        if( isNew )
         {
-            broadcaster->TriggerObservers( GetEventContext(), EventTrigger::NewClinicalCase );
-        }
-        else if ( symptom == ClinicalSymptomsEnum::SEVERE_DISEASE )
-        {
-            broadcaster->TriggerObservers( GetEventContext(), EventTrigger::NewSevereCase );
+            // Trigger observers of new clinical and severe malaria episodes
+            if( symptom == ClinicalSymptomsEnum::CLINICAL_DISEASE )
+            {
+                broadcaster->TriggerObservers( GetEventContext(), EventTrigger::NewClinicalCase );
+            }
+            else if( symptom == ClinicalSymptomsEnum::SEVERE_DISEASE )
+            {
+                broadcaster->TriggerObservers( GetEventContext(), EventTrigger::NewSevereCase );
+            }
         }
     }
 
-    bool IndividualHumanMalaria::HasClinicalSymptom(ClinicalSymptomsEnum::Enum symptom) const
+    bool IndividualHumanMalaria::HasClinicalSymptomNew(ClinicalSymptomsEnum::Enum symptom) const
     {
-        return m_clinical_symptoms[symptom];
+        return m_clinical_symptoms_new[symptom];
+    }
+
+    bool IndividualHumanMalaria::HasClinicalSymptomContinuing( ClinicalSymptomsEnum::Enum symptom ) const
+    {
+        return m_clinical_symptoms_continuing[ symptom ];
     }
 
     IMalariaSusceptibility* IndividualHumanMalaria::GetMalariaSusceptibilityContext() const
@@ -490,114 +572,97 @@ namespace Kernel
     std::vector< std::pair<int,int> > IndividualHumanMalaria::GetInfectingStrainIds() const
     {
         std::vector< std::pair<int,int> > strainIds;
-        StrainIdentity strain;
         for (auto inf : infections)
         {
-            inf->GetInfectiousStrainID(&strain);
-            strainIds.push_back( std::make_pair( strain.GetAntigenID(), strain.GetGeneticID() ) );
+            const IStrainIdentity& r_strain_id = inf->GetInfectiousStrainID();
+            strainIds.push_back( std::make_pair( r_strain_id.GetAntigenID(), r_strain_id.GetGeneticID() ) );
         }
         return strainIds;
     }
 
-    void IndividualHumanMalaria::CountPositiveSlideFields( RANDOMBASE * rng, int nfields, float uL_per_field, int& positive_asexual_fields, int& positive_gametocyte_fields) const
+    float IndividualHumanMalaria::GetParasiteDensity() const
     {
-        float asexual_density = GetMalariaSusceptibilityContext()->get_parasite_density();
-        float gametocyte_density = (m_female_gametocytes + m_male_gametocytes) * m_inv_microliters_blood;
-
-        float asexual_prob_per_field = EXPCDF(-asexual_density * uL_per_field);
-        float gametocyte_prob_per_field = EXPCDF(-gametocyte_density * uL_per_field);
-
-        // binomial random draw (or poisson/normal approximations thereof)
-        positive_asexual_fields = rng->binomial_approx2(nfields, asexual_prob_per_field);
-        positive_gametocyte_fields = rng->binomial_approx2(nfields, gametocyte_prob_per_field);
-    }
-
-    void IndividualHumanMalaria::PerformMalariaTest(int test_type)
-    {
-        if (test_type == MALARIA_TEST_BLOOD_SMEAR)
-        {
-            // first asexual parasites
-            m_parasites_detected_by_blood_smear = malaria_susceptibility->CheckParasiteCountWithTest(test_type);
-
-            // then gametocytes
-            float gametocyte_density = (m_female_gametocytes + m_male_gametocytes) * m_inv_microliters_blood;
-            m_gametocytes_detected = float(1.0 / params()->malaria_params->parasiteSmearSensitivity * GetRng()->Poisson(params()->malaria_params->parasiteSmearSensitivity * gametocyte_density));
-        }
-        else if (test_type == MALARIA_TEST_NEW_DIAGNOSTIC)
-        {
-            m_parasites_detected_by_new_diagnostic = (malaria_susceptibility->CheckForParasitesWithTest(test_type)) ? 1.0f : 0.0f;
-        }
-        else
-            LOG_WARN("Tried to perform unknown malaria diagnostic!\n");
-    }
-
-    bool  IndividualHumanMalaria::CheckForParasitesWithTest(int test_type) const
-    {
-        if(test_type == MALARIA_TEST_BLOOD_SMEAR)
-        {
-            return (m_parasites_detected_by_blood_smear > 0.0f);
-        }
-        else if (test_type == MALARIA_TEST_NEW_DIAGNOSTIC)
-        {
-            return (m_parasites_detected_by_new_diagnostic > 0.0f);
-        }
-        else
-        {
-            LOG_WARN("Tried to check results of unknown malaria diagnostic!\n");
-            return false;
-        }
-    }
-
-    float IndividualHumanMalaria::CheckParasiteCountWithTest(int test_type) const 
-    {
-        if(test_type == MALARIA_TEST_BLOOD_SMEAR)
-            return m_parasites_detected_by_blood_smear;
-        else if (test_type == MALARIA_TEST_NEW_DIAGNOSTIC)
-            return m_parasites_detected_by_new_diagnostic;
-        else
-        {
-            LOG_WARN("Tried to check parasite count detected by unknown malaria diagnostic!\n");
-            return 0.0f;
-        }
-    }
-
-    bool  IndividualHumanMalaria::HasFever() const
-    {
-        return malaria_susceptibility->get_fever() > GET_CONFIGURABLE(SimulationConfig)->malaria_params->feverDetectionThreshold;
-    }
-
-    float IndividualHumanMalaria::CheckGametocyteCountWithTest(int test_type) const
-    {
-        if(test_type == MALARIA_TEST_BLOOD_SMEAR)
-        {
-            return m_gametocytes_detected;
-        }
-        else if (test_type == MALARIA_TEST_NEW_DIAGNOSTIC)
-        {
-            LOG_WARN("Gametocyte count detected by MALARIA_TEST_NEW_DIAGNOSTIC type is not currently defined.\n");
-            return 0.0f;
-        }
-        else
-        {
-            LOG_WARN("Tried to check gametocyte count detected by unknown malaria diagnostic!\n");
-            return 0.0f;
-        }
+        return malaria_susceptibility->get_parasite_density();
     }
 
     float IndividualHumanMalaria::GetGametocyteDensity() const
     {
-        return (m_female_gametocytes + m_male_gametocytes) * m_inv_microliters_blood;
+        release_assert( malaria_susceptibility != nullptr );
+        return (m_female_gametocytes + m_male_gametocytes) * malaria_susceptibility->get_inv_microliters_blood();
     }
 
-    void IndividualHumanMalaria::Drug_Report()
+    float IndividualHumanMalaria::MakeDiagnosticMeasurement( MalariaDiagnosticType::Enum mdType, float measurementSensitivity )
     {
-        //malaria_susceptibility->Drug_Action_Report();
+        float measurement = 0.0;
+        if( measurementSensitivity == 0.0 )
+        {
+            return measurement;
+        }
+
+        float true_parasite_density = malaria_susceptibility->get_parasite_density();
+        float true_gametocyte_density = GetGametocyteDensity();
+        switch( mdType )
+        {
+            case MalariaDiagnosticType::BLOOD_SMEAR_PARASITES:
+                // perform a typical blood smear (default
+                // take .1 microliters of blood and count parasites
+                // 10xPoisson distributed with mean .1xparasite_density
+                measurement = float( 1.0 / measurementSensitivity * GetRng()->Poisson( measurementSensitivity * true_parasite_density ) ); // parasites / microliter
+                break;
+
+            case MalariaDiagnosticType::BLOOD_SMEAR_GAMETOCYTES:
+                measurement = float( 1.0 / measurementSensitivity * GetRng()->Poisson( measurementSensitivity * true_gametocyte_density ) ); // gametocytes / microliter
+                break;
+
+            case MalariaDiagnosticType::PCR_PARASITES:
+                measurement = ReportUtilitiesMalaria::NASBADensityWithUncertainty( GetRng(), true_parasite_density );
+                break;
+
+            case MalariaDiagnosticType::PCR_GAMETOCYTES:
+                measurement = ReportUtilitiesMalaria::NASBADensityWithUncertainty( GetRng(), true_gametocyte_density );
+                break;
+
+            case MalariaDiagnosticType::PF_HRP2:
+                measurement = malaria_susceptibility->GetPfHRP2() * malaria_susceptibility->get_inv_microliters_blood();
+                break;
+
+            case MalariaDiagnosticType::TRUE_PARASITE_DENSITY:
+                measurement = true_parasite_density;
+                break;
+
+            case MalariaDiagnosticType::FEVER:
+                measurement = malaria_susceptibility->get_fever();
+                break;
+
+            default:
+                throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "mdType", mdType,
+                                                         MalariaDiagnosticType::pairs::lookup_key( mdType ) );
+        }
+        return measurement;
     }
 
-    /*void IndividualHumanMalaria::malaria_infectivity_report()
+
+    void IndividualHumanMalaria::CalculateDiagnosticMeasurementsForReports()
     {
-        EnvPtr->Report.Plotting << m_female_gametocytes * m_inv_microliters_blood << '\t' << infectiousness << std::endl;
-    }*/
+        // ----------------------------------------------------------------
+        // --- We calculate the diagnostic measurements all at once so that
+        // --- all reports will use the same values.  We don't require this
+        // --- for the interventions.  They calculate a new value on the fly
+        // --- because that diagnostic could have different sensitivities.
+        // ----------------------------------------------------------------
+        m_DiagnosticMeasurement.clear();
+        for( int i = 0; i < MalariaDiagnosticType::pairs::count(); ++i )
+        {
+            MalariaDiagnosticType::Enum md_type = MalariaDiagnosticType::Enum( i );
+            float measurement = MakeDiagnosticMeasurement( md_type, IndividualHumanMalariaConfig::measurement_sensitivity[ i ] );
+            m_DiagnosticMeasurement.push_back( measurement );
+        }
+    }
+
+    float IndividualHumanMalaria::GetDiagnosticMeasurementForReports( MalariaDiagnosticType::Enum mdType ) const
+    {
+        return m_DiagnosticMeasurement[ mdType ];
+    }
 
     const SimulationConfig*
     IndividualHumanMalaria::params()
@@ -617,6 +682,16 @@ namespace Kernel
         }
     }
 
+    bool IndividualHumanMalaria::HasMaxInfections() const
+    {
+        return (this->infections.size() == IndividualHumanConfig::max_ind_inf);
+    }
+
+    float IndividualHumanMalaria::GetMaxInfectionDuration() const
+    {
+        return m_MaxedInfDuration;
+    }
+
     REGISTER_SERIALIZABLE(IndividualHumanMalaria);
 
     void serialize(IArchive& ar, IndividualHumanMalaria::gametocytes_strain_map_t& mapping)
@@ -629,7 +704,7 @@ namespace Kernel
             {
                 StrainIdentity* strain = const_cast<StrainIdentity*>(&entry.first);
                 ar.startObject();
-                    ar.labelElement("key"); StrainIdentity::serialize(ar, strain);
+                    ar.labelElement("key"); StrainIdentity::serialize(ar, *strain);
                     ar.labelElement("value") & entry.second;
                 ar.endObject();
             }
@@ -638,13 +713,13 @@ namespace Kernel
         {
             for (size_t i = 0; i < count; i++)
             {
-                StrainIdentity* strain;
+                StrainIdentity strain;
                 int64_t value;
                 ar.startObject();
                     ar.labelElement("key"); StrainIdentity::serialize(ar, strain);
                     ar.labelElement("value") & value;
                 ar.endObject();
-                mapping[*strain] = value;
+                mapping[strain] = value;
             }
         }
         ar.endArray();
@@ -654,15 +729,14 @@ namespace Kernel
     {
         IndividualHumanVector::serialize(ar, obj);
         IndividualHumanMalaria& individual = *obj;
-        ar.labelElement("m_inv_microliters_blood") & individual.m_inv_microliters_blood;
-        ar.labelElement("m_male_gametocytes") & individual.m_male_gametocytes;
-        ar.labelElement("m_female_gametocytes") & individual.m_female_gametocytes;
-        ar.labelElement("m_female_gametocytes_by_strain"); Kernel::serialize(ar, individual.m_female_gametocytes_by_strain);
-        ar.labelElement("m_parasites_detected_by_blood_smear") & individual.m_parasites_detected_by_blood_smear;
-        ar.labelElement("m_parasites_detected_by_new_diagnostic") & individual.m_parasites_detected_by_new_diagnostic;
-        ar.labelElement("m_gametocytes_detected") & individual.m_gametocytes_detected;
-        ar.labelElement("m_clinical_symptoms"); ar.serialize( individual.m_clinical_symptoms, ClinicalSymptomsEnum::CLINICAL_SYMPTOMS_COUNT);
-        ar.labelElement("m_initial_infected_hepatocytes") & individual.m_initial_infected_hepatocytes;
+        ar.labelElement( "m_male_gametocytes"             ) & individual.m_male_gametocytes;
+        ar.labelElement( "m_female_gametocytes"           ) & individual.m_female_gametocytes;
+        ar.labelElement( "m_female_gametocytes_by_strain" ); Kernel::serialize(ar, individual.m_female_gametocytes_by_strain);
+        ar.labelElement( "m_gametocytes_detected"         ) & individual.m_gametocytes_detected;
+        ar.labelElement( "m_clinical_symptoms_new"        ); ar.serialize( individual.m_clinical_symptoms_new, ClinicalSymptomsEnum::CLINICAL_SYMPTOMS_COUNT );
+        ar.labelElement( "m_clinical_symptoms_continuing" ); ar.serialize( individual.m_clinical_symptoms_continuing, ClinicalSymptomsEnum::CLINICAL_SYMPTOMS_COUNT );
+        ar.labelElement( "m_initial_infected_hepatocytes" ) & individual.m_initial_infected_hepatocytes;
+        ar.labelElement( "m_DiagnosticMeasurement"        ) & individual.m_DiagnosticMeasurement;
 
         // ----------------------------------------------------------------------
         // --- This is a pointer to an object held in the Susceptibility object. 

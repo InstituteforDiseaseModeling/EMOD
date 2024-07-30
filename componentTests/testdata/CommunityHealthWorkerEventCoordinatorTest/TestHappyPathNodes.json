@@ -12,18 +12,12 @@
         "ListenForEvent"
     ],
     "Intervention_Config": {
-        "class": "SpaceSpraying",
+        "class": "IndoorSpaceSpraying",
         "Cost_To_Consumer": 10.0,
         "Habitat_Target": "ALL_HABITATS",
-        "Spray_Kill_Target": "SpaceSpray_Indoor",
         "Killing_Config": {
             "class": "WaningEffectExponential",
             "Initial_Effect": 0.7,
-            "Box_Duration": 365
-        },
-        "Reduction_Config": {
-            "class": "WaningEffectExponential",
-            "Initial_Effect": 0,
             "Box_Duration": 365
         }
     }

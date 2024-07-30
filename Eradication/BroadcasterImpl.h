@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -34,12 +26,16 @@ namespace Kernel
         virtual void RegisterObserver(   Observer* pObserver, const Trigger& trigger );
         virtual void UnregisterObserver( Observer* pObserver, const Trigger& trigger );
         virtual void TriggerObservers(   Entity*   pEntity,   const Trigger& trigger );
+        virtual uint64_t GetNumTriggeredEvents();
+        virtual uint64_t GetNumObservedEvents();
 
         void DisposeOfUnregisteredObservers();
 
     private:
         std::vector< std::vector<Observer*> > observers;
         std::vector< std::vector<Observer*> > disposed_observers;
+        uint64_t num_triggered_events;
+        uint64_t num_observed_events;
     };
 
     class EventTriggerCoordinatorFactory;

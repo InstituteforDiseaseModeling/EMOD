@@ -1,0 +1,143 @@
+{
+    "Default_Config_Path": "defaults/vector_default_config.json",
+    "parameters": {
+        "CLIMATE": {
+           "Base_Air_Temperature": 25.0,
+           "Climate_Model": "CLIMATE_CONSTANT",
+           "Enable_Climate_Stochasticity": 0
+        },
+        "DEMOGRAPHICS": {
+            "Enable_Natural_Mortality": 0,
+            "Enable_Birth": 0,
+            "Population_Scale_Type": "FIXED_SCALING",
+            "x_Base_Population": 10,
+            "Birth_Rate_Dependence": "DEMOGRAPHIC_DEP_RATE",
+            "Demographics_Filenames": [
+                "Demographics.json"
+            ],
+            "Enable_Initial_Prevalence": 0
+        },
+        "PRIMARY": {
+            "Config_Name": "114_Vector_Genetics_Underdominance_TwoLocus",
+            "Custom_Reports_Filename": "custom_reports.json",
+            "Enable_Demographics_Reporting": 0,
+            "Geography": "Namawala",
+            "Python_Script_Path": "SHARED",
+            "Run_Number": 13,
+            "Simulation_Duration": 800
+        },
+        "VECTOR" : {
+            "Enable_Vector_Aging": 1, 
+            "Enable_Vector_Mortality": 1, 
+            
+            "Enable_Vector_Migration": 0, 
+            
+            ".Vector_Sampling_Type": "VECTOR_COMPARTMENTS_NUMBER",
+            "Vector_Sampling_Type": "TRACK_ALL_VECTORS",
+            
+            "x_Temporary_Larval_Habitat": 0.025
+        },
+        "Vector_Species_Params": [
+            {
+                "Name": "SillySkeeter",
+                "Indoor_Feeding_Fraction": 1,
+                "COMMENT": "See Invasion and migration of spatially self-limiting gene drives: A comparative analysis by Sumit Dhole",
+                "Genes": [
+                    {
+                        "Is_Gender_Gene": 0,
+                        "Alleles": [
+                            {
+                                "Name": "Aw",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 1
+                            },
+                            {
+                                "Name": "At",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0
+                            }
+                        ],
+                        "Mutations": []
+                    },
+                    {
+                        "Is_Gender_Gene": 0,
+                        "Alleles": [
+                            {
+                                "Name": "Bw",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 1
+                            },
+                            {
+                                "Name": "Bt",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0
+                            }
+                        ],
+                        "Mutations": []
+                    }
+                ],
+                "Gene_To_Trait_Modifiers" : [
+                    {
+                        "Allele_Combinations" : [
+                            [ "Aw", "Aw" ],
+                            [ "Bt", "*" ]
+                        ],
+                        "Trait_Modifiers" : [
+                            {
+                                "Trait" : "ADJUST_FERTILE_EGGS",
+                                "Modifier": 0.0
+                            },
+                            {
+                                "Trait" : "MORTALITY",
+                                "Modifier": 0.0
+                            }
+                        ]
+                    },
+                    {
+                        "Allele_Combinations" : [
+                            [ "At", "*" ],
+                            [ "Bw", "Bw" ]
+                        ],
+                        "Trait_Modifiers" : [
+                            {
+                                "Trait" : "ADJUST_FERTILE_EGGS",
+                                "Modifier": 0.0
+                            },
+                            {
+                                "Trait" : "MORTALITY",
+                                "Modifier": 0.0
+                            }
+                        ]
+                    }
+                ],
+                "Acquire_Modifier": 0.2,
+                "Adult_Life_Expectancy": 20,
+                "Anthropophily": 0.65,
+                "Aquatic_Arrhenius_1": 84200000000,
+                "Aquatic_Arrhenius_2": 8328,
+                "Aquatic_Mortality_Rate": 0.1,
+                "Cycle_Arrhenius_1": 0,
+                "Cycle_Arrhenius_2": 0,
+                "Cycle_Arrhenius_Reduction_Factor": 0,
+                "Days_Between_Feeds": 3,
+                "Egg_Batch_Size": 100,
+                "Habitats": [
+                    {
+                        "Habitat_Type": "TEMPORARY_RAINFALL",
+                        "Max_Larval_Capacity": 11250000000.0
+                    }
+                ],
+                "Immature_Duration": 2,
+                "Infected_Arrhenius_1": 117000000000,
+                "Infected_Arrhenius_2": 8336,
+                "Infected_Egg_Batch_Factor": 0.8,
+                "Infectious_Human_Feed_Mortality_Factor": 1.5,
+                "Male_Life_Expectancy": 10,
+                "Microsporidia": [],
+                "Temperature_Dependent_Feeding_Cycle": "NO_TEMPERATURE_DEPENDENCE",
+                "Transmission_Rate": 0.9,
+                "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_NONE"
+            }
+        ]
+    }
+}

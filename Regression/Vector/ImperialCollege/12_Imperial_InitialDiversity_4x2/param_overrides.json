@@ -1,0 +1,82 @@
+{
+    "Default_Config_Path": "Vector/ImperialCollege/default_config.json",
+    "parameters": {
+        "Config_Name": "12_Imperial_InitialDiversity_4x2",
+        ".Simulation_Duration": 50,
+        "Python_Script_Path": "LOCAL",
+        "Vector_Species_Params": [
+            {
+                "Name": "arabiensis",
+                "Indoor_Feeding_Fraction": 1,
+                "Genes": [
+                    {
+                        "Is_Gender_Gene": 0,
+                        "Alleles": [
+                            {
+                                "Name": "a0",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.6
+                            },
+                            {
+                                "Name": "a1",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.4
+                            }
+                        ],
+                        "Mutations": []
+                    },
+                    {
+                        "Is_Gender_Gene": 0,
+                        "Alleles": [
+                            {
+                                "Name": "b0",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.7
+                            },
+                            {
+                                "Name": "b1",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.3
+                            }
+                        ],
+                        "Mutations": []
+                    },
+                    {
+                        "Is_Gender_Gene": 0,
+                        "Alleles": [
+                            {
+                                "Name": "c0",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.8
+                            },
+                            {
+                                "Name": "c1",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.2
+                            }
+                        ],
+                        "Mutations": []
+                    },
+                    {
+                        "Is_Gender_Gene": 0,
+                        "Alleles": [
+                            {
+                                "Name": "d0",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.9
+                            },
+                            {
+                                "Name": "d1",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.1
+                            }
+                        ],
+                        "Mutations": []
+                    }
+                ],
+                "Drivers" : [
+                ]
+            }
+        ]
+    }
+}

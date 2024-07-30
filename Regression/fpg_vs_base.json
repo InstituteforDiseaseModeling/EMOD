@@ -1,0 +1,274 @@
+{
+    "tests": [
+        {
+            "path": "Malaria/fpg_vs_base/1_Mort-1"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/2_Mort-2"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/3_Mort-4"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/4_Mort-8"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/5_Int-Bednet_Tgt-100_R-1_B-0_K-0"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/6_Int-Bednet_Tgt-300_R-1_B-0_K-0"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/7_Int-Bednet_Tgt-500_R-1_B-0_K-0"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/8_Int-Bednet_Tgt-700_R-1_B-0_K-0"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/9_Int-Bednet_Tgt-900_R-1_B-0_K-0"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/10_Int-Bednet_Tgt-1000_R-0.9_B-0_K-0"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/11_Int-Bednet_Tgt-1000_R-0.7_B-0_K-0"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/12_Int-Bednet_Tgt-1000_R-0.5_B-0_K-0"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/13_Int-Bednet_Tgt-1000_R-0.3_B-0_K-0"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/14_Int-Bednet_Tgt-1000_R-0.1_B-0_K-0"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/15_Int-Bednet_Tgt-100_R-0_B-1_K-0"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/16_Int-Bednet_Tgt-300_R-0_B-1_K-0"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/17_Int-Bednet_Tgt-500_R-0_B-1_K-0"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/18_Int-Bednet_Tgt-700_R-0_B-1_K-0"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/19_Int-Bednet_Tgt-900_R-0_B-1_K-0"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/20_Int-Bednet_Tgt-1000_R-0_B-0.9_K-0"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/21_Int-Bednet_Tgt-1000_R-0_B-0.7_K-0"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/22_Int-Bednet_Tgt-1000_R-0_B-0.5_K-0"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/23_Int-Bednet_Tgt-1000_R-0_B-0.3_K-0"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/24_Int-Bednet_Tgt-1000_R-0_B-0.1_K-0"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/25_Int-Bednet_Tgt-100_R-0_B-0.5_K-1"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/26_Int-Bednet_Tgt-300_R-0_B-0.5_K-1"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/27_Int-Bednet_Tgt-500_R-0_B-0.5_K-1"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/28_Int-Bednet_Tgt-700_R-0_B-0.5_K-1"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/29_Int-Bednet_Tgt-900_R-0_B-0.5_K-1"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/30_Int-Bednet_Tgt-1000_R-0_B-0.5_K-0.9"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/31_Int-Bednet_Tgt-1000_R-0_B-0.5_K-0.7"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/32_Int-Bednet_Tgt-1000_R-0_B-0.5_K-0.5"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/33_Int-Bednet_Tgt-1000_R-0_B-0.5_K-0.3"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/34_Int-Bednet_Tgt-1000_R-0_B-0.5_K-0.1"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/35_Int-IRS_Tgt-100_B-1_K-0"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/36_Int-IRS_Tgt-300_B-1_K-0"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/37_Int-IRS_Tgt-500_B-1_K-0"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/38_Int-IRS_Tgt-700_B-1_K-0"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/39_Int-IRS_Tgt-900_B-1_K-0"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/40_Int-IRS_Tgt-1000_B-0.9_K-0"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/41_Int-IRS_Tgt-1000_B-0.7_K-0"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/42_Int-IRS_Tgt-1000_B-0.5_K-0"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/43_Int-IRS_Tgt-1000_B-0.3_K-0"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/44_Int-IRS_Tgt-1000_B-0.1_K-0"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/45_Int-IRS_Tgt-100_B-0_K-1"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/46_Int-IRS_Tgt-300_B-0_K-1"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/47_Int-IRS_Tgt-500_B-0_K-1"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/48_Int-IRS_Tgt-700_B-0_K-1"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/49_Int-IRS_Tgt-900_B-0_K-1"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/50_Int-IRS_Tgt-1000_B-0_K-0.9"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/51_Int-IRS_Tgt-1000_B-0_K-0.7"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/52_Int-IRS_Tgt-1000_B-0_K-0.5"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/53_Int-IRS_Tgt-1000_B-0_K-0.3"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/54_Int-IRS_Tgt-1000_B-0_K-0.1"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/55_Int-Repellent_Tgt-100_R-1"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/56_Int-Repellent_Tgt-300_R-1"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/57_Int-Repellent_Tgt-500_R-1"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/58_Int-Repellent_Tgt-700_R-1"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/59_Int-Repellent_Tgt-900_R-1"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/60_Int-Repellent_Tgt-1000_R-0.9"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/61_Int-Repellent_Tgt-1000_R-0.7"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/62_Int-Repellent_Tgt-1000_R-0.5"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/63_Int-Repellent_Tgt-1000_R-0.3"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/64_Int-Repellent_Tgt-1000_R-0.1"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/65_Int-Drug_Tgt-100_DoseInt-10_T1-10"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/66_Int-Drug_Tgt-300_DoseInt-10_T1-10"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/67_Int-Drug_Tgt-500_DoseInt-10_T1-10"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/68_Int-Drug_Tgt-700_DoseInt-10_T1-10"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/69_Int-Drug_Tgt-900_DoseInt-10_T1-10"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/70_Int-Drug_Tgt-1000_DoseInt-9_T1-10"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/71_Int-Drug_Tgt-1000_DoseInt-7_T1-10"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/72_Int-Drug_Tgt-1000_DoseInt-5_T1-10"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/73_Int-Drug_Tgt-1000_DoseInt-3_T1-10"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/74_Int-Drug_Tgt-1000_DoseInt-1_T1-10"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/75_Int-Drug_Tgt-1000_DoseInt-10_T1-9"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/76_Int-Drug_Tgt-1000_DoseInt-10_T1-7"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/77_Int-Drug_Tgt-1000_DoseInt-10_T1-5"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/78_Int-Drug_Tgt-1000_DoseInt-10_T1-3"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/79_Int-Drug_Tgt-1000_DoseInt-10_T1-1"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/80_Int-Bednet_Tgt-500_R-0_B-0.8_K-0.6_H-0.1"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/81_Int-Bednet_Tgt-500_R-0_B-0.8_K-0.6_H-0.2"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/82_Int-Bednet_Tgt-500_R-0_B-0.8_K-0.6_H-0.4"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/83_Int-IRS_Tgt-500_R-0_B-0.8_K-0.6_H-0.1"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/84_Int-IRS_Tgt-500_R-0_B-0.8_K-0.6_H-0.2"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/85_Int-IRS_Tgt-500_R-0_B-0.8_K-0.6_H-0.4"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/86_Int-OutdoorRestKill_K-0.1"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/87_Int-OutdoorRestKill_K-0.3"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/88_Int-OutdoorRestKill_K-0.5"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/89_Int-OutdoorRestKill_K-0.7"
+        },
+        {
+            "path": "Malaria/fpg_vs_base/90_Int-OutdoorRestKill_K-0.9"
+        }
+    ]
+}

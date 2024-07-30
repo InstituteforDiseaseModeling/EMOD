@@ -4,7 +4,7 @@
             "Event_Coordinator_Config": {
                 "Demographic_Coverage": 0.8, 
                 "Intervention_Config": {
-                    "Blocking_Config": {
+                    "Repelling_Config": {
                         "Box_Duration": 3650, 
                         "Initial_Effect": 0.0, 
                         "class": "WaningEffectBox"
@@ -32,10 +32,17 @@
             "Event_Coordinator_Config": {
                 "Demographic_Coverage": 0.8, 
                 "Intervention_Config": {
-                    "Cost_To_Consumer": 3.75, 
-                    "Dosing_Type": "FullTreatmentParasiteDetect", 
-                    "Drug_Type": "Chloroquine", 
-                    "class": "AntimalarialDrug"
+                    "class": "MalariaDiagnostic",
+                    "Cost_To_Consumer": 0, 
+                    "Diagnostic_Type": "BLOOD_SMEAR_PARASITES", 
+                    "Detection_Threshold": 0, 
+                    "Event_Or_Config": "Config", 
+                    "Positive_Diagnosis_Config": {
+                        "class": "AntimalarialDrug",
+                        "Dont_Allow_Duplicates" : 1,
+                        "Cost_To_Consumer": 3.75, 
+                        "Drug_Type": "Chloroquine"
+                    }
                 }, 
                 "Number_Repetitions": 9, 
                 "Target_Demographic": "Everyone", 

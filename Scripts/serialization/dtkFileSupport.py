@@ -19,7 +19,7 @@ class EllZeeFour(object):
 
     @classmethod
     def compress(cls, data):
-        return lz4.block.compress(data.encode())
+        return lz4.block.compress(data)
 
     @classmethod
     def uncompress(cls, data):

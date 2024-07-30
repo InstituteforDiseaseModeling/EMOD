@@ -5,6 +5,10 @@
                 "Demographic_Coverage": 0.7,
                 "Intervention_Config": {
                     "Cost_To_Consumer": 3.75,
+                    "Repelling_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect": 0.0
+                    }, 
                     "Killing_Config": {
                         "Initial_Effect": 0.6,
                         "Decay_Time_Constant": 1460,

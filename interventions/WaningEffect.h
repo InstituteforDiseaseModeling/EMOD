@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -47,10 +39,7 @@ namespace Kernel
         bool usingDefault;
         const int notSetByUser = -1;
 
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         DECLARE_SERIALIZABLE(WaningEffectConstant);
-#pragma warning( pop )
     };
 
     // --------------------------- WaningEffectExponential ---------------------------
@@ -72,10 +61,7 @@ namespace Kernel
     protected:
         float decayTimeConstant;
 
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         DECLARE_SERIALIZABLE(WaningEffectExponential);
-#pragma warning( pop )
     };
 
     // --------------------------- WaningEffectBox ---------------------------
@@ -97,10 +83,7 @@ namespace Kernel
     protected:
         float boxDuration;
 
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         DECLARE_SERIALIZABLE(WaningEffectBox);
-#pragma warning( pop )
     };
 
     // --------------------------- WaningEffectBoxExponential ---------------------------
@@ -123,9 +106,6 @@ namespace Kernel
         float boxDuration;
         float decayTimeConstant;
 
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         DECLARE_SERIALIZABLE(WaningEffectBoxExponential);
-#pragma warning( pop )
     };
 }

@@ -1,0 +1,82 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender", 
+                "Target_Gender" : "FEMALE",
+                "Demographic_Coverage": 0.20,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Incubation_Period_Override": 0
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 90,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "RelationshipFormationRateChanger",
+                    "Relationship_Type": "MARITAL",
+                    "Overriding_Formation_Rate": 0.0
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 510,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "RelationshipFormationRateChanger",
+                    "Relationship_Type": "MARITAL",
+                    "Overriding_Formation_Rate": 0.0001
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 390,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "RelationshipFormationRateChanger",
+                    "Relationship_Type": "TRANSITORY",
+                    "Overriding_Formation_Rate": 0.0
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 600,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "RelationshipFormationRateChanger",
+                    "Relationship_Type": "TRANSITORY",
+                    "Overriding_Formation_Rate": 0.002
+                }
+            }
+        }
+    ]
+}

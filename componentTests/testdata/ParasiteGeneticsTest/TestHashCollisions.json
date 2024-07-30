@@ -1,0 +1,33 @@
+{
+    "Enable_FPG_Similarity_To_Base": 0,
+    "Sporozoite_Life_Expectancy": 10,
+    "Num_Sporozoites_In_Bite_Fail": 12,
+    "Probability_Sporozoite_In_Bite_Fails": 0.5,
+    "Num_Oocyst_From_Bite_Fail": 3,
+    "Probability_Oocyst_From_Bite_Fails": 0.5,
+    "Sporozoites_Per_Oocyst_Distribution": "GAUSSIAN_DISTRIBUTION",
+    "Sporozoites_Per_Oocyst_Gaussian_Mean": 10000,
+    "Sporozoites_Per_Oocyst_Gaussian_Std_Dev": 1000,
+    "Crossover_Gamma_K"     : 2.0,
+    "Crossover_Gamma_Theta" : 0.38,
+    "Barcode_Genome_Locations" : [
+              100000,   214333,   311500,   428667,   750000,   958667,  1116500,  1274333,  1700000,  1864900,
+             2139900,  2140000,  2414900,  2600000,  2750000,  2989900,  3289900,  3290000,  3589900,  3700000,
+             3950000,  4150000,  4323333,  4410000,  4670000,  4756667,  4930000,  5100000,  5250000,  5470000,
+             5656667,  5750000,  6030000,  6123333,  6310000,  6500000,  6700000,  6870000,  7056667,  7150000,
+             7430000,  7523333,  7710000,  7800000,  8100000,  8250000,  8423333,  8510000,  8770000,  8856667, 
+             9030000,  9150000,  9400000,  9590000,  9790000,  9890000, 10190000, 10290000, 10490000, 10650000, 
+            10900000, 11130000, 11356667, 11470000, 11810000, 11923333, 12150000, 12300000, 12600000, 12890000, 
+            13156667, 13290000, 13690000, 13823333, 14090000, 14300000, 14600000, 14950000, 15256667, 15410000, 
+            15870000, 16023333, 16330000, 16600000, 16900000, 17330000, 17690000, 17870000, 18410000, 18590000, 
+            18950000, 19300000, 19700000, 20150000, 20590000, 20810000, 21470000, 21690000, 22130000, 22500000
+    ],
+    "Drug_Resistant_Genome_Locations" : [ ],
+    "HRP_Genome_Locations" : [],
+    "MSP_Genome_Location" : 0, 
+    "PfEMP1_Variants_Genome_Locations": [
+    ],
+    "Var_Gene_Randomness_Type" : "ALL_RANDOM",
+    "Neighborhood_Size_MSP" : 0,
+    "Neighborhood_Size_PfEMP1" : 0
+}

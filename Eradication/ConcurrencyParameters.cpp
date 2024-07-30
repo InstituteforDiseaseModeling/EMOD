@@ -1,15 +1,8 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
 #include "ConcurrencyParameters.h"
+#include "demographic_params.rc"
 #include "Debug.h"
 #include "Environment.h"
 #include "Log.h"
@@ -84,7 +77,7 @@ namespace Kernel
             ConcurrencyByProperty* p_cbp = new ConcurrencyByProperty( DEFAULT_PROPERTY );
             m_PropertyValueToConcurrencyMap[ DEFAULT_PROPERTY ] = p_cbp;
 
-            initConfigTypeMap( DEFAULT_PROPERTY, p_cbp, "TBD" );
+            initConfigTypeMap( DEFAULT_PROPERTY, p_cbp, Concurrency_By_Property_NONE_DESC_TEXT );
         }
         else
         {
@@ -105,7 +98,7 @@ namespace Kernel
                 ConcurrencyByProperty* p_cbp = new ConcurrencyByProperty( prop_value );
                 m_PropertyValueToConcurrencyMap[ prop_value ] = p_cbp;
 
-                initConfigTypeMap( prop_value.c_str(), p_cbp, "TBD" );
+                initConfigTypeMap( prop_value.c_str(), p_cbp, Concurrency_By_Property_IP_DESC_TEXT );
             }
         }
         try
@@ -168,14 +161,14 @@ namespace Kernel
         initConfig( "Extra_Relational_Flag_Type", 
                     m_ExtraRelFlag,
                     json, 
-                    MetadataDescriptor::Enum("Extra_Relational_Flag_Type", "TBD", MDD_ENUM_ARGS( ExtraRelationalFlagType ) ) );
+                    MetadataDescriptor::Enum("Extra_Relational_Flag_Type", Extra_Relational_Flag_Type_DESC_TEXT, MDD_ENUM_ARGS( ExtraRelationalFlagType ) ) );
 
         bool ret = true;
         if( m_ExtraRelFlag == ExtraRelationalFlagType::Correlated )
         {
             std::set<std::string> allowable_relationship_types = GetAllowableRelationshipTypes();
             std::vector<std::string> rel_type_strings ;
-            initConfigTypeMap( "Correlated_Relationship_Type_Order", &rel_type_strings, "TBD", nullptr, allowable_relationship_types );
+            initConfigTypeMap( "Correlated_Relationship_Type_Order", &rel_type_strings, Correlated_Relationship_Type_Order_DESC_TEXT, nullptr, allowable_relationship_types );
 
             ret = JsonConfigurable::Configure( json );
             if( ret )
@@ -228,7 +221,7 @@ namespace Kernel
     void ConcurrencyConfiguration::Initialize( const ::Configuration *json )
     {
         initConfigTypeMap( "Probability_Person_Is_Behavioral_Super_Spreader", &m_ProbSuperSpreader, Probability_Person_Is_Behavioral_Super_Spreader_DESC_TEXT, 0.0, 1.0f, 0.001f );
-        initConfigTypeMap( "Individual_Property_Name", &m_PropertyKey, "TBD", DEFAULT_PROPERTY );
+        initConfigTypeMap( "Individual_Property_Name", &m_PropertyKey, Individual_Property_Name_DESC_TEXT, DEFAULT_PROPERTY );
         try
         {
             JsonConfigurable::Configure( json );
@@ -249,7 +242,7 @@ namespace Kernel
         {
             ConcurrencyConfigurationByProperty* p_ccbp = new ConcurrencyConfigurationByProperty( DEFAULT_PROPERTY );
             m_PropertyValueToConfig[ DEFAULT_PROPERTY ] = p_ccbp;
-            initConfigTypeMap( DEFAULT_PROPERTY, p_ccbp, "TBD" );
+            initConfigTypeMap( DEFAULT_PROPERTY, p_ccbp, Concurrency_Configuration_By_Property_NONE_DESC_TEXT );
         }
         else
         {
@@ -281,7 +274,7 @@ namespace Kernel
                 ConcurrencyConfigurationByProperty* p_ccbp = new ConcurrencyConfigurationByProperty( prop_value );
                 m_PropertyValueToConfig[ prop_value ] = p_ccbp ;
 
-                initConfigTypeMap( prop_value.c_str(), p_ccbp, "TBD" );
+                initConfigTypeMap( prop_value.c_str(), p_ccbp, Concurrency_Configuration_By_Property_IP_DESC_TEXT );
             }
         }
         try
@@ -307,7 +300,7 @@ namespace Kernel
         return ( (prop != nullptr) && (m_PropertyKey == prop) );
     }
 
-    const char* ConcurrencyConfiguration::GetConcurrencyPropertyValue( const tProperties* the_individuals_properties, 
+    const char* ConcurrencyConfiguration::GetConcurrencyPropertyValue( const IPKeyValueContainer& rProperties, 
                                                                        const char* prop, 
                                                                        const char* prop_value ) const
     {
@@ -317,10 +310,9 @@ namespace Kernel
         }
         else if( (prop == nullptr) || (prop_value == nullptr) )
         {
-            release_assert( the_individuals_properties );
-            release_assert( the_individuals_properties->count( m_PropertyKey ) > 0 );
+            IPKey key( m_PropertyKey );
 
-            return the_individuals_properties->at( m_PropertyKey ).c_str();
+            return rProperties.Get( key ).GetValueAsString().c_str();
         }
         else
         {

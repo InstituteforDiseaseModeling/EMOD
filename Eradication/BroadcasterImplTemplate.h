@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -24,6 +16,8 @@ namespace Kernel
     BroadcasterImpl<Observer,Entity,Trigger,TriggerFactory>::BroadcasterImpl()
         : observers()
         , disposed_observers()
+        , num_triggered_events(0)
+        , num_observed_events(0)
     {
         int num_triggers = TriggerFactory::GetInstance()->GetNumEventTriggers();
         observers.resize( num_triggers );
@@ -77,9 +71,15 @@ namespace Kernel
         {
             return;
         }
+        ++num_triggered_events;
 
         std::vector<Observer*>& observer_list = observers[ trigger.GetIndex() ];
         std::vector<Observer*>& disposed_list = disposed_observers[ trigger.GetIndex() ];
+
+        if( observer_list.size() > 0 )
+        {
+            ++num_observed_events;
+        }
 
         LOG_DEBUG_F( "We have %d observers of event %s.\n", observer_list.size(), trigger.c_str() );
         for( auto observer : observer_list )
@@ -100,6 +100,30 @@ namespace Kernel
                 observer->notifyOnEvent( pEntity, trigger );
             }
         }
+    }
+
+    template<class Observer, class Entity, class Trigger, class TriggerFactory>
+    uint64_t BroadcasterImpl<Observer, Entity, Trigger, TriggerFactory>::GetNumTriggeredEvents()
+    {
+        // ------------------------------------------------------------------------------------------
+        // --- By clearing the value after getting it, we are attempting to ensure we include
+        // --- all of the events since we last asked for it.
+        // ------------------------------------------------------------------------------------------
+        uint64_t ret = num_triggered_events;
+        num_triggered_events = 0;
+        return ret;
+    }
+
+    template<class Observer, class Entity, class Trigger, class TriggerFactory>
+    uint64_t BroadcasterImpl<Observer, Entity, Trigger, TriggerFactory>::GetNumObservedEvents()
+    {
+        // ------------------------------------------------------------------------------------------
+        // --- By clearing the value after getting it, we are attempting to ensure we include
+        // --- all of the events since we last asked for it.
+        // ------------------------------------------------------------------------------------------
+        uint64_t ret = num_observed_events;
+        num_observed_events = 0;
+        return ret;
     }
 
     template<class Observer, class Entity, class Trigger, class TriggerFactory>

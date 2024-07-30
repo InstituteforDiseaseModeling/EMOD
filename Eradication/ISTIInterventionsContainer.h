@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -19,6 +11,16 @@ namespace Kernel
 
     // this container becomes a help implementation member of the IndividualHumanSTI class 
     // it needs to implement consumer interfaces for all the relevant intervention types
+
+    // The StartNewRelationship intervention needs to create the relationship
+    // at about the place in the code as the PFA.  This will ensure that all
+    // relationships are processed in the same order.  This was discovered
+    // because if you created the relationship when the intervention was updated,
+    // it can expire before the couple has a chance to consummate.
+    struct INonPfaRelationshipStarter : ISupports
+    {
+        virtual void StartNonPfaRelationship() = 0;
+    };
 
     struct ISTIBarrierConsumer : public ISupports
     {
@@ -39,9 +41,20 @@ namespace Kernel
         virtual void CureStiCoInfection() = 0;
     };
 
+    struct ICoitalActRiskData : ISupports
+    {
+        virtual void UpdateCoitalActRiskFactors( float acqMod, float tranMod ) = 0;
+        virtual float GetCoitalActRiskAcquisitionFactor() const = 0;
+        virtual float GetCoitalActRiskTransmissionFactor() const = 0;
+    };
+
     struct ISTIInterventionsContainer : public ISupports
     {
-        // No methods currently
+        // These two methods are added for performance.  We could use QueryInterface
+        // before putting the files in the container or when we are trying to get them out.
+        // However, this lets us only do this for this intervention and not everything.
+        virtual void AddNonPfaRelationshipStarter( INonPfaRelationshipStarter* pSNR ) = 0;
+        virtual void StartNonPfaRelationships() = 0;
     };
 
 }

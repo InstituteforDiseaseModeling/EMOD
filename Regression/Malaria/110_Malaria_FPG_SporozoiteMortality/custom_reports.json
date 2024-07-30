@@ -1,0 +1,36 @@
+{
+    "Reports": [
+        {
+            "class": "ReportNodeDemographicsMalariaGenetics",
+            "Age_Bins": [],
+            "Stratify_By_Gender": 0,
+            "Include_Identity_By_XXX": 0,
+            "Barcodes" : [
+                "C*",
+                "G*"
+            ]
+        },
+        {
+            "class": "ReportVectorStatsMalariaGenetics",
+            "Species_List": [
+                "SillySkeeter"
+            ],
+            "Barcodes" : [
+                "C*",
+                "G*"
+            ]
+        },
+        {
+            "class": "ReportVectorGeneticsMalariaGenetics",
+            "Gender": "VECTOR_FEMALE",
+            "Species": "SillySkeeter",
+            "Stratify_By": "GENOME",
+            "Combine_Similar_Genomes": 1,
+            "Parasite_Barcodes" : [
+                "C*",
+                "G*"
+            ]
+        }
+    ],
+    "Use_Defaults": 1
+}

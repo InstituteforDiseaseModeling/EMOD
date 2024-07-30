@@ -1,0 +1,82 @@
+{
+   "Campaign_Name": "Simple FP Campaign",
+   "Events": [
+      {
+         "Event_Coordinator_Config": {
+            "Intervention_Config": {
+                "Disqualifying_Properties": [
+                ],
+                "Intervention_Name": "FemaleContraceptive",
+                "New_Property_Value": "",
+                "Usage_Duration_Distribution": "UNIFORM_DISTRIBUTION",
+                "Usage_Duration_Min": 1000,
+                "Usage_Duration_Max": 2000,
+                "Usage_Expiration_Event": "Initially_Distributed_Contraceptive_Expired",
+                "Waning_Config": {
+                   "Initial_Effect": 1.0,
+                   "class": "WaningEffectConstant"
+                },
+                "Cost_To_Consumer" : 1,
+                "class": "FemaleContraceptive"
+            },
+            "Target_Demographic": "Pregnant",
+            "class": "StandardInterventionDistributionEventCoordinator"
+         },
+         "Nodeset_Config": {
+            "class": "NodeSetAll"
+         },
+         "Start_Day": 0.0,
+         "class": "CampaignEvent"
+      },
+      {
+         "Event_Coordinator_Config": {
+            "class": "StandardInterventionDistributionEventCoordinator",
+            "Number_Repetitions": 10,
+            "Timesteps_Between_Repetitions": 50,
+            "Target_Demographic": "ExplicitAgeRangesAndGender",
+            "Target_Gender": "FEMALE",
+            "Target_Age_Min": 13,
+            "Target_Age_Max": 50,
+            "Targeting_Config": {
+                "class" : "TargetingLogic",
+                "Logic" : [
+                    [
+                        {
+                            "class": "HasIntervention",
+                            "Is_Equal_To": 0,
+                            "Intervention_Name": "FemaleContraceptive"
+                        },
+                        {
+                            "class": "IsPregnant",
+                            "Is_Equal_To": 0
+                        }
+                    ]
+                ]
+            },
+            "Demographic_Coverage": 0.25,
+            "Intervention_Config": {
+                "Disqualifying_Properties": [
+                ],
+                "Intervention_Name": "FemaleContraceptive",
+                "New_Property_Value": "",
+                "Usage_Duration_Distribution": "UNIFORM_DISTRIBUTION",
+                "Usage_Duration_Min": 1000,
+                "Usage_Duration_Max": 2000,
+                "Usage_Expiration_Event": "Initially_Distributed_Contraceptive_Expired",
+                "Waning_Config": {
+                   "Initial_Effect": 1.0,
+                   "class": "WaningEffectConstant"
+                },
+                "Cost_To_Consumer" : 1,
+                "class": "FemaleContraceptive"
+            }
+         },
+         "Nodeset_Config": {
+            "class": "NodeSetAll"
+         },
+         "Start_Day": 1500.0,
+         "class": "CampaignEvent"
+      }
+   ],
+   "Use_Defaults": 1
+}

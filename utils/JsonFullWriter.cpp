@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "JsonFullWriter.h"
@@ -13,9 +5,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 namespace Kernel
 {
-    JsonFullWriter::JsonFullWriter(bool object_by_default)
+    JsonFullWriter::JsonFullWriter(bool object_by_default, bool use_full_precision)
         : m_buffer(new rapidjson::StringBuffer())
-        , m_writer(new rapidjson::Writer<rapidjson::StringBuffer>(*m_buffer,false))
+        , m_writer(new rapidjson::Writer<rapidjson::StringBuffer>( *m_buffer, use_full_precision ))
         , m_closed(false)
         , m_object_by_default(object_by_default)
     {
@@ -101,9 +93,7 @@ namespace Kernel
 
     IArchive& JsonFullWriter::operator&(uint64_t& u64)
     {
-#if defined(WIN32)
         m_writer->Uint64(u64);
-#endif
         return *this;
     }
 
@@ -127,9 +117,8 @@ namespace Kernel
 
     IArchive& JsonFullWriter::operator&( jsonConfigurable::ConstrainedString& cs )
     {
-#if defined(WIN32)
-        this->operator&( (std::string)cs );
-#endif
+        std::string tmp(cs);
+        this->operator&( tmp );
         return *this;
     }
 

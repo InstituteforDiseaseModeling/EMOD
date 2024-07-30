@@ -1,0 +1,55 @@
+{
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 10,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1.0,
+                "Property_Restrictions": [
+                    "Risk:LOW"
+                ],
+                "Intervention_Config": {
+                    "class": "PropertyValueChanger",
+                    "Disqualifying_Properties": [],
+                    "New_Property_Value": "InterventionStatus:Monitor",
+                    "Target_Property_Key" : "Risk",
+                    "Target_Property_Value" : "HIGH",
+                    "Daily_Probability" : 1,
+                    "Maximum_Duration" : 1,
+                    "Revert" : 100
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 10,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1.0,
+                "Property_Restrictions": [
+                    "QualityOfCare:Good"
+                ],
+                "Intervention_Config": {
+                    "class": "PropertyValueChanger",
+                    "Disqualifying_Properties": [],
+                    "New_Property_Value": "InterventionStatus:NON_Monitor",
+                    "Target_Property_Key" : "QualityOfCare",
+                    "Target_Property_Value" : "Bad",
+                    "Daily_Probability" : 1,
+                    "Maximum_Duration" : 1,
+                    "Revert" : 100
+                }
+            }
+        }
+    ],
+    "Use_Defaults": 1
+}

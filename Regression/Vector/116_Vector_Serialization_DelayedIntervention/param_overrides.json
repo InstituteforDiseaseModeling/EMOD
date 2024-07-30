@@ -1,0 +1,37 @@
+{
+    "Default_Config_Path": "../../defaults/vector_default_config.json",
+    "parameters": {
+        "Climate_Model": "CLIMATE_CONSTANT",
+        "Enable_Birth": 0,
+        "Enable_Climate_Stochasticity": 0,
+        "Enable_Vital_Dynamics": 0,
+        "DEMOGRAPHICS": {
+            "Birth_Rate_Dependence": "DEMOGRAPHIC_DEP_RATE",
+            "Demographics_Filenames": [
+                "Namawala_single_node_demographics.json",
+                "Namawala_overlay.json"
+            ],
+            "Enable_Initial_Prevalence": 1
+        },
+        "PRIMARY": {
+            "Config_Name": "116_Vector_Serialization_DelayedIntervention",
+            "Geography": "Namawala",
+            "Custom_Individual_Events": [
+                "Bednet_Got_New_One",
+                "Bednet_Using",
+                "Bednet_Discarded",
+                "Bednet_Using_Num_2"
+            ],
+            "Run_Number": 1,
+            "Simulation_Duration": 200,
+            "x_Temporary_Larval_Habitat": 0.01
+        },
+        "SERIALIZATION" : {
+            "Serialization_Test" : 1,
+            "Serialized_Population_Writing_Type" : "TIME",
+            "Serialization_Mask_Node_Write": 0,
+            "Serialization_Precision" : "FULL",
+            "Serialization_Times" : [ 100 ]
+        }
+    }
+}

@@ -1,7 +1,7 @@
 import dtk_test.dtk_sft as sft
 import os.path as path
-import dtk_test.dtk_serialization_support as d_ss
 import json
+import dtk_test.dtk_serialization_support as d_ss
 
 def application(output_folder="output", config_filename="config.json",
                 report_name=sft.sft_output_filename, debug=False):

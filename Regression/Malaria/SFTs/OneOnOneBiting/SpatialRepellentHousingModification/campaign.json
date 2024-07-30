@@ -1,0 +1,26 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Individual_Selection_Type": "TARGET_NUM_INDIVIDUALS",
+                "Target_Num_Individuals":1,
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 1,
+                    "Repelling_Config": {
+                        "Initial_Effect": 1,
+                        "class": "WaningEffectConstant"
+                    },
+                    "class": "SpatialRepellentHousingModification"
+                }
+            }
+        }
+    ]
+}

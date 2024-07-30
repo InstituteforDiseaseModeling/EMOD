@@ -1,0 +1,18 @@
+{
+    "Reports": [
+        {
+            "Gender": "VECTOR_FEMALE",
+            "Species": "gambiae2",
+            "Stratify_By": "GENOME",
+            "class": "ReportVectorGenetics"
+        },
+        {
+            "Include_Death_By_State_Columns": 1,
+            "Species_List": [
+                "gambiae2"
+            ],
+            "class": "ReportVectorStats"
+        }
+    ],
+    "Use_Defaults": 1
+}

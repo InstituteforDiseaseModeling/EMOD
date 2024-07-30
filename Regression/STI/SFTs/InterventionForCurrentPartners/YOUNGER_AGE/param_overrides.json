@@ -1,0 +1,33 @@
+{
+    "parameters": {
+        "Base_Infectivity": 10.0,
+        "Base_Mortality": 0.01,
+        "x_Base_Population": 0.0001,
+        "Config_Name": "ICP_YOUNGER_AGE",
+        "Custom_Individual_Events": [
+            "Reduced_Acquire_Lowest",
+            "This_Is_What_The_Partners_Should_Broadcast"
+        ],
+        "Demographics_Filenames": [
+            "../../../../HIV/input/SA_UN_demographics.json",
+            "../../../../HIV/input/PFA_overlay.json",
+            "../../Inputs/PFA_Concurrency.json"
+        ],
+        "Enable_Disease_Mortality": 0,
+        "Enable_Natural_Mortality": 0,
+        "Enable_Vital_Dynamics": 0,
+        "Incubation_Period_Constant": 1,
+        "Infectious_Period_Gaussian_Mean": 120,
+        "Min_Days_Between_Adding_Relationships": 1,
+        "Report_Event_Recorder": 1,
+        "Report_Event_Recorder_Events": [
+            "This_Is_What_The_Partners_Should_Broadcast"
+        ],
+        "Report_Relationship_End": 1,
+        "Report_Relationship_Start": 1,
+        "Run_Number": 1,
+        "Simulation_Duration": 200,
+        "Python_Script_Path": "SHARED"
+    },
+    "Default_Config_Path": "defaults/sti_science_default_config.json"
+}

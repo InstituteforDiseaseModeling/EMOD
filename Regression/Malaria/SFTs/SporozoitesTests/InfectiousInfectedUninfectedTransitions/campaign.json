@@ -1,0 +1,119 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividualMalaria",
+                    "Antigen": 0,
+                    "Genome_Markers": [
+                        "gm1"
+                    ]
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "Blocking_Config": {
+                        "Initial_Effect": 0.0,
+                        "class": "WaningEffectConstant"
+                    },
+                    "Cost_To_Consumer": 1,
+                    "Killing_Config": {
+                        "Initial_Effect": 0.0,
+                        "class": "WaningEffectConstant"
+                    },
+                    "Repelling_Config": {
+                        "Initial_Effect": 1.0,
+                        "class": "WaningEffectConstant"
+                    },
+                    "Usage_Config": {
+                        "Initial_Effect": 1.0,
+                        "Box_Duration": 30,
+                        "class": "WaningEffectBox"
+                    },
+                    "class": "SimpleBednet"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 31,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "Blocking_Config": {
+                        "Initial_Effect": 0.0,
+                        "class": "WaningEffectConstant"
+                    },
+                    "Cost_To_Consumer": 1,
+                    "Killing_Config": {
+                        "Initial_Effect": 0.0,
+                        "class": "WaningEffectConstant"
+                    },
+                    "Repelling_Config": {
+                        "Initial_Effect": 1.0,
+                        "class": "WaningEffectConstant"
+                    },
+                    "Usage_Config": {
+                        "Initial_Effect": 1.0,
+                        "Box_Duration": 20,
+                        "class": "WaningEffectBox"
+                    },
+                    "class": "SimpleBednet"
+                }
+            }
+        },
+                        {
+            "class": "CampaignEvent",
+            "Start_Day": 52,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "Blocking_Config": {
+                        "Initial_Effect": 0.0,
+                        "class": "WaningEffectConstant"
+                    },
+                    "Cost_To_Consumer": 1,
+                    "Killing_Config": {
+                        "Initial_Effect": 0.0,
+                        "class": "WaningEffectConstant"
+                    },
+                    "Repelling_Config": {
+                        "Initial_Effect": 1.0,
+                        "class": "WaningEffectConstant"
+                    },
+                    "Usage_Config": {
+                        "Initial_Effect": 1.0,
+                        "Box_Duration": 250,
+                        "class": "WaningEffectBox"
+                    },
+                    "class": "SimpleBednet"
+                }
+            }
+        }
+    ]
+}

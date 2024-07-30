@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "NLHTIVNode.h"
@@ -38,18 +30,36 @@ namespace Kernel
     , max_duration(0)
     , duration(0)
     , node_property_restrictions()
-    , demographic_restrictions()
-    , m_disqualified_by_coverage_only(false)
     , blackout_period(0.0)
     , blackout_time_remaining(0.0)
     , blackout_event_trigger()
     , blackout_on_first_occurrence(false)
-    , notification_occured(false)
-    , event_occured_list()
-    , actual_node_intervention_config()
+    , notification_occurred(false)
+    , event_occurred_list()
     , _ndi(nullptr)
-    , using_individual_config(false)
+    , m_ClassName()
     {
+    }
+
+    NLHTIVNode::NLHTIVNode( const NLHTIVNode& rMaster )
+    : BaseNodeIntervention( rMaster )
+    , m_trigger_conditions( rMaster.m_trigger_conditions )
+    , max_duration( rMaster.max_duration )
+    , duration( rMaster.duration )
+    , node_property_restrictions( rMaster.node_property_restrictions )
+    , blackout_period( rMaster.blackout_period)
+    , blackout_time_remaining( rMaster.blackout_time_remaining )
+    , blackout_event_trigger( rMaster.blackout_event_trigger )
+    , blackout_on_first_occurrence( rMaster.blackout_on_first_occurrence )
+    , notification_occurred( rMaster.notification_occurred )
+    , event_occurred_list( rMaster.event_occurred_list )
+    , _ndi(nullptr)
+    , m_ClassName( rMaster.m_ClassName )
+    {
+        if( rMaster._ndi != nullptr )
+        {
+            _ndi = rMaster._ndi->Clone();
+        }
     }
 
     NLHTIVNode::~NLHTIVNode()
@@ -70,28 +80,16 @@ namespace Kernel
         const Configuration * inputJson
     )
     {
-        JsonConfigurable::_useDefaults = InterventionFactory::useDefaults;
-
-        if( JsonConfigurable::_dryrun || inputJson->Exist( "Actual_NodeIntervention_Config" ) )
-        {
-            initConfigComplexType( "Actual_NodeIntervention_Config", &actual_node_intervention_config, BT_Actual_NodeIntervention_Config_DESC_TEXT );
-        }
-        if( !JsonConfigurable::_dryrun && 
-            ( ( inputJson->Exist( "Actual_IndividualIntervention_Config" ) &&  inputJson->Exist( "Actual_NodeIntervention_Config" )) || 
-              (!inputJson->Exist( "Actual_IndividualIntervention_Config" ) && !inputJson->Exist( "Actual_NodeIntervention_Config" )) ) )
-        {
-            throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, "You must specify either 'Actual_IndividualIntervention_Config' or 'Actual_NodeIntervention_Config' (but do not specify both)." );
-        }
+        NodeInterventionConfig actual_node_intervention_config;
+        initConfigComplexType( "Actual_NodeIntervention_Config", &actual_node_intervention_config, Actual_NodeIntervention_Config_DESC_TEXT );
 
         initConfigTypeMap("Duration", &max_duration, BT_Duration_DESC_TEXT, -1.0f, FLT_MAX, -1.0f ); // -1 is a convention for indefinite duration
 
         initConfigTypeMap( "Blackout_Period", &blackout_period, Blackout_Period_DESC_TEXT, 0.0f, FLT_MAX, 0.0f );
-        initConfigTypeMap( "Blackout_Event_Trigger", &blackout_event_trigger, Blackout_Event_Trigger_DESC_TEXT );
+        initConfigTypeMap( "Blackout_Event_Trigger", &blackout_event_trigger, NLHTIVNode_Blackout_Event_Trigger_DESC_TEXT );
         initConfigTypeMap( "Blackout_On_First_Occurrence", &blackout_on_first_occurrence, Blackout_On_First_Occurrence_DESC_TEXT, false );
 
-        initConfigComplexType( "Node_Property_Restrictions", &node_property_restrictions, NLHTIV_Node_Property_Restriction_DESC_TEXT );
-
-        demographic_restrictions.ConfigureRestrictions( this, inputJson );
+        initConfigComplexType( "Node_Property_Restrictions", &node_property_restrictions, NLHTIVNode_Node_Property_Restrictions_DESC_TEXT );
 
         // --------------------------------------------------------------------------------------------------------------------
         // --- Phase 0 - Pre V2.0 - Trigger_Condition was an enum and users had to have all indivual events in the enum list.
@@ -102,25 +100,20 @@ namespace Kernel
         // ---                      Trigger_Condition_String for backward compatibility (and I'm lazy).
         // --- Phase 3 - 11/9/16    Consolidate so that the user only defines Trigger_Condition_List
         // --------------------------------------------------------------------------------------------------------------------
-        JsonConfigurable::_useDefaults = InterventionFactory::useDefaults; // Why???
-        initConfigTypeMap( "Trigger_Condition_List", &m_trigger_conditions, NLHTI_Trigger_Condition_List_DESC_TEXT );
+        initConfigTypeMap( "Trigger_Condition_List", &m_trigger_conditions, NLHTINode_Trigger_Condition_List_DESC_TEXT );
 
         bool retValue = BaseNodeIntervention::Configure( inputJson );
 
         //this section copied from standardevent coordinator
         if( retValue && !JsonConfigurable::_dryrun )
         {
-            demographic_restrictions.CheckConfiguration();
-            if( inputJson->Exist( "Actual_NodeIntervention_Config" ) )
-            {
-                InterventionValidator::ValidateIntervention( GetTypeName(),
-                                                             InterventionTypeValidation::NODE,
-                                                             actual_node_intervention_config._json, 
-                                                             inputJson->GetDataLocation() );
-                using_individual_config = false;
-            }
+            _ndi = InterventionFactory::getInstance()->CreateNDIIntervention( actual_node_intervention_config._json,
+                                                                              inputJson->GetDataLocation(),
+                                                                              "Actual_NodeIntervention_Config",
+                                                                              true );
+            m_ClassName = std::string( json::QuickInterpreter( actual_node_intervention_config._json )[ "class" ].As<json::String>() );
 
-            event_occured_list.resize( EventTriggerNodeFactory::GetInstance()->GetNumEventTriggers() );
+            event_occurred_list.resize( EventTriggerNodeFactory::GetInstance()->GetNumEventTriggers() );
 
             bool blackout_configured = (inputJson->Exist("Blackout_Event_Trigger")) || (inputJson->Exist("Blackout_Period")) || (inputJson->Exist("Blackout_On_First_Occurrence"));
             bool blackout_all_configured = (inputJson->Exist("Blackout_Event_Trigger")) && (inputJson->Exist("Blackout_Period")) && (inputJson->Exist("Blackout_On_First_Occurrence"));
@@ -199,8 +192,7 @@ namespace Kernel
 
         if( distributed )
         {
-            std::string classname = GetInterventionClassName();
-            LOG_INFO_F("Distributed '%s' intervention to node %d\n", classname.c_str(), parent->GetExternalId() );
+            LOG_INFO_F("Distributed '%s' intervention to node %d\n", m_ClassName.c_str(), parent->GetExternalId() );
         }
         ndi->Release();
 
@@ -213,9 +205,9 @@ namespace Kernel
             }
             else
             {
-                notification_occured = true ;
+                notification_occurred = true ;
             }
-            event_occured_list[ trigger.GetIndex() ].insert( pNode->GetNodeContext()->GetSuid().data ); 
+            event_occurred_list[ trigger.GetIndex() ].insert( pNode->GetNodeContext()->GetSuid().data ); 
         }
 
         return distributed;
@@ -250,87 +242,15 @@ namespace Kernel
             LOG_DEBUG_F("Node-Level HTI reached max_duration. Time to unregister...\n");
             Unregister();
         }
-        event_occured_list.clear();
-        event_occured_list.resize( EventTriggerNodeFactory::GetInstance()->GetNumEventTriggers() );
+        event_occurred_list.clear();
+        event_occurred_list.resize( EventTriggerNodeFactory::GetInstance()->GetNumEventTriggers() );
 
         blackout_time_remaining -= dt ;
-        if( notification_occured )
+        if( notification_occurred )
         {
-            notification_occured = false ;
+            notification_occurred = false ;
             blackout_time_remaining = blackout_period ;
             LOG_DEBUG_F( "start blackout period - nodeid=%d\n",parent->GetExternalId() );
         }
-    }
-
-    void NLHTIVNode::SetContextTo(INodeEventContext *context)
-    {
-        BaseNodeIntervention::SetContextTo( context );
-
-        // Important: Use the instance method to obtain the intervention factory obj instead of static method to cross the DLL boundary
-        //const IInterventionFactory* ifobj = dynamic_cast<NodeEventContextHost *>(parent)->GetInterventionFactoryObj();
-        IGlobalContext *pGC = nullptr;
-        const IInterventionFactory* ifobj = nullptr;
-        if (s_OK == parent->QueryInterface(GET_IID(IGlobalContext), (void**)&pGC))
-        {
-            ifobj = pGC->GetInterventionFactory();
-        }
-        if (!ifobj)
-        {
-            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, "The pointer to IInterventionFactory object is not valid (could be DLL specific)" );
-        }
-        if( _ndi == nullptr )
-        {
-            Configuration* config = nullptr;
-            config = Configuration::CopyFromElement( (actual_node_intervention_config._json), "campaign" );
-
-            _ndi = const_cast<IInterventionFactory*>(ifobj)->CreateNDIIntervention( config );
-            release_assert( _ndi != nullptr );
-
-            delete config;
-            config = nullptr;
-        }
-    }
-
-#if 0
-    // private/protected
-    bool
-    NLHTIVNode::qualifiesToGetIntervention(
-        const IIndividualHumanEventContext * const pIndividual
-    )
-    {
-        bool retQualifies = demographic_restrictions.IsQualified( pIndividual );
-
-        //OK they passed the property and age test, now check if they are part of the demographic coverage
-        if (retQualifies)
-        {
-            LOG_DEBUG_F("demographic_coverage = %f\n", getDemographicCoverage());
-            if( !SMART_DRAW( getDemographicCoverage() ) )
-            {
-                m_disqualified_by_coverage_only = true;
-                LOG_DEBUG_F("Demographic coverage ruled this out, m_disqualified_by_coverage_only is %d \n", m_disqualified_by_coverage_only);
-                retQualifies = false;
-            }
-        }
-
-        LOG_DEBUG_F( "Returning %d from %s\n", retQualifies, __FUNCTION__ );
-        return retQualifies;
-    }
-
-    float NLHTIVNode::getDemographicCoverage() const
-    {
-        return demographic_restrictions.GetDemographicCoverage();    
-    }
-
-    void NLHTIVNode::onDisqualifiedByCoverage( IIndividualHumanEventContext *pIndiv )
-    {
-        //do nothing, this is for the scale up switch
-    }
-#endif
-
-    std::string NLHTIVNode::GetInterventionClassName() const
-    {
-        std::string class_name;
-        class_name = std::string( json::QuickInterpreter( actual_node_intervention_config._json )[ "class" ].As<json::String>() );
-        return class_name;
     }
 }

@@ -1,0 +1,37 @@
+
+{ 
+    "Metadata": 
+    { 
+        "DateCreated": "June 9, 2015",
+        "Tool": "Notepad",
+        "Author": "Daniel Bridenbecker",
+        "RegionName": "RegressionTest",
+        "DataSource": "NA",
+        "IdReference": "0",
+        "NodeCount": 1
+    },
+    "Defaults": 
+    { 
+        "IndividualProperties": [
+            { 
+                "Property": "CurrentStatus",
+                "Values": [
+                    "NONE",
+                    "PREGNANT",
+                    "Use_Test_Contraceptive"
+                ],
+                "Initial_Distribution": [
+                    1.0, 
+                    0.0,
+                    0.0
+                ],
+                "Transitions": []
+            }
+        ]
+    },
+    "Nodes": [ 
+        { 
+            "NodeID": 1
+        } 
+    ]
+}

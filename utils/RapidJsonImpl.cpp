@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 #include <stdafx.h>
 #include <cstdio>
 #include <string>
@@ -291,7 +283,7 @@ namespace Kernel {
         assert(m_document);
         Document& document = *m_document;
         assert(document[key].IsNumber());
-        return document[key].GetDouble();
+        return float(document[key].GetDouble());
     }
 
     double RapidJsonObj::GetDouble(const char* key) const
@@ -327,7 +319,7 @@ namespace Kernel {
         return rjObj;
     }
 
-    const char* RapidJsonObj::AsString() const { assert(m_document->IsNumber()); return m_document->GetString(); }
+    const char* RapidJsonObj::AsString() const {                                 return m_document->GetString(); }
     int32_t     RapidJsonObj::AsInt()    const { assert(m_document->IsNumber()); return m_document->GetInt(); }
     uint32_t    RapidJsonObj::AsUint()   const { assert(m_document->IsNumber()); return m_document->GetUint(); }
     int64_t     RapidJsonObj::AsInt64()  const { assert(m_document->IsNumber()); return m_document->GetInt64(); }

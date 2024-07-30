@@ -1,0 +1,96 @@
+{
+    "Default_Config_Path": "../../defaults/malaria_genetics_default_config.json",
+    "DEMOGRAPHICS": {
+        "Base_Air_Temperature": 26.0,
+        "Demographics_Filenames": [
+            "Namawala_single_node_demographics.json",
+            "Namawala_no_prevalence.json"
+        ]
+    },
+    "PRIMARY": {
+        "Config_Name": "111_Malaria_FPG_OocystProgression",
+        "Geography": "Namawala",
+        "Python_Script_Path": "SHARED",
+        "Run_Number": 2,
+        "x_Base_Population": 10,
+        "Simulation_Duration": 730
+    },
+    "REPORTS": {
+        "Custom_Reports_Filename": "custom_reports.json"
+    },
+    "STRAIN_TRACKING": {
+        "Falciparum_MSP_Variants": 16,
+        "Falciparum_Nonspecific_Types": 16,
+        "Falciparum_PfEMP1_Variants": 500,
+        "Max_Individual_Infections": 20,
+        "Parasite_Genetics": {
+            "Barcode_Genome_Locations": [
+                2140000,
+                18590000
+            ],
+            "PfEMP1_Variants_Genome_Locations": [
+            ],
+            "Sporozoite_Life_Expectancy": 10,
+            "Var_Gene_Randomness_Type": "ALL_RANDOM"
+        }
+    },
+    "VECTOR": {
+        "x_Temporary_Larval_Habitat": 0.1,
+        "Vector_Species_Params": [
+            {
+                "Name": "SillySkeeter",
+				"COMMENT": "Reducing impats of being infected or infectious so we can see the impact more easily",
+                "Infected_Egg_Batch_Factor": 1.0,
+                "Infectious_Human_Feed_Mortality_Factor": 1.0,
+                "Genes" : [
+                    {
+                        "Is_Gender_Gene": 0,
+                        "Alleles": [
+                            {
+                                "Name": "a1",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.5
+                            },
+                            {
+                                "Name": "a2",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.5
+                            }
+                        ],
+                        "Mutations": []
+                    }
+                ],
+                "Gene_To_Trait_Modifiers" : [
+                    {
+                        "Allele_Combinations" : [
+                            [ "X", "X" ],
+                            [ "a1", "a1" ]
+                        ],
+                        "Trait_Modifiers" : [
+                            {
+                                "Trait" : "OOCYST_PROGRESSION",
+                                "Modifier": 1.5,
+                                "Gametocyte_A_Barcode_String": "G*",
+                                "Gametocyte_B_Barcode_String": "G*"
+                            }
+                        ]
+                    },
+                    {
+                        "Allele_Combinations" : [
+                            [ "X", "X" ],
+                            [ "a2", "a2" ]
+                        ],
+                        "Trait_Modifiers" : [
+                            {
+                                "Trait" : "OOCYST_PROGRESSION",
+                                "Modifier": 0.8,
+                                "Gametocyte_A_Barcode_String": "A*",
+                                "Gametocyte_B_Barcode_String": "A*"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

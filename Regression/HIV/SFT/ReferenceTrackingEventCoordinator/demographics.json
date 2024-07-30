@@ -1,0 +1,123 @@
+
+{ 
+    "Metadata": 
+    { 
+        "DateCreated": "Mon Dec 19, 2016",
+        "Author": "Daniel Bridenbecker",
+        "IdReference": "0",
+        "NodeCount": 1,
+        "NOTE": "No natural death"
+    },
+    "Defaults": 
+    { 
+        "NodeAttributes": 
+        { 
+            "NOTE": "The following parameters are required, but not used",
+            "BirthRate": 0
+        },
+        "IndividualProperties": [ 
+            { 
+                "alpha__Comment": "80% Healthcare Accessible",
+                "Property": "Accessibility",
+                "Values": [ "Yes", "No" ],
+                "Initial_Distribution": [ 0.80000000000000004, 0.20000000000000001 ],
+                "Transitions": []
+            }
+        ],
+        "IndividualAttributes": 
+        { 
+            "FertilityDistribution": 
+            { 
+                "NumDistributionAxes": 2,
+                "AxisNames": [ "age", "year" ],
+                "AxisUnits": [ "years", "simulation year" ],
+                "AxisScaleFactors": [ 365, 1 ],
+                "NumPopulationGroups": [ 1, 1 ],
+                "PopulationGroups": 
+                [
+                    [ 15 ], 
+                    [ 1950 ]
+                ],
+                "ResultUnits": "annual births per 1000 individuals",
+                "ResultScaleFactor": 2.73972602739726e-06,
+                "ResultValues": 
+                [
+                    [ 0.0 ]
+                ]
+            },
+            "MortalityDistributionMale": 
+            { 
+                "NumDistributionAxes": 2,
+                "AxisNames": [ "age", "year" ],
+                "AxisUnits": [ "years", "simulation year" ],
+                "AxisScaleFactors": [ 365, 1 ],
+                "NumPopulationGroups": [ 1, 1 ],
+                "PopulationGroups": 
+                [
+                    [ 0 ], 
+                    [ 1952 ]
+                ],
+                "ResultUnits": "Mortality rate in units of 1/year",
+                "ResultScaleFactor": 0.0027397260273970001,
+                "ResultValues": 
+                [
+                    [ 0.0 ]
+                ]
+            },
+            "MortalityDistributionFemale": 
+            { 
+                "NumDistributionAxes": 2,
+                "AxisNames": [ "age", "year" ],
+                "AxisUnits": [ "years", "simulation year" ],
+                "AxisScaleFactors": [ 365, 1 ],
+                "NumPopulationGroups": [ 1, 1 ],
+                "PopulationGroups": 
+                [
+                    [ 0 ], 
+                    [ 1952 ]
+                ],
+                "ResultUnits": "Mortality rate in units of 1/year",
+                "ResultScaleFactor": 0.0027397260273970001,
+                "ResultValues": 
+                [
+                    [ 0.0 ]
+                ]
+            },
+            "AgeDistribution": 
+            { 
+                "NumDistributionAxes": 0,
+                "ResultUnits": "years",
+                "ResultScaleFactor": 365,
+                "AxisScaleFactors": 1,
+                "ResultValues": [ 0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 90 ],
+                "DistributionValues": [ 0, 0.16325000000000001, 0.29843500000000001, 0.40943000000000002, 0.50558999999999998, 0.58856200000000003, 0.66244899999999995, 0.72695399999999999, 0.78286900000000004, 0.83338800000000002, 0.87607999999999997, 0.91180499999999998, 0.93940299999999999, 0.96134799999999998, 0.97784300000000002, 0.98905100000000001, 0.99555499999999997, 1 ]
+            },
+            "NOTE": "The following parameters are required, but not used",
+            "PrevalenceDistributionFlag": 0,
+            "PrevalenceDistribution1": 0,
+            "PrevalenceDistribution2": 0,
+            "AgeDistributionFlag": 9,
+            "AgeDistribution1_Note": "Lambda",
+            "AgeDistribution1": 10220,
+            "AgeDistribution2_Note": "Kappa",
+            "AgeDistribution2": 1.05,
+            "SusceptibilityDistributionFlag": 0,
+            "SusceptibilityDistribution1": 1,
+            "SusceptibilityDistribution2": 0
+        }
+    },
+    "Nodes": [ 
+        { 
+            "NodeID": 1,
+            "NodeAttributes": 
+            { 
+                "NOT_LGA_Name": "Base_Dem",
+                "InitialPopulation": 10000,
+                "NOTE": "The following parameters are required, but not used",
+                "Latitude": 0,
+                "Longitude": 0,
+                "Altitude": 0
+            }
+        } 
+    ]
+}

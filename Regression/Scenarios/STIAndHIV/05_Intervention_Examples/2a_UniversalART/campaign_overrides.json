@@ -80,7 +80,6 @@
                             "InterventionStatus:OnPreART",
                             "InterventionStatus:LinkingToPreART"
                         ],
-                        "Event_Or_Config": "Event",
                         "NOTE1": "Threshold for adult vs child guidelines",
                         "Negative_Diagnosis_Event": "ARTStaging5",
                         "New_Property_Value": "InterventionStatus:ARTStaging",
@@ -113,7 +112,6 @@
                             "InterventionStatus:OnPreART",
                             "InterventionStatus:LinkingToPreART"
                         ],
-                        "Event_Or_Config": "Event",
                         "If_Active_TB": {
                             "Times": [
                                 2010.34
@@ -249,7 +247,6 @@
                             "InterventionStatus:OnART",
                             "InterventionStatus:LinkingToART"
                         ],
-                        "Event_Or_Config": "Event",
                         "NOTE1": "Threshold for adult vs child guidelines",
                         "Negative_Diagnosis_Event": "OnPreART3",
                         "New_Property_Value": "InterventionStatus:OnPreART",
@@ -280,7 +277,6 @@
                             "InterventionStatus:OnART",
                             "InterventionStatus:LinkingToART"
                         ],
-                        "Event_Or_Config": "Event",
                         "If_Active_TB": {
                             "Times": [
                                 2010.34

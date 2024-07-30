@@ -99,7 +99,6 @@
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Days_To_Diagnosis": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -108,7 +107,6 @@
                             "InterventionStatus:LinkingToPreART",
                             "InterventionStatus:ARTStaging"
                         ],
-                        "Event_Or_Config": "Event",
                         "Female_Multiplier": 0,
                         "Interpolation_Order": 0,
                         "Negative_Diagnosis_Event": "HCTTestingLoop0",
@@ -181,7 +179,6 @@
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Days_To_Diagnosis": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -189,7 +186,6 @@
                             "InterventionStatus:OnPreART",
                             "InterventionStatus:LinkingToPreART"
                         ],
-                        "Event_Or_Config": "Event",
                         "Female_Multiplier": 0,
                         "Interpolation_Order": 0,
                         "New_Property_Value": "InterventionStatus:ARTStagingDiagnosticTest",

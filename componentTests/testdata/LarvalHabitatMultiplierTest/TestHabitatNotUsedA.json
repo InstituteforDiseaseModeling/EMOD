@@ -1,0 +1,15 @@
+{
+    "LarvalHabitatMultiplier" : 
+    [
+        {
+            "Habitat" : "BRACKISH_SWAMP",
+            "Species" : "ALL_SPECIES",
+            "Factor" : 2.0
+        },
+        {
+            "Habitat" : "MARSHY_STREAM",
+            "Species" : "ALL_SPECIES",
+            "Factor" : 3.0
+        }
+    ]
+}

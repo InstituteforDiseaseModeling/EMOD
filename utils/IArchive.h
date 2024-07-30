@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 #include <string>
@@ -147,6 +139,29 @@ namespace Kernel
                     (*this) & entry;
                     st.insert( entry );
                 }
+            }
+            this->endArray();
+        }
+
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // !!! A special version is needed for std::vector<bool> because std::vector<bool> has a
+        // !!! special version in STL where the values are converted to bits.  The problem with
+        // !!! the special version is that we can get the reference to a particular index.
+        // !!! Look for info on "cannot convert from 'std::_Vb_reference<_MycontTy>' to 'bool &'"
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        void operator & ( std::vector<bool>& vec )
+        {
+            size_t count = this->IsWriter() ? vec.size() : -1;
+
+            this->startArray(count);
+            if (!this->IsWriter()) {
+                vec.resize(count);
+            }
+            for( int i = 0; i < vec.size(); ++i )
+            {
+                bool val = vec[ i ];
+                (*this) & val;
+                vec[ i ] = val;
             }
             this->endArray();
         }

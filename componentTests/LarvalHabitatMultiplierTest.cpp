@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "UnitTest++.h"
@@ -44,18 +36,12 @@ SUITE(LarvalHabitatMultiplierTest)
             Environment::setLogger( new SimpleLogger( Logger::tLevel::WARNING ) );
             Environment::setSimulationConfig( m_pSimulationConfig );
 
-            m_pSimulationConfig->vector_params->vector_species_names.insert( "arabiensis" );
-            m_pSimulationConfig->vector_params->vector_species_names.insert( "funestus" );
-            m_pSimulationConfig->vector_params->vector_species_names.insert( "gambiae" );
-
             unique_ptr<Configuration> p_config( Environment::LoadConfigurationFile( "testdata/LarvalHabitatMultiplierTest/config.json" ) );
-            unique_ptr<Configuration> p_parameters( Environment::CopyFromElement( (*p_config)[ "parameters" ] ) );
 
             try
             {
-                m_pSimulationConfig->vector_params->vspMap[ "arabiensis" ] = VectorSpeciesParameters::CreateVectorSpeciesParameters( p_parameters.get(), "arabiensis" );
-                m_pSimulationConfig->vector_params->vspMap[ "funestus"   ] = VectorSpeciesParameters::CreateVectorSpeciesParameters( p_parameters.get(), "funestus"   );
-                m_pSimulationConfig->vector_params->vspMap[ "gambiae"    ] = VectorSpeciesParameters::CreateVectorSpeciesParameters( p_parameters.get(), "gambiae"    );
+                m_pSimulationConfig->vector_params->vector_species.ConfigureFromJsonAndKey( p_config.get(), "Vector_Species_Params" );
+                m_pSimulationConfig->vector_params->vector_species.CheckConfiguration();
             }
             catch( DetailedException& re )
             {
@@ -68,6 +54,7 @@ SUITE(LarvalHabitatMultiplierTest)
         {
             delete m_pSimulationConfig;
             Environment::Finalize();
+            JsonConfigurable::ClearMissingParameters();
             JsonConfigurable::_useDefaults = true;
             JsonConfigurable::_track_missing = true;
         }
@@ -251,7 +238,7 @@ SUITE(LarvalHabitatMultiplierTest)
         }
     }
 
-    TEST_FIXTURE(LhmFixture, TestReadMixA)
+    TEST_FIXTURE( LhmFixture, TestReadMixA )
     {
         JsonObjectDemog json;
         json.ParseFile( "testdata/LarvalHabitatMultiplierTest/TestReadMix.json" );
@@ -259,12 +246,12 @@ SUITE(LarvalHabitatMultiplierTest)
         LarvalHabitatMultiplier lhm;
         lhm.Initialize();
 
-        ConfigFromJson(json, lhm);
+        ConfigFromJson( json, lhm );
 
         CheckReadMix( lhm );
     }
 
-    TEST_FIXTURE(LhmFixture, TestReadMixB)
+    TEST_FIXTURE( LhmFixture, TestReadMixB )
     {
         std::unique_ptr<Configuration> p_config( Configuration_Load( "testdata/LarvalHabitatMultiplierTest/TestReadMix.json" ) );
 
@@ -276,7 +263,7 @@ SUITE(LarvalHabitatMultiplierTest)
         CheckReadMix( lhm );
     }
 
-    TEST_FIXTURE(LhmFixture, TestInvalidValue)
+    TEST_FIXTURE( LhmFixture, TestInvalidValue )
     {
         JsonObjectDemog json;
         json.ParseFile( "testdata/LarvalHabitatMultiplierTest/TestInvalidValue.json" );
@@ -286,7 +273,7 @@ SUITE(LarvalHabitatMultiplierTest)
 
         try
         {
-            ConfigFromJson(json, lhm);
+            ConfigFromJson( json, lhm );
             CHECK( false );
         }
         catch( DetailedException& /*re*/ )
@@ -306,7 +293,7 @@ SUITE(LarvalHabitatMultiplierTest)
 
         try
         {
-            ConfigFromJson(json, lhm);
+            ConfigFromJson( json, lhm );
             CHECK( false );
         }
         catch( DetailedException& re )
@@ -316,23 +303,104 @@ SUITE(LarvalHabitatMultiplierTest)
         }
     }
 
-    TEST_FIXTURE(LhmFixture, TestOverspecification)
+    TEST_FIXTURE( LhmFixture, TestHabitatNotUsedA )
     {
         JsonObjectDemog json;
-        json.ParseFile("testdata/LarvalHabitatMultiplierTest/TestOverspecification.json");
+        json.ParseFile( "testdata/LarvalHabitatMultiplierTest/TestHabitatNotUsedA.json" );
 
         LarvalHabitatMultiplier lhm;
         lhm.Initialize();
 
         try
         {
-            ConfigFromJson(json, lhm);
-            CHECK(false);
+            ConfigFromJson( json, lhm );
+            CHECK( false );
         }
-        catch (DetailedException& re)
+        catch( DetailedException& re )
         {
-            PrintDebug(re.GetMsg());
-            CHECK(true);
+            PrintDebug( re.GetMsg() );
+            CHECK( true );
         }
     }
+
+    TEST_FIXTURE( LhmFixture, TestHabitatNotUsedB )
+    {
+        JsonObjectDemog json;
+        json.ParseFile( "testdata/LarvalHabitatMultiplierTest/TestHabitatNotUsedB.json" );
+
+        LarvalHabitatMultiplier lhm;
+        lhm.Initialize();
+
+        try
+        {
+            ConfigFromJson( json, lhm );
+            CHECK( false );
+        }
+        catch( DetailedException& re )
+        {
+            PrintDebug( re.GetMsg() );
+            CHECK( true );
+        }
+    }
+
+    TEST_FIXTURE( LhmFixture, TestUnknownSpecies )
+    {
+        JsonObjectDemog json;
+        json.ParseFile( "testdata/LarvalHabitatMultiplierTest/TestUnknownSpecies.json" );
+
+        LarvalHabitatMultiplier lhm;
+        lhm.Initialize();
+
+        try
+        {
+            ConfigFromJson( json, lhm );
+            CHECK( false );
+        }
+        catch( DetailedException& re )
+        {
+            PrintDebug( re.GetMsg() );
+            CHECK( true );
+        }
+    }
+
+    TEST_FIXTURE( LhmFixture, TestOverspecification )
+    {
+        JsonObjectDemog json;
+        json.ParseFile( "testdata/LarvalHabitatMultiplierTest/TestOverspecification.json" );
+
+        LarvalHabitatMultiplier lhm;
+        lhm.Initialize();
+
+        try
+        {
+            ConfigFromJson( json, lhm );
+            CHECK( false );
+        }
+        catch( DetailedException& re )
+        {
+            PrintDebug( re.GetMsg() );
+            CHECK( true );
+        }
+    }
+
+    TEST_FIXTURE( LhmFixture, TestInvalidAllHabitatsInIntervention )
+    {
+        JsonObjectDemog json;
+        json.ParseFile( "testdata/LarvalHabitatMultiplierTest/TestInvalidAllHabitatsInIntervention.json" );
+
+        LarvalHabitatMultiplier lhm( true ); // used by intervention
+        lhm.Initialize();
+
+        try
+        {
+            ConfigFromJson( json, lhm );
+            CHECK( false );
+        }
+        catch( DetailedException& re )
+        {
+            PrintDebug( re.GetMsg() );
+            CHECK( true );
+        }
+    }
+
 }

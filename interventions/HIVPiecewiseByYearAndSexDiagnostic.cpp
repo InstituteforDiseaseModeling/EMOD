@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include <math.h> // for std::floor
@@ -29,7 +21,6 @@ namespace Kernel
     BEGIN_QUERY_INTERFACE_BODY(HIVPiecewiseByYearAndSexDiagnostic)
         HANDLE_INTERFACE(IConfigurable)
         HANDLE_INTERFACE(IDistributableIntervention)
-        //HANDLE_INTERFACE(IHealthSeekingBehavior)
         HANDLE_INTERFACE(IBaseIntervention)
         HANDLE_ISUPPORTS_VIA(IDistributableIntervention)
     END_QUERY_INTERFACE_BODY(HIVPiecewiseByYearAndSexDiagnostic)
@@ -37,42 +28,53 @@ namespace Kernel
     IMPLEMENT_FACTORY_REGISTERED(HIVPiecewiseByYearAndSexDiagnostic)
 
     HIVPiecewiseByYearAndSexDiagnostic::HIVPiecewiseByYearAndSexDiagnostic()
-    : HIVSimpleDiagnostic()
-    , interpolation_order(0)
-    , female_multiplier(1)
-    , default_value(0)
-    , period_between_trials(0)
+        : AbstractDecision(true)
+        , interpolation_order(0)
+        , female_multiplier(1)
+        , default_value(0)
+        , year2ValueMap()
     {
         initSimTypes(1, "HIV_SIM" ); // just limiting this to HIV for release
     }
 
     HIVPiecewiseByYearAndSexDiagnostic::HIVPiecewiseByYearAndSexDiagnostic( const HIVPiecewiseByYearAndSexDiagnostic& master )
-    : HIVSimpleDiagnostic( master )
+        : AbstractDecision( master )
+        , interpolation_order( master.interpolation_order )
+        , female_multiplier( master.female_multiplier )
+        , default_value( master.default_value )
+        , year2ValueMap( master.year2ValueMap )
     {
-        interpolation_order = master.interpolation_order;
-        female_multiplier = master.female_multiplier;
-        default_value = master.default_value;
-        period_between_trials = master.period_between_trials;
-        year2ValueMap = master.year2ValueMap;
-        period_between_trials = master.period_between_trials;
-        value_multiplier = master.value_multiplier;
     }
 
     bool
     HIVPiecewiseByYearAndSexDiagnostic::Configure(const Configuration* inputJson)
     {
+        // This used to be available.  I saw it used in test but never by researchers
+        // This is just a double check
+        if( inputJson->Exist( "Days_To_Diagnosis" ) )
+        {
+            std::stringstream ss;
+            ss << "'Days_To_Diagnosis' is no longer supported.\n";
+            throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+        }
+
+        if( inputJson->Exist( "Event_Or_Config" ) )
+        {
+            std::stringstream ss;
+            ss << "'Event_Or_Config' is no longer needed.  Only events are supported.";
+            throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+        }
+
         initConfigTypeMap("Interpolation_Order", &interpolation_order, HIV_PBYASD_Interpolation_Order_DESC_TEXT, 0, 1, 0);
         initConfigTypeMap("Female_Multiplier", &female_multiplier, HIV_PBYASD_Female_Multiplier_DESC_TEXT, 0, FLT_MAX, 1);
         initConfigTypeMap("Default_Value", &default_value, HIV_PBYASD_Default_Value_DESC_TEXT, 0, 1, 0);
-        initConfigComplexType("Time_Value_Map", &year2ValueMap, HIV_PBYASD_Time_Value_Map_DESC_TEXT);
+        initConfigTypeMap("Time_Value_Map", &year2ValueMap, HIV_PBYASD_Time_Value_Map_DESC_TEXT);
 
-        bool ret = HIVSimpleDiagnostic::Configure(inputJson);
-        value_multiplier = period_between_trials/DAYSPERYEAR;   // Will use first order approximation of exponential
+        bool ret = AbstractDecision::Configure(inputJson);
         return ret;
     }
 
-    bool
-    HIVPiecewiseByYearAndSexDiagnostic::positiveTestResult()
+    bool HIVPiecewiseByYearAndSexDiagnostic::MakeDecision( float dt )
     {
         bool testResult = 0;
         float value = 0;
@@ -105,14 +107,12 @@ namespace Kernel
 
     void HIVPiecewiseByYearAndSexDiagnostic::serialize(IArchive& ar, HIVPiecewiseByYearAndSexDiagnostic* obj)
     {
-        HIVSimpleDiagnostic::serialize( ar, obj );
+        AbstractDecision::serialize( ar, obj );
         HIVPiecewiseByYearAndSexDiagnostic& diag = *obj;
 
         ar.labelElement("interpolation_order"  ) & diag.interpolation_order;
         ar.labelElement("female_multiplier"    ) & diag.female_multiplier;
         ar.labelElement("default_value"        ) & diag.default_value;
         ar.labelElement("year2ValueMap"        ) & diag.year2ValueMap;
-        ar.labelElement("period_between_trials") & diag.period_between_trials;
-        ar.labelElement("value_multiplier"     ) & diag.value_multiplier;
     }
 }

@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include <memory> // unique_ptr
@@ -1134,7 +1126,7 @@ SUITE(MigrationTest)
             "Household-Scenario-Small", 
             26,
             1,
-            "Variable testdata/MigrationTest/TestDatavalueCountTooSmall.bin.json[Metadata][DatavalueCount] had value 0 which was inconsistent with range limit 0" );
+            "Variable 'testdata/MigrationTest/TestDatavalueCountTooSmall.bin.json[Metadata][DatavalueCount]' had value 0 which was inconsistent with range limit 0" );
     }
 
     TEST_FIXTURE(MigrationFixture, TestDatavalueCountTooBig)
@@ -1145,7 +1137,7 @@ SUITE(MigrationTest)
             "Household-Scenario-Small", 
             26,
             1,
-            "Variable testdata/MigrationTest/TestDatavalueCountTooBig.bin.json[Metadata][DatavalueCount] had value 999 which was inconsistent with range limit 100" );
+            "Variable 'testdata/MigrationTest/TestDatavalueCountTooBig.bin.json[Metadata][DatavalueCount]' had value 999 which was inconsistent with range limit 100" );
     }
 
     TEST_FIXTURE(MigrationFixture, TestInvalidMigrationTypeA)
@@ -1255,7 +1247,7 @@ SUITE(MigrationTest)
             "Household-Scenario-Small", 
             26,
             1,
-            "testdata/MigrationTest/TestMetadataBadJsonA.bin.json: Failed to parse incoming text. Name of an object member must be a string at character=312 / line number=10" );
+            "testdata/MigrationTest/TestMetadataBadJsonA.bin.json: Failed to parse incoming text. Name of an object member must be a string" );
     }
 
     TEST_FIXTURE(MigrationFixture, TestMetadataBadJsonB)
@@ -1282,13 +1274,19 @@ SUITE(MigrationTest)
 
     TEST_FIXTURE(MigrationFixture, TestLocalMigrationFileNotFound)
     {
+        std::string exp_msg;
+        exp_msg  = "Could not find file TestLocalMigrationFileNotFound.bin.\n";
+        exp_msg += "Received the following system error messages while checking for the existance\n";
+        exp_msg += "of the file at the following locations:\n";
+        exp_msg += "testdata/MigrationTest/TestLocalMigrationFileNotFound.bin - 'No such file or directory'";
+
         TestHelper_FactoryConfigureException( 
             __LINE__, 
             "testdata/MigrationTest/TestLocalMigrationFileNotFound_config.json", 
             "Household-Scenario-Small", 
             26,
             1,
-            "Could not find file testdata/MigrationTest/TestLocalMigrationFileNotFound.bin" );
+            exp_msg );
     }
 
     TEST_FIXTURE(MigrationFixture, TestWrongSize)

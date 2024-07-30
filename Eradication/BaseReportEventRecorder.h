@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -41,14 +33,15 @@ namespace Kernel
         virtual std::string GetHeader() const;
 
         // IObserver
-        bool notifyOnEvent( Entity *pEntity, const Trigger& trigger );
+        virtual bool notifyOnEvent( Entity *pEntity, const Trigger& trigger ) override;
 
     protected:
         virtual void ConfigureOther( const Configuration* inputJson );
+        virtual void CheckOther( const Configuration* inputJson );
         virtual std::string GetOtherData( Entity *pEntity, const Trigger& trigger );
         virtual std::string GetTimeHeader() const;
 
-        virtual float GetTime( Entity* pEntity ) const = 0;
+        virtual std::string GetTime( Entity* pEntity ) const = 0;
 
         bool ignore_events_in_list;
 

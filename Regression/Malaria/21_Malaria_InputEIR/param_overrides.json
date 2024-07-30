@@ -69,7 +69,7 @@
         "Geography": "Zambia"
     }, 
     "MOSQUITO": {
-        "Vector_Species_Names": []
+        "Vector_Species_Params": []
     }, 
     "Default_Config_Path": "../../defaults/malaria_default_config.json", 
     "FUDGE_FACTORS": {

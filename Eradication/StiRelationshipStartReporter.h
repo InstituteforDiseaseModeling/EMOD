@@ -1,17 +1,11 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
 #include "BaseTextReport.h"
 #include "ISimulation.h"
 #include "RelationshipReporting.h"
+#include "ReportFilterRelationship.h"
+#include "Properties.h"
 
 namespace Kernel
 {
@@ -20,19 +14,23 @@ namespace Kernel
 
     class StiRelationshipStartReporter : public BaseTextReport
     {
+        GET_SCHEMA_STATIC_WRAPPER( StiRelationshipStartReporter )
     public:
         static IReport* Create(ISimulation* simulation);
 
         // IReport
-        virtual void BeginTimestep();
-        virtual void EndTimestep( float currentTime, float dt );
+        virtual bool Configure( const Configuration* inputJson ) override;
+        virtual void Initialize( unsigned int nrmSize ) override;
+        virtual void CheckForValidNodeIDs( const std::vector<ExternalNodeId_t>& demographicNodeIds ) override;
+        virtual void BeginTimestep() override;
+        virtual void EndTimestep( float currentTime, float dt ) override;
 
     protected:
-        StiRelationshipStartReporter(ISimulation* simulation);
+        StiRelationshipStartReporter( ISimulation* simulation = nullptr );
         virtual ~StiRelationshipStartReporter();
 
         // BaseTextReport
-        virtual std::string GetHeader() const ;
+        virtual std::string GetHeader() const override;
 
         void onNewNode(INodeContext* node);
         void onNewRelationship(IRelationship* relationship);
@@ -42,10 +40,17 @@ namespace Kernel
                                        IIndividualHumanSTI* pPartnerA,
                                        IIndividualHumanSTI* pPartnerB ) {} ;
         virtual std::string GetOtherData( unsigned int relationshipID ) { return ""; };
-
-        std::string GetPropertyString( IIndividualHumanEventContext* individual );
+        void ExtractPartnerData( IIndividualHumanEventContext* pHuman,
+                                 IIndividualHumanSTI* pHumanSTI,
+                                 ParticipantInfo& rParticipant );
+        void AddPartnerColumnHeaders( const char* pPartnerLabel, std::stringstream& rHeader ) const;
+        void WriteParticipant( ParticipantInfo& rParticipant );
 
         ISimulation* simulation;
         std::vector<RelationshipStartInfo> report_data;
+        std::vector<std::string> m_IPKeyNames;
+        std::vector<IPKey> m_IPKeys;
+        bool m_IncludeOther;
+        ReportFilterRelationship m_ReportFilter;
     };
 }

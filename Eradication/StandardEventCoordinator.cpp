@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
@@ -51,17 +43,25 @@ namespace Kernel
     //, include_emigrants(false)
     //, include_immigrants(false)
     , intervention_activated(false)
-    , intervention_config()
     , cached_nodes()
     , node_suids()
-    , _di( nullptr ) 
     , demographic_restrictions( true, TargetDemographicType::Everyone, useDemographicCoverage )
-    , has_node_level_intervention(false)
     , demographic_coverage(1.0)
     , node_property_restrictions()
+    , use_demographic_coverage( useDemographicCoverage )
+    , individual_selection_type( IndividualSelectionType::DEMOGRAPHIC_COVERAGE )
+    , target_num_individuals( 1 )
     , log_intervention_name()
+    , m_pInterventionIndividual( nullptr )
+    , m_pInterventionNode( nullptr )
     {
         LOG_DEBUG("StandardInterventionDistributionEventCoordinator ctor\n");
+    }
+
+    StandardInterventionDistributionEventCoordinator::~StandardInterventionDistributionEventCoordinator()
+    {
+        delete m_pInterventionIndividual;
+        delete m_pInterventionNode;
     }
 
     bool
@@ -69,16 +69,21 @@ namespace Kernel
         const Configuration * inputJson
     )
     {
+        InterventionConfig intervention_config;
         initConfigComplexType( "Intervention_Config", &intervention_config, Intervention_Config_DESC_TEXT );
 
         InitializeRepetitions( inputJson );
+        if( use_demographic_coverage )
+        {
+            InitializeIndividualSelectionType( inputJson );
+        }
 
         //initConfigTypeMap("Include_Departures", &include_emigrants, Include_Departures_DESC_TEXT, false );
         //initConfigTypeMap("Include_Arrivals", &include_immigrants, Include_Arrivals_DESC_TEXT, false );
 
         demographic_restrictions.ConfigureRestrictions( this, inputJson );
 
-        initConfigComplexType( "Node_Property_Restrictions", &node_property_restrictions, SEC_Node_Property_Restriction_DESC_TEXT );
+        initConfigComplexType( "Node_Property_Restrictions", &node_property_restrictions, Node_Property_Restrictions_DESC_TEXT );
 
         bool retValue = JsonConfigurable::Configure( inputJson );
         if( retValue && !JsonConfigurable::_dryrun)
@@ -87,29 +92,66 @@ namespace Kernel
 
             CheckRepetitionConfiguration();
 
-            InterventionTypeValidation::Enum found_type = InterventionValidator::ValidateIntervention( 
-                                                              GetTypeName(),
-                                                              InterventionTypeValidation::EITHER,
-                                                              intervention_config._json,
-                                                              inputJson->GetDataLocation() );
+            m_pInterventionIndividual = InterventionFactory::getInstance()->CreateIntervention( intervention_config._json,
+                                                                                                inputJson->GetDataLocation(),
+                                                                                                "Intervention_Config",
+                                                                                                false ); // don't throw if null
+            if( m_pInterventionIndividual == nullptr )
+            {
+                m_pInterventionNode = InterventionFactory::getInstance()->CreateNDIIntervention( intervention_config._json,
+                                                                                                 inputJson->GetDataLocation(),
+                                                                                                 "Intervention_Config",
+                                                                                                 false ); // don't throw if null
+            }
+            if( (m_pInterventionIndividual == nullptr) && (m_pInterventionNode == nullptr) )
+            {
+                std::string class_name = std::string(json::QuickInterpreter( intervention_config._json )["class"].As<json::String>()) ;
 
-            has_node_level_intervention = (found_type == InterventionTypeValidation::NODE);
-            if( has_node_level_intervention )
+                std::stringstream ss;
+                ss << "Invalid Intervention Type in '" << GetTypeName() << "'.\n";
+                ss << "'" << class_name << "' is not a known intervention.";
+                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+            }
+            log_intervention_name = std::string( json::QuickInterpreter( intervention_config._json )[ "class" ].As<json::String>() );
+
+            if( m_pInterventionNode != nullptr )
             {
                 // ---------------------------------------------------------------------------
                 // --- If the user is attempting to define demographic restrictions when they
                 // --- are using a node level intervention, then we need to error because these
                 // --- restrictions are not doing anything.
                 // ---------------------------------------------------------------------------
-                if( !demographic_restrictions.HasDefaultRestrictions() )
+                if( !demographic_restrictions.HasDefaultRestrictions() ||
+                    (individual_selection_type != IndividualSelectionType::DEMOGRAPHIC_COVERAGE) )
                 {
                     std::ostringstream msg ;
-                    msg << "In StandardInterventionDistributionEventCoordinator, demographic restrictions such as 'Demographic_Coverage'\n";
-                    msg << "and 'Target_Gender' do not apply when distributing node level interventions such as ";
-                    msg << std::string( json::QuickInterpreter(intervention_config._json)["class"].As<json::String>() );
-                    msg << ".\nThe node level intervention must handle the demographic restrictions.";
+                    msg << "Cannot target individuals when distributing nodel-level intervention (";
+                    msg << std::string( json::QuickInterpreter( intervention_config._json )[ "class" ].As<json::String>() );
+                    msg << ").\n";
+                    msg << "In StandardInterventionDistributionEventCoordinator, you cannot target individuals\n";
+                    msg << "when distributing node-level interventions such as NodeLevelHealthTriggeredIV or SpaceSpraying.\n";
+                    msg << "You can only use parameters that select nodes such as 'Node_Property_Restrictions'.\n";
+                    msg << "The following parameters can only be used when distributing individual-interventions:\n";
+                    msg << "- Target_Demographic\n";
+                    msg << "- Target_Gender\n";
+                    msg << "- Target_Age_Min\n";
+                    msg << "- Target_Age_Max\n";
+                    msg << "- Target_Residents_Only\n";
+                    msg << "- Individual_Selection_Type\n";
+                    msg << "- Demographic_Coverage\n";
+                    msg << "- Target_Num_Individuals\n";
+                    msg << "- Property_Restrictions\n";
+                    msg << "- Property_Restrictions_Within_Node\n";
+                    msg << "- Targeting_Config\n";
+                    msg << "The node level intervention must handle the targeting of individuals.";
                     throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
                 }
+            }
+
+            if( (individual_selection_type == IndividualSelectionType::TARGET_NUM_INDIVIDUALS) &&
+                (target_num_individuals == 0) )
+            {
+                LOG_WARN( "'Target_Num_Individuals'=0.  ZERO interventions will be distributed.\n" );
             }
         }
 
@@ -118,11 +160,26 @@ namespace Kernel
 
     void StandardInterventionDistributionEventCoordinator::InitializeRepetitions( const Configuration* inputJson )
     {
-        initConfigTypeMap( "Number_Repetitions", &num_repetitions, Number_Repetitions_DESC_TEXT, -1, 1000, 1 );
+        initConfigTypeMap( "Number_Repetitions", &num_repetitions, Number_Repetitions_DESC_TEXT, -1, 10000, 1 );
         //if( num_repetitions > 1 ) // -1 = repeat without end, 0 is meaningless. want to think this one through more
         {
             initConfigTypeMap( "Timesteps_Between_Repetitions", &tsteps_between_reps, Timesteps_Between_Repetitions_DESC_TEXT, -1, 10000 /*undefined*/, -1 /*off*/ ); // , "Number_Repetitions", "<>0" );
         }
+    }
+
+    void StandardInterventionDistributionEventCoordinator::InitializeIndividualSelectionType( const Configuration* inputJson )
+    {
+        initConfig( "Individual_Selection_Type",
+                    individual_selection_type,
+                    inputJson,
+                    MetadataDescriptor::Enum( "Individual_Selection_Type",
+                                              Individual_Selection_Type_DESC_TEXT,
+                                              MDD_ENUM_ARGS( IndividualSelectionType ) ) );
+        initConfigTypeMap( "Target_Num_Individuals",
+                           &target_num_individuals,
+                           Target_Num_Individuals_DESC_TEXT,
+                           0, INT32_MAX, 1,
+                           "Individual_Selection_Type", "TARGET_NUM_INDIVIDUALS" );
     }
 
     void StandardInterventionDistributionEventCoordinator::CheckRepetitionConfiguration()
@@ -159,10 +216,10 @@ namespace Kernel
         node_suids.push_back(node_suid);
         cached_nodes.push_back(parent->GetNodeEventContext(node_suid));
 
+#if 0
         INodeEventContext * pNec = parent->GetNodeEventContext(node_suid);
         // Register unconditionally to be notified when individuals arrive at our node so we can zap them!
         // TODO: Make this param driven
-        /*
         if( include_immigrants )
         {
             pNec->RegisterTravelDistributionSource( this, INodeEventContext::Arrival );
@@ -171,7 +228,7 @@ namespace Kernel
         {
             pNec->RegisterTravelDistributionSource( this, INodeEventContext::Departure );
         }
-        */
+#endif
     }
 
     void StandardInterventionDistributionEventCoordinator::Update( float dt )
@@ -202,11 +259,11 @@ namespace Kernel
             return;
         }
 
-        ExtractInterventionNameForLogging();
-
-        InitializeInterventions();
+        std::vector<IIndividualHumanEventContext*> qualified_individuals;
 
         LOG_DEBUG_F("[UpdateNodes] visiting %d nodes per NodeSet\n", cached_nodes.size());
+
+        preDistribute();
 
         for (auto event_context : cached_nodes)
         {
@@ -215,19 +272,94 @@ namespace Kernel
                 continue;
             }
 
-            if( has_node_level_intervention )
+            if( m_pInterventionNode != nullptr )
             {
                 DistributeInterventionsToNodes( event_context );
             }
             else
             {
-                preDistribute();
-
-                DistributeInterventionsToIndividuals( event_context );
+                if( individual_selection_type == IndividualSelectionType::TARGET_NUM_INDIVIDUALS )
+                {
+                    if( target_num_individuals > 0 )
+                    {
+                        FindQualifyingIndividuals( event_context, qualified_individuals );
+                    }
+                }
+                else
+                {
+                    DistributeInterventionsToIndividuals( event_context );
+                }
             }
         }
 
+        if( (individual_selection_type == IndividualSelectionType::TARGET_NUM_INDIVIDUALS) &&
+            (target_num_individuals > 0) )
+        {
+            int totalIndivGivenIntervention = 0;
+            float cost_out = 0.0;
+            std::vector<IIndividualHumanEventContext*> selected = SelectIndividuals( qualified_individuals );
+            for( auto p_ind : selected )
+            {
+                ICampaignCostObserver* pICCO;
+                if( p_ind->GetNodeEventContext()->QueryInterface( GET_IID( ICampaignCostObserver ), (void**)&pICCO ) != s_OK )
+                {
+                    throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__,
+                                                   "p_ind->GetNodeEventContext()",
+                                                   "ICampaignCostObserver",
+                                                   "INodeEventContext" );
+                }
+
+                if( DistributeInterventionsToIndividual( p_ind, cost_out, pICCO ) )
+                {
+                    ++totalIndivGivenIntervention;
+                }
+            }
+            LogNumInterventionsDistributed( totalIndivGivenIntervention, nullptr );
+        }
+
         UpdateRepetitions();
+    }
+
+    void StandardInterventionDistributionEventCoordinator::FindQualifyingIndividuals( INodeEventContext* pNEC,
+                                                                                      std::vector<IIndividualHumanEventContext*>& r_qualified_individuals )
+    {
+        INodeEventContext::individual_visit_function_t fn =
+            [ this, &r_qualified_individuals ]( IIndividualHumanEventContext *ihec )
+        {
+            if( qualifiesDemographically( ihec ) )
+            {
+                r_qualified_individuals.push_back( ihec );
+            }
+        };
+
+        pNEC->VisitIndividuals( fn );
+    }
+
+    std::vector<IIndividualHumanEventContext*>
+    StandardInterventionDistributionEventCoordinator::SelectIndividuals( const std::vector<IIndividualHumanEventContext*>& r_qualified_individuals )
+    {
+        if( target_num_individuals >= r_qualified_individuals.size() )
+        {
+            return r_qualified_individuals;
+        }
+
+        // ----------------------------------------------------------------------------------
+        // --- Robert Floyd's Algorithm for Sampling without Replacement
+        // --- http://www.nowherenearithaca.com/2013/05/robert-floyds-tiny-and-beautiful.html
+        // ----------------------------------------------------------------------------------
+        uint32_t N = r_qualified_individuals.size();
+        uint32_t M = target_num_individuals;
+
+        release_assert( cached_nodes.size() > 0 );
+        std::set<uint32_t> selected_indexes = cached_nodes[ 0 ]->GetRng()->chooseMofN( M, N );
+
+        std::vector<IIndividualHumanEventContext*> selected_individuals;
+        for( auto index : selected_indexes )
+        {
+            selected_individuals.push_back( r_qualified_individuals[ index ] );
+        }
+
+        return selected_individuals;
     }
 
     void StandardInterventionDistributionEventCoordinator::UpdateRepetitions()
@@ -290,61 +422,6 @@ namespace Kernel
         for (auto& node_id : node_suids)
         {
             cached_nodes.push_back(parent->GetNodeEventContext(node_id));
-        }
-    }
-
-    void StandardInterventionDistributionEventCoordinator::formatInterventionClassNames( std::ostringstream& intervention_name, json::QuickInterpreter* actual_intervention_config)
-    {
-        if ( actual_intervention_config->Exist("Actual_Intervention_Config") )
-        {
-            // find actual_intervention_config if it exists
-            actual_intervention_config = &( (*actual_intervention_config)["Actual_Intervention_Config"] );
-
-            // append class name to intervention name
-            intervention_name << " -> " << std::string( (*actual_intervention_config)["class"].As<json::String>() );
-
-            // keep looking recursively for more actual_intervention_config layers
-            formatInterventionClassNames( intervention_name, actual_intervention_config );
-        }
-        else if ( actual_intervention_config->Exist("Actual_Intervention_Configs") )
-        {
-            // maybe it was an array of actual interventions
-            const json::Array& actual_interventions_array = (*actual_intervention_config)["Actual_Intervention_Configs"].As<json::Array>();
-
-            // loop over array
-            intervention_name << " -> ";
-            int array_size = actual_interventions_array.Size();
-            for( int idx = 0; idx < array_size; idx++ )
-            {
-                if( idx == 0 && array_size > 1 )
-                    intervention_name << "[ ";
-                else if ( idx > 0 )
-                    intervention_name << ", ";
-
-                // accumulate individual class names
-                const json::Object& actual_intervention = json_cast<const json::Object&>( actual_interventions_array[idx] );
-                actual_intervention_config = &json::QuickInterpreter(actual_intervention);
-                intervention_name << std::string( (*actual_intervention_config)["class"].As<json::String>() );
-
-                // recursively search for each for more layers!
-                formatInterventionClassNames( intervention_name, actual_intervention_config );
-            }
-            if( array_size > 1 ) intervention_name << " ]";
-        }
-        else if ( actual_intervention_config->Exist("Positive_Diagnosis_Config") )
-        {
-            // maybe it was a diagnostic with positive_diagnosis_config if it exists (TODO: can this part be merged with the acutal_intervention_config block?)
-            actual_intervention_config = &( (*actual_intervention_config)["Positive_Diagnosis_Config"] );
-
-            // append class name to intervention name
-            intervention_name << " -> " << std::string( (*actual_intervention_config)["class"].As<json::String>() );
-
-            // keep looking recursively for more actual_intervention_config layers
-            formatInterventionClassNames( intervention_name, actual_intervention_config );
-        }
-        else
-        {
-            // end of recursive call
         }
     }
 
@@ -411,65 +488,41 @@ namespace Kernel
         visitIndividualCallback( pInd, incrementalCostOut, nullptr /* campaign cost observer */ );
     }
 
-    void StandardInterventionDistributionEventCoordinator::ExtractInterventionNameForLogging()
-    {
-        // intervention class names for informative logging
-        if( LOG_LEVEL( INFO ) && (log_intervention_name.str().size() == 0) )
-        {
-            log_intervention_name.str("");
-            log_intervention_name << std::string( json::QuickInterpreter( intervention_config._json )[ "class" ].As<json::String>() );
-
-#ifdef WIN32
-            // DMB This method was crashing in Linux trying to get the class name out of Positive_Diagnosis_Config.  Not sure why.
-            // including deeper information for "distributing" interventions (e.g. calendars)
-            formatInterventionClassNames( log_intervention_name, &json::QuickInterpreter( intervention_config._json ) );
-#endif
-        }
-    }
-
-    void StandardInterventionDistributionEventCoordinator::InitializeInterventions()
-    {
-        if( !has_node_level_intervention && (_di == nullptr) )
-        {
-            auto config = Configuration::CopyFromElement( (intervention_config._json), "campaign" );
-            _di = InterventionFactory::getInstance()->CreateIntervention( config );
-            delete config;
-            config = nullptr;
-        }
-    }
-
     void StandardInterventionDistributionEventCoordinator::DistributeInterventionsToNodes( INodeEventContext* event_context )
     {
-        auto config = Configuration::CopyFromElement( (intervention_config._json), "campaign" );
-        INodeDistributableIntervention *ndi = InterventionFactory::getInstance()->CreateNDIIntervention( config );
-        if( ndi == nullptr )
-        {
-            throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "Should have constructed a node-level intervention." );
-        }
+        INodeDistributableIntervention *ndi = m_pInterventionNode->Clone();
+        ndi->AddRef();
         if( ndi->Distribute( event_context, this ) )
         {
-            LOG_INFO_F( "UpdateNodes() distributed '%s' intervention to node %d\n", log_intervention_name.str().c_str(), event_context->GetId().data );
+            LOG_INFO_F( "UpdateNodes() distributed '%s' intervention to node %d\n", log_intervention_name.c_str(), event_context->GetId().data );
         }
         ndi->Release();
-        delete config;
-        config = nullptr;
     }
 
     void StandardInterventionDistributionEventCoordinator::DistributeInterventionsToIndividuals( INodeEventContext* event_context )
     {
         int totalIndivGivenIntervention = event_context->VisitIndividuals( this );
 
+        LogNumInterventionsDistributed( totalIndivGivenIntervention, event_context );
+    }
+
+    void StandardInterventionDistributionEventCoordinator::LogNumInterventionsDistributed( int totalIndivGivenIntervention, INodeEventContext* event_context )
+    {
         if( LOG_LEVEL( INFO ) )
         {
             // Create log message 
             std::stringstream ss;
-            ss << "UpdateNodes() gave out " << totalIndivGivenIntervention << " '" << log_intervention_name.str().c_str() << "' interventions ";
+            ss << "UpdateNodes() gave out " << totalIndivGivenIntervention << " '" << log_intervention_name.c_str() << "' interventions ";
             std::string restriction_str = demographic_restrictions.GetPropertyRestrictionsAsString();
             if( !restriction_str.empty() )
             {
                 ss << " with property restriction(s) " << restriction_str << " ";
             }
-            ss << "at node " << event_context->GetExternalId() << "\n";
+            if( event_context != nullptr )
+            {
+                ss << "at node " << event_context->GetExternalId();
+            }
+            ss << "\n";
             LOG_INFO( ss.str().c_str() );
         }
     }
@@ -479,8 +532,8 @@ namespace Kernel
                                                                                                 ICampaignCostObserver * pICCO )
     {
         // instantiate and distribute intervention
-        LOG_DEBUG_F( "Attempting to instantiate intervention of class %s\n", std::string( json::QuickInterpreter( intervention_config._json )[ "class" ].As<json::String>() ).c_str() );
-        IDistributableIntervention *di = _di->Clone();
+        LOG_DEBUG_F( "Attempting to instantiate intervention of class %s\n", log_intervention_name.c_str());
+        IDistributableIntervention *di = m_pInterventionIndividual->Clone();
         release_assert( di );
 
         di->AddRef();
@@ -495,31 +548,4 @@ namespace Kernel
         return distributed;
     }
 }
-
-#if 0
-namespace Kernel
-{
-    template<class Archive>
-    void serialize(Archive &ar, StandardInterventionDistributionEventCoordinator &ec, const unsigned int v)
-    {
-        ar & ec.coverage;
-        ar & ec.distribution_complete;
-        ar & ec.num_repetitions;
-        ar & ec.tsteps_between_reps;
-        ar & ec.demographic_coverage;
-        ar & ec.target_demographic;
-        ar & ec.target_age_min;
-        ar & ec.target_age_max;
-        ar & ec.include_emigrants;
-        ar & ec.include_immigrants;
-        ar & ec.tsteps_since_last;
-        ar & ec.intervention_activated;
-        ar & ec.intervention_config;
-
-        // need to save the list of suids and restore from them, rather than saving the context pointers
-        //ar & cached_nodes;
-        ar & ec.node_suids;
-    }
-}
-#endif
 

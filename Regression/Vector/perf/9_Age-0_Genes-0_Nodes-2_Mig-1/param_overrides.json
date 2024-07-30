@@ -1,0 +1,19 @@
+{
+    "Default_Config_Path": "Vector/perf/default_config.json",
+    "parameters": {
+        "Config_Name": "9_Age-0_Genes-0_Nodes-2_Mig-1",
+        "Demographics_Filenames": [
+            "../Demographics_2.json"
+        ],
+        "Enable_Vector_Aging": 0,
+        "Enable_Vector_Migration": 1,
+        "Enable_Vector_Migration_Local": 1,
+        "Python_Script_Path": "LOCAL",
+        "Vector_Migration_Filename_Local": "Local_Vector_Migration_2_Nodes.bin",
+        "Enable_Vector_Migration_Regional": 0,
+        "Vector_Migration_Food_Modifier":0,
+        "Vector_Migration_Habitat_Modifier":0,
+        "Vector_Migration_Modifier_Equation":"LINEAR",
+        "Vector_Migration_Stay_Put_Modifier":0
+    }
+}

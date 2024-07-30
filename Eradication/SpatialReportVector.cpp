@@ -1,23 +1,11 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
 #include <functional>
 #include <map>
-#include "BoostLibWrapper.h"
-// not in boost wrapper???
-#include <boost/math/special_functions/fpclassify.hpp>
 
 #include "SpatialReportVector.h"
 #include "VectorContexts.h"
-#include "VectorPopulation.h"
 #include "Sugar.h"
 #include "Environment.h"
 #include "Exceptions.h"
@@ -97,8 +85,11 @@ SpatialReportVector::LogNodeData(
     // TBD
     for (const auto vectorpopulation : vectorPopulations)
     {
-        adult_vectors      += (float)( vectorpopulation->getAdultCount() + vectorpopulation->getInfectedCount( nullptr ) + vectorpopulation->getInfectiousCount( nullptr ) );
-        infectious_vectors += (float)( vectorpopulation->getInfectiousCount( nullptr ) );
+        adult_vectors += float( vectorpopulation->getCount( VectorStateEnum::STATE_ADULT      ) );
+        adult_vectors += float( vectorpopulation->getCount( VectorStateEnum::STATE_INFECTED   ) );
+        adult_vectors += float( vectorpopulation->getCount( VectorStateEnum::STATE_INFECTIOUS ) );
+
+        infectious_vectors += (float)(vectorpopulation->getCount( VectorStateEnum::STATE_INFECTIOUS ));
 
         daily_eir          += vectorpopulation->GetEIRByPool(Kernel::VectorPoolIdEnum::BOTH_VECTOR_POOLS);
         daily_hbr          += vectorpopulation->GetHBRByPool(Kernel::VectorPoolIdEnum::BOTH_VECTOR_POOLS);

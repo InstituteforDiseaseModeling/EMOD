@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -29,7 +21,7 @@ namespace Kernel
     // --- EventTriggerInternal's of these statics with those from the EXE.
     // -----------------------------------------------------------------------------------------------
     std::vector<std::pair<std::string,EventTriggerNode*>> EventTriggerNodeFactory::m_VectorBuiltIn;
-    const EventTriggerNode& EventTriggerNode::SheddingComplete                     = EventTriggerNodeFactory::CreateBuiltInEventTrigger( "SheddingComplete"                    );
+    //const EventTriggerNode& EventTriggerNode::SheddingComplete                     = EventTriggerNodeFactory::CreateBuiltInEventTrigger( "SheddingComplete"                    );
 
     const EventType::Enum EventTriggerNodeFactory::EVENT_TYPE = EventType::NODE;
 

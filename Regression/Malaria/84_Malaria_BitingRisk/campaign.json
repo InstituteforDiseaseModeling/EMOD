@@ -1,0 +1,110 @@
+{
+    "Events": [
+        {
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "class": "BroadcastEvent",
+                    "Broadcast_Event": "PFA_NoPartnerFound",
+                    "New_Property_Value": "Risk:HIGH"
+                },
+                "Property_Restrictions_Within_Node": [
+                    {
+                        "Risk": "LOW"
+                    }
+                ],
+                "Individual_Selection_Type": "TARGET_NUM_INDIVIDUALS",
+                "Target_Num_Individuals": 500,
+                "Target_Demographic": "Everyone",
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Event_Name": "Outbreak",
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 1,
+            "class": "CampaignEvent"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "Risk_Distribution": "CONSTANT_DISTRIBUTION",
+                    "class": "BitingRisk",
+                    "Risk_Constant": 1
+                },
+                "Target_Demographic": "Everyone",
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 3,
+            "class": "CampaignEvent"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "Risk_Distribution": "CONSTANT_DISTRIBUTION",
+                    "class": "BitingRisk",
+                    "Risk_Constant": 0.0625
+                },
+                "Property_Restrictions_Within_Node": [
+                    {
+                        "Risk": "HIGH"
+                    }
+                ],
+                "Target_Demographic": "Everyone",
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 4,
+            "class": "CampaignEvent"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual"
+                },
+                "Property_Restrictions_Within_Node": [
+                    {
+                        "Risk": "LOW"
+                    }
+                ],
+                "Individual_Selection_Type": "TARGET_NUM_INDIVIDUALS",
+                "Target_Num_Individuals": 100,
+                "Target_Demographic": "Everyone",
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 5,
+            "class": "CampaignEvent"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual"
+                },
+                "Property_Restrictions_Within_Node": [
+                    {
+                        "Risk": "HIGH"
+                    }
+                ],
+                "Individual_Selection_Type": "TARGET_NUM_INDIVIDUALS",
+                "Target_Num_Individuals": 100,
+                "Target_Demographic": "Everyone",
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 5,
+            "class": "CampaignEvent"
+        }
+    ],
+    "Use_Defaults": 1
+}

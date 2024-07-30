@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 #include <vector>
@@ -17,10 +9,28 @@ using namespace std;
 
 namespace Kernel
 {
-    class INodeSTI : public ISupports
+    class CoitalAct;
+    struct IStrainIdentity;
+    struct IDistributableIntervention;
+    struct IIndividualHumanEventContext;
+    class RANDOMBASE;
+
+    // Add interventions/events to be distributed/broadcasted after all of the individuals have been updated.
+    // The goal is to avoid situations where the order of the individuals being processed changes the outcome.
+    struct IActionStager
+    {
+        virtual void StageIntervention( IIndividualHumanEventContext* pHuman, IDistributableIntervention* pIntervention ) = 0;
+        virtual void StageEvent( IIndividualHumanEventContext* pHuman, const EventTrigger& rTrigger ) = 0;
+    };
+
+    struct INodeSTI : public ISupports
     {
     public:
         virtual /*const?*/ IRelationshipManager* GetRelationshipManager() /*const?*/ = 0;
         virtual ISociety* GetSociety() = 0;
+        virtual IActionStager* GetActionStager() = 0;
+
+        virtual void DepositFromIndividual( const IStrainIdentity& rStrain, const CoitalAct& rCoitalAct ) = 0;
+        virtual RANDOMBASE* GetRng() = 0;
     };
 }

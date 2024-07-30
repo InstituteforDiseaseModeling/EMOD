@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "MaleCircumcision.h"
@@ -45,12 +37,13 @@ namespace Kernel
 
     bool MaleCircumcision::Configure( const Configuration * inputJson )
     {
-        initConfigTypeMap( "Circumcision_Reduced_Acquire", &m_ReducedAcquire, Male_Circumcision_Reduced_Acquire_DESC_TEXT, 0.0f, 1.0f, 0.60f );
-        initConfigTypeMap( "Apply_If_Higher_Reduced_Acquire", &m_ApplyIfHigherReducedAcquire, Male_Circumcision_Apply_If_Higher_Reduced_Acquire_DESC_TEXT, false );
+        initConfigTypeMap( "Cost_To_Consumer", &cost_per_unit, IV_Cost_To_Consumer_DESC_TEXT, 0.0f, FLT_MAX, 0.0f );
+        initConfigTypeMap( "Circumcision_Reduced_Acquire", &m_ReducedAcquire, MaleCirc_Circumcision_Reduced_Acquire_DESC_TEXT, 0.0f, 1.0f, 0.60f );
+        initConfigTypeMap( "Apply_If_Higher_Reduced_Acquire", &m_ApplyIfHigherReducedAcquire, MaleCirc_Apply_If_Higher_Reduced_Acquire_DESC_TEXT, false );
 
         initConfigTypeMap( "Distributed_Event_Trigger",
                            &m_DistrbutedEventTrigger,
-                           Male_Circumcision_Distributed_Event_Trigger_DESC_TEXT );
+                           Distributed_Event_Trigger_DESC_TEXT );
 
         return BaseIntervention::Configure( inputJson );
     }

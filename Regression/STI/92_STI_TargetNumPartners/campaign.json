@@ -1,0 +1,57 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 50, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender", 
+                "Target_Gender" : "FEMALE",
+                "Demographic_Coverage": 0.5,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Antigen": 0, 
+                    "Genome": 0, 
+                    "Incubation_Period_Override": 0
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 40, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitAgeRangesAndGender", 
+                "Target_Gender" : "MALE",
+                "Target_Age_Min": 20,
+                "Target_Age_Max": 125,
+                "Demographic_Coverage": 1.0,
+                "Targeting_Config": {                
+                    "class": "HasMoreOrLessThanNumPartners",
+                    "Is_Equal_To": 1,
+                    "Of_Relationship_Type": "NA",
+                    "Num_Partners": 8,
+                    "More_Or_Less": "MORE"
+                },
+                "Intervention_Config": {
+                    "class": "SimpleVaccine",
+                    "Intervention_Name" : "MyVaccine",
+                    "Cost_To_Consumer": 1,
+                    "Vaccine_Take": 1,
+                    "Vaccine_Type": "AcquisitionBlocking",
+                    "Waning_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect" : 1.0
+                    }
+                }
+            }
+        }
+    ]
+}

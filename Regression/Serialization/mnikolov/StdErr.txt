@@ -1,6 +1,0 @@
-00:00:00 [0] [W] [NodeDemographics] DeprecationWarning: Specification of multiple files with "Demographics_Filename" parameter as semicolon-delimited string will soon be deprecated. Use the "Demographics_Filenames" parameter (note plural) and specify its value as a JSON array, e.g. "Demographics_Filenames" : ["filename1","filename2"]
-00:00:01 [0] [W] [Simulation] Failed to use legacy loadbalance file. Defaulting to checkerboard.
-00:00:01 [0] [W] [NodeVector] DeprecationWarning: Specification of "LarvalHabitatMultiplier" as a floating-point value in the "NodeAttributes" block will soon be deprecated. Specify as an object with habitat-type keys, e.g. "LarvalHabitatMultiplier" : {"TEMPORARY_RAINFALL" : 0.3}
-00:37:29 [0] [W] [Eradication] Embedded python code failed (PyImport_Import). Returning without doing anything.
-00:37:29 [0] [E] [Eradication] 
-

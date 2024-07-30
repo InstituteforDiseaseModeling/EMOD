@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include <iomanip>
@@ -21,6 +13,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IIndividualHumanContext.h"
 #include "IdmDateTime.h"
 #include "INodeContext.h"
+#include "NodeEventContext.h"
 
 #include "Types.h" // for ProbabilityNumber and NaturalNumber
 #include "Debug.h" // for release_assert
@@ -37,9 +30,7 @@ namespace Kernel
     float InfectionHIVConfig::AIDS_duration_in_months = 0.0f;
     float InfectionHIVConfig::acute_stage_infectivity_multiplier = 0.0f;
     float InfectionHIVConfig::AIDS_stage_infectivity_multiplier = 0.0f;
-    float InfectionHIVConfig::ART_viral_suppression_multiplier = 0.0f;
     float InfectionHIVConfig::personal_infectivity_scale = 0.0f;
-    float InfectionHIVConfig::max_CD4_cox = 0.0f;
     FerrandAgeDependentDistribution InfectionHIVConfig::mortality_distribution_by_age;
     IDistribution* InfectionHIVConfig::p_hetero_infectivity_distribution = nullptr;
 
@@ -57,13 +48,11 @@ namespace Kernel
     )
     {
         //read in configs here   
-        initConfigTypeMap( "Acute_Duration_In_Months", &acute_duration_in_months, Acute_Duration_In_Months_DESC_TEXT, 0.0f, 5.0f, 2.9f, "Simulation_Type", "HIV_SIM, TBHIV_SIM");
-        initConfigTypeMap( "AIDS_Duration_In_Months", &AIDS_duration_in_months, AIDS_Duration_In_Months_DESC_TEXT, 7.0f, 12.0f, 9.0f, "Simulation_Type", "HIV_SIM, TBHIV_SIM");
+        initConfigTypeMap( "Acute_Duration_In_Months", &acute_duration_in_months, Acute_Duration_In_Months_DESC_TEXT, 0.0f, 10.0f, 2.9f, "Simulation_Type", "HIV_SIM");
+        initConfigTypeMap( "AIDS_Duration_In_Months", &AIDS_duration_in_months, AIDS_Duration_In_Months_DESC_TEXT, 7.0f, 12.0f, 9.0f, "Simulation_Type", "HIV_SIM");
         initConfigTypeMap( "Acute_Stage_Infectivity_Multiplier", &acute_stage_infectivity_multiplier, Acute_Stage_Infectivity_Multiplier_DESC_TEXT, 1.0f, 100.0f, 26.0f, "Simulation_Type", "HIV_SIM");
         initConfigTypeMap( "AIDS_Stage_Infectivity_Multiplier", &AIDS_stage_infectivity_multiplier, AIDS_Stage_Infectivity_Multiplier_DESC_TEXT, 1.0f, 100.0f, 10.0f, "Simulation_Type", "HIV_SIM");
-        initConfigTypeMap( "ART_Viral_Suppression_Multiplier", &ART_viral_suppression_multiplier, ART_Viral_Suppression_Multiplier_DESC_TEXT, 0.0f, 1.0f, 0.08f, "Simulation_Type", "HIV_SIM");
         initConfigTypeMap( "Heterogeneous_Infectiousness_LogNormal_Scale", &personal_infectivity_scale, Heterogeneous_Infectiousness_LogNormal_Scale_DESC_TEXT, 0.0f, 10.0f, 0.0f, "Simulation_Type", "HIV_SIM" );
-        initConfigTypeMap( "ART_CD4_at_Initiation_Saturating_Reduction_in_Mortality", &max_CD4_cox, ART_CD4_at_Initiation_Saturating_Reduction_in_Mortality_DESC_TEXT, 0.0f, FLT_MAX, 350.0f, "Simulation_Type", "HIV_SIM, TBHIV_SIM");
 
         bool ret = JsonConfigurable::Configure( config );
         if( ret || JsonConfigurable::_dryrun )
@@ -102,7 +91,10 @@ namespace Kernel
         // Initialization of HIV infection members, start with constant-ish values
         ViralLoad = INITIAL_VIRAL_LOAD;
 
+        m_has_been_suppressed = false;
         SetupNonSuppressedDiseaseTimers();
+
+        SetupWouldHaveTimers();
 
         // calculate individual infectivity multiplier based on Log-Normal draw.
         m_hetero_infectivity_multiplier = 1;
@@ -111,9 +103,61 @@ namespace Kernel
             m_hetero_infectivity_multiplier = InfectionHIVConfig::p_hetero_infectivity_distribution->Calculate( parent->GetRng() );
         }
 
-        //m_hetero_infectivity_multiplier = Environment::getInstance()->RNG->Weibull2(InfectionHIVConfig::personal_infectivity_scale, InfectionHIVConfig::personal_infectivity_heterogeneity);
-
         LOG_DEBUG_F( "Individual %d just entered (started) HIV Acute stage, heterogeneity multiplier = %f.\n", parent->GetSuid().data, m_hetero_infectivity_multiplier );
+    }
+
+    void InfectionHIV::SetupWouldHaveTimers()
+    {
+        // save/start timers
+        m_duration_until_would_have_entered_latent = m_acute_duration;                        // WouldHaveEnteredLatentStage
+        m_duration_until_would_have_entered_aids   = m_acute_duration + m_latent_duration;    // WouldHaveHadAids
+        m_duration_until_would_have_died           = HIV_duration_until_mortality_without_TB; // WouldHaveDied
+    }
+
+    void InfectionHIV::UpdateWouldHaveTimers( float dt )
+    {
+        m_duration_until_would_have_entered_latent -= dt;
+        m_duration_until_would_have_entered_aids   -= dt;
+        m_duration_until_would_have_died           -= dt;
+
+        // ----------------------------------------------------------------------------
+        // --- Only broadcast WouldHaveXXX events if the events would have happened
+        // --- to the person if interventions like ART hadn't surpressed the infection.
+        // --- Make sure not to broadcast the events if the person is in the process
+        // --- of dying.  Also, don't broadcast the event if the duration is more than
+        // --- dt old.  This means that the infection was fast forwarded and these
+        // --- events occured in the past.
+        // ----------------------------------------------------------------------------
+        if( m_has_been_suppressed && (StateChange != InfectionStateChange::Fatal) ) // not goint to die right now
+        {
+            IIndividualEventBroadcaster* p_broadcaster = nullptr;
+            INodeEventContext* p_nec = parent->GetEventContext()->GetNodeEventContext();
+            auto signal = EventTrigger::Births;
+
+            if( !m_would_have_died && (-dt <= m_duration_until_would_have_died) && (m_duration_until_would_have_died <= 0.0) )
+            {
+                m_would_have_died = true;
+                signal = EventTrigger::WouldHaveDied;
+            }
+            else if( !m_would_have_entered_aids && (-dt <= m_duration_until_would_have_entered_aids) && (m_duration_until_would_have_entered_aids <= 0.0) )
+            {
+                m_would_have_entered_aids = true;
+                signal = EventTrigger::WouldHaveHadAIDS;
+            }
+            else if( !m_would_have_entered_latent && (-dt <= m_duration_until_would_have_entered_latent) && (m_duration_until_would_have_entered_latent <= 0.0) )
+            {
+                m_would_have_entered_latent = true;
+                signal = EventTrigger::WouldHaveEnteredLatentStage;
+            }
+            if( p_nec != nullptr )
+            {
+                p_broadcaster = p_nec->GetIndividualEventBroadcaster();
+                if( p_broadcaster && signal != EventTrigger::Births )
+                {
+                    p_broadcaster->TriggerObservers( parent->GetEventContext(), signal  );
+                }
+            }
+        }
     }
 
     void InfectionHIV::SetContextTo( IIndividualHumanContext* context )
@@ -188,7 +232,7 @@ namespace Kernel
             duration = 0.0f;
             ///////////////////////////////////////////////////////////////////////////////////////////////
             // SCHEDULE NATURAL DISEASE PROGRESSION, TODO put parameters into config //////////////////////
-            m_infection_stage = HIVInfectionStage::ACUTE;
+            SetStage( HIVInfectionStage:: ACUTE );
         }
         catch( DetailedException &exc )
         {
@@ -197,9 +241,9 @@ namespace Kernel
     }
 
     void
-    InfectionHIV::SetupSuppressedDiseaseTimers()
+    InfectionHIV::SetupSuppressedDiseaseTimers( float durationFromEnrollmentToArtAidsDeath )
     {
-        m_infection_stage = HIVInfectionStage::ON_ART;
+        m_has_been_suppressed = true;
         m_acute_duration  = INACTIVE_DURATION;
         m_latent_duration = INACTIVE_DURATION;
         m_aids_duration   = INACTIVE_DURATION;
@@ -209,7 +253,7 @@ namespace Kernel
         // Clear HIV natural duration so it's clear we're not using this
         HIV_duration_until_mortality_without_TB = INACTIVE_DURATION;
         // Set our new prognosis based on being on ART
-        HIV_duration_until_mortality_with_viral_suppression = ComputeDurationFromEnrollmentToArtAidsDeath();
+        HIV_duration_until_mortality_with_viral_suppression = durationFromEnrollmentToArtAidsDeath;
         // There are redundant variables that now need to be set also (TBD: let's use just 1 soon)
         total_duration = HIV_duration_until_mortality_with_viral_suppression;
 
@@ -221,9 +265,10 @@ namespace Kernel
                      HIV_duration_until_mortality_with_viral_suppression,
                      parent->GetSuid().data
                    );
+        SetStage( HIVInfectionStage::ON_ART );
     }
 
-    void InfectionHIV::SetParameters( IStrainIdentity* infstrain, int incubation_period_override)
+    void InfectionHIV::SetParameters( const IStrainIdentity* infstrain, int incubation_period_override )
     {
         LOG_DEBUG_F( "New HIV infection for individual %d; incubation_period_override = %d.\n", parent->GetSuid().data, incubation_period_override );
         // Don't call down into baseclass. Copied two lines below to repro required functionality.
@@ -237,9 +282,18 @@ namespace Kernel
             duration += fast_forward;
             m_time_infected -= fast_forward;    // Move infection time backwards
             hiv_parent->GetHIVSusceptibility()->FastForward( this, fast_forward );
+
+            // The infection is not surpressed so WouldHaveXXX events would not fire
+            // so just reduct timers.
+            m_duration_until_would_have_entered_latent -= fast_forward;
+            m_duration_until_would_have_entered_aids   -= fast_forward;
+            m_duration_until_would_have_died           -= fast_forward;
+
             LOG_DEBUG_F( "Individual is outbreak seed, fast forward infection by %f.\n", fast_forward );
+
             SetStageFromDuration();
         }
+
         total_duration = HIV_duration_until_mortality_without_TB;
         // now we have 3 variables doing the same thing?
         infectiousness = InfectionConfig::base_infectivity;
@@ -252,7 +306,6 @@ namespace Kernel
         //  E.g. if someone is in ACUTE or ON_ART stage, their stage is unchanged
         // DJK*: Note, this function _also_ sets StateChange to Fatal.
 
-
         LOG_DEBUG_F( "Individual %d, duration = %f, prognosis = %f, m_infection_stage = %d\n",
                      parent->GetSuid().data,
                      duration,
@@ -262,17 +315,19 @@ namespace Kernel
         if (duration >= GetPrognosis() )
         {
             StateChange = InfectionStateChange::Fatal;
-            LOG_DEBUG_F( "Individual %d just died of HIV in stage %s with CD4 count of %f.\n", parent->GetSuid().data, HIVInfectionStage::pairs::lookup_key(m_infection_stage), hiv_parent->GetHIVSusceptibility()->GetCD4count() );
+            LOG_DEBUG_F( "Individual %d just died of HIV in stage %s with CD4 count of %f.\n",
+                         parent->GetSuid().data,
+                         HIVInfectionStage::pairs::lookup_key(m_infection_stage),
+                         hiv_parent->GetHIVSusceptibility()->GetCD4count() );
         }
-        else if ( ( m_infection_stage == HIVInfectionStage::ACUTE || m_infection_stage == HIVInfectionStage::LATENT ) && duration >= m_acute_duration+m_latent_duration )
+        else if ( ((m_infection_stage == HIVInfectionStage::ACUTE) || (m_infection_stage == HIVInfectionStage::LATENT)) &&
+                  (duration >= (m_acute_duration + m_latent_duration)) )
         {
-            m_infection_stage = HIVInfectionStage::AIDS;
-            LOG_DEBUG_F( "Individual %d just entered of HIV AIDS stage.\n", parent->GetSuid().data );
+            SetStage( HIVInfectionStage::AIDS );
         }
-        else if (m_infection_stage == HIVInfectionStage::ACUTE && duration >= m_acute_duration )
+        else if( (m_infection_stage == HIVInfectionStage::ACUTE) && (duration >= m_acute_duration) )
         {
-            m_infection_stage = HIVInfectionStage::LATENT;
-            LOG_DEBUG_F( "Individual %d just entered HIV Latent stage.\n", parent->GetSuid().data );
+            SetStage( HIVInfectionStage::LATENT );
         }
     }
 
@@ -295,22 +350,28 @@ namespace Kernel
         HIV_duration_until_mortality_without_TB *= (1.0 - fraction_prognosis_completed); // if 0 completed, prog is unchanged. If 1.0 completed, prog = 0.
         infectious_timer = HIV_duration_until_mortality_without_TB;
         total_duration = HIV_duration_until_mortality_without_TB;
-        m_infection_stage = HIVInfectionStage::LATENT;
         m_acute_duration = 0;   // DJK*: With this, acute+latent+AIDS durations will not sum to prognosis!
+
+        // Initially, set stage to LATENT, but then possibly
+        // switch to AIDS if the latent duration has expired
+        SetStage( HIVInfectionStage::LATENT );
         SetStageFromDuration();
-        LOG_DEBUG_F( "Post-dropout prognosis for individual %d = %f\n", parent->GetSuid().data, HIV_duration_until_mortality_without_TB/DAYSPERYEAR );
+
+        LOG_DEBUG_F( "Post-dropout prognosis for individual %d = %f\n",
+                     parent->GetSuid().data,
+                     HIV_duration_until_mortality_without_TB/DAYSPERYEAR );
     }
 
     void InfectionHIV::ApplySuppressionFailure()
     {
         LOG_DEBUG_F( "Looks like ART failure for %d, recalc timers for AIDS-stage progression.\n", parent->GetSuid().data );
         // Should be just 9 months to live. Timers shouldn't need to be reset.
-        m_infection_stage = HIVInfectionStage::AIDS;
+        SetStage( HIVInfectionStage::AIDS );
     }
 
-    void InfectionHIV::Update(float dt, ISusceptibilityContext* immunity)
+    void InfectionHIV::Update( float currenttime, float dt, ISusceptibilityContext* immunity )
     {
-        InfectionSTI::Update(dt, immunity);
+        InfectionSTI::Update( currenttime, dt, immunity );
 
         SetStageFromDuration();
 
@@ -325,6 +386,8 @@ namespace Kernel
 
         // Make sure we didn't accidentally clear.  Remove this line for sterilizing cure.
         release_assert( StateChange != InfectionStateChange::Cleared );
+
+        UpdateWouldHaveTimers( dt );
     }
 
     float
@@ -402,6 +465,49 @@ namespace Kernel
         return m_infection_stage;
     }
 
+    void InfectionHIV::SetStage( HIVInfectionStage::Enum stage )
+    {
+        m_infection_stage = stage;
+
+        EventTrigger stage_trigger;
+        switch( m_infection_stage )
+        {
+            case HIVInfectionStage::ACUTE:
+                // do nothing
+                break;
+
+            case HIVInfectionStage::LATENT:
+                stage_trigger = EventTrigger::HIVInfectionStageEnteredLatent;
+                break;
+
+            case HIVInfectionStage::AIDS:
+                stage_trigger = EventTrigger::HIVInfectionStageEnteredAIDS;
+                break;
+
+            case HIVInfectionStage::ON_ART:
+                stage_trigger = EventTrigger::HIVInfectionStageEnteredOnART;
+                break;
+
+            default:
+                throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__,
+                                                         "m_infection_stage",
+                                                         m_infection_stage,
+                                                         HIVInfectionStage::pairs::lookup_key( m_infection_stage ) );
+        }
+
+        if( !stage_trigger.IsUninitialized() )
+        {
+            INodeEventContext* p_nec = parent->GetEventContext()->GetNodeEventContext();
+            IIndividualEventBroadcaster* p_broadcaster = p_nec->GetIndividualEventBroadcaster();
+
+            p_broadcaster->TriggerObservers( parent->GetEventContext(), stage_trigger );
+
+            LOG_DEBUG_F( "Individual %d just entered of HIV %s stage.\n",
+                         parent->GetSuid().data,
+                         HIVInfectionStage::pairs::lookup_key( m_infection_stage ) );
+        }
+    }
+
     bool InfectionHIV::ApplyDrugEffects(float dt, ISusceptibilityContext* immunity)
     {
         // Check for valid inputs
@@ -452,6 +558,19 @@ namespace Kernel
         , HIV_natural_duration_until_mortality(INACTIVE_DURATION ) // need some value that says Ignore-Me
         , HIV_duration_until_mortality_with_viral_suppression(INACTIVE_DURATION )
         , m_time_infected ( 0 )
+        , m_infection_stage( HIVInfectionStage::ACUTE )
+        //, m_fraction_of_prognosis_spent_in_stage[ NUM_WHO_STAGES ]
+        , m_acute_duration( 0.0 )
+        , m_latent_duration( 0.0 )
+        , m_aids_duration( 0.0 )
+        , m_duration_until_would_have_entered_latent( 0.0 )
+        , m_duration_until_would_have_entered_aids( 0.0 )
+        , m_duration_until_would_have_died( 0.0 )
+        , m_would_have_entered_latent( false )
+        , m_would_have_entered_aids( false )
+        , m_would_have_died( false )
+        , m_has_been_suppressed( false )
+        , m_hetero_infectivity_multiplier( 0.0 )
         , hiv_parent( nullptr )
     {
     }
@@ -461,15 +580,24 @@ namespace Kernel
         , HIV_duration_until_mortality_without_TB(INACTIVE_DURATION )
         , HIV_natural_duration_until_mortality(INACTIVE_DURATION ) // need some value that says Ignore-Me
         , HIV_duration_until_mortality_with_viral_suppression(INACTIVE_DURATION )
+        , m_time_infected( 0 )
+        , m_infection_stage( HIVInfectionStage::ACUTE )
+        //, m_fraction_of_prognosis_spent_in_stage[ NUM_WHO_STAGES ]
+        , m_acute_duration( 0.0 )
+        , m_latent_duration( 0.0 )
+        , m_aids_duration( 0.0 )
+        , m_duration_until_would_have_entered_latent( 0.0 )
+        , m_duration_until_would_have_entered_aids( 0.0 )
+        , m_duration_until_would_have_died( 0.0 )
+        , m_would_have_entered_latent( false )
+        , m_would_have_entered_aids( false )
+        , m_would_have_died( false )
+        , m_has_been_suppressed( false )
+        , m_hetero_infectivity_multiplier( 0.0 )
         , hiv_parent( nullptr )
     {
         // TODO: Consider moving m_time_infected to Infection layer.  Alternatively, track only in reporters.
-        IIndividualHuman *human_parent;
-        if( s_OK != parent->QueryInterface(GET_IID(IIndividualHuman), (void**)&human_parent) )
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "IIndividualHuman", "IIndividualHumanContext" );
-        }
-        m_time_infected = human_parent->GetParent()->GetTime().time;
+        m_time_infected = parent->GetEventContext()->GetIndividualHumanConst()->GetParent()->GetTime().time;
     }
 
     float
@@ -533,124 +661,6 @@ namespace Kernel
         return ret;
     }
 
-    // static: doesn't use any member variables, just lives in this class for convenience.
-    // Purpose: This function converts a WHO HIV stage (1-4 really, but 1.0-4.99 for us)
-    // into a human body weight in kg. It does a linear interpolation on the hardcoded array.
-    float
-    InfectionHIV::GetWeightInKgFromWHOStage(
-        float whoStage
-    )
-    {
-        if( whoStage < MIN_WHO_HIV_STAGE || whoStage > MAX_WHO_HIV_STAGE)
-        {
-            throw OutOfRangeException( __FILE__, __LINE__, __FUNCTION__, "whoStage", whoStage, ( whoStage < MIN_WHO_HIV_STAGE ? MIN_WHO_HIV_STAGE : MAX_WHO_HIV_STAGE ) );
-        }
-
-        // All hardcoded here because these are the weight boundaries for WHO HIV stages.
-        // !!! SEE BELOW FOR EXPLANATION !!!
-        float weights[] = { 65.0f, 62.1f, 57.0f, 50.0f, 40.1f }; // Kg
-
-        int left  = int(floor(whoStage))-1;
-        int right = int(ceil(whoStage))-1;
-
-        float weightInKilograms = weights[ left ] + (weights[ right ] - weights[ left ]) * (whoStage - floor(whoStage));
-        LOG_DEBUG_F( "%s returning %f for stage %f\n", __FUNCTION__, weightInKilograms, whoStage );
-        return weightInKilograms;
-    }
-
-    // -------------------------------------------------------------------------------------------------------
-    // !!! WEIGHTS EXPLANATION - Values used above. !!! 5/14/2015 AB
-    // The goal of the weight model was to combine information about WHO guideline and clinical progression 
-    // in order to estimate body weight over the course of untreated HIV infection. This in turn is used to 
-    // estimate body weight at treatment initiation, which is used to compute survivorship based to reflect
-    // that of the IeDEA cohorts. The WHO guidelines for clinical staging (revised 2005) specify that WHO 
-    // stage I/II is defined as <10% loss in body weight and WHO stage III/IV is a >10% loss in body weight. 
-    // Thus, we placed the transition between stages II and III at approximately 10% loss of body weight. 
-    // IeDEA uses absolute weight rather than percentage change from pre-HIV baseline or BMI, because 
-    // pre-HIV weight and height are often unavailable in patient records. We therefore assumed an intial
-    // weight of 65kg. Clinically, we know that weight loss during AIDS is not linear: in Stage I/II there 
-    // is usually relatively slow weight loss, whereas in Stage IV weight loss can be rapid due to the 
-    // compounding effects of malabsorption, difficulty eating/loss of appetite, the metabolic demands of
-    // opportunistic infections and viral replication. This is why the rate of decline in weight increases
-    // as the clinical stages advance.
-    // -------------------------------------------------------------------------------------------------------
-
-
-#define IEDEA_KAPPA (0.34f)
-#define IEDEA_LAMBDA_BASE_IN_YRS (123.83f)
-#define IEDEA_FEMALE_MULTIPLIER (0.6775f)
-#define AGE_40_YRS (40.0f*DAYSPERYEAR)
-#define IEDEA_OVER_AGE_40Y_MULTIPLIER (1.4309f)
-#define WHO_STAGE_THRESHOLD_FOR_COX (3)
-#define IEDEA_STAGE_3_PLUS_MULTIPLIER (2.7142f)
-#define COX_PROP_CONSTANT_1 (-0.00758256281931556)
-#define COX_PROP_CONSTANT_2 (0.282851687024819)
-#define COX_PROP_CONSTANT_3 (-0.0731529900006081)
-#define COX_PROP_CONSTANT_4 (3.05043211490958)
-
-    // This is an implementation of the Cox Proportional Model (e.g., http://en.wikipedia.org/wiki/Cox_proportional_hazards_model)
-    // The values are taken from the IeDEA website (http://www.iedea-sa.org/index.php?id=2856)
-    float
-    InfectionHIV::ComputeDurationFromEnrollmentToArtAidsDeath()
-    const
-    {
-        float whoStageContinuous = GetWHOStage();
-        float weight = GetWeightInKgFromWHOStage(whoStageContinuous);
-        // presumably it's at enrollment which is now, why would we be doing this calc any other time?
-        float cd4AtArtEnrollment = hiv_parent->GetHIVSusceptibility()->GetCD4count(); 
-        //release_assert( cd4AtArtEnrollment > 30.0f );
-        if( cd4AtArtEnrollment < 30.0f )
-        {
-            LOG_WARN_F( "Individual %d had low CD4 at ART enrollment: %f\n", parent->GetSuid().data, cd4AtArtEnrollment );
-        }
-        //release_assert( cd4AtArtEnrollment < 850.0f );
-        if( cd4AtArtEnrollment > 850.0f )
-        {
-            LOG_WARN_F( "Individual %d had high CD4 at ART enrollment: %f\n", parent->GetSuid().data, cd4AtArtEnrollment );
-        }
-        float multiplier = float(exp( COX_PROP_CONSTANT_1 * min(InfectionHIVConfig::max_CD4_cox, cd4AtArtEnrollment) + COX_PROP_CONSTANT_2)); // Stop at 350
-        release_assert( multiplier > 0.0f );
-        //release_assert( multiplier < 10.0f );
-
-        // have to cast to get gender?!
-        if( dynamic_cast<IIndividualHuman*>(parent)->GetGender() == Gender::FEMALE)
-        {
-            multiplier *= IEDEA_FEMALE_MULTIPLIER;
-        }
-
-        /*float hostAge = infectionInternals->GetCommunityCharacteristics()->UseFakeAgeForIntrahost() ? 
-                        infectionInternals->GetHost()->FakeAge() : infectionInternals->GetHost()->Age();*/
-        if (dynamic_cast<IIndividualHuman*>(parent)->GetAge() > AGE_40_YRS)
-        {
-            multiplier *= IEDEA_OVER_AGE_40Y_MULTIPLIER;
-        }
-
-        if (whoStageContinuous >= WHO_STAGE_THRESHOLD_FOR_COX)
-        {
-            multiplier *= IEDEA_STAGE_3_PLUS_MULTIPLIER;
-        }
-
-        multiplier *= float(exp( COX_PROP_CONSTANT_3 * weight + COX_PROP_CONSTANT_4));
-        LOG_DEBUG_F( "multiplier = %f\n", multiplier );
-        float lambda_divisor = pow(multiplier, 1.0f/IEDEA_KAPPA);
-
-        float lambda_corrected = IEDEA_LAMBDA_BASE_IN_YRS / lambda_divisor;
-        float ret = DAYSPERYEAR * lambda_corrected * pow(-log(1.0f- parent->GetRng()->e() ), 1.0f/IEDEA_KAPPA);
-        // This might be a little too verbose for production.
-        LOG_DEBUG_F( "%s returning %f from WHO stage of %f, age of %f, weight of %f, and gender %s: multiplier was %f, lambda divisor = %f, lambda (actual) %f.\n",
-                     __FUNCTION__,
-                     ret,
-                     whoStageContinuous,
-                     dynamic_cast<IIndividualHuman*>(parent)->GetAge()/DAYSPERYEAR,
-                     weight,
-                     ( dynamic_cast<IIndividualHuman*>(parent)->GetGender()==Gender::MALE ? "MALE" : "FEMALE" ),
-                     multiplier,
-                     lambda_divisor,
-                     lambda_corrected
-                   );
-        return ret;
-    }
-
     REGISTER_SERIALIZABLE(InfectionHIV);
 
     void InfectionHIV::serialize(IArchive& ar, InfectionHIV* obj)
@@ -662,12 +672,18 @@ namespace Kernel
         ar.labelElement("HIV_natural_duration_until_mortality"               ) & inf_hiv.HIV_natural_duration_until_mortality;
         ar.labelElement("HIV_duration_until_mortality_with_viral_suppression") & inf_hiv.HIV_duration_until_mortality_with_viral_suppression;
         ar.labelElement("m_time_infected"                                    ) & inf_hiv.m_time_infected;
-        ar.labelElement("prognosis_timer"                                    ) & inf_hiv.prognosis_timer;
         ar.labelElement("m_infection_stage"                                  ) & (uint32_t&)inf_hiv.m_infection_stage;
         ar.labelElement("m_fraction_of_prognosis_spent_in_stage"             ); ar.serialize( inf_hiv.m_fraction_of_prognosis_spent_in_stage, NUM_WHO_STAGES );
         ar.labelElement("m_acute_duration"                                   ) & inf_hiv.m_acute_duration;
         ar.labelElement("m_latent_duration"                                  ) & inf_hiv.m_latent_duration;
         ar.labelElement("m_aids_duration"                                    ) & inf_hiv.m_aids_duration;
+        ar.labelElement("m_duration_until_would_have_entered_latent"         ) & inf_hiv.m_duration_until_would_have_entered_latent;
+        ar.labelElement("m_duration_until_would_have_entered_aids"           ) & inf_hiv.m_duration_until_would_have_entered_aids;
+        ar.labelElement("m_duration_until_would_have_died"                   ) & inf_hiv.m_duration_until_would_have_died;
+        ar.labelElement("m_would_have_entered_latent"                        ) & inf_hiv.m_would_have_entered_latent;
+        ar.labelElement("m_would_have_entered_aids"                          ) & inf_hiv.m_would_have_entered_aids;
+        ar.labelElement("m_would_have_died"                                  ) & inf_hiv.m_would_have_died;
+        ar.labelElement("m_has_been_suppressed"                              ) & inf_hiv.m_has_been_suppressed;
         ar.labelElement("m_hetero_infectivity_multiplier"                    ) & inf_hiv.m_hetero_infectivity_multiplier;
 
         //hiv_parent assigned in SetContextTo()

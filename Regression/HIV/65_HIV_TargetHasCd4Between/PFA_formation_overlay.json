@@ -1,0 +1,64 @@
+{
+    "Metadata": {
+        "Author": "dbridenbecker", 
+        "NodeCount": 1, 
+        "Tool": "notepad", 
+        "IdReference": "0", 
+        "DateCreated": "2015-3-21"
+    },
+    "Defaults": {
+        "Society" : {
+            "TRANSITORY" :
+            {
+                "Concurrency_Parameters" :
+                {
+                    "NONE": 
+                    {
+                        "Max_Simultaneous_Relationships_Female": 7,
+                        "Max_Simultaneous_Relationships_Male"  : 7,
+                        "Prob_Extra_Relationship_Female"       : 1,
+                        "Prob_Extra_Relationship_Male"         : 1
+                    }
+                },
+                "Pair_Formation_Parameters" :
+                {
+                    "Formation_Rate_Constant": 0.04
+                }
+            },
+            "INFORMAL" :
+            {
+                "Concurrency_Parameters" :
+                {
+                    "NONE": 
+                    {
+                        "Max_Simultaneous_Relationships_Female": 4,
+                        "Max_Simultaneous_Relationships_Male"  : 4,
+                        "Prob_Extra_Relationship_Female"       : 1,
+                        "Prob_Extra_Relationship_Male"         : 1
+                    }
+                },
+                "Pair_Formation_Parameters" :
+                {
+                    "Formation_Rate_Constant": 0.02
+                }
+            },
+            "MARITAL" :
+            {
+                "Concurrency_Parameters" :
+                {
+                    "NONE": 
+                    {
+                        "Max_Simultaneous_Relationships_Female": 2,
+                        "Max_Simultaneous_Relationships_Male"  : 2,
+                        "Prob_Extra_Relationship_Female"       : 1,
+                        "Prob_Extra_Relationship_Male"         : 1
+                    }
+                },
+                "Pair_Formation_Parameters" :
+                {
+                    "Formation_Rate_Constant": 0.005
+                }
+            }
+        }
+    }
+}

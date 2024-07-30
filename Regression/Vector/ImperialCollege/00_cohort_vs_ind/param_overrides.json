@@ -1,0 +1,63 @@
+{
+    "Default_Config_Path": "Vector/ImperialCollege/default_config.json",
+    "parameters": {
+        "Config_Name": "00_cohort_vs_ind",
+        ".Vector_Sampling_Type": "VECTOR_COMPARTMENTS_NUMBER",
+        "Vector_Sampling_Type": "TRACK_ALL_VECTORS",
+        "Python_Script_Path": "LOCAL",
+        "Enable_Vector_Aging": 1,
+        "Enable_Vector_Mortality": 1,
+        "x_Temporary_Larval_Habitat": 10.0,
+        "Simulation_Duration": 400,
+        "Demographics_Filenames": [
+            "Demographics.json"
+        ],
+        "Insecticides" : [
+            {
+                "Name" : "FemaleVectorInsecticide",
+                "COMMENT": "It is supposed to kill females, so we modify it to NOT kill males.",
+                "Resistances" : [
+                    {
+                        "Species" : "arabiensis",
+                        "Allele_Combinations" : [
+                            [ "X", "Y" ]
+                        ],
+                        "Larval_Killing_Modifier": 1.0,
+                        "Repelling_Modifier" : 1.0,
+                        "Blocking_Modifier": 1.0,
+                        "Killing_Modifier": 0.0
+                    }
+                ]
+            }
+        ],
+        "Vector_Species_Params": [
+            {
+                "Name": "arabiensis",
+                "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_NONE",
+                "Anthropophily": 0.95,
+                "Days_Between_Feeds": 3,
+                "Indoor_Feeding_Fraction": 0.5,
+                ".Genes": [
+                    {
+                        "Alleles" : {
+                            "a0" : 0.4,
+                            "a1" : 0.3,
+                            "a2" : 0.2,
+                            "a3" : 0.1
+                        },
+                        "Mutations" : {}
+                    },
+                    {
+                        "Alleles" : {
+                            "b0" : 0.45,
+                            "b1" : 0.35,
+                            "b2" : 0.15,
+                            "b3" : 0.05
+                        },
+                        "Mutations" : {}
+                    }
+                ]
+            }
+        ]
+    }
+}

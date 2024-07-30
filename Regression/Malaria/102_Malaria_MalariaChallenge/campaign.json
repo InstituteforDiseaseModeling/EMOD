@@ -1,0 +1,41 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "Start_Day": 10, 
+            "class": "CampaignEvent", 
+            "Event_Coordinator_Config": { 
+                "Number_Repetitions": 1, 
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "COMMENT": "10 * 10 (Mean_Sporozoites_Per_Bite) * 0.5 (Base_Sporozoite_Survival_Fraction) = 50 hepatocytes",
+                    "class": "MalariaChallenge",
+                    "Challenge_Type": "InfectiousBites",
+                    "InfectiousBites": 10,
+                    "Coverage": 1.0
+                }
+            }, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }
+        },
+        {
+            "Start_Day": 100, 
+            "class": "CampaignEvent", 
+            "Event_Coordinator_Config": { 
+                "Number_Repetitions": 1, 
+                "class": "StandardInterventionDistributionEventCoordinator", 
+                "Intervention_Config": {
+                    "COMMENT": "100 * 0.5 (Base_Sporozoite_Survival_Fraction) = 50 hepatocytes",
+                    "class": "MalariaChallenge",
+                    "Challenge_Type": "Sporozoites",
+                    "Sporozoite_Count": 100,
+                    "Coverage": 1.0
+                }
+            }, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }
+        }
+    ]
+}

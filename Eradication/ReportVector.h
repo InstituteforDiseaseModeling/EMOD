@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -27,10 +19,16 @@ protected:
     virtual void populateSummaryDataUnitsMap( std::map<std::string, std::string> &units_map ) override;
     virtual void postProcessAccumulatedData() override;
 
+    virtual void AddSEIRChannels() override {};
     virtual void AddSEIRWUnits( std::map<std::string, std::string> &units_map ) override {}
     virtual void UpdateSEIRW( const Kernel::IIndividualHuman* individual, float monte_carlo_weight ) override {}
     virtual void AccumulateSEIRW() override {}
     virtual void NormalizeSEIRWChannels() override {}
+
+    ChannelID adult_vectors_id;
+    ChannelID infectious_vectors_id;
+    ChannelID daily_EIR_id;
+    ChannelID daily_HBR_id;
 };
 
 }

@@ -30,7 +30,6 @@
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Days_To_Diagnosis": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:OnART",
                             "InterventionStatus:LinkingToART",
@@ -74,7 +73,6 @@
                     "Actual_IndividualIntervention_Config": {
                         "Broadcast_Event": "HCTUptakePostDebut1",
                         "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
-                        "Delay_Period_Constant": 1,
                         "Disqualifying_Properties": [
                             "InterventionStatus:OnART",
                             "InterventionStatus:LinkingToART",
@@ -86,7 +84,8 @@
                         "Max_Entries": 1,
                         "Muxer_Name": "HCTUptakePostDebut",
                         "New_Property_Value": "InterventionStatus:HCTUptakePostDebut",
-                        "class": "HIVMuxer"
+                        "class": "HIVMuxer",
+                        "Delay_Period_Constant": 1
                     },
                     "Trigger_Condition_List": [
                         "HCTUptakePostDebut0"
@@ -107,7 +106,6 @@
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Days_To_Diagnosis": 0,
                         "Default_Value": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:OnART",
@@ -166,7 +164,6 @@
                     "Actual_IndividualIntervention_Config": {
                         "Broadcast_Event": "HCTTestingLoop1",
                         "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
-                        "Delay_Period_Constant": 1,
                         "Disqualifying_Properties": [
                             "InterventionStatus:OnART",
                             "InterventionStatus:LinkingToART",
@@ -177,7 +174,8 @@
                         "Max_Entries": 1,
                         "Muxer_Name": "HCTTestingLoop",
                         "New_Property_Value": "InterventionStatus:HCTTestingLoop",
-                        "class": "HIVMuxer"
+                        "class": "HIVMuxer",
+                        "Delay_Period_Constant": 1
                     },
                     "Trigger_Condition_List": [
                         "HCTTestingLoop0"
@@ -235,12 +233,12 @@
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
                         "Choice_Names": [
-                            "LTFU0",
-                            "ARTStaging0"
+                            "ARTStaging0",
+                            "LTFU0"
                         ],
                         "Choice_Probabilities": [
-                            0,
-                            1
+                            1,
+                            0
                         ],
                         "Disqualifying_Properties": [
                             "InterventionStatus:OnART",
@@ -278,12 +276,12 @@
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
                         "Choice_Names": [
-                            "LTFU1",
-                            "HCTTestingLoop4"
+                            "HCTTestingLoop4",
+                            "LTFU1"
                         ],
                         "Choice_Probabilities": [
-                            0,
-                            1
+                            1,
+                            0
                         ],
                         "Disqualifying_Properties": [
                             "InterventionStatus:OnART",
@@ -322,7 +320,6 @@
                     "Actual_IndividualIntervention_Config": {
                         "Broadcast_Event": "HCTTestingLoop1",
                         "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
-                        "Delay_Period_Constant": 365,
                         "Disqualifying_Properties": [
                             "InterventionStatus:OnART",
                             "InterventionStatus:LinkingToART",
@@ -333,7 +330,8 @@
                         "Max_Entries": 1,
                         "Muxer_Name": "HCTTestingLoop",
                         "New_Property_Value": "InterventionStatus:HCTTestingLoop",
-                        "class": "HIVMuxer"
+                        "class": "HIVMuxer",
+                        "Delay_Period_Constant": 365
                     },
                     "Trigger_Condition_List": [
                         "HCTTestingLoop4"
@@ -391,12 +389,12 @@
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
                         "Choice_Names": [
-                            "LTFU3",
-                            "ARTStaging0"
+                            "ARTStaging0",
+                            "LTFU3"
                         ],
                         "Choice_Probabilities": [
-                            0,
-                            1
+                            1,
+                            0
                         ],
                         "Disqualifying_Properties": [
                             "InterventionStatus:OnART",
@@ -433,6 +431,7 @@
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
+                        "Days_To_Diagnosis": 0,
                         "Event_Or_Config": "Event",
                         "Positive_Diagnosis_Event": "TestingOnANC1",
                         "class": "STIIsPostDebut"
@@ -533,12 +532,12 @@
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
                         "Choice_Names": [
-                            "LTFU5",
-                            "ARTStaging0"
+                            "ARTStaging0",
+                            "LTFU5"
                         ],
                         "Choice_Probabilities": [
-                            0,
-                            1
+                            1,
+                            0
                         ],
                         "Disqualifying_Properties": [
                             "InterventionStatus:OnART",
@@ -614,12 +613,12 @@
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
                         "Choice_Names": [
-                            "LTFU7",
-                            "ARTStaging0"
+                            "ARTStaging0",
+                            "LTFU7"
                         ],
                         "Choice_Probabilities": [
-                            0,
-                            1
+                            1,
+                            0
                         ],
                         "Disqualifying_Properties": [
                             "InterventionStatus:OnART",
@@ -659,7 +658,6 @@
                     "Actual_IndividualIntervention_Config": {
                         "Broadcast_Event": "ARTStaging1",
                         "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
-                        "Delay_Period_Constant": 1,
                         "Disqualifying_Properties": [
                             "InterventionStatus:OnART",
                             "InterventionStatus:LinkingToART",
@@ -669,7 +667,8 @@
                         "Max_Entries": 1,
                         "Muxer_Name": "ARTStaging",
                         "New_Property_Value": "InterventionStatus:ARTStaging",
-                        "class": "HIVMuxer"
+                        "class": "HIVMuxer",
+                        "Delay_Period_Constant": 1
                     },
                     "Trigger_Condition_List": [
                         "ARTStaging0"
@@ -823,12 +822,12 @@
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
                         "Choice_Names": [
-                            "LTFU8",
-                            "ARTStaging4"
+                            "ARTStaging4",
+                            "LTFU8"
                         ],
                         "Choice_Probabilities": [
-                            0,
-                            1
+                            1,
+                            0
                         ],
                         "Disqualifying_Properties": [
                             "InterventionStatus:OnART",
@@ -866,7 +865,6 @@
                     "Actual_IndividualIntervention_Config": {
                         "Broadcast_Event": "ARTStaging5",
                         "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
-                        "Delay_Period_Constant": 7,
                         "Disqualifying_Properties": [
                             "InterventionStatus:OnART",
                             "InterventionStatus:LinkingToART",
@@ -874,7 +872,8 @@
                             "InterventionStatus:LinkingToPreART"
                         ],
                         "New_Property_Value": "InterventionStatus:ARTStaging",
-                        "class": "HIVDelayedIntervention"
+                        "class": "HIVDelayedIntervention",
+                        "Delay_Period_Constant": 7
                     },
                     "Trigger_Condition_List": [
                         "ARTStaging4"
@@ -962,7 +961,6 @@
                     "Actual_IndividualIntervention_Config": {
                         "Broadcast_Event": "LinkingToPreART1",
                         "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
-                        "Delay_Period_Constant": 7,
                         "Disqualifying_Properties": [
                             "InterventionStatus:OnART",
                             "InterventionStatus:LinkingToART",
@@ -971,7 +969,8 @@
                         "Max_Entries": 1,
                         "Muxer_Name": "LinkingToPreART",
                         "New_Property_Value": "InterventionStatus:LinkingToPreART",
-                        "class": "HIVMuxer"
+                        "class": "HIVMuxer",
+                        "Delay_Period_Constant": 7
                     },
                     "Trigger_Condition_List": [
                         "LinkingToPreART0"
@@ -1027,6 +1026,7 @@
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
+                        "Days_To_Diagnosis": 0,
                         "Event_Or_Config": "Event",
                         "Negative_Diagnosis_Event": "LTFU9",
                         "Positive_Diagnosis_Event": "OnPreART0",
@@ -1058,7 +1058,6 @@
                     "Actual_IndividualIntervention_Config": {
                         "Broadcast_Event": "OnPreART1",
                         "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
-                        "Delay_Period_Constant": 182,
                         "Disqualifying_Properties": [
                             "InterventionStatus:OnART",
                             "InterventionStatus:LinkingToART"
@@ -1066,7 +1065,8 @@
                         "Max_Entries": 1,
                         "Muxer_Name": "LinkingToPreART",
                         "New_Property_Value": "InterventionStatus:OnPreART",
-                        "class": "HIVMuxer"
+                        "class": "HIVMuxer",
+                        "Delay_Period_Constant": 182
                     },
                     "Trigger_Condition_List": [
                         "OnPreART0"
@@ -1225,12 +1225,12 @@
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
                         "Choice_Names": [
-                            "OnPreART5",
-                            "OnPreART0"
+                            "OnPreART0",
+                            "OnPreART5"
                         ],
                         "Choice_Probabilities": [
-                            1,
-                            0
+                            0,
+                            1
                         ],
                         "Disqualifying_Properties": [
                             "InterventionStatus:OnART",
@@ -1264,6 +1264,7 @@
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
+                        "Days_To_Diagnosis": 0,
                         "Event_Or_Config": "Event",
                         "Negative_Diagnosis_Event": "LTFU11",
                         "Positive_Diagnosis_Event": "OnART0",
@@ -1295,14 +1296,14 @@
                     "Actual_IndividualIntervention_Config": {
                         "Broadcast_Event": "LinkingToART1",
                         "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
-                        "Delay_Period_Constant": 14,
                         "Disqualifying_Properties": [
                             "InterventionStatus:OnART"
                         ],
                         "Max_Entries": 1,
                         "Muxer_Name": "LinkingToART",
                         "New_Property_Value": "InterventionStatus:LinkingToART",
-                        "class": "HIVMuxer"
+                        "class": "HIVMuxer",
+                        "Delay_Period_Constant": 14
                     },
                     "Trigger_Condition_List": [
                         "LinkingToART0"
@@ -1356,6 +1357,7 @@
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
+                        "Days_To_Diagnosis": 0,
                         "Event_Or_Config": "Event",
                         "Negative_Diagnosis_Event": "LTFU12",
                         "Positive_Diagnosis_Event": "OnART0",
@@ -1381,18 +1383,24 @@
             "class": "CampaignEvent"
         },
         {
+            "class": "CampaignEvent",
+            "Event_Name": "OnART: state 0 (muxer, 1-day delay)",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
             "Event_Coordinator_Config": {
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Broadcast_Event": "OnART1",
-                        "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
-                        "Delay_Period_Constant": 1,
-                        "Disqualifying_Properties": [],
-                        "Max_Entries": 1,
+                        "class": "HIVMuxer",
                         "Muxer_Name": "OnART",
                         "New_Property_Value": "InterventionStatus:OnART",
-                        "class": "HIVMuxer"
+                        "Disqualifying_Properties": [],
+                        "Max_Entries": 1,
+                        "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                        "Delay_Period_Constant": 1,
+                        "Broadcast_Event": "OnART1"
                     },
                     "Trigger_Condition_List": [
                         "OnART0"
@@ -1400,20 +1408,20 @@
                     "class": "NodeLevelHealthTriggeredIV"
                 },
                 "class": "StandardInterventionDistributionEventCoordinator"
-            },
-            "Event_Name": "OnART: state 0 (muxer, 1-day delay)",
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Event_Name": "OnART: state 1 (run AntiretroviralTherapy)",
+            "Start_Day": 0,
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
-            "Start_Day": 0,
-            "class": "CampaignEvent"
-        },
-        {
             "Event_Coordinator_Config": {
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "class": "ARTBasic"
+                        "class": "AntiretroviralTherapy"
                     },
                     "Trigger_Condition_List": [
                         "OnART1"
@@ -1421,13 +1429,7 @@
                     "class": "NodeLevelHealthTriggeredIV"
                 },
                 "class": "StandardInterventionDistributionEventCoordinator"
-            },
-            "Event_Name": "OnART: state 1 (run ARTBasic)",
-            "Nodeset_Config": {
-                "class": "NodeSetAll"
-            },
-            "Start_Day": 0,
-            "class": "CampaignEvent"
+            }
         }
     ],
     "Use_Defaults": 1

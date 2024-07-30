@@ -1,0 +1,41 @@
+{
+     "Use_Defaults": 1,
+     "Events": [
+          {
+               "COMMENT1" : "The goal of this test is to verify that only the people without the intervention get it distributed to them.",
+               "COMMENT2" : "Verify that in the ReportHIVByAgeAndGender that for each person that got HasIntervention there was a Vaccinated event distributed.",
+               "COMMENT3" : "Having Duration_To_Wait_Before_Revaccination=0 is key to the test.  It implies that intervention will allow someone to get the intervention more than once.",
+
+               "class": "CampaignEventByYear",
+               "Start_Year": 1960, 
+               "Nodeset_Config": {
+                    "class": "NodeSetAll"
+               }, 
+               "Event_Coordinator_Config": {
+                    "class": "ReferenceTrackingEventCoordinator",
+                    "Target_Demographic": "Everyone",
+                    "Update_Period": 1,
+                    "End_Year": 1965,
+                    "Time_Value_Map": {
+                        "Times" : [ 1960, 1960.5, 1961, 1961.5, 1962, 1962.5, 1963, 1964 ],
+                        "Values": [ 0.1,  0.3,    0.2,  0.2,    0.4,  0.6,    1,    0.9 ]
+                    },
+                    "Intervention_Config": {
+                        "class": "ControlledVaccine",
+                        "Intervention_Name" : "VaccineA",
+                        "Cost_To_Consumer": 1,
+                        "Vaccine_Type": "AcquisitionBlocking",
+                        "Vaccine_Take": 1.0,
+                        "Waning_Config": {
+                            "Box_Duration": 3650,
+                            "Initial_Effect": 0,
+                            "class": "WaningEffectBox"
+                        },
+                        "Distributed_Event_Trigger" : "Vaccinated",
+                        ".Expired_Event_Trigger"     : "VaccineExpired",
+                        "Duration_To_Wait_Before_Revaccination" : 0
+                    }
+               }
+          }
+     ]
+}

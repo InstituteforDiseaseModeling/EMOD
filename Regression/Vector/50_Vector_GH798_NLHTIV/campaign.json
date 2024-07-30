@@ -10,7 +10,7 @@
                         "Genome":0,
                         "class":"Outbreak"
                     },
-                    "Trigger_Condition_List": [ "TBTestPositive" ],
+                    "Trigger_Condition_List": [ "PFA_FoundPartner" ],
                     "Demographic_Coverage":1,
                     "class":"NodeLevelHealthTriggeredIV"
                 },
@@ -55,7 +55,7 @@
                     "Days_To_Diagnosis":1.0,
                     "Dont_Allow_Duplicates":0,
                     "Event_Or_Config":"Event",
-                    "Positive_Diagnosis_Event":"TBTestPositive",
+                    "Positive_Diagnosis_Event":"PFA_FoundPartner",
                     "Intervention_Name":"Diagnostic_Sample",
                     "Treatment_Fraction":1
                 },
@@ -74,10 +74,10 @@
                 "Intervention_Config":{  
                     "Actual_IndividualIntervention_Config":{  
                         "Intervention_Name":"Treatment_broadcast",
-                        "Broadcast_Event":"TBTestNegative",
+                        "Broadcast_Event":"PFA_NoPartnerFound",
                         "class":"BroadcastEvent"
                     },
-                    "Trigger_Condition_List": [ "TBTestPositive" ],
+                    "Trigger_Condition_List": [ "PFA_FoundPartner" ],
                     "Demographic_Coverage":1.0,
                     "class":"NodeLevelHealthTriggeredIV"
                 },

@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
@@ -152,12 +144,7 @@ namespace Kernel {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context", "IIndividualHumanEventContext", "IIndividualHumanHIV" );
         }
         release_assert( hiv_individual );
-        IIndividualHumanSTI* sti_individual = nullptr;
-        if (context->QueryInterface( GET_IID(IIndividualHumanSTI), (void**)&sti_individual ) != s_OK )
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context", "IIndividualHumanEventContext", "IIndividualHumanSTI" );
-        }
-        release_assert( sti_individual );
+        IIndividualHumanSTI* sti_individual = hiv_individual->GetIndividualHumanSTI();;
 
         MortalityInfo info;
 
@@ -176,7 +163,7 @@ namespace Kernel {
                 info.individual_id = context->GetSuid().data;
                 info.gender = context->GetGender();
                 info.age = context->GetAge()/DAYSPERYEAR;
-                info.num_relationships_at_death = sti_individual->GetNumRelationshipsAtDeath();
+                info.num_relationships_at_death = sti_individual->GetRelationshipsTerminated().size();
                 info.num_lifetime_relationships = sti_individual->GetLifetimeRelationshipCount();
 
                 // Get HIV Infection
@@ -199,12 +186,7 @@ namespace Kernel {
                 }
 
                 // Get IHIVMedicalHistory
-                IHIVMedicalHistory * hiv_ivc = nullptr;
-                release_assert( hiv_individual->GetHIVInterventionsContainer() );
-                if( s_OK != hiv_individual->GetHIVInterventionsContainer()->QueryInterface(GET_IID(IHIVMedicalHistory), (void**)&hiv_ivc) )
-                {
-                    throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "hiv_ivc", "IHIVMedicalHistory", "IHIVInterventionsContainer" );
-                }
+                IHIVMedicalHistory * hiv_ivc = hiv_individual->GetMedicalHistory();
                 if( hiv_ivc )
                 {
                     info.total_number_ART_initiations = hiv_ivc->GetTotalARTInitiations();

@@ -1,0 +1,65 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 100,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Individual_Selection_Type": "TARGET_NUM_INDIVIDUALS",
+                "Target_Num_Individuals": 10,
+                "Property_Restrictions_Within_Node" : [ { "Accessibility": "NONE" } ],
+                "Intervention_Config": {
+                    "class": "MultiInterventionDistributor",
+                    "Intervention_List": [
+                        {
+                            "class": "OutbreakIndividualMalariaGenetics",
+                            "Create_Nucleotide_Sequence_From": "BARCODE_STRING",
+                            "Barcode_String": "CC"
+                        },
+                        {
+                            "COMMENT": "Just want to set the property.  Do not care about the event being broadcast.",
+                            "class": "BroadcastEvent",
+                            "New_Property_Value": "Accessibility:GM_1",
+                            "Broadcast_Event": "PFA_NoPartnerFound"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 101,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Individual_Selection_Type": "TARGET_NUM_INDIVIDUALS",
+                "Target_Num_Individuals": 10,
+                "Property_Restrictions_Within_Node" : [ { "Accessibility": "NONE" } ],
+                "Intervention_Config": {
+                    "class": "MultiInterventionDistributor",
+                    "Intervention_List": [
+                        {
+                            "class": "OutbreakIndividualMalariaGenetics",
+                            "Create_Nucleotide_Sequence_From": "BARCODE_STRING",
+                            "Barcode_String": "GG"
+                        },
+                        {
+                            "COMMENT": "Just want to set the property.  Do not care about the event being broadcast.",
+                            "class": "BroadcastEvent",
+                            "New_Property_Value": "Accessibility:GM_2",
+                            "Broadcast_Event": "PFA_NoPartnerFound"
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}

@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -19,14 +11,16 @@ namespace Kernel
 
     class HIVRelationshipStartReporter : public StiRelationshipStartReporter
     {
+        GET_SCHEMA_STATIC_WRAPPER( HIVRelationshipStartReporter )
     public:
         static IReport* Create(ISimulation* simulation);
 
     protected:
-        HIVRelationshipStartReporter(ISimulation* simulation);
+        HIVRelationshipStartReporter(ISimulation* simulation=nullptr);
         virtual ~HIVRelationshipStartReporter();
 
         // BaseTextReport
+        virtual bool Configure( const Configuration* inputJson ) override;
         virtual std::string GetHeader() const ;
 
         virtual void ClearData();
@@ -36,10 +30,10 @@ namespace Kernel
         virtual std::string GetOtherData( unsigned int relationshipID );
 
         IIndividualHumanHIV* GetIndividualHumanHIV( IIndividualHumanSTI* pPartner );
-        IHIVMedicalHistory* GetMedicalHistory( IIndividualHumanHIV* pPartner );
         int GetHivTestedPositive( IIndividualHumanHIV* pPartner );
         std::string GetReceivedTestResultForHIV( IIndividualHumanHIV* pPartner );
     private:
         std::map<unsigned int, std::string> hiv_report_data ;
+        bool m_IncludeHivData;
     };
 }

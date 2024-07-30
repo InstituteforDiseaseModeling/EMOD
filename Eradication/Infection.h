@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 #include <string>
@@ -71,26 +63,41 @@ namespace Kernel
 
         virtual suids::suid GetSuid() const;
 
-        virtual void SetParameters(IStrainIdentity* infstrain=NULL, int incubation_period_override = -1 );
-        virtual void Update(float, ISusceptibilityContext* =nullptr) override;
+        virtual void SetParameters( const IStrainIdentity* infstrain, int incubation_period_override = -1 ) override;
+        virtual void Update( float currentTime, float dt, ISusceptibilityContext* immunity = nullptr ) override;
 
         virtual InfectionStateChange::_enum GetStateChange() const override;
         virtual float GetInfectiousness() const override;
         virtual float GetInfectiousnessByRoute( const string& route ) const override; //used in multi-route simulations
 
         virtual void InitInfectionImmunology(ISusceptibilityContext* _immunity) override;
-        virtual void GetInfectiousStrainID(IStrainIdentity* infstrain); // the ID of the strain being shed
+        virtual const IStrainIdentity& GetInfectiousStrainID() const override; // the ID of the strain being shed
         virtual bool IsActive() const override;
         virtual NonNegativeFloat GetDuration() const override;
         virtual bool StrainMatches( IStrainIdentity * pStrain );
         
         virtual bool IsSymptomatic() const override;
+        virtual float GetSimTimeCreated() const override;
 
     protected:
+        Infection();
+        Infection(IIndividualHumanContext *context);
+        virtual void Initialize(suids::suid _suid);
+
+        /* clorton virtual */ const SimulationConfig* params() /* clorton override */;
+
+        virtual void CreateInfectionStrain( const IStrainIdentity* infstrain );
+        virtual void EvolveStrain(ISusceptibilityContext* immunity, float dt);
+
+        virtual bool  IsNewlySymptomatic() const override;
+        virtual void  UpdateSymptomatic( float const duration, float const incubation_timer );
+        virtual bool  DetermineSymptomatology( float const duration, float const incubation_timer );
+
         IIndividualHumanContext *parent;
 
         suids::suid suid; // unique id of this infection within the system
 
+        float sim_time_created;
         float duration;         // local timer
         float total_duration;
         float incubation_timer;
@@ -101,22 +108,8 @@ namespace Kernel
         
         InfectionStateChange::_enum StateChange;    //  Lets individual know something has happened
 
-        StrainIdentity* infection_strain;           // this a pointer because disease modules may wish to implement derived types 
+        IStrainIdentity* infection_strain;           // this a pointer because disease modules may wish to implement derived types 
 
-        Infection();
-        Infection(IIndividualHumanContext *context);
-        virtual void Initialize(suids::suid _suid);
-
-        /* clorton virtual */ const SimulationConfig* params() /* clorton override */;
-
-        virtual void CreateInfectionStrain(IStrainIdentity* infstrain);
-        virtual void EvolveStrain(ISusceptibilityContext* immunity, float dt);
-
-        virtual bool  IsNewlySymptomatic() const override;
-        virtual void  UpdateSymptomatic( float const duration, float const incubation_timer );
-        virtual bool  DetermineSymptomatology( float const duration, float const incubation_timer );
-
-    private:
         bool m_is_newly_symptomatic;
         bool m_is_symptomatic;
 

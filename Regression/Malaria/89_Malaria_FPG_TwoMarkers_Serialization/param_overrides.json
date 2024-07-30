@@ -1,0 +1,31 @@
+{
+    "Default_Config_Path": "../../defaults/malaria_genetics_default_config.json",
+    "DEMOGRAPHICS": {
+        "Demographics_Filenames": [
+            "Namawala_single_node_demographics.json",
+            "Namawala_no_prevalence.json"
+        ]
+    },
+    "PRIMARY": {
+        "Config_Name": "89_Malaria_FPG_TwoMarkers_Serialization",
+        "Geography": "Namawala",
+        "Run_Number": 1,
+        "Simulation_Duration": 730
+    },
+    "SERIALIZATION" : {
+        "Inset_Chart_Reporting_Include_30Day_Avg_Infection_Duration": 0,
+        "Serialization_Test" : 1,
+        "Serialized_Population_Writing_Type" : "TIME",
+        "Serialization_Mask_Node_Write": 0,
+        "Serialization_Precision" : "FULL",
+        "Serialization_Times" : [ 365 ]
+    },
+    "STRAIN_TRACKING": {
+        "Falciparum_MSP_Variants": 16,
+        "Falciparum_Nonspecific_Types": 16,
+        "Falciparum_PfEMP1_Variants": 500
+    },
+    "VECTOR": {
+        "x_Temporary_Larval_Habitat": 0.1
+    }
+}

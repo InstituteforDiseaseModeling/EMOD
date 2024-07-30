@@ -1,0 +1,108 @@
+{
+    "Metadata": {
+        "IdReference": "0",
+        "NodeCount": 4
+    },
+    "Defaults": {
+        "NodeID": -1,
+        "NodeAttributes": {
+            "Latitude": -1,
+            "Longitude": -1,
+            "Altitude": 0,
+            "Airport": 0,
+            "Region": 1,
+            "Seaport": 1,
+            "BirthRate": 8.715e-005,
+            "Urban": 0,
+            "AbovePoverty": 0.5
+        },
+        "IndividualAttributes": {
+            "AgeDistribution": {
+                "AxisScaleFactors": 1, 
+                "NumDistributionAxes": 0, 
+                "ResultScaleFactor": 365, 
+                "ResultUnits": "years", 
+                "DistributionValues": [ 0.0, 0.0, 0.5, 0.5, 1.0 ],
+                "ResultValues"      : [  0,   3,   8,  20,  70 ]
+            },
+            "PrevalenceDistributionFlag": 0,
+            "PrevalenceDistribution1": 0,
+            "PrevalenceDistribution2": 0,
+            "SusceptibilityDistributionFlag": 0,
+            "SusceptibilityDistribution1": 0,
+            "SusceptibilityDistribution2": 0,
+            "RiskDistributionFlag": 0,
+            "RiskDistribution1": 0,
+            "RiskDistribution2": 0,
+            "MigrationHeterogeneityDistributionFlag": 0,
+            "MigrationHeterogeneityDistribution1": 0.25,
+            "MigrationHeterogeneityDistribution2": 0
+        }
+    },
+    "Nodes": [
+        {
+            "NodeID": 1,
+            "NodeAttributes": {
+                "InitialPopulation": 20000,
+                "Latitude": 0.0,
+                "Longitude": 0.0
+            },
+            "IndividualProperties": [ 
+                { 
+                    "Property": "StudyGroups",
+                    "Values": [ "arm1", "arm2", "arm3", "not_selected" ],
+                    "Initial_Distribution": [ 0.1, 0.0, 0.0, 0.9 ],
+                    "Transitions": []
+                }
+            ]
+        },
+        {
+            "NodeID": 2,
+            "NodeAttributes": {
+                "InitialPopulation": 20000,
+                "Latitude": 0.05,
+                "Longitude": 0.0
+            },
+            "IndividualProperties": [ 
+                { 
+                    "Property": "StudyGroups",
+                    "Values": [ "arm1", "arm2", "arm3", "not_selected" ],
+                    "Initial_Distribution": [ 0.0, 0.2, 0.0, 0.8 ],
+                    "Transitions": []
+                }
+            ]
+        },
+        {
+            "NodeID": 3,
+            "NodeAttributes": {
+                "InitialPopulation": 20000,
+                "Latitude": 0.0,
+                "Longitude": 0.05
+            },
+            "IndividualProperties": [ 
+                { 
+                    "Property": "StudyGroups",
+                    "Values": [ "arm1", "arm2", "arm3", "not_selected" ],
+                    "Initial_Distribution": [ 0.0, 0.0, 0.3, 0.7 ],
+                    "Transitions": []
+                }
+            ]
+        },
+        {
+            "NodeID": 4,
+            "NodeAttributes": {
+                "InitialPopulation": 20000,
+                "Latitude": 0.05,
+                "Longitude": 0.05
+            },
+            "IndividualProperties": [ 
+                { 
+                    "Property": "StudyGroups",
+                    "Values": [ "arm1", "arm2", "arm3", "not_selected" ],
+                    "Initial_Distribution": [ 0.0, 0.0, 0.0, 1.0 ],
+                    "Transitions": []
+                }
+            ]
+        }
+    ]
+}

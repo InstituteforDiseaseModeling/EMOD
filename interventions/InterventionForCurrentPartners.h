@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -47,7 +39,7 @@ namespace Kernel
         virtual void Update( float dt ) override;
 
     protected:
-        std::vector<IRelationship*> SelectRelationships( const RelationshipSet_t& rRelationships );
+        std::vector<IRelationship*> SelectRelationships( const std::vector<IRelationship*>& rRelationships );
         std::vector<IIndividualHumanEventContext*> SelectPartners( IIndividualHumanSTI* pHumanStiSelf, std::vector<IRelationship*>& reducedRelationships );
         void ReducePartners( std::vector<IIndividualHumanEventContext*>& partners );
         void DistributeToPartnersEvent( const std::vector<IIndividualHumanEventContext*>& partners );
@@ -68,7 +60,7 @@ namespace Kernel
         float m_MaximumPartners;
         EventOrConfig::Enum m_UseEventOrConfig;
         EventTrigger m_EventToBroadcast;
-        IndividualInterventionConfig m_InterventionConfig;
+        IDistributableIntervention* m_di;
 
         DECLARE_SERIALIZABLE( InterventionForCurrentPartners );
     };

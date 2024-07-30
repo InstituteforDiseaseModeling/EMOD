@@ -1,6 +1,6 @@
 # SUMMARY: Plot theoretical and observed relationship duration distributions
 # INPUT: 
-#   1. config.json
+#   1. pfa_simple.json
 #   2. output/RelationshipEnd.csv
 # OUTPUT: figs/RelationshipDuration.png
 
@@ -20,11 +20,11 @@ if( !file.exists(fig_dir) ) {
 }
 
 end <- read.csv("output/RelationshipEnd.csv", header=TRUE)
-names(end)[names(end) == 'Rel_type'] <- 'Rel_type'
+names(end)[startsWith(names(end), 'Rel_type')] <- 'Rel_type'
 end$Duration = (end$Rel_actual_end_time - end$Rel_start_time)/DAYS_PER_YEAR
 end$Count = 1
 
-C = fromJSON('../../../InputFiles/pfa_simple.json')
+C = fromJSON('../../../../STI/SFTs/Inputs/pfa_simple.json')
 
 transitory.shape = 1.0 / C$Defaults$Society$TRANSITORY$Relationship_Parameters$Duration_Weibull_Heterogeneity
 informal.shape   = 1.0 / C$Defaults$Society$INFORMAL$Relationship_Parameters$Duration_Weibull_Heterogeneity

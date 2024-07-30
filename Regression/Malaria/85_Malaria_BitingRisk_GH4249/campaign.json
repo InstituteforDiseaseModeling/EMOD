@@ -1,0 +1,26 @@
+{
+    "Events": [
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 0.7,
+                "Intervention_Config": {
+                    "class": "MigrateIndividuals",
+                    "NodeID_To_Migrate_To": 2,
+                    "Duration_Before_Leaving_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Duration_At_Node_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Is_Moving": 0,
+                    "Duration_Before_Leaving_Constant": 0,
+                    "Duration_At_Node_Constant": 200
+                },
+                "Target_Demographic": "Everyone",
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 3000,
+            "class": "CampaignEvent"
+        }
+    ],
+    "Use_Defaults": 1
+}

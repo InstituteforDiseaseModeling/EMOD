@@ -1,0 +1,94 @@
+{
+    "Default_Config_Path": "defaults/hiv_default_config.json",
+    "parameters": {
+        "Config_Name": "57_HIV_WouldHaveDied",
+        "Run_Number": 254,
+        "Simulation_Duration": 1460,
+        "Simulation_Timestep": 30,
+        "AIDS_Duration_In_Months": 7,
+        "Acute_Duration_In_Months": 5,
+        "HIV_Age_Max_for_Child_Survival_Function": 0.1,
+        
+        "Enable_Birth": 0,
+        "x_Base_Population": 0.01,
+        "Demographics_Filenames": [
+            "SA_UN_demographics_extrapolated_WithProperties_Smoothed_4_Nodes.json",
+            "../input/PFA_overlay.json"
+        ],
+        "Report_HIV_Event_Channels_List": [
+            "WouldHaveEnteredLatentStage",
+            "WouldHaveHadAIDS",
+            "WouldHaveDied",
+            "DiseaseDeaths",
+            "NonDiseaseDeaths"
+        ],
+        "Report_HIV_Period": 30,
+        "Report_HIV_ByAgeAndGender": 1,
+        "Report_HIV_ByAgeAndGender_Start_Year" : 1900,
+        "Report_HIV_ByAgeAndGender_Stop_Year" : 2100,
+        "Report_HIV_ByAgeAndGender_Collect_Gender_Data" : 1,
+        "Report_HIV_ByAgeAndGender_Collect_Age_Bins_Data" : [
+             0,
+            10,
+            20,
+            30,
+            40,
+            50,
+            60,
+            70,
+            80,
+            90
+        ],
+        "Report_HIV_ByAgeAndGender_Collect_HIV_Data"             : 0,
+        "Report_HIV_ByAgeAndGender_Collect_HIV_Stage_Data"       : 0,
+        "Report_HIV_ByAgeAndGender_Collect_On_Art_Data"          : 0,
+        "Report_HIV_ByAgeAndGender_Collect_Circumcision_Data"    : 0,
+        "Report_HIV_ByAgeAndGender_Collect_IP_Data"              : [],
+        "Report_HIV_ByAgeAndGender_Collect_Intervention_Data"    : [],
+        "Report_HIV_ByAgeAndGender_Add_Transmitters"             : 0,
+        "Report_HIV_ByAgeAndGender_Add_Relationships"            : 1,
+        "Report_HIV_ByAgeAndGender_Add_Concordant_Relationships" : 0,
+        "Report_HIV_ByAgeAndGender_Stratify_Infected_By_CD4"     : 0,
+        "Report_HIV_ByAgeAndGender_Has_Intervention_With_Name"   : "",
+        "Report_HIV_ByAgeAndGender_Event_Counter_List"           : [
+            "WouldHaveEnteredLatentStage",
+            "WouldHaveHadAIDS",
+            "WouldHaveDied",
+            "EnteredRelationship",
+            "Emigrating",
+            "Immigrating"
+        ],
+            
+            
+        
+        "MIGRATION": {
+            "Air_Migration_Filename": "",
+            "Air_Migration_Roundtrip_Duration": 10000,
+            "Air_Migration_Roundtrip_Probability": 0,
+            "Enable_Air_Migration": 0,
+            "Enable_Family_Migration": 0,
+            "Enable_Local_Migration": 0,
+            "Enable_Migration_Heterogeneity": 0,
+            "Enable_Regional_Migration": 0,
+            "Enable_Sea_Migration": 0,
+            "Family_Migration_Filename": "",
+            "Family_Migration_Roundtrip_Duration": 0.0,
+            "Local_Migration_Filename": "",
+            "Local_Migration_Roundtrip_Duration": 10000,
+            "Local_Migration_Roundtrip_Probability": 0,
+            "Migration_Model": "FIXED_RATE_MIGRATION",
+            "Migration_Pattern": "SINGLE_ROUND_TRIPS",
+            "Regional_Migration_Filename": "",
+            "Regional_Migration_Roundtrip_Duration": 10000,
+            "Regional_Migration_Roundtrip_Probability": 0,
+            "Sea_Migration_Filename": "",
+            "Sea_Migration_Roundtrip_Duration": 10000,
+            "Sea_Migration_Roundtrip_Probability": 0,
+            "x_Air_Migration": 1,
+            "x_Family_Migration": 1,
+            "x_Local_Migration": 1,
+            "x_Regional_Migration": 1,
+            "x_Sea_Migration": 1
+        }
+    }
+}

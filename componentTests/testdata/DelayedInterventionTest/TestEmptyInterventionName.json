@@ -1,0 +1,14 @@
+{
+    "class": "DelayedIntervention",
+    "COMMENT":"Intervention_Name cannot be empty",
+    "Intervention_Name": "",
+    "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
+    "Delay_Period_Constant": 3,
+    "Actual_IndividualIntervention_Configs": [
+        {
+            "class": "OutbreakIndividual",
+            "Ignore_Immunity": 1,
+            "Incubation_Period_Override": 0
+        }
+    ]
+}

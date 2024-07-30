@@ -1,0 +1,182 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 10,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 1,2,3,4,5,6,7 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 0,
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Antigen": 0
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 30,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 2 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 0,
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                     "class": "AntimalarialDrug",
+                     "Dont_Allow_Duplicates" : 0,
+                     "Cost_To_Consumer": 1, 
+                     "Drug_Type": "TestDrugA"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 30,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 3 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 0,
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "MultiPackComboDrug",
+                    "Dont_Allow_Duplicates" : 0,
+                    "Cost_To_Consumer": 1,
+                    "Doses": [
+                        [ "TestDrugA" ],
+                        [ "TestDrugA" ],
+                        [ "TestDrugA" ],
+                        [ "TestDrugA" ]
+                    ],
+                    "Dose_Interval": 2
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 30,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 4 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 0,
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                     "class": "AntimalarialDrug",
+                     "Dont_Allow_Duplicates" : 0,
+                     "Cost_To_Consumer": 1, 
+                     "Drug_Type": "TestDrugB"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 30,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 5 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 0,
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "MultiPackComboDrug",
+                    "Dont_Allow_Duplicates" : 0,
+                    "Cost_To_Consumer": 1,
+                    "Doses": [
+                        [ "TestDrugB" ],
+                        [ "TestDrugB" ],
+                        [ "TestDrugB" ],
+                        [ "TestDrugB" ]
+                    ],
+                    "Dose_Interval": 4
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 30,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 6 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 0,
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "MultiInterventionDistributor",
+                    "Intervention_List": [
+                        {
+                            "class": "AntimalarialDrug",
+                            "Dont_Allow_Duplicates" : 0,
+                            "Cost_To_Consumer": 1, 
+                            "Drug_Type": "TestDrugA"
+                        },
+                        {
+                            "class": "AntimalarialDrug",
+                            "Dont_Allow_Duplicates" : 0,
+                            "Cost_To_Consumer": 1, 
+                            "Drug_Type": "TestDrugB"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 30,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 7 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 0,
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "MultiPackComboDrug",
+                    "Dont_Allow_Duplicates" : 0,
+                    "Cost_To_Consumer": 1,
+                    "Doses": [
+                        [ "TestDrugA", "TestDrugB" ],
+                        [ "TestDrugA" ],
+                        [ "TestDrugA", "TestDrugB" ],
+                        [ "TestDrugA" ],
+                        [ "TestDrugB" ],
+                        [],
+                        [ "TestDrugB" ]                        
+                    ],
+                    "Dose_Interval": 2
+                }
+            }
+        }
+    ]
+}

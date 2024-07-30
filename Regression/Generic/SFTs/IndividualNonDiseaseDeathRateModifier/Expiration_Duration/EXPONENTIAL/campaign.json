@@ -1,0 +1,27 @@
+{
+    "Campaign_Name": "IndividualNonDiseaseDeathRateModifier Campaign",
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 50,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "IndividualNonDiseaseDeathRateModifier",
+                    "Cost_To_Consumer": 1,
+                    "Duration_To_Modifier" : {
+                        "Times" : [ 0.0 ],
+                        "Values": [ 0.0 ]
+                    },
+                    "Expiration_Duration_Distribution": "EXPONENTIAL_DISTRIBUTION",
+                    "Expiration_Duration_Exponential": 2,
+                    "Expiration_Event": "Stopped_Death_Modification"
+                }
+            }
+        }
+    ],
+    "Use_Defaults": 1
+}

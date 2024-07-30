@@ -1,0 +1,19 @@
+{
+    "Reports": [
+        {
+            "Gender": "VECTOR_FEMALE",
+            "Species": "arabiensis2",
+            "Stratify_By": "GENOME",
+            "class": "ReportVectorGenetics"
+        },
+        {
+            "Gender": "VECTOR_BOTH_GENDERS",
+            "Species": "arabiensis2",
+            "Stratify_By": "ALLELE_FREQ",
+            "Filename_Suffix": "Test67",
+            "Alleles_For_Stratification" : [ "a0", "a1", "b0", "b1" ],
+            "class": "ReportVectorGenetics"
+        }
+    ],
+    "Use_Defaults": 1
+}

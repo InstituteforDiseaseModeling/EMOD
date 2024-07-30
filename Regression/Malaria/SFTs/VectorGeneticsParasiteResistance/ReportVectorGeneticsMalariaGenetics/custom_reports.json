@@ -1,0 +1,26 @@
+{
+    "Reports": [
+
+        {
+            "class": "ReportVectorGeneticsMalariaGenetics",
+            "Combine_Similar_Genomes": 0,
+            "End_Day": 80,
+            "Filename_Suffix": "",
+            "Parasite_Barcodes": [
+                "AA", "AG"
+            ],
+            "Gender": "VECTOR_FEMALE",
+            "Include_Death_By_State_Columns": 1,
+            "Include_Vector_State_Columns": 1,
+            "Node_IDs_Of_Interest": [],
+            "Species": "SillySkeeter",
+            "Start_Day": 25,
+            "Stratify_By": "GENOME",
+            "Enabled": 1,
+            "Pretty_Format": 1
+        }
+    ],
+    "Custom_Reports": {
+        "Use_Explicit_Dlls": 1
+    }
+}

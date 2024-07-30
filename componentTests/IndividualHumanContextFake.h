@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -25,7 +17,6 @@ using namespace Kernel;
 
 class IndividualHumanContextFake : public IIndividualHumanContext,
                                    public IIndividualHumanHIV,
-                                   public IGlobalContext,
                                    public IIndividualHumanEventContext,
                                    public IInfectionHIV,
                                    public IIndividualHumanSTI,
@@ -46,7 +37,6 @@ public:
         , m_pISusceptibilityHIV( pISusceptibilityHIV )
         , m_Rand()
         , m_pMyRand(nullptr)
-        , m_IntendsToBreastfeed(false)
         , m_IsPregnant(false)
         , m_Age(0.0)
         , m_WhoStage(0.0)
@@ -56,11 +46,20 @@ public:
         , m_Relationships()
         , m_Properties()
         , m_AssortivityIndex(-1)
+        , m_pHIVInterventionsContainer(nullptr)
+        , m_DiseaseTimer(0.0f)
+        , m_NumUniquePartnersPerTimePeriodPerRel()
+        , m_pExitingRelationship( nullptr )
     {
         m_Id.data = 1 ;
         if( pIHIC != nullptr )
         {
             pIHIC->SetContextTo( this );
+        }
+        std::vector<int> relationship_count( RelationshipType::COUNT, 0 );
+        for( int i = 0 ; i < 4; ++i )// there are four time periods
+        {
+            m_NumUniquePartnersPerTimePeriodPerRel.push_back( relationship_count );
         }
     }
 
@@ -77,8 +76,6 @@ public:
         *ppvObject = nullptr ;
         if ( iid == GET_IID(IIndividualHumanHIV)) 
             *ppvObject = static_cast<IIndividualHumanHIV*>(this);
-        else if ( iid == GET_IID(IGlobalContext)) 
-            *ppvObject = static_cast<IGlobalContext*>(this);
         else if ( iid == GET_IID(IIndividualHumanEventContext)) 
             *ppvObject = static_cast<IIndividualHumanEventContext*>(this);
         else if ( iid == GET_IID(IIndividualHumanSTI)) 
@@ -147,9 +144,6 @@ public:
 
     virtual IIndividualHumanInterventionsContext* GetInterventionsContextbyInfection(IInfection* infection)       override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
 
-    virtual const std::string& GetPropertyReportString() const     override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
-    virtual void SetPropertyReportString( const std::string& str ) override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
-
     // --------------------------------
     // --- IIndividualHuman Methods
     // --------------------------------
@@ -185,11 +179,13 @@ public:
     virtual void UpdateMCSamplingRate(float)                                                       override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual bool UpdatePregnancy(float)                                                            override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual void InitiatePregnancy(float)                                                          override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+    virtual float GetBirthRateMod() const                                                          override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual ProbabilityNumber getProbMaternalTransmission(void) const                              override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual suids::suid GetParentSuid(void) const                                                  override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual bool IsMigrating(void)                                                                 override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual void ClearNewInfectionState(void)                                                      override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual const infection_list_t& GetInfections(void) const                                      override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+    virtual IInfection* GetNewInfection(void) const                                                override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual float GetImmunityReducedAcquire(void) const                                            override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual float GetInterventionReducedAcquire(void) const                                        override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual const suids::suid& GetMigrationDestination(void)                                       override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
@@ -214,11 +210,6 @@ public:
     virtual ISusceptibilityHIV* GetHIVSusceptibility() const override
     {
         return m_pISusceptibilityHIV ;
-    }
-
-    virtual bool IntendsToBreastfeed() const
-    {
-        return m_IntendsToBreastfeed ;
     }
 
     virtual IInfectionHIV* GetHIVInfection() const override
@@ -250,20 +241,37 @@ public:
 
     virtual IHIVInterventionsContainer* GetHIVInterventionsContainer() const override
     {
-        return reinterpret_cast<IHIVInterventionsContainer*>(m_pInterventionsContext) ;
+        return m_pHIVInterventionsContainer == nullptr ? reinterpret_cast<IHIVInterventionsContainer*>(m_pInterventionsContext) : m_pHIVInterventionsContainer;
+    }
+
+    virtual IIndividualHumanSTI* GetIndividualHumanSTI() override
+    {
+        throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented.");
+    }
+
+    virtual IHIVMedicalHistory* GetMedicalHistory() const override
+    {
+        IHIVMedicalHistory* p_med_history = nullptr;
+        if(const_cast<IHIVInterventionsContainer*>(GetHIVInterventionsContainer())->QueryInterface( GET_IID( IHIVMedicalHistory ), (void**)&p_med_history ) != s_OK)
+        {
+            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__,
+                                            "GetHIVInterventionsContainer()",
+                                            "IHIVInterventionsContainer",
+                                            "IHIVMedicalHistory" );
+        }
+        return p_med_history;
     }
 
     virtual std::string toString() const override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
 
-    // --------------------------
-    // --- IGlobalContext Methods
-    // --------------------------
-    virtual const SimulationConfig*     GetSimulationConfigObj() const override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
-    virtual const IInterventionFactory* GetInterventionFactory() const override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
-
     // -----------------------------------------
     // --- IIndividualHumanEventContext Methods
     // -----------------------------------------
+    virtual const IIndividualHuman* GetIndividualHumanConst() const override
+    {
+        return this;
+    }
+
     virtual bool IsPregnant() const override
     {
         return m_IsPregnant ;
@@ -293,8 +301,9 @@ public:
     virtual bool             IsOnFamilyTrip()      const override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual const suids::suid& GetHomeNodeId()     const override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual bool IsDead()                          const override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+    virtual void SetHome(const suids::suid& rHomeNodeID) override {throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); };
 
-    virtual IPKeyValueContainer* GetProperties() override
+    virtual IPKeyValueContainerFull* GetProperties() override
     {
         return &m_Properties ;
     }
@@ -312,13 +321,24 @@ public:
         return m_WhoStage ;
     }
 
+    virtual void SetupSuppressedDiseaseTimers(float time) override 
+    { 
+        m_DiseaseTimer = time;
+    }
+
+    virtual float GetPrognosis() const override 
+    { 
+        return 0.0f;
+    }
+
+    virtual void ApplySuppressionDropout() override 
+    { 
+    }
+
     virtual NaturalNumber GetViralLoad()              const override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
-    virtual float GetPrognosis()                      const override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual float GetTimeInfected()                   const override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual float GetDaysTillDeath()                  const override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
-    virtual const HIVInfectionStage::Enum& GetStage() const override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
-    virtual void SetupSuppressedDiseaseTimers()             override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
-    virtual void ApplySuppressionDropout()                  override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+    virtual const HIVInfectionStage::Enum& GetStage() const override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }   
     virtual void ApplySuppressionFailure()                  override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
 
 
@@ -327,41 +347,60 @@ public:
     // ------------------
     //virtual suids::suid GetSuid() const = 0; // pass-through to base
     //virtual bool IsInfected() const = 0; //  pass-through to base
+    virtual IIndividualHuman* GetIndividualHuman() override { return this; }
     virtual bool IsBehavioralSuperSpreader()       const override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual unsigned int GetExtrarelationalFlags() const override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
-    virtual bool IsCircumcised() const
+    virtual bool IsCircumcised() const override
     {
         return m_IsCircumcised;
     }
+    virtual bool IsPostDebut() const override
+    {
+        return GetAge() >= GetDebutAge();
+    }
 
-    virtual const IPKeyValueContainer& GetPropertiesConst() const override 
+    virtual bool EnterPfaNow() const override
+    {
+        return false;
+    }
+
+    virtual bool EnterRelationshipNow() const override
+    {
+        return false;
+    }
+
+    virtual const IPKeyValueContainerFull& GetPropertiesConst() const override 
     {
         return m_Properties ;
     }
 
-    virtual float GetCoInfectiveTransmissionFactor()           const override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
-    virtual float GetCoInfectiveAcquisitionFactor()           const override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+    virtual float GetCoInfectiveTransmissionFactor() const override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+    virtual float GetCoInfectiveAcquisitionFactor()  const override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+
+    virtual float GetCoitalActRiskAcquisitionFactor()  const override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+    virtual float GetCoitalActRiskTransmissionFactor() const override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
 
     virtual void UpdateSTINetworkParams(const char *prop = nullptr, const char* new_value = nullptr) override {throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented.");}
 
-    virtual void UpdateInfectiousnessSTI(std::vector<act_prob_t> &act_prob_vec, unsigned int rel_id) override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
-
+    virtual void UpdateInfectiousnessSTI( CoitalAct& rCoitalAct ) override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
 
     virtual void UpdatePausedRelationships( const Kernel::IdmDateTime &, float ) override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual void UpdateHistory( const IdmDateTime& rCurrentTime, float dt ) override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual bool AvailableForRelationship(RelationshipType::Enum) const override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+    virtual std::vector<unsigned int> GetQueuedRelationships() const override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." ); }
+    virtual std::vector<bool>GetAvailableRelationships() const override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." ); };
     virtual void UpdateEligibility()                                    override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual void ConsiderRelationships(float dt)                        override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual void RemoveRelationship( IRelationship* pNewRelationship )  override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     //virtual std::string toString() const = 0 ;
-    virtual unsigned int GetOpenRelationshipSlot() const       override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual NaturalNumber GetLast6MonthRels() const            override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual NaturalNumber GetLifetimeRelationshipCount() const override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
-    virtual NaturalNumber GetNumRelationshipsAtDeath() const   override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual void NotifyPotentialExposure()                     override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual void onEmigrating()                                override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual void onImmigrating()                               override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
     virtual suids::suid GetNodeSuid() const                    override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+
+    virtual unsigned int GetOpenRelationshipSlot() const override { return 0; }
 
     virtual void ClearAssortivityIndexes()                                     override { m_AssortivityIndex = -1; }
     virtual int GetAssortivityIndex( RelationshipType::Enum type ) const       override { return m_AssortivityIndex; }
@@ -369,21 +408,42 @@ public:
 
     virtual ProbabilityNumber getProbabilityUsingCondomThisAct( const IRelationshipParameters* pRelParams ) const override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
 
-    virtual RelationshipSet_t& GetRelationshipsAtDeath() override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented."); }
+    virtual float GetSimDayBorn() const override
+    {
+        return -m_Age;
+    }
 
     virtual float GetDebutAge() const override
     {
-        return 13*365 ;
+        return 13 * 365;
     }
 
-    virtual RelationshipSet_t& GetRelationships() override
+    virtual float GetAgeAtInfection() const override
+    {
+        return 20 * 365;
+    }
+
+    IRelationship* GetExitingRelationship() const override
+    {
+        return m_pExitingRelationship;
+    }
+
+    const CoitalAct& GetCurrentCoitalAct() const
+    {
+        throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." );
+    }
+
+    virtual std::vector<IRelationship*>& GetRelationships() override
     {
         return m_Relationships ;
     }
+    virtual std::vector<IRelationship*>& GetRelationshipsTerminated() override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." ); }
+    virtual IRelationship* GetMigratingRelationship() override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." ); }
+
 
     virtual void AddRelationship( IRelationship* pNewRelationship ) override
     {
-        m_Relationships.insert( pNewRelationship );
+        m_Relationships.push_back( pNewRelationship );
     }
 
     virtual void UpdateNumCoitalActs( uint32_t numActs ) override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." ); }
@@ -400,40 +460,42 @@ public:
 
     virtual NaturalNumber GetNumUniquePartners( int itp, int irel ) const override
     {
-        return 0;
+        return m_NumUniquePartnersPerTimePeriodPerRel[ itp ][ irel ];
     }
 
-    virtual NaturalNumber GetLifetimeRelationshipCount( RelationshipType::Enum ofType ) const
+    virtual NaturalNumber GetLifetimeRelationshipCount( RelationshipType::Enum ofType ) const override
     {
         return 0;
     }
+
+    virtual void SetSexualDebutAge( float age ) override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." ); }
 
     // ---------------------------------
     // --- IMalariaHumanContext Methods 
     // ---------------------------------
 
     virtual const SimulationConfig *params() const    { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." ); }
-    virtual void  PerformMalariaTest( int test_type ) { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." ); }
-    virtual void  CountPositiveSlideFields( RANDOMBASE * rng,
-                                            int nfields,
-                                            float uL_per_field,
-                                            int& positive_asexual_fields,
-                                            int& positive_gametocyte_fields ) const
+    virtual float GetParasiteDensity()                                               const override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." ); }
+    virtual float GetGametocyteDensity()                                             const override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." ); }
+    virtual void  AddClinicalSymptom( ClinicalSymptomsEnum::Enum symptom, bool )           override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." ); }
+    virtual bool  HasClinicalSymptomNew(        ClinicalSymptomsEnum::Enum symptom ) const override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." ); }
+    virtual bool  HasClinicalSymptomContinuing( ClinicalSymptomsEnum::Enum symptom ) const override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." ); }
+    virtual IMalariaSusceptibility* GetMalariaSusceptibilityContext()                const override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." ); }
+    virtual std::vector< std::pair<int, int> > GetInfectingStrainIds()               const override { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." ); }
+
+    virtual float MakeDiagnosticMeasurement( MalariaDiagnosticType::Enum mdType,
+                                             float measurementSensitivity )
     {
         throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." );
     }
-    virtual bool  CheckForParasitesWithTest(    int test_type )            const { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." ); }
-    virtual float CheckParasiteCountWithTest(   int test_type )            const { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." ); }
-    virtual float CheckGametocyteCountWithTest( int test_type )            const { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." ); }
-    virtual float GetGametocyteDensity()                                   const { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." ); }
-    virtual bool  HasFever()                                               const { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." ); }
-    virtual void  AddClinicalSymptom( ClinicalSymptomsEnum::Enum symptom )       { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." ); }
-    virtual bool  HasClinicalSymptom( ClinicalSymptomsEnum::Enum symptom ) const { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." ); }
-    virtual IMalariaSusceptibility* GetMalariaSusceptibilityContext()      const { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." ); }
-    virtual std::vector< std::pair<int, int> > GetInfectingStrainIds()     const { throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." ); }
 
+    virtual float GetDiagnosticMeasurementForReports( MalariaDiagnosticType::Enum mdType ) const
+    {
+        throw Kernel::NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "The method or operation is not implemented." );
+    }
 
-
+    virtual bool HasMaxInfections() const { return false;  }
+    virtual float GetMaxInfectionDuration() const { return 0.0f; }
 
     // ------------------
     // --- Other Methods 
@@ -441,11 +503,6 @@ public:
     void SetId( int id )
     {
         m_Id.data = id ;
-    }
-
-    void SetIntendsToBreastfeed( bool feed )
-    {
-        m_IntendsToBreastfeed = feed ;
     }
 
     void SetIsPregnant( bool isPregnant )
@@ -502,6 +559,36 @@ public:
         m_pMyRand = pRng;
     }
 
+    void SetHIVInterventionsContainer(IHIVInterventionsContainer* container)
+    {
+        m_pHIVInterventionsContainer = container;
+    }
+
+    void SetHIVSusceptibility(ISusceptibilityHIV* susceptibility)
+    {
+        m_pISusceptibilityHIV = susceptibility;
+    }
+
+    float GetDiseaseTimer() const
+    {
+        return m_DiseaseTimer;
+    }
+
+    void SetNumUniquePartners( int iTimePeriod, int irel, int numPartners )
+    {
+        m_NumUniquePartnersPerTimePeriodPerRel[ iTimePeriod ][ irel ] = numPartners;
+    }
+
+    void SetExitingRelationship( IRelationship* pRel )
+    {
+        m_pExitingRelationship = pRel;
+    }
+
+    void BroadcastEvent( const EventTrigger& event_trigger )
+    {
+        return;
+    }
+
 private:
     int m_RefCount ;
     suids::suid m_Id ;
@@ -511,7 +598,6 @@ private:
     ISusceptibilityHIV* m_pISusceptibilityHIV ;
     RandomFake m_Rand ;
     RANDOMBASE* m_pMyRand;
-    bool m_IntendsToBreastfeed ;
     bool m_IsPregnant ;
     int m_Gender ;
     float m_Age ;
@@ -519,10 +605,14 @@ private:
     bool m_HasSTI ;
     bool m_HasHIV ;
     bool m_HasCoSTI ;
-    RelationshipSet_t m_Relationships ;
-    IPKeyValueContainer m_Properties ;
+    std::vector<IRelationship*> m_Relationships ;
+    IPKeyValueContainerFull m_Properties ;
     bool m_IsCircumcised;
     int m_AssortivityIndex;
+    IHIVInterventionsContainer* m_pHIVInterventionsContainer;
+    float m_DiseaseTimer;
+    std::vector<std::vector<int>> m_NumUniquePartnersPerTimePeriodPerRel;
+    IRelationship* m_pExitingRelationship;
 };
 
 

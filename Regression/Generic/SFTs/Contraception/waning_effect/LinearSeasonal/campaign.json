@@ -1,0 +1,53 @@
+{
+    "Campaign_Name": "Simple FP Campaign",
+    "Events": [
+        {
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "Broadcast_Event": "Use_Test",
+                    "class": "BroadcastEvent"
+                },
+                "Target_Demographic": "ExplicitGender",
+                "Target_Gender": "Female",
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 0.0,
+            "class": "CampaignEvent"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "Disqualifying_Properties": [
+                        "CurrentStatus:PREGNANT"
+                    ],
+                    "Intervention_Name": "Test_Contraceptive",
+                    "New_Property_Value": "CurrentStatus:Use_Test_Contraceptive",
+                    "Usage_Duration_Constant": 10000,
+                    "Usage_Duration_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Usage_Expiration_Event": "Test_Expiration_Event",
+                    "Waning_Config": {
+                        "class": "WaningEffectMapLinearSeasonal",
+                        "Initial_Effect": 0.85,
+                        "Durability_Map": {
+                            "Times": [0, 90, 180, 270, 300, 365],
+                            "Values": [1.0, 0.7, 0.5, 0.5, 0.0, 0.75]
+                        }
+                    },
+                    "class": "FemaleContraceptive"
+                },
+                "Target_Demographic": "ExplicitGender",
+                "Target_Gender": "Female",
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 0.0,
+            "class": "CampaignEvent"
+        }
+    ],
+    "Use_Defaults": 1
+}

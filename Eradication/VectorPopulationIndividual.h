@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -23,8 +15,10 @@ namespace Kernel
         DECLARE_QUERY_INTERFACE()
 
     public:
-        VectorPopulationIndividual() : m_mosquito_weight(0), m_average_oviposition_killing(0) {};
-        static VectorPopulationIndividual *CreatePopulation( INodeContext *context, const std::string& species_name, uint32_t _adult, uint32_t _infectious, uint32_t mosquito_weight );
+        static VectorPopulationIndividual *CreatePopulation( INodeContext *context,
+                                                             int speciesIndex,
+                                                             uint32_t _adult,
+                                                             uint32_t mosquito_weight );
         virtual ~VectorPopulationIndividual() override;
 
         // IVectorPopulation
@@ -37,14 +31,36 @@ namespace Kernel
         // IVectorPopulationReporting
         virtual uint32_t getInfectedCount(   IStrainIdentity* pStrain ) const override;
         virtual uint32_t getInfectiousCount( IStrainIdentity* pStrain ) const override;
-        virtual std::vector<uint64_t> GetNewlyInfectedVectorIds()   const override;
-        virtual std::vector<uint64_t> GetInfectiousVectorIds()      const override;
+        virtual std::vector<uint32_t> GetNewlyInfectedVectorIds()   const override;
+        virtual std::vector<uint32_t> GetInfectiousVectorIds()      const override;
+        virtual std::map<uint32_t, uint32_t> getNumInfectiousByCohort() const override;
 
     protected:
-        VectorPopulationIndividual(uint32_t mosquito_weight);
-        virtual void InitializeVectorQueues( uint32_t adults, uint32_t _infectious ) override;
+        VectorPopulationIndividual(uint32_t mosquito_weight=1); // default needed for serialization
+
+        virtual VectorCohortIndividual *CreateAdultCohort( uint32_t vectorID,
+                                                           VectorStateEnum::Enum state,
+                                                           float age,
+                                                           float progress,
+                                                           float microsporidiaDuration,
+                                                           uint32_t initial_population,
+                                                           const VectorGenome& rGenome,
+                                                           int speciesIndex );
+
+        virtual void AddInitialFemaleCohort( const VectorGenome& rGenomeFemale,
+                                             const VectorGenome& rGenomeMate,
+                                             uint32_t num ) override;
+
         virtual uint32_t ProcessFeedingCycle( float dt, IVectorCohort* cohort ) override;
-        void ExposeCohortList( const IContagionPopulation* cp, VectorCohortVector_t& list, float success_prob, float infection_prob );
+        void ExposeCohortList( const IContagionPopulation* cp,
+                               VectorCohortVector_t& list,
+                               const GeneticProbability& success_prob_gp,
+                               const GeneticProbability& infection_prob_gp,
+                               bool isIndoors );
+        virtual void AcquireNewInfection( uint32_t vectorID,
+                                          IVectorCohortIndividual* pVCI,
+                                          const StrainIdentity& rStrain,
+                                          bool isIndoors );
         uint32_t CalculateOvipositionTime();
         void RandomlySetOvipositionTimer( VectorCohortIndividual* pvci );
 
@@ -52,22 +68,50 @@ namespace Kernel
         virtual void Update_Infected_Queue( float dt ) override;
         virtual void Update_Adult_Queue( float dt ) override;
 
-        virtual void AddAdultsFromMating( const VectorGeneticIndex_t& rVgiMale,
-                                          const VectorGeneticIndex_t& rVgiFemale,
-                                          uint32_t pop ) override;
+        virtual void AddAdultsAndMate( IVectorCohort* pFemaleCohort,
+                                       VectorCohortCollectionAbstract& rQueue,
+                                       bool isNewAdult ) override;
+        virtual void AddAdultCohort( IVectorCohort* pFemaleCohort,
+                                     const VectorGenome& rMaleGenome,
+                                     uint32_t pop,
+                                     VectorCohortCollectionAbstract& rQueue,
+                                     bool isNewAdult ) override;
+        virtual void AddReleasedCohort( VectorStateEnum::Enum state,
+                                        const VectorGenome& rFemaleGenome,
+                                        const VectorGenome& rMaleGenome,
+                                        uint32_t pop ) override;
 
-        // function to support adding in new vectors (Wolbachia types, etc...)
-        virtual void AddVectors_Adults( const VectorMatingStructure& _vector_genetics, uint32_t releasedNumber ) override;
-
-        virtual void AdjustForFeedingRate( float dt, float p_local_mortality, FeedingProbabilities& rFeedProbs );
         virtual void AdjustForCumulativeProbability( FeedingProbabilities& rFeedProbs );
 
-        bool DidDie(  IVectorCohort* cohort, float probDies, float outcome, uint32_t& rCounter );
-        bool DidFeed( IVectorCohort* cohort, float probFeed, float outcome, uint32_t& rCounter );
-        bool DiedLayingEggs( IVectorCohort* cohort );
+        bool DidDie(  IVectorCohort* cohort,
+                     float probDies,
+                     float outcome,
+                     bool enableMortality,
+                     uint32_t& rCounter,
+                     const char* msg,
+                     const char* name );
+        bool DidFeed( IVectorCohort* cohort,
+                      float probFeed,
+                      float outcome,
+                      uint32_t& rCounter,
+                      const char* msg,
+                      const char* name );
+        bool DiedLayingEggs( IVectorCohort* cohort, const FeedingProbabilities& rFeedProbs );
 
-        virtual void GenerateEggs( uint32_t numFeedHuman, uint32_t numFeedAD, uint32_t numFeedAnimal, IVectorCohort* cohort ) override;
+        virtual void StartGestating( uint32_t numFed, IVectorCohort* cohort ) override;
 
+        virtual void UpdateGestatingCount( const IVectorCohort* pvc ) override;
+
+        virtual IndoorOutdoorResults ProcessIndoorOutdoorFeeding( const char* pIndoorOutdoorName,
+                                                                  const IndoorOutdoorProbabilities& rProbs,
+                                                                  float probHumanFeed,
+                                                                  IVectorCohort* cohort,
+                                                                  TransmissionRoute::Enum routeVectorToHuman,
+                                                                  VectorCohortVector_t& rExposedQueue );
+
+        uint32_t CountStrains( VectorStateEnum::Enum state,
+                               const VectorCohortCollectionAbstract& queue,
+                               IStrainIdentity* pStrain ) const;
 
         uint32_t m_mosquito_weight;
         float m_average_oviposition_killing;

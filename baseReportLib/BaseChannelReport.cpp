@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
@@ -19,7 +11,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "FileSystem.h"
 #include "Exceptions.h"
 #include "ProgVersion.h"
-#include "BoostLibWrapper.h"
 #include "RapidJsonImpl.h"
 #include "Serializer.h"
 
@@ -75,7 +66,7 @@ BaseChannelReport::Finalize()
     std::map<std::string, std::string> units_map;
     populateSummaryDataUnitsMap(units_map);
 
-    channelDataMap.WriteOutput( report_name, units_map );
+    channelDataMap.WriteOutput( GetReportName(), units_map );
 }
 
 std::string BaseChannelReport::GetReportName() const
@@ -83,9 +74,24 @@ std::string BaseChannelReport::GetReportName() const
     return report_name;
 }
 
+ChannelID BaseChannelReport::AddChannel( const std::string& channel_name )
+{
+    return channelDataMap.AddChannel( channel_name );
+}
+
+void BaseChannelReport::Accumulate( const ChannelID& rID, float value )
+{
+    channelDataMap.Accumulate( rID, value );
+}
+
 void BaseChannelReport::Accumulate( const std::string& channel_name, float value )
 {
     channelDataMap.Accumulate( channel_name, value );
+}
+
+void BaseChannelReport::SetLastValue( const std::string& channel_name, float value )
+{
+    channelDataMap.SetLastValue( channel_name, value );
 }
 
 void

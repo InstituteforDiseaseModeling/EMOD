@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
@@ -23,10 +15,12 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "DllLoader.h"
 #include "EventTrigger.h"
 #include "InterventionFactory.h"
+#include "ReportFactory.h"
 #include "SimulationConfig.h"
 #include "CampaignEvent.h"
 #include "EventCoordinator.h"
 #include "IWaningEffect.h"
+#include "AdditionalRestrictionsFactory.h"
 #include "PythonSupport.h"
 #include "Memory.h"
 #include "FileSystem.h"
@@ -35,6 +29,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 SETUP_LOGGING( "Schema" )
 
 #define CAMP_Use_Defaults_DESC_TEXT "Set to true (1) if you don't want to have to specify all params for event coordinators and interventions. Use at own risk." 
+#define REPORTS_Use_Defaults_DESC_TEXT "Set to true (1) if you don't want to have to specify all params for the reports."
 
 const std::vector<std::string> getSimTypeList()
 {
@@ -45,32 +40,11 @@ const std::vector<std::string> getSimTypeList()
 #ifndef DISABLE_MALARIA
         , "MALARIA_SIM"
 #endif
-#ifndef DISABLE_AIRBORNE
-        , "AIRBORNE_SIM"
-#endif
-#ifdef ENABLE_POLIO
-        , "POLIO_SIM"
-#endif
-#ifndef DISABLE_TBHIV
-        , "TBHIV_SIM"
-#endif
 #ifndef DISABLE_STI
         , "STI_SIM"
 #endif
 #ifndef DISABLE_HIV
         , "HIV_SIM"
-#endif
-#ifdef ENABLE_DENGUE
-        , "DENGUE_SIM"
-#endif
-#ifdef ENABLE_PYTHON_FEVER
-        , "PY_SIM"
-#endif
-#ifdef ENABLE_TYPHOID
-        , "TYPHOID_SIM"
-#endif
-#ifdef ENABLE_ENVIRONMENTAL
-        , "ENVIRONMENTAL_SIM"
 #endif
     };
 
@@ -130,7 +104,9 @@ void IDMAPI writeInputSchemas(
     Kernel::JsonConfigurable::_dryrun = true;
     std::ostringstream oss;
 
-    
+    // ---------------------------
+    // --- Create Config Schema
+    // ---------------------------
     json::Object configSchemaAll;
 
     for (auto& sim_type : getSimTypeList())
@@ -157,6 +133,9 @@ void IDMAPI writeInputSchemas(
 
     total_schema[ "config" ] = configSchemaAll;
 
+    // ---------------------------
+    // --- Create Campaign Schema
+    // ---------------------------
     if( !Kernel::InterventionFactory::getInstance() )
     {
         throw Kernel::InitializationException( __FILE__, __LINE__, __FUNCTION__, "Kernel::InterventionFactory::getInstance(" );
@@ -167,6 +146,7 @@ void IDMAPI writeInputSchemas(
     json::QuickBuilder ivs_schema = Kernel::InterventionFactory::getInstance()->GetSchema();
     json::QuickBuilder ns_schema  = Kernel::NodeSetFactory::getInstance()->GetSchema();
     json::QuickBuilder we_schema  = Kernel::WaningEffectFactory::getInstance()->GetSchema();
+    json::QuickBuilder ar_schema  = Kernel::AdditionalRestrictionsFactory::getInstance()->GetSchema();
 
     json::Object objRoot;
     json::QuickBuilder camp_schema( objRoot );
@@ -180,13 +160,39 @@ void IDMAPI writeInputSchemas(
 
     camp_schema["Events"][0] = json::String( "idmType:CampaignEvent" );
 
-    camp_schema["idmTypes" ][ "idmType:CampaignEvent" ] = ces_schema.As<json::Object>();
-    camp_schema["idmTypes" ][ "idmType:EventCoordinator" ] = ecs_schema.As<json::Object>();
-    camp_schema["idmTypes" ][ "idmType:Intervention"] = ivs_schema.As<json::Object>();
-    camp_schema["idmTypes" ][ "idmType:NodeSet"] = ns_schema[ "schema" ].As<json::Object>();
-    camp_schema["idmTypes" ][ "idmType:WaningEffect"] = we_schema[ "schema" ].As<json::Object>();
+    camp_schema[ "idmTypes" ][ "idmType:CampaignEvent"          ] = ces_schema.As<json::Object>();
+    camp_schema[ "idmTypes" ][ "idmType:EventCoordinator"       ] = ecs_schema.As<json::Object>();
+    camp_schema[ "idmTypes" ][ "idmType:Intervention"           ] = ivs_schema.As<json::Object>();
+    camp_schema[ "idmTypes" ][ "idmType:NodeSet"                ] = ns_schema.As<json::Object>();
+    camp_schema[ "idmTypes" ][ "idmType:WaningEffect"           ] = we_schema.As<json::Object>();
+    camp_schema[ "idmTypes" ][ "idmType:AdditionalRestrictions" ] = ar_schema.As<json::Object>();
 
     total_schema[ "interventions" ] = camp_schema.As< json::Object> ();
+
+    // ---------------------------
+    // --- Create Reports Schema
+    // ---------------------------
+    json::Object reports_objRoot;
+    json::QuickBuilder reports_schema( reports_objRoot );
+
+    json::Object reports_useDefaultsRoot;
+    json::QuickBuilder reports_udSchema( reports_useDefaultsRoot );
+    reports_udSchema["type"] = json::String( "bool" );
+    reports_udSchema["default"] = json::Number( 0 );
+    reports_udSchema["description"] = json::String( REPORTS_Use_Defaults_DESC_TEXT );
+    reports_schema["Use_Defaults"] = reports_udSchema.As<json::Object>();
+
+    reports_schema["Reports"][0] = json::String( "idmType:IReport" );
+
+    json::QuickBuilder rf_schema  = Kernel::ReportFactory::getInstance()->GetSchema();
+
+    reports_schema["idmTypes" ][ "idmType:IReport" ] = rf_schema.As<json::Object>();
+
+    total_schema[ "reports" ] = reports_schema.As< json::Object> ();
+
+    // --------------------------
+    // --- Write Schema to output
+    // --------------------------
     json::Writer::Write( total_schema, schema_ostream );
     schema_ostream_file.close();
 

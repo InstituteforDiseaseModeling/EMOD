@@ -1,26 +1,13 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
 #include "OutbreakIndividual.h"
 #include "IIndividualHuman.h"
 #include "IIndividualHumanContext.h"
-#include "ISimulationContext.h"
-#include "InterventionFactory.h"
-#include "ConfigurationImpl.h"
+#include "INodeContext.h"
 #include "NodeEventContext.h"
 #include "Exceptions.h"
-#include "SimulationConfig.h"
 #include "StrainIdentity.h"
-#include "IdmString.h"
-#include "Node.h" // for number_substrains. Move to StrainIdentity
 #include "RANDOM.h"
 
 SETUP_LOGGING( "OutbreakIndividual" )
@@ -48,7 +35,7 @@ namespace Kernel
     {
         initConfigTypeMap( "Ignore_Immunity", &ignoreImmunity, OB_Ignore_Immunity_DESC_TEXT, true );
         initConfigTypeMap( "Incubation_Period_Override", &incubation_period_override, Incubation_Period_Override_DESC_TEXT, -1, INT_MAX, -1);
-        initSimTypes( 11, "GENERIC_SIM" , "VECTOR_SIM" , "MALARIA_SIM", "AIRBORNE_SIM", "POLIO_SIM", "TBHIV_SIM", "STI_SIM", "HIV_SIM", "PY_SIM", "TYPHOID_SIM", "ENVIRONMENTAL_SIM" );
+        initSimTypes( 5, "GENERIC_SIM" , "VECTOR_SIM" , "MALARIA_SIM", "STI_SIM", "HIV_SIM" );
     }
 
     bool
@@ -68,6 +55,19 @@ namespace Kernel
 
     void OutbreakIndividual::ConfigureAntigen( const Configuration * inputJson )
     {
+        // Check in a way that is not going to force adding malaria files into generic
+        // but make sure one is using the correct version of outbreak individual.
+        // This is in ConfigureAntigen() because OutbreakIndividualMalariaGenetics
+        // overrides this method.
+        if( !JsonConfigurable::_dryrun && GET_CONFIG_STRING( EnvPtr->Config, "Simulation_Type" ) == "MALARIA_SIM" )
+        { 
+            if( GET_CONFIG_STRING( EnvPtr->Config, "Malaria_Model" ) == "MALARIA_MECHANISTIC_MODEL_WITH_PARASITE_GENETICS" )
+            {
+                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__,
+                                                     "'OutbreakIndividual' cannot be used with parasite genetics.\nPlease use OutbreakIndividualMalariaGenetics.");
+            }
+        }
+
         initConfigTypeMap( "Antigen", &antigen, Antigen_DESC_TEXT, 0, 10, 0 );
     }
 
@@ -89,8 +89,10 @@ namespace Kernel
         if( ignoreImmunity || // if we're ignoring immunity, just infect
             context->GetParent()->GetRng()->SmartDraw( individual->GetAcquisitionImmunity() ) )
         {
-            individual->AcquireNewInfection( GetNewStrainIdentity( pContext, context->GetParent() ), incubation_period_override );
+            IStrainIdentity* p_si = GetNewStrainIdentity( pContext, context->GetParent() );
+            individual->AcquireNewInfection( p_si, incubation_period_override );
             distributed = true;
+            delete p_si;
         }
         else
         {
@@ -105,27 +107,12 @@ namespace Kernel
         // Distribute() doesn't call GiveIntervention() for this intervention, so it isn't added to the NodeEventContext's list of NDI
     }
 
-    const Kernel::StrainIdentity* OutbreakIndividual::GetNewStrainIdentity( INodeEventContext *context, IIndividualHumanContext* pIndiv )
+    IStrainIdentity* OutbreakIndividual::GetNewStrainIdentity( INodeEventContext *context, IIndividualHumanContext* pIndiv )
     {
         StrainIdentity *outbreakIndividual_strainID = nullptr;
 
-        // Important: Use the instance method to obtain the intervention factory obj instead of static method to cross the DLL boundary
-        // NO usage of GET_CONFIGURABLE(SimulationConfig)->number_substrains in DLL
-        IGlobalContext *pGC = nullptr;
-        const SimulationConfig* simConfigObj = nullptr;
-        if (s_OK == context->QueryInterface(GET_IID(IGlobalContext), (void**)&pGC))
-        {
-            simConfigObj = pGC->GetSimulationConfigObj();
-        }
-        if (!simConfigObj)
-        {
-            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, "The pointer to IInterventionFactory object is not valid (could be DLL specific)" );
-        }
-
-        //if (( antigen < 0 ) || ( antigen >= simConfigObj->number_basestrains ))
         if( antigen < 0 )
         {
-            //throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "antigen", antigen, "number_basestrains", simConfigObj->number_basestrains );
             throw ConfigurationRangeException( __FILE__, __LINE__, __FUNCTION__, "antigen", antigen, 0 );
         }
 

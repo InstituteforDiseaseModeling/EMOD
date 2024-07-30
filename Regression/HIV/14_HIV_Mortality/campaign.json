@@ -34,7 +34,6 @@
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Days_To_Diagnosis": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -43,7 +42,6 @@
                             "InterventionStatus:LinkingToPreART",
                             "InterventionStatus:ARTStaging"
                         ],
-                        "Event_Or_Config": "Event",
                         "Female_Multiplier": 1.4,
                         "Negative_Diagnosis_Event": "HCTUptakePostDebut0",
                         "New_Property_Value": "InterventionStatus:HCTUptakeAtDebut",
@@ -120,7 +118,6 @@
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Days_To_Diagnosis": 0,
                         "Default_Value": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
@@ -131,7 +128,6 @@
                             "InterventionStatus:ARTStaging",
                             "InterventionStatus:HCTTestingLoop"
                         ],
-                        "Event_Or_Config": "Event",
                         "Female_Multiplier": 1.5,
                         "Interpolation_Order": 1,
                         "Negative_Diagnosis_Event": "HCTUptakePostDebut0",
@@ -317,7 +313,6 @@
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Days_To_Diagnosis": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -326,7 +321,6 @@
                             "InterventionStatus:LinkingToPreART",
                             "InterventionStatus:ARTStaging"
                         ],
-                        "Event_Or_Config": "Event",
                         "Female_Multiplier": 1,
                         "New_Property_Value": "InterventionStatus:TestingOnSymptomatic",
                         "Positive_Diagnosis_Event": "ARTStaging0",
@@ -387,7 +381,6 @@
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Days_To_Diagnosis": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -397,7 +390,6 @@
                             "InterventionStatus:ARTStaging",
                             "InterventionStatus:TestingOnSymptomatic"
                         ],
-                        "Event_Or_Config": "Event",
                         "Female_Multiplier": 1,
                         "Interpolation_Order": 1,
                         "New_Property_Value": "InterventionStatus:TestingOnANC",
@@ -442,7 +434,6 @@
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Days_To_Diagnosis": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
@@ -452,7 +443,6 @@
                             "InterventionStatus:ARTStaging",
                             "InterventionStatus:TestingOnSymptomatic"
                         ],
-                        "Event_Or_Config": "Event",
                         "Female_Multiplier": 1,
                         "Interpolation_Order": 1,
                         "New_Property_Value": "InterventionStatus:TestingOnChild6w",
@@ -697,7 +687,6 @@
                             "InterventionStatus:OnPreART",
                             "InterventionStatus:LinkingToPreART"
                         ],
-                        "Event_Or_Config": "Event",
                         "NOTE1": "Threshold for adult vs child guidelines",
                         "Negative_Diagnosis_Event": "ARTStaging5",
                         "New_Property_Value": "InterventionStatus:ARTStaging",
@@ -768,7 +757,6 @@
                             "InterventionStatus:OnPreART",
                             "InterventionStatus:LinkingToPreART"
                         ],
-                        "Event_Or_Config": "Event",
                         "If_Active_TB": {
                             "Times": [
                                 2010.34
@@ -821,14 +809,12 @@
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Days_To_Diagnosis": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
                             "InterventionStatus:LinkingToART",
                             "InterventionStatus:OnPreART"
                         ],
-                        "Event_Or_Config": "Event",
                         "Female_Multiplier": 1,
                         "Negative_Diagnosis_Event": "LTFU3",
                         "New_Property_Value": "InterventionStatus:LinkingToPreART",
@@ -987,7 +973,6 @@
                             "InterventionStatus:OnART",
                             "InterventionStatus:LinkingToART"
                         ],
-                        "Event_Or_Config": "Event",
                         "NOTE1": "Threshold for adult vs child guidelines",
                         "Negative_Diagnosis_Event": "OnPreART3",
                         "New_Property_Value": "InterventionStatus:OnPreART",
@@ -1050,7 +1035,6 @@
                             "InterventionStatus:OnART",
                             "InterventionStatus:LinkingToART"
                         ],
-                        "Event_Or_Config": "Event",
                         "If_Active_TB": {
                             "Times": [
                                 2010.34
@@ -1103,12 +1087,10 @@
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Days_To_Diagnosis": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART"
                         ],
-                        "Event_Or_Config": "Event",
                         "Female_Multiplier": 1.8896,
                         "Female_Multiplier__SP4": "<-- Marker for Experiment Builder",
                         "Negative_Diagnosis_Event": "LTFU5",
@@ -1137,57 +1119,56 @@
         },
         {
             "BEGIN": "ART",
+            "class": "CampaignEvent",
+            "Event_Name": "OnART: state 0 (muxer and delay)",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
             "Event_Coordinator_Config": {
-                "Demographic_Coverage": 1,
+                "class": "StandardInterventionDistributionEventCoordinator",
                 "Intervention_Config": {
-                    "Actual_IndividualIntervention_Config": {
-                        "Broadcast_Event": "OnART1",
-                        "Delay_Period_Distribution": "UNIFORM_DISTRIBUTION",
-                        "Delay_Period_Max": 120,
-                        "Delay_Period_Min": 1,
-                        "Disqualifying_Properties": [
-                            "InterventionStatus:LostForever"
-                        ],
-                        "Max_Entries": 1,
-                        "Muxer_Name": "OnART",
-                        "New_Property_Value": "InterventionStatus:OnART",
-                        "class": "HIVMuxer"
-                    },
+                    "class": "NodeLevelHealthTriggeredIV",
                     "Trigger_Condition_List": [
                         "OnART0"
                     ],
-                    "class": "NodeLevelHealthTriggeredIV"
-                },
-                "class": "StandardInterventionDistributionEventCoordinator"
-            },
-            "Event_Name": "OnART: state 0 (muxer and delay)",
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "HIVMuxer",
+                        "Muxer_Name": "OnART",
+                        "New_Property_Value": "InterventionStatus:OnART",
+                        "Disqualifying_Properties": [
+                            "InterventionStatus:LostForever"
+                        ],
+                        "Delay_Period_Distribution": "UNIFORM_DISTRIBUTION",
+                        "Delay_Period_Max": 120,
+                        "Delay_Period_Min": 1,
+                        "Broadcast_Event": "OnART1"
+                    }
+                }
+            }
+        }, 
+        { 
+            "class": "CampaignEvent",
+            "Event_Name": "OnART: state 1 (run AntiretroviralTherapy)",
+            "Start_Day": 0,
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
-            "Start_Day": 0,
-            "class": "CampaignEvent"
-        },
-        {
             "Event_Coordinator_Config": {
-                "Demographic_Coverage": 1,
-                "Intervention_Config": {
-                    "Actual_IndividualIntervention_Config": {
-                        "class": "ARTBasic"
-                    },
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": 
+                { 
+                    "class": "NodeLevelHealthTriggeredIV",
                     "Trigger_Condition_List": [
                         "OnART1"
                     ],
-                    "class": "NodeLevelHealthTriggeredIV"
-                },
-                "class": "StandardInterventionDistributionEventCoordinator"
-            },
-            "Event_Name": "OnART: state 1 (run ARTBasic)",
-            "Nodeset_Config": {
-                "class": "NodeSetAll"
-            },
-            "Start_Day": 0,
-            "class": "CampaignEvent"
-        },
+                    "Actual_IndividualIntervention_Config": 
+                    { 
+                        "class": "AntiretroviralTherapy"
+                    }
+                }
+            }
+        }, 
         {
             "Event_Coordinator_Config": {
                 "Demographic_Coverage": 1,

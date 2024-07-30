@@ -1,0 +1,236 @@
+{
+    "Reports": [
+        {
+            "Combine_Similar_Genomes": 1,
+            "Gender": "VECTOR_BOTH_GENDERS",
+            "Species": "arabiensis",
+            "Stratify_By": "GENOME",
+            "class": "ReportVectorGenetics"
+        },
+        {
+            "Combine_Similar_Genomes": 1,
+            "Gender": "VECTOR_BOTH_GENDERS",
+            "Include_Vector_State_Columns": 1,
+            "Include_Death_By_State_Columns": 1,
+            "Species": "arabiensis",
+            "Specific_Genome_Combinations_For_Stratification": [
+                {
+                    "Allele_Combination": [
+                        [
+                            "X",
+                            "*"
+                        ],
+                        [
+                            "a0",
+                            "a0"
+                        ],
+                        [
+                            "b0",
+                            "b0"
+                        ]
+                    ]
+                },
+                {
+                    "Allele_Combination": [
+                        [
+                            "X",
+                            "*"
+                        ],
+                        [
+                            "a1",
+                            "a1"
+                        ],
+                        [
+                            "b1",
+                            "b1"
+                        ]
+                    ]
+                },
+                {
+                    "Allele_Combination": [
+                        [
+                            "X",
+                            "*"
+                        ],
+                        [
+                            "a1",
+                            "a1"
+                        ],
+                        [
+                            "b0",
+                            "b0"
+                        ]
+                    ]
+                },
+                {
+                    "Allele_Combination": [
+                        [
+                            "X",
+                            "*"
+                        ],
+                        [
+                            "a0",
+                            "a0"
+                        ],
+                        [
+                            "b1",
+                            "b1"
+                        ]
+                    ]
+                }
+            ],
+            "Stratify_By": "SPECIFIC_GENOME",
+            "class": "ReportVectorGenetics"
+        },
+        {
+            "Combine_Similar_Genomes": 1,
+            "Gender": "VECTOR_FEMALE",
+            "Include_Vector_State_Columns": 1,
+            "Species": "arabiensis",
+            "Specific_Genome_Combinations_For_Stratification": [
+                {
+                    "Allele_Combination": [
+                        [
+                            "X",
+                            "X"
+                        ],
+                        [
+                            "a0",
+                            "*"
+                        ],
+                        [
+                            "b1",
+                            "b0"
+                        ]
+                    ]
+                },
+                {
+                    "Allele_Combination": [
+                        [
+                            "X",
+                            "X"
+                        ],
+                        [
+                            "a1",
+                            "a0"
+                        ],
+                        [
+                            "b0",
+                            "*"
+                        ]
+                    ]
+                },
+                {
+                    "Allele_Combination": [
+                        [
+                            "X",
+                            "X"
+                        ],
+                        [
+                            "a1",
+                            "*"
+                        ],
+                        [
+                            "b1",
+                            "b0"
+                        ]
+                    ]
+                },
+                {
+                    "Allele_Combination": [
+                        [
+                            "X",
+                            "X"
+                        ],
+                        [
+                            "a1",
+                            "a0"
+                        ],
+                        [
+                            "b1",
+                            "*"
+                        ]
+                    ]
+                }
+            ],
+            "Stratify_By": "SPECIFIC_GENOME",
+            "class": "ReportVectorGenetics"
+        },
+        {
+            "Combine_Similar_Genomes": 1,
+            "Gender": "VECTOR_MALE",
+            "Include_Vector_State_Columns": 1,
+            "Include_Death_By_State_Columns": 1,
+            "Species": "arabiensis",
+            "Specific_Genome_Combinations_For_Stratification": [
+                {
+                    "Allele_Combination": [
+                        [
+                            "X",
+                            "Y"
+                        ],
+                        [
+                            "a0",
+                            "*"
+                        ],
+                        [
+                            "b1",
+                            "b0"
+                        ]
+                    ]
+                },
+                {
+                    "Allele_Combination": [
+                        [
+                            "X",
+                            "Y"
+                        ],
+                        [
+                            "a1",
+                            "a0"
+                        ],
+                        [
+                            "b0",
+                            "*"
+                        ]
+                    ]
+                },
+                {
+                    "Allele_Combination": [
+                        [
+                            "X",
+                            "Y"
+                        ],
+                        [
+                            "a1",
+                            "*"
+                        ],
+                        [
+                            "b1",
+                            "b0"
+                        ]
+                    ]
+                },
+                {
+                    "Allele_Combination": [
+                        [
+                            "X",
+                            "Y"
+                        ],
+                        [
+                            "a1",
+                            "a0"
+                        ],
+                        [
+                            "b1",
+                            "*"
+                        ]
+                    ]
+                }
+            ],
+            "Stratify_By": "SPECIFIC_GENOME",
+            "class": "ReportVectorGenetics"
+        }
+    ],
+    "Use_Defaults": 1
+}

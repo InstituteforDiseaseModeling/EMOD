@@ -1,0 +1,149 @@
+{
+    "Metadata": {
+        "Author": "dbridenbecker", 
+        "NodeCount": 5, 
+        "Tool": "notepad", 
+        "IdReference": "0", 
+        "DateCreated": "2018-3-28"
+    },
+    "Defaults": {
+        "IndividualAttributes": 
+        { 
+            "AgeDistribution": 
+            { 
+                "NumDistributionAxes": 0,
+                "ResultUnits": "years",
+                "ResultScaleFactor": 365,
+                "AxisScaleFactors":  1,
+                "ResultValues": [ 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 90 ],
+                "DistributionValues": [ 0.505590, 0.588562, 0.662449, 0.726954, 0.782869, 0.833388, 0.876080, 0.911805, 0.939403, 0.961348, 0.977843, 0.989051, 0.995555, 1.000000]
+            }
+        },
+        "IndividualProperties": [ 
+            { 
+                "Property": "StartNewRels",
+                "Values": [ "YAY_SINGLE", "CREATED", "IS_COMPLICATED" ],
+                "Initial_Distribution": [ 0.50, 0.25, 0.25 ],
+                "Transitions": []
+            }
+        ],
+        "Society" : {
+            "TRANSITORY" :
+            {
+                "Concurrency_Parameters" :
+                {
+                    "NONE":
+                    {
+                        "Max_Simultaneous_Relationships_Female": 3,
+                        "Max_Simultaneous_Relationships_Male"  : 6,
+                        "Prob_Extra_Relationship_Female"       : 1,
+                        "Prob_Extra_Relationship_Male"         : 1
+                    }
+                },
+                "Relationship_Parameters" :
+                {
+                    "Duration_Weibull_Heterogeneity": 0.666666667,
+                    "Duration_Weibull_Scale": 22.154455184937,
+                    "Condom_Usage_Probability" :
+                    {
+                        "Min": 0.0,
+                        "Max": 0.0,
+                        "Mid": 2000,
+                        "Rate": 0
+                    }
+                },
+                "Pair_Formation_Parameters" :
+                {
+                    "Formation_Rate_Constant": 0.0005
+                }
+            },
+            "INFORMAL" :
+            {
+                "Concurrency_Parameters" :
+                {
+                    "NONE": 
+                    {
+                        "Max_Simultaneous_Relationships_Female": 2,
+                        "Max_Simultaneous_Relationships_Male"  : 4,
+                        "Prob_Extra_Relationship_Female"       : 1,
+                        "Prob_Extra_Relationship_Male"         : 1
+                    }
+                },
+                "Relationship_Parameters" :
+                {
+                    "Duration_Weibull_Heterogeneity": 0.666666667,
+                    "Duration_Weibull_Scale": 22.154455184937,
+                    "Condom_Usage_Probability" :
+                    {
+                        "Min": 0.0,
+                        "Max": 0.0,
+                        "Mid": 2000,
+                        "Rate": 0
+                    }
+                },
+                "Pair_Formation_Parameters" :
+                {
+                    "Formation_Rate_Constant": 0.0005
+                }
+            },
+            "MARITAL" :
+            {
+                "Concurrency_Parameters" :
+                {
+                    "NONE": 
+                    {
+                        "Max_Simultaneous_Relationships_Female": 1,
+                        "Max_Simultaneous_Relationships_Male"  : 2,
+                        "Prob_Extra_Relationship_Female"       : 1,
+                        "Prob_Extra_Relationship_Male"         : 1
+                    }
+                },
+                "Relationship_Parameters" :
+                {
+                    "Duration_Weibull_Heterogeneity": 0.666666667,
+                    "Duration_Weibull_Scale": 22.154455184937,
+                    "Condom_Usage_Probability" :
+                    {
+                        "Min": 0.0,
+                        "Max": 0.0,
+                        "Mid": 80,
+                        "Rate": 0
+                    }
+                },
+                "Pair_Formation_Parameters" :
+                {
+                    "Formation_Rate_Constant": 0.0005
+                }
+            },
+            "COMMERCIAL" :
+            {
+                "Concurrency_Parameters" :
+                {
+                    "NONE": 
+                    {
+                        "Max_Simultaneous_Relationships_Female": 10,
+                        "Max_Simultaneous_Relationships_Male"  : 10,
+                        "Prob_Extra_Relationship_Female"       : 1,
+                        "Prob_Extra_Relationship_Male"         : 1
+                    }
+                },
+                "Relationship_Parameters" :
+                {
+                    "Duration_Weibull_Heterogeneity": 0.666666667,
+                    "Duration_Weibull_Scale": 22.154455184937,
+                    "Condom_Usage_Probability" :
+                    {
+                        "Min": 0.0,
+                        "Max": 0.0,
+                        "Mid": 2000,
+                        "Rate": 0
+                    }
+                },
+                "Pair_Formation_Parameters" :
+                {
+                    "Formation_Rate_Constant": 0.0005
+                }
+            }
+        }
+    }
+}

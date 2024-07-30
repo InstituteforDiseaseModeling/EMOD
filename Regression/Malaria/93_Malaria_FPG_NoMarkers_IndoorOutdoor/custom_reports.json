@@ -1,0 +1,11 @@
+{
+    "Reports": [
+        {
+            "Species_List": [
+                "SillySkeeter"
+            ],
+            "class": "ReportVectorStatsMalariaGenetics"
+        }
+    ],
+    "Use_Defaults": 1
+}

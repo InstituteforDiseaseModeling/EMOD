@@ -1,0 +1,23 @@
+{
+    "Campaign_Name": "HIV_Mortality test",
+    "Use_Defaults": 1,
+    "Events": [{
+            "Description": "Initial HIV outbreak",
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1.0,
+                "Travel_Linked": 0,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Incubation_Period_Override": 0,
+                    "Outbreak_Source": "PrevalenceIncrease"
+                }
+            }
+        }
+    ]
+}

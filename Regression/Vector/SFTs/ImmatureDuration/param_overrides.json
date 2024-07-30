@@ -1,0 +1,42 @@
+{
+    "parameters": {
+        "CAMPAIGNS": {
+            "Enable_Interventions": 0
+        },
+        "DEMOGRAPHICS": {
+            "Demographics_Filenames": [
+                "../Input/Vector_single_node_demographics.json"
+            ]
+        },
+        "FUDGE_FACTORS": {
+            "x_Temporary_Larval_Habitat": 0.1
+        },
+        "PRIMARY": {
+            "Config_Name": "Vector:SFT:ImmatureDuration",
+            "Simulation_Duration": 1700
+        },
+        "VECTOR": {
+            "Human_Feeding_Mortality": 0,
+            "SPECIES": {
+                "Vector_Species_Params": [
+                    {   
+                        "Name" : "TestVector",
+                        "Acquire_Modifier": 0.5,
+                        "Adult_Life_Expectancy": 10,
+                        "Male_Life_Expectancy": 10,
+                        "Anthropophily": 1,
+                        "Days_Between_Feeds": 2,
+                        "Immature_Duration": 11.78,
+                        "Indoor_Feeding_Fraction": 0,
+                        "Infectious_Human_Feed_Mortality_Factor": 0
+                    }
+                ]
+            }
+        },
+        "LOGGING": {
+            "logLevel_VectorPopulation": "VALID"
+        }
+    },
+    "Default_Config_Path": "defaults/vector_science_default_config.json"
+}
+

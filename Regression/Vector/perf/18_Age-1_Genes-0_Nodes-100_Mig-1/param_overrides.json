@@ -1,0 +1,14 @@
+{
+    "Default_Config_Path": "Vector/perf/default_config.json",
+    "parameters": {
+        "Config_Name": "18_Age-1_Genes-0_Nodes-100_Mig-1",
+        "Demographics_Filenames": [
+            "../Demographics_100.json"
+        ],
+        "Enable_Vector_Aging": 1,
+        "Enable_Vector_Migration": 1,
+        "Enable_Vector_Migration_Local": 1,
+        "Python_Script_Path": "LOCAL",
+        "Vector_Migration_Filename_Local": "Local_Vector_Migration_100_Node_Torus.bin"
+    }
+}

@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "DelayEventCoordinator.h"
@@ -42,14 +34,14 @@ namespace Kernel
 
     bool DelayEventCoordinator::Configure( const Configuration * inputJson )
     {
-        initConfigTypeMap( "Start_Trigger_Condition_List", &m_StartTriggerConditionList, TEC_Start_Trigger_Condition_List_DESC_TEXT );
-        initConfigTypeMap( "Stop_Trigger_Condition_List", &m_StopTriggerConditionList, TEC_Stop_Trigger_Condition_List_DESC_TEXT );
+        initConfigTypeMap( "Start_Trigger_Condition_List", &m_StartTriggerConditionList, DEC_Start_Trigger_Condition_List_DESC_TEXT );
+        initConfigTypeMap( "Stop_Trigger_Condition_List", &m_StopTriggerConditionList, DEC_Stop_Trigger_Condition_List_DESC_TEXT );
         initConfigTypeMap( "Delay_Complete_Event", &m_CompletionEvent, DEC_Completion_Event_DESC_TEXT );
-        initConfigTypeMap( "Coordinator_Name", &m_CoordinatorName, TEC_Coordinator_Name_DESC_TEXT, "DelayEventCoordinator" );
-        initConfigTypeMap( "Duration", &m_Duration, TEC_Duration_DESC_TEXT, -1.0f, FLT_MAX, -1.0f );
+        initConfigTypeMap( "Coordinator_Name", &m_CoordinatorName, Coordinator_Name_DESC_TEXT, "DelayEventCoordinator" );
+        initConfigTypeMap( "Duration", &m_Duration, DEC_Duration_DESC_TEXT, -1.0f, FLT_MAX, -1.0f );
 
         DistributionFunction::Enum delay_function( DistributionFunction::CONSTANT_DISTRIBUTION );
-        initConfig( "Delay_Period_Distribution", delay_function, inputJson, MetadataDescriptor::Enum( "Delay_Period", DI_Delay_Distribution_DESC_TEXT, MDD_ENUM_ARGS( DistributionFunction ) ) );      
+        initConfig( "Delay_Period_Distribution", delay_function, inputJson, MetadataDescriptor::Enum( "Delay_Period", Delay_Period_Distribution_DESC_TEXT, MDD_ENUM_ARGS( DistributionFunction ) ) );      
         delay_distribution = DistributionFactory::CreateDistribution( this, delay_function, "Delay_Period", inputJson );
 
         bool retValue = JsonConfigurable::Configure( inputJson );

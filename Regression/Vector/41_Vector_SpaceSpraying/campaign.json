@@ -3,21 +3,14 @@
         {
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
-                    "Reduction_Config": {
-                        "Box_Duration": 100, 
-                        "Decay_Time_Constant": 150, 
-                        "Initial_Effect": 0.1, 
-                        "class": "WaningEffectBoxExponential"
-                    }, 
                     "Cost_To_Consumer": 1.0, 
-                    "Habitat_Target": "ALL_HABITATS", 
                     "Killing_Config": {
                         "Box_Duration": 100, 
                         "Decay_Time_Constant": 150, 
                         "Initial_Effect": 0.1, 
                         "class": "WaningEffectBoxExponential"
                     }, 
-                    "Spray_Kill_Target": "SpaceSpray_FemalesOnly", 
+                    "Insecticide_Name": "FemaleVectorInsecticide",
                     "class": "SpaceSpraying"
                 }, 
                 "class": "StandardInterventionDistributionEventCoordinator"

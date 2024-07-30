@@ -1,0 +1,77 @@
+{
+    "Events": [
+        {
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "Insecticides" : [
+                        {
+                            "Insecticide_Name": "pyrethroid_homo",
+                            "Killing_Config": {
+                                "Box_Duration": 100, 
+                                "Decay_Time_Constant": 150, 
+                                "Initial_Effect": 0.1, 
+                                "class": "WaningEffectBoxExponential"
+                            }
+                        },
+                        {
+                            "Insecticide_Name": "carbamate_homo",
+                            "Killing_Config": {
+                                "Box_Duration": 100, 
+                                "Decay_Time_Constant": 150, 
+                                "Initial_Effect": 0.1, 
+                                "class": "WaningEffectBoxExponential"
+                            }
+                        }
+                    ],
+                    "Cost_To_Consumer": 1.0, 
+                    "Habitat_Target": "ALL_HABITATS", 
+                    "Spray_Coverage" : 1.0,
+                    "class": "MultiInsecticideSpaceSpraying"
+                }, 
+                "class": "StandardInterventionDistributionEventCoordinator"
+            }, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Start_Day": 100, 
+            "class": "CampaignEvent"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "Insecticides" : [
+                        {
+                            "Insecticide_Name": "pyrethroid_hetero",
+                            "Killing_Config": {
+                                "Box_Duration": 100, 
+                                "Decay_Time_Constant": 150, 
+                                "Initial_Effect": 0.1, 
+                                "class": "WaningEffectBoxExponential"
+                            }
+                        },
+                        {
+                            "Insecticide_Name": "carbamate_hetero",
+                            "Killing_Config": {
+                                "Box_Duration": 100, 
+                                "Decay_Time_Constant": 150, 
+                                "Initial_Effect": 0.1, 
+                                "class": "WaningEffectBoxExponential"
+                            }
+                        }
+                    ],
+                    "Cost_To_Consumer": 1.0, 
+                    "Habitat_Target": "ALL_HABITATS", 
+                    "Spray_Coverage" : 1.0,
+                    "class": "MultiInsecticideSpaceSpraying"
+                }, 
+                "class": "StandardInterventionDistributionEventCoordinator"
+            }, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Start_Day": 500, 
+            "class": "CampaignEvent"
+        }
+    ], 
+    "Use_Defaults": 1
+}

@@ -1,0 +1,15 @@
+{
+    "Reports": [
+        {
+            "Include_Wolbachia_Columns": 1,
+            "Species_List": [
+                "arabiensis",
+                "funestus",
+                "gambiae"
+            ],
+            "Stratify_By_Species": 1,
+            "class": "ReportVectorStats"
+        }
+    ],
+    "Use_Defaults": 1
+}

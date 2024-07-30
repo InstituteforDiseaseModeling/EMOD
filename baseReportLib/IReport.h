@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -82,7 +74,4 @@ namespace Kernel
                                               std::vector<INodeEventContext*>& rNodeEventContextList,
                                               ISimulationEventContext* pSimEventContext ) {} ;
     };
-
-    // This is a pointer to a function that is used to create/instantiate reports
-    typedef std::function< IReport* (void)> report_instantiator_function_t;
 }

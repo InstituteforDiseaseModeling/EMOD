@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "AgeDiagnostic.h"
@@ -19,134 +11,138 @@ SETUP_LOGGING( "AgeDiagnostic" )
 
 namespace Kernel
 {
-    void
-    AgeThresholds::ConfigureFromJsonAndKey(
-        const Configuration* inputJson,
-        const std::string& key
-    )
+    // ------------------------------------------------------------------------
+    // --- RangeThreshold
+    // ------------------------------------------------------------------------
+
+    RangeThreshold::RangeThreshold( const char* pLowDesc, const char* pHighDesc, const char* pEventDesc )
+        : JsonConfigurable()
+        , m_Low( 0.0f )
+        , m_High( 0.0f )
+        , m_Event()
     {
-        LOG_DEBUG_F( "Configuring age thresholds from campaign.json\n" );
-        // Now's as good a time as any to parse in the calendar schedule.
-        json::QuickInterpreter a_qi( (*inputJson)[key] );
-        try {
-            json::QuickInterpreter threshJson( a_qi.As<json::Array>() );
-            assert( a_qi.As<json::Array>().Size() );
-            for( unsigned int idx=0; idx<a_qi.As<json::Array>().Size(); idx++ )
+        // Don't nomrally like to put these in the constructor but
+        // want to reduce the need of keeping pointers to the descriptions.
+        initConfigTypeMap( "Low",   &m_Low,   pLowDesc,  0.0f, 2000.0f, 0.0f );
+        initConfigTypeMap( "High",  &m_High,  pHighDesc, 0.0f, 2000.0f, 0.0f );
+        initConfigTypeMap( "Event", &m_Event, pEventDesc );
+    }
+
+    RangeThreshold::RangeThreshold( const RangeThreshold& rMaster )
+        : JsonConfigurable( rMaster )
+        , m_Low(  rMaster.m_Low )
+        , m_High( rMaster.m_High )
+        , m_Event( rMaster.m_Event )
+    {
+    }
+
+    RangeThreshold::~RangeThreshold()
+    {
+    }
+
+    bool RangeThreshold::Configure( const Configuration* inputJson )
+    {
+        bool configured = JsonConfigurable::Configure( inputJson );
+        if( configured && !JsonConfigurable::_dryrun )
+        {
+            if( m_Low >= m_High )
             {
-                EventTrigger signal;
-                initConfigTypeMap( "Event", &signal, HIV_Age_Diagnostic_Event_Name_DESC_TEXT );
-                auto obj = Configuration::CopyFromElement( (threshJson)[idx], inputJson->GetDataLocation() );
-                JsonConfigurable::Configure( obj );
-                delete obj;
-                obj = nullptr;
-                thresh_events.push_back( signal );
-
-                NaturalNumber low, high;
-                try {
-                    low = float(threshJson[idx]["Low"].As<json::Number>());
-                }
-                catch( const json::Exception & )
-                {
-                    throw Kernel::JsonTypeConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Low", threshJson[idx], "Expected NUMBER" );
-                }
-                try {
-                    high = float(threshJson[idx]["High"].As<json::Number>());
-                }
-                catch( const json::Exception & )
-                {
-                    throw Kernel::JsonTypeConfigurationException( __FILE__, __LINE__, __FUNCTION__, "High", threshJson[idx], "Expected NUMBER" );
-                }
-                if( high <= low )
-                {
-                    throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__,
-                            "low",  std::to_string( low ).c_str(),
-                            "high", std::to_string( high ).c_str(),
-                            "High value must be higher than Low value." );
-                }
-
-                thresholds.push_back( std::make_pair( low, high ) );
-                LOG_DEBUG_F( "Found age threshold set from config: low/high/event = %d/%d/%s\n", (int) low, (int) high, signal.c_str() );
+                throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__,
+                                                        "Low", m_Low, "High", m_High,
+                                                        "'High' value must be higher than 'Low' value.");
             }
         }
-        catch( const json::Exception & )
-        {
-            throw Kernel::JsonTypeConfigurationException( __FILE__, __LINE__, __FUNCTION__, key.c_str(), a_qi, "Expected ARRAY" );
-        }
-        LOG_DEBUG_F( "Found %d age thresholds\n", thresholds.size() );
+        return configured;
     }
 
-    static void serialize_thresholds( IArchive& ar, std::vector<std::pair<NaturalNumber,NaturalNumber>>& thresholds )
+    void RangeThreshold::serialize( IArchive& ar, RangeThreshold& rt )
     {
-        size_t count = ar.IsWriter() ? thresholds.size() : -1;
-
-        ar.startArray(count);
-        if( !ar.IsWriter() ) 
-        {
-            thresholds.resize(count);
-        }
-        for( auto& entry : thresholds )
-        {
-            ar.startObject();
-            ar.labelElement("first" ) & entry.first;
-            ar.labelElement("second") & entry.second;
-            ar.endObject();
-        }
-        ar.endArray();
+        ar.labelElement( "m_Low"   ) & rt.m_Low;
+        ar.labelElement( "m_High"  ) & rt.m_High;
+        ar.labelElement( "m_Event" ) & rt.m_Event;
     }
 
-    void AgeThresholds::serialize(IArchive& ar, AgeThresholds& obj)
+    // ------------------------------------------------------------------------
+    // --- RangeThresholdList
+    // ------------------------------------------------------------------------
+
+    RangeThresholdList::RangeThresholdList( const char* pLowDesc, const char* pHighDesc, const char* pEventDesc )
+        : JsonConfigurableCollection("RangeThresholdList")
+        , m_pLowDesc( pLowDesc )
+        , m_pHighDesc( pHighDesc )
+        , m_pEventDesc( pEventDesc )
     {
-        ar.startObject();
-        ar.labelElement("thresholds"   ); serialize_thresholds( ar, obj.thresholds );
-        ar.labelElement("thresh_events") & obj.thresh_events;
-        ar.endObject();
+    }
 
-        // verify events are valid
-        if( ar.IsReader() )
+    RangeThresholdList::RangeThresholdList( const RangeThresholdList& rMaster )
+        : JsonConfigurableCollection( rMaster )
+        , m_pLowDesc( rMaster.m_pLowDesc )
+        , m_pHighDesc( rMaster.m_pHighDesc )
+        , m_pEventDesc( rMaster.m_pEventDesc )
+    {
+        for( auto p_art : rMaster.m_Collection )
         {
-            EventTrigger signal;
-            for( auto ev : obj.thresh_events )
-            {
-                signal = ev;
-            }
+            m_Collection.push_back( new RangeThreshold( *p_art ) );
         }
     }
 
-    json::QuickBuilder
-    AgeThresholds::GetSchema()
+    RangeThresholdList::~RangeThresholdList()
     {
-        json::QuickBuilder schema( GetSchemaBase() );
-        auto tn = JsonConfigurable::_typename_label();
-        auto ts = JsonConfigurable::_typeschema_label();
-        schema[ tn ] = json::String( "idmType:AgeThresholds" );
-        schema[ts] = json::Array();
-        schema[ts][0] = json::Object();
-        schema[ts][0]["Low"] = json::Object();
-        schema[ts][0]["Low"][ "type" ] = json::String( "float" );
-        schema[ts][0]["Low"][ "min" ] = json::Number( 0 );
-        schema[ts][0]["Low"][ "max" ] = json::Number( 1000.0 );
-        schema[ts][0]["Low"][ "description" ] = json::String( HIV_Age_Diagnostic_Low_DESC_TEXT );
-        schema[ts][0]["High"] = json::Object();
-        schema[ts][0]["High"][ "type" ] = json::String( "float" );
-        schema[ts][0]["High"][ "min" ] = json::Number( 0 );
-        schema[ts][0]["High"][ "max" ] = json::Number( 1000.0 );
-        schema[ts][0]["High"][ "description" ] = json::String( HIV_Age_Diagnostic_High_DESC_TEXT );
-        schema[ts][0]["Event"] = json::Object();
-        schema[ts][0]["Event"][ "type" ] = json::String( "String" );
-        schema[ts][0]["Event"][ "description" ] = json::String( HIV_Age_Diagnostic_Event_Name_DESC_TEXT );
-        return schema;
     }
+
+    RangeThreshold* RangeThresholdList::CreateObject()
+    {
+        return new RangeThreshold( m_pLowDesc, m_pHighDesc, m_pEventDesc );
+    }
+
+    // ------------------------------------------------------------------------
+    // --- AgeDiagnostic
+    // ------------------------------------------------------------------------
 
     BEGIN_QUERY_INTERFACE_DERIVED(AgeDiagnostic, SimpleDiagnostic)
     END_QUERY_INTERFACE_DERIVED(AgeDiagnostic, SimpleDiagnostic)
 
     IMPLEMENT_FACTORY_REGISTERED(AgeDiagnostic)
 
+    AgeDiagnostic::AgeDiagnostic()
+        : SimpleDiagnostic()
+        , range_thresholds( HIV_Age_Diagnostic_Low_DESC_TEXT,
+                            HIV_Age_Diagnostic_High_DESC_TEXT,
+                            HIV_Age_Diagnostic_Event_Name_DESC_TEXT )
+    {
+        initSimTypes( 1, "HIV_SIM" );
+    }
+
+    AgeDiagnostic::AgeDiagnostic( const char* pLowDesc, const char* pHighDesc, const char* pEventDesc )
+        : SimpleDiagnostic()
+        , range_thresholds( pLowDesc,
+                            pHighDesc,
+                            pEventDesc )
+    {
+        // don't put initSimTypes here so that subclass can set it
+    }
+
+    AgeDiagnostic::AgeDiagnostic( const AgeDiagnostic& master )
+        : SimpleDiagnostic( master )
+        , range_thresholds( master.range_thresholds )
+    {
+    }
+
+    AgeDiagnostic::~AgeDiagnostic()
+    {
+        LOG_DEBUG("Destructing AgeDiagnostic \n");
+    }
+
     bool AgeDiagnostic::Configure(
         const Configuration * inputJson
     )
     {
-        initConfigComplexType("Age_Thresholds", &age_thresholds, HIV_Age_Thresholds_DESC_TEXT );
+        // not sure that AgeDiagnostic and CD4Diagnostic should have a default cost
+        // but tests are depending on it
+        initConfigTypeMap( "Cost_To_Consumer", &cost_per_unit, IV_Cost_To_Consumer_DESC_TEXT );
+
+        ConfigureRangeThresholds( inputJson );
+
         // --------------------------------------------------------------------------------------------------
         // --- Do NOT configure SimpleDiagnostic.
         // --- This does not use the parameters defined in Configure()
@@ -155,60 +151,42 @@ namespace Kernel
         return BaseIntervention::Configure(inputJson);
     }
 
-    AgeDiagnostic::AgeDiagnostic() : SimpleDiagnostic()
+    void AgeDiagnostic::ConfigureRangeThresholds( const Configuration* inputJson )
     {
-        initSimTypes( 1, "HIV_SIM" );
-    }
-
-    AgeDiagnostic::AgeDiagnostic( const AgeDiagnostic& master )
-    : SimpleDiagnostic( master )
-    {
-        age_thresholds = master.age_thresholds;
-    }
-
-    AgeDiagnostic::~AgeDiagnostic()
-    {
-        LOG_DEBUG("Destructing Age Diagnostic \n");
+        initConfigComplexCollectionType("Age_Thresholds", &range_thresholds, HIV_Age_Thresholds_DESC_TEXT );
     }
 
     bool AgeDiagnostic::positiveTestResult()
     {
-        LOG_DEBUG("Positive test result function\n");
-
         // Apply diagnostic test with given specificity/sensitivity
         bool test_pos = false;
 
-        IIndividualHumanEventContext* ind_hec = nullptr;
-        if(parent->QueryInterface( GET_IID( IIndividualHumanEventContext ), (void**)&ind_hec ) != s_OK)
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "IIndividualHumanEventContext", "IIndividualHuman" );
-        }
+        float value = GetValue();
 
-        float age_years = ind_hec->GetAge() / DAYSPERYEAR;
-        LOG_DEBUG_F( "age is %f. %d thresholds configured.\n", age_years, age_thresholds.thresholds.size() );
-
-        unsigned int thresh_event_counter = 0;
-        for( auto thresh : age_thresholds.thresholds )
+        for( int i = 0; i < range_thresholds.Size(); ++i )
         {
-            LOG_DEBUG_F( "low/high thresholds = %d/%d\n", (int) thresh.first, (int) thresh.second );
-            if( age_years >= thresh.first && age_years < thresh.second )
+            RangeThreshold* p_thresh = range_thresholds[ i ];
+            LOG_DEBUG_F( "low/high thresholds = %d/%d\n", (int) p_thresh->m_Low, (int) p_thresh->m_High );
+            if( (p_thresh->m_Low <= value) && (value < p_thresh->m_High) )
             {
                 // broadcast associated event
                 IIndividualEventBroadcaster* broadcaster = parent->GetEventContext()->GetNodeEventContext()->GetIndividualEventBroadcaster();
-                LOG_DEBUG_F("SimpleHealthSeekingBehavior is broadcasting the actual intervention event to individual %d.\n", parent->GetSuid().data );
-                broadcaster->TriggerObservers( parent->GetEventContext(), age_thresholds.thresh_events[ thresh_event_counter ] );
+                broadcaster->TriggerObservers( parent->GetEventContext(), p_thresh->m_Event );
                 test_pos = true;
             }
-            thresh_event_counter++;
         }
-
-        // always return negative if the person is not infected, intended to be used with GroupEventCoordinator
-        // TODO: allow to distribute Smear diagnostic to non-infected individuals?
 
         // True positive (sensitivity), or False positive (1-specificity)
         expired = true;
         bool positiveTest = applySensitivityAndSpecificity( test_pos );
         return positiveTest;
+    }
+
+    float AgeDiagnostic::GetValue() const
+    {
+        float age_years = parent->GetEventContext()->GetAge() / DAYSPERYEAR;
+        LOG_DEBUG_F( "age is %f. %d thresholds configured.\n", age_years, range_thresholds.Size() );
+        return age_years;
     }
 
     REGISTER_SERIALIZABLE(AgeDiagnostic);
@@ -217,6 +195,6 @@ namespace Kernel
     {
         SimpleDiagnostic::serialize( ar, obj );
         AgeDiagnostic& ad = *obj;
-        ar.labelElement("age_thresholds"); AgeThresholds::serialize( ar, ad.age_thresholds );
+        ar.labelElement( "range_thresholds" ) & ad.range_thresholds;
     }
 }

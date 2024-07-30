@@ -1,0 +1,58 @@
+{
+    "Infection_Updates_Per_Timestep" : 8,
+    "Simulation_Timestep" : 1,
+    "Malaria_Model" : "MALARIA_MECHANISTIC_MODEL_WITH_PARASITE_GENETICS",
+    "Malaria_Drug_Params" : [
+        {
+            "Name": "Chloroquine",
+            "PKPD_Model": "CONCENTRATION_VERSUS_TIME",
+            "Bodyweight_Exponent": 1, 
+            "Drug_Cmax": 2, 
+            "Drug_Decay_T1": 3, 
+            "Drug_Decay_T2": 4, 
+            "Drug_Dose_Interval": 5, 
+            "Drug_Fulltreatment_Doses": 6, 
+            "Drug_Gametocyte02_Killrate": 7, 
+            "Drug_Gametocyte34_Killrate": 8, 
+            "Drug_GametocyteM_Killrate": 9, 
+            "Drug_Hepatocyte_Killrate": 10, 
+            "Drug_PKPD_C50": 11, 
+            "Drug_Vd": 12, 
+            "Max_Drug_IRBC_Kill": 13,
+            "Fractional_Dose_By_Upper_Age": [
+                { "Upper_Age_In_Years": 14, "Fraction_Of_Adult_Dose": 0.9 },
+                { "Upper_Age_In_Years": 15, "Fraction_Of_Adult_Dose": 0.8 },
+                { "Upper_Age_In_Years": 16, "Fraction_Of_Adult_Dose": 0.7 }
+            ],
+            "Resistances" : [
+                {
+                    "Drug_Resistant_String": "",
+                    "PKPD_C50_Modifier" : 0.1,
+                    "Max_IRBC_Kill_Modifier" : 0.2
+                }
+            ]
+        }
+    ],
+    "Parasite_Genetics": {
+        "Var_Gene_Randomness_Type" : "ALL_RANDOM",
+        "Barcode_Genome_Locations" :        [ 300000, 2000000, 10000000 ],
+        "Drug_Resistant_Genome_Locations" : [ ],
+        "HRP_Genome_Locations" : [],
+        "MSP_Genome_Location" : 1, 
+        "PfEMP1_Variants_Genome_Locations": [],
+        
+        "Enable_FPG_Similarity_To_Base": 0,
+        "Sporozoite_Life_Expectancy": 10,
+        "Num_Sporozoites_In_Bite_Fail": 12,
+        "Probability_Sporozoite_In_Bite_Fails": 0.5,
+        "Num_Oocyst_From_Bite_Fail": 3,
+        "Probability_Oocyst_From_Bite_Fails": 0.5,
+        "Sporozoites_Per_Oocyst_Distribution": "GAUSSIAN_DISTRIBUTION",
+        "Sporozoites_Per_Oocyst_Gaussian_Mean": 10000,
+        "Sporozoites_Per_Oocyst_Gaussian_Std_Dev": 1000,
+        "Crossover_Gamma_K"     : 2.0,
+        "Crossover_Gamma_Theta" : 0.38,
+        "Neighborhood_Size_MSP" : 1,
+        "Neighborhood_Size_PfEMP1" : 1
+    }
+}

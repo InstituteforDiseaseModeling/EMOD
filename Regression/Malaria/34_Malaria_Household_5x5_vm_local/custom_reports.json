@@ -1,22 +1,21 @@
 {
-    "Custom_Reports" : 
-    {
-        "Use_Explicit_Dlls" : 1,
-        "ReportVectorStats" :
+    "Reports": [
         {
-            "Enabled" : 1,
-            "Reports" : [ {} ]
+            "Species_List": [
+                "arabiensis",
+                "funestus",
+                "gambiae"
+            ],
+            "class": "ReportVectorStats"
         },
-        "ReportVectorMigration" :
         {
-            "NOTE" : "This can generate very large files.  Not saving to compare against.",
-            "Enabled" : 1,
-            "Reports" : [ {} ]
+            "class": "ReportVectorMigration",
+			"Start_Day" : 365.0,
+			"End_Day" : 372.0
         },
-        "VectorHabitatReport" :
         {
-            "Enabled" : 1,
-            "Reports" : [ {} ]
+            "class": "VectorHabitatReport"
         }
-    }
+    ],
+    "Use_Defaults": 1
 }

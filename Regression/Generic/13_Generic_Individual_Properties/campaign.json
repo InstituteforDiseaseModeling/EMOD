@@ -1,24 +1,48 @@
 {
-     "Use_Defaults": 1,
-     "Campaign_Name": "Generic Seattle Regression Campaign", 
-     "Events": [
-          {
-               "Event_Coordinator_Config": {
-                    "Intervention_Config": {
-                         "Antigen": 0, 
-                         "Genome": 0, 
-                         "class": "OutbreakIndividual",
-                         "Incubation_Period_Override": 0
-                    }, 
-                    "Target_Demographic": "Everyone", 
-                    "Property_Restrictions": [ "QualityOfCare:Bad" ],
-                    "class": "StandardInterventionDistributionEventCoordinator"
-               }, 
-               "Nodeset_Config": {
-                    "class": "NodeSetAll"
-               }, 
-               "Start_Day": 40, 
-               "class": "CampaignEvent"
-          }
-     ]
+    "Use_Defaults": 1,
+    "Campaign_Name": "Generic Seattle Regression Campaign",
+    "Events": [{
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "Antigen": 0,
+                    "Genome": 0,
+                    "class": "OutbreakIndividual",
+                    "Incubation_Period_Override": 0
+                },
+                "Target_Demographic": "Everyone",
+                "Property_Restrictions": ["QualityOfCare:Bad"],
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 40,
+            "class": "CampaignEvent"
+        }, 
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 100,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1.0,
+                "Property_Restrictions": [
+                    "Risk:HIGH"
+                ],
+                "Intervention_Config": {
+                    "class": "PropertyValueChanger",
+                    "Disqualifying_Properties": [],
+                    "New_Property_Value": "",
+                    "Target_Property_Key": "Risk",
+                    "Target_Property_Value": "MEDIUM",
+                    "Daily_Probability": 1.0,
+                    "Maximum_Duration": 0,
+                    "Revert": 50
+                }
+            }
+        }
+    ]
 }

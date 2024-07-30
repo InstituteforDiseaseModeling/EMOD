@@ -77,22 +77,20 @@
             "x_Family_Migration": 1
         },
         "MOSQUITO": {
-            "Vector_Species_Names": [
-                "arabiensis",
-                "funestus",
-                "gambiae"
-            ],
-            "Vector_Species_Params": {
-                "arabiensis": {
+            "Vector_Species_Params": [
+                {
+                    "Name": "arabiensis",
                     "Immature_Duration": 2
                 },
-                "funestus": {
+                {
+                    "Name": "funestus",
                     "Immature_Duration": 2
                 },
-                "gambiae": {
+                {
+                    "Name": "funesgambiaetus",
                     "Immature_Duration": 2
                 }
-            }
+            ]
         },
         "PRIMARY": {
             "Config_Name": "PrimaryScenarios_2_Namawala_Full_Malaria_Model -- multicore -- Madagascar_Nosibe",

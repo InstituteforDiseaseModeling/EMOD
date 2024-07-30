@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -23,6 +15,7 @@ namespace Kernel
     {
     public:
         BaseTextReport( const std::string& rReportName, bool everyTimeStep = true );
+        BaseTextReport( const BaseTextReport& rThat );
         virtual ~BaseTextReport();
 
         // ------------
@@ -54,17 +47,15 @@ namespace Kernel
         void AddHeaderLine(bool add_endl);
 
         void GetDataFromOtherCores();
-        void WriteData( const std::string& rStringData );
+        virtual void WriteData( const std::string& rStringData );
 
         // make protected so derived classes can set in Configure()
         bool write_every_time_step ;
         bool write_header_newline;
-
-    private:
+        int num_time_steps;
         std::string report_name;
         std::stringstream output_stream;
         std::stringstream reduced_stream;   // For rank 0 only
-        ofstream outfile;
     };
 
 }

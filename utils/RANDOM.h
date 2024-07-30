@@ -15,9 +15,7 @@
 #include <stdint.h>
 #include <vector>
 #include <set>
-#ifndef WIN32
 #include<emmintrin.h> // for __m128i
-#endif
 
 #include "ISerializable.h"
 
@@ -65,7 +63,6 @@ namespace Kernel
         double Weibull2(float lambda=1.0, float inv_kappa=1.0);
         double LogLogistic(double lambda=1.0, double kappa=1.0);
         uint64_t binomial_approx(uint64_t=1, double=1.0);
-        uint64_t binomial_approx2(uint64_t=1, double=1.0);
         uint64_t binomial_true(uint64_t=1, double=1.0);
         double time_varying_rate_dist( const std::vector <float>& v_rate, float timestep, float rate);
 
@@ -75,17 +72,20 @@ namespace Kernel
         // Sum(rFractions) * N ~= Sum(returned vector) such that Sum(returned vector) <= N.
         std::vector<uint64_t> multinomial_approx( uint64_t N, const std::vector<float>& rFractions );
 
-        // M Behrend
-        // gamma-distributed random number
-        // shape constant k=2
-        double rand_gamma(double mean);
-        double gamma_cdf(double x, double mean);
+        float rand_gamma( float k, float theta );
+        uint64_t negative_binomial( float n, float p );
+        std::vector<uint32_t> multivariate_hypergeometric( const std::vector<uint32_t>& rColors, uint32_t nsample );
+
         double get_cdf_random_num_precision();
 
     protected:
 
         virtual void fill_bits();
         void bits_to_float();
+
+        int64_t numpy_hypergeometric_sample( int64_t good, int64_t bad, int64_t sample );
+        uint64_t numpy_binomial_inversion( uint64_t n, double p );
+        uint64_t numpy_binomial_btpe( uint64_t n, double p );
 
         size_t    cache_count;
         size_t    index;

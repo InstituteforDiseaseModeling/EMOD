@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 #include "IArchive.h"
@@ -47,8 +39,6 @@ namespace Kernel
         rapidjson::GenericValue<rapidjson::UTF8<>>& GetElement();
         rapidjson::GenericValue<rapidjson::UTF8<>>& GetElementForNumber();
 
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         rapidjson::Document* m_document;
         rapidjson::GenericValue<rapidjson::UTF8<>>* m_json;
         uint32_t m_index;
@@ -56,6 +46,5 @@ namespace Kernel
         std::string label;
         std::stack<uint32_t> m_index_stack;
         std::stack<rapidjson::GenericValue<rapidjson::UTF8<>>*> m_value_stack;
-#pragma warning( pop )
     };
 }

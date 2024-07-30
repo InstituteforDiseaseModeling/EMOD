@@ -1,4 +1,4 @@
-Time, NodeID, AgeYears, NumIndividuals, NumInfected, NodeProp=Accessibility
+Time,NodeID,AgeYears,NumIndividuals,NumInfected,NodeProp=Accessibility
 0,10,125,10,0,YES
 0,9,125,10,0,YES
 0,8,125,10,0,YES

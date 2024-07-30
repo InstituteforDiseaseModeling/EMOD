@@ -39,9 +39,13 @@
             "Serialized_Population_Filenames": [
                 "state-00050.dtk"
             ],
+            "Serialized_Population_Reading_Type": "READ",
+            "Enable_Random_Generator_From_Serialized_Population": 0,
+            "Serialization_Mask_Node_Read": 0,
+            "Serialization_Mask_Node_Write": 0,
             "Simulation_Duration": 70,
             "Start_Time": 50
         },
-        "Serialization_Type": "TIMESTEP"
+        "Serialized_Population_Writing_Type": "TIMESTEP"
     }
 }

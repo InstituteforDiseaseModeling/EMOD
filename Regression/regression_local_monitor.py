@@ -13,12 +13,12 @@ import io
 
 import regression_utils as ru
 
-MAX_ACTIVE_JOBS=20
+MAX_ACTIVE_JOBS=50
 class Monitor(threading.Thread):
     sems = threading.Semaphore( MAX_ACTIVE_JOBS )
     completed = 0
 
-    def __init__(self, sim_id, scenario_path, report, params, config_json=None, scenario_type='tests'):
+    def __init__(self, sim_id, scenario_path, report, params, config_json=None, scenario_type='tests', serialization_test_type=None):
         threading.Thread.__init__( self )
         #print "Running DTK execution and monitor thread."
         sys.stdout.flush()
@@ -30,30 +30,72 @@ class Monitor(threading.Thread):
         # can I make this static?
         self.params = params
         self.scenario_type = scenario_type
+        self.sim_dir = None
+        self.serialization_test_type = serialization_test_type
 
+    def get_input_path_from_geog( self, input_root ):
+        #actual_input_dir = "."
+        actual_input_dir = None
+        if "Geography" in self.config_json["parameters"]:
+            if self.config_json["parameters"]["Geography"] == "LOCAL": # not used yet but forward-looking proposal for non-geography scenarios
+                actual_input_dir = "."
+            else:
+                actual_input_dir = ".;" + os.path.join( input_root, self.config_json["parameters"]["Geography"] )
+        return actual_input_dir 
+
+    def get_num_cores( self ):
+        num_cores = 1
+        if ('parameters' in self.config_json) and ('Num_Cores' in self.config_json['parameters']):
+            num_cores = self.config_json['parameters']['Num_Cores']
+        else:
+           print( "Didn't find key 'parameters/Num_Cores' in '{0}'. Using 1.".format( self.scenario_path ) )
+               
+        return int(num_cores)
+    
     def run(self):
         self.__class__.sems.acquire()
         self.sim_root = self.params.local_sim_root
-        sim_dir = os.path.join( self.sim_root, self.sim_timestamp )
-        #os.chdir( sim_dir )    # NOT THREAD SAFE!
+        self.sim_dir = os.path.join( self.sim_root, self.sim_timestamp )
+        numcores = self.get_num_cores()
+        #os.chdir( self.sim_dir )    # NOT THREAD SAFE!
 
         starttime = datetime.datetime.now()
 
         stdoutfile = "stdout.txt"
         if self.scenario_type != 'tests':
             stdoutfile = "test.txt"
-        with open(os.path.join(sim_dir, stdoutfile), "w") as stdout, open(os.path.join(sim_dir, "stderr.txt"), "w") as stderr:
-            actual_input_dir = ".;" + os.path.join( self.params.input_path, self.config_json["parameters"]["Geography"] )
+        with open(os.path.join(self.sim_dir, stdoutfile), "w") as stdout, open(os.path.join(self.sim_dir, "stderr.txt"), "w") as stderr:
+            actual_input_dir = self.get_input_path_from_geog( self.params.input_path )
+            # Call Eradication.exe through mpiexec to avoid Windows security warnings (see GitHub issue #1439)
             cmd = None
+            if "Eradication" in self.config_json["bin_path"]:
+                cmd = ['mpiexec', "-n", str(numcores), self.config_json["bin_path"], "-C", "config.json" ]
+            else:
+                cmd = self.config_json["bin_path"].split()
+                if self.scenario_type != 'pymod':
+                    cmd.extend( ["-C", "config.json" ] )
+            if actual_input_dir:
+                cmd.extend( [ "--input-path", actual_input_dir ] )
             # python-script-path is optional parameter.
             if "PSP" in self.config_json:
-                cmd = [self.config_json["bin_path"], "-C", "config.json", "--input-path", actual_input_dir, "--python-script-path", self.config_json["PSP"]]
-            else:
-                cmd = [self.config_json["bin_path"], "-C", "config.json", "--input-path", actual_input_dir ]
-            #print( "Calling '" + str(cmd) + "' from " + sim_dir + "\n" )
-            print( "Running '" + str(self.config_json["parameters"]["Config_Name"]) + "' in " + sim_dir + "\n" )
-            proc = subprocess.Popen( cmd, stdout=stdout, stderr=stderr, cwd=sim_dir )
+                cmd.extend( [ "--python-script-path", self.config_json["PSP"] ] )
+            #print( "Calling '" + str(cmd) + "' from " + self.sim_dir + "\n" )
+            print( "Running '" + str(self.config_json["parameters"]["Config_Name"]) + "' in " + self.sim_dir + "\n" )
+            shell_val = False
+            #if self.scenario_type == 'pymod' and self.params.local_execution:
+            #    shell_val = True
+
+            proc = subprocess.Popen( cmd, stdout=stdout, stderr=stderr, cwd=self.sim_dir, shell=shell_val )
             proc.wait()
+            if (os.name != "nt") and (proc.returncode == 134) and ("40_STI_Trivial_All_Reporters" in self.scenario_path):
+                print("40_STI_Trivial_All_Reporters: expected issue seen")
+                # The expected issue is a double-free corruption issue with using shared objects on Linux
+                # The sim can run completely fine but run into the error when destructing the objects.
+                # We want to keep the test because it is the only one exercising the use of shared objects.
+            elif proc.returncode != 0:
+                err_str = "received error code=" +str(proc.returncode)
+                self.report.addErroringTest( self.scenario_path, err_str, self.sim_dir, self.scenario_type )
+                
         # JPS - do we want to append config_json["parameters"]["Geography"] to the input_path here too like we do in the HPC case?
         endtime = datetime.datetime.now()
         self.duration = endtime - starttime
@@ -61,21 +103,32 @@ class Monitor(threading.Thread):
         self.__class__.completed = self.__class__.completed + 1
         print( str(self.__class__.completed) + " out of " + str(len(ru.reg_threads)) + " completed." )
         # JPS - should check here and only do the verification if it passed... ?
+        self.verify_test()
+
+        self.__class__.sems.release()
+
+    def verify_test( self ):
         if self.scenario_type == 'tests':
             if self.params.all_outputs == False:
-            # Following line is for InsetChart.json only
-                self.verify(sim_dir)
+                # Following line is for InsetChart.json only
+                self.verify(self.sim_dir)
             else:
                 # Every .json file in output (not hidden with . prefix) will be used for validation
                 for file in os.listdir( os.path.join( self.scenario_path, "output" ) ):
-                    if ( file.endswith( ".json" ) or file.endswith( ".csv" ) or file.endswith( ".h5" ) or file.endswith( ".db" ) ) and file[0] != ".":
-                        self.verify( sim_dir, file, "Channels" )
-        elif self.scenario_type == 'science':
-            self.science_verify( sim_dir )
-        elif self.scenario_type == 'pymod':
-            self.pymod_verify( sim_dir )
-
-        self.__class__.sems.release()
+                    known_file = (file.endswith( ".json" ) or
+                                  file.endswith( ".csv"  ) or
+                                  file.endswith( ".kml"  ) or
+                                  file.endswith( ".npy"  ) or
+                                  file.endswith( ".txt"  ) or
+                                  file.endswith( ".bin"  ) or
+                                  file.endswith( ".h5"   ) or
+                                  file.endswith( ".db"   ))
+                    if known_file and (file[0] != ".") and (file != "transitions.json") and ("linux" not in file):
+                        self.verify( self.sim_dir, file, "Channels" )
+        elif self.scenario_type == 'science':   # self.report <> None:
+            self.science_verify( self.sim_dir )
+        elif self.scenario_type == 'pymod':   # self.report <> None:
+            self.pymod_verify( self.sim_dir )
 
     def get_json_data_hash( self, data ):
         with tempfile.TemporaryFile() as handle:
@@ -92,19 +145,25 @@ class Monitor(threading.Thread):
         try:
             ru.load_json( os.path.join(ru.cache_cwd, ref_path) )
         except Exception:
-            print("Exception {0} {1} loading json file: {2}.".format(sys.exc_info()[0], sys.exc_info()[1], (os.path.join(ru.cache_cwd, ref_path))))
-            return
+            fail_validation = True
+            failure_txt = "Exception {0} {1} loading json file: {2}.".format(sys.exc_info()[0], sys.exc_info()[1], (os.path.join(ru.cache_cwd, ref_path)))
+            print(failure_txt)
+            return True, failure_txt
 
         ref_json = ru.load_json( os.path.join( sim_dir, ref_path ) )
 
         if "Channels" not in ref_json.keys():
-            ref_md5  = ru.md5_hash_of_file( ref_path )
-            test_md5 = ru.md5_hash_of_file( test_path )
-            if ref_md5 == test_md5:
+            # switched from MD5 to equality so files generated on different OS can still pass
+            # without dealing with line endings
+            test_json = ru.load_json( os.path.join( sim_dir, test_path ) )
+            if ref_json == test_json:
                 return False, ""
             else:
-                print( self.scenario_path + " completed but did not match reference! (" + str(self.duration) + ") - " + report_name )
-                return True, "Non-Channel JSON failed MD5."
+                stt = ""
+                if self.serialization_test_type != None:
+                    stt = " " + self.serialization_test_type
+                print( self.scenario_path + stt + " completed but did not match reference! (" + str(self.duration) + ") - " + report_name )
+                return True, "Non-Channel JSON failed equality."
         else:
             test_json = ru.load_json( os.path.join( sim_dir, test_path ) )
 
@@ -124,15 +183,16 @@ class Monitor(threading.Thread):
             new_channels = test_channels - ref_channels
 
             if len(missing_channels) > 0:
-                fail_validation = True
+                #fail_validation = True
                 print("ERROR: Missing channels - " + ', '.join(missing_channels))
                 failure_txt += "Missing channels:\n" + '\n'.join(missing_channels) + "\n"
-                self.report.addFailingTest( self.scenario_path, failure_txt, os.path.join( sim_dir, ( "output/" + report_name ) ), self.scenario_type )
+                self.report.addFailingTest( self.scenario_path, failure_txt, os.path.join( sim_dir, ( "output/" + report_name ) ), self.scenario_type, self.serialization_test_type )
+                failures.append("ERROR: Missing channels - " + ', '.join(missing_channels))
 
             if len(new_channels) > 0:
                 print("WARNING: The test "+report_name+" has " + str(len(new_channels)) + " channels not found in the reference.  Please update the reference "+report_name+".")
-                ru.final_warnings += self.scenario_path + " - New channels not found in reference:\n  " + '\n  '.join(new_channels) + "\nPlease update reference from " + os.path.join( sim_dir, os.path.join( "output", "InsetChart.json" ) ) + "!\n"
-                self.report.addFailingTest( self.scenario_path, failure_txt, os.path.join( sim_dir, ( "output/" + report_name ) ), self.scenario_type )
+                ru.final_warnings += self.scenario_path + " - New channels not found in reference:\n  " + '\n  '.join(new_channels) + "\nPlease update reference from " + os.path.join( sim_dir, os.path.join( "output", report_name ) ) + "!\n"
+                self.report.addFailingTest( self.scenario_path, failure_txt, os.path.join( sim_dir, ( "output/" + report_name ) ), self.scenario_type, self.serialization_test_type )
 
             if "Header" in ref_json.keys() and ref_json["Header"]["Timesteps"] != test_json["Header"]["Timesteps"]:
                 warning_msg = "WARNING: test "+report_name+" has timesteps " + str(test_json["Header"]["Timesteps"])  + " DIFFERRING from ref "+report_name+" timesteps " + str(ref_json["Header"]["Timesteps"]) + "!\n"
@@ -160,7 +220,10 @@ class Monitor(threading.Thread):
             if len(failures) > 0:
                 fail_validation = True
                 failure_txt += "Channel Timestep Reference_Value Test_Value\n" + ''.join(failures)
-                print( self.scenario_path + " completed but did not match reference! (" + str(self.duration) + ") - " + report_name )
+                stt = ""
+                if self.serialization_test_type != None:
+                    stt = " " + self.serialization_test_type
+                print( self.scenario_path + stt + " completed but did not match reference! (" + str(self.duration) + ") - " + report_name )
 
         return fail_validation, failure_txt
 
@@ -189,10 +252,15 @@ class Monitor(threading.Thread):
                 line_num = 0
                 for ref_line in ref_file:
                     line_num = line_num + 1
-                    test_line = test_file.readline()
+                    test_line = test_file.readline().rstrip()
+                    ref_line = ref_line.rstrip()
                     if ref_line != test_line:
                         ref_line_tokens = ref_line.split(',')
                         test_line_tokens = test_line.split(',')
+                        if len(ref_line_tokens) != test_line_tokens:
+                            err_msg = "First mismatch at line {0} of {1}:\nDifferent number of columns: {2} vs {3}:\nreference line...\n{4}\nvs test line...\n{5}".format( line_num, ref_path, len(ref_line_tokens), len(test_line_tokens), ref_line, test_line )
+                            fail_validation = True
+                            break
                         for col_idx in range( len( ref_line_tokens) ):
                             if ref_line_tokens[col_idx] != test_line_tokens[col_idx]:
                                 break
@@ -263,7 +331,7 @@ class Monitor(threading.Thread):
             num_steps_test = len(test_json["Channels"][chan_title]["Data"])
             if( (min_tstep_ind > num_steps_ref) or (min_tstep_ind > num_steps_test) ):
                 failures.append("Reference has "+str(num_steps_ref) + " steps and test has "+str(num_steps_test)+" steps, but the header says the min Timesteps is "+str(min_tstep_ind))
-                print("!!!! Reference has "+str(num_steps_ref) + " steps and test has "+str(num_steps_test)+" steps, but the header says the min Timesteps is "+str(min_tstep_ind))
+                print("!!!! Reference["+str(chan_title)+"] has "+str(num_steps_ref) + " steps and test has "+str(num_steps_test)+" steps, but the header says the min Timesteps is "+str(min_tstep_ind))
                 return
             num_lines = 10
             num_skipped = 0
@@ -277,6 +345,9 @@ class Monitor(threading.Thread):
             if num_skipped > 0:
                 failures.append( "And another " + str( num_skipped  ) + " lines skipped.\n" )
         return
+
+    def get_sim_path(self):
+        return self.sim_dir
 
     # Adding optional report_name parameter, defaults to InsetChart
     def verify(self, sim_dir, report_name="InsetChart.json", key="Channels" ):
@@ -295,46 +366,68 @@ class Monitor(threading.Thread):
         if self.report == None:
             return 
 
-        test_path = os.path.join( sim_dir, os.path.join( "output", report_name ) )
+        test_path = os.path.join( self.get_sim_path(), os.path.join( "output", report_name ) )
         ref_path = os.path.join( ru.cache_cwd, os.path.join( str(self.scenario_path), os.path.join( "output", report_name ) ) )
 
+        # Do not compare the partial sims because the save output is for the full sim
+        if (self.serialization_test_type == "BEFORE") or (self.serialization_test_type == "AFTER"):
+            return True
+
+        if report_name == "InsetChart.linux.json":
+            return True
+
         # if on linux, use alternate InsetChart.json, but only if exists
-        if os.name != "nt" and report_name == "InsetChart.json":
+        if ( os.name != "nt" or self.params.linux ) and report_name == "InsetChart.json":
             report_name = "InsetChart.linux.json" 
             alt_ref_path = os.path.join( ru.cache_cwd, os.path.join( str(self.scenario_path), os.path.join( "output", report_name ) ) )
             if os.path.exists( alt_ref_path ):
                 ref_path = alt_ref_path
 
+        # This check is probably only for InsetChart.json
+        if os.path.exists( ref_path ) == False:
+            print( "Reference file \"" + ref_path + "\" -- for " + self.scenario_path + " -- does not exist." )
+            failure_txt = "Reference file missing - " + report_name
+            self.report.addFailingTest( self.scenario_path, failure_txt, sim_dir, self.scenario_type, self.serialization_test_type )
+            return False
 
-        if os.name == "nt" and report_name == "InsetChart.linux.json":
-            return True
-
-        #if test_hash != ref_hash:
         if os.path.exists( test_path ) == False:
             print( "Test file \"" + test_path + "\" -- for " + self.scenario_path + " -- does not exist." )
-            failure_txt = "Report not generated by executable."
-            self.report.addFailingTest( self.scenario_path, failure_txt, os.path.join( sim_dir, ( "output/" + report_name ) ), self.scenario_type )
+            failure_txt = "Report not generated by executable - " + report_name
+            self.report.addFailingTest( self.scenario_path, failure_txt, sim_dir, self.scenario_type, self.serialization_test_type )
             return False
 
         if test_path.endswith( ".csv" ):
             fail_validation, failure_txt = self.compareCsvOutputs( ref_path, test_path, failures )
 
         elif test_path.endswith( ".json" ):
-            fail_validation, failure_txt = self.compareJsonOutputs( sim_dir, report_name, ref_path, test_path, failures )
+            fail_validation, failure_txt = self.compareJsonOutputs( self.get_sim_path(), report_name, ref_path, test_path, failures )
 
-        elif test_path.endswith( ".kml" ) or test_path.endswith( ".bin" ):
+        elif test_path.endswith( ".kml" ) or\
+             test_path.endswith( ".bin" ) or\
+             test_path.endswith( ".npy" ) or\
+             test_path.endswith( ".txt" ) or\
+             test_path.endswith( ".h5"  ) or\
+             test_path.endswith( ".db" ):
             fail_validation, failure_txt = self.compareOtherOutputs( report_name, ref_path, test_path, failures )
 
         if fail_validation:
             #print( "Validation failed, add to failing tests report." )
             self.report.addFailingTest( self.scenario_path, failure_txt, os.path.join( sim_dir, ( "output/" + report_name ) ), self.scenario_type )
 
-            if len(failures) > 0 and not self.params.hide_graphs and report_name.startswith( "InsetChart" ):
+            plotable_report = (report_name.startswith( "InsetChart" ) or
+                               report_name.startswith( "ReportMalariaFiltered" ) or
+                               report_name.startswith( "ReportVectorStats.json" ) or
+                               report_name.startswith( "ReportVectorGenetics_arabiensis_Female_GENOME.json" ) or
+                               report_name.startswith( "AlleleFrequency.json" ))
+            if len(failures) > 0 and not self.params.hide_graphs and plotable_report:
                 #print( "Plotting charts for failure deep dive." )  
                 # Note: Use python version 2 for plotAllCharts.py
-                subprocess.Popen( ["python", "plotAllCharts.py", ref_path, test_path, self.scenario_path ] )
+                subprocess.Popen( ["python", "plotAllCharts.py", ref_path, test_path ] )
         else:
-            print( self.scenario_path + " passed (" + str(self.duration) + ") - " + report_name )
+            ser_test_str = ""
+            if (self.serialization_test_type == "FULL") or (self.serialization_test_type == "CONCAT"):
+                ser_test_str = " " + self.serialization_test_type
+            print( self.scenario_path + ser_test_str + " passed (" + str(self.duration) + ") - " + report_name )
             self.report.addPassingTest(self.scenario_path, self.duration, os.path.join(sim_dir, ("output/" + report_name)))
             
             if ru.version_string is not None:
@@ -356,7 +449,7 @@ class Monitor(threading.Thread):
                     print( self.scenario_path + " passed (" + str(self.duration) + ") - " + report_name )
                     #print( self.scenario_path + " passed." )
                     self.report.addPassingTest(self.scenario_path, self.duration, os.path.join(sim_dir, report_name))
-                    os.remove( os.path.join( sim_dir, "test.txt" ) )
+                    #os.remove( os.path.join( sim_dir, "test.txt" ) )
                 else:
                     fail_text = self.scenario_path + " SFT failed."
                     print( self.scenario_path + " failed (" + str(self.duration) + ") - " + report_name )
@@ -369,20 +462,24 @@ class Monitor(threading.Thread):
 
     def pymod_verify( self, sim_dir ):
         # pymod verification, which consists entirely of looking for an 'OK' at the end of the stdout which happens to be StdErr.txt
-        report_name = "StdErr.txt" # This isn't my 'design'; it's just what is. XXXJHHB
-        pmr = os.path.join( sim_dir, report_name )
-        if os.path.exists( pmr ):
-            with open( pmr ) as pmr_file:
-                for line in pmr_file:
-                    pass
-                pmr_data = line
-                if pmr_data.strip() == "OK":
-                    print( self.scenario_path + " passed (" + str(self.duration) + ") - " + report_name )
-                    self.report.addPassingTest(self.scenario_path, self.duration, os.path.join(sim_dir, report_name))
-                else:
-                    fail_text = self.scenario_path + " PyMod failed."
-                    print( self.scenario_path + " failed (" + str(self.duration) + ") - " + report_name )
-                    print( pmr_data )
-                    self.report.addFailingTest( self.scenario_path, fail_text, os.path.join( sim_dir, report_name ), self.scenario_type )
-        else:
-            print( "Failed to find 'report' file for pymod test: " + report_name )
+        fail = True
+        for report_name in [ "stderr.txt", "test.txt" ]:
+            pmr = os.path.join( sim_dir, report_name )
+            if os.path.exists( pmr ):
+                with open( pmr ) as pmr_file:
+                    line = None
+                    for line in pmr_file:
+                        pass
+                    pmr_data = line
+                    if pmr_data is not None and pmr_data.strip() == "OK":
+                        print( self.scenario_path + " passed (" + str(self.duration) + ") - " + report_name )
+                        self.report.addPassingTest(self.scenario_path, self.duration, os.path.join(self.sim_dir, report_name))
+                        fail = False
+            #else:
+               #print( "Failed to find 'report' file for pymod test: " + report_name )
+        if fail:
+            report_name = "test.txt"
+            fail_text = self.scenario_path + " PyMod failed."
+            print( self.scenario_path + " failed (" + str(self.duration) + ") - " + report_name )
+            #print( pmr_data )
+            self.report.addFailingTest( self.scenario_path, fail_text, os.path.join( self.sim_dir, report_name ), self.scenario_type )

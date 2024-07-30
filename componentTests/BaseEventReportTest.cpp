@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "UnitTest++.h"
@@ -15,6 +7,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "SimulationConfig.h"
 #include "IdmMpi.h"
 #include "EventTrigger.h"
+#include "SimulationEventContext.h"
+#include "IdmDateTime.h"
 
 using namespace Kernel; 
 using namespace std; 
@@ -23,7 +17,7 @@ class TestReport : public Kernel::BaseEventReport
 {
 public:
     TestReport()
-        : BaseEventReport( "TestReport" )
+        : BaseEventReport( "TestReport", true, true )
         , m_ReportValue(0)
         , m_NumBirthEvents(0)
         , m_NumDeathEvents(0)
@@ -82,7 +76,7 @@ public:
         , m_Name("MyIntervention")
     {};
 
-    virtual const std::string& GetName() const override { return m_Name; }
+    virtual const InterventionName& GetName() const override { return m_Name; }
 
     virtual void Update(float dt) override
     {
@@ -93,7 +87,6 @@ public:
 
     virtual bool Distribute(INodeEventContext *context, IEventCoordinator2* pEC = nullptr ) override { assert( false ); return false; };
     virtual void SetContextTo(INodeEventContext *context) override {};
-    virtual void ValidateSimType( const std::string& simTypeStr ) override {};
     virtual bool Expired() override { return false; };
     virtual void SetExpired( bool ) override {};
     virtual QueryResult QueryInterface(iid_t iid, void** pinstance) override { return Kernel::e_NOINTERFACE; };
@@ -102,8 +95,34 @@ public:
 
 private:
     IIndividualEventBroadcaster* m_Broadcaster ;
-    std::string m_Name;
+    InterventionName m_Name;
 };
+
+class MySimulationEventContext : public ISimulationEventContext
+{
+public:
+    MySimulationEventContext( IdmDateTime* pDateTime )
+        : m_pDateTime( pDateTime )
+    {
+    }
+
+    virtual QueryResult QueryInterface( iid_t iid, void** pinstance ) override { return Kernel::e_NOINTERFACE; };
+    virtual int32_t AddRef() override { return 0; };
+    virtual int32_t Release() override { return 0; };
+
+    virtual void                          VisitNodes( node_visit_function_t func )           override { throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "shoud not get here" ); }
+    virtual INodeEventContext*            GetNodeEventContext( suids::suid node_id )         override { throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "shoud not get here" ); }
+    virtual void                          RegisterEventCoordinator( IEventCoordinator* iec ) override { throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "shoud not get here" ); }
+    virtual ICoordinatorEventBroadcaster* GetCoordinatorEventBroadcaster()                   override { throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "shoud not get here" ); }
+    virtual INodeEventBroadcaster*        GetNodeEventBroadcaster()                          override { throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "shoud not get here" ); }
+
+    virtual const IdmDateTime& GetSimulationTime() const { return *m_pDateTime;  }
+    virtual int GetSimulationTimestep() const { return 0; }
+
+private:
+    IdmDateTime* m_pDateTime;
+};
+
 
 
 SUITE(BaseEventReportTest)
@@ -156,7 +175,6 @@ SUITE(BaseEventReportTest)
         TestReport report ;
 
         CHECK_EQUAL( 0.0f, report.GetStartDay() );
-        CHECK_EQUAL( 0.0f, report.GetDurationDays() );
         CHECK_EQUAL(    0, report.GetReportValue() );
 
         json::Array report_data = Environment::getInstance()->Config->operator[]( std::string("Reports") ).As<json::Array>() ;
@@ -171,7 +189,6 @@ SUITE(BaseEventReportTest)
         report.Configure( p_cfg.get() );
 
         CHECK_EQUAL( 123.0f, report.GetStartDay() );
-        CHECK_EQUAL(   4.0f, report.GetDurationDays() );
         CHECK_EQUAL(      5, report.GetReportValue() );
 
         CHECK_EQUAL( 2, report.GetEventTriggerList().size() );
@@ -208,7 +225,9 @@ SUITE(BaseEventReportTest)
         // ---       calls to these methods from within the Node::Update() method
         // ---       which happens after updating the interventions.
         // -------------------------------------------------------------------------
-        report.UpdateEventRegistration( 122.0, 1.0, nec_list, nullptr );
+        IdmDateTime date_time( 122.0 );
+        MySimulationEventContext sec( &date_time );
+        report.UpdateEventRegistration( date_time.time, 1.0, nec_list, &sec );
         nec.UpdateInterventions( 1.0 );
         nec.TriggerObservers( nullptr, EventTrigger::Births );
         nec.TriggerObservers( nullptr, EventTrigger::NonDiseaseDeaths );
@@ -223,7 +242,8 @@ SUITE(BaseEventReportTest)
         // --------------------------------------------------------------------------------------
         // --- START_DAY - Show that we register for two events and get updates on those events.
         // --------------------------------------------------------------------------------------
-        report.UpdateEventRegistration( 123.0, 1.0, nec_list, nullptr );
+        date_time.time = 123.0;
+        report.UpdateEventRegistration( date_time.time, 1.0, nec_list, &sec );
         nec.UpdateInterventions( 1.0 ); // a NonDiseaseDeaths from MyIntervention
         nec.TriggerObservers( nullptr, EventTrigger::Births );
         nec.TriggerObservers( nullptr, EventTrigger::NonDiseaseDeaths );
@@ -238,7 +258,8 @@ SUITE(BaseEventReportTest)
         // ------------------------------------------
         // --- Simple update but with an extra birth
         // ------------------------------------------
-        report.UpdateEventRegistration( 124.0, 1.0, nec_list, nullptr );
+        date_time.time = 124.0;
+        report.UpdateEventRegistration( date_time.time, 1.0, nec_list, &sec );
         nec.UpdateInterventions( 1.0 ); // a NonDiseaseDeaths from MyIntervention
         nec.TriggerObservers( nullptr, EventTrigger::Births );
         nec.TriggerObservers( nullptr, EventTrigger::Births );
@@ -254,7 +275,8 @@ SUITE(BaseEventReportTest)
         // ------------------
         // --- Simple Update
         // ------------------
-        report.UpdateEventRegistration( 125.0, 1.0, nec_list, nullptr );
+        date_time.time = 125.0;
+        report.UpdateEventRegistration( date_time.time, 1.0, nec_list, &sec );
         nec.UpdateInterventions( 1.0 ); // a NonDiseaseDeaths from MyIntervention
         nec.TriggerObservers( nullptr, EventTrigger::Births );
         nec.TriggerObservers( nullptr, EventTrigger::NonDiseaseDeaths );
@@ -269,7 +291,8 @@ SUITE(BaseEventReportTest)
         // ----------------------------------------------------------
         // --- LAST UPDATE - Duration_Days = 4 => 123, 124, 125, 126
         // ----------------------------------------------------------
-        report.UpdateEventRegistration( 126.0, 1.0, nec_list, nullptr );
+        date_time.time = 126.0;
+        report.UpdateEventRegistration( date_time.time, 1.0, nec_list, &sec );
         nec.UpdateInterventions( 1.0 ); // a NonDiseaseDeaths from MyIntervention
         nec.TriggerObservers( nullptr, EventTrigger::Births );
         nec.TriggerObservers( nullptr, EventTrigger::NonDiseaseDeaths );
@@ -287,7 +310,8 @@ SUITE(BaseEventReportTest)
         // --- stop getting events from UpdateInterventions(), the onNotifyEvent() method must have
         // --- a check to see if report has unregistered the events so it will stop processing them.
         // --------------------------------------------------------------------------------------------
-        report.UpdateEventRegistration( 127.0, 1.0, nec_list, nullptr );
+        date_time.time = 127.0;
+        report.UpdateEventRegistration( date_time.time, 1.0, nec_list, &sec );
         nec.UpdateInterventions( 1.0 ); // see note above
         nec.TriggerObservers( nullptr, EventTrigger::Births );
         nec.TriggerObservers( nullptr, EventTrigger::NonDiseaseDeaths );
@@ -305,7 +329,8 @@ SUITE(BaseEventReportTest)
         // -------------------------------------------------------
         // --- Simple Update but we are not listening for events.
         // -------------------------------------------------------
-        report.UpdateEventRegistration( 128.0, 1.0, nec_list, nullptr );
+        date_time.time = 128.0;
+        report.UpdateEventRegistration( date_time.time, 1.0, nec_list, &sec );
         nec.UpdateInterventions( 1.0 );
         nec.TriggerObservers( nullptr, EventTrigger::Births );
         nec.TriggerObservers( nullptr, EventTrigger::NonDiseaseDeaths );

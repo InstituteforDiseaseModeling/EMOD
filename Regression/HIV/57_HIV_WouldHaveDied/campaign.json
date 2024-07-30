@@ -1,0 +1,120 @@
+
+{ 
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "COMMENT1" : "Infect everyone so people are dying.",
+            "COMMENT2" : "Should NOT see WouldHaveDied becuase nothing stopping disease from killing.",
+            "class": "CampaignEvent",
+            "Start_Day": 90,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1.0,
+                "Target_Demographic": "Everyone",
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Incubation_Period_Override": 1
+                }
+            }
+        },
+        {
+            "COMMENT1" : "Give ART to everyone to greatly reduce the number of people that die from HIV.",
+            "COMMENT2" : "Now we should starting seeing WouldHaveDied because ART is keeping people alive.",
+            "class": "CampaignEvent",
+            "Start_Day": 120,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1.0,
+                "Target_Demographic": "Everyone",
+                "Intervention_Config": {
+                    "class": "AntiretroviralTherapy",
+                    "Cost_To_Consumer" : 10
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Demographic_Coverage": 1.0,
+                    "Trigger_Condition_List": [
+                        "WouldHaveEnteredLatentStage"
+                    ],
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "MigrateIndividuals",
+                        "NodeID_To_Migrate_To": 2,
+                        "Duration_Before_Leaving_Distribution" : "CONSTANT_DISTRIBUTION",
+                        "Duration_Before_Leaving_Constant": 0, 
+                        "Duration_At_Node_Distribution" : "CONSTANT_DISTRIBUTION",
+                        "Duration_At_Node_Constant": 0, 
+                        "Is_Moving" : 1
+                    }
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Demographic_Coverage": 1.0,
+                    "Trigger_Condition_List": [
+                        "WouldHaveHadAIDS"
+                    ],
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "MigrateIndividuals",
+                        "NodeID_To_Migrate_To": 3,
+                        "Duration_Before_Leaving_Distribution" : "CONSTANT_DISTRIBUTION",
+                        "Duration_Before_Leaving_Constant": 0, 
+                        "Duration_At_Node_Distribution" : "CONSTANT_DISTRIBUTION",
+                        "Duration_At_Node_Constant": 0, 
+                        "Is_Moving" : 1
+                    }
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Demographic_Coverage": 1.0,
+                    "Trigger_Condition_List": [
+                        "WouldHaveDied"
+                    ],
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "MigrateIndividuals",
+                        "NodeID_To_Migrate_To": 4,
+                        "Duration_Before_Leaving_Distribution" : "CONSTANT_DISTRIBUTION",
+                        "Duration_Before_Leaving_Constant": 0, 
+                        "Duration_At_Node_Distribution" : "CONSTANT_DISTRIBUTION",
+                        "Duration_At_Node_Constant": 0, 
+                        "Is_Moving" : 1
+                    }
+                }
+            }
+        }
+    ]
+}

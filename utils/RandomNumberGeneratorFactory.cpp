@@ -1,16 +1,9 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "RandomNumberGeneratorFactory.h"
 #include "RANDOM.h"
 #include "IArchive.h"
+#include "Configuration.h"
 
 #include "Log.h"
 
@@ -18,6 +11,16 @@ SETUP_LOGGING( "RandomNumberGeneratorFactory" )
 
 namespace Kernel
 {
+    RANDOMBASE* RandomNumberGeneratorFactory::CreateRandomNumberGeneratorForReport()
+    {
+        uint16_t run_number = GET_CONFIG_INTEGER( EnvPtr->Config, "Run_Number" );
+        uint16_t randomseed[2];
+        randomseed[0] = (uint16_t) run_number;
+        randomseed[1] = (uint16_t) EnvPtr->MPI.Rank;
+        RANDOMBASE* p_rng = new PSEUDO_DES( *((uint32_t*)randomseed) );
+        return p_rng;
+    }
+
     GET_SCHEMA_STATIC_WRAPPER_IMPL( RandomNumberGeneratorFactory, RandomNumberGeneratorFactory )
     BEGIN_QUERY_INTERFACE_BODY( RandomNumberGeneratorFactory )
     END_QUERY_INTERFACE_BODY( RandomNumberGeneratorFactory )

@@ -1,16 +1,7 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
 #include "BaseProperties.h"
-#include "PropertiesString.h" //want to remove
 
 // Individual Properties (IP) allow the DTK user to assign attributes to individuals that are not
 // built in.  IP applies the BaseProperties feature to individuals.  See BaseProperties.h for more info.
@@ -49,6 +40,30 @@ namespace Kernel
         friend class BaseKeyValue;
 
         explicit IPKey( const BaseProperty* pip );
+    };
+
+    // An IPKeyParameter is used to get configuration data from the user.
+    // JsonConfigurable will use the SetParameterName() when configuring.  This
+    // will then be used in the error message when verifying the input value is valid.
+    // This class was created so that IPKey would not have the m_ParameterName
+    // variable and could stay super light.
+    class IPKeyParameter : public IPKey
+    {
+    public:
+        IPKeyParameter();
+        ~IPKeyParameter();
+
+        // Set this object equal to the given one
+        IPKeyParameter& operator=( const std::string& rKeyStr );
+
+        // Return the external name associated with this key-value pair
+        const std::string& GetParameterName() const;
+
+        // Set the parameter name associated with this key-value pair.  The name is used in error reporting.
+        void SetParameterName( const std::string& rParameterName );
+
+    protected:
+        std::string m_ParameterName;
     };
 
     // An IPKeyValue represents an Individual Property key and value 
@@ -90,6 +105,30 @@ namespace Kernel
         IPKeyValue( KeyValueInternal* pkvi );
     };
 
+    // An IPKeyValueParameter is used to get configuration data from the user.
+    // JsonConfigurable will use the SetParameterName() when configuring.  This
+    // will then be used in the error message when verifying the input value is valid.
+    // This class was created so that IPKeyValue would not have the m_ParameterName
+    // variable and could stay super light.
+    class IDMAPI IPKeyValueParameter : public IPKeyValue
+    {
+    public:
+        IPKeyValueParameter();
+        ~IPKeyValueParameter();
+
+        // Set this object equal to the given one
+        IPKeyValueParameter& operator=( const std::string& rKeyValueStr );
+
+        // Return the external name associated with this key-value pair
+        const std::string& GetParameterName() const;
+
+        // Set the parameter name associated with this key-value pair.  The name is used in error reporting.
+        void SetParameterName( const std::string& rParameterName );
+
+    protected:
+        std::string m_ParameterName;
+    };
+
     // An IPTransition is an event where individuals can have the value of
     // their Individual Property changed.  An IPTransition is converted to
     // a campaign event and added to the simulation's other events.
@@ -121,8 +160,6 @@ namespace Kernel
         void Validate( const JsonObjectDemog& rDemog );
 
     private:
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         IPKeyValue  m_From;
         IPKeyValue  m_To;
         std::string m_Type;
@@ -135,7 +172,6 @@ namespace Kernel
         float       m_MinAgeYears;
         float       m_MaxAgeYears;
         float       m_AgeYears;
-#pragma warning( pop )
     };
 
     // An iterator class used for traversing the elements in IPKeyValueContainer
@@ -169,19 +205,49 @@ namespace Kernel
         bool operator==( const IPKeyValueContainer& rThat ) const;
         bool operator!=( const IPKeyValueContainer& rThat ) const;
 
-        void Set( const IPKeyValue& rKeyValue );
-
-        void Add( const IPKeyValue& rKeyValue );
-        void Remove( const IPKeyValue& rKeyValue );
+        virtual void Set( const IPKeyValue& rKeyValue );
+        virtual void Add( const IPKeyValue& rKeyValue );
+        virtual void Remove( const IPKeyValue& rKeyValue );
 
         IPKeyValue FindFirst( const IPKeyValueContainer& rContainer ) const;
 
-        tProperties GetOldVersion() const;
+        static void serialize( IArchive& ar, IPKeyValueContainer& obj );
+
+    protected:
+        friend class BaseProperty;
+        IPKeyValueContainer( const std::vector<KeyValueInternal*>& rInternalList );
+    };
+
+    // The "Full" version is meant to be used by humans versus interventions.
+    // It contains a translation to the old-style string map and only humans
+    // need that.  This allows the interventions to have a lighter weight version.
+    class IDMAPI IPKeyValueContainerFull : public IPKeyValueContainer
+    {
+    public:
+        IPKeyValueContainerFull();
+        IPKeyValueContainerFull( const IPKeyValueContainerFull& rThat );
+        IPKeyValueContainerFull( const IPKeyValueContainer& rThat );
+        ~IPKeyValueContainerFull();
+
+        IPKeyValueContainerFull& operator=( const IPKeyValueContainerFull& rThat );
+        IPKeyValueContainerFull& operator=( const IPKeyValueContainer& rThat );
+
+        virtual void Set( const IPKeyValue& rKeyValue ) override;
+        virtual void Add( const IPKeyValue& rKeyValue ) override;
+        virtual void Remove( const IPKeyValue& rKeyValue ) override;
+
+        std::string ToString() const;
+
+        static void serialize( IArchive& ar, IPKeyValueContainerFull& obj );
 
     protected:
         friend class BaseProperty;
 
-        IPKeyValueContainer( const std::vector<KeyValueInternal*>& rInternalList );
+        void UpdateCache();
+
+        IPKeyValueContainerFull( const std::vector<KeyValueInternal*>& rInternalList );
+
+        std::string m_ToStringCache;
     };
 
     // Used to in HINT to define how disease is transmitted between people
@@ -201,12 +267,9 @@ namespace Kernel
         const std::map< std::string, std::vector<std::vector<float>>>& GetRouteToMatrixMap() const;
 
     private:
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         std::string m_RouteName;
         std::vector<std::vector<float>> m_Matrix;
         std::map< std::string, std::vector<std::vector<float>>> m_RouteToMatrixMap;
-#pragma warning( pop )
     };
 
     // An IndividualProperty object represents a single Individual Property.  It contains everything 
@@ -243,11 +306,8 @@ namespace Kernel
 
         void CreateAgeBinTransitions();
 
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         std::vector<IPTransition*> m_Transitions;
         std::map<uint32_t,IPIntraNodeTransmission*> m_IntraNodeTransmissionMap;
-#pragma warning( pop )
     };
 
 
@@ -279,7 +339,7 @@ namespace Kernel
         // It is assumed that each node has the same Individual Property values in its demographics.
         // Hence, it will only read the demographics when it has no individual properties and
         // assume anything new / different is an error.
-        void Initialize( uint32_t externNodeId, const JsonObjectDemog& rDemog, bool isWhitelistEnabled );
+        void Initialize( uint32_t externNodeId, const JsonObjectDemog& rDemog );
 
         // This method will write the transition data into a campaign.json formatted file
         // that is read in later by the application's initialization.  Only one process needs
@@ -298,7 +358,10 @@ namespace Kernel
                                    bool throwOnNotFound = true );
 
         // Add a new IP using the key and set of values
-        void AddIP( uint32_t externalNodeId, const std::string& rKey, const std::map<std::string,float>& rValues );
+        IndividualProperty* AddIP( uint32_t externalNodeId,
+                                   const std::string& rKey,
+                                   const std::map<std::string,float>& rValues,
+                                   bool haveFactoryMaintain = true );
 
         // Return an initial set of values for a human.  There should be one value for each key/property.
         // The values are determined by the initial distribution parameters set in the demographics data.
@@ -313,6 +376,7 @@ namespace Kernel
         //static void GenerateAllPermutationsOnce( std::set< std::string > &keys, tKeyValuePair perm, tPermutations &perms );
 
     protected:
+        friend class IPKeyValueParameter;
         friend class IPKeyValue;
         friend class IndividualProperty;
 

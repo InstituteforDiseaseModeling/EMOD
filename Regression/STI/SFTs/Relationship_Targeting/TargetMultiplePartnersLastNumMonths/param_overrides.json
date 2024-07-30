@@ -1,0 +1,43 @@
+{
+    "Default_Config_Path": "./defaults/sti_science_default_config.json", 
+    "parameters": {
+        "DEMOGRAPHICS": {
+            "x_Base_Population": 0.0001,
+            "Demographics_Filenames": [ 
+                "../../../../HIV/input/SA_UN_demographics.json",
+                "../../../../HIV/input/PFA_overlay.json",
+                "PFA_Concurrency.json"
+            ], 
+            "Enable_Vital_Dynamics": 0,
+            "MORTALITY": {
+                "Base_Mortality": 0.01, 
+                "Post_Infection_Mortality_Multiplier": 0.5
+            }
+        }, 
+        "DISEASE": {
+            "INFECTIOUSNESS": {
+                "Base_Infectivity": 10.0, 
+                "Infectious_Period_Gaussian_Mean": 120
+            }, 
+            "INCUBATION": {
+                "Incubation_Period_Constant": 1
+            },
+            "Enable_Disease_Mortality": 0
+        }, 
+        "PRIMARY": {
+            "Simulation_Duration": 450, 
+            "Config_Name": "Relationship_Targeting-TargetMultiplePartnersLastNumMonths",
+            "Custom_Individual_Events" : [
+            "3_INFORMAL", "6_TRANSITORY", "9_NA", "12_MARITAL", "6_COMMERCIAL", "3_NA"
+            ],
+            "Report_Event_Recorder": 1,
+            "Report_Event_Recorder_Events": ["3_INFORMAL", "6_TRANSITORY", "9_NA", "12_MARITAL", "6_COMMERCIAL", "3_NA"],
+            "Report_Event_Recorder_Individual_Properties": [],
+            "Report_Event_Recorder_PropertyChange_IP_Key_Of_Interest" : "",
+            "Report_Event_Recorder_Ignore_Events_In_List": 0,
+            "Report_Relationship_End": 1,
+            "Report_Relationship_Start": 1,
+            "Run_Number": 2
+        }
+    }
+}

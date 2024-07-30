@@ -1,0 +1,72 @@
+{    
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 0.25,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Incubation_Period_Override": 0
+                }
+            }
+        },
+        
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "TriggeredEventCoordinator",
+                "Coordinator_Name": "TEC-Vaccinate",
+                "Start_Trigger_Condition_List": [ "Vaccinate_People" ],
+                "Stop_Trigger_Condition_List": [],
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 1,
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 0.1,
+                "Intervention_Config": {
+                   "class": "SimpleVaccine",
+                   "Cost_To_Consumer": 1,
+                   "Vaccine_Take": 1,
+                   "Vaccine_Type": "AcquisitionBlocking",
+                   "Waning_Config": {
+                      "class": "WaningEffectConstant",
+                      "Initial_Effect": 1.0
+                   }
+                },
+                "Completion_Event": "Done_Vaccinating"
+            }
+        },
+        
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 25,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition_List": [
+                        "NonDiseaseDeaths"
+                    ],
+                    "Demographic_Coverage": 1.0,
+                    "Actual_NodeIntervention_Config": {
+                        "class": "BroadcastCoordinatorEventFromNode",
+                        "Broadcast_Event" : "Vaccinate_People"
+                    }
+                }
+            }
+        }
+    ],
+    "Use_Defaults": 1
+}

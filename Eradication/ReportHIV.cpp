@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
@@ -17,7 +9,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IHIVInterventionsContainer.h"
 #include "NodeEventContext.h"
 #include "EventTrigger.h"
-#include "IIndividualHumanHIV.h"
+#include "IndividualHIV.h"
 
 SETUP_LOGGING( "ReportHIV" )
 
@@ -25,29 +17,25 @@ SETUP_LOGGING( "ReportHIV" )
 
 namespace Kernel {
 
-    static const char* _num_hiv_acute_label          = "Number of (untreated) Individuals with Acute HIV";
-    static const char* _num_hiv_latent_label         = "Number of (untreated) Individuals with Latent HIV";
-    static const char* _num_hiv_aids_label           = "Number of (untreated) Individuals with AIDS";
-    static const char* _num_hiv_cd4_hi_on_ART_label  = "Number of Individuals HIV+ w/ CD4 >= 200 (on-ART)";
-    static const char* _num_hiv_cd4_hi_non_ART_label = "Number of Individuals HIV+ w/ CD4 >= 200 (non-ART)";
-    static const char* _num_hiv_cd4_lo_on_ART_label  = "Number of Individuals HIV+ w/ CD4 < 200 (on-ART)";
-    static const char* _num_hiv_cd4_lo_non_ART_label = "Number of Individuals HIV+ w/ CD4 < 200 (non-ART)";
-    static const char* _num_on_ART_label             = "Number of Individuals on ART";
-    static const char* _num_ART_dropouts_label       = "Number of ART dropouts (cumulative)";
-    static const char* _num_events_label             = "Number of Events" ;
-
-    std::string GetEventPerChannelLabel( const std::string& trig )
-    {
-        std::string label = _num_events_label + std::string(" - ") + trig;
-        return label ;
-    }
-
     GET_SCHEMA_STATIC_WRAPPER_IMPL(ReportHIV,ReportHIV)
 
     ReportHIV::ReportHIV()
-        : num_acute(0)
+        : num_hiv_acute_id()
+        , num_hiv_latent_id()
+        , num_hiv_untreated_aids_id()
+        , num_hiv_treated_aids_id()
+        , num_hiv_cd4_hi_on_ART_id()
+        , num_hiv_cd4_hi_non_ART_id()
+        , num_hiv_cd4_lo_on_ART_id()
+        , num_hiv_cd4_lo_non_ART_id()
+        , num_on_ART_id()
+        , num_ART_dropouts_id()
+        , num_events_id()
+        , event_trigger_index_to_channel_id()
+        , num_acute(0)
         , num_latent(0)
-        , num_aids(0)
+        , num_aids_without(0)
+        , num_aids_with(0)
         , num_hiv_cd4_lo_non_ART(0)
         , num_hiv_cd4_hi_non_ART(0)
         , num_hiv_cd4_lo_on_ART(0)
@@ -58,7 +46,6 @@ namespace Kernel {
         , counting_all_events(false)
         , event_counter_vector()
         , eventTriggerList()
-        , broadcaster_list()
     {
         // ------------------------------------------------------------------------------------------------
         // --- Since this report will be listening for events, it needs to increment its reference count
@@ -68,7 +55,19 @@ namespace Kernel {
         AddRef();   // TODO - this should be virtual, but isn't because the constructor isn't finished yet...
 
         // this vector is indexed by the EventTrigger index
-        event_counter_vector.resize( EventTriggerFactory::GetInstance()->GetNumEventTriggers() );
+        event_trigger_index_to_channel_id.resize( EventTriggerFactory::GetInstance()->GetNumEventTriggers() );
+        event_counter_vector.resize(              EventTriggerFactory::GetInstance()->GetNumEventTriggers() );
+
+        num_hiv_acute_id          = AddChannel( "Number of (untreated) Individuals with Acute HIV"   );
+        num_hiv_latent_id         = AddChannel( "Number of (untreated) Individuals with Latent HIV"  );
+        num_hiv_untreated_aids_id = AddChannel( "Number of (untreated) Individuals with AIDS"        );
+        num_hiv_treated_aids_id   = AddChannel( "Number of (treated) Individuals with AIDS"          );
+        num_hiv_cd4_hi_on_ART_id  = AddChannel( "Number of Individuals HIV+ w/ CD4 >= 200 (on-ART)"  );
+        num_hiv_cd4_hi_non_ART_id = AddChannel( "Number of Individuals HIV+ w/ CD4 >= 200 (non-ART)" );
+        num_hiv_cd4_lo_on_ART_id  = AddChannel( "Number of Individuals HIV+ w/ CD4 < 200 (on-ART)"   );
+        num_hiv_cd4_lo_non_ART_id = AddChannel( "Number of Individuals HIV+ w/ CD4 < 200 (non-ART)"  );
+        num_on_ART_id             = AddChannel( "Number of Individuals on ART"                       );
+        num_ART_dropouts_id       = AddChannel( "Number of ART dropouts (cumulative)"                );
     }
 
     ReportHIV::~ReportHIV()
@@ -81,24 +80,28 @@ namespace Kernel {
     )
     {
         ReportSTI::populateSummaryDataUnitsMap(units_map);
-        units_map[ _num_hiv_acute_label          ] = "";
-        units_map[ _num_hiv_latent_label         ] = "";
-        units_map[ _num_hiv_aids_label           ] = "";
-        units_map[ _num_hiv_cd4_hi_non_ART_label ] = "";
-        units_map[ _num_hiv_cd4_hi_on_ART_label  ] = "";
-        units_map[ _num_hiv_cd4_lo_non_ART_label ] = "";
-        units_map[ _num_hiv_cd4_lo_on_ART_label  ] = "";
+
+        units_map[ num_hiv_acute_id.GetName()          ] = "";
+        units_map[ num_hiv_latent_id.GetName()         ] = "";
+        units_map[ num_hiv_untreated_aids_id.GetName() ] = "";
+        units_map[ num_hiv_treated_aids_id.GetName()   ] = "";
+        units_map[ num_hiv_cd4_hi_non_ART_id.GetName() ] = "";
+        units_map[ num_hiv_cd4_hi_on_ART_id.GetName()  ] = "";
+        units_map[ num_hiv_cd4_lo_non_ART_id.GetName() ] = "";
+        units_map[ num_hiv_cd4_lo_on_ART_id.GetName()  ] = "";
+        units_map[ num_on_ART_id.GetName()             ] = "";
+        units_map[ num_ART_dropouts_id.GetName()       ] = "";
 
         if( counting_all_events )
         {
-            units_map[ _num_events_label ] = "";
+            units_map[ num_events_id.GetName()] = "";
         }
         else
         {
             for( auto trig : eventTriggerList )
             {
-                std::string label = GetEventPerChannelLabel( trig.ToString() ) ;
-                units_map[ label ] = "";
+                const ChannelID& r_id = event_trigger_index_to_channel_id[ trig.GetIndex() ];
+                units_map[ r_id.GetName()] = "";
             }
         }
     }
@@ -107,7 +110,7 @@ namespace Kernel {
     {
         initConfigTypeMap( "Report_HIV_Event_Channels_List", &eventTriggerList, Report_HIV_Event_Channels_List_DESC_TEXT, "Enable_Default_Reporting" );
 
-        bool ret = JsonConfigurable::Configure( inputJson );
+        bool ret = ReportSTI::Configure( inputJson );
 
         if( ret && JsonConfigurable::_dryrun == false )
         {
@@ -123,43 +126,40 @@ namespace Kernel {
                 for( auto trig : all_triggers )
                 {
                     // we'll need better solution here as we add more built-in model events
-                    if( (trig != EventTrigger::EveryUpdate) && (trig != EventTrigger::EveryTimeStep && trig != EventTrigger::ExposureComplete ) ) 
+                    if( (trig != EventTrigger::EveryUpdate) && (trig != EventTrigger::ExposureComplete ) ) 
                     {
-                        LOG_INFO_F( "Adding %s to eventTriggerList.\n", trig.c_str() );
+                        LOG_DEBUG_F( "Adding %s to eventTriggerList.\n", trig.c_str() );
                         eventTriggerList.push_back( trig );
+                        bool in_event_list = std::find( m_EventTriggerList.begin(),
+                                                        m_EventTriggerList.end(),
+                                                        trig ) != m_EventTriggerList.end();
+                        if( !in_event_list )
+                        {
+                            m_EventTriggerList.push_back( trig );
+                        }
                     }
                 }
+                num_events_id = AddChannel( "Number of Events" );
             }
             else
             {
                 counting_all_events = false;
+                for( auto trigger : eventTriggerList )
+                {
+                    bool in_event_list = std::find( m_EventTriggerList.begin(),
+                                                    m_EventTriggerList.end(),
+                                                    trigger ) != m_EventTriggerList.end();
+                    if( !in_event_list )
+                    {
+                        m_EventTriggerList.push_back( trigger );
+                    }
+                    std::string label = std::string("Number of Events - ") + trigger.ToString();
+                    ChannelID id = AddChannel( label );
+                    event_trigger_index_to_channel_id[ trigger.GetIndex() ] = id;
+                }
             }
         }
         return ret ;
-    }
-
-    void ReportHIV::UpdateEventRegistration( float currentTime, 
-                                             float dt, 
-                                             std::vector<INodeEventContext*>& rNodeEventContextList,
-                                             ISimulationEventContext* pSimEventContext )
-    {
-        if( broadcaster_list.size() > 0 )
-        {
-            return ;
-        }
-
-        for( auto pNEC : rNodeEventContextList )
-        {
-            IIndividualEventBroadcaster* broadcaster = pNEC->GetIndividualEventBroadcaster();
-            release_assert( broadcaster );
-
-            for( auto trig : eventTriggerList )
-            {
-                LOG_INFO_F( "ReportHIV is registering to listen to event %s\n", trig.c_str() );
-                broadcaster->RegisterObserver( this, trig );
-            }
-            broadcaster_list.push_back( broadcaster );
-        }
     }
 
     void
@@ -168,11 +168,12 @@ namespace Kernel {
     )
     {
         ReportSTI::LogIndividualData( individual );
-        IIndividualHumanHIV* hiv_individual = nullptr;
-        if( individual->QueryInterface( GET_IID( IIndividualHumanHIV ), (void**)&hiv_individual ) != s_OK )
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "individual", "IIndividualHIV", "IndividualHuman" );
-        }
+
+        // --------------------------------------------------------------------------------
+        // --- Switched to static_cast because this method was taking 12% of total sim time
+        // --- and the QueryInterface() was taking most of that. 
+        // --------------------------------------------------------------------------------
+        IndividualHumanHIV* hiv_individual = static_cast<IndividualHumanHIV*>(individual);
 
         if( hiv_individual->GetHIVInfection() )
         {
@@ -212,7 +213,10 @@ namespace Kernel {
                 break;
 
                 case HIVInfectionStage::AIDS:
-                    num_aids += mcw;
+                    if( hiv_individual->GetHIVInterventionsContainer()->OnArtQuery() )
+                        num_aids_with += mcw;
+                    else
+                        num_aids_without += mcw;
                 break;
 
                 case HIVInfectionStage::ON_ART:
@@ -237,34 +241,37 @@ namespace Kernel {
     {
         ReportSTI::EndTimestep( currentTime, dt );
 
-        Accumulate( _num_hiv_acute_label, num_acute );
-        Accumulate( _num_hiv_latent_label, num_latent );
-        Accumulate( _num_hiv_aids_label, num_aids );
-        Accumulate( _num_hiv_cd4_hi_non_ART_label, num_hiv_cd4_hi_non_ART );
-        Accumulate( _num_hiv_cd4_hi_on_ART_label, num_hiv_cd4_hi_on_ART );
-        Accumulate( _num_hiv_cd4_lo_non_ART_label, num_hiv_cd4_lo_non_ART );
-        Accumulate( _num_hiv_cd4_lo_on_ART_label, num_hiv_cd4_lo_on_ART );
-        Accumulate( _num_on_ART_label, num_on_ART );
-        Accumulate( _num_ART_dropouts_label, num_ART_dropouts );
+        Accumulate( num_hiv_acute_id,          num_acute              );
+        Accumulate( num_hiv_latent_id,         num_latent             );
+        Accumulate( num_hiv_untreated_aids_id, num_aids_without       );
+        Accumulate( num_hiv_treated_aids_id,   num_aids_with          );
+        Accumulate( num_hiv_cd4_hi_non_ART_id, num_hiv_cd4_hi_non_ART );
+        Accumulate( num_hiv_cd4_hi_on_ART_id,  num_hiv_cd4_hi_on_ART  );
+        Accumulate( num_hiv_cd4_lo_non_ART_id, num_hiv_cd4_lo_non_ART );
+        Accumulate( num_hiv_cd4_lo_on_ART_id,  num_hiv_cd4_lo_on_ART  );
+        Accumulate( num_on_ART_id,             num_on_ART             );
+        Accumulate( num_ART_dropouts_id,       num_ART_dropouts       );
 
         if( counting_all_events )
         {
-            Accumulate( _num_events_label, num_events ); 
+            Accumulate( num_events_id, num_events ); 
             num_events = 0 ;
         }
         else
         {
             for( auto trig : eventTriggerList )
             {
-                std::string label = GetEventPerChannelLabel( trig.ToString() ) ;
-                Accumulate( label, event_counter_vector[ trig.GetIndex() ] ); 
-                event_counter_vector[ trig.GetIndex() ] = 0 ;
+                int trig_index = trig.GetIndex();
+                ChannelID& r_id = event_trigger_index_to_channel_id[ trig_index ];
+                Accumulate( r_id, event_counter_vector[ trig_index ] ); 
+                event_counter_vector[ trig_index ] = 0 ;
             }
         }
                  
-        num_acute =  0;
+        num_acute = 0;
         num_latent = 0;
-        num_aids =   0;
+        num_aids_without = 0;
+        num_aids_with = 0;
         num_hiv_cd4_lo_non_ART = 0;
         num_hiv_cd4_lo_on_ART = 0;
         num_hiv_cd4_hi_non_ART = 0;
@@ -273,26 +280,12 @@ namespace Kernel {
         num_ART_dropouts = 0;
     }
 
-    void
-    ReportHIV::Reduce()
-    {
-        ReportSTI::Reduce();
-
-        // make sure we are unregistered before objects start being deleted
-        for( auto broadcaster : broadcaster_list )
-        {
-            for( auto trig : eventTriggerList )
-            {
-                broadcaster->UnregisterObserver( this, trig  );
-            }
-        }
-        broadcaster_list.clear();
-    }
-
+    
     bool ReportHIV::notifyOnEvent( IIndividualHumanEventContext *context, 
                                    const EventTrigger& trigger )
     {
-        LOG_DEBUG_F( "notifyOnEvent: %s\n", trigger.c_str() );
+        ReportSTI::notifyOnEvent( context, trigger );
+
         // no elements in the map implies that we are counting all of the events.
         if( counting_all_events )
         {
@@ -300,9 +293,24 @@ namespace Kernel {
         }
         else
         {
-            event_counter_vector[ trigger.GetIndex() ]++ ;
+            bool in_event_list = std::find( eventTriggerList.begin(),
+                                            eventTriggerList.end(), trigger ) != eventTriggerList.end();
+            if( in_event_list )
+            {
+                event_counter_vector[ trigger.GetIndex() ]++ ;
+            }
         }
         return true ;
+    }
+
+    void ReportHIV::postProcessAccumulatedData()
+    {
+        ReportSTI::postProcessAccumulatedData();
+        channelDataMap.RemoveChannel( susceptible_pop_id.GetName() );
+        channelDataMap.RemoveChannel( exposed_pop_id.GetName()     );
+        channelDataMap.RemoveChannel( infectious_pop_id.GetName()  );
+        channelDataMap.RemoveChannel( recovered_pop_id.GetName()   );
+        channelDataMap.RemoveChannel( waning_pop_id.GetName()      );
     }
 }
 

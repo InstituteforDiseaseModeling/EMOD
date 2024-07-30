@@ -1,0 +1,50 @@
+{
+    "Campaign_Name": "Simple FP Campaign",
+    "Events": [
+        {
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "Broadcast_Event": "Use_Some_Contraception",
+                    "class": "BroadcastEvent"
+                },
+                "Target_Demographic": "ExplicitGender",
+                "Target_Gender": "Female",
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 0.0,
+            "class": "CampaignEvent"
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "Disqualifying_Properties": [
+                        "CurrentStatus:PREGNANT"
+                    ],
+                    "Intervention_Name": "Test",
+                    "New_Property_Value": "CurrentStatus:Using_Some_Contraception",
+                    "Usage_Duration_Distribution": "GAUSSIAN_DISTRIBUTION",
+                    "Usage_Duration_Gaussian_Mean": 90,
+                    "Usage_Duration_Gaussian_Std_Dev": 15,
+                    "Usage_Expiration_Event": "Test_Distribution_Expired",
+                    "Waning_Config": {
+                        "Initial_Effect": 1.0,
+                        "class": "WaningEffectConstant"
+                    },
+                    "class": "FemaleContraceptive"
+                },
+                "Target_Demographic": "ExplicitGender",
+                "Target_Gender": "Female",
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 0.0,
+            "class": "CampaignEvent"
+        }
+    ],
+    "Use_Defaults": 1
+}

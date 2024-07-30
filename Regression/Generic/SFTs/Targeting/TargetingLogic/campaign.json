@@ -1,0 +1,85 @@
+{
+    "Campaign_Name": "TargetingLogic test",
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 0.4,
+                "Intervention_Config": {
+                    "class": "SimpleVaccine",
+                    "Intervention_Name" : "MyVaccine",
+                    "Cost_To_Consumer": 1,
+                    "Vaccine_Take": 1,
+                    "Vaccine_Type": "AcquisitionBlocking",
+                    "Waning_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect" : 1.0
+                    }
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Ignore_Immunity": 0
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 5,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 0.2,
+                "Targeting_Config": {
+                    "class" : "TargetingLogic",
+                    "Logic" : [
+                        [
+                            {
+                                "class": "HasIntervention",
+                                "Is_Equal_To": 0,
+                                "Intervention_Name": "MyVaccine"
+                            },
+                            {
+                                "class": "HasIP",
+                                "Is_Equal_To": 1,
+                                "IP_Key_Value": "Risk:Low"
+                            }
+                        ],
+                        [
+                            {
+                                "class": "HasIP",
+                                "Is_Equal_To": 0,
+                                "IP_Key_Value": "Risk:Low"
+                            }
+                        ]
+                    ]
+                },
+                "Intervention_Config": {
+                    "class": "BroadcastEvent",
+                    "Broadcast_Event": "Tested_Event"
+                }
+            }
+        }
+    ],
+    "Use_Defaults": 1
+}

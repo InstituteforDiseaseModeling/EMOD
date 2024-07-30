@@ -1,17 +1,5 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
-
-#ifndef WIN32
-#include <cxxabi.h>
-#endif
 
 #include "Configure.h"
 
@@ -30,6 +18,18 @@ namespace Kernel
             , m_IdmTypeName( rIdmTypeName )
             , m_Collection()
         {
+        }
+
+        JsonConfigurableCollection( const JsonConfigurableCollection& rMaster )
+            : JsonConfigurable( rMaster )
+            , m_IdmTypeName( rMaster.m_IdmTypeName )
+            , m_Collection() // DO NOT COPY
+        {
+            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            // !!! Do not copy the elements of m_Collection.  They are pointers to objects owned by rMaster.
+            // !!! Implementers of the template must implement their own copy constructor so that they
+            // !!! can copy the elements.
+            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         }
 
         virtual ~JsonConfigurableCollection()
@@ -59,23 +59,19 @@ namespace Kernel
                 p_jcc->Configure( nullptr );
             }
 
-            std::string idm_type_schema = "idmType:" + m_IdmTypeName;
-            std::string object_name = typeid(*p_jcc).name();
-#ifdef WIN32
-            object_name = object_name.substr( 14 ); // remove "class Kernel::"
-#else
-            object_name = abi::__cxa_demangle( object_name.c_str(), 0, 0, nullptr );
-            object_name = object_name.substr( 8 ); // remove "Kernel::"
-#endif
-            std::string object_schema_name = "<" + object_name + " Value>";
+            std::string object_schema_name = p_jcc->GetTypeName();
+            std::string idm_type_schema = "idmType:" + object_schema_name;
 
             json::QuickBuilder schema( GetSchemaBase() );
             auto tn = JsonConfigurable::_typename_label();
             auto ts = JsonConfigurable::_typeschema_label();
             schema[ tn ] = json::String( idm_type_schema );
+            schema[ "item_type" ] = json::String( object_schema_name );
 
-            schema[ ts ] = json::Object();
-            schema[ ts ][ object_schema_name ] = p_jcc->GetSchema();
+            // Add the schema for the objects to be retrieved by JsonConfigurable::Configure()
+            // Also add the "class" parameter so the python classes will be generated
+            schema[ ts ] = p_jcc->GetSchema();
+            schema[ ts ][ "class" ] = json::String( object_schema_name );
 
             delete p_jcc;
 
@@ -84,8 +80,14 @@ namespace Kernel
 
         virtual void ConfigureFromJsonAndKey( const Configuration* inputJson, const std::string& key ) override
         {
-            // Temporary object created so we can 'operate' on json with the desired tools
-            auto p_config = Configuration::CopyFromElement( (*inputJson)[ key ], inputJson->GetDataLocation() );
+            // Exist(key) should have been called before calling this
+            Configuration* p_config = Configuration::CopyFromElement( (*inputJson)[ key ], inputJson->GetDataLocation() );
+
+            if( p_config->operator const json::Element &().Type() != json::ARRAY_ELEMENT )
+            {
+                throw Kernel::JsonTypeConfigurationException( __FILE__, __LINE__, __FUNCTION__,
+                                                              key.c_str(), (*inputJson)[key], "Expected ARRAY of OBJECTs" );
+            }
 
             const auto& json_array = json_cast<const json::Array&>((*p_config));
             for( auto data = json_array.Begin(); data != json_array.End(); ++data )
@@ -93,8 +95,29 @@ namespace Kernel
                 Configuration* p_object_config = Configuration::CopyFromElement( *data, inputJson->GetDataLocation() );
 
                 JsonConfigurableClass* p_jcc = CreateObject();
-                p_jcc->Configure( p_object_config );
 
+                if( p_object_config->operator const json::Element &().Type() != json::OBJECT_ELEMENT )
+                {
+                    // I'm passing (*inputJson)[key] in to the exception instead of p_object_config because
+                    // I had someone give a 2D vector and they only saw the inner vector.  Showing the whole
+                    // element for this message seems to provide more information.
+                    std::stringstream ss;
+                    ss << "Expected ARRAY of OBJECTs of type '" << p_jcc->GetTypeName() << "'";
+                    throw Kernel::JsonTypeConfigurationException( __FILE__, __LINE__, __FUNCTION__,
+                                                                  key.c_str(), (*inputJson)[key], ss.str().c_str() );
+                }
+
+                try
+                {
+                    p_jcc->Configure( p_object_config );
+                }
+                catch( json::Exception& )
+                {
+                    std::stringstream ss;
+                    ss << "JSON Error while reading OBECT of type '" << p_jcc->GetTypeName() << "'";
+                    throw Kernel::JsonTypeConfigurationException( __FILE__, __LINE__, __FUNCTION__,
+                                                                  key.c_str(), (*p_object_config), ss.str().c_str() );
+                }
                 Add( p_jcc );
 
                 delete p_object_config;
@@ -117,9 +140,47 @@ namespace Kernel
             return m_Collection.size();
         }
 
+        void Clear()
+        {
+            m_Collection.clear();
+        }
+
         JsonConfigurableClass* operator[]( int index )
         {
             return m_Collection[ index ];
+        }
+
+        const JsonConfigurableClass* operator[]( int index ) const
+        {
+            return m_Collection[ index ];
+        }
+
+        static void serialize( IArchive& ar, JsonConfigurableCollection<JsonConfigurableClass>& rJcc )
+        {
+            size_t count = ar.IsWriter() ? rJcc.m_Collection.size() : -1;
+
+            ar.startArray( count );
+            if( ar.IsWriter() )
+            {
+                for( JsonConfigurableClass* p_obj : rJcc.m_Collection )
+                {
+                    ar.startObject();
+                        ar & *p_obj;
+                    ar.endObject();
+                }
+            }
+            else
+            {
+                for( size_t i = 0; i < count; ++i )
+                {
+                    JsonConfigurableClass* p_obj = rJcc.CreateObject();
+                    ar.startObject();
+                        ar & *p_obj;
+                    ar.endObject();
+                    rJcc.m_Collection.push_back( p_obj );
+                }
+            }
+            ar.endArray();
         }
 
     protected:

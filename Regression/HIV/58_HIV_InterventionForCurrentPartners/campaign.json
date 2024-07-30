@@ -1,0 +1,38 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender", 
+                "Target_Gender" : "FEMALE",
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "InterventionForCurrentPartners",
+                    "Cost_To_Consumer": 1.0,
+                    "Disqualifying_Properties": [],  
+                    "New_Property_Value": "", 
+                    "Minimum_Duration_Years": 0,
+                    "Dont_Allow_Duplicates": 0,
+                    "Prioritize_Partners_By": "OLDER_AGE",
+                    "Relationship_Types": [],
+                    "Maximum_Partners": 1,
+                    "Event_Or_Config" : "Config",
+                    "Intervention_Config": {
+                        "class": "HIVSimpleDiagnostic",
+                        "Event_Or_Config": "Event",
+                        "Treatment_Fraction": 1.0,
+                        "Dont_Allow_Duplicates": 1,
+                        "Positive_Diagnosis_Event":"HIVTestedPositive",
+                        "Negative_Diagnosis_Event":"HIVTestedNegative"
+                        }
+                    }
+                }
+        }
+    ]
+}

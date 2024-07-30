@@ -1,0 +1,20 @@
+{
+    "Reports": [
+        {
+            "class": "ReportEventCounter",
+            "Filename_Suffix": "",
+            "Start_Day": 0,
+            "End_Day": 10000,
+            "Node_IDs_Of_Interest": [],
+            "Min_Age_Years": 0.0,
+            "Max_Age_Years": 1000.0,
+            "Must_Have_IP_Key_Value": "",
+            "Must_Have_Intervention": "",
+            "Event_Trigger_List": [
+                "HRP2_FOUND",
+                "BLOOD_SMEAR_PARASITES_FOUND"
+            ]
+        }
+    ],
+    "Use_Defaults": 1
+}

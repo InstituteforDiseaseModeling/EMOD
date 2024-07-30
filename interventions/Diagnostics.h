@@ -1,19 +1,9 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
 #include <string>
 #include <list>
 #include <vector>
-
-#include "BoostLibWrapper.h"
 
 #include "Configuration.h"
 #include "Configure.h"
@@ -26,22 +16,21 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 namespace Kernel
 {
-    class IDMAPI SimpleDiagnostic :  public BaseIntervention
+    class SimpleDiagnostic :  public BaseIntervention
     {
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
+        DECLARE_QUERY_INTERFACE()
         DECLARE_FACTORY_REGISTERED(InterventionFactory, SimpleDiagnostic, IDistributableIntervention)
 
     public:
         SimpleDiagnostic();
         SimpleDiagnostic( const SimpleDiagnostic& master );
-        virtual ~SimpleDiagnostic() {  }
-        bool Configure( const Configuration* pConfig ) override;
-        virtual void CheckConfigTriggers( const Configuration * inputJson );
-        void ConfigurePositiveEventOrConfig( const Configuration * inputJson );
+        virtual ~SimpleDiagnostic();
+
+        virtual bool Configure( const Configuration* pConfig ) override;
 
         // IDistributingDistributableIntervention
         virtual bool Distribute(IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pICCO ) override;
-        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) override;
         virtual void Update(float dt) override;
 
         virtual bool positiveTestResult();
@@ -54,12 +43,25 @@ namespace Kernel
     protected:
 
         void broadcastEvent( const EventTrigger& event );
-        virtual EventOrConfig::Enum getEventOrConfig( const Configuration* );
-        void CheckPostiveEventConfig();
+        virtual void ConfigureSensitivitySpecificity( const Configuration* inputJson );
+        virtual void ConfigureEventsConfigs( const Configuration * inputJson );
+        virtual void ConfigureOther( const Configuration* inputJson );
+        virtual void CheckEventsConfigs( const Configuration * inputJson );
 
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
-        int   diagnostic_type;
+        virtual EventOrConfig::Enum getEventOrConfig( const Configuration* );
+        virtual void ConfigurePositiveEvent( const Configuration * inputJson );
+        virtual void ConfigurePositiveConfig( const Configuration * inputJson );
+        virtual IDistributableIntervention* CheckEventConfig( const Configuration * inputJson,
+                                                              bool isRequired,
+                                                              const char* eventParameterName,
+                                                              const EventTrigger& event,
+                                                              const char* configParameterName,
+                                                              const IndividualInterventionConfig& config );
+        virtual void DistributeResult( const char* resultTypeMsg,
+                                       const EventTrigger& event,
+                                       IDistributableIntervention* pIntervention );
+        virtual const char* GetDaysToDiagnosisDescription() const;
+
         ProbabilityNumber base_specificity;
         ProbabilityNumber base_sensitivity;
         ProbabilityNumber treatment_fraction;
@@ -67,10 +69,10 @@ namespace Kernel
         bool enable_isSymptomatic;
 
         EventOrConfig::Enum use_event_or_config;
-        IndividualInterventionConfig positive_diagnosis_config;
         EventTrigger positive_diagnosis_event;
+        IndividualInterventionConfig positive_diagnosis_config;
+        IDistributableIntervention* positive_diagnosis_intervention;
 
         DECLARE_SERIALIZABLE(SimpleDiagnostic);
-#pragma warning( pop )
     };
 }

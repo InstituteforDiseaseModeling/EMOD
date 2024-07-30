@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -30,10 +22,6 @@ using namespace std;
 namespace Kernel
 {
     struct VectorParameters;
-    struct MalariaParameters;
-    struct TBParameters;
-    struct PolioParameters;
-    struct TBHIVParameters;
 
     class SimulationConfig;
 
@@ -75,9 +63,6 @@ namespace Kernel
 // !!! the memory layout and boundary issues are not really a concern.
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
-
     class IDMAPI SimulationConfig : public JsonConfigurable
     {
 
@@ -100,7 +85,6 @@ namespace Kernel
         float lloffset; // half the size of a grid edge in degrees, set by SetFlags()
 
         // parameters for individual
-        int infection_updates_per_tstep;
         bool interventions;
 
         // constant climate params
@@ -144,10 +128,6 @@ namespace Kernel
         std::string seamig_filename;
 
         VectorParameters*  vector_params;
-        MalariaParameters* malaria_params;
-        TBParameters*      tb_params;
-        PolioParameters*   polio_params;
-        TBHIVParameters*   tbhiv_params;
 
         ///////////////////////////////////////////
         SimulationConfig();
@@ -167,24 +147,5 @@ namespace Kernel
 
         void VectorInitConfig( const Configuration* inputJson );
         void VectorCheckConfig( const Configuration* inputJson );
-        void VectorAddSchema( json::QuickBuilder& retJson );
-
-        void MalariaInitConfig( const Configuration* inputJson );
-        void MalariaCheckConfig( const Configuration* inputJson );
-        void MalariaAddSchema( json::QuickBuilder& retJson );
-
-        jsonConfigurable::tDynamicStringSet tb_drug_names_for_this_sim;
-
-        void PolioInitConfig( const Configuration* inputJson );
-        void PolioCheckConfig( const Configuration* inputJson );
-        void PolioAddSchema( json::QuickBuilder& retJson );
-        std::string tmpSubstrainInfectivityString[3];
-        std::string tmpSiteRatesStrings[3];
-
-        void TBHIVInitConfig( const Configuration* inputJson );
-        void TBHIVCheckConfig( const Configuration* inputJson );
-        void TBHIVAddSchema( json::QuickBuilder& retJson );
-
     };
-#pragma warning( pop )
 }

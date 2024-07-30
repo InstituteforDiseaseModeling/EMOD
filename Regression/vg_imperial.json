@@ -1,0 +1,16 @@
+{
+    "tests": [
+        { "path": "Vector/ImperialCollege/01_Imperial_Baseline" },
+        { "path": "Vector/ImperialCollege/02_Imperial_SingleEffector" },
+        { "path": "Vector/ImperialCollege/03_Imperial_SingleDriver" },
+        { "path": "Vector/ImperialCollege/04_Imperial_DriverAndEffector" },
+        { "path": "Vector/ImperialCollege/05_Imperial_DriverAndTwoEffectors" },
+        { "path": "Vector/ImperialCollege/06_Imperial_NonDrivingCas9" },
+        { "path": "Vector/ImperialCollege/07_Imperial_Resistance" },
+        { "path": "Vector/ImperialCollege/08_Imperial_DelayedRelease" },
+        { "path": "Vector/ImperialCollege/09_Imperial_InitialDiversity_1x2" },
+        { "path": "Vector/ImperialCollege/10_Imperial_InitialDiversity_2x2" },
+        { "path": "Vector/ImperialCollege/11_Imperial_InitialDiversity_2x4" },
+        { "path": "Vector/ImperialCollege/12_Imperial_InitialDiversity_4x2" }
+    ]
+}

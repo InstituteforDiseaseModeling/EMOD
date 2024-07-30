@@ -1,0 +1,52 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender", 
+                "Target_Gender" : "FEMALE",
+                "Demographic_Coverage": 0.5,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Antigen": 0, 
+                    "Genome": 0, 
+                    "Incubation_Period_Override": 0
+                }
+            }
+        },
+        {
+            "Event_Coordinator_Config": {
+                "Tracking_Config": {
+                    "class": "HasIP",
+                    "Is_Equal_To": 1,
+                    "IP_Key_Value": "Risk:HIGH"
+                },
+                "Intervention_Config": {
+                    "class": "PropertyValueChanger",
+                    "Target_Property_Key" : "Risk",
+                    "Target_Property_Value" : "HIGH",
+                    "Revert" : 50
+                }, 
+                "Target_Demographic": "Everyone",
+                "Update_Period": 1,
+                "End_Year": 1963,
+                "Time_Value_Map": {
+                    "Times":  [ 1961, 1961.5, 1962.0, 1962.5, 1963.0 ],
+                    "Values": [  0.1,    0.5,    0.3,    1.0,    0.5 ]
+                },
+                "class": "ReferenceTrackingEventCoordinatorTrackingConfig"
+            }, 
+            "Nodeset_Config": {
+                 "class": "NodeSetAll"
+            }, 
+            "Start_Year": 1961, 
+            "class": "CampaignEventByYear"
+        }
+    ]
+}

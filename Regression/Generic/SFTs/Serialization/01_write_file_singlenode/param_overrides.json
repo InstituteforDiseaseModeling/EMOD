@@ -33,8 +33,9 @@
                 20,
                 50
             ],
-            "Simulation_Duration": 120
+            "Simulation_Duration": 120,
+            "Serialization_Mask_Node_Write": 0
         },
-        "Serialization_Type": "TIMESTEP"
+        "Serialized_Population_Writing_Type": "TIMESTEP"
     }
 }

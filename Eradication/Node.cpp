@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "NodeDemographics.h"
@@ -33,12 +25,11 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "StatusReporter.h" // for initialization progress
 #include "StrainIdentity.h"
 #include "IInfectable.h"
-#include "Memory.h"
 #include "FileSystem.h"
 #include "IMigrationInfo.h"
 #include "Individual.h"
 #include "IntranodeTransmissionTypes.h"
-#include "Serialization.h"
+#include "SerializationParameters.h"
 #include "IdmMpi.h"
 #include "EventTrigger.h"
 #include "IdmDateTime.h"
@@ -60,11 +51,13 @@ namespace Kernel
     //------------------------------------------------------------------
     //   Initialization methods
     //------------------------------------------------------------------
+    SerializationBitMask_t Node::serializationFlagsDefault = SerializationBitMask_t{}.set( SerializationFlags::Population )
+                                                           | SerializationBitMask_t{}.set( SerializationFlags::Parameters );
 
     // <ERAD-291>
     // TODO: Make simulation object initialization more consistent.  Either all pass contexts to constructors or just have empty constructors
     Node::Node(ISimulationContext *_parent_sim, ExternalNodeId_t externalNodeId, suids::suid _suid)
-        : serializationMask(SerializationFlags(uint32_t(SerializationFlags::Population) | uint32_t(SerializationFlags::Parameters)))
+        : serializationFlags( 0 )     // "Initialize" in ::serialize
         , SusceptibilityDistribution( nullptr )
         , FertilityDistribution( nullptr )
         , MortalityDistribution( nullptr )
@@ -113,7 +106,6 @@ namespace Kernel
         , newInfectedPeopleAgeProduct(0.0f)           // counters starting with this one were only used for old spatial reporting and can probably now be removed
         , infected_people_prior()
         , infected_age_people_prior()
-        , infectionrate(0.0f)
         , mInfectivity(0.0f)
         , parent( nullptr )
         , parent_sim( nullptr )
@@ -173,18 +165,17 @@ namespace Kernel
         , bSkipping( false )
         , maxInfectionProb()
         , gap(0)
-        , vital_death_dependence(VitalDeathDependence::NOT_INITIALIZED)
+        , vital_death_dependence(VitalDeathDependence::NONDISEASE_MORTALITY_BY_AGE_AND_GENDER)
         , m_pRng( nullptr )
         , m_IndividualHumanSuidGenerator(0,0)
         , symptomatic( 0.0f )
         , newly_symptomatic( 0.0f )
     {
         SetContextTo(_parent_sim);  // TODO - this should be a virtual function call, but it isn't because the constructor isn't finished running yet.
-        setupEventContextHost();
     }
 
     Node::Node()
-        : serializationMask(SerializationFlags(uint32_t(SerializationFlags::Population) | uint32_t(SerializationFlags::Parameters)))
+        : serializationFlags( 0 )     // "Initialize" in ::serialize
         , SusceptibilityDistribution( nullptr )
         , FertilityDistribution( nullptr )
         , MortalityDistribution( nullptr )
@@ -201,7 +192,7 @@ namespace Kernel
         , susceptibility_scaling( false )
         , susceptibility_scaling_rate( 1.0f )
         , susceptibility_dynamic_scaling( 1.0f )
-        , suid()
+        , suid(suids::nil_suid())
         , birthrate(DEFAULT_BIRTHRATE)
         , individualHumans()
         , home_individual_ids()
@@ -233,7 +224,6 @@ namespace Kernel
         , newInfectedPeopleAgeProduct(0.0f)           // counters starting with this one were only used for old spatial reporting and can probably now be removed
         , infected_people_prior()
         , infected_age_people_prior()
-        , infectionrate(0.0f)
         , mInfectivity(0.0f)
         , parent(nullptr)
         , parent_sim( nullptr )
@@ -293,13 +283,12 @@ namespace Kernel
         , bSkipping( false )
         , maxInfectionProb()
         , gap(0)
-        , vital_death_dependence(VitalDeathDependence::NOT_INITIALIZED)
+        , vital_death_dependence(VitalDeathDependence::NONDISEASE_MORTALITY_BY_AGE_AND_GENDER)
         , m_pRng( nullptr )
         , m_IndividualHumanSuidGenerator(0,0)
         , symptomatic( 0.0f )
         ,newly_symptomatic( 0.0f )
     {
-        setupEventContextHost();
     }
 
     Node::~Node()
@@ -356,8 +345,6 @@ namespace Kernel
             foundInterface = static_cast<INodeContext*>(this);
         else if ( iid == GET_IID(ISupports) )
             foundInterface = static_cast<ISupports*>(static_cast<INodeContext*>(this));
-        else if (iid == GET_IID(IGlobalContext))
-            parent->QueryInterface(iid, (void**) &foundInterface);
         else
             foundInterface = nullptr;
 
@@ -408,11 +395,10 @@ namespace Kernel
         // TODO: there is conditionality in which of the following configurable parameters need to be read in based on the values of certain enums/booleans
         initConfigTypeMap( "x_Other_Mortality",               &x_othermortality,        x_Other_Mortality_DESC_TEXT,    0.0f, FLT_MAX, 1.0f, "Enable_Natural_Mortality" );
         
-        initConfigTypeMap( "Enable_Initial_Prevalence",       &enable_initial_prevalence,             Enable_Initial_Prevalence_DESC_TEXT, false, "Simulation_Type", "GENERIC_SIM, VECTOR_SIM, STI_SIM, ENVIRONMENTAL_SIM, MALARIA_SIM");
         initConfigTypeMap( "Enable_Birth",                    &vital_birth,             Enable_Birth_DESC_TEXT,         true,                "Enable_Vital_Dynamics" );
 
-        initConfigTypeMap( "Enable_Demographics_Risk",        &enable_demographics_risk,       Enable_Demographics_Risk_DESC_TEXT,       false, "Simulation_Type", "VECTOR_SIM,MALARIA_SIM,TBHIV_SIM,DENGUE_SIM");  // DJK*: Should be "Enable_Risk_Factor_Heterogeneity_At_Birth"
- 
+        initConfigTypeMap( "Enable_Demographics_Risk",        &enable_demographics_risk,       Enable_Demographics_Risk_DESC_TEXT,       false, "Simulation_Type", "VECTOR_SIM,MALARIA_SIM");  // DJK*: Should be "Enable_Risk_Factor_Heterogeneity_At_Birth"
+
         initConfigTypeMap( "Enable_Maternal_Infection_Transmission",    &enable_maternal_infection_transmission,   Enable_Maternal_Infection_Transmission_DESC_TEXT,   false, "Enable_Birth" );
         initConfigTypeMap( "Maternal_Infection_Transmission_Probability", &prob_maternal_infection_transmission, Maternal_Infection_Transmission_Probability_DESC_TEXT, 0.0f, 1.0f,    0.0f, "Enable_Maternal_Infection_Transmission" );
 
@@ -447,15 +433,24 @@ namespace Kernel
         initConfigTypeMap( "Birth_Rate_Sinusoidal_Forcing_Phase",     &birth_rate_sinusoidal_forcing_phase,     Birth_Rate_Sinusoidal_Forcing_Phase_DESC_TEXT,     0.0f,  365.0f, 0.0f, "Birth_Rate_Time_Dependence", "SINUSOIDAL_FUNCTION_OF_TIME" );
         initConfigTypeMap( "Birth_Rate_Boxcar_Forcing_Amplitude",     &birth_rate_boxcar_forcing_amplitude,     Birth_Rate_Boxcar_Forcing_Amplitude_DESC_TEXT,     0.0f, FLT_MAX, 0.0f, "Birth_Rate_Time_Dependence", "ANNUAL_BOXCAR_FUNCTION" );
         initConfigTypeMap( "Birth_Rate_Boxcar_Forcing_Start_Time",    &birth_rate_boxcar_start_time,            Birth_Rate_Boxcar_Forcing_Start_Time_DESC_TEXT,    0.0f,  365.0f, 0.0f, "Birth_Rate_Time_Dependence", "ANNUAL_BOXCAR_FUNCTION" );
-        initConfigTypeMap( "Birth_Rate_Boxcar_Forcing_End_Time",      &birth_rate_boxcar_end_time,              Birth_Rate_Boxcar_Forcing_End_Time_DESC_TEXT,      0.0f,  365.0f, 0.0f, "Birth_Rate_Time_Dependence", "ANNUAL_BOXCAR_FUNCTION" );      
-       
+        initConfigTypeMap( "Birth_Rate_Boxcar_Forcing_End_Time",      &birth_rate_boxcar_end_time,              Birth_Rate_Boxcar_Forcing_End_Time_DESC_TEXT,      0.0f,  365.0f, 0.0f, "Birth_Rate_Time_Dependence", "ANNUAL_BOXCAR_FUNCTION" );
+
+        initConfigTypeMap( "Enable_Initial_Prevalence", &enable_initial_prevalence, Enable_Initial_Prevalence_DESC_TEXT, false, "Simulation_Type", "GENERIC_SIM, VECTOR_SIM, STI_SIM, MALARIA_SIM" );
+
         bool ret = JsonConfigurable::Configure( config );
-        // something is really screwed up with this. Don't initconfig it above if we're just using SimConfig's
+
         return ret;
     }
 
     void Node::Initialize()
     {
+        // -----------------------------------------------------
+        // --- Call this here for normal setup, but it is 
+        // --- called in Simulation::populateFromDemographics()
+        // --- when reading from a serialized population file
+        // -----------------------------------------------------
+        SetupEventContextHost();
+
         Configure( EnvPtr->Config );
 
         if(susceptibility_scaling_type == SusceptibilityScalingType::LOG_LINEAR_FUNCTION_OF_TIME)
@@ -464,7 +459,7 @@ namespace Kernel
         }
     }
 
-    void Node::setupEventContextHost()
+    void Node::SetupEventContextHost()
     {
         event_context_host = _new_ NodeEventContextHost(this);
     }
@@ -502,7 +497,7 @@ namespace Kernel
         }
     }
 
-    void Node::SetParameters( NodeDemographicsFactory *demographics_factory, ClimateFactory *climate_factory, bool white_list_enabled )
+    void Node::SetParameters( NodeDemographicsFactory *demographics_factory, ClimateFactory *climate_factory )
     {
         // Parameters set from an input filestream
         // TODO: Jeff, this is a bit hack-y that I had to do this. is there a better way?
@@ -512,8 +507,6 @@ namespace Kernel
         delete demographics_temp;
         uint32_t temp_externalId = demographics["NodeID"].AsUint();
         release_assert( this->externalId == temp_externalId );
-
-        m_IndividualHumanSuidGenerator = suids::distributed_generator( GetSuid().data, demographics_factory->GetNodeIDs().size() );
 
         //////////////////////////////////////////////////////////////////////////////////////
         // Hack: commenting out for pymod work. Need real solution once I understand all this.
@@ -525,7 +518,7 @@ namespace Kernel
         LOG_DEBUG( "Looking for Individual_Properties in demographics.json file(s)\n" );
         if( IPFactory::GetInstance() )
         {
-            IPFactory::GetInstance()->Initialize( GetExternalID(), demographics.GetJsonObject(), white_list_enabled );
+            IPFactory::GetInstance()->Initialize( GetExternalID(), demographics.GetJsonObject() );
         }
         //////////////////////////////////////////////////////////////////////////////////////
 
@@ -608,7 +601,6 @@ namespace Kernel
 
     void Node::LoadImmunityDemographicsDistribution()
     {
-        // Overridden in derived classes POLIO_SIM and MALARIA_SIM
         // If not overridden, "SusceptibilityDistribution" provides age-specific probabilities of being susceptible (1.0 = not immune; 0.0 = immune)
         LOG_DEBUG( "Parsing IndividualAttributes->SusceptibilityDistribution tag in node demographics file.\n" );
         SusceptibilityDistribution = NodeDemographicsDistribution::CreateDistribution(demographics["IndividualAttributes"]["SusceptibilityDistribution"]);
@@ -617,11 +609,6 @@ namespace Kernel
     ITransmissionGroups* Node::CreateTransmissionGroups()
     {
         return TransmissionGroupsFactory::CreateNodeGroups( TransmissionGroupType::StrainAwareGroups, GetRng() );
-    }
-
-    ITransmissionGroups* Node::GetTransmissionGroups() const
-    {
-        return transmissionGroups;
     }
 
     void Node::AddDefaultRoute( void )
@@ -677,7 +664,7 @@ namespace Kernel
         BuildTransmissionRoutes( 1.0f );
     }
 
-    void Node::GetGroupMembershipForIndividual(const RouteList_t& route, const tProperties& properties, TransmissionGroupMembership_t& transmissionGroupMembership)
+    void Node::GetGroupMembershipForIndividual(const RouteList_t& route, const IPKeyValueContainer& properties, TransmissionGroupMembership_t& transmissionGroupMembership)
     {
         LOG_DEBUG_F( "Calling GetGroupMembershipForProperties\n" );
         transmissionGroups->GetGroupMembershipForProperties(properties, transmissionGroupMembership );
@@ -688,7 +675,6 @@ namespace Kernel
     const
     {
         // Honestly not sure how to implement this in the general case yet.
-        //throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, "This function is only supported in NodeTyphoid at this time." );
         std::map<std::string, float> contagionByRoute;
         release_assert( GetTransmissionRoutes().size() > 0 );
         for( auto & route: GetTransmissionRoutes() )
@@ -718,7 +704,7 @@ namespace Kernel
         return transmissionGroups->GetContagionByProperty( property_value );
     }
 
-    void Node::UpdateTransmissionGroupPopulation(const tProperties& properties, float size_changes, float mc_weight)
+    void Node::UpdateTransmissionGroupPopulation(const IPKeyValueContainer& properties, float size_changes, float mc_weight)
     {
         TransmissionGroupMembership_t membership;
         transmissionGroups->GetGroupMembershipForProperties( properties, membership ); 
@@ -740,14 +726,6 @@ namespace Kernel
         transmissionGroups->DepositContagion( strain_IDs, contagion_quantity, individual );
     }
     
-    act_prob_vec_t Node::DiscreteGetTotalContagion( void )
-    {
-        throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, 
-            "The use of DiscreteGetTotalContagion is not supported in \"GENERIC_SIM\".  \
-             To use discrete transmission, please use a simulation type derived from either \
-             \"STI_SIM\" or \"HIV_SIM\"." );
-    }
-
     //------------------------------------------------------------------
     //   Every timestep Update() methods
     //------------------------------------------------------------------
@@ -824,14 +802,20 @@ namespace Kernel
         }
     }
 
+    void Node::PostUpdate()
+    {
+        // Do nothing for generic
+    }
+
     void Node::Update(float dt)
     {
+#ifndef DISABLE_CLIMATE
         // Update weather
         if(localWeather)
         {
             localWeather->UpdateWeather( GetTime().time, dt, GetRng() );
         }
-
+#endif
         // Update node-level interventions
         if (params()->interventions) 
         {
@@ -874,6 +858,18 @@ namespace Kernel
             PreUpdate();
 
             individual->Update(GetTime().time, dt);
+        }
+
+        PostUpdate();
+
+        // -------------------------------------------------------------------------------------------------
+        // --- Break out the updating of the reports to be after all of the individuals have been updated.
+        // --- This is particularly important to diseases based on relationships.  When we collect data on
+        // --- a relationships (i.e. discordant vs concordant), we want both individuals to have been updated.
+        // -------------------------------------------------------------------------------------------------
+        for( int i = 0 ; i < individualHumans.size() ; ++i )
+        {
+            IIndividualHuman* individual = individualHumans[i];
 
             // JPS: Should we do this later, after updateVitalDynamics() instead?  
             //      That way we could track births in the report class instead of having to do it in Node...
@@ -931,7 +927,6 @@ namespace Kernel
                 if (individual->GetStateChange() == HumanStateChange::KilledByInfection)
                     Disease_Deaths += float(individual->GetMonteCarloWeight());
 
-                individual->UpdateGroupPopulation(-1.0f);
                 RemoveHuman( iHuman );
 
                 // ---------------------------------------
@@ -958,7 +953,6 @@ namespace Kernel
                 RemoveHuman( iHuman );
 
                 // subtract individual from group population(s)
-                individual->UpdateGroupPopulation(-1.0f);
                 processEmigratingIndividual(individual);
             }
             else
@@ -980,22 +974,32 @@ namespace Kernel
         // Increment simulation time counter
     }
 
+    void Node::clearTransmissionGroups()
+    {
+        // -------------------------------------------------------------------------
+        // --- Clearing the population size assumes that we are updating it in
+        // --- accumulateIndividualPopulationStatistics().  This way it is update
+        // --- with the most recent status before we call EndUpdate()
+        // -------------------------------------------------------------------------
+        this->transmissionGroups->ClearPopulationSize();
+    }
+
     void Node::updateInfectivity(float dt)
     {
+        clearTransmissionGroups();
+
         // Process population to update who is infectious, etc...
         updatePopulationStatistics(dt);
         LOG_DEBUG_F("Statistical population of %d at Node ID = %d.\n", GetStatPop(), GetSuid().data);
 
         if ( statPop <=0 )
         {
-            infectionrate = 0;
-            LOG_WARN_F("No individuals at Node ID = %d.  infectionrate = %f\n", GetSuid().data, infectionrate);
+            LOG_WARN_F("No individuals at Node ID = %d.  infectionrate = 0\n", GetSuid().data);
             return;
         }
 
         // Single route implementation
-        infectionrate = mInfectivity;
-        LOG_DEBUG_F("[updateInfectivity] starting infectionrate = %f\n", infectionrate/statPop);
+        LOG_DEBUG_F("[updateInfectivity] starting infectionrate = %f\n", mInfectivity/statPop);
 
         float infectivity_multiplier = 1.0;
 
@@ -1032,10 +1036,8 @@ namespace Kernel
         else if(infectivity_scaling == InfectivityScaling::EXPONENTIAL_FUNCTION_OF_TIME)
         {
             infectivity_multiplier *= getExponentialCorrection(infectivity_exponential_baseline,
-                                                          infectivity_exponential_rate, infectivity_exponential_delay);    
+                                                               infectivity_exponential_rate, infectivity_exponential_delay);    
         }
-
-        infectionrate *= infectivity_multiplier / statPop;
 
         // Incorporate additive infectivity
         float infectivity_addition = 0.0f;
@@ -1050,10 +1052,9 @@ namespace Kernel
         }
 
         mInfectivity  += infectivity_addition;
-        infectionrate += infectivity_addition / statPop;
 
         transmissionGroups->EndUpdate(infectivity_multiplier, infectivity_addition);
-        LOG_DEBUG_F("[updateInfectivity] final infectionrate = %f\n", infectionrate);
+        LOG_DEBUG_F("[updateInfectivity] final infectionrate = %f\n", mInfectivity/statPop);
 
         if( IndividualHumanConfig::enable_skipping )
         {
@@ -1087,6 +1088,8 @@ namespace Kernel
             LOG_DEBUG_F( "infectiousness = %f\n", infectiousness );
         }
         accumulateIndividualPopStatsByValue( mcw, infectiousness, individual->IsPossibleMother(), individual->IsInfected(), individual->IsSymptomatic(), individual->IsNewlySymptomatic() );
+
+        individual->UpdateGroupPopulation( 1.0 );
     }
 
     void Node::updatePopulationStatistics(float dt)
@@ -1159,9 +1162,7 @@ namespace Kernel
     float Node::getClimateInfectivityCorrection() const
     {
         throw NotYetImplementedException( __FILE__, __LINE__, __FUNCTION__, 
-            "The use of \"Infectivity_Scale_Type\" : \"FUNCTION_OF_CLIMATE\" is not supported in \"GENERIC_SIM\".  \
-             To have an explicit dependence of infectivity on climate, please use a simulation type derived from either \
-             \"AIRBORNE_SIM\" or \"ENVIRONMENTAL_SIM\"." );
+            "The use of \"Infectivity_Scale_Type\" : \"FUNCTION_OF_CLIMATE\" is not supported in \"GENERIC_SIM\"." );
     }
 
     float Node::getExponentialCorrection(float baseline, float rate, float delay)
@@ -1236,6 +1237,12 @@ namespace Kernel
                 }
 
                 step_birthrate = temp_birthrate * dt * x_birth;
+            }
+
+            if( pIndividual != nullptr )
+            {
+                // Modify the birth rate - i.e. like from a contraceptive
+                step_birthrate *= pIndividual->GetBirthRateMod();
             }
 
             if( (GetRng() != nullptr) && GetRng()->SmartDraw( step_birthrate ) )
@@ -1388,8 +1395,10 @@ namespace Kernel
     //------------------------------------------------------------------
 
     // This function allows one to scale the initial population by a factor without modifying an input demographics file.
-    void Node::PopulateFromDemographics()
+    void Node::PopulateFromDemographics( NodeDemographicsFactory *demographics_factory )
     {
+        m_IndividualHumanSuidGenerator = suids::distributed_generator( GetSuid().data, demographics_factory->GetNodeIDs().size() );
+
         uint32_t InitPop = uint32_t(demographics["NodeAttributes"]["InitialPopulation"].AsUint64());
 
         // correct initial population if necessary (historical simulation for instance
@@ -1533,6 +1542,7 @@ namespace Kernel
                         num_children++ ;
                     }
                 }
+                parent->CheckMemoryFailure( true );
             }
 
             IIndividualHuman* tempind = configureAndAddNewIndividual(1.0F / temp_sampling_rate, float(temp_age), float(initial_prevalence), float(female_ratio));
@@ -1543,7 +1553,7 @@ namespace Kernel
             }
 
             // For now, do it unconditionally and see if it can catch all the memory failures cases with minimum cost
-            MemoryGauge::CheckMemoryFailure( true );
+            parent->CheckMemoryFailure( false );
 
             // Every 1000 individuals, do a StatusReport...
             if( individualHumans.size() % 1000 == 0 && EnvPtr && EnvPtr->getStatusReporter() )
@@ -1578,7 +1588,6 @@ namespace Kernel
         for (auto individual : individualHumans)
         {
             individual->UpdateGroupMembership();
-            individual->UpdateGroupPopulation(1.0f);
         }
     }
 
@@ -1979,7 +1988,7 @@ namespace Kernel
             // This is not done during initialization but other times when the individual is created.           
             std::unique_ptr<IDistribution> distribution( DistributionFactory::CreateDistribution( migration_dist_type ) );
             distribution->SetParameters( migration_dist1, migration_dist2, 0.0 );
-            temp_risk = distribution->Calculate( GetRng() );
+            temp_migration = distribution->Calculate( GetRng() );
         }
 
 
@@ -2006,10 +2015,10 @@ namespace Kernel
         new_individual->SetParameters( this, 1.0, susceptibility_parameter, risk_parameter, migration_heterogeneity);// default values being used except for total number of communities
         new_individual->SetInitialInfections(initial_infections);
         new_individual->UpdateGroupMembership();
-        new_individual->UpdateGroupPopulation(1.0f);
 
         individualHumans.push_back(new_individual);
         home_individual_ids.insert( std::make_pair( new_individual->GetSuid().data, new_individual->GetSuid() ) );
+        new_individual->SetHome( this->GetSuid() );
 
         event_context_host->TriggerObservers( new_individual->GetEventContext(), EventTrigger::Births ); // EAW: this is not just births!!  this will also trigger on e.g. AddImportCases
 
@@ -2190,7 +2199,6 @@ namespace Kernel
             event_context_host->TriggerObservers( movedind->GetEventContext(), EventTrigger::Immigrating );
 
             movedind->UpdateGroupMembership();
-            movedind->UpdateGroupPopulation(1.0f);
         }
         return movedind;
     }
@@ -2269,9 +2277,6 @@ namespace Kernel
             break;
 
         case NewInfectionState::Invalid: break;
-        case NewInfectionState::NewlyActive: break;
-        case NewInfectionState::NewlyInactive: break;
-        case NewInfectionState::NewlyCleared: break;
         default: break;
         } 
 
@@ -2284,7 +2289,6 @@ namespace Kernel
 
         new_infections += monte_carlo_weight; 
         Cumulative_Infections += monte_carlo_weight; 
-        event_context_host->TriggerObservers( ih->GetEventContext(), EventTrigger::NewInfectionEvent );
 
         newInfectedPeopleAgeProduct += monte_carlo_weight * float(ih->GetAge());
     }
@@ -2579,9 +2583,6 @@ namespace Kernel
     Node::GetInfectivity()   const { return mInfectivity; }
 
     float
-    Node::GetInfectionRate() const { return infectionrate; }
-
-    float
     Node::GetSusceptDynamicScaling() const { return susceptibility_dynamic_scaling; }
 
     ExternalNodeId_t
@@ -2673,8 +2674,7 @@ namespace Kernel
                 {
                     ostringstream message;
                     message << "HINT Configuration: Unsupported route '" << route_name << "'." << endl;
-                    message << "For generic/TB sims, only \"contact\" route (contagion is reset at each timestep) is supported." << endl;
-                    message << "For environmental/polio sims, we support \"contact\" (contagion is reset at each timestep) and \"environmental\" (fraction of contagion carried over to next time step = 1 - Node_Contagion_Decay_Rate." << endl;
+                    message << "For generic sims, only \"contact\" route (contagion is reset at each timestep) is supported." << endl;
                     message << "For malaria sims, transmissionMatrix is not supported (yet)." << endl;
                     throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, message.str().c_str());
                 }
@@ -2695,19 +2695,32 @@ namespace Kernel
     void Node::serialize(IArchive& ar, Node* obj)
     {
         Node& node = *obj;
-        ar.labelElement("serializationMask") & (uint32_t&)node.serializationMask;
 
-            ar.labelElement("suid") & node.suid;
-            ar.labelElement( "externalId" ) & node.externalId;
+        if ( ar.IsWriter() )    // If we are writing out data, use the specified mask to skip writing certain data.
+        {
+            node.serializationFlags = node.serializationFlagsDefault & ~SerializationParameters::GetInstance()->GetSerializationWriteMask();
+        }
+
+        ar.labelElement("serializationFlags") & (uint32_t&)node.serializationFlags;
+
+        if ( ar.IsReader() )    // If we are reading in data, use the specified mask to skip reading certain data.
+        {
+            node.serializationFlags = node.serializationFlags & ~SerializationParameters::GetInstance()->GetSerializationReadMask();
+        }
+
+        ar.labelElement("suid")       & node.suid;
+        ar.labelElement("externalId") & node.externalId;
             ar.labelElement( "m_pRng" ) & node.m_pRng;
             ar.labelElement( "m_IndividualHumanSuidGenerator" ) & node.m_IndividualHumanSuidGenerator;
             
-        if ((node.serializationMask & SerializationFlags::Population) != 0) {
+        if ( node.serializationFlags.test( SerializationFlags::Population ) )
+        {
             ar.labelElement("individualHumans"   ) & node.individualHumans;
             ar.labelElement("home_individual_ids") & node.home_individual_ids;
         }
 
-        if ((node.serializationMask & SerializationFlags::Parameters) != 0) {
+        if ( node.serializationFlags.test( SerializationFlags::Parameters ) )
+        {
             ar.labelElement("ind_sampling_type")                            & (uint32_t&)node.ind_sampling_type;
             ar.labelElement("population_density_infectivity_correction")    & (uint32_t&)node.population_density_infectivity_correction;
             ar.labelElement("age_initialization_distribution_type")         & (uint32_t&)node.age_initialization_distribution_type;
@@ -2754,7 +2767,9 @@ namespace Kernel
             ar.labelElement("infectivity_sinusoidal_forcing_amplitude") & node.infectivity_sinusoidal_forcing_amplitude;
             ar.labelElement("infectivity_sinusoidal_forcing_phase")     & node.infectivity_sinusoidal_forcing_phase;
             ar.labelElement("infectivity_boxcar_forcing_amplitude")     & node.infectivity_boxcar_forcing_amplitude;
+
             ar.labelElement("infectivity_boxcar_start_time")            & node.infectivity_boxcar_start_time;
+
             ar.labelElement("infectivity_boxcar_end_time")              & node.infectivity_boxcar_end_time;
             ar.labelElement("infectivity_exponential_baseline")         & node.infectivity_exponential_baseline;
             ar.labelElement("infectivity_exponential_rate")             & node.infectivity_exponential_rate;
@@ -2769,7 +2784,8 @@ namespace Kernel
             ar.labelElement("birth_rate_boxcar_end_time")               & node.birth_rate_boxcar_end_time;
         }
 
-        if ((node.serializationMask & SerializationFlags::Properties) != 0) {
+        if ( node.serializationFlags.test( SerializationFlags::Properties ) ) 
+        {
             ar.labelElement("_latitude") & node._latitude;
             ar.labelElement("_longitude") & node._longitude;
             ar.labelElement("birthrate") & node.birthrate;
@@ -2793,7 +2809,6 @@ namespace Kernel
             ar.labelElement("Campaign_Cost") & node.Campaign_Cost;
             ar.labelElement("mean_age_infection") & node.mean_age_infection;
             ar.labelElement("newInfectedPeopleAgeProduct") & node.newInfectedPeopleAgeProduct;
-            ar.labelElement("infectionrate") & node.infectionrate;
             ar.labelElement("mInfectivity") & node.mInfectivity;
             ar.labelElement("prob_maternal_transmission") & node.prob_maternal_infection_transmission;
             ar.labelElement("susceptibility_dist_type") & (uint32_t&)node.susceptibility_dist_type;

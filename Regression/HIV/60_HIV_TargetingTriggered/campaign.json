@@ -1,0 +1,136 @@
+{
+    "Use_Defaults": 1,
+    "Comment": "See Campaign Cost for evidence of the individual Targeting_Config effect. As more vaccine repetitions occur, there are more individuals put on the vaccine, but the number of additional individuals given the vaccine tapers over time. This is evidence of the targeting logic narrowing down who gets vaccinated.",
+    "Events": [{
+            "Description": "HIV Outbreak",
+            "class": "CampaignEventByYear",
+            "Start_Year": 2021,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 0.2,
+                "Target_Demographic": "Everyone",
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Incubation_Period_Override": 1
+                }
+            }
+        },
+        {
+            "class": "CampaignEventByYear",
+            "Event_Name": "Distribute vaccine",
+            "Start_Year": 2021,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition_List": [
+                        "EnteredRelationship",
+                        "PartnerGotInfected"
+                    ],
+                    "Targeting_Config": {
+                        "class": "TargetingLogic",
+                        "Logic": [
+                            [   
+                                {
+                                    "class": "IsHivPositive",
+                                    "Is_Equal_To": 0
+                                },
+                                {
+                                    "class" : "HasRelationship",
+                                    "Is_Equal_To": 1,
+                                    "Of_Relationship_Type":  "NA",
+                                    "That_Recently":  "NA",
+                                    "Is_Using_Condoms":  "NA",
+                                    "With_Partner_Who" : {
+                                        "class" : "IsHivPositive",
+                                        "Is_Equal_To" : 1,
+                                        "And_Has_Ever_Been_Tested": "NA",
+                                        "And_Has_Ever_Tested_Positive": "NA",
+                                        "And_Has_Received_Positive_Results": "NA"
+                                    }                                        
+                                }
+                            ]
+                        ]
+                    },
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "SimpleVaccine",
+                        "Disqualifying_Properties": [
+                            "InterventionStatus:STOP_VACCINATING"
+                        ],
+                        "Vaccine_Type": "Generic",
+                        "Intervention_Name": "PrEP",
+                        "Waning_Config": {
+                            "class": "WaningEffectBox",
+                            "Initial_Effect": 1,
+                            "Box_Duration": 9000
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "class": "CampaignEventByYear",
+            "Event_Name": "Cancel vaccine",
+            "Start_Year": 2021,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1.0,
+                "Target_Demographic": "Everyone",
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition_List": [
+                        "ExitedRelationship"
+                    ],
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "PropertyValueChanger",
+                        "Target_Property_Key": "InterventionStatus",
+                        "Target_Property_Value": "STOP_VACCINATING",
+                        "Revert": 1
+                    }
+                }
+            }
+        },
+        {
+            "class": "CampaignEventByYear",
+            "Event_Name": "New infections",
+            "Start_Year": 2021,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1.0,
+                "Target_Demographic": "Everyone",
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition_List": [
+                        "NewInfectionEvent"
+                    ],
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "InterventionForCurrentPartners",
+                        "Cost_To_Consumer": 0.0,
+                        "Disqualifying_Properties": [],
+                        "New_Property_Value": "",
+                        "Minimum_Duration_Years": 0,
+                        "Dont_Allow_Duplicates": 0,
+                        "Prioritize_Partners_By": "OLDER_AGE",
+                        "Relationship_Types": [],
+                        "Maximum_Partners": 1,
+                        "Event_Or_Config": "Event",
+                        "Broadcast_Event": "PartnerGotInfected"
+                    }
+                }
+            }
+        }
+    ]
+}

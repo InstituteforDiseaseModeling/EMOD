@@ -1,0 +1,28 @@
+{
+    "Events": [
+        {
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "Cost_To_Consumer": 3.75, 
+                    "Killing_Config" : {
+                        "Box_Duration": 50,
+                        "Decay_Time_Constant": 3000, 
+                        "Initial_Effect": 1.0, 
+                        "class": "WaningEffectBoxExponential"
+                    },
+                    "Expiration_Period_Distribution" : "CONSTANT_DISTRIBUTION",
+                    "Expiration_Period_Constant" : 360,
+                    "Insecticide_Name": "MaleVectorInsecticide",
+                    "class": "SugarTrap"
+                }, 
+                "class": "StandardInterventionDistributionEventCoordinator"
+            }, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Start_Day": 140, 
+            "class": "CampaignEvent"
+        }
+    ], 
+    "Use_Defaults": 1
+}

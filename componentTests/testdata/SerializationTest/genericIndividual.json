@@ -26,7 +26,10 @@
       "drugVaccineReducedAcquire":1,
       "drugVaccineReducedTransmit":1,
       "drugVaccineReducedMortality":1,
-      "interventions":[]
+      "birth_rate_mod":1,
+      "non_disease_death_rate_mod":1,
+      "interventions":[],
+      "m_LastIPChange" : ""
     },
     "m_is_infected":false,
     "infectiousness":0,

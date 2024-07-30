@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -27,6 +19,11 @@ using namespace std;
 
 typedef Kernel::ISimulation* (*createSim)(const Environment *);
 typedef const char* (*getSchema)();
+#ifdef WIN32
+typedef std::wstring emodulewstr;
+#else
+typedef std::string emodulewstr;
+#endif
 
 class DllLoader
 {
@@ -39,18 +36,19 @@ public:
 
     bool LoadDiseaseDlls(std::map< std::string, createSim>& createSimFuncPtrMap, const char* dllName=nullptr);
     json::Object GetDiseaseDllSchemas();
-    bool LoadReportDlls( std::unordered_map< std::string, Kernel::report_instantiator_function_t >& reportInstantiators,
-                         const char* dllName = nullptr );
+    bool LoadReportDlls( Kernel::support_spec_map_t& reportInstantiators );
     bool LoadInterventionDlls(const char* dllName=nullptr);
 
+    bool StringEquals(const emodulewstr& wStr, const char* cStr);
 #if defined(WIN32)
-    bool StringEquals(const std::wstring& wStr, const char* cStr);
     bool StringEquals(const TCHAR* tStr, const char* cStr);
-    wstring GetFullDllPath(std::wstring& pluginDir, const char* dllPath = nullptr);
-    bool GetDllsVersion(const char* dllPath, std::wstring& wsPluginDir,list<string>& dllNames, list<string>& dllVersions);
-
     bool CheckEModuleVersion(HMODULE hEMod, char* emodVer=nullptr);
+#else
+    bool StringEquals(const char* tStr, const char* cStr);
+    bool CheckEModuleVersion(void* hEMod, char* emodVer=nullptr);
 #endif
+    bool GetDllsVersion(const char* dllPath, emodulewstr& wsPluginDir,list<string>& dllNames, list<string>& dllVersions);
+    emodulewstr GetFullDllPath(emodulewstr& pluginDir, const char* dllPath = nullptr);
 
     string GetEModulePath(const char* emoduleDir);
     bool GetEModulesVersion(const char* dllPath, list<string>& dllNames, list<string>& dllVersions);
@@ -58,18 +56,18 @@ public:
 protected:
 #if defined(WIN32)
     bool GetSimTypes( const TCHAR* pFilename, HMODULE repDll );
-    bool GetReportInstantiator( const TCHAR* pFilename, 
-                                HMODULE repDll, 
-                                Kernel::report_instantiator_function_t* pRIF );
-    bool GetType( const TCHAR* pFilename, 
-                  HMODULE repDll, 
-                 std::string& rClassName );
+    bool GetReportInstantiator( const TCHAR* pFilename, HMODULE repDll, Kernel::instantiator_function_t* pRIF );
+    bool GetType( const TCHAR* pFilename, HMODULE repDll, std::string& rClassName );
+#else
+    bool GetSimTypes( const char* pFilename, void* repDll );
+    bool GetReportInstantiator( const char* pFilename, void* repDll, Kernel::instantiator_function_t* pRIF );
+    bool GetType( const char* pFilename, void* repDll, std::string& rClassName );
 #endif
     
     bool MatchSimType(char* simTypes[]);
     bool IsValidVersion(const char* emodVer);
     void LogSimTypes(char* simTypes[]);
-    void ReadEmodulesJson( const std::string& key, std::list< std::wstring > &dll_dirs );
+    void ReadEmodulesJson( const std::string& key, std::list< emodulewstr > &dll_dirs );
     std::map< std::string, getSchema> getSchemaFuncPtrMap;
     std::map< std::string, std::string > dll2VersionStringMap;
 

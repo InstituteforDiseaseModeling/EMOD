@@ -1,0 +1,34 @@
+{
+    "Reports": [
+        {
+            "class": "ReportNodeDemographicsMalariaGenetics",
+            "Age_Bins": [],
+            "Barcodes": [],
+            "Drug_Resistant_And_HRP_Statistic_Type": "NUM_PEOPLE_WITH_RESISTANT_INFECTION",
+            "Drug_Resistant_Strings": [],
+            "HRP_Strings": [],
+            "IP_Key_To_Collect": "",
+            "Include_Identity_By_XXX": 1,
+            "Stratify_By_Gender": 0,
+            "Enabled": 1,
+            "Pretty_Format": 1
+        },
+        {
+            "End_Day": 900,
+            "Filename_Suffix": "test",
+            "Max_Age_Years": 500,
+            "Min_Age_Years": 0,
+            "Must_Have_IP_Key_Value": "",
+            "Must_Have_Intervention": "",
+            "Node_IDs_Of_Interest": [],
+            "Start_Day": 400,
+            "Minimum_Parasite_Density": 0,
+            "Sampling_Period": 45,
+            "Include_Genome_IDs": 1,
+            "class": "ReportFpgOutputForObservationalModel"
+        }
+    ],
+    "Custom_Reports": {
+        "Use_Explicit_Dlls": 1
+    }
+}

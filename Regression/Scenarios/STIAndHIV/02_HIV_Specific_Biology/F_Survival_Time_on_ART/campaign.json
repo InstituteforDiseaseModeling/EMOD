@@ -44,7 +44,7 @@
                 "Travel_Linked": 0,
                 "Intervention_Config": 
                 { 
-                "class": "ARTBasic"
+                "class": "AntiretroviralTherapy"
                 }
             }
         },
@@ -64,7 +64,7 @@
                 "Travel_Linked": 0,
                 "Intervention_Config": 
                 { 
-                "class": "ARTBasic"
+                "class": "AntiretroviralTherapy"
                 }
             }
         },
@@ -109,7 +109,7 @@
                 "Travel_Linked": 0,
                 "Intervention_Config": 
                 { 
-                "class": "ARTBasic"
+                "class": "AntiretroviralTherapy"
                 }
             }
         }

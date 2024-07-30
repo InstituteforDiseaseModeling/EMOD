@@ -20,8 +20,7 @@
     },
     "Default_Config_Path": "../../defaults/malaria_default_config.json",
     "GENERAL_DISEASE": {
-        "Infection_Updates_Per_Timestep": 8,
-        "PKPD_Model": "CONCENTRATION_VERSUS_TIME"
+        "Infection_Updates_Per_Timestep": 8
     },
     "MALARIA": {
         "Antibody_Memory_Level": 0.3,
@@ -29,10 +28,13 @@
         "Base_Gametocyte_Production_Rate": 0.1,
         "Falciparum_MSP_Variants": 100,
         "Falciparum_Nonspecific_Types": 20,
-        "Falciparum_PfEMP1_Variants": 1000
+        "Falciparum_PfEMP1_Variants": 1000,
+        "Number_Basestrains": 2
     },
-    "Malaria_Drug_Params": {
-        "DHA": {
+    "Malaria_Drug_Params": [
+        {
+            "Name": "DHA",
+            "PKPD_Model": "CONCENTRATION_VERSUS_TIME",
             "Bodyweight_Exponent": 1,
             "Drug_Cmax": 200,
             "Drug_Decay_T1": 0.12,
@@ -61,7 +63,9 @@
             ],
             "Max_Drug_IRBC_Kill": 9.2
         },
-        "Piperaquine": {
+        {
+            "Name": "Piperaquine",
+            "PKPD_Model": "CONCENTRATION_VERSUS_TIME",
             "Bodyweight_Exponent": 0,
             "Drug_Cmax": 30,
             "Drug_Decay_T1": 0.17,
@@ -90,15 +94,16 @@
             ],
             "Max_Drug_IRBC_Kill": 4.6
         }
-    },
+    ],
     "OUTPUT": {
+        "Python_Script_Path": "SHARED",
         "Enable_Spatial_Output": 1,
         "Spatial_Output_Channels": [
             "Population",
             "New_Infections",
             "Prevalence",
             "Adult_Vectors",
-            "New_Diagnostic_Prevalence", 
+            "PCR_Parasite_Prevalence", 
             "New_Clinical_Cases"
         ]
     },
@@ -110,35 +115,6 @@
         "Num_Cores": 8,
         "Run_Number": 68,
         "Simulation_Duration": 85
-    },
-    "STRAIN_TRACKING": {
-        "Number_Basestrains": 2,
-        "Genome_Markers" : [
-            "gm01",
-            "gm02",
-            "gm03",
-            "gm04",
-            "gm05",
-            "gm06",
-            "gm07",
-            "gm08",
-            "gm09",
-            "gm10",
-            "gm11",
-            "gm12",
-            "gm13",
-            "gm14",
-            "gm15",
-            "gm16",
-            "gm17",
-            "gm18",
-            "gm19",
-            "gm20",
-            "gm21",
-            "gm22",
-            "gm23",
-            "gm24"
-        ]
     },
     "VECTOR": {
         "Vector_Sampling_Type": "TRACK_ALL_VECTORS",

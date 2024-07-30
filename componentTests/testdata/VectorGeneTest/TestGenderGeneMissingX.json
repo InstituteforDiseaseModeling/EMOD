@@ -1,0 +1,16 @@
+{
+    "COMMENT" : "Missing X",
+    "Genes" : [
+        {
+            "Is_Gender_Gene": 1,
+            "Alleles": [
+                {
+                    "Name": "Y",
+                    "Is_Y_Chromosome" : 1,
+                    "Initial_Allele_Frequency": 1.0
+                }
+            ],
+            "Mutations": []
+        }
+    ]
+}

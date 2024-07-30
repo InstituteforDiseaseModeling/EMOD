@@ -1,0 +1,136 @@
+{
+   "Defaults": {
+      "Society": {
+         "COMMERCIAL": {
+            "Pair_Formation_Parameters": {
+               "Assortivity": {
+                  "Axes": [
+                     "LOW",
+                     "MEDIUM",
+                     "HIGH"
+                  ],
+                  "Group": "INDIVIDUAL_PROPERTY",
+                  "Property_Name": "Risk",
+                  "Weighting_Matrix_RowMale_ColumnFemale": [
+                     [
+                        1,
+                        1,
+                        1
+                     ],
+                     [
+                        1,
+                        1,
+                        1
+                     ],
+                     [
+                        1,
+                        1,
+                        1
+                     ]
+                  ]
+               }
+            }
+         },
+         "INFORMAL": {
+            "Pair_Formation_Parameters": {
+               "Assortivity": {
+                  "Axes": [
+                     "LOW",
+                     "MEDIUM",
+                     "HIGH"
+                  ],
+                  "Group": "INDIVIDUAL_PROPERTY",
+                  "Property_Name": "Risk",
+                  "Weighting_Matrix_RowMale_ColumnFemale": [
+                     [
+                        0.6097767084,
+                        0.3902232916,
+                        0
+                     ],
+                     [
+                        0.3902232916,
+                        0.6097767084,
+                        0.6097767084
+                     ],
+                     [
+                        0,
+                        0.6097767084,
+                        0.3902232916
+                     ]
+                  ],
+                  "Weighting_Matrix_RowMale_ColumnFemale__KP_RiskAssortivity": "<-- MARKER"
+               }
+            }
+         },
+         "MARITAL": {
+            "Pair_Formation_Parameters": {
+               "Assortivity": {
+                  "Axes": [
+                     "LOW",
+                     "MEDIUM",
+                     "HIGH"
+                  ],
+                  "Group": "INDIVIDUAL_PROPERTY",
+                  "Property_Name": "Risk",
+                  "Weighting_Matrix_RowMale_ColumnFemale": [
+                     [
+                        0.6097767084,
+                        0.3902232916,
+                        0
+                     ],
+                     [
+                        0.3902232916,
+                        0.6097767084,
+                        0.6097767084
+                     ],
+                     [
+                        0,
+                        0.6097767084,
+                        0.3902232916
+                     ]
+                  ],
+                  "Weighting_Matrix_RowMale_ColumnFemale__KP_RiskAssortivity": "<-- MARKER"
+               }
+            }
+         },
+         "TRANSITORY": {
+            "Pair_Formation_Parameters": {
+               "Assortivity": {
+                  "Axes": [
+                     "LOW",
+                     "MEDIUM",
+                     "HIGH"
+                  ],
+                  "Group": "INDIVIDUAL_PROPERTY",
+                  "Property_Name": "Risk",
+                  "Weighting_Matrix_RowMale_ColumnFemale": [
+                     [
+                        0.6097767084,
+                        0.3902232916,
+                        0
+                     ],
+                     [
+                        0.3902232916,
+                        0.6097767084,
+                        0.6097767084
+                     ],
+                     [
+                        0,
+                        0.6097767084,
+                        0.3902232916
+                     ]
+                  ],
+                  "Weighting_Matrix_RowMale_ColumnFemale__KP_RiskAssortivity": "<-- MARKER"
+               }
+            }
+         }
+      }
+   },
+   "Metadata": {
+      "Author": "dklein + dbridenbecker+ Edinah Mudimu + Anna Bershteyn + aakullian based on Zambia dev",
+      "DateCreated": "May 2018",
+      "IdReference": "0",
+      "NodeCount": 1,
+      "Tool": "Text editor"
+   }
+}

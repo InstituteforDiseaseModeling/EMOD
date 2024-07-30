@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -101,14 +93,11 @@ namespace Kernel
             }
         }
 
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         ISimulationEventContext*        m_Parent;
         std::vector<INodeEventContext*> m_CachedNodes;
         std::string                     m_InterventionName;
         IDistributableIntervention*     m_pInterventionIndividual;
         INodeDistributableIntervention* m_pInterventionNode;
-        InterventionConfig              m_InterventionConfig;
 
         float                           m_CoordinatorDaysRemaining;
         DemographicRestrictions         m_DemographicRestrictions;
@@ -130,7 +119,6 @@ namespace Kernel
         float m_DaysBetweenShipments;
         int   m_AmountInShipment;
         float m_DaysToNextShipment;
-#pragma warning( pop )
     };
 }
 

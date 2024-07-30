@@ -3,25 +3,38 @@
         {
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
-                    "Cost_To_Consumer": 200, 
+                    "class": "MosquitoRelease",
                     "Cost_To_Consumer_Citation": "Alphey et al Vector Borne Zoonotic Dis 2010 10 295 by projecting 1979 An albimanus cost in El Salvador to 2008 dollars", 
-                    "Mated_Genetics": {
-                        "HEG": "NotMated", 
-                        "Pesticide_Resistance": "NotMated"
-                    }, 
-                    "Released_Gender": "VECTOR_FEMALE", 
-                    "Released_Genetics": {
-                        "HEG": "WILD", 
-                        "Pesticide_Resistance": "WILD"
-                    }, 
+                    "Cost_To_Consumer": 200, 
                     "Released_Number": 50000, 
                     "Released_Species": "arabiensis", 
-                    "Released_Sterility": "VECTOR_FERTILE", 
                     "Released_Wolbachia": "VECTOR_WOLBACHIA_A", 
-                    "class": "MosquitoRelease"
+                    "Released_Genome" : [
+                        [ "X", "X" ]
+                    ]
                 }, 
-                "Number_Repetitions": 5, 
-                "Timesteps_Between_Repetitions": 30, 
+                "class": "StandardInterventionDistributionEventCoordinator"
+            }, 
+            "Event_Name": "MosquitoRelease", 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Start_Day": 250, 
+            "class": "CampaignEvent"
+        }, 
+        {
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "class": "MosquitoRelease",
+                    "Cost_To_Consumer_Citation": "Alphey et al Vector Borne Zoonotic Dis 2010 10 295 by projecting 1979 An albimanus cost in El Salvador to 2008 dollars", 
+                    "Cost_To_Consumer": 200, 
+                    "Released_Number": 50000, 
+                    "Released_Species": "arabiensis", 
+                    "Released_Wolbachia": "VECTOR_WOLBACHIA_B", 
+                    "Released_Genome" : [
+                        [ "X", "X" ]
+                    ]
+                }, 
                 "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Event_Name": "MosquitoRelease", 
@@ -33,9 +46,31 @@
         }, 
         {
             "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "class": "MosquitoRelease",
+                    "Cost_To_Consumer_Citation": "Alphey et al Vector Borne Zoonotic Dis 2010 10 295 by projecting 1979 An albimanus cost in El Salvador to 2008 dollars", 
+                    "Cost_To_Consumer": 200, 
+                    "Released_Number": 50000, 
+                    "Released_Species": "arabiensis", 
+                    "Released_Wolbachia": "VECTOR_WOLBACHIA_AB", 
+                    "Released_Genome" : [
+                        [ "X", "X" ]
+                    ]
+                }, 
+                "class": "StandardInterventionDistributionEventCoordinator"
+            }, 
+            "Event_Name": "MosquitoRelease", 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Start_Day": 310, 
+            "class": "CampaignEvent"
+        }, 
+        {
+            "Event_Coordinator_Config": {
                 "Demographic_Coverage": 0.8, 
                 "Intervention_Config": {
-                    "Blocking_Config": {
+                    "Repelling_Config": {
                         "Box_Duration": 3650, 
                         "Initial_Effect": 0.0, 
                         "class": "WaningEffectBox"

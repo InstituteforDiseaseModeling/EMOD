@@ -1,32 +1,71 @@
 {
      "Use_Defaults": 1,
-     "Campaign_Name": "Generic Seattle Regression Campaign", 
      "Events": [
           {
+               "class": "CampaignEvent",
+               "Start_Day": 1, 
+               "Nodeset_Config": {
+                    "class": "NodeSetAll"
+               }, 
                "Event_Coordinator_Config": {
-                    "Intervention_Config": {
-                         "Antigen": 0, 
-                         "Event_Name": "Outbreak (not used)", 
-                         "Genome": 0, 
-                         "Outbreak_Source": "PrevalenceIncrease", 
-                         "class": "OutbreakIndividual",
-                         "Incubation_Period_Override": 0
-                    }, 
+                    "class": "StandardInterventionDistributionEventCoordinator",
                     "Target_Demographic": "ExplicitAgeRanges", 
                     "Target_Age_Min": 15,
                     "Target_Age_Max": 20,
                     "Demographic_Coverage": 0.90,
-                    "class": "StandardInterventionDistributionEventCoordinator"
-,
-                    "Travel_Linked": 0 
-               }, 
-               "Nodeset_Config": {
-                    "Polygon_Format": "SHAPE", 
-                    "Vertices": "-122.320726936496,47.6597902588541 -122.320406460197,47.6520988276782 -122.308388598985,47.6471314450438 -122.301658596706,47.6541819236217 -122.315118601264,47.6644371651896 -122.320726936496,47.6597902588541", 
-                    "class": "NodeSetAll"
-               }, 
+                    "Intervention_Config": {
+                         "class": "OutbreakIndividual",
+                         "Antigen": 0, 
+                         "Genome": 0, 
+                         "Incubation_Period_Override": 0
+                    }
+               }
+          },
+          {
+               "Comment" : "Distribute a high quality circumcision",
+               "class": "CampaignEvent",
                "Start_Day": 1, 
-               "class": "CampaignEvent"
+               "Nodeset_Config": {
+                   "class": "NodeSetAll"
+               }, 
+               "Event_Coordinator_Config": {
+                    "class": "StandardInterventionDistributionEventCoordinator",
+                    "Target_Demographic": "ExplicitAgeRangesAndGender",
+                    "Target_Gender" : "Male",
+                    "Target_Age_Min" : 10,
+                    "Target_Age_Max" : 30,
+                    "Demographic_Coverage": 1.0, 
+                    "Intervention_Config": {
+                        "class": "MaleCircumcision",
+                        "Intervention_Name": "GoodCircumcision",
+                        "Circumcision_Reduced_Acquire": 0.9,
+                        "Distributed_Event_Trigger" : "",
+                        "Apply_If_Higher_Reduced_Acquire" : 1
+                    }
+               }
+          },
+          {
+               "Comment" : "Distribute a low quality circumcision",
+               "class": "CampaignEvent",
+               "Start_Day": 2, 
+               "Nodeset_Config": {
+                   "class": "NodeSetAll"
+               }, 
+               "Event_Coordinator_Config": {
+                    "class": "StandardInterventionDistributionEventCoordinator",
+                    "Target_Demographic": "ExplicitAgeRangesAndGender",
+                    "Target_Gender" : "Male",
+                    "Target_Age_Min" : 30,
+                    "Target_Age_Max" : 50,
+                    "Demographic_Coverage": 1.0, 
+                    "Intervention_Config": {
+                        "class": "MaleCircumcision",
+                        "Intervention_Name": "BadCircumcision",
+                        "Circumcision_Reduced_Acquire": 0.2,
+                        "Distributed_Event_Trigger" : "",
+                        "Apply_If_Higher_Reduced_Acquire" : 1
+                    }
+               }
           }
      ]
 }

@@ -72,7 +72,6 @@
                             "InterventionStatus:OnPreART",
                             "InterventionStatus:LinkingToPreART"
                         ],
-                        "Event_Or_Config": "Event",
                         "NOTE1": "Threshold for adult vs child guidelines",
                         "Negative_Diagnosis_Event": "ARTStaging5",
                         "New_Property_Value": "InterventionStatus:ARTStaging",
@@ -105,7 +104,6 @@
                             "InterventionStatus:OnPreART",
                             "InterventionStatus:LinkingToPreART"
                         ],
-                        "Event_Or_Config": "Event",
                         "If_Active_TB": {
                             "Times": [
                                 2010.34
@@ -225,7 +223,6 @@
                             "InterventionStatus:OnART",
                             "InterventionStatus:LinkingToART"
                         ],
-                        "Event_Or_Config": "Event",
                         "NOTE1": "Threshold for adult vs child guidelines",
                         "Negative_Diagnosis_Event": "OnPreART3",
                         "New_Property_Value": "InterventionStatus:OnPreART",
@@ -256,7 +253,6 @@
                             "InterventionStatus:OnART",
                             "InterventionStatus:LinkingToART"
                         ],
-                        "Event_Or_Config": "Event",
                         "If_Active_TB": {
                             "Times": [
                                 2010.34
@@ -343,11 +339,9 @@
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Days_To_Diagnosis": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever"
                         ],
-                        "Event_Or_Config": "Event",
                         "Female_Multiplier": 1,
                         "Interpolation_Order": 0,
                         "Negative_Diagnosis_Event": "OnART1",
@@ -391,7 +385,7 @@
                             },
                             {
                                 "Event": "OnART8",
-                                "High": 100000,
+                                "High": 2000,
                                 "Low": 500
                             }
                         ],
@@ -415,7 +409,7 @@
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "class": "ARTBasic"
+                        "class": "AntiretroviralTherapy"
                     },
                     "Trigger_Condition_List": [
                         "OnART1",
@@ -425,7 +419,7 @@
                 },
                 "class": "StandardInterventionDistributionEventCoordinator"
             },
-            "Event_Name": "OnART: state 1 (run ARTBasic)",
+            "Event_Name": "OnART: state 1 (run AntiretroviralTherapy)",
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },

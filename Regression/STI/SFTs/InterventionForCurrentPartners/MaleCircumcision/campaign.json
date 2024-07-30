@@ -1,0 +1,59 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 365, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender", 
+                "Target_Gender" : "FEMALE",
+                "Demographic_Coverage": 1.0,
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 730,
+                "Intervention_Config": {
+                    "class": "InterventionForCurrentPartners",
+                    "Disqualifying_Properties": [],  
+                    "New_Property_Value": "", 
+                    "Minimum_Duration_Years": 0,
+                    "Prioritize_Partners_By": "LONGER_TIME_IN_RELATIONSHIP",
+                    "Relationship_Types": [],
+                    "Maximum_Partners": 100,
+                    "Event_Or_Config" : "Config",
+                    "Intervention_Config": {
+                        "Intervention_Name": "MaleCircumcision",
+                        "class": "MaleCircumcision",
+                        "Cost_To_Consumer": 1.0,
+                        "Circumcision_Reduced_Acquire": 1.0,
+                        "Distributed_Event_Trigger" : "Reduced_Acquire_Lowest",
+                        "Apply_If_Higher_Reduced_Acquire" : 1
+                    }
+                    }
+                }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender", 
+                "Target_Gender" : "FEMALE",
+                "Demographic_Coverage": 0.02,
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 730,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Antigen": 0, 
+                    "Genome": 0, 
+                    "Incubation_Period_Override": 0
+                }
+            }
+        }
+    ]
+}

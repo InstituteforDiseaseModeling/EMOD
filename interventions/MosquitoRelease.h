@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -20,22 +12,13 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "EventCoordinator.h"
 #include "Configure.h"
 #include "VectorEnums.h"
-#include "VectorMatingStructure.h"
+#include "VectorGenome.h"
 
 namespace Kernel
 {
-    class ResistanceHegGenetics : public JsonConfigurable, public IComplexJsonConfigurable
-    {
-        IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
-        virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) { return e_NOINTERFACE; }
-        public:
-            ResistanceHegGenetics() {}
-            virtual void ConfigureFromJsonAndKey( const Configuration *, const std::string &key ) override;
-            virtual json::QuickBuilder GetSchema() override;
-            virtual bool  HasValidDefault() const override { return false; }
-            VectorAllele::Enum pesticideResistance;
-            VectorAllele::Enum HEG;
-    };
+    ENUM_DEFINE( MosquitoReleaseType, 
+        ENUM_VALUE_SPEC( FIXED_NUMBER , 0 )
+        ENUM_VALUE_SPEC( FRACTION     , 1 ))
 
     class MosquitoRelease : public BaseNodeIntervention
     {
@@ -55,15 +38,12 @@ namespace Kernel
         virtual void Update(float dt);
 
     protected:
-        virtual const std::string& getSpecies() const;
-        virtual const VectorMatingStructure& getVectorGenetics() const;
-        virtual uint32_t getNumber() const;
-
-    protected:
-        jsonConfigurable::ConstrainedString releasedSpecies;
-        VectorMatingStructure vector_genetics;
-        ResistanceHegGenetics self;
-        ResistanceHegGenetics mate;
-        uint32_t releasedNumber;
+        jsonConfigurable::ConstrainedString m_ReleasedSpecies;
+        uint32_t m_TotalToRelease;
+        VectorGenome m_Genome;
+        VectorGenome m_MateGenome;
+        bool m_IsFraction;
+        float m_FractionToRelease;
+        float m_FractionToInfect;
     };
 }

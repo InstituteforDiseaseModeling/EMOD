@@ -1,0 +1,38 @@
+{
+    "Events": [
+        {
+            "Event_Coordinator_Config": {
+                "Demographic_Coverage": 0.7, 
+                "Intervention_Config": {
+                    "Repelling_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect": 1.0
+                    }, 
+                    "Blocking_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect": 0.0
+                    }, 
+                    "Killing_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect": 0.0
+                    }, 
+                    "Usage_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect": 1.0
+                    },
+                    "Cost_To_Consumer": 8, 
+                    "class": "SimpleBednet"
+                }, 
+                "Property_Restrictions": [], 
+                "Target_Demographic": "Everyone", 
+                "class": "StandardInterventionDistributionEventCoordinator"
+            }, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Start_Day": 800, 
+            "class": "CampaignEvent"
+        }
+    ], 
+    "Use_Defaults": 1
+}

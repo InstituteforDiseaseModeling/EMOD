@@ -1,0 +1,123 @@
+{
+    "Default_Config_Path": "defaults/vector_default_config.json",
+    "parameters": {
+        "CLIMATE": {
+           "Base_Air_Temperature": 25.0,
+           "Climate_Model": "CLIMATE_CONSTANT",
+           "Enable_Climate_Stochasticity": 0
+        },
+        "DEMOGRAPHICS": {
+            "Enable_Natural_Mortality": 0,
+            "Birth_Rate_Dependence": "DEMOGRAPHIC_DEP_RATE",
+            "Demographics_Filenames": [
+                "Demographics.json"
+            ],
+            "Enable_Initial_Prevalence": 1
+        },
+        "PRIMARY": {
+            "Config_Name": "112_Vector_Genetics_YShred_Complex",
+            "Custom_Reports_Filename": "custom_reports.json",
+            "Enable_Demographics_Reporting": 0,
+            "Geography": "Namawala",
+            "Python_Script_Path": "SHARED",
+            "Run_Number": 13,
+            "Simulation_Duration": 1095
+        },
+        "VECTOR" : {
+            "Enable_Vector_Aging": 1, 
+            "Enable_Vector_Mortality": 1, 
+            
+            "Enable_Vector_Migration": 0, 
+            
+            ".Vector_Sampling_Type": "VECTOR_COMPARTMENTS_NUMBER",
+            "Vector_Sampling_Type": "TRACK_ALL_VECTORS",
+            
+            "x_Temporary_Larval_Habitat": 0.1
+        },
+        "Vector_Species_Params": [
+            {
+                "Name": "arabiensis",
+                "Indoor_Feeding_Fraction": 1,
+                "Genes": [
+                    {
+                        "Is_Gender_Gene": 1,
+                        "Alleles": [
+                            {
+                                "Name": "Xw",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.75
+                            },
+                            {
+                                "Name": "Yw",
+                                "Is_Y_Chromosome" : 1,
+                                "Initial_Allele_Frequency": 0.25
+                            },
+                            {
+                                "Name": "Ym",
+                                "Is_Y_Chromosome" : 1,
+                                "Initial_Allele_Frequency": 0.0
+                            }
+                        ],
+                        "Mutations": []
+                    },
+                    {
+                        "Is_Gender_Gene": 0,
+                        "Alleles": [
+                            {
+                                "Name": "Aw",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 1
+                            },
+                            {
+                                "Name": "Ad",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0
+                            }
+                        ],
+                        "Mutations": []
+                    }
+                ],
+                "Gene_To_Trait_Modifiers" : [
+                    {
+                        "Allele_Combinations" : [
+                            [ "*", "Ym" ]
+                        ],
+                        "Trait_Modifiers" : [
+                            {
+                                "Trait" : "STERILITY",
+                                "Modifier": 0.0
+                            }
+                        ]
+                    }
+                ],
+                "Drivers" : [
+                    {
+                        "Driver_Type" : "Y_SHRED",
+                        "Driving_Allele" : "Ad",
+                        "Driving_Allele_Params" : {
+                            "Allele_To_Copy"    : "Ad",
+                            "Allele_To_Replace" : "Aw",
+                            "Copy_To_Likelihood" : [
+                                {
+                                    "Copy_To_Allele" : "Ad",
+                                    "Likelihood" : 1.0
+                                },
+                                {
+                                    "Copy_To_Allele" : "Aw",
+                                    "Likelihood" : 0.0
+                                }
+                            ]
+                        },
+                        "Shredding_Alleles" : {
+                            "Allele_Required"    : "Xw",
+                            "Allele_To_Shred"    : "Yw",
+                            "Allele_To_Shred_To" : "Ym",
+                            "Allele_Shredding_Fraction": 0.97,
+                            "Allele_To_Shred_To_Surviving_Fraction" : 1.0
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

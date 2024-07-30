@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -253,7 +245,14 @@ namespace Kernel
     template<class Key, class KeyValue, class Iterator_t>
     bool BaseKeyValueContainer<Key, KeyValue, Iterator_t>::Contains( const KeyValue& rKeyValue ) const
     {
-        return Contains( rKeyValue.m_pInternal->GetKeyValueString() );
+        for( auto p_kvi : m_Vector )
+        {
+            if( p_kvi == rKeyValue.m_pInternal )
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     template<class Key, class KeyValue, class Iterator_t>
@@ -391,8 +390,9 @@ namespace Kernel
         float ran = -1.0f;
         float prob = 0.0;
 
-        for( auto kvi : m_Values )
+        for( int i = 0; i < m_Values.size(); ++i )
         {
+            KeyValueInternal* kvi = m_Values[ i ];
             float dis = kvi->m_InitialDistributions[ externalNodeId ];
 
             // -------------------------------------------------------------
@@ -413,7 +413,12 @@ namespace Kernel
             }
 
             prob += dis;
-            if( prob >= ran )
+
+            // -----------------------------------------------------------------------------
+            // --- The check for the end of the list is to handle floating point rounding
+            // --- problems where the some of the values don't quite sum to 1.0.
+            // -----------------------------------------------------------------------------
+            if( (prob >= ran) || ((i + 1) == m_Values.size()) )
             {
                 return KeyValue( kvi );
             }

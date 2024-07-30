@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 #include "IArchive.h"
@@ -18,7 +10,7 @@ namespace Kernel
     class IDMAPI JsonFullWriter : public IArchive
     {
     public:
-        explicit JsonFullWriter(bool object_by_default = true);
+        explicit JsonFullWriter(bool object_by_default = true, bool use_full_precision = false);
         virtual ~JsonFullWriter();
 
     private:
@@ -45,12 +37,9 @@ namespace Kernel
         virtual size_t GetBufferSize() override;
         virtual const char* GetBuffer() override;
 
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         rapidjson::StringBuffer* m_buffer;
         rapidjson::Writer<rapidjson::StringBuffer>* m_writer;
         bool m_closed;
         bool m_object_by_default;
-#pragma warning( pop )
     };
 }

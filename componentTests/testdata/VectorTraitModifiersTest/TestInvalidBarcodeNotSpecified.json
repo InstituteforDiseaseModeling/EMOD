@@ -1,0 +1,94 @@
+{
+    "Genes" : [
+        {
+            "Is_Gender_Gene": 1,
+            "Alleles": [
+                {
+                    "Name": "X",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.5
+                },
+                {
+                    "Name": "Y",
+                    "Is_Y_Chromosome" : 1,
+                    "Initial_Allele_Frequency": 0.5
+                }
+            ],
+            "Mutations": []
+        },
+        {
+            "Is_Gender_Gene": 0,
+            "Alleles": [
+                {
+                    "Name": "a1",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.5
+                },
+                {
+                    "Name": "a2",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.5
+                }
+            ],
+            "Mutations": [
+            ]
+        }
+    ],
+    "Gene_To_Trait_Modifiers" : [
+        {
+            "Allele_Combinations" : [
+                [ "X", "X" ],
+                [ "a1", "a1" ]
+            ],
+            "Trait_Modifiers" : [
+                {
+                    "Trait" : "OOCYST_PROGRESSION",
+                    "Modifier": 2.0,
+                    "Gametocyte_A_Barcode_String": "AAA",
+                    "Gametocyte_B_Barcode_String": "GGG"
+                }
+            ]
+        },
+        {
+            "Allele_Combinations" : [
+                [ "X", "X" ],
+                [ "a2", "a2" ]
+            ],
+            "Trait_Modifiers" : [
+                {
+                    "Trait" : "SPOROZOITE_MORTALITY",
+                    "Modifier": 2.0,
+                    "COMMENT": "do not specify barcode",
+                    "...Sporozoite_Barcode_String": "CC*"
+                }
+            ]
+        }
+    ],
+    "Malaria_Model": "MALARIA_MECHANISTIC_MODEL_WITH_PARASITE_GENETICS",
+    "Parasite_Genetics": {
+        "Enable_FPG_Similarity_To_Base": 0,
+        "Sporozoite_Life_Expectancy": 10,
+        "Num_Sporozoites_In_Bite_Fail": 12,
+        "Probability_Sporozoite_In_Bite_Fails": 0.5,
+        "Num_Oocyst_From_Bite_Fail": 3,
+        "Probability_Oocyst_From_Bite_Fails": 0.5,
+        "Sporozoites_Per_Oocyst_Distribution": "GAUSSIAN_DISTRIBUTION",
+        "Sporozoites_Per_Oocyst_Gaussian_Mean": 10000,
+        "Sporozoites_Per_Oocyst_Gaussian_Std_Dev": 1000,
+        "Crossover_Gamma_K"     : 2.0,
+        "Crossover_Gamma_Theta" : 0.38,
+        "Barcode_Genome_Locations" : [
+            3000000,
+            6000000,
+           11000000
+        ],
+        "Drug_Resistant_Genome_Locations" : [],
+        "HRP_Genome_Locations" : [],
+        "MSP_Genome_Location" : 1, 
+        "PfEMP1_Variants_Genome_Locations": [
+        ],
+        "Var_Gene_Randomness_Type" : "ALL_RANDOM",
+        "Neighborhood_Size_MSP" : 0,
+        "Neighborhood_Size_PfEMP1" : 0
+    }
+}

@@ -10,6 +10,7 @@
         ],
         "Report_Relationship_End": 1,
         "Report_Relationship_Start": 1,
+        "Report_Relationship_Start_Include_HIV_Disease_Statistics": 0,
         "Run_Number": 3,
         "Simulation_Duration": 10,
         "____________DEMOGRAPHICS___________": "",

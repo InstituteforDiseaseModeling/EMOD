@@ -1,0 +1,26 @@
+{
+    "parameters": {
+        "x_Base_Population": 1,
+        "Base_Year": 1960,
+        "Config_Name": "ReferenceTrackingEventCoordinator",
+        "Custom_Individual_Events": [
+            "Vaccinated"
+        ],
+        "Demographics_Filenames": [
+            "demographics.json",
+            "../../input/PFA_overlay.json"
+        ],
+        "Report_HIV_ByAgeAndGender": 1,
+        "Report_HIV_ByAgeAndGender_Event_Counter_List": [
+            "Vaccinated"
+        ],
+        "Report_HIV_ByAgeAndGender_Has_Intervention_With_Name": "VaccineA",
+        "Report_HIV_Event_Channels_List": [
+            "Vaccinated"
+        ],
+        "Report_HIV_Period": 60.83333333,
+        "Run_Number": 1,
+        "Simulation_Duration": 1825
+    },
+    "Default_Config_Path": "defaults/hiv_sft_default_config.json"
+}

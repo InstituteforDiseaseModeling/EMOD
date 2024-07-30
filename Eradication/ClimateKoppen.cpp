@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include <cstdlib>
@@ -88,7 +80,7 @@ namespace Kernel {
         new_climate->Configure( EnvPtr->Config );
 
         // initialize climate values
-        new_climate->UpdateWeather( start_time, 1.0f, pRNG );
+        new_climate->UpdateWeather( start_time, 1.0f, pRNG, true );
 
         return new_climate;
     }
@@ -200,7 +192,7 @@ namespace Kernel {
         return true;
     }
 
-    void ClimateKoppen::UpdateWeather( float time, float dt, RANDOMBASE* pRNG )
+    void ClimateKoppen::UpdateWeather( float time, float dt, RANDOMBASE* pRNG, bool initialization )
     {
         // NOTE: this assumes we always start on Jan1... if that ever changes, we'll need to fix this
         int doy = (int(time) % DAYSPERYEAR) + 1; // day-of-year, one-indexed
@@ -233,7 +225,7 @@ namespace Kernel {
                 humidity_index = (humidity_index + (num_humidity_ranges / 2)) % num_humidity_ranges;
         m_humidity = humidity_base[koppen_type][humidity_index];
 
-        Climate::UpdateWeather( time, dt, pRNG ); // call base-class UpdateWeather() to add stochasticity and check values are within valid bounds
+        Climate::UpdateWeather( time, dt, pRNG, initialization ); // call base-class UpdateWeather() to add stochasticity and check values are within valid bounds
     }
 
     void ClimateKoppen::AddStochasticity( RANDOMBASE* pRNG, float, float, bool, float)
@@ -325,17 +317,3 @@ namespace Kernel {
         }
     }
 }
-
-#if 0
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive & ar, ClimateKoppen & climate, const unsigned int file_version)
-    {
-        ar & climate.koppen_type;
-        ar & climate.t_average;
-        ar & climate.t_range;
-        ar & climate.in_southern_hemisphere;
-        ar & boost::serialization::base_object<Kernel::Climate>(climate);
-    }
-}
-#endif

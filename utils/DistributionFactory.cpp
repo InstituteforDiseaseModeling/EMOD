@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "MathFunctions.h"
@@ -40,12 +32,17 @@ namespace Kernel
             return new DistributionDualConstant();
         case DistributionFunction::UNIFORM_DISTRIBUTION:
             return new DistributionUniform();
+        case DistributionFunction::NOT_INITIALIZED:
+            throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, "Distribution is NOT_INITIALIZED" );
         default:
             throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "DistributionFunction does not exist." );
         }
     }
 
-    IDistribution* DistributionFactory::CreateDistribution( JsonConfigurable* pParent, DistributionFunction::Enum distribution_function, std::string base_parameter_name, const Configuration* config )
+    IDistribution* DistributionFactory::CreateDistribution( JsonConfigurable* pParent,
+                                                            DistributionFunction::Enum distribution_function,
+                                                            const std::string& base_parameter_name,
+                                                            const Configuration* config )
     {
         if( JsonConfigurable::_dryrun )
         {
@@ -109,13 +106,21 @@ namespace Kernel
                 distribution->Configure( pParent, base_parameter_name, config );
                 return distribution;
             }
+            case DistributionFunction::NOT_INITIALIZED:
+            {
+                std::stringstream ss;
+                ss << "The distribution '" << base_parameter_name+"_Distribution" << "' is NOT_INITIALIZED in class " << pParent->GetTypeName();
+                throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+            }
             default:
                 throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "DistributionFunction does not exist." );
         }
     }
 
-
-    void DistributionFactory::AddToSchema( JsonConfigurable* pParent, DistributionFunction::Enum distribution_function, std::string base_parameter_name, const Configuration* config )
+    void DistributionFactory::AddToSchema( JsonConfigurable* pParent,
+                                           DistributionFunction::Enum distribution_function,
+                                           const std::string& base_parameter_name,
+                                           const Configuration* config )
     {
         DistributionConstantConfigurable distribution_constant;
         distribution_constant.Configure( pParent, base_parameter_name, config );

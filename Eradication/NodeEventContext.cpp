@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include <typeinfo>
@@ -23,7 +15,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IdmDateTime.h"
 #include "Log.h"
 #include "Exceptions.h"
-#include "TransmissionGroupsBase.h"
 
 SETUP_LOGGING( "NodeEventContext" )
 
@@ -72,8 +63,6 @@ namespace Kernel
         else if (iid == GET_IID( IIndividualEventBroadcaster ))
             foundInterface = static_cast<IIndividualEventBroadcaster*>(this);
         // -->> add support for other I*Consumer interfaces here <<--      
-        else if (iid == GET_IID(IGlobalContext))
-            node->QueryInterface(iid, (void**) &foundInterface);
         else if (iid == GET_IID(INodeContext))
             foundInterface = (INodeContext*)node;
         else
@@ -262,6 +251,16 @@ namespace Kernel
         broadcaster_impl.TriggerObservers( pIndiv, trigger );
     }
 
+    uint64_t NodeEventContextHost::GetNumTriggeredEvents()
+    {
+        return broadcaster_impl.GetNumTriggeredEvents();
+    }
+
+    uint64_t NodeEventContextHost::GetNumObservedEvents()
+    {
+        return broadcaster_impl.GetNumObservedEvents();
+    }
+
     void NodeEventContextHost::PropagateContextToDependents()
     {
         for (auto intervention : node_interventions)
@@ -347,6 +346,12 @@ namespace Kernel
         }
     }
 
+    const std::list<INodeDistributableIntervention*>& NodeEventContextHost::GetNodeInterventions() const
+    {
+        return node_interventions;
+    }
+
+
     NodeEventContextHost::~NodeEventContextHost()
     {
         cleanupDistributionSourceMap(arrival_distribution_sources);
@@ -382,7 +387,7 @@ namespace Kernel
     }
 
     void NodeEventContextHost::AddImportCases(
-        StrainIdentity* outbreak_strainID,
+        IStrainIdentity* outbreak_strainID,
         float import_age,
         NaturalNumber num_cases_per_node,
         ProbabilityNumber prob_infection
@@ -393,12 +398,23 @@ namespace Kernel
             IIndividualHuman* new_individual = node->configureAndAddNewIndividual(1.0, import_age, 0.0, 0.5); // using age specified by Oubreak, but otherwise community demographics for import case (e.g. immune history)
 
             // 0 = incubation_period_override, outbreaks are instantaneously mature
-            TransmissionGroupsBase::ContagionPopulationImpl cp( outbreak_strainID, 0 );
-            //if( prob_infection == 1.0f || ( prob_infection != 0 && randgen->e() < prob_infection ) ) // TBD, fix smart draw in merge with new RNG stuff.
+            if( GetRng()->SmartDraw( prob_infection ) )
             {
-                new_individual->AcquireNewInfection(&cp, 0 ); 
+                new_individual->AcquireNewInfection( outbreak_strainID, 0 ); 
             }
         }
+    }
+
+    bool NodeEventContextHost::ContainsExistingByName( const InterventionName& iv_name )
+    {
+        for( auto intervention : node_interventions )
+        {
+            if( intervention->GetName() == iv_name )
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     // These are all pass-throughs in order to get rid of GetNode() as an interface method.

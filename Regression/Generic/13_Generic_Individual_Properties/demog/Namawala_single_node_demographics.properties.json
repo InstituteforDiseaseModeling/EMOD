@@ -55,6 +55,16 @@
             },
             "IndividualProperties": [
                 {
+                    "Property": "Risk",
+                    "Values": [
+                        "LOW",
+                        "MEDIUM",
+                        "HIGH"
+                    ],
+                    "Initial_Distribution": [ 0.9, 0.0, 0.1 ],
+                    "Transitions": []
+                },
+                {
                     "Property": "QualityOfCare",
                     "Values": [
                         "Bad",

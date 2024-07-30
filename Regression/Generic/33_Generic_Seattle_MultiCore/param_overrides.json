@@ -60,6 +60,7 @@
         },
         "PRIMARY": {
             "Config_Name": "33_Generic_Seattle_MultiCore",
+            "Custom_Reports_Filename": "custom_reports.json",
             "Geography": "Seattle",
             "Node_Grid_Size": 0.009,
             "Run_Number": 42

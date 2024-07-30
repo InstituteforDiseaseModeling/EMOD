@@ -29,18 +29,14 @@
         {
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
-                    "Blocking_Config": {
-                        "Box_Duration": 3650, 
-                        "Initial_Effect": 0.8, 
-                        "class": "WaningEffectBox"
-                    }, 
                     "Cost_To_Consumer": 3.75, 
                     "Habitat_Target": "ALL_HABITATS", 
-                    "Killing_Config": {
+                    "Larval_Killing_Config": {
                         "Box_Duration": 3650, 
-                        "Initial_Effect": 0.0, 
+                        "Initial_Effect": 0.125, 
                         "class": "WaningEffectBox"
                     }, 
+                    "Spray_Coverage" : 1.0,
                     "class": "Larvicides"
                 }, 
                 "Number_Repetitions": 1, 

@@ -15,7 +15,6 @@
             "Start_SIA_2",
             "Start_SIA_4"
         ],
-        "Disable_IP_Whitelist": 1,
         "Enable_Demographics_Reporting": 0,
         "Report_Coordinator_Event_Recorder": 1,
         "Report_Coordinator_Event_Recorder_Events": [

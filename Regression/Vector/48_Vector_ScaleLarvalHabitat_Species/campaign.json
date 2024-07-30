@@ -3,15 +3,13 @@
         {
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
-                    "Larval_Habitat_Multiplier": {
-                        "LarvalHabitatMultiplier": [
-                            {
-                                "Factor": 0.05,
-                                "Habitat": "TEMPORARY_RAINFALL",
-                                "Species": "ALL_SPECIES"
-                            }
-                        ]
-                    },
+                    "Larval_Habitat_Multiplier": [
+                        {
+                            "Factor": 0.05,
+                            "Habitat": "TEMPORARY_RAINFALL",
+                            "Species": "ALL_SPECIES"
+                        }
+                    ],
                     "class": "ScaleLarvalHabitat"
                 },
                 "class": "StandardInterventionDistributionEventCoordinator"
@@ -26,20 +24,18 @@
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
                     "COMMENT1": "NOTICE: If we dont set the other species (i.e. gambiae) to the previous value, their habitats wont be reduced anymore.",
-                    "Larval_Habitat_Multiplier": {
-                        "LarvalHabitatMultiplier": [
-                            {
-                                "Factor": 3.0,
-                                "Habitat": "TEMPORARY_RAINFALL",
-                                "Species": "arabiensis"
-                            },
-                            {
-                                "Factor": 0.05,
-                                "Habitat": "TEMPORARY_RAINFALL",
-                                "Species": "gambiae"
-                            }
-                        ]
-                    },
+                    "Larval_Habitat_Multiplier": [
+                        {
+                            "Factor": 3.0,
+                            "Habitat": "TEMPORARY_RAINFALL",
+                            "Species": "arabiensis"
+                        },
+                        {
+                            "Factor": 0.05,
+                            "Habitat": "TEMPORARY_RAINFALL",
+                            "Species": "gambiae"
+                        }
+                    ],
                     "class": "ScaleLarvalHabitat"
                 },
                 "class": "StandardInterventionDistributionEventCoordinator"

@@ -26,7 +26,6 @@
         },
         "PRIMARY": {
             "Config_Name": "52_STI_All_Rel_Types_Assortivity_Prop_Location_Matrix",
-            "Disable_IP_Whitelist": 1,
             "Run_Number": 1,
             "Simulation_Duration": 1500
         },

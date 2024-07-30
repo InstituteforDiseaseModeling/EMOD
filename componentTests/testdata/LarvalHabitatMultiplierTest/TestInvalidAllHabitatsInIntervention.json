@@ -1,0 +1,10 @@
+{
+    "LarvalHabitatMultiplier" : 
+    [
+        {
+            "Habitat" : "ALL_HABITATS",
+            "Species" : "ALL_SPECIES",
+            "Factor" : 3.0
+        }
+    ]
+}

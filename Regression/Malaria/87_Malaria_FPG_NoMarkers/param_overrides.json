@@ -1,0 +1,32 @@
+{
+    "Default_Config_Path": "../../defaults/malaria_genetics_default_config.json",
+    "DEMOGRAPHICS": {
+        "Demographics_Filenames": [
+            "Namawala_single_node_demographics.json",
+            "Namawala_no_prevalence.json"
+        ]
+    },
+    "PRIMARY": {
+        "Config_Name": "87_Malaria_FPG_NoMarkers",
+        "Geography": "Namawala",
+        "Run_Number": 1,
+        "Simulation_Duration": 730
+    },
+    "REPORTS": {
+        "Custom_Reports_Filename": "custom_reports.json"
+    },
+    "STRAIN_TRACKING": {
+        "Falciparum_MSP_Variants": 32,
+        "Falciparum_Nonspecific_Types": 32,
+        "Falciparum_PfEMP1_Variants": 1000
+    },
+    "VECTOR": {
+        "x_Temporary_Larval_Habitat": 0.1,
+        "Vector_Species_Params": [
+            {
+                "Name": "SillySkeeter",
+                "Infectious_Human_Feed_Mortality_Factor": 3.0
+            }
+        ]
+    }
+}

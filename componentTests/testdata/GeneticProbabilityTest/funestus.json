@@ -1,0 +1,42 @@
+{
+    "Genes" : [
+        {
+            "Alleles": [
+                {
+                    "Name": "d1",
+                    "Initial_Allele_Frequency": 0.4
+                },
+                {
+                    "Name": "d2",
+                    "Initial_Allele_Frequency": 0.3
+                },
+                {
+                    "Name": "d3",
+                    "Initial_Allele_Frequency": 0.2
+                },
+                {
+                    "Name": "d4",
+                    "Initial_Allele_Frequency": 0.1
+                }
+            ],
+            "Mutations": []
+        },
+        {
+            "Alleles": [
+                {
+                    "Name": "e1",
+                    "Initial_Allele_Frequency": 0.5
+                },
+                {
+                    "Name": "e2",
+                    "Initial_Allele_Frequency": 0.5
+                },
+                {
+                    "Name": "e3",
+                    "Initial_Allele_Frequency": 0.0
+                }
+            ],
+            "Mutations": []
+        }
+    ]
+}

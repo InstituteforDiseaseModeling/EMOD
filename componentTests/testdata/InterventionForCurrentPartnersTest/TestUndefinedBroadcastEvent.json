@@ -7,5 +7,5 @@
     "Relationship_Types": [],
     "Maximum_Partners": 10,
     "Event_Or_Config" : "Event",
-    "XXX_Broadcast_Event": "TBActivation"
+    "XXX_Broadcast_Event": "NewMalariaInfectionObject"
 }

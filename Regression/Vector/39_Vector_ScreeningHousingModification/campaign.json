@@ -4,7 +4,7 @@
             "Event_Coordinator_Config": {
                 "Demographic_Coverage": 0.8, 
                 "Intervention_Config": {
-                    "Blocking_Config": {
+                    "Repelling_Config": {
                         "Box_Duration": 100, 
                         "Decay_Time_Constant": 150, 
                         "Initial_Effect": 0.8, 

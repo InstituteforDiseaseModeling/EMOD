@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "ClimateByData.h"
@@ -42,7 +34,7 @@ namespace Kernel {
         new_climate->ReadDataFromFiles(datapoints, airtemperature_file, landtemperature_file, rainfall_file, humidity_file);
 
         // initialize climate values
-        new_climate->UpdateWeather( start_time, 1.0f, pRNG );
+        new_climate->UpdateWeather( start_time, 1.0f, pRNG, true );
 
         return new_climate;
     }
@@ -193,7 +185,7 @@ namespace Kernel {
                 humidity_data[i] *= humidity_scale_factor;
     }
 
-    void ClimateByData::UpdateWeather( float time, float dt, RANDOMBASE* pRNG )
+    void ClimateByData::UpdateWeather( float time, float dt, RANDOMBASE* pRNG, bool initialization )
     {
         LOG_DEBUG_F("UpdateWeather: time = %f", time);
         int index = 0;
@@ -236,7 +228,7 @@ namespace Kernel {
         m_accumulated_rainfall = rainfall_data[index] * resolution_correction * dt; // just the mean rainfall each day
         m_humidity = humidity_data[index];
 
-        Climate::UpdateWeather( time, dt, pRNG ); // call base-class UpdateWeather() to add stochasticity and check values are within valid bounds
+        Climate::UpdateWeather( time, dt, pRNG, initialization ); // call base-class UpdateWeather() to add stochasticity and check values are within valid bounds
     }
 
     ClimateByData::~ClimateByData()
@@ -244,20 +236,3 @@ namespace Kernel {
 
     }
 }
-
-#if 0
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive &ar, ClimateByData &climate, const unsigned int v)
-    {
-        ar & climate.num_datapoints;
-        ar & climate.num_years
-           & climate.airtemperature_data
-           & climate.landtemperature_data
-           & climate.rainfall_data
-           & climate.humidity_data;
-
-        ar & boost::serialization::base_object<Kernel::Climate>(climate);
-    }
-}
-#endif

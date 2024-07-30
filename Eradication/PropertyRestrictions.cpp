@@ -1,13 +1,8 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
+#ifndef WIN32
+#include <cxxabi.h>
+#endif
 
 #include "PropertyRestrictions.h"
 
@@ -46,19 +41,42 @@ namespace Kernel
         // Good Character AND High Income OR Bad Character AND Low Income.
         // So we AND together the elements of each json object and OR together these 
         // calculated truth values of the elements of the json array.
+        json::QuickInterpreter pr_qi = (*inputJson)[ key ];
+
+        if( pr_qi.operator const json::Element &().Type() != json::ARRAY_ELEMENT )
+        {
+            std::stringstream ss;
+            ss << "'" << key << "' is NOT an ARRAY in <" << inputJson->GetDataLocation() << ">.";
+            throw JsonTypeConfigurationException( __FILE__, __LINE__, __FUNCTION__, key.c_str(), *inputJson, ss.str().c_str() );
+        }
+
         json::QuickInterpreter s2sarray = (*inputJson)[key].As<json::Array>();
         for( int idx=0; idx < (*inputJson)[key].As<json::Array>().Size(); idx++ )
         {
             Container container;
+
+            if( s2sarray[ idx ].operator const json::Element &().Type() != json::OBJECT_ELEMENT )
+            {
+                std::stringstream ss;
+                ss << "'" << key << "' is NOT an ARRAY of OBJECTs in <" << inputJson->GetDataLocation() << ">.";
+                throw JsonTypeConfigurationException( __FILE__, __LINE__, __FUNCTION__, key.c_str(), *inputJson, ss.str().c_str() );
+            }
 
             auto json_map = s2sarray[idx].As<json::Object>();
             for( auto data = json_map.Begin();
                       data != json_map.End();
                       ++data )
             {
-                std::string key = data->name;
-                std::string value = (std::string)s2sarray[idx][key].As< json::String >();
-                KeyValue kv( key, value );
+                std::string prop_key = data->name;
+
+                if( s2sarray[ idx ][ prop_key ].operator const json::Element &().Type() != json::STRING_ELEMENT )
+                {
+                    std::stringstream ss;
+                    ss << "'" << key << "' has an OBJECT where the parameter '" << prop_key << "' is NOT a STRING in <" << inputJson->GetDataLocation() << ">.";
+                    throw JsonTypeConfigurationException( __FILE__, __LINE__, __FUNCTION__, key.c_str(), *inputJson, ss.str().c_str() );
+                }
+                std::string value = (std::string)s2sarray[ idx ][ prop_key ].As< json::String >();
+                KeyValue kv( prop_key, value );
                 container.Add( kv );
             }
             _restrictions.push_back( container );
@@ -72,8 +90,16 @@ namespace Kernel
         auto tn = JsonConfigurable::_typename_label();
         auto ts = JsonConfigurable::_typeschema_label();
 
+        std::string key_name = typeid(Key).name();
+#ifdef WIN32
+        key_name = key_name.substr( 14 ); // remove "class Kernel::"
+#else
+        key_name = abi::__cxa_demangle( key_name.c_str(), 0, 0, nullptr );
+        key_name = key_name.substr( 8 ); // remove "Kernel::"
+#endif
+
         // this is kind of hacky, but there only two types right now.
-        if( std::string( typeid(Key).name() ) == "class Kernel::IPKey" )
+        if( key_name == "IPKey" )
         {
             schema[ tn ] = json::String( "idmType:PropertyRestrictions" );
         }
@@ -107,12 +133,20 @@ namespace Kernel
     }
 
     template<class Key, class KeyValue, class Container>
-    bool PropertyRestrictions<Key, KeyValue, Container>::Qualifies( const Container& rPropertiesContainer )
+    void PropertyRestrictions<Key, KeyValue, Container>::Add(KeyValue& kv)
+    {
+        Container container;
+        container.Add(kv);
+        _restrictions.push_back(container);
+    }
+
+    template<class Key, class KeyValue, class Container>
+    bool PropertyRestrictions<Key, KeyValue, Container>::Qualifies( const Container& rPropertiesContainer ) const
     {
         bool qualifies = true;
 
         // individual has to have one of these properties
-        for( Container& container : _restrictions)
+        for( const Container& container : _restrictions)
         {
             qualifies = false;
             bool meets_property_restriction_criteria = true;
@@ -130,49 +164,6 @@ namespace Kernel
                     LOG_DEBUG_F( "Person does not get the intervention because the allowed property is %s and the person is %s.\n", 
                                  kv.ToString().c_str(), rPropertiesContainer.Get( kv.GetKey<Key>() ).ToString().c_str() );
 #endif
-                    break;
-                }
-            }
-            // If verified, we're done since these are OR-ed together
-            if( meets_property_restriction_criteria )
-            {
-                qualifies = true;
-                LOG_DEBUG_F( "Individual meets at least 1 of the OR-ed together property restriction conditions. Not checking the rest.\n" );
-                break;
-            }
-        }
-
-        return qualifies;
-    }
-
-    template<class Key, class KeyValue, class Container>
-    bool PropertyRestrictions<Key, KeyValue, Container>::Qualifies( const tProperties* pProp )
-    {
-        release_assert( pProp );
-
-        bool qualifies = true;
-
-        // individual has to have one of these properties
-        for( Container& container : _restrictions )
-        {
-            qualifies = false;
-            bool meets_property_restriction_criteria = true;
-            for( KeyValue kv : container )
-            {
-                const std::string& szKey = kv.GetKeyAsString();
-                const std::string& szVal = kv.GetValueAsString();
-
-                LOG_DEBUG_F( "Applying property restrictions in event coordinator: %s/%s.\n", szKey.c_str(), szVal.c_str() );
-                // Every individual has to have a property value for each property key
-                if( pProp->at( szKey ) == szVal )
-                {
-                    LOG_DEBUG_F( "Person satisfies (partial) property restriction: constraint is %s/%s and the person is %s.\n", szKey.c_str(), szVal.c_str(), pProp->at( szKey ).c_str() );
-                    continue; // we're good
-                }
-                else
-                {
-                    meets_property_restriction_criteria = false;
-                    LOG_DEBUG_F( "Person does not get the intervention because the allowed property is %s/%s and the person is %s.\n", szKey.c_str(), szVal.c_str(), pProp->at( szKey ).c_str() );
                     break;
                 }
             }

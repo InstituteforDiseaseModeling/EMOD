@@ -7,7 +7,6 @@
             "../input/SA_UN_demographics_extrapolated_WithProperties_Smoothed_with_Adherence.json",
             "../input/PFA_overlay.json"
         ],
-        "Disable_IP_Whitelist": 1,
         "Simulation_Duration": 365,
         "____________DEMOGRAPHICS___________": "",
         "____________INTRAHOST___________": "",

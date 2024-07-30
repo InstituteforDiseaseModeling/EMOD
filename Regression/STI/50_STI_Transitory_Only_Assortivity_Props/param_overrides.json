@@ -25,7 +25,6 @@
         },
         "PRIMARY": {
             "Config_Name": "50_STI_Transitory_Only_Assortivity_Props",
-            "Disable_IP_Whitelist": 1,
             "Run_Number": 1,
             "Simulation_Duration": 1500
         },

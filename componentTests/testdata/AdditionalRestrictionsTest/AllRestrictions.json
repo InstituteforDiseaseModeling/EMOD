@@ -1,0 +1,279 @@
+{
+    "Simulation_Type": "HIV_SIM",
+    "IsCircumcised" : 
+    {
+        "class" : "IsCircumcised"
+    },
+    "NotIsCircumcised" : 
+    {
+        "class" : "IsCircumcised",
+        "Is_Equal_To": 0
+    },
+    "HasIP" : 
+    {
+        "class" : "HasIP",
+        "IP_Key_Value": "Risk:MEDIUM"
+    },
+    "NotHasIP" : 
+    {
+        "class" : "HasIP",
+        "Is_Equal_To": 0,
+        "IP_Key_Value": "Risk:MEDIUM"
+    },
+    "HasIntervention" : 
+    {
+        "class" : "HasIntervention",
+        "Intervention_Name": "MySpecialIntervention"
+    },
+    "NotHasIntervention" : 
+    {
+        "class" : "HasIntervention",
+        "Is_Equal_To": 0,
+        "Intervention_Name": "MySpecialIntervention"
+    },
+    "HasMoreOrLessThanNumPartners" : 
+    {
+        "class" : "HasMoreOrLessThanNumPartners",
+        "More_Or_Less": "MORE",
+        "Num_Partners": 1,
+        "Of_Relationship_Type": "NA"
+    },
+    "NotHasMoreOrLessThanNumPartners" : 
+    {
+        "class" : "HasMoreOrLessThanNumPartners",
+        "Is_Equal_To": 0,
+        "More_Or_Less": "MORE",
+        "Num_Partners": 1,
+        "Of_Relationship_Type": "NA"
+    },
+    "InformalHasMoreOrLessThanNumPartners" : 
+    {
+        "class" : "HasMoreOrLessThanNumPartners",
+        "More_Or_Less": "LESS",
+        "Num_Partners": 1,
+        "Of_Relationship_Type": "INFORMAL"
+    },
+    "HasHadMultiplePartnersInLastNumMonths" : 
+    {
+        "class" : "HasHadMultiplePartnersInLastNumMonths",
+        "Num_Months_Type": "SIX_MONTHS",
+        "Of_Relationship_Type": "NA"
+    },
+    "NotHasHadMultiplePartnersInLastNumMonths" : 
+    {
+        "class" : "HasHadMultiplePartnersInLastNumMonths",
+        "Is_Equal_To": 0,
+        "Num_Months_Type": "SIX_MONTHS",
+        "Of_Relationship_Type": "NA"
+    },
+    "InformalHasHadMultiplePartnersInLastNumMonths" : 
+    {
+        "class" : "HasHadMultiplePartnersInLastNumMonths",
+        "Num_Months_Type": "TWELVE_MONTHS",
+        "Of_Relationship_Type": "INFORMAL"
+    },
+    "IsOnART" : 
+    {
+        "class" : "IsOnART"
+    },
+    "NotIsOnART" : 
+    {
+        "class" : "IsOnART",
+        "Is_Equal_To": 0
+    },
+    "HasBeenOnArtMoreOrLessThanNumMonths" : 
+    {
+        "class" : "HasBeenOnArtMoreOrLessThanNumMonths",
+        "Is_Equal_To": 1,
+        "More_Or_Less": "MORE",
+        "Num_Months": 6
+    },
+    "NotHasBeenOnArtMoreOrLessThanNumMonths" : 
+    {
+        "class" : "HasBeenOnArtMoreOrLessThanNumMonths",
+        "Is_Equal_To": 0,
+        "More_Or_Less": "MORE",
+        "Num_Months": 6
+    },
+    "LessHasBeenOnArtMoreOrLessThanNumMonths" : 
+    {
+        "class" : "HasBeenOnArtMoreOrLessThanNumMonths",
+        "Is_Equal_To": 1,
+        "More_Or_Less": "LESS",
+        "Num_Months": 6
+    },
+    "IsHivPositive" : 
+    {
+        "class" : "IsHivPositive",
+        "Is_Equal_To": 1
+    },
+    "IsHivPositiveAndTested" : 
+    {
+        "class" : "IsHivPositive",
+        "Is_Equal_To": 1,
+        "And_Has_Ever_Been_Tested": "YES",
+        "And_Has_Ever_Tested_Positive": "NA",
+        "And_Has_Received_Positive_Results": "NA"
+    },
+    "IsHivPositiveAndNotTested" : 
+    {
+        "class" : "IsHivPositive",
+        "Is_Equal_To": 1,
+        "And_Has_Ever_Been_Tested": "NO",
+        "And_Has_Ever_Tested_Positive": "NA",
+        "And_Has_Received_Positive_Results": "NA"
+    },
+    "IsHivPositiveAndTestedPositive" : 
+    {
+        "class" : "IsHivPositive",
+        "Is_Equal_To": 1,
+        "And_Has_Ever_Been_Tested": "NA",
+        "And_Has_Ever_Tested_Positive": "YES",
+        "And_Has_Received_Positive_Results": "NA"
+    },
+    "IsHivPositiveAndNotTestedPositive" : 
+    {
+        "class" : "IsHivPositive",
+        "Is_Equal_To": 1,
+        "And_Has_Ever_Been_Tested": "NA",
+        "And_Has_Ever_Tested_Positive": "NO",
+        "And_Has_Received_Positive_Results": "NA"
+    },
+    "IsHivPositiveAndPositiveResult" : 
+    {
+        "class" : "IsHivPositive",
+        "Is_Equal_To": 1,
+        "And_Has_Ever_Been_Tested": "NA",
+        "And_Has_Ever_Tested_Positive": "NA",
+        "And_Has_Received_Positive_Results": "YES"
+    },
+    "IsHivPositiveAndNotPositiveResult" : 
+    {
+        "class" : "IsHivPositive",
+        "Is_Equal_To": 1,
+        "And_Has_Ever_Been_Tested": "NA",
+        "And_Has_Ever_Tested_Positive": "NA",
+        "And_Has_Received_Positive_Results": "NO"
+    },
+    "IsHivPositiveAndTestedAndTestedPositiveAndPositiveResult" : 
+    {
+        "class" : "IsHivPositive",
+        "Is_Equal_To": 1,
+        "And_Has_Ever_Been_Tested": "YES",
+        "And_Has_Ever_Tested_Positive": "YES",
+        "And_Has_Received_Positive_Results": "YES"
+    },
+    "IsHivNegative" : 
+    {
+        "class" : "IsHivPositive",
+        "Is_Equal_To": 0,
+        "And_Has_Ever_Been_Tested": "NA",
+        "And_Has_Ever_Tested_Positive": "NA",
+        "And_Has_Received_Positive_Results": "NA"
+    },
+    "HasCd4BetweenMinAndMax" : 
+    {
+        "class" : "HasCd4BetweenMinAndMax",
+        "Is_Equal_To": 1,
+        "Min_CD4":  50.0,
+        "Max_CD4": 100.0
+    },
+    "NotHasCd4BetweenMinAndMax" : 
+    {
+        "class" : "HasCd4BetweenMinAndMax",
+        "Is_Equal_To": 0,
+        "Min_CD4":  50.0,
+        "Max_CD4": 100.0
+    },
+    "NotHasRelationshipOnlyType" : 
+    {
+        "class" : "HasRelationship",
+        "Is_Equal_To": 0,
+        "Of_Relationship_Type":  "INFORMAL",
+        "That_Recently":  "NA",
+        "With_Partner_Who" : {
+        }        
+    },
+    "HasRelationshipOnlyType" : 
+    {
+        "class" : "HasRelationship",
+        "Is_Equal_To": 1,
+        "Of_Relationship_Type":  "INFORMAL",
+        "That_Recently":  "NA",
+        ".With_Partner_Who" : {
+        }        
+    },
+    "HasRelationshipOnlyStarted" : 
+    {
+        "class" : "HasRelationship",
+        "Is_Equal_To": 1,
+        "Of_Relationship_Type":  "NA",
+        "That_Recently":  "STARTED",
+        "With_Partner_Who" : {
+        }        
+    },
+    "HasRelationshipOnlyHivPositivePartner" : 
+    {
+        "class" : "HasRelationship",
+        "Is_Equal_To": 1,
+        "Of_Relationship_Type":  "NA",
+        "That_Recently":  "NA",
+        "With_Partner_Who" : {
+            "class": "IsHivPositive"
+        }        
+    },
+    "HasRelationshipStartedTransitory" : 
+    {
+        "class" : "HasRelationship",
+        "Is_Equal_To": 1,
+        "Of_Relationship_Type":  "TRANSITORY",
+        "That_Recently":  "STARTED",
+        "With_Partner_Who" : {
+        }        
+    },
+    "HasRelationshipStartedCommercialPartnerIsHivPositive" : 
+    {
+        "class" : "HasRelationship",
+        "Is_Equal_To": 1,
+        "Of_Relationship_Type":  "COMMERCIAL",
+        "That_Recently":  "STARTED",
+        "With_Partner_Who" : {
+            "class": "TargetingLogic",
+            "Logic":
+            [
+                [
+                    {
+                        "class": "IsHivPositive"
+                    },
+                    {
+                        "class": "IsOnART",
+                        "Is_Equal_To": 0
+                    }
+                ],
+                [
+                    {
+                        "class": "IsHivPositive"
+                    },
+                    {
+                        "class" : "HasBeenOnArtMoreOrLessThanNumMonths",
+                        "Is_Equal_To": 1,
+                        "More_Or_Less": "LESS",
+                        "Num_Months": 6
+                    }
+                ]
+            ]
+        }        
+    },
+    "HasRelationshipEndedCommercial" : 
+    {
+        "class" : "HasRelationship",
+        "Is_Equal_To": 1,
+        "Of_Relationship_Type":  "COMMERCIAL",
+        "That_Recently":  "ENDED",
+        "With_Partner_Who" : {
+        }        
+    }
+}
+
+
+

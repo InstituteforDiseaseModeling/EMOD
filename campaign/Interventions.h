@@ -1,29 +1,20 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
 #include <string>
 #include <list>
 
-#include "IdmApi.h"
-
 #include "ISupports.h"
 #include "Configure.h"                 // for JsonConfigurable
 #include "InterventionEnums.h"
-#include "InterventionValidator.h"
 #include "Properties.h"
 #include "NodeProperties.h"
 #include "BroadcasterObserver.h"
+#include "InterventionName.h"
 
 #include "ISerializable.h"
 #include "IArchive.h"
+#include "IReportInterventionDataAccess.h"
 
 namespace Kernel
 {
@@ -31,7 +22,7 @@ namespace Kernel
     struct IIndividualHumanEventContext;
     class EventTrigger;
 
-    struct IDMAPI ICampaignCostObserver : ISupports
+    struct ICampaignCostObserver : ISupports
     {
         virtual void notifyCampaignExpenseIncurred( float expenseIncurred, const IIndividualHumanEventContext * pIndiv ) = 0;
         virtual void notifyCampaignEventOccurred( /*const*/ ISupports * pDistributedIntervention, /*const*/ ISupports * pDistributor, /*const*/ IIndividualHumanContext * pDistributeeIndividual ) = 0;
@@ -40,25 +31,21 @@ namespace Kernel
 
     struct IIndividualHumanInterventionsContext;
 
-#pragma warning(push)
-#pragma warning(disable: 4251) // See IdmApi.h for details
-    struct IDMAPI IDistributableIntervention : ISerializable
+    struct IDistributableIntervention : ISerializable
     {
         // Distribute transfers ownership of this object to the context if it succeeds, the context becomes responsible for freeing it
         // returns false if cannot distribute to the individual represented by this context, for whatever reason
-        virtual const std::string& GetName() const = 0;
+        virtual const InterventionName& GetName() const = 0;
         virtual bool Distribute(IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pICCO ) = 0;
         virtual void SetContextTo(IIndividualHumanContext *context) = 0;
         virtual void Update(float dt) = 0;
         virtual bool Expired() = 0;
         virtual void SetExpired( bool isExpired ) = 0;
-        virtual void ValidateSimType( const std::string& simTypeStr ) = 0;
         virtual IDistributableIntervention * Clone()  = 0;
         virtual bool NeedsInfectiousLoopUpdate() const = 0;
 
         virtual ~IDistributableIntervention() { }
     };
-#pragma warning(pop)
 
     struct IIndividualHumanInterventionsContext : ISerializable // ISupports
     {
@@ -66,12 +53,16 @@ namespace Kernel
         virtual void SetContextTo(IIndividualHumanContext *context) = 0;
         virtual IIndividualHumanContext* GetParent() = 0;
         virtual std::list<IDistributableIntervention*> GetInterventionsByType(const std::string &type_name) = 0;
-        virtual std::list<IDistributableIntervention*> GetInterventionsByName(const std::string &intervention_name) = 0;
+        virtual std::list<IDistributableIntervention*> GetInterventionsByName(const InterventionName& intervention_name) = 0;
         virtual std::list<void*>                       GetInterventionsByInterface( iid_t iid ) = 0;
         virtual void PurgeExisting( const std::string &iv_name ) = 0;
         virtual bool ContainsExisting( const std::string &iv_name ) = 0;
-        virtual bool ContainsExistingByName( const std::string &name ) = 0;
+        virtual bool ContainsExistingByName( const InterventionName& name ) = 0;
         virtual void ChangeProperty( const char *property, const char* new_value ) = 0;
+        virtual const std::vector<IDistributableIntervention*>& GetInterventions() const = 0;
+        virtual uint32_t GetNumInterventions() const = 0;
+        virtual uint32_t GetNumInterventionsAdded() = 0;
+        virtual const IPKeyValue& GetLastIPChange() const = 0;
 
         virtual ~IIndividualHumanInterventionsContext() {}
     };
@@ -79,17 +70,16 @@ namespace Kernel
     struct INodeEventContext;
     struct IEventCoordinator2;
 
-    struct IDMAPI INodeDistributableIntervention : ISupports
+    struct INodeDistributableIntervention : ISupports
     {
         // Distribute transfers ownership of this object to the context if it succeeds, the context becomes responsible for freeing it
         // returns false if cannot distribute to the individual represented by this context, for whatever reason
-        virtual const std::string& GetName() const = 0;
+        virtual const InterventionName& GetName() const = 0;
         virtual bool Distribute(INodeEventContext *context, IEventCoordinator2* pEC = nullptr ) = 0;
         virtual void SetContextTo(INodeEventContext *context) = 0;
         virtual void Update(float dt) = 0;
         virtual bool Expired() = 0;
         virtual void SetExpired( bool isExpired ) = 0;
-        virtual void ValidateSimType( const std::string& simTypeStr ) = 0;
         virtual INodeDistributableIntervention * Clone()  = 0;
 
         virtual ~INodeDistributableIntervention() { }
@@ -100,12 +90,12 @@ namespace Kernel
         virtual bool GiveIntervention( IDistributableIntervention * pIV ) = 0;
     };
 
-    struct IDMAPI INodeInterventionConsumer : ISupports
+    struct INodeInterventionConsumer : ISupports
     {
         virtual bool GiveIntervention( INodeDistributableIntervention * pIV ) = 0;
     };
 
-    struct IDMAPI IBaseIntervention : ISupports
+    struct IBaseIntervention : ISupports
     {
         virtual float GetCostPerUnit() const = 0;
     };
@@ -113,17 +103,19 @@ namespace Kernel
     struct IIndividualHumanEventContext;
 
     // TODO - BaseInterventions looks concrete, but can't be instantiated. :(
-    struct IDMAPI BaseIntervention : IDistributableIntervention, IBaseIntervention, JsonConfigurable
+    struct BaseIntervention : IDistributableIntervention, IBaseIntervention, IReportInterventionDataAccess, JsonConfigurable
     {
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
 
-        virtual const std::string& GetName() const override { return name; };
+        virtual const InterventionName& GetName() const override { return name; };
         virtual void SetContextTo(IIndividualHumanContext *context) override;
         virtual float GetCostPerUnit() const override { return cost_per_unit; }
         virtual bool Expired() override ;
         virtual void SetExpired( bool isExpired ) override;
-        virtual void ValidateSimType( const std::string& simTypeStr ) override;
         virtual bool NeedsInfectiousLoopUpdate() const { return false; }
+
+        // IReportInterventionData
+        virtual ReportInterventionData GetReportInterventionData() const override;
 
     protected:
         BaseIntervention();
@@ -133,35 +125,34 @@ namespace Kernel
         virtual bool Distribute(IIndividualHumanInterventionsContext *context, ICampaignCostObserver * const pICCO ) override;
 
         virtual bool AbortDueToDisqualifyingInterventionStatus( IIndividualHumanContext* pHuman );
-        virtual bool UpdateIndividualsInterventionStatus();
+        virtual bool UpdateIndividualsInterventionStatus( bool checkDisqualifyingProperties=true );
 
         static void serialize( IArchive& ar, BaseIntervention* obj );
 
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         IIndividualHumanContext *parent;
-        std::string name;
+        InterventionName name;
         float cost_per_unit;
         bool expired;
-        bool dont_allow_duplicates ;
+        bool dont_allow_duplicates;
         bool first_time;
         IPKeyValueContainer disqualifying_properties;
         IPKeyValue status_property;
-#pragma warning(pop)
     };
 
-    struct BaseNodeIntervention : IBaseIntervention, JsonConfigurable, INodeDistributableIntervention
+    struct BaseNodeIntervention : INodeDistributableIntervention, IBaseIntervention, IReportInterventionDataAccess, JsonConfigurable
     {
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
 
     public:
         virtual bool Configure( const Configuration* inputJson ) override;
-        virtual const std::string& GetName() const override { return name; };
+        virtual const InterventionName& GetName() const override { return name; };
         virtual float GetCostPerUnit() const override { return cost_per_unit; }
         virtual bool Expired() override;
         virtual void SetExpired( bool isExpired ) override;
-        virtual void ValidateSimType( const std::string& simTypeStr ) override;
         virtual void SetContextTo( INodeEventContext *context ) override;
+
+        // IReportInterventionData
+        virtual ReportInterventionData GetReportInterventionData() const override;
 
     protected:
         BaseNodeIntervention();
@@ -171,9 +162,10 @@ namespace Kernel
         virtual bool UpdateNodesInterventionStatus();
 
         INodeEventContext *parent;
-        std::string name;
+        InterventionName name;
         float cost_per_unit;
         bool expired;
+        bool dont_allow_duplicates;
         bool first_time;
         NPKeyValueContainer disqualifying_properties;
         NPKeyValue status_property;

@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -173,9 +165,9 @@ namespace Kernel
             if( campaign->Exist( "Use_Defaults" ) )
             {
                 // store value of Use_Defaults from campaign.json in InterventionFactory.
-                InterventionFactory::useDefaults = ((*campaign)["Use_Defaults"].As< json::Number >() != 0);
+                InterventionFactory::getInstance()->SetUseDefaults( ((*campaign)["Use_Defaults"].As< json::Number >() != 0) );
                 // We're about to parse some campaign event stuff from campaign.json. Set JC::_useDefaults.
-                JsonConfigurable::_useDefaults = InterventionFactory::useDefaults;
+                JsonConfigurable::_useDefaults = InterventionFactory::getInstance()->IsUsingDefaults();
                 LOG_DEBUG_F( "UseDefault values for campaign.json (when key not found) specified in campaign.json as: %d.\n", JsonConfigurable::_useDefaults );
             }
             else
@@ -187,20 +179,17 @@ namespace Kernel
 
             for (int k= 0; k < events.Size(); k++ )
             {
-                // TODO: this is very inefficient; could probably convert these arguments to const QuickInterpreter*s instead of full Configurations...
-                Configuration *event_config = Configuration::CopyFromElement( events[k], campaign->GetDataLocation() );
-                release_assert( event_config );
+                std::stringstream param_name;
+                param_name << "Events[" << k << "]";
 
-                CampaignEvent *ce = CampaignEventFactory::CreateInstance(event_config);
+                CampaignEvent *ce = CampaignEventFactory::getInstance()->CreateInstance( events[k], campaign->GetDataLocation(), param_name.str().c_str() );
                 if (ce)
                 {
                     ce->CheckForValidNodeIDs(nodeIds_demographics);
                     if( ce->GetStartDay() < sim->GetSimulationTime().time )
                     {
                         LOG_WARN_F("Discarding old event for t=%0.1f.\n", ce->GetStartDay());
-                        delete event_config;
                         delete ce;
-                        event_config = nullptr;
                         ce = nullptr;
                         continue;
                     }
@@ -213,7 +202,6 @@ namespace Kernel
                     s << "Failure loading campaign events: could not instantiate object for Event " << k << std::endl ;
                     throw FactoryCreateFromJsonException( __FILE__, __LINE__, __FUNCTION__, s.str().c_str() ); // JB hint-y
                 }
-                delete event_config;
             }
         }
         catch( FactoryCreateFromJsonException& )
@@ -281,6 +269,24 @@ namespace Kernel
                                                        const EventTriggerCoordinator& trigger )
     {
         coordinator_broadcaster_impl.TriggerObservers( pCoordinator, trigger );
+    }
+
+    uint64_t SimulationEventContextHost::GetNumTriggeredEvents()
+    {
+        // This is a weird interface thing where the same method is actually for different data.
+        // The problem could be that this SimulationEventContext should not be implementing both
+        // interfaces.  I don't want this data anyway so I'm going to leave this hear for now.
+        release_assert( false );
+        return 0;
+    }
+
+    uint64_t SimulationEventContextHost::GetNumObservedEvents()
+    {
+        // This is a weird interface thing where the same method is actually for different data.
+        // The problem could be that this SimulationEventContext should not be implementing both
+        // interfaces.  I don't want this data anyway so I'm going to leave this here for now.
+        release_assert( false );
+        return 0;
     }
 
     void SimulationEventContextHost::RegisterObserver( INodeEventObserver* pObserver,

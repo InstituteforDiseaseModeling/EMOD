@@ -1,0 +1,24 @@
+{
+    "parameters": {
+        "Config_Name": "IndividualNonDiseaseDeathRateModifier_Expiration_Duration_EXPONENTIAL",
+        "Age_Initialization_Distribution_Type": "DISTRIBUTION_COMPLEX",
+        "Birth_Rate_Dependence": "INDIVIDUAL_PREGNANCIES_BY_AGE_AND_YEAR",
+        "Custom_Individual_Events": [
+        "Stopped_Death_Modification"
+        ],
+        "Death_Rate_Dependence": "NONDISEASE_MORTALITY_BY_AGE_AND_GENDER",
+        "Demographics_Filenames": [
+            "../../demographics.json"
+        ],
+        "Enable_Natural_Mortality": 1,
+        "Report_Event_Recorder": 1,
+        "Simulation_Duration": 730,
+        "Simulation_Timestep": 1,
+        "Inset_Chart_Include_Pregnancies": 0,
+        "Report_Event_Recorder_Events": [
+            "NonDiseaseDeaths",
+            "Stopped_Death_Modification"
+        ]
+    },
+    "Default_Config_Path": "defaults/generic_science_config.json"
+}

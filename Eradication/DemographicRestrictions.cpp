@@ -1,17 +1,10 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
 #include "DemographicRestrictions.h"
 #include "IndividualEventContext.h"
 #include "IIndividualHuman.h"
+#include "AdditionalRestrictionsFactory.h"
 
 SETUP_LOGGING( "DemographicRestrictions" )
 
@@ -21,10 +14,12 @@ namespace Kernel
 {
     DemographicRestrictions::DemographicRestrictions( bool age_restrictions,
                                                       TargetDemographicType::Enum defaultTargetDemographic,
-                                                      bool use_coverage )
+                                                      bool use_coverage,
+                                                      const char* pDemographicCoverageDescText )
     : allow_age_restrictions(age_restrictions)
     , use_demographic_coverage( use_coverage )
     , demographic_coverage(DEFAULT_DEMOGRAPHIC_COVERAGE)
+    , p_demographic_coverage_desc_text(pDemographicCoverageDescText)
     , default_target_demographic(defaultTargetDemographic)
     , target_demographic(default_target_demographic)
     , target_age_min_years(0)
@@ -35,6 +30,8 @@ namespace Kernel
     , property_restrictions_set()
     , property_restrictions()
     , target_residents_only( false )
+    , targeting_config()
+    , additional_restrictions(nullptr)
     {
     }
 
@@ -44,7 +41,7 @@ namespace Kernel
         {
             pParent->initConfigTypeMap( "Demographic_Coverage", 
                                         &demographic_coverage,
-                                        Demographic_Coverage_DESC_TEXT,
+                                        p_demographic_coverage_desc_text,
                                         0.0, 
                                         1.0, 
                                         DEFAULT_DEMOGRAPHIC_COVERAGE/*, 
@@ -79,7 +76,7 @@ namespace Kernel
                 throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
             }
 
-            pParent->initConfigTypeMap( "Target_Age_Min", &target_age_min_years, Target_Age_Min_DESC_TEXT, 0.0f, FLT_MAX,    0.0f, "Target_Demographic", "ExplicitAgeRanges,ExplicitAgeRangesAndGender" );
+            pParent->initConfigTypeMap( "Target_Age_Min", &target_age_min_years, Target_Age_Min_DESC_TEXT, 0.0f, FLT_MAX/DAYSPERYEAR,                0.0f, "Target_Demographic", "ExplicitAgeRanges,ExplicitAgeRangesAndGender" );
             pParent->initConfigTypeMap( "Target_Age_Max", &target_age_max_years, Target_Age_Max_DESC_TEXT, 0.0f, FLT_MAX/DAYSPERYEAR, FLT_MAX/DAYSPERYEAR, "Target_Demographic", "ExplicitAgeRanges,ExplicitAgeRangesAndGender" );
 
             if( (target_demographic == TargetDemographicType::ExplicitAgeRangesAndGender) || JsonConfigurable::_dryrun)
@@ -94,14 +91,19 @@ namespace Kernel
 
         // xpath-y way of saying that the possible values for prop restrictions comes from demographics file IP's.
         property_restrictions_set.value_source = IPKey::GetConstrainedStringConstraintKeyValue(); 
-        pParent->initConfigTypeMap("Property_Restrictions", &property_restrictions_set, Property_Restriction_DESC_TEXT /*, "Intervention_Config.*.iv_type", "IndividualTargeted"*/ );
+        pParent->initConfigTypeMap("Property_Restrictions", &property_restrictions_set, Property_Restrictions_DESC_TEXT /*, "Intervention_Config.*.iv_type", "IndividualTargeted"*/ );
 
-        pParent->initConfigComplexType("Property_Restrictions_Within_Node", &property_restrictions, Property_Restriction_DESC_TEXT /*, "Intervention_Config.*.iv_type", "IndividualTargeted"*/ );
+        pParent->initConfigComplexType("Property_Restrictions_Within_Node", &property_restrictions, Property_Restrictions_Within_Node_DESC_TEXT /*, "Intervention_Config.*.iv_type", "IndividualTargeted"*/ );
 
         pParent->initConfigTypeMap( "Target_Residents_Only", &target_residents_only, Target_Residents_Only_DESC_TEXT, false );
+
+        if (JsonConfigurable::_dryrun || inputJson->Exist("Targeting_Config"))
+        {
+            pParent->initConfigComplexType("Targeting_Config", &targeting_config, Targeting_Config_DESC_TEXT);
+        }
     }
 
-    void DemographicRestrictions::CheckConfiguration()
+    void DemographicRestrictions::CheckConfiguration()  
     {
         if( target_age_min_years >= target_age_max_years )
         {
@@ -139,6 +141,10 @@ namespace Kernel
             }
             property_restrictions.Add( restriction_map );
         }
+        additional_restrictions = AdditionalRestrictionsFactory::getInstance()->CreateInstance( targeting_config._json,
+                                                                                                "campaign.json",
+                                                                                                "Targeting_Config",
+                                                                                                true );
     }
 
     bool DemographicRestrictions::HasDefaultRestrictions() const
@@ -147,6 +153,7 @@ namespace Kernel
         if( target_demographic           != TargetDemographicType::Everyone ) return false;
         if( target_residents_only        != false                           ) return false;
         if( property_restrictions.Size() >  0                               ) return false;
+        if( additional_restrictions      != nullptr                         ) return false;
 
         return true;
     }
@@ -157,11 +164,7 @@ namespace Kernel
 
         if( target_residents_only )
         {
-            IIndividualHuman* p_human = nullptr;
-            if (s_OK != const_cast<IIndividualHumanEventContext*>(pIndividual)->QueryInterface(GET_IID(IIndividualHuman), (void**)&p_human) )
-            {
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "pIndividual", "IIndividualHuman", "IIndividualHumanEventContext" );
-            }
+            const IIndividualHuman* p_human = pIndividual->GetIndividualHumanConst();
             if( !p_human->AtHome() )
             {
                 return false ;
@@ -221,6 +224,13 @@ namespace Kernel
                 retQualifies = false;
             }
         }
+        else if( target_demographic == TargetDemographicType::Pregnant )
+        {
+            if( !pIndividual->IsPregnant() )
+            {
+                retQualifies = false;
+            }
+        }
 
         if( retQualifies && (property_restrictions.Size() > 0) )
         {
@@ -230,6 +240,12 @@ namespace Kernel
         {
             LOG_DEBUG( "No property restrictions in event coordiantor applied.\n" );
         }
+
+        if (retQualifies && additional_restrictions != nullptr)
+        {
+            retQualifies = additional_restrictions->IsQualified(const_cast<IIndividualHumanEventContext*>(pIndividual));
+        }
+        
         LOG_DEBUG_F( "Returning %d from %s\n", retQualifies, __FUNCTION__ );
         return retQualifies;
     }

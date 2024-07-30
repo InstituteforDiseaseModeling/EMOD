@@ -18,37 +18,38 @@
     <ProjectGuid>{D423EC17-4DDC-430C-A153-F1EB87CCDF31}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>BaseReportLib</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='QuickStart|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
-    <Import Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" />
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
-    <Import Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" />
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='QuickStart|x64'" Label="PropertySheets">
-    <Import Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" />
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -125,51 +126,6 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\cajun\include\CajunIncludes.h" />
-    <ClInclude Include="..\campaign\InterventionEnums.h" />
-    <ClInclude Include="..\campaign\Interventions.h" />
-    <ClInclude Include="..\campaign\InterventionValidator.h" />
-    <ClInclude Include="..\Eradication\IContagionPopulation.h" />
-    <ClInclude Include="..\Eradication\IIndividualHuman.h" />
-    <ClInclude Include="..\Eradication\IInfectable.h" />
-    <ClInclude Include="..\Eradication\IMigrate.h" />
-    <ClInclude Include="..\Eradication\Individual.h" />
-    <ClInclude Include="..\Eradication\IndividualEventContext.h" />
-    <ClInclude Include="..\Eradication\INodeContext.h" />
-    <ClInclude Include="..\Eradication\InterventionsContainer.h" />
-    <ClInclude Include="..\Eradication\IntranodeTransmissionTypes.h" />
-    <ClInclude Include="..\Eradication\ITransmissionGroups.h" />
-    <ClInclude Include="..\Eradication\MalariaDrugTypeParameters.h" />
-    <ClInclude Include="..\Eradication\NodeEventContext.h" />
-    <ClInclude Include="..\Eradication\SimulationEnums.h" />
-    <ClInclude Include="..\Eradication\StrainIdentity.h" />
-    <ClInclude Include="..\Eradication\TBDrugTypeParameters.h" />
-    <ClInclude Include="..\Eradication\TransmissionGroupMembership.h" />
-    <ClInclude Include="..\Eradication\VectorEnums.h" />
-    <ClInclude Include="..\interventions\IDrug.h" />
-    <ClInclude Include="..\utils\BoostLibWrapper.h" />
-    <ClInclude Include="..\utils\Common.h" />
-    <ClInclude Include="..\utils\Configuration.h" />
-    <ClInclude Include="..\utils\ConfigurationImpl.h" />
-    <ClInclude Include="..\utils\Configure.h" />
-    <ClInclude Include="..\utils\Debug.h" />
-    <ClInclude Include="..\utils\EnumSupport.h" />
-    <ClInclude Include="..\utils\Environment.h" />
-    <ClInclude Include="..\utils\Exceptions.h" />
-    <ClInclude Include="..\utils\FileSystem.h" />
-    <ClInclude Include="..\utils\IdmApi.h" />
-    <ClInclude Include="..\utils\IdmDateTime.h" />
-    <ClInclude Include="..\utils\ISupports.h" />
-    <ClInclude Include="..\utils\JsonObject.h" />
-    <ClInclude Include="..\utils\Log.h" />
-    <ClInclude Include="..\utils\Profile.h" />
-    <ClInclude Include="..\utils\ProgVersion.h" />
-    <ClInclude Include="..\utils\Properties.h" />
-    <ClInclude Include="..\utils\RANDOM.h" />
-    <ClInclude Include="..\utils\RapidJsonImpl.h" />
-    <ClInclude Include="..\utils\Sugar.h" />
-    <ClInclude Include="..\utils\Types.h" />
-    <ClInclude Include="..\utils\ValidationLog.h" />
     <ClInclude Include="BaseChannelReport.h" />
     <ClInclude Include="BaseEventReport.h" />
     <ClInclude Include="BaseEventReportIntervalOutput.h" />
@@ -179,6 +135,8 @@
     <ClInclude Include="BinnedReport.h" />
     <ClInclude Include="IReport.h" />
     <ClInclude Include="ChannelDataMap.h" />
+    <ClInclude Include="ReportFilter.h" />
+    <ClInclude Include="ReportFilterRelationship.h" />
     <ClInclude Include="ReportUtilities.h" />
     <ClInclude Include="ReportUtilitiesMalaria.h" />
     <ClInclude Include="stdafx.h" />
@@ -192,6 +150,8 @@
     <ClCompile Include="BaseTextReportEvents.cpp" />
     <ClCompile Include="BinnedReport.cpp" />
     <ClCompile Include="ChannelDataMap.cpp" />
+    <ClCompile Include="ReportFilter.cpp" />
+    <ClCompile Include="ReportFilterRelationship.cpp" />
     <ClCompile Include="ReportUtilities.cpp" />
     <ClCompile Include="ReportUtilitiesMalaria.cpp" />
     <ClCompile Include="stdafx.cpp">

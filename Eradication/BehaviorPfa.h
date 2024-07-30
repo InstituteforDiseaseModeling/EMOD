@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -32,11 +24,16 @@ namespace Kernel
                                                RANDOMBASE* prng, 
                                                RelationshipCreator rc );
 
+        // IPairFormationAgent
+        virtual void BeginUpdate() override;
         virtual void AddIndividual(IIndividualHumanSTI*) override;
-
         virtual void RemoveIndividual(IIndividualHumanSTI*) override;
-
         virtual void Update( const IdmDateTime& rCurrentTime, float dt ) override;
+        virtual void RegisterIndividual( IIndividualHumanSTI* pIndividualSti ) override;
+        virtual void UnregisterIndividual( IIndividualHumanSTI* pIndividualSti ) override;
+        virtual bool StartNonPfaRelationship( IIndividualHumanSTI* pIndividualSTI,
+                                              const IPKeyValue& rPartnerHasIP,
+                                              Sigmoid* pCondomUsage ) override;
         virtual const map<int, vector<float>>& GetAgeBins() override;
         virtual const map<int, vector<float>>& GetDesiredFlow() override;
         virtual const map<int, vector<int>>& GetQueueLengthsBefore() override;
@@ -44,6 +41,7 @@ namespace Kernel
 
         virtual void Print(const char *rel_type) const override;
 
+        // Others
         int GetNumPopulationTotal() const { return m_population_map.size() ; }
 
         int GetNumMalesInBin(   int ageBinIndex ) const { return m_male_population[   ageBinIndex ].size() ; }
@@ -76,21 +74,20 @@ namespace Kernel
         typedef vector<pair_t> map_entry_t;
         typedef map<IIndividualHumanSTI*, map_entry_t> population_map_t;
 
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
+        std::vector<IIndividualHumanSTI*> m_RegisteredMales;
+        std::vector<IIndividualHumanSTI*> m_RegisteredFemales;
+        std::map<uint32_t,uint32_t> m_RegisteredIDtoIndexMapMales;
+        std::map<uint32_t,uint32_t> m_RegisteredIDtoIndexMapFemales;
         human_list_t m_all_males;
         population_t m_male_population;
         population_t m_female_population;
         population_map_t m_population_map;
-#pragma warning( pop )
 
     private:
         void AddToPopulation( human_list_t& age_bin_list, IIndividualHumanSTI* sti_person, int age_bin_index );
         bool RemoveFromPopulation( IIndividualHumanSTI* sti_person, population_t& target_population, bool remove_all );
         void UpdateQueueLengths( map<int, vector<int>>& rQueueLengths );
 
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         vector<float> preference;
         map<int, vector<float>> desired_flow;
 
@@ -107,6 +104,5 @@ namespace Kernel
         vector<int> new_females;
 
         DECLARE_SERIALIZABLE(BehaviorPfa);
-#pragma warning( pop )
     };
 }

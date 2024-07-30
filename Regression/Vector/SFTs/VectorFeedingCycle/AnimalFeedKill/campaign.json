@@ -1,0 +1,22 @@
+{
+    "Events": [
+        {
+            "Event_Coordinator_Config": {
+                "Intervention_Config": {
+                    "Killing_Config": {
+                        "Initial_Effect": 0.67,
+                        "class": "WaningEffectConstant"
+                    },
+                    "class": "AnimalFeedKill"
+                },
+                "class": "StandardInterventionDistributionEventCoordinator"
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Start_Day": 0,
+            "class": "CampaignEvent"
+        }
+    ],
+    "Use_Defaults": 1
+}

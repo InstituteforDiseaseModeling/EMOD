@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
@@ -16,11 +8,14 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Common.h"
 #include "Debug.h"
 #include "IContagionPopulation.h"
+#include "ContagionPopulationSimple.h"
 #include "TransmissionGroupMembership.h"
-#include "TransmissionGroupsBase.h"
-#include "NodeVector.h"
+#include "INodeContext.h"
 #include "VectorInterventionsContainer.h"
 #include "RANDOM.h"
+#include "SimulationConfig.h"
+#include "IContagionPopulationGP.h"
+#include "NodeEventContext.h"
 
 #include "Log.h"
 
@@ -36,6 +31,7 @@ namespace Kernel
     : Kernel::IndividualHuman(_suid, float(monte_carlo_weight), float(initial_age), gender)
     , m_strain_exposure()
     , m_total_exposure(0.0f)
+    , m_num_infectious_bites(0)
     , vector_susceptibility(nullptr)
     , vector_interventions(nullptr)
     {
@@ -45,6 +41,7 @@ namespace Kernel
     : Kernel::IndividualHuman(context)
     , m_strain_exposure()
     , m_total_exposure(0.0f)
+    , m_num_infectious_bites(0)
     , vector_susceptibility(nullptr)
     , vector_interventions(nullptr)
     {
@@ -72,6 +69,18 @@ namespace Kernel
         immunity_config.Configure( config );
     }
 
+    void IndividualHumanVector::InitializeHuman()
+    {
+        // -----------------------------------------------------------------------------
+        // --- We need to ensure that the probabilities in VectorInterventionsContainer
+        // --- get initialized correctly.  If we don't do this, the math gets messed up
+        // --- in VectorPopulation.
+        // -----------------------------------------------------------------------------
+        float dt = GET_CONFIGURABLE( SimulationConfig )->Sim_Tstep;
+        vector_interventions->InfectiousLoopUpdate( dt );
+        vector_interventions->Update( dt );
+    }
+
     void IndividualHumanVector::PropagateContextToDependents()
     {
         IndividualHuman::PropagateContextToDependents();
@@ -80,8 +89,14 @@ namespace Kernel
         {
             if ( s_OK != susceptibility->QueryInterface(GET_IID(IVectorSusceptibilityContext), (void**)&vector_susceptibility) )
             {
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "susceptibility", "IVectorSusceptibilityContext", "Susceptibility" );
+                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__,
+                                               "susceptibility", "IVectorSusceptibilityContext", "Susceptibility" );
             }
+        }
+
+        if( vector_interventions == nullptr && interventions != nullptr)
+        {
+            vector_interventions = static_cast<VectorInterventionsContainer*>(interventions);
         }
     }
 
@@ -122,23 +137,36 @@ namespace Kernel
     void IndividualHumanVector::UpdateGroupPopulation(float size_changes)
     {
         // Update nodepool population for both human-vector and vector-human since we use the same normalization for both
-        parent->UpdateTransmissionGroupPopulation({{"indoor","human"},{"outdoor","human"}}, size_changes, this->GetMonteCarloWeight());
-        LOG_DEBUG_F("updated population for both human and vector, with size change %f and monte carlo weight %f.\n", size_changes, this->GetMonteCarloWeight());
+        float host_vector_weight = float(GetMonteCarloWeight() * GetRelativeBitingRate());
+        IPKeyValueContainer not_used_by_NodeVector;
+        parent->UpdateTransmissionGroupPopulation( not_used_by_NodeVector, size_changes, host_vector_weight );
+        LOG_DEBUG_F("updated population for both human and vector, with size change %f and monte carlo weight %f.\n", size_changes, host_vector_weight);
+    }
+
+    bool IndividualHumanVector::DidReceiveInfectiousBite()
+    {
+        // We don't do the draw on probability of *any* infectious bites, i.e. EXPCDF(-m_total_exposure)
+        // We will instead do a Poisson draw on how many infectious bites, with the equivalent behavior for zero bites.
+
+        m_num_infectious_bites = GetRng()->Poisson( m_total_exposure );
+        if( m_num_infectious_bites > 0 )
+        {
+            IIndividualEventBroadcaster* broadcaster = GetNodeEventContext()->GetIndividualEventBroadcaster();
+            broadcaster->TriggerObservers( GetEventContext(), EventTrigger::ReceivedInfectiousBites );
+        }
+        return (m_num_infectious_bites > 0);
     }
 
     void IndividualHumanVector::ApplyTotalBitingExposure()
     {
-        // Make random draw whether to acquire new infection
-        // dt incorporated already in ExposeIndividual function arguments
-        float acquisition_probability = float(EXPCDF(-m_total_exposure));
-        if ( GetRng()->e() >= acquisition_probability ) return;
-            
-        // Choose a strain based on a weighted draw over values from all vector-to-human pools
-        float strain_cdf_draw = GetRng()->e() * m_total_exposure;
-        std::vector<strain_exposure_t>::iterator it = std::lower_bound( m_strain_exposure.begin(), m_strain_exposure.end(), strain_cdf_draw, compare_strain_exposure_float_less());
-        TransmissionGroupsBase::ContagionPopulationImpl contPop( &(it->first), (it->second) );
-        LOG_DEBUG_F( "Mosquito->Human infection transmission based on total exposure %f. Existing infections = %d.\n", m_total_exposure, GetInfections().size() );
-        AcquireNewInfection(&contPop);
+        if( DidReceiveInfectiousBite() )
+        {
+            // Choose a strain based on a weighted draw over values from all vector-to-human pools
+            float strain_cdf_draw = GetRng()->e() * m_total_exposure;
+            std::vector<strain_exposure_t>::iterator it = std::lower_bound( m_strain_exposure.begin(), m_strain_exposure.end(), strain_cdf_draw, compare_strain_exposure_float_less());
+            LOG_DEBUG_F( "Mosquito->Human infection transmission based on total exposure %f. Existing infections = %d.\n", m_total_exposure, GetInfections().size() );
+            AcquireNewInfection( &(it->first) );
+        }
     }
 
     void IndividualHumanVector::Expose( const IContagionPopulation* cp, float dt, TransmissionRoute::Enum transmission_route )
@@ -146,72 +174,88 @@ namespace Kernel
         release_assert( cp );
         release_assert( susceptibility );
         release_assert( interventions );
-#if 1
-        // get rid of this. but seems to be needed for malaria garki. :( :( :(
-        if( !vector_interventions )
-        {
-            vector_interventions = static_cast<VectorInterventionsContainer*>(interventions);
-        }
-#endif
         release_assert( vector_interventions );
+
+        IContagionPopulationGP* cp_gp = nullptr;
+        if ( s_OK != (const_cast<IContagionPopulation*>(cp))->QueryInterface(GET_IID(IContagionPopulationGP), (void**)&cp_gp) )
+        {
+            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "cp", "IContagionPopulationGP", "IContagionPopulation" );
+        }
+
         float acqmod = GetRelativeBitingRate() * susceptibility->getModAcquire() * interventions->GetInterventionReducedAcquire();
 
+        GeneticProbability gp_acqmod = 1.0f;
         switch( transmission_route )
         {
             case TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_INDOOR:
-                acqmod *= vector_interventions->GetblockIndoorVectorAcquire();
+                gp_acqmod = vector_interventions->GetblockIndoorVectorAcquire();
                 break;
 
             case TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_OUTDOOR:
-                acqmod *= vector_interventions->GetblockOutdoorVectorAcquire();
+                gp_acqmod = vector_interventions->GetblockOutdoorVectorAcquire();
                 break;
         
             default:
                 throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "transmission_route", transmission_route, TransmissionRoute::pairs::lookup_key( transmission_route ) );
         }
 
-        // Accumulate vector of pairs of strain ids and cumulative infection probability
-        float infection_probability = cp->GetTotalContagion() * acqmod * dt;
+        // -----------------------------------------------------------------------------------
+        // --- Accumulate vector of pairs of strain ids and cumulative infection probability
+        // --- We have a GeneticProbability because we taking into account the genome of the
+        // --- vectors that were depositing and any resistance in this person's interventions.
+        // -----------------------------------------------------------------------------------
+        GeneticProbability total_contagion = cp_gp->GetTotalContagionGP();
+        GeneticProbability gp_total = total_contagion * gp_acqmod;
+        float infection_probability = gp_total.GetSum() * acqmod * dt;
         if ( infection_probability > 0 )
         {
-            // Increment total exposure
-            m_total_exposure += infection_probability;
-
             // With a weighted random draw, pick a strain from the ContagionPopulation CDF
             StrainIdentity strain_id;
-            cp->ResolveInfectingStrain(&strain_id);
+            if( cp->ResolveInfectingStrain(&strain_id) )
+            {
+                // Increment total exposure
+                m_total_exposure += infection_probability;
 
-            // Push this exposure and strain back to the storage array for all vector-to-human pools (e.g. indoor, outdoor)
-            m_strain_exposure.push_back( std::make_pair(strain_id, m_total_exposure) );
+                AddExposure( strain_id, m_total_exposure, transmission_route );
+            }
         }
+    }
+
+    void IndividualHumanVector::AddExposure( const StrainIdentity& rStrainId,
+                                             float totalExposure,
+                                             TransmissionRoute::Enum transmission_route )
+    {
+        // Push this exposure and strain back to the storage array for all vector-to-human pools (e.g. indoor, outdoor)
+        m_strain_exposure.push_back( std::make_pair( rStrainId, totalExposure ) );
     }
 
     void IndividualHumanVector::UpdateInfectiousness(float dt)
     {
         infectiousness = 0;
-        float tmp_infectiousness = 0;
 
         typedef std::map< StrainIdentity, float >     strain_infectivity_map_t;
         typedef strain_infectivity_map_t::value_type  strain_infectivity_t;
-        strain_infectivity_map_t infectivity_by_strain;
-        StrainIdentity tmp_strainIDs;
+        static strain_infectivity_map_t infectivity_by_strain;
+        infectivity_by_strain.clear();
 
         // Loop once over all infections, caching strains and infectivity.
         // If total infectiousness exceeds unity, we will normalize all strains down accordingly.
         for (auto infection : infections)
         {
             release_assert( infection );
-            tmp_infectiousness = infection->GetInfectiousness();
+            float tmp_infectiousness = infection->GetInfectiousness();
             infectiousness += tmp_infectiousness;
 
             if ( tmp_infectiousness > 0 )
             {
-                infection->GetInfectiousStrainID(&tmp_strainIDs);
+                const IStrainIdentity& r_strain_id = infection->GetInfectiousStrainID();
+                StrainIdentity tmp_strainIDs;
+                tmp_strainIDs.SetAntigenID( r_strain_id.GetAntigenID() );
+                tmp_strainIDs.SetGeneticID( r_strain_id.GetGeneticID() );
                 infectivity_by_strain[tmp_strainIDs] += tmp_infectiousness;
             }
         }
 
-        // This optimization seems to make sense. Works for Dengue. Need to test for Vector/Malaria of course.
         if( infectiousness == 0 )
         {
             return;
@@ -230,22 +274,28 @@ namespace Kernel
         float host_vector_weight = float(GetMonteCarloWeight() * GetRelativeBitingRate());
 
         // Effects from vector intervention container
-        IVectorInterventionsEffects* ivie = nullptr;
-        if ( s_OK !=  interventions->QueryInterface(GET_IID(IVectorInterventionsEffects), (void**)&ivie) )
+        IVectorInterventionsEffects* ivie = GetVectorInterventionEffects();
+
+        INodeVector* p_node_vector = nullptr;
+        if ( s_OK != parent->QueryInterface(GET_IID(INodeVector), (void**)&p_node_vector) )
         {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "interventions", "IVectorInterventionsEffects", "IndividualHumanVector" );
+            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "parent", "INodeVector", "INodeContext" );
         }
 
         // Loop again over infection strains, depositing (downscaled) infectivity modified by vector intervention effects etc. (indoor + outdoor)
+        GeneticProbability indoor_contagion  = ivie->GetblockIndoorVectorTransmit()  * (host_vector_weight * truncate_infectious_mod * modtransmit);
+        GeneticProbability outdoor_contagion = ivie->GetblockOutdoorVectorTransmit() * (host_vector_weight * truncate_infectious_mod * modtransmit);
         for (auto& infectivity : infectivity_by_strain)
         {
             const StrainIdentity *id = &(infectivity.first);
+            GeneticProbability inf_indoor_contagion  = indoor_contagion  * infectivity.second;
+            GeneticProbability inf_outdoor_contagion = outdoor_contagion * infectivity.second;
             LOG_DEBUG_F( "Depositing contagion from human to vector (indoor & outdoor) with biting-rate-driven weight of %f and combined modifiers of %f.\n",
                          host_vector_weight,
-                         infectivity.second * truncate_infectious_mod * modtransmit * ivie->GetblockIndoorVectorTransmit()
+                         indoor_contagion.GetSum()
                        );
-            parent->DepositFromIndividual( *id, host_vector_weight * infectivity.second * truncate_infectious_mod * modtransmit * ivie->GetblockIndoorVectorTransmit(),  NodeVector::human_indoor,  TransmissionRoute::TRANSMISSIONROUTE_HUMAN_TO_VECTOR_INDOOR );
-            parent->DepositFromIndividual( *id, host_vector_weight * infectivity.second * truncate_infectious_mod * modtransmit * ivie->GetblockOutdoorVectorTransmit(), NodeVector::human_outdoor, TransmissionRoute::TRANSMISSIONROUTE_HUMAN_TO_VECTOR_OUTDOOR );
+            p_node_vector->DepositFromIndividual( *id, inf_indoor_contagion,  TransmissionRoute::TRANSMISSIONROUTE_HUMAN_TO_VECTOR_INDOOR );
+            p_node_vector->DepositFromIndividual( *id, inf_outdoor_contagion, TransmissionRoute::TRANSMISSIONROUTE_HUMAN_TO_VECTOR_OUTDOOR );
         }
     }
 
@@ -257,8 +307,27 @@ namespace Kernel
     float 
     IndividualHumanVector::GetRelativeBitingRate(void) const
     {
+        // I don't think we need this but it was needed by Dengue at one point
+        if( vector_susceptibility == nullptr && susceptibility != nullptr)
+        {
+            if ( s_OK != susceptibility->QueryInterface(GET_IID(IVectorSusceptibilityContext), (void**)&vector_susceptibility) )
+            {
+                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__,
+                                               "susceptibility", "IVectorSusceptibilityContext", "Susceptibility" );
+            }
+        }
         release_assert( vector_susceptibility );
         return vector_susceptibility->GetRelativeBitingRate();
+    }
+
+    int IndividualHumanVector::GetNumInfectiousBites() const
+    {
+        return m_num_infectious_bites;
+    }
+
+    IVectorInterventionsEffects* IndividualHumanVector::GetVectorInterventionEffects() const
+    {
+        return vector_interventions;
     }
 
     void IndividualHumanVector::ReportInfectionState()
@@ -302,8 +371,7 @@ namespace Kernel
         for (auto& entry : vec)
         {
             ar.startObject();
-            StrainIdentity* strain = &entry.first;
-            ar.labelElement("strain"); StrainIdentity::serialize(ar, strain);
+            ar.labelElement("strain"); StrainIdentity::serialize(ar, entry.first);
             ar.labelElement("weight") & entry.second;
             ar.endObject();
         }

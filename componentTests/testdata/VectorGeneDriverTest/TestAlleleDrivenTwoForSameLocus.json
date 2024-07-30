@@ -1,0 +1,216 @@
+{
+    "Genes" : [
+        {
+            "Is_Gender_Gene": 0,
+            "Alleles": [
+                {
+                    "Name": "a1",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 1.0
+                },
+                {
+                    "Name": "a2",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.0
+                },
+                {
+                    "Name": "a3",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.0
+                }
+            ],
+            "Mutations": [
+                {
+                    "Mutate_From": "a1",
+                    "Mutate_To": "a3",
+                    "Probability_Of_Mutation": 0.01
+                }
+            ]
+        },
+        {
+            "Is_Gender_Gene": 0,
+            "Alleles": [
+                {
+                    "Name": "b1",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.4
+                },
+                {
+                    "Name": "b2",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.3
+                },
+                {
+                    "Name": "b3",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.2
+                },
+                {
+                    "Name": "b4",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.1
+                },
+                {
+                    "Name": "b5",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.0
+                },
+                {
+                    "Name": "b6",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.0
+                }
+            ],
+            "Mutations": [
+                {
+                    "Mutate_From": "b2",
+                    "Mutate_To": "b4",
+                    "Probability_Of_Mutation": 0.01
+                },
+                {
+                    "Mutate_From": "b2",
+                    "Mutate_To": "b5",
+                    "Probability_Of_Mutation": 0.02
+                },
+                {
+                    "Mutate_From": "b3",
+                    "Mutate_To": "b6",
+                    "Probability_Of_Mutation": 0.03
+                }
+            ]
+        },
+        {
+            "Is_Gender_Gene": 0,
+            "Alleles": [
+                {
+                    "Name": "c1",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.5
+                },
+                {
+                    "Name": "c2",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.5
+                },
+                {
+                    "Name": "c3",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.0
+                },
+                {
+                    "Name": "c4",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.0
+                }
+            ],
+            "Mutations": [
+                {
+                    "Mutate_From": "c2",
+                    "Mutate_To": "c3",
+                    "Probability_Of_Mutation": 0.001
+                }
+            ]
+        },
+        {
+            "Is_Gender_Gene": 0,
+            "Alleles": [
+                {
+                    "Name": "d1",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.5
+                },
+                {
+                    "Name": "d2",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.5
+                },
+                {
+                    "Name": "d3",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.0
+                }
+            ],
+            "Mutations": []
+        },
+        {
+            "Is_Gender_Gene": 0,
+            "Alleles": [
+                {
+                    "Name": "e1",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.5
+                },
+                {
+                    "Name": "e2",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.5
+                }
+            ],
+            "Mutations": []
+        }
+    ],
+    "Drivers" : [
+        {
+            "Driver_Type" : "INTEGRAL_AUTONOMOUS",
+            "Driving_Allele" : "a2",
+            "Alleles_Driven" : [
+                {
+                    "Allele_To_Copy"    : "a2",
+                    "Allele_To_Replace" : "a1",
+                    "Copy_To_Likelihood" : [
+                        {
+                            "Copy_To_Allele" : "a2",
+                            "Likelihood" : 0.9
+                        },
+                        {
+                            "Copy_To_Allele" : "a1",
+                            "Likelihood" : 0.1
+                        }
+                    ]
+                },
+                {
+                    "Allele_To_Copy"    : "a3",
+                    "Allele_To_Replace" : "a1",
+                    "Copy_To_Likelihood" : [
+                        {
+                            "Copy_To_Allele" : "a3",
+                            "Likelihood" : 0.9
+                        },
+                        {
+                            "Copy_To_Allele" : "a1",
+                            "Likelihood" : 0.1
+                        }
+                    ]
+                },
+                {
+                    "Allele_To_Copy"    : "b2",
+                    "Allele_To_Replace" : "b1",
+                    "Copy_To_Likelihood" : [
+                        {
+                            "Copy_To_Allele" : "b3",
+                            "Likelihood" : 1.0
+                        },
+                        {
+                            "Copy_To_Allele" : "b1",
+                            "Likelihood" : 0.0
+                        }
+                    ]
+                },
+                {
+                    "Allele_To_Copy"    : "c2",
+                    "Allele_To_Replace" : "c1",
+                    "Copy_To_Likelihood" : [
+                        {
+                            "Copy_To_Allele" : "c3",
+                            "Likelihood" : 1.0
+                        },
+                        {
+                            "Copy_To_Allele" : "c1",
+                            "Likelihood" : 0.0
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

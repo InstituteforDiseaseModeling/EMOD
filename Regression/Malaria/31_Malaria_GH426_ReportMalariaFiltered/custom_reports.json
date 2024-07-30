@@ -1,31 +1,47 @@
 {
-    "Custom_Reports" : 
-    {
-        "Use_Explicit_Dlls" : 1,
-        "ReportMalariaFiltered" :
+    "Reports": [
         {
-            "Enabled" : 1,
-            "Reports" :
-            [
-                {
-                    "Start_Day": 0,
-                    "End_Day": 100,
-                    "Report_File_Name" : "Rank0_Nodes1n2.json",
-                    "Node_IDs_Of_Interest" : [1,2]
-                },
-                {
-                    "Start_Day" : 0,
-                    "End_Day": 100,
-                    "Report_File_Name" : "Rank1_Nodes3n4.json",
-                    "Node_IDs_Of_Interest" : [3,4]
-                },
-                {
-                    "Start_Day" : 0,
-                    "End_Day": 100,
-                    "Report_File_Name" : "Rank2_Nodes5n6.json",
-                    "Node_IDs_Of_Interest" : [5,6]
-                }
-            ]
+            "Include_Gestation_Columns": 1,
+            "Species_List": [
+                "SillySkeeter"
+            ],
+            "Stratify_By_Species": 0,
+            "class": "ReportVectorStats"
+        },
+        {
+            "End_Day": 101,
+            "Min_Age_Years": 0,
+            "Max_Age_Years": 5,
+            "Node_IDs_Of_Interest": [
+                1,
+                2
+            ],
+            "Filename_Suffix": "Rank0_Nodes1n2",
+            "Start_Day": 0,
+            "class": "ReportMalariaFiltered"
+        },
+        {
+            "End_Day": 101,
+            "Node_IDs_Of_Interest": [
+                3,
+                4
+            ],
+            "Filename_Suffix": "Rank1_Nodes3n4",
+            "Start_Day": 0,
+            "class": "ReportMalariaFiltered"
+        },
+        {
+            "End_Day": 101,
+            "Min_Age_Years": 0,
+            "Max_Age_Years": 125,
+            "Node_IDs_Of_Interest": [
+                5,
+                6
+            ],
+            "Filename_Suffix": "Rank2_Nodes5n6",
+            "Start_Day": 0,
+            "class": "ReportMalariaFiltered"
         }
-    }
+    ],
+    "Use_Defaults": 1
 }

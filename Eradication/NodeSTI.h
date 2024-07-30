@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 #include "Node.h"
@@ -14,7 +6,9 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 namespace Kernel
 {
-    class NodeSTI : public Node, public INodeSTI
+    class RelationshipGroups;
+
+    class NodeSTI : public Node, public INodeSTI, public IActionStager
     {
         GET_SCHEMA_STATIC_WRAPPER(NodeSTI)
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING();
@@ -25,9 +19,8 @@ namespace Kernel
         static NodeSTI *CreateNode(ISimulationContext *_parent_sim, ExternalNodeId_t externalNodeId, suids::suid node_suid);
 
         virtual void Initialize() override;
+        virtual void SetupEventContextHost() override;
         virtual bool Configure( const Configuration* config ) override;
-
-        void GetGroupMembershipForIndividual_STI( const std::map<std::string, uint32_t>& properties, std::map< int, TransmissionGroupMembership_t>& membershipOut );
 
     protected:
         NodeSTI();
@@ -35,29 +28,35 @@ namespace Kernel
 
         IRelationshipManager* relMan;
         ISociety* society;
+        RelationshipGroups* pRelationshipGroups;
 
-        virtual void SetParameters( NodeDemographicsFactory *demographics_factory, ClimateFactory *climate_factory, bool white_list_enabled ) override;
+        virtual void SetParameters( NodeDemographicsFactory *demographics_factory, ClimateFactory *climate_factory ) override;
 
         // Factory methods
         virtual IIndividualHuman* createHuman( suids::suid suid, float monte_carlo_weight, float initial_age, int gender) override;
 
-        // INodeContext
-        virtual act_prob_vec_t DiscreteGetTotalContagion( void ) override;
-
         // INodeSTI
         virtual /*const?*/ IRelationshipManager* GetRelationshipManager() /*const?*/ override;
         virtual ISociety* GetSociety() override;
+        virtual IActionStager* GetActionStager() override;
+        virtual void DepositFromIndividual( const IStrainIdentity& rStrain, const CoitalAct& rCoitalAct ) override;
+        virtual RANDOMBASE* GetRng() override;
 
+        // IActionStager
+        virtual void StageIntervention( IIndividualHumanEventContext* pHuman, IDistributableIntervention* pIntervention ) override;
+        virtual void StageEvent( IIndividualHumanEventContext* pHuman, const EventTrigger& rTrigger ) override;
+
+        virtual void PostUpdate() override;
         virtual void SetupIntranodeTransmission() override;
         virtual void Update( float dt ) override;
         virtual void processEmigratingIndividual( IIndividualHuman* individual ) override;
         virtual IIndividualHuman* processImmigratingIndividual( IIndividualHuman* movedind ) override;
-        virtual void UpdateTransmissionGroupPopulation( const tProperties& properties, float size_changes, float mc_weight );
-        
 
         DECLARE_SERIALIZABLE(NodeSTI);
 
     private:
         float pfa_burnin_duration;
+        std::vector<std::pair<IIndividualHumanEventContext*, IDistributableIntervention*>> staged_interventions;
+        std::vector<std::pair<IIndividualHumanEventContext*, EventTrigger>> staged_events;
     };
 }

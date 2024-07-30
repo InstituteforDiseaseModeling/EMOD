@@ -1,19 +1,8 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "CampaignEventByYear.h"
 #ifndef DISABLE_STI
 #include "SimulationSTI.h"
-#endif
-#ifdef ENABLE_TYPHOID
-#include "SimulationTyphoid.h"
 #endif
 #include "SimulationConfig.h"
 
@@ -21,7 +10,7 @@ SETUP_LOGGING("CampaignEventByYear")
 
 namespace Kernel
 {
-#if !defined(DISABLE_STI) || defined(ENABLE_TYPHOID)
+#if !defined(DISABLE_STI)
     //
     // CampaignEventByYear class here.
     //
@@ -38,9 +27,6 @@ namespace Kernel
     )
     {
         if( !JsonConfigurable::_dryrun &&
-#ifdef ENABLE_TYPHOID
-            (GET_CONFIGURABLE( SimulationConfig )->sim_type != SimType::TYPHOID_SIM) &&
-#endif
             (GET_CONFIGURABLE( SimulationConfig )->sim_type != SimType::STI_SIM) &&
             (GET_CONFIGURABLE( SimulationConfig )->sim_type != SimType::HIV_SIM) )
         {
@@ -48,7 +34,7 @@ namespace Kernel
         }
 
         float start_year = MIN_YEAR;
-        initConfigTypeMap( "Start_Year", &start_year, Start_Year_DESC_TEXT, MIN_YEAR, MAX_YEAR, MIN_YEAR );
+        initConfigTypeMap( "Start_Year", &start_year, CampaignEventByYear_Start_Year_DESC_TEXT, MIN_YEAR, MAX_YEAR, MIN_YEAR );
         initConfigComplexType( "Nodeset_Config", &nodeset_config, Nodeset_Config_DESC_TEXT );
         initConfigComplexType( "Event_Coordinator_Config", &event_coordinator_config, Event_Coordinator_Config_DESC_TEXT );
 

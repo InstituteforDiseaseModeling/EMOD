@@ -1,15 +1,9 @@
 
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
-
 #include "stdafx.h"
+
 #include "BaseEventReportIntervalOutput.h"
+
+#include "report_params.rc"
 #include "ReportUtilities.h"
 #include "FileSystem.h"
 #include "Serializer.h"
@@ -24,27 +18,13 @@ SETUP_LOGGING( "BaseEventReportIntervalOutput" )
 
 namespace Kernel
 {
-    BaseEventReportIntervalOutput::BaseEventReportIntervalOutput()
-        : BaseEventReport( "" ) 
-        , m_current_time( 0 )
-        , m_interval_timer(0)
-        , m_reporting_interval(0)
-        , m_report_count(0)
-        , m_max_number_reports(0)
-        , m_one_file_per_report(true)
-        , m_has_data(false)
-        , m_expired(false)
-        , m_PrettyFormat(false)
-        , m_pIntervalData(nullptr)
-        , m_pMulticoreDataExchange(nullptr)
-    {
-    }
-
     BaseEventReportIntervalOutput::BaseEventReportIntervalOutput( const std::string& rReportName, 
                                                                   bool oneFilePerReport,
                                                                   IIntervalData* pIntervalData,
-                                                                  IIntervalData* pMulticoreDataExchange )
-        : BaseEventReport( rReportName ) 
+                                                                  IIntervalData* pMulticoreDataExchange,
+                                                                  bool useHumanMinMaxAge,
+                                                                  bool useHumanOther )
+        : BaseEventReport( rReportName, useHumanMinMaxAge, useHumanOther ) 
         , m_current_time(0)
         , m_interval_timer(0)
         , m_reporting_interval(0)
@@ -75,9 +55,9 @@ namespace Kernel
         release_assert( m_pIntervalData );
         release_assert( m_pMulticoreDataExchange );
 
-        initConfigTypeMap( "Reporting_Interval", &m_reporting_interval, Reporting_Interval_DESC_TEXT, 1, 1000000, 1000000);
-        initConfigTypeMap( "Max_Number_Reports", &m_max_number_reports, Max_Number_Reports_DESC_TEXT, 0, 1000000, 1);
-        initConfigTypeMap( "Pretty_Format",      &m_PrettyFormat,       Pretty_Format_DESC_TEXT, false );
+        initConfigTypeMap( "Reporting_Interval", &m_reporting_interval, Report_Reporting_Interval_DESC_TEXT, 1, 1000000, 1000000);
+        initConfigTypeMap( "Max_Number_Reports", &m_max_number_reports, Report_Max_Number_Reports_DESC_TEXT, 0, 1000000, 1);
+        initConfigTypeMap( "Pretty_Format",      &m_PrettyFormat,       Report_Pretty_Format_DESC_TEXT, false );
 
         bool ret = BaseEventReport::Configure( inputJson );
         return ret;
@@ -107,11 +87,8 @@ namespace Kernel
                 LOG_WARN_F("Reporting_Interval ( %f ) is not a multiple of Simulation_Timestep ( %f ), so Time Of Report might not be as expected \n", m_reporting_interval, dt );
             }
 
-
-            if ( m_interval_timer >= m_reporting_interval )
+            if( !m_expired && (m_interval_timer >= m_reporting_interval) )
             {
-                LOG_DEBUG_F("Resetting %s reporting interval timer...\n", GetReportName().c_str());
-                m_interval_timer -= m_reporting_interval; // allows for dealing with reporting intervals that are not whole days, for example 12 approximately equal reports in a year = 30.42 day interval
                 m_report_count++; // have before WriteOutput() so it can use the value
 
                 Reduce();
@@ -121,9 +98,11 @@ namespace Kernel
                     if( m_one_file_per_report )
                     {
                         WriteOutput( currentTime );
-                        m_has_data = false ;
                     }
+                    m_has_data = false ;
                 }
+                LOG_DEBUG_F( "Resetting %s reporting interval timer...\n", GetReportName().c_str() );
+                m_interval_timer -= m_reporting_interval; // allows for dealing with reporting intervals that are not whole days, for example 12 approximately equal reports in a year = 30.42 day interval
 
                 ClearOutputData();
 
@@ -149,39 +128,56 @@ namespace Kernel
             return;
         }
 
+        // ----------------------------------------------------------------------------------
+        // --- NOTE: We need to do Reduce() even if the core is not collecting event data.
+        // --- We want all cores/ranks communicating if they have no real data.  Part of the
+        // --- reason for this is so we don't force the Rank=0 core to know which cores ar
+        // --- collecting data and which are not.
+        // ----------------------------------------------------------------------------------
         if( EnvPtr->MPI.Rank != 0 )
         {
-            IJsonObjectAdapter* pIJsonObj = CreateJsonObjAdapter();
-            pIJsonObj->CreateNewWriter();
-            pIJsonObj->BeginObject();
+            ReportUtilities::SendHasData( m_has_data );
 
-            JSerializer js;
-            m_pIntervalData->Serialize( *pIJsonObj, js );
+            if( m_has_data )
+            {
+                IJsonObjectAdapter* pIJsonObj = CreateJsonObjAdapter();
+                pIJsonObj->CreateNewWriter();
+                pIJsonObj->BeginObject();
 
-            pIJsonObj->EndObject();
+                JSerializer js;
+                m_pIntervalData->Serialize( *pIJsonObj, js );
 
-            std::string json_data = pIJsonObj->ToString();
+                pIJsonObj->EndObject();
 
-            delete pIJsonObj;
+                std::string json_data = pIJsonObj->ToString();
 
-            ReportUtilities::SendData( json_data );
+                delete pIJsonObj;
+
+                ReportUtilities::SendData( json_data );
+            }
         }
         else
         {
             for( int fromRank = 1 ; fromRank < EnvPtr->MPI.NumTasks ; ++fromRank )
             {
-                std::vector<char> received;
-                ReportUtilities::GetData( fromRank, received );
+                bool has_data = ReportUtilities::GetHasData( fromRank );
+                m_has_data |= has_data;
 
-                IJsonObjectAdapter* pIJsonObj = CreateJsonObjAdapter();
-                pIJsonObj->Parse( received.data() );
+                if( has_data )
+                {
+                    std::vector<char> received;
+                    ReportUtilities::GetData( fromRank, received );
 
-                m_pMulticoreDataExchange->Clear();
-                m_pMulticoreDataExchange->Deserialize( *pIJsonObj );
+                    IJsonObjectAdapter* pIJsonObj = CreateJsonObjAdapter();
+                    pIJsonObj->Parse( received.data() );
 
-                m_pIntervalData->Update( *m_pMulticoreDataExchange );
+                    m_pMulticoreDataExchange->Clear();
+                    m_pMulticoreDataExchange->Deserialize( *pIJsonObj );
 
-                delete pIJsonObj;
+                    m_pIntervalData->Update( *m_pMulticoreDataExchange );
+
+                    delete pIJsonObj;
+                }
             }
         }
     }
@@ -189,10 +185,13 @@ namespace Kernel
     void BaseEventReportIntervalOutput::Finalize()
     {
         // if the report has data, then we need to write it out at the end.
-        if( !m_expired && m_has_data )
+        if( !m_expired )
         {
             LOG_WARN_F("Report, %s, not written yet, but the simulation is over.  Writing now...\n",GetReportName().c_str());
-            AccumulateOutput();
+            if( m_has_data )
+            {
+                AccumulateOutput();
+            }
             WriteOutput(-999.0);
 
             // Probably should clear the output data but it would just waste time

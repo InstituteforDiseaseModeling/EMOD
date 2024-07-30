@@ -1,0 +1,36 @@
+{
+    "tests": [
+        { "path": "Vector/perf/1_Age-0_Genes-0_Nodes-1_Mig-0"  },
+        { "path": "Vector/perf/2_Age-1_Genes-0_Nodes-1_Mig-0"  },
+        { "path": "Vector/perf/3_Age-0_Genes-2_Nodes-1_Mig-0"  },
+        { "path": "Vector/perf/4_Age-1_Genes-2_Nodes-1_Mig-0"  },
+        { "path": "Vector/perf/5_Age-0_Genes-0_Nodes-2_Mig-0"  },
+        { "path": "Vector/perf/6_Age-1_Genes-0_Nodes-2_Mig-0"  },
+        { "path": "Vector/perf/7_Age-0_Genes-2_Nodes-2_Mig-0"  },
+        { "path": "Vector/perf/8_Age-1_Genes-2_Nodes-2_Mig-0"  },
+        { "path": "Vector/perf/9_Age-0_Genes-0_Nodes-2_Mig-1"  },
+        { "path": "Vector/perf/10_Age-1_Genes-0_Nodes-2_Mig-1" },
+        { "path": "Vector/perf/11_Age-0_Genes-2_Nodes-2_Mig-1" },
+        { "path": "Vector/perf/12_Age-1_Genes-2_Nodes-2_Mig-1" }
+    ],
+    "..tests" : [
+        { "path": "Vector/perf/13_Age-0_Genes-0_Nodes-100_Mig-0" },
+        { "path": "Vector/perf/14_Age-1_Genes-0_Nodes-100_Mig-0" },
+        { "path": "Vector/perf/15_Age-0_Genes-2_Nodes-100_Mig-0" },
+        { "path": "Vector/perf/16_Age-1_Genes-2_Nodes-100_Mig-0" },
+        { "path": "Vector/perf/17_Age-0_Genes-0_Nodes-100_Mig-1" },
+        { "path": "Vector/perf/18_Age-1_Genes-0_Nodes-100_Mig-1" },
+        { "path": "Vector/perf/19_Age-0_Genes-2_Nodes-100_Mig-1" },
+        { "path": "Vector/perf/20_Age-1_Genes-2_Nodes-100_Mig-1" }
+    ],
+    ".tests": [
+        { "path": "Vector/perf/21_Age-0_Genes-0_Nodes-25_Mig-0" },
+        { "path": "Vector/perf/22_Age-1_Genes-0_Nodes-25_Mig-0" },
+        { "path": "Vector/perf/23_Age-0_Genes-2_Nodes-25_Mig-0" },
+        { "path": "Vector/perf/24_Age-1_Genes-2_Nodes-25_Mig-0" },
+        { "path": "Vector/perf/25_Age-0_Genes-0_Nodes-25_Mig-1" },
+        { "path": "Vector/perf/26_Age-1_Genes-0_Nodes-25_Mig-1" },
+        { "path": "Vector/perf/27_Age-0_Genes-2_Nodes-25_Mig-1" },
+        { "path": "Vector/perf/28_Age-1_Genes-2_Nodes-25_Mig-1" }
+    ]
+}

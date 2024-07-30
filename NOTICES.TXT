@@ -1,4 +1,4 @@
-Epidemiological Modeling Copyright 2012 – 2015 Intellectual Ventures Management, LLC.
+Epidemiological Modeling Copyright (c) 2024 Bill & Melinda Gates Foundation
 
 This product includes software developed at the following open source initiatives:
 
@@ -22,22 +22,26 @@ URL:     https://code.google.com/p/snappy/
 source:  https://drive.google.com/file/d/0B0xs9kK-b5nMOWIxWGJhMXd6aGs/edit?usp=sharing
 license: Please see the COPYING file in the snappy directory.
 
-stringencoders: A collection of high performance c-string transformations
-
-URL:     http://code.google.com/p/stringencoders/
-source:  http://code.google.com/p/stringencoders/downloads/list
-license: Please see the LICENSE.TXT file in the rapidjson\modp directory.
-
-
-tarball support
-
-URL:     http://plindenbaum.blogspot.com/2010/08/creating-tar-file-in-c.html
-source:  https://github.com/lindenb/cclindenb/tree/master/src/core/lindenb/io
-license: Please see the LICENSE.TXT file in the reporters\libtajikreporter directory.
-
-
-UnitTest++
+UnitTest++ - unit test framework for C++
 
 URL:     http://sourceforge.net/projects/unittest-cpp/
 source:  http://sourceforge.net/projects/unittest-cpp/
 license: Please see the COPYING file in the unittest\UnitTest++ directory.
+
+Numpy
+
+URL:     https://numpy.org/
+source:  https://github.com/numpy/numpy
+license: Please see text at the top of utils\RANDOM.cpp
+
+sqlite - SQLite library
+
+URL:     https://www.sqlite.org
+source:  https://www.sqlite.org/download.html
+license: Please see text at the top of libsqlite\sqlite3.h
+
+lz4 - Extremely fast compression
+
+URL:     ttp://www.lz4.org
+source:  https://travis-ci.org/Cyan4973/lz4
+license: Please see lz4\README.md

@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -13,7 +5,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <list>
 
 #include "IdmApi.h"
-#include "BoostLibWrapper.h"
 
 #include "ISupports.h"
 #include "Types.h"
@@ -29,7 +20,7 @@ namespace Kernel
     struct IIndividualEventBroadcaster;
     struct NodeDemographics;
     class Node;
-    class StrainIdentity;
+    struct IStrainIdentity;
     
     class IndividualHuman;
     class RANDOMBASE;
@@ -43,8 +34,7 @@ namespace Kernel
 
     struct IDMAPI IOutbreakConsumer : public ISupports
     {
-        virtual void AddImportCases( StrainIdentity* outbreak_strainID, float import_age, NaturalNumber num_cases_per_node, ProbabilityNumber prob_infect ) = 0;
-        //virtual void IncreasePrevalence(StrainIdentity* outbreak_strainID, IEventCoordinator2* pEC) = 0;
+        virtual void AddImportCases( IStrainIdentity* outbreak_strainID, float import_age, NaturalNumber num_cases_per_node, ProbabilityNumber prob_infect ) = 0;
     };
 
     struct ITravelLinkedDistributionSource : ISupports
@@ -81,8 +71,10 @@ namespace Kernel
         virtual const suids::suid & GetId() const = 0;
         virtual void SetContextTo(INodeContext* context) = 0;
         virtual std::list<INodeDistributableIntervention*> GetInterventionsByType(const std::string& type_name) = 0;
+        virtual bool ContainsExistingByName( const InterventionName& iv_name ) = 0;
         virtual void PurgeExisting( const std::string& iv_name ) = 0;
-       
+        virtual const std::list<INodeDistributableIntervention*>& GetNodeInterventions() const = 0;
+
         virtual bool IsInPolygon(float* vertex_coords, int numcoords) = 0;
         virtual bool IsInPolygon( const json::Array &poly ) = 0;
         virtual bool IsInExternalIdSet( const std::list<ExternalNodeId_t>& nodelist ) = 0;

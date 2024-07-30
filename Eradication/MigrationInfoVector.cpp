@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "MigrationInfoVector.h"
@@ -324,11 +316,11 @@ namespace Kernel
             initConfigTypeMap( "Vector_Migration_Stay_Put_Modifier", &m_ModifierStayPut,  Vector_Migration_Stay_Put_Modifier_DESC_TEXT, 0.0f, FLT_MAX, 0.0f, "Enable_Vector_Migration" );
         }
 
-        m_InfoFileListVector[0]->SetEnableParameterName( "Enable_Local_Vector_Migration"    );
-        m_InfoFileListVector[2]->SetEnableParameterName( "Enable_Regional_Vector_Migration" );
+        m_InfoFileListVector[0]->SetEnableParameterName( "Enable_Vector_Migration_Local"    );
+        m_InfoFileListVector[2]->SetEnableParameterName( "Enable_Vector_Migration_Regional" );
 
-        m_InfoFileListVector[0]->SetFilenameParameterName( "Local_Vector_Migration_Filename"    );
-        m_InfoFileListVector[2]->SetFilenameParameterName( "Regional_Vector_Migration_Filename" );
+        m_InfoFileListVector[0]->SetFilenameParameterName( "Vector_Migration_Filename_Local"    );
+        m_InfoFileListVector[2]->SetFilenameParameterName( "Vector_Migration_Filename_Regional" );
     }
 
     bool MigrationInfoFactoryVector::IsVectorMigrationEnabled() const

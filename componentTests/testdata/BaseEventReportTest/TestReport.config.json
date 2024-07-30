@@ -2,18 +2,20 @@
     "parameters": {
         "Reports": [
             {
-                "Duration_Days": 4,
+                "class": "TestReport",
+                "Filename_Suffix": "rd",
+                "Start_Day": 123,
+                "End_Day": 127,
+                "Node_IDs_Of_Interest": [],
+                "Min_Age_Years": 0.0,
+                "Max_Age_Years": 1000.0,
+                "Must_Have_IP_Key_Value": "",
+                "Must_Have_Intervention": "",
                 "Event_Trigger_List": [
                     "Births",
                     "NonDiseaseDeaths"
                 ],
-                "Nodeset_Config": {
-                    "class": "NodeSetAll"
-                },
-                "Report_Description": "rd",
-                "Report_Value": 5,
-                "Start_Day": 123,
-                "class": "TestReport"
+                "Report_Value": 5
             }
         ]
     }

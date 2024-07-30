@@ -1,17 +1,10 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 #include "BaseTextReportEvents.h"
 #include "ISimulation.h"
 #include "IIndividualHuman.h"
 #include "ExternalNodeId.h"
+#include "RelationshipType.h"
 
 namespace Kernel
 {
@@ -21,11 +14,14 @@ namespace Kernel
         NonNegativeFloat year;
 
         unsigned long rel_id; // relationship id
+        RelationshipType::Enum rel_type;
+        bool is_outside_pfa;
         ExternalNodeId_t node_id;
         unsigned long source_id;
         bool source_is_infected;
         unsigned int source_gender;
         float source_age;
+        std::string source_ip;
         unsigned int source_current_relationship_count;
         unsigned int source_lifetime_relationship_count;
         unsigned int source_relationships_in_last_6_months;
@@ -38,6 +34,7 @@ namespace Kernel
         bool destination_is_infected;
         unsigned int destination_gender;
         float destination_age;
+        std::string destination_ip;
         unsigned int destination_current_relationship_count;
         unsigned int destination_lifetime_relationship_count;
         unsigned int destination_relationships_in_last_6_months;

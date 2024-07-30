@@ -1,0 +1,308 @@
+{
+    "Events": [
+        {
+            "comment": "Broadcast Event to start Surveillance",
+            "class": "CampaignEvent",
+            "Start_Day": 10,
+            "Nodeset_Config": {
+                "Node_List": [
+                    1,2
+                ],
+                "class": "NodeSetNodeList"
+            },
+            "Event_Coordinator_Config": {
+                "class": "BroadcastCoordinatorEvent",
+                "Coordinator_Name": "Coordnator_1",
+                "Cost_To_Consumer": 10,
+                "Broadcast_Event": "Start_Sampling_a1"
+            }
+        },
+        {
+            "comment": "Broadcast Event to stop Surveillance",
+            "class": "CampaignEvent",
+            "Start_Day": 350,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "BroadcastCoordinatorEvent",
+                "Coordinator_Name": "Coordnator_2",
+                "Cost_To_Consumer": 10,
+                "Broadcast_Event": "Stop_Sampling_a1"
+            }
+        },
+        {
+            "comment": "Broadcast Event to stop Surveillance",
+            "class": "CampaignEvent",
+            "Start_Day": 20,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "BroadcastCoordinatorEvent",
+                "Coordinator_Name": "Coordnator_3",
+                "Cost_To_Consumer": 10,
+                "Broadcast_Event": "Start_Sampling_a0a0"
+            }
+        },
+        {
+            "comment": "Broadcast Event to stop Surveillance",
+            "class": "CampaignEvent",
+            "Start_Day": 700,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "BroadcastCoordinatorEvent",
+                "Coordinator_Name": "Coordnator_4",
+                "Cost_To_Consumer": 10,
+                "Broadcast_Event": "Stop_Sampling_a0a0"
+            }
+        },
+        {
+            "comment": "Triggered by BroadcastCoordinatorEvent",
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "Node_List": [
+                   1,2
+                ],
+                "class": "NodeSetNodeList"
+            },
+            "Event_Coordinator_Config": {
+                "class": "VectorSurveillanceEventCoordinator",
+                "Coordinator_Name": "Frequency_Counter",
+                "Start_Trigger_Condition_List": [
+                    "Start_Sampling_a1"
+                ],
+                "Stop_Trigger_Condition_List": [
+                    "Stop_Sampling_a1"
+                ],
+                "Duration": -1,
+                "Counter": {
+                    "Update_Period": 20,
+                    "Sample_Size_Distribution": "GAUSSIAN_DISTRIBUTION",
+                    "Sample_Size_Gaussian_Std_Dev": 200,
+                    "Sample_Size_Gaussian_Mean": 1000,
+                    "Species": "SillySkeeter",
+                    "Gender": "VECTOR_FEMALE",
+                    "Count_Type": "ALLELE_FREQ"
+                },
+                "Responder": {
+                    "Survey_Completed_Event": "Considered_Responding_a1"
+                }
+            }
+        },
+        {
+            "comment": "Triggered by BroadcastCoordinatorEvent",
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "Node_List": [
+                    1,3
+                ],
+                "class": "NodeSetNodeList"
+            },
+            "Event_Coordinator_Config": {
+                "class": "VectorSurveillanceEventCoordinator",
+                "Coordinator_Name": "Fraction_Counter",
+                "Start_Trigger_Condition_List": [
+                    "Start_Sampling_a0a0"
+                ],
+                "Stop_Trigger_Condition_List": [
+                    "Stop_Sampling_a0a0"
+                ],
+                "Duration": -1,
+                "Counter": {
+                    "Update_Period": 10,
+                    "Sample_Size_Distribution": "GAUSSIAN_DISTRIBUTION",
+                    "Sample_Size_Gaussian_Std_Dev": 200,
+                    "Sample_Size_Gaussian_Mean": 1000,
+                    "Species": "SillySkeeter",
+                    "Gender": "VECTOR_FEMALE",
+                    "Count_Type": "GENOME_FRACTION"
+                },
+                "Responder": {
+                    "Survey_Completed_Event": "Considered_Responding_a0a0"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "Node_List": [
+                    3
+                ],
+                "class": "NodeSetNodeList"
+            },
+            "Event_Coordinator_Config": {
+                "class": "TriggeredEventCoordinator",
+                "Coordinator_Name": "MosquitoRelease",
+                "Start_Trigger_Condition_List": [
+                    "Release_More_Mosquitoes_a1a1"
+                ],
+                "Stop_Trigger_Condition_List": [],
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 1,
+                "Duration": -1,
+                "Target_Demographic": "Everyone",
+                "Node_Property_Restrictions": [],
+                "Property_Restrictions_Within_Node": [],
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "MosquitoRelease",
+                    "Cost_To_Consumer": 10,
+                    "Released_Type": "FIXED_NUMBER",
+                    "Released_Number": 50000,
+                    "Released_Species": "SillySkeeter",
+                    "Released_Wolbachia": "VECTOR_WOLBACHIA_FREE",
+                    "Released_Genome": [
+                        [
+                            "X",
+                            "X"
+                        ],
+                        [
+                            "a1",
+                            "a1"
+                        ]
+                    ]
+                },
+                "Completion_Event": "DoneReleasing_a1a1"
+            }
+        },
+             {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "Node_List": [
+                    1, 3
+                ],
+                "class": "NodeSetNodeList"
+            },
+            "Event_Coordinator_Config": {
+                "class": "TriggeredEventCoordinator",
+                "Coordinator_Name": "MosquitoRelease",
+                "Start_Trigger_Condition_List": [
+                    "Release_More_Mosquitoes_a1a1"
+                ],
+                "Stop_Trigger_Condition_List": [],
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 1,
+                "Duration": -1,
+                "Target_Demographic": "Everyone",
+                "Node_Property_Restrictions": [],
+                "Property_Restrictions_Within_Node": [],
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "MosquitoRelease",
+                    "Cost_To_Consumer": 10,
+                    "Released_Type": "FIXED_NUMBER",
+                    "Released_Number": 50000,
+                    "Released_Species": "SillySkeeter",
+                    "Released_Wolbachia": "VECTOR_WOLBACHIA_FREE",
+                    "Released_Genome": [
+                        [
+                            "X",
+                            "Y"
+                        ],
+                        [
+                            "a1",
+                            "a1"
+                        ]
+                    ]
+                },
+                "Completion_Event": "DoneReleasing_a1a1"
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [
+                    1
+                ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "TriggeredEventCoordinator",
+                "Coordinator_Name": "MosquitoRelease",
+                "Start_Trigger_Condition_List": [
+                    "Release_More_Mosquitoes_a0a0"
+                ],
+                "Stop_Trigger_Condition_List": [],
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 1,
+                "Duration": -1,
+                "Target_Demographic": "Everyone",
+                "Node_Property_Restrictions": [],
+                "Property_Restrictions_Within_Node": [],
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "MosquitoRelease",
+                    "Cost_To_Consumer": 10,
+                    "Released_Type": "FIXED_NUMBER",
+                    "Released_Number": 50000,
+                    "Released_Species": "SillySkeeter",
+                    "Released_Wolbachia": "VECTOR_WOLBACHIA_FREE",
+                    "Released_Genome": [
+                        [
+                            "X",
+                            "X"
+                        ],
+                        [
+                            "a0",
+                            "a0"
+                        ]
+                    ]
+                },
+                "Completion_Event": "DoneReleasing_a0a0"
+            }
+        },
+                {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [
+                    1
+                ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "TriggeredEventCoordinator",
+                "Coordinator_Name": "MosquitoRelease",
+                "Start_Trigger_Condition_List": [
+                    "Release_More_Mosquitoes_a0a0"
+                ],
+                "Stop_Trigger_Condition_List": [],
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 1,
+                "Duration": -1,
+                "Target_Demographic": "Everyone",
+                "Node_Property_Restrictions": [],
+                "Property_Restrictions_Within_Node": [],
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "MosquitoRelease",
+                    "Cost_To_Consumer": 10,
+                    "Released_Type": "FIXED_NUMBER",
+                    "Released_Number": 50000,
+                    "Released_Species": "SillySkeeter",
+                    "Released_Wolbachia": "VECTOR_WOLBACHIA_FREE",
+                    "Released_Genome": [
+                        [
+                            "X",
+                            "Y"
+                        ],
+                        [
+                            "a0",
+                            "a0"
+                        ]
+                    ]
+                },
+                "Completion_Event": "DoneReleasing_a0a0"
+            }
+        }
+    ],
+    "Use_Defaults": 1
+}

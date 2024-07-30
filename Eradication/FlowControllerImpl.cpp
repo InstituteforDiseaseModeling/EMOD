@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "FlowControllerImpl.h"
@@ -31,9 +23,9 @@ namespace Kernel
         // -------------------------
         UpdateDesiredFlow( rCurrentTime, dt );
 
-        if (LOG_LEVEL(INFO))
+        if (LOG_LEVEL(DEBUG))
         {
-            LOG_INFO_F( "%s: desired flow:\n", __FUNCTION__ );
+            LOG_DEBUG_F( "%s: desired flow:\n", __FUNCTION__ );
             for (auto& entry : desired_flow) {
                 cout << "{ " << entry.first << ", [ ";
                 for (float flow : entry.second) {
@@ -70,10 +62,15 @@ namespace Kernel
             }
         }
 
-        if (LOG_LEVEL(INFO))
+        if (LOG_LEVEL(DEBUG))
         {
             rate_table->DumpRates();
         }
+    }
+
+    std::map<int, std::vector<float>>& FlowControllerImpl::GetDesiredFlow()
+    {
+        return desired_flow;
     }
 
     IPairFormationFlowController* FlowControllerImpl::CreateController(
@@ -131,9 +128,9 @@ namespace Kernel
                 }
             }
 
-            if (LOG_LEVEL(INFO))
+            if (LOG_LEVEL(DEBUG))
             {
-                LOG_INFO_F( "%s: eligible population for %s risk group:\n", __FUNCTION__, RiskGroup::pairs::lookup_key(risk_group) );
+                LOG_DEBUG_F( "%s: eligible population for %s risk group:\n", __FUNCTION__, RiskGroup::pairs::lookup_key(risk_group) );
                 for (auto& entry : eligible_population) {
                     cout << "{ " << entry.first << ", [ ";
                     for (int count : entry.second) {

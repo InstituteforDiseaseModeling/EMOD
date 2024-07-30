@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
@@ -37,7 +29,6 @@ namespace Kernel
     bool IndividualHumanHIVConfig::Configure( const Configuration* config )
     {
         initConfigTypeMap( "Maternal_Transmission_ART_Multiplier", &maternal_transmission_ART_multiplier, Maternal_Transmission_ART_Multiplier_DESC_TEXT, 0.0f, 1.0f, 0.1f );
-        IndividualHumanConfig::enable_immunity = true;
         return JsonConfigurable::Configure( config );
     }
 
@@ -73,8 +64,12 @@ namespace Kernel
 
     IndividualHumanHIV::IndividualHumanHIV(suids::suid _suid, float monte_carlo_weight, float initial_age, int gender)
         : IndividualHumanSTI(_suid, monte_carlo_weight, initial_age, gender)
-        , pos_num_partners_while_CD4500plus(0)
-        , neg_num_partners_while_CD4500plus(0)
+        , hiv_susceptibility( nullptr )
+        , m_pHIVInfection( nullptr )
+        , m_pHIVInterventionsContainer( nullptr )
+        , has_active_TB( false )
+        , pos_num_partners_while_CD4500plus( 0 )
+        , neg_num_partners_while_CD4500plus( 0 )
     {
         LOG_DEBUG("created IndividualHumanHIV\n");
     }
@@ -86,7 +81,15 @@ namespace Kernel
 
     IInfection* IndividualHumanHIV::createInfection( suids::suid _suid )
     {
-        return InfectionHIV::CreateInfection(this, _suid);
+        InfectionHIV* p_inf = InfectionHIV::CreateInfection(this, _suid);
+        LOG_VALID_F( "Time_of_Infection=%f  Individual id=%d  age_years=%f  days_until_death_by_HIV=%f  days_between_sympotmatic_and_death=%f\n",
+                     float(this->GetParent()->GetTime().time),
+                     this->GetSuid().data,
+                     this->getAgeInYears(),
+                     p_inf->GetDaysTillDeath(),
+                     this->hiv_susceptibility->GetDaysBetweenSymptomaticAndDeath() );
+        m_pHIVInfection = p_inf;
+        return p_inf;
     }
 
     void IndividualHumanHIV::InitializeStaticsHIV( const Configuration* config )
@@ -102,37 +105,36 @@ namespace Kernel
 
     void IndividualHumanHIV::setupInterventionsContainer()
     {
-        m_pSTIInterventionsContainer = _new_ HIVInterventionsContainer();
+        m_pHIVInterventionsContainer = _new_ HIVInterventionsContainer();
+        m_pSTIInterventionsContainer = m_pHIVInterventionsContainer;
         interventions = m_pSTIInterventionsContainer;
+    }
+
+    bool IndividualHumanHIV::IsSymptomatic() const
+    {
+        return hiv_susceptibility->IsSymptomatic();
     }
 
     bool IndividualHumanHIV::HasHIV() const
     {
-        bool ret = false;
-        for (auto infection : infections)
-        {
-            IInfectionHIV* pinfHIV = nullptr;
-            if (s_OK == infection->QueryInterface(GET_IID( IInfectionHIV ), (void**)&pinfHIV) )
-            {
-                ret = true;
-                break;
-            }
-        }
-        return ret;
+        return (infections.size() > 0);
     }
 
     IInfectionHIV *
     IndividualHumanHIV::GetHIVInfection()
     const
     {
-        IInfectionHIV* pinfHIV = nullptr;
         if( infections.size() == 0 )
         {
             return nullptr;
         }
-        else if (s_OK == (*infections.begin())->QueryInterface(GET_IID( IInfectionHIV ), (void**)&pinfHIV) )
+        else if( m_pHIVInfection != nullptr )
         {
-            return pinfHIV;
+            return m_pHIVInfection;
+        }
+        else if (s_OK == (*infections.begin())->QueryInterface(GET_IID( IInfectionHIV ), (void**)&m_pHIVInfection) )
+        {
+            return m_pHIVInfection;
         }
         else
         {
@@ -152,14 +154,17 @@ namespace Kernel
     IndividualHumanHIV::GetHIVInterventionsContainer()
     const
     {
-        IHIVInterventionsContainer *ic = nullptr;
-        if (s_OK == interventions->QueryInterface(GET_IID( IHIVInterventionsContainer ), (void**)&ic) )
-        {
-            return ic;
-        } else {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "interventions", "IHIVInterventionsContainer", "interventions" );
-        }
+        return m_pHIVInterventionsContainer;
+    }
 
+    IIndividualHumanSTI* IndividualHumanHIV::GetIndividualHumanSTI()
+    {
+        return this;
+    }
+
+    IHIVMedicalHistory* IndividualHumanHIV::GetMedicalHistory() const
+    {
+        return m_pHIVInterventionsContainer;
     }
 
     void
@@ -167,7 +172,7 @@ namespace Kernel
     {
         IndividualHumanSTI::Update( curtime, dt );
 
-        if (IndividualHumanConfig::aging)
+        if (IndividualHumanConfig::aging && broadcaster != nullptr)
         {
             if( ((m_age - dt) < SIX_WEEKS) && (SIX_WEEKS <= m_age) )
             {
@@ -184,7 +189,7 @@ namespace Kernel
     {
         bool birth_this_timestep = IndividualHumanSTI::UpdatePregnancy( dt );
         
-        if( is_pregnant )
+        if( is_pregnant && broadcaster )
         {
             if( ((pregnancy_timer - dt) < (DAYSPERWEEK*WEEKS_FOR_GESTATION - TWELVE_WEEKS)) && 
                                           ((DAYSPERWEEK*WEEKS_FOR_GESTATION - TWELVE_WEEKS) <= pregnancy_timer) )
@@ -228,6 +233,12 @@ namespace Kernel
         return retValue;
     }
 
+    bool 
+    IndividualHumanHIV::ImmunityEnabled()
+    const
+    {
+        return true;
+    }
 
     std::string
     IndividualHumanHIV::toString()
@@ -272,6 +283,10 @@ namespace Kernel
             if ( ind_hiv.susceptibility->QueryInterface(GET_IID(ISusceptibilityHIV), (void**)&ind_hiv.hiv_susceptibility) != s_OK)
             {
                 throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "susc", "IHIVSusceptibilityHIV", "Susceptibility" );
+            }
+            if( ind_hiv.m_pHIVInterventionsContainer == nullptr )
+            {
+                ind_hiv.m_pHIVInterventionsContainer = static_cast<HIVInterventionsContainer*>(ind_hiv.interventions);
             }
         }
     }

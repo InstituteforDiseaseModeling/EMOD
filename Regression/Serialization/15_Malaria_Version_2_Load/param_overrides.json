@@ -22,6 +22,9 @@
           "Serialized_Population_Filenames": [ "state-00365.dtk" ],
           "Serialized_Population_Path": "../14_Malaria_Version_2_Save/output", 
           ".Serialized_Population_Path": "\\\\bayesianfil01\\idm\\home\\clorton\\input\\Test\\regression\\serialization\\15_Malaria_Version_2_Load",
-          "Start_Time": 365
+          "Start_Time": 365,
+          "Serialized_Population_Reading_Type": "READ",
+          "Serialization_Mask_Node_Read": 0,
+          "Enable_Random_Generator_From_Serialized_Population": 0
      }
 }

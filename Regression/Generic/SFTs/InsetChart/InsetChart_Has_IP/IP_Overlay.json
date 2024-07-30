@@ -1,0 +1,92 @@
+
+{ 
+    "Metadata": 
+    { 
+        "DateCreated": "June 9, 2015",
+        "Tool": "Notepad",
+        "Author": "Daniel Bridenbecker",
+        "RegionName": "RegressionTest",
+        "DataSource": "NA",
+        "IdReference": "Gridded world grump2.5arcmin",
+        "NodeCount": 1
+    },
+    "Defaults": 
+    { 
+        "IndividualProperties": [ 
+            { 
+                "Property": "CurrentStatus",
+                "Values": [
+                    "NONE",
+                    "PREGNANT",
+                    "Using_Some_Contraception"
+                ],
+                "Initial_Distribution": [
+                    1.0, 
+                    0.0,
+                    0.0
+                ],
+                "Transitions": []
+            },
+                        { 
+                "Property": "Pokemon",
+                "Values": [
+                    "Charzard",
+                    "Bulbasaur",
+                    "Pikachu"
+                ],
+                "Initial_Distribution": [
+                    0.34, 
+                    0.33,
+                    0.33
+                ],
+                "Transitions": []
+            },
+                        { 
+                "Property": "Airbender",
+                "Values": [
+                    "Fire",
+                    "Air",
+                    "Water",
+                    "Earth"
+                ],
+                "Initial_Distribution": [
+                    0.25, 
+                    0.25,
+                    0.5,
+                    0
+                ],
+                "Transitions": []
+            },
+                        { 
+                "Property": "FiftyFifty",
+                "Values": [
+                    "OneHalf",
+                    "OtherHalf"
+                ],
+                "Initial_Distribution": [
+                    0.5, 
+                    0.5
+                ],
+                "Transitions": []
+            },            { 
+                "Property": "Health",
+                "Values": [
+                    "Healthy",
+                    "Ok",
+                    "Sick"
+                ],
+                "Initial_Distribution": [
+                    0.4, 
+                    0.5,
+                    0.1
+                ],
+                "Transitions": []
+            }
+        ]
+    },
+    "Nodes": [ 
+        { 
+            "NodeID": 1
+        } 
+    ]
+}

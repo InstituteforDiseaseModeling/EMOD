@@ -1,0 +1,32 @@
+{
+    "Default_Config_Path": "defaults/malaria_genetics_science_default_config.json",
+    "DEMOGRAPHICS": {
+        "Demographics_Filenames": [
+            "Namawala_single_node_demographics.json"
+        ]
+    },
+    "PRIMARY": {
+        "Config_Name": "Malaria::SFTs::NeighborhoodSized::MSP_Smaller_Neighborhood",
+        "Geography": "Namawala",
+        "Run_Number": 1,
+        "Simulation_Duration": 730
+    },
+    "REPORTS": {
+        "Custom_Reports_Filename": ""
+    },
+    "STRAIN_TRACKING": {
+        "Falciparum_MSP_Variants": 200,
+        "Falciparum_Nonspecific_Types": 16,
+        "Falciparum_PfEMP1_Variants": 500,
+        "Parasite_Genetics": {
+            "Var_Gene_Randomness_Type": "FIXED_MSP",
+            "Neighborhood_Size_MSP": 0,
+            "Barcode_Genome_Locations": [
+                2423470
+            ]
+        }
+    },
+    "VECTOR": {
+        "x_Temporary_Larval_Habitat": 0.1
+    }
+}

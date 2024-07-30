@@ -1,0 +1,63 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEventByYear",
+            "Start_Year": 1961, 
+            "Nodeset_Config": {
+                    "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "ReferenceTrackingEventCoordinatorTrackingConfig",
+                "End_Year": 2050,
+                "Update_Period": 30.416667,
+                "Time_Value_Map": {
+                    "Times":  [ 1961, 1963, 1963.1, 1965, 1967, 1969],
+                    "Values": [  0.1,  0.1,    0.3,  0.3,  0.6,  0.1]
+                },
+                "Target_Demographic": "ExplicitAgeRangesAndGender",
+                "Target_Gender": "Male",
+                "Target_Age_Min":  15,
+                "Target_Age_Max":  20,
+                "Tracking_Config": {
+                    "class": "IsPostDebut",
+                    "Is_Equal_To": 1
+                },
+                "Intervention_Config": {
+                    "Distributed_Event_Trigger": "Male_SetSexualDebutAge_Event",
+                    "class": "SetSexualDebutAge",
+                    "Setting_Type " : "CURRENT_AGE"
+                }
+            }
+        },
+        {
+            "class": "CampaignEventByYear",
+            "Start_Year": 1963, 
+            "Nodeset_Config": {
+                    "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "ReferenceTrackingEventCoordinatorTrackingConfig",
+                "End_Year": 2050,
+                "Update_Period": 30.416667,
+                "Time_Value_Map": {
+                    "Times":  [ 1963, 1965, 1965.1, 1967, 1969, 1971],
+                    "Values": [  0.1,  0.1,    0.3,  0.3,  0.6,  0.1]
+                },
+                "Target_Demographic": "ExplicitAgeRangesAndGender",
+                "Target_Gender": "Female",
+                "Target_Age_Min":  15,
+                "Target_Age_Max":  20,
+                "Tracking_Config": {
+                    "class": "IsPostDebut",
+                    "Is_Equal_To": 1
+                },
+                "Intervention_Config": {
+                    "Distributed_Event_Trigger": "Female_SetSexualDebutAge_Event",
+                    "class": "SetSexualDebutAge",
+                    "Setting_Type " : "CURRENT_AGE"
+                }
+            }
+        }
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "parameters": {
+        "Config_Name": "HIVMortality_InfectionToDeath_Adult",
+        "Demographics_Filenames": [
+            "../../../input/SA_UN_demographics_extrapolated_WithProperties_Smoothed.json",
+            "../../../input/PFA_overlay.json",
+            "age_overlay.json"
+        ],
+        "Enable_Birth": 0,
+        "Enable_Natural_Mortality": 0,
+        "HIV_Adult_Survival_Scale_Parameter_Intercept": 21.12,
+        "HIV_Adult_Survival_Scale_Parameter_Slope": -0.272,
+        "HIV_Adult_Survival_Shape_Parameter": 2.1,
+        "HIV_Age_Max_for_Adult_Age_Dependent_Survival": 65.0,
+        "HIV_Age_Max_for_Child_Survival_Function": 0.0,
+        "Simulation_Duration": 2,
+        "logLevel_IndividualHIV": "VALID",
+		"Run_Number": 0
+    },
+    "Default_Config_Path": "defaults/hiv_sft_default_config.json"
+}

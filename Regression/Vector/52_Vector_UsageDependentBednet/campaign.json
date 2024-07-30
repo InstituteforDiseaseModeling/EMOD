@@ -6,6 +6,10 @@
             "Event_Coordinator_Config": {
                 "Demographic_Coverage": 1.0,
                 "Intervention_Config": {
+                    "Repelling_Config": {
+                        "Initial_Effect": 0.0,
+                        "class": "WaningEffectConstant"
+                    },
                     "Blocking_Config": {
                         "Initial_Effect": 1.0,
                         "class": "WaningEffectConstant"
@@ -37,7 +41,7 @@
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
-            "Start_Day": 1,
+            "Start_Day": 101,
             "class": "CampaignEvent"
         },
         {
@@ -46,6 +50,10 @@
             "Event_Coordinator_Config": {
                 "Demographic_Coverage": 1.0,
                 "Intervention_Config": {
+                    "Repelling_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect": 0.0
+                    }, 
                     "Blocking_Config": {
                         "Initial_Effect": 1.0,
                         "class": "WaningEffectConstant"
@@ -80,7 +88,7 @@
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
-            "Start_Day": 101,
+            "Start_Day": 201,
             "class": "CampaignEvent"
         },
         {
@@ -89,6 +97,10 @@
             "Event_Coordinator_Config": {
                 "Demographic_Coverage": 1.0,
                 "Intervention_Config": {
+                    "Repelling_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect": 0.0
+                    }, 
                     "Blocking_Config": {
                         "Initial_Effect": 0.5,
                         "class": "WaningEffectConstant"
@@ -119,15 +131,19 @@
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
-            "Start_Day": 201,
+            "Start_Day": 301,
             "class": "CampaignEvent"
         },
         {
-            "COMMENT1": "Test that this bed net replaces the previous one at time 220 and is discared at 241 instead of the original expected 251.",
+            "COMMENT1": "Test that this bed net replaces the previous one at time 320 and is discared at 339 instead of the original expected 350.",
             "COMMENT2": "Verify by looking at ReportEventRecorder.csv",
             "Event_Coordinator_Config": {
                 "Demographic_Coverage": 1.0,
                 "Intervention_Config": {
+                    "Repelling_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect": 0.0
+                    }, 
                     "Blocking_Config": {
                         "Initial_Effect": 1.0,
                         "class": "WaningEffectConstant"
@@ -158,19 +174,23 @@
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
-            "Start_Day": 220,
+            "Start_Day": 320,
             "class": "CampaignEvent"
         },
         {
             "COMMENT1": "Test the multiplication of Age and Seasonal waning effects.",
-            "COMMENT2": "Show usage does not start until Day 264 when person turns 13.",
-            "COMMENT3": "There is the usage every day for 7 days (i.e. 271).",
-            "COMMENT5": "after 41 days on day 292 (duration is dependent on random number draws in DUAL_TIMESCALE_DURATION).",
+            "COMMENT2": "Show usage does not start until Day 364 when person turns 13.",
+            "COMMENT3": "There is the usage every day for 7 days (i.e. 371).",
+            "COMMENT4": "It should then start again 31 days in (i.e. 382) and continue until it expires",
+            "COMMENT5": "after 41 days on day 398 (duration is dependent on random number draws in DUAL_TIMESCALE_DURATION).",
             "COMMENT6": "Verify by looking at ReportEventRecorder.csv",
-            "COMMETN4": "It should then start again 31 days in (i.e. 282) and continue until it expires",
             "Event_Coordinator_Config": {
                 "Demographic_Coverage": 1.0,
                 "Intervention_Config": {
+                    "Repelling_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect": 0.0
+                    }, 
                     "Blocking_Config": {
                         "Initial_Effect": 1.0,
                         "class": "WaningEffectConstant"
@@ -227,9 +247,9 @@
                     ],
                     "Using_Event": "Bednet_Using",
                     "class": "UsageDependentBednet",
-                    "Expiration_Period_Mean_1": 150,
+                    "Expiration_Period_Mean_1": 60,
                     "Expiration_Period_Mean_2": 50,
-                    "Expiration_Period_Proportion_1": 0.9
+                    "Expiration_Period_Proportion_1": 1.0
                 },
                 "Number_Repetitions": 1,
                 "Target_Demographic": "Everyone",
@@ -239,7 +259,7 @@
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
-            "Start_Day": 251,
+            "Start_Day": 351,
             "class": "CampaignEvent"
         }
     ],

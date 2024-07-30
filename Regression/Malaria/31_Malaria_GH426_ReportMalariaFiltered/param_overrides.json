@@ -2,9 +2,8 @@
      "Default_Config_Path": "../../defaults/malaria_default_config.json", 
      "parameters": {
           "CLIMATE": {
-               "AIR_TEMPERATURE": {
-                    "Base_Air_Temperature": 25.0
-               }, 
+               "Base_Air_Temperature": 25.0,
+               "Enable_Climate_Stochasticity": 0,
                "Climate_Model": "CLIMATE_CONSTANT"
           }, 
           "DEMOGRAPHICS": {
@@ -17,9 +16,11 @@
                "Geography": "Test", 
                "Enable_Default_Reporting": 1, 
                "Enable_Demographics_Reporting": 0, 
+               "Enable_Disease_Mortality": 0,
                "Custom_Reports_Filename" : "custom_reports.json",
                "Load_Balance_Filename": "GitHub_426_LoadBalance.json", 
                "Num_Cores" : 3,
+               "Python_Script_Path": "SHARED",
                "Run_Number": 1, 
                "Simulation_Timestep": 1, 
                "Simulation_Duration": 100
@@ -44,6 +45,37 @@
           "Vector_Migration_Habitat_Modifier": 0.0, 
           "Vector_Migration_Stay_Put_Modifier" : 0.0,
 
-          "Vector_Sampling_Type": "TRACK_ALL_VECTORS"
+          "Vector_Sampling_Type": "TRACK_ALL_VECTORS",
+          "x_Temporary_Larval_Habitat": 1,
+          "Vector_Species_Params": [
+              {
+                  "Name": "SillySkeeter",
+                  "Acquire_Modifier": 0.2,
+                  "Adult_Life_Expectancy": 10,
+                  "Male_Life_Expectancy": 10,
+                  "Anthropophily": 0.95,
+                  "Aquatic_Arrhenius_1": 84200000000,
+                  "Aquatic_Arrhenius_2": 8328,
+                  "Aquatic_Mortality_Rate": 0.1,
+                  "Days_Between_Feeds": 3,
+                  "Egg_Batch_Size": 100,
+                  "Immature_Duration": 4,
+                  "Indoor_Feeding_Fraction": 0.5,
+                  "Infected_Arrhenius_1": 117000000000,
+                  "Infected_Arrhenius_2": 8336,
+                  "Infected_Egg_Batch_Factor": 0.8,
+                  "Infectious_Human_Feed_Mortality_Factor": 1.5,
+                  "Habitats": [
+                      {
+                          "Habitat_Type": "TEMPORARY_RAINFALL",
+                          "Max_Larval_Capacity": 11250000000.0
+                      }
+                  ],
+                  "Microsporidia": [],
+                  "Temperature_Dependent_Feeding_Cycle": "NO_TEMPERATURE_DEPENDENCE",
+                  "Transmission_Rate": 0.5,
+                  "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_NONE"
+              }
+          ]
      }
 }

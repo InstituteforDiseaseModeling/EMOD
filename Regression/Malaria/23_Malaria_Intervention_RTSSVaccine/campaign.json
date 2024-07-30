@@ -4,8 +4,6 @@
             "Event_Coordinator_Config": {
                 "Demographic_Coverage": 0.8,
                 "Intervention_Config": {
-                    "Antibody_Type": "CSP",
-                    "Antibody_Variant": 0,
                     "Boosted_Antibody_Concentration": 1200,
                     "Cost_To_Consumer": 1.0,
                     "class": "RTSSVaccine"

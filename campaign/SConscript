@@ -7,8 +7,8 @@ Import("env")
 
 campaignSrcFiles = ["EventCoordinator.cpp",
                     "InterventionFactory.cpp",
+                    "InterventionName.cpp",
                     "Interventions.cpp",
-                    "InterventionValidator.cpp",
                     "NodeSetAll.cpp",
                     "NodeSetNodeList.cpp",
                     "NodeSetPolygon.cpp",
@@ -19,22 +19,7 @@ campaignIncFiles = ['EventCoordinator.h',
                     'InterventionEnums.h',
                     'InterventionFactory.h',
                     'Interventions.h',
-                    'InterventionValidator.h',
                     'NodeSet.h']
 campaignLocalInc = ['stdafx.h']
 
 campaignLib = env.StaticLibrary('campaign', campaignSrcFiles)
-
-msvc = GetOption( "MSVC" )
-if msvc is not None and msvc != False and msvc != "":
-
-    bvar = env['BUILD_VARIANT'] + '|x64'
-    print( "Campaign: Generating MSVS" + env['MSVS_VERSION'] + " project files for '%s'" % bvar )
-
-    env.MSVSProject(target = 'CampaignScons' + env['MSVSPROJECTSUFFIX'],
-		srcs = campaignSrcFiles,
-		incs = campaignIncFiles,
-		localincs = campaignLocalInc,
-		buildtarget = campaignLib,
-                auto_build_solution = 0,
-                variant = bvar)

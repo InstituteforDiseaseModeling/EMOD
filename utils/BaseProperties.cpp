@@ -1,16 +1,7 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
 #include "BaseProperties.h"
-#include "PropertiesString.h"
 #include "Log.h"
 #include "IdmString.h"
 #include "FileSystem.h"
@@ -29,54 +20,8 @@ const char* IP_VALUES_KEY             = "Values";
 const char* IP_INIT_KEY               = "Initial_Distribution";
 
 
-std::string PropertiesToString( const tProperties& properties, 
-                                const char propValSeparator, 
-                                const char propSeparator )
-{
-    std::string propertyString;
-    for (const auto& entry : properties)
-    {
-        const std::string& key   = entry.first;
-        const std::string& value = entry.second;
-        propertyString += key + propValSeparator + value + propSeparator;
-    }
-
-    if( !propertyString.empty() )
-    {
-#ifdef WIN32
-        propertyString.pop_back();
-#else
-        propertyString.resize(propertyString.size() - 1);
-#endif
-    }
-
-    return propertyString;
-}
-
-std::string PropertiesToString( const tProperties& properties )
-{
-    return PropertiesToString( properties, ':', ',' );
-}
-
-std::string PropertiesToStringCsvFriendly( const tProperties& properties )
-{
-    return PropertiesToString( properties, '-', ';' );
-}
-
 namespace Kernel
 {
-    template <typename T, std::size_t N>
-    inline std::size_t sizeof_array( T (&)[N] ) { return N; }
-
-    static const char* KEY_WHITE_LIST_TMP[] = { "Age_Bin", 
-                                                "Accessibility", 
-                                                "Geographic",
-                                                "Place",
-                                                "Risk",
-                                                "QualityOfCare",
-                                                "HasActiveTB",
-                                                "InterventionStatus"  };
-
     // ------------------------------------------------------------------------
     // --- KeyValueInternal
     // ------------------------------------------------------------------------
@@ -84,11 +29,13 @@ namespace Kernel
     KeyValueInternal::KeyValueInternal( BaseProperty* pip, 
                                         const std::string& rValue,
                                         uint32_t externalNodeId,
-                                        const ProbabilityNumber& rInitialDist )
+                                        const ProbabilityNumber& rInitialDist,
+                                        int uniqueID )
         : m_pIP( pip )
         , m_KeyValueString()
         , m_Value( rValue )
         , m_InitialDistributions()
+        , m_UniqueID( uniqueID )
     {
         m_KeyValueString = BaseFactory::CreateKeyValueString( m_pIP->GetKeyAsString(), m_Value );
         m_InitialDistributions[ externalNodeId ] = rInitialDist;
@@ -100,13 +47,11 @@ namespace Kernel
 
     BaseKey::BaseKey()
         : m_pIP( nullptr )
-        , m_ParameterName()
     {
     }
 
     BaseKey::BaseKey( const BaseProperty* pip )
         : m_pIP( pip )
-        , m_ParameterName()
     {
         release_assert( m_pIP );
     }
@@ -143,16 +88,6 @@ namespace Kernel
         return (m_pIP != nullptr);
     }
 
-    const std::string& BaseKey::GetParameterName() const
-    {
-        return m_ParameterName;
-    }
-
-    void BaseKey::SetParameterName( const std::string& rParameterName )
-    {
-        m_ParameterName = rParameterName;
-    }
-
     void BaseKey::serialize( IArchive& ar, BaseKey& key, k_assignment_function_t assign_func )
     {
         std::string key_str;
@@ -175,13 +110,11 @@ namespace Kernel
 
     BaseKeyValue::BaseKeyValue()
         : m_pInternal( nullptr )
-        , m_ParameterName()
     {
     }
 
     BaseKeyValue::BaseKeyValue( KeyValueInternal* pkvi )
         : m_pInternal( pkvi )
-        , m_ParameterName()
     {
     }
 
@@ -207,12 +140,6 @@ namespace Kernel
 
     bool BaseKeyValue::operator==( const BaseKeyValue& rThat ) const
     {
-        // ------------------------------------------------------------
-        // --- Don't check the parameter name.  The user wants to know
-        // --- if this is the same key-value, not the same parameter.
-        // ------------------------------------------------------------
-        //if( this->m_ParameterName != rThat.m_ParameterName ) return false;
-
         if( this->m_pInternal != rThat.m_pInternal ) return false;
 
         return true;
@@ -221,16 +148,6 @@ namespace Kernel
     bool BaseKeyValue::operator!=( const BaseKeyValue& rThat ) const
     {
         return !operator==( rThat );
-    }
-
-    const std::string& BaseKeyValue::GetParameterName() const
-    {
-        return m_ParameterName;
-    }
-
-    void BaseKeyValue::SetParameterName( const std::string& rParameterName )
-    {
-        m_ParameterName = rParameterName;
     }
 
     // See BasePropertiesTempaltes.h for template methods
@@ -251,6 +168,15 @@ namespace Kernel
             throw NullPointerException( __FILE__, __LINE__, __FUNCTION__, "m_pInternal", "KeyValueInternal" );
         }
         return m_pInternal->GetValueAsString();
+    }
+
+    int BaseKeyValue::GetUniqueID() const
+    {
+        if( m_pInternal == nullptr )
+        {
+            throw NullPointerException( __FILE__, __LINE__, __FUNCTION__, "m_pInternal", "KeyValueInternal" );
+        }
+        return m_pInternal->GetUniqueID();
     }
 
     void BaseKeyValue::UpdateInitialDistribution( uint32_t externalNodeId, double value )
@@ -310,7 +236,11 @@ namespace Kernel
         float total_prob = 0.0;
         for( auto entry : rValues )
         {
-            KeyValueInternal* pkvi = new KeyValueInternal( this, entry.first, externalNodeId, entry.second );
+            KeyValueInternal* pkvi = new KeyValueInternal( this, 
+                                                           entry.first,
+                                                           externalNodeId,
+                                                           entry.second,
+                                                           pFactory->GetNextUniqueKeyValueID() );
             pFactory->AddKeyValue( pkvi );
             m_Values.push_back( pkvi );
             total_prob += entry.second;
@@ -418,8 +348,6 @@ namespace Kernel
             throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
         }
 
-        ip_factory->CheckIpKeyInWhitelist( ip_key_str, m_Key, num_values );
-
         float total_prob = 0.0;
         for( int val_idx = 0; val_idx < num_values; val_idx++ )
         {
@@ -447,7 +375,11 @@ namespace Kernel
                     ss << "demographics[" << ip_key_str << "][" << idx << "] with property=" << m_Key << " has a duplicate value = " << value ;
                     throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
                 }
-                KeyValueInternal* pkvi = new KeyValueInternal( this, value, externalNodeId, initial_dist );
+                KeyValueInternal* pkvi = new KeyValueInternal( this,
+                                                               value,
+                                                               externalNodeId,
+                                                               initial_dist,
+                                                               ip_factory->GetNextUniqueKeyValueID() );
                 ip_factory->AddKeyValue( pkvi );
                 m_Values.push_back( pkvi );
             }
@@ -475,12 +407,10 @@ namespace Kernel
 
     BaseFactory::BaseFactory()
         : m_ExternalNodeIdOfFirst( UINT32_MAX )
-        , m_WhiteListEnabled( true )
         , m_IPList()
         , m_KeyValueMap()
-        , m_KeyWhiteList()
+        , m_NextUniqueKeyValueID( 0 )
     {
-        m_KeyWhiteList = std::set< std::string> ( KEY_WHITE_LIST_TMP, KEY_WHITE_LIST_TMP+sizeof_array(KEY_WHITE_LIST_TMP) );
     }
 
     BaseFactory::~BaseFactory()
@@ -536,11 +466,8 @@ namespace Kernel
                                         const char* ip_name_key_str,
                                         BaseFactory::read_function_t read_func,
                                         uint32_t externalNodeId,
-                                        const JsonObjectDemog& rDemog,
-                                        bool isWhitelistEnabled )
+                                        const JsonObjectDemog& rDemog )
     {
-        m_WhiteListEnabled = isWhitelistEnabled;
-
         if( externalNodeId == UINT32_MAX )
         {
             std::stringstream ss;
@@ -557,17 +484,6 @@ namespace Kernel
         if( !rDemog.Contains( ip_key_str ) )
         {
             return;
-        }
-
-        // Check that we're not using more than 3 axes in whitelist mode
-        if( rDemog[ ip_key_str ].size() > 3 && isWhitelistEnabled )
-        {
-            std::ostringstream msg;
-            msg << "Too many " << ip_key_str << " (" 
-                << rDemog[ ip_key_str ].size()
-                << "). Max is 3."
-                << std::endl;
-            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
         }
 
         if( first_time )
@@ -614,33 +530,6 @@ namespace Kernel
         }
     }
 
-    void BaseFactory::CheckIpKeyInWhitelist( const char* ip_key_str, const std::string& rKey, int numValues )
-    {
-        if( m_WhiteListEnabled )
-        {
-            if( m_KeyWhiteList.count( rKey ) == 0 )
-            {
-                std::ostringstream msg;
-                msg << "Invalid " << ip_key_str << " key '" << rKey << "' found in demographics file. Use one of: ";
-                for (auto& key : m_KeyWhiteList)
-                {
-                    msg << "'" << key<< "', " ;
-                }
-                std::string msg_str = msg.str();
-                msg_str = msg_str.substr( 0, msg_str.length()-2 );
-                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
-            }
-
-            if (((numValues > 5) && (rKey != "Geographic") && (rKey != "InterventionStatus")) || (numValues > 125))
-            {
-                std::ostringstream msg;
-                msg << "Too many values for Individual Property key " << rKey
-                    << ".  This key has " << numValues << " and the limit is 5, except for Geographic & InterventionStatus, which is 125." << std::endl;
-                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
-            }
-        }
-    }
-
     void BaseFactory::CheckForDuplicateKey( const std::string& rKeyStr )
     {
         bool found = false;
@@ -663,15 +552,30 @@ namespace Kernel
         }
     }
 
-    void BaseFactory::AddIP( uint32_t externalNodeId,
-                             const std::string& rKeyStr, 
-                             const std::map<std::string,float>& rValues,
-                             ip_construct_function_t create_ip )
+    int BaseFactory::GetNextUniqueKeyValueID()
+    {
+        // Each key:value should have a unique number.  On multicore, each process
+        // should read the IPs from the demographics in the same order so they
+        // can have simplie integer IDs.  These IDs can then be used in a database.
+        // Unfortunnately, it does NOT give the key:value pair a unique ID across
+        // different scenarios.  If this is needed it could be changed to a hash.
+        return ++m_NextUniqueKeyValueID;
+    }
+
+    BaseProperty* BaseFactory::AddIP( uint32_t externalNodeId,
+                                      const std::string& rKeyStr, 
+                                      const std::map<std::string,float>& rValues,
+                                      ip_construct_function_t create_ip,
+                                      bool haveFactoryMaintain )
     {
         CheckForDuplicateKey( rKeyStr );
 
         BaseProperty* p_ip = create_ip( externalNodeId, rKeyStr, rValues );
-        m_IPList.push_back( p_ip );
+        if( haveFactoryMaintain )
+        {
+            m_IPList.push_back( p_ip );
+        }
+        return p_ip;
     }
 
     BaseProperty* BaseFactory::GetIP( const std::string& rKey, const std::string& rParameterName, bool throwOnNotFound )

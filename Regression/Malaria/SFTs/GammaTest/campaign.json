@@ -1,0 +1,20 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "OutbreakIndividualMalariaGenetics",
+                    "Create_Nucleotide_Sequence_From": "BARCODE_STRING",
+                    "Barcode_String": "AAAAAAAAAAAAAAAAAAAAAAAA"
+                }
+            }
+        }
+    ]
+}

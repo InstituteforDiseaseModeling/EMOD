@@ -1,0 +1,23 @@
+{
+    "Default_Config_Path": "Vector/cohort_vs_ind/default_config.json",
+    "parameters": {
+        "Config_Name": "55_Mort-1_Age-1_Peop-1000_DBF-1_Anth-0.9_IndoorFF-0.5_Infection-0.2_SugarFF-EveryFeed_Interven-SugarTrap",
+        "Demographics_Filenames": [
+            "../Demographics.json",
+            "../Overlay_1000.json"
+        ],
+        "Enable_Vector_Aging": 1,
+        "Enable_Vector_Mortality": 1,
+        "Python_Script_Path": "SHARED",
+        "Simulation_Duration": 400.0,
+        "Vector_Species_Params": [
+            {
+                "Name": "arabiensis",
+                "Anthropophily": 0.9,
+                "Days_Between_Feeds": 1.0,
+                "Indoor_Feeding_Fraction": 0.5,
+                "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_EVERY_FEED"
+            }
+        ]
+    }
+}

@@ -1,0 +1,143 @@
+{
+    "Default_Config_Path": "Vector/genetic_perf/default_config.json",
+    "parameters": {
+        "Config_Name": "15_VGP_5Gene_4Allele",
+        "Vector_Species_Params": [
+            {
+                "Name": "arabiensis",
+                "Genes": [
+                    {
+                        "Is_Gender_Gene": 0,
+                        "Alleles": [
+                            {
+                                "Name": "A1",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.25
+                            },
+                            {
+                                "Name": "A2",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.25
+                            },
+                            {
+                                "Name": "A3",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.25
+                            },
+                            {
+                                "Name": "A4",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.25
+                            }
+                        ],
+                        "Mutations": []
+                    },
+                    {
+                        "Is_Gender_Gene": 0,
+                        "Alleles": [
+                            {
+                                "Name": "B1",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.25
+                            },
+                            {
+                                "Name": "B2",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.25
+                            },
+                            {
+                                "Name": "B3",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.25
+                            },
+                            {
+                                "Name": "B4",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.25
+                            }
+                        ],
+                        "Mutations": []
+                    },
+                    {
+                        "Is_Gender_Gene": 0,
+                        "Alleles": [
+                            {
+                                "Name": "C1",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.25
+                            },
+                            {
+                                "Name": "C2",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.25
+                            },
+                            {
+                                "Name": "C3",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.25
+                            },
+                            {
+                                "Name": "C4",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.25
+                            }
+                        ],
+                        "Mutations": []
+                    },
+                    {
+                        "Is_Gender_Gene": 0,
+                        "Alleles": [
+                            {
+                                "Name": "D1",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.25
+                            },
+                            {
+                                "Name": "D2",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.25
+                            },
+                            {
+                                "Name": "D3",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.25
+                            },
+                            {
+                                "Name": "D4",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.25
+                            }
+                        ],
+                        "Mutations": []
+                    },
+                    {
+                        "Is_Gender_Gene": 0,
+                        "Alleles": [
+                            {
+                                "Name": "E1",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.25
+                            },
+                            {
+                                "Name": "E2",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.25
+                            },
+                            {
+                                "Name": "E3",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.25
+                            },
+                            {
+                                "Name": "E4",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.25
+                            }
+                        ],
+                        "Mutations": []
+                    }
+                ]
+            }
+        ]
+    }
+}

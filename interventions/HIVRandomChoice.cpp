@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "HIVRandomChoice.h"
@@ -16,21 +8,33 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "IHIVInterventionsContainer.h" // for time-date util function
 #include "IIndividualHumanContext.h"
 #include "RANDOM.h"
-#include <numeric>
 
 SETUP_LOGGING( "HIVRandomChoice" )
 
 namespace Kernel
 {
-    BEGIN_QUERY_INTERFACE_DERIVED(HIVRandomChoice, HIVSimpleDiagnostic)
-    END_QUERY_INTERFACE_DERIVED(HIVRandomChoice, HIVSimpleDiagnostic)
+    BEGIN_QUERY_INTERFACE_BODY( HIVRandomChoice )
+        HANDLE_INTERFACE( IConfigurable )
+        HANDLE_INTERFACE( IDistributableIntervention )
+        HANDLE_INTERFACE( IBaseIntervention )
+        HANDLE_ISUPPORTS_VIA( IDistributableIntervention )
+    END_QUERY_INTERFACE_BODY( HIVRandomChoice )
 
     IMPLEMENT_FACTORY_REGISTERED(HIVRandomChoice)
 
     HIVRandomChoice::HIVRandomChoice()
-    : HIVSimpleDiagnostic()
+        : BaseIntervention()
+        , m_EventNames()
+        , m_EventProbabilities()
     {
         initSimTypes(1, "HIV_SIM" ); // just limiting this to HIV for release
+    }
+
+    HIVRandomChoice::HIVRandomChoice( const HIVRandomChoice & rMaster )
+        : BaseIntervention( rMaster )
+        , m_EventNames( rMaster.m_EventNames )
+        , m_EventProbabilities( rMaster.m_EventProbabilities )
+    {
     }
 
     bool HIVRandomChoice::Configure( const Configuration* inputJson )
@@ -38,14 +42,17 @@ namespace Kernel
         std::vector<std::string> names;
         std::vector<float> values;
 
-        initConfigTypeMap("Choice_Names", &names, HIV_Random_Choice_Names_DESC_TEXT);
-        initConfigTypeMap("Choice_Probabilities", &values, HIV_Random_Choice_Probabilities_DESC_TEXT, 0.0f, 1.0f);
+        // I hate that the default is 1, but keeping it for backward compatibility.
+        initConfigTypeMap( "Cost_To_Consumer",     &cost_per_unit, IV_Cost_To_Consumer_DESC_TEXT, 0.0f, FLT_MAX, 1.0f );
+        initConfigTypeMap( "Choice_Names",         &names,         HIV_Random_Choice_Names_DESC_TEXT );
+        initConfigTypeMap( "Choice_Probabilities", &values,        HIV_Random_Choice_Probabilities_DESC_TEXT, 0.0f, 1.0f );
 
-        bool val = HIVSimpleDiagnostic::Configure(inputJson);
-
-        ProcessChoices(names, values);
-
-        return val;
+        bool is_configured = BaseIntervention::Configure(inputJson);
+        if( is_configured && !JsonConfigurable::_dryrun )
+        {
+            ProcessChoices( names, values );
+        }
+        return is_configured;
     }
 
     void HIVRandomChoice::ProcessChoices(std::vector<std::string> &names, std::vector<float> &values)
@@ -54,7 +61,7 @@ namespace Kernel
         {
             std::stringstream message;
             message << "Size of Choice_Names (" << names.size() << ") does not match size of Choice_Probabilities ("
-                << values.size() << ") for intervention \"" << GetName() << "\"";
+                << values.size() << ") for intervention \"" << GetName().ToString() << "\"";
             throw GeneralConfigurationException(__FILE__, __LINE__, __FUNCTION__, message.str().c_str());
         }
 
@@ -63,10 +70,10 @@ namespace Kernel
 
         for (int i = 0; i < names.size(); i++)
         {
-            EventTrigger event = EventTriggerFactory::GetInstance()->CreateTrigger("Choices", names[i]);
+            EventTrigger event_trigger = EventTriggerFactory::GetInstance()->CreateTrigger("Choices", names[i]);
             float probability = values[i];
-            event_names.push_back(event);
-            event_probabilities.push_back(probability);
+            m_EventNames.push_back( event_trigger );
+            m_EventProbabilities.push_back( probability );
             total += probability;
         }
 
@@ -76,19 +83,16 @@ namespace Kernel
         }
 
         // Normalize the probabilities
-        for (int i = 0; i < event_probabilities.size(); i++)
+        for (int i = 0; i < m_EventProbabilities.size(); i++)
         {
-            event_probabilities[i] = event_probabilities[i] / total;
+            m_EventProbabilities[i] = m_EventProbabilities[i] / total;
         }
     }
 
-    bool HIVRandomChoice::positiveTestResult()
+    void HIVRandomChoice::Update( float dt )
     {
-        return true;
-    }
+        if( !BaseIntervention::UpdateIndividualsInterventionStatus() ) return;
 
-    void HIVRandomChoice::positiveTestDistribute()
-    {
         LOG_DEBUG_F( "Individual %d tested HIVRandomChoice receiving actual intervention from HIVRandomChoice.\n", parent->GetSuid().data );
 
         // random number to choose an event from the dictionary
@@ -98,12 +102,12 @@ namespace Kernel
         float probSum = 0;
 
         // pick the EventTrigger to broadcast
-        for (int i = 0; i < event_names.size(); i++)
+        for (int i = 0; i < m_EventNames.size(); i++)
         {
-            probSum += event_probabilities[i];
+            probSum += m_EventProbabilities[i];
             if (p <= probSum)
             {
-                trigger = event_names[i];
+                trigger = m_EventNames[i];
                 break;
             }
         }
@@ -123,10 +127,10 @@ namespace Kernel
 
     void HIVRandomChoice::serialize(IArchive& ar, HIVRandomChoice* obj)
     {
-        HIVSimpleDiagnostic::serialize( ar, obj );
+        BaseIntervention::serialize( ar, obj );
         HIVRandomChoice& choice = *obj;
 
-        ar.labelElement("event_names") & choice.event_names;
-        ar.labelElement("event_probabilities") & choice.event_probabilities;
+        ar.labelElement("m_EventNames"        ) & choice.m_EventNames;
+        ar.labelElement("m_EventProbabilities") & choice.m_EventProbabilities;
     }
 }

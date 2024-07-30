@@ -1,0 +1,133 @@
+{
+   "Metadata": {
+      "Author": "abershteyn based on aakullian Nyanza + dklein Zimbabwe + dbridenbecker dev",
+      "DateCreated": "20160628",
+      "IdReference": "0",
+      "NodeCount": 10,
+      "Tool": "Nodepad++"
+   },
+   "Defaults": {
+      "Society": {
+         "COMMERCIAL": {
+            "Pair_Formation_Parameters": {
+               "Assortivity": {
+                  "Axes": [
+                     "LOW",
+                     "MEDIUM",
+                     "HIGH"
+                  ],
+                  "Group": "INDIVIDUAL_PROPERTY",
+                  "Property_Name": "Risk",
+                  "Weighting_Matrix_RowMale_ColumnFemale": [
+                     [
+                        1,
+                        1,
+                        1
+                     ],
+                     [
+                        1,
+                        1,
+                        1
+                     ],
+                     [
+                        1,
+                        1,
+                        1
+                     ]
+                  ]
+               }
+            }
+         },
+         "INFORMAL": {
+            "Pair_Formation_Parameters": {
+               "Assortivity": {
+                  "Axes": [
+                     "LOW",
+                     "MEDIUM",
+                     "HIGH"
+                  ],
+                  "Group": "INDIVIDUAL_PROPERTY",
+                  "Property_Name": "Risk",
+                  "Weighting_Matrix_RowMale_ColumnFemale": [
+                     [
+                        0.682748259,
+                        0.317251741,
+                        0
+                     ],
+                     [
+                        0.317251741,
+                        0.682748259,
+                        0.682748259
+                     ],
+                     [
+                        0,
+                        0.682748259,
+                        0.317251741
+                     ]
+                  ]
+               }
+            }
+         },
+         "MARITAL": {
+            "Pair_Formation_Parameters": {
+               "Assortivity": {
+                  "Axes": [
+                     "LOW",
+                     "MEDIUM",
+                     "HIGH"
+                  ],
+                  "Group": "INDIVIDUAL_PROPERTY",
+                  "Property_Name": "Risk",
+                  "Weighting_Matrix_RowMale_ColumnFemale": [
+                     [
+                        0.682748259,
+                        0.317251741,
+                        0
+                     ],
+                     [
+                        0.317251741,
+                        0.682748259,
+                        0.682748259
+                     ],
+                     [
+                        0,
+                        0.682748259,
+                        0.317251741
+                     ]
+                  ]
+               }
+            }
+         },
+         "TRANSITORY": {
+            "Pair_Formation_Parameters": {
+               "Assortivity": {
+                  "Axes": [
+                     "LOW",
+                     "MEDIUM",
+                     "HIGH"
+                  ],
+                  "Group": "INDIVIDUAL_PROPERTY",
+                  "Property_Name": "Risk",
+                  "Weighting_Matrix_RowMale_ColumnFemale": [
+                     [
+                        0.682748259,
+                        0.317251741,
+                        0
+                     ],
+                     [
+                        0.317251741,
+                        0.682748259,
+                        0.682748259
+                     ],
+                     [
+                        0,
+                        0.682748259,
+                        0.317251741
+                     ]
+                  ]
+               }
+            }
+         }
+      }
+   }
+}

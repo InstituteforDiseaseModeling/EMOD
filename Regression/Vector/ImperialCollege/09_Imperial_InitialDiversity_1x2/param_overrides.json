@@ -1,0 +1,34 @@
+{
+    "Default_Config_Path": "Vector/ImperialCollege/default_config.json",
+    "parameters": {
+        "Config_Name": "09_Imperial_InitialDiversity_1x2",
+        ".Simulation_Duration": 18250,
+        "Python_Script_Path": "LOCAL",
+        "Vector_Species_Params": [
+            {
+                "Name": "arabiensis",
+                "Indoor_Feeding_Fraction": 1,
+                "Genes": [
+                    {
+                        "Is_Gender_Gene": 0,
+                        "Alleles": [
+                            {
+                                "Name": "a0",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.6
+                            },
+                            {
+                                "Name": "a1",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.4
+                            }
+                        ],
+                        "Mutations": []
+                    }
+                ],
+                "Drivers" : [
+                ]
+            }
+        ]
+    }
+}

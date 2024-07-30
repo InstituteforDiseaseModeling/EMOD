@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "DistributionsConfigurable.h"
@@ -15,7 +7,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "PiecewiseDistributionBase.h"
 #include "InterpolatedValueMap.h"
 
-SETUP_LOGGING("DurationDistributionImpl")
+SETUP_LOGGING("DistributionsConfigurable")
 
 namespace Kernel
 {
@@ -65,7 +57,7 @@ namespace Kernel
     DistributionConstantConfigurable::~DistributionConstantConfigurable()
     { }
 
-    bool DistributionConstantConfigurable::Configure( JsonConfigurable* pParent, std::string& param_name, const Configuration* config )
+    bool DistributionConstantConfigurable::Configure( JsonConfigurable* pParent, const std::string& param_name, const Configuration* config )
     {
         const std::string param_constant( param_name + "_Constant" );
         const std::string distribution_name( param_name + "_Distribution" );
@@ -97,7 +89,7 @@ namespace Kernel
     DistributionExponentialConfigurable::~DistributionExponentialConfigurable()
     { }
 
-    bool DistributionExponentialConfigurable::Configure( JsonConfigurable* pParent, std::string& param_name, const Configuration* config )
+    bool DistributionExponentialConfigurable::Configure( JsonConfigurable* pParent, const std::string& param_name, const Configuration* config )
     {
         const std::string param_exponential( param_name + "_Exponential" );
         const std::string distribution_name( param_name + "_Distribution" );
@@ -136,7 +128,7 @@ namespace Kernel
     DistributionGaussianConfigurable::~DistributionGaussianConfigurable()
     { }
 
-    bool DistributionGaussianConfigurable::Configure( JsonConfigurable* pParent, std::string& param_name, const Configuration* config )
+    bool DistributionGaussianConfigurable::Configure( JsonConfigurable* pParent, const std::string& param_name, const Configuration* config )
     {
         const std::string param_gaussian_mean( param_name + "_Gaussian_Mean" );
         const std::string param_gaussian_std_dev( param_name + "_Gaussian_Std_Dev" );
@@ -169,7 +161,7 @@ namespace Kernel
     DistributionPoissonConfigurable::~DistributionPoissonConfigurable()
     { }
 
-    bool DistributionPoissonConfigurable::Configure( JsonConfigurable* pParent, std::string& param_name, const Configuration* config )
+    bool DistributionPoissonConfigurable::Configure( JsonConfigurable* pParent, const std::string& param_name, const Configuration* config )
     {
         const std::string param_poisson_mean( param_name + "_Poisson_Mean" );
         const std::string distribution_name( param_name + "_Distribution" );
@@ -202,7 +194,7 @@ namespace Kernel
     DistributionLogNormalConfigurable::~DistributionLogNormalConfigurable()
     { }
 
-    bool DistributionLogNormalConfigurable::Configure( JsonConfigurable* pParent, std::string& param_name, const Configuration* config )
+    bool DistributionLogNormalConfigurable::Configure( JsonConfigurable* pParent, const std::string& param_name, const Configuration* config )
     {
         const std::string param_log_normal_mu( param_name + "_Log_Normal_Mu" );
         const std::string param_log_normal_sigma( param_name + "_Log_Normal_Sigma" );
@@ -239,7 +231,7 @@ namespace Kernel
     {
     }
 
-    bool DistributionWeibullConfigurable::Configure( JsonConfigurable* pParent, std::string& param_name, const Configuration* config )
+    bool DistributionWeibullConfigurable::Configure( JsonConfigurable* pParent, const std::string& param_name, const Configuration* config )
     {
         const std::string param_lambda( param_name + "_Lambda" );
         const std::string param_kappa( param_name + "_Kappa" );
@@ -275,7 +267,7 @@ namespace Kernel
     {
     }
 
-    bool DistributionDualConstantConfigurable::Configure( JsonConfigurable* pParent, std::string& param_name, const Configuration* config )
+    bool DistributionDualConstantConfigurable::Configure( JsonConfigurable* pParent, const std::string& param_name, const Configuration* config )
     {
         const std::string param_proportion_0( param_name + "_Proportion_0" );
         const std::string param_peak_2_value( param_name + "_Peak_2_Value" );
@@ -318,7 +310,7 @@ namespace Kernel
     DistributionDualExponentialConfigurable::~DistributionDualExponentialConfigurable()
     { }
 
-    bool DistributionDualExponentialConfigurable::Configure( JsonConfigurable* pParent, std::string& param_name, const Configuration* config )
+    bool DistributionDualExponentialConfigurable::Configure( JsonConfigurable* pParent, const std::string& param_name, const Configuration* config )
     {
         const std::string param_mean_1( param_name + "_Mean_1" );
         const std::string param_mean_2( param_name + "_Mean_2" );
@@ -363,7 +355,7 @@ namespace Kernel
     DistributionUniformConfigurable::~DistributionUniformConfigurable()
     { }
 
-    bool DistributionUniformConfigurable::Configure( JsonConfigurable* pParent, std::string& param_name, const Configuration* config )
+    bool DistributionUniformConfigurable::Configure( JsonConfigurable* pParent, const std::string& param_name, const Configuration* config )
     {
         const std::string param_min( param_name + "_Min" );
         const std::string param_max( param_name + "_Max" );
@@ -394,11 +386,11 @@ namespace Kernel
     DistributionPiecewiseConstantConfigurable::~DistributionPiecewiseConstantConfigurable()
     { }
 
-    bool DistributionPiecewiseConstantConfigurable::Configure( JsonConfigurable* pParent, std::string& param_name, const Configuration* config )
+    bool DistributionPiecewiseConstantConfigurable::Configure( JsonConfigurable* pParent, const std::string& param_name, const Configuration* config )
     {
         const std::string param_piecewise_constant( param_name + "_Piecewise_Constant" );
         const std::string distribution_name( param_name + "_Distribution" );
-        pParent->initConfigComplexType( param_piecewise_constant.c_str(), &m_interpolatedValueMap, Distribution_PiecewiseConstant_DESC_TEXT, distribution_name.c_str(), "PIECEWISE_CONSTANT" );
+        pParent->initConfigTypeMap( param_piecewise_constant.c_str(), &m_interpolatedValueMap, Distribution_PiecewiseConstant_DESC_TEXT, distribution_name.c_str(), "PIECEWISE_CONSTANT" );
         return pParent->JsonConfigurable::Configure( config );
     }
 
@@ -422,12 +414,12 @@ namespace Kernel
     DistributionPiecewiseLinearConfigurable::~DistributionPiecewiseLinearConfigurable()
     { }
 
-    bool DistributionPiecewiseLinearConfigurable::Configure( JsonConfigurable* pParent, std::string& param_name, const Configuration* config )
+    bool DistributionPiecewiseLinearConfigurable::Configure( JsonConfigurable* pParent, const std::string& param_name, const Configuration* config )
     {
         const std::string param_piecewise_linear( param_name + "_Piecewise_Linear" );
         const std::string distribution_name( param_name + "_Distribution" );
 
-        pParent->initConfigComplexType( param_piecewise_linear.c_str(), &m_interpolatedValueMap, Distribution_PiecewiseLinear_DESC_TEXT, distribution_name.c_str(), "PIECEWISE_LINEAR" );
+        pParent->initConfigTypeMap( param_piecewise_linear.c_str(), &m_interpolatedValueMap, Distribution_PiecewiseLinear_DESC_TEXT, distribution_name.c_str(), "PIECEWISE_LINEAR" );
         return pParent->JsonConfigurable::Configure( config );
     }
 

@@ -1,0 +1,45 @@
+{
+    "Reports": [
+        {
+            "Age_Bins": [],
+            "Stratify_By_Gender": 0,
+            "Barcodes": [
+                "AAAAAAAAAAAAAAAAAAAAAAAA",
+                "TAAAAAAAAAAAAAAAAAAAAAAA",
+                "AAAAAAAAAAAAAAAAAAAAAAAT",
+                "TAAAAAAAAAAAAAAAAAAAAAAT"
+            ],
+            "Drug_Resistant_Strings": [
+                "T"
+            ],
+            "HRP_Strings": [
+                "G"
+            ],
+            "class": "ReportNodeDemographicsMalariaGenetics"
+        },
+        {
+            "Species_List": [
+                "SillySkeeter"
+            ],
+            "Barcodes": [
+                "AAAAAAAAAAAAAAAAAAAAAAAA",
+                "TAAAAAAAAAAAAAAAAAAAAAAA",
+                "AAAAAAAAAAAAAAAAAAAAAAAT",
+                "TAAAAAAAAAAAAAAAAAAAAAAT"
+            ],
+            "class": "ReportVectorStatsMalariaGenetics"
+        }
+    ],
+    "Use_Defaults": 1,
+    "Not_Used": [
+        {
+            "Notes": "Not using because SQL report regularler locks up when running on Jenkins linux",
+            "class": "SqlReportMalaria",
+            "Start_Day": 300,
+            "End_Day": 310,
+            "Include_Health_Table": 1,
+            "Include_Infection_Data_Table": 1,
+            "Include_Drug_Status_Table": 1
+        }
+    ]
+}

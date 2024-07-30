@@ -1,17 +1,8 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
 #include "NodeProperties.h"
 #include "BasePropertiesTemplates.h"
-#include "PropertiesString.h"
 #include "Log.h"
 #include "FileSystem.h"
 #include "NoCrtWarnings.h"
@@ -81,7 +72,7 @@ namespace Kernel
 
     NPKey& NPKey::operator=( const std::string& rKeyStr )
     {
-        m_pIP = NPFactory::GetInstance()->GetNP( rKeyStr, m_ParameterName );
+        m_pIP = NPFactory::GetInstance()->GetNP( rKeyStr );
         return *this;
     }
 
@@ -104,6 +95,36 @@ namespace Kernel
     void NPKey::serialize( IArchive& ar, NPKey& key )
     {
         BaseKey::serialize( ar, key, key_assign_func );
+    }
+
+    // ------------------------------------------------------------------------
+    // --- NPKeyParameter
+    // ------------------------------------------------------------------------
+
+    NPKeyParameter::NPKeyParameter()
+        : NPKey()
+        , m_ParameterName()
+    {
+    }
+
+    NPKeyParameter::~NPKeyParameter()
+    {
+    }
+
+    NPKeyParameter& NPKeyParameter::operator=( const std::string& rKeyStr )
+    {
+        m_pIP = NPFactory::GetInstance()->GetNP( rKeyStr, m_ParameterName );
+        return *this;
+    }
+
+    const std::string& NPKeyParameter::GetParameterName() const
+    {
+        return m_ParameterName;
+    }
+
+    void NPKeyParameter::SetParameterName( const std::string& rParameterName )
+    {
+        m_ParameterName = rParameterName;
     }
 
     // ------------------------------------------------------------------------
@@ -139,7 +160,7 @@ namespace Kernel
 
     NPKeyValue& NPKeyValue::operator=( const std::string& rKeyValueStr )
     {
-        m_pInternal = NPFactory::GetInstance()->GetKeyValue<NPKeyValueContainer>( NP_KEY, rKeyValueStr, m_ParameterName );
+        m_pInternal = NPFactory::GetInstance()->GetKeyValue<NPKeyValueContainer>( NP_KEY, rKeyValueStr );
         return *this;
     }
 
@@ -171,6 +192,36 @@ namespace Kernel
     void NPKeyValue::serialize( IArchive& ar, NPKeyValue& kv )
     {
         BaseKeyValue::serialize( ar, kv, key_value_assign_func );
+    }
+
+    // ------------------------------------------------------------------------
+    // --- NPKeyValueParameter
+    // ------------------------------------------------------------------------
+
+    NPKeyValueParameter::NPKeyValueParameter()
+        : NPKeyValue()
+        , m_ParameterName()
+    {
+    }
+
+    NPKeyValueParameter::~NPKeyValueParameter()
+    {
+    }
+
+    NPKeyValueParameter& NPKeyValueParameter::operator=( const std::string& rKeyValueStr )
+    {
+        m_pInternal =NPFactory::GetInstance()->GetKeyValue<NPKeyValueContainer>( NP_KEY, rKeyValueStr, m_ParameterName );
+        return *this;
+    }
+
+    const std::string& NPKeyValueParameter::GetParameterName() const
+    {
+        return m_ParameterName;
+    }
+
+    void NPKeyValueParameter::SetParameterName( const std::string& rParameterName )
+    {
+        m_ParameterName = rParameterName;
     }
 
     // ------------------------------------------------------------------------
@@ -310,7 +361,6 @@ namespace Kernel
     NPFactory::NPFactory()
         : BaseFactory()
     {
-        m_KeyWhiteList.erase( "Age_Bin" );
     }
 
     NPFactory::~NPFactory()
@@ -351,7 +401,7 @@ namespace Kernel
         return p_factory;
     }
 
-    void  NPFactory::Initialize( const JsonObjectDemog& rDemog, bool isWhitelistEnabled )
+    void  NPFactory::Initialize( const JsonObjectDemog& rDemog )
     {
         if( !rDemog.IsNull() )
         {
@@ -366,7 +416,7 @@ namespace Kernel
             JsonObjectDemog np_json( JsonObjectDemog::JsonObjectType::JSON_OBJECT_OBJECT );
             np_json.Add( NP_KEY, rDemog );
 
-            BaseFactory::Initialize( NP_KEY, NP_NAME_KEY, read_fn, 0, np_json, isWhitelistEnabled );
+            BaseFactory::Initialize( NP_KEY, NP_NAME_KEY, read_fn, 0, np_json );
         }
     }
 
@@ -377,9 +427,15 @@ namespace Kernel
         return new NodeProperty( rKeyStr, rValues );
     }
 
-    void NPFactory::AddNP( const std::string& rKeyStr, const std::map<std::string,float>& rValues )
+    NodeProperty* NPFactory::AddNP( const std::string& rKeyStr,
+                                    const std::map<std::string,float>& rValues,
+                                    bool haveFactoryMaintain )
     {
-        BaseFactory::AddIP( 0, rKeyStr, rValues, NPFactory::construct_np );
+        return static_cast<NodeProperty*>( BaseFactory::AddIP( 0, 
+                                                               rKeyStr,
+                                                               rValues,
+                                                               NPFactory::construct_np,
+                                                               haveFactoryMaintain ) );
     }
 
     NodeProperty* NPFactory::GetNP( const std::string& rKey, const std::string& rParameterName, bool throwOnNotFound )
@@ -405,6 +461,7 @@ namespace Kernel
         {
             if( rNodeJson["NodeAttributes"].Contains( "NodePropertyValues" ) )
             {
+                //NodePropertyValues_DESC_TEXT
                 JsonObjectDemog np_values = rNodeJson[ "NodeAttributes" ][ "NodePropertyValues" ];
                 release_assert( np_values.IsArray() );
 

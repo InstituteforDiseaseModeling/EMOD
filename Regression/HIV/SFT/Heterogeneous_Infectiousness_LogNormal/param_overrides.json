@@ -1,0 +1,39 @@
+{
+    "parameters": {
+        "Config_Name": "Heterogeneous_Infectiousness_LogNormal",
+        "Simulation_Duration": 2,
+        "Simulation_Timestep": 1,
+        "Run_Number": 3,
+        
+        "AIDS_Stage_Infectivity_Multiplier": 1,
+        "Acute_Stage_Infectivity_Multiplier": 1,
+        "Base_Infectivity": 1000,
+        "Condom_Transmission_Blocking_Probability": 0.6,
+        "x_Base_Population": 0.01,
+        "Demographics_Filenames": [
+            "../../input/SA_UN_demographics_extrapolated_WithProperties_Smoothed.json",
+            "../../input/PFA_overlay.json",
+            "PFA_overlay_rates.json"
+        ],
+        "Enable_Birth": 1,
+        "Enable_Natural_Mortality": 0,
+        "Heterogeneous_Infectiousness_LogNormal_Scale": 2,
+        "Male_To_Female_Relative_Infectivity_Ages": [
+            0
+        ],
+        "Male_To_Female_Relative_Infectivity_Multipliers": [
+            1
+        ],
+        "Min_Days_Between_Adding_Relationships": 0,
+        "STI_Coinfection_Acquisition_Multiplier": 13.4,
+        "STI_Coinfection_Transmission_Multiplier": 13.4,
+        "Sexual_Debut_Age_Female_Weibull_Heterogeneity": 0.020408162847,
+        "Sexual_Debut_Age_Female_Weibull_Scale": 1.011341333389,
+        "Sexual_Debut_Age_Male_Weibull_Heterogeneity": 0.020408162847,
+        "Sexual_Debut_Age_Male_Weibull_Scale": 1.011341333389,
+        "Sexual_Debut_Age_Min": 0,        
+        "logLevel_InfectionHIV": "DEBUG",
+        "logLevel_MathFunctions": "ERROR"
+    },
+    "Default_Config_Path": "defaults/hiv_sft_default_config.json"
+}

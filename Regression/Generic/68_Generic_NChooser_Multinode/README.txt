@@ -17,3 +17,12 @@ without migration.
 The "Human Infectious Reservoir" is half what it is for test 22 because
 it is an average per node. That is, the value in this test should be half
 what it is in test 22 because this test has two nodes.
+
+====================================================================
+GH-3651
+NChooser: Qualifying individuals not distributed among multiple nodes
+7/9/2019
+
+Before the fix you would see the "Vaccinated" event only going to people
+in node 2 (in ReportEventRecorder.csv.  After the fix, you see "Vaccinated"
+going to people in both nodes.

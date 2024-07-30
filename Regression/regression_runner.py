@@ -7,8 +7,12 @@ import subprocess
 import glob
 import regression_local_monitor
 import regression_hpc_monitor
+import regression_hpc_linux_monitor
 import regression_utils as ru
 import sys
+import shutil
+import pdb
+from ctypes import *
 
 
 class MyRegressionRunner(object):
@@ -22,12 +26,17 @@ class MyRegressionRunner(object):
 
     def __init__(self, params):
         self.params = params
-        self.dtk_hash = ru.md5_hash_of_file(self.params.executable_path)
+        try:
+            self.dtk_hash = ru.md5_hash_of_file(self.params.executable_path)
+        except Exception as ex:
+            self.dtk_hash = None
+            print( "Exception getting md5 of Eradication binary/exe; OK if doing pymod run." )
         self.sim_dir_sem = threading.Semaphore()
         self.emodules_map["interventions"] = []
         self.emodules_map["disease_plugins"] = []
         self.emodules_map["reporter_plugins"] = []
         self.src_dest_set = set()
+        self.dll_name_to_path = {}
         if params.dll_root is not None and params.use_dlls is True:
             # print( "dll_root (remote) = " + params.dll_root )
             self.copyEModulesOver(params)
@@ -58,7 +67,12 @@ class MyRegressionRunner(object):
         return succeeded
 
     def copy_serialized_population_files(self, config_json, simulation_directory, scenario_directory):
+        if config_json['parameters']["Serialized_Population_Reading_Type"] != "READ":
+            return
+
         input_files = config_json['parameters'].get('Serialized_Population_Filenames', [])
+        input_files_dir = config_json['parameters']['Serialized_Population_Path']
+        input_files_dir = os.path.join(scenario_directory, input_files_dir)
 
         serialized_pop_filenames = []
         #config_json["parameters"]["Serialized_Population_Filenames"] = []
@@ -67,8 +81,8 @@ class MyRegressionRunner(object):
             if not filename or len(filename.strip(' ')) == 0:
                 continue
 
-            scenario_file = os.path.join(scenario_directory, filename)
-
+            scenario_file = os.path.join(input_files_dir, filename)
+            
             # Copy directly to remote simulation working directory
             if os.path.isfile(scenario_file):
                 #print('Copying %s to remote working directory'%filename)
@@ -79,6 +93,7 @@ class MyRegressionRunner(object):
 
         if( len(serialized_pop_filenames) > 0 ):
             config_json["parameters"]["Serialized_Population_Filenames"] = serialized_pop_filenames
+            config_json['parameters']['Serialized_Population_Path'] = "."
 
         return
 
@@ -152,19 +167,20 @@ class MyRegressionRunner(object):
                 # For any demographics overlays WITHIN regression folder:
                 # Copy directly to remote simulation working directory
                 if os.path.isfile(scenario_file):
-                    # print('Copying %s to remote working directory'%filename)
                     simulation_path = os.path.join(self.params.sim_root, simulation_directory)
                     simulation_file = os.path.join(simulation_path, os.path.basename(filename))
-                    self.update_file(scenario_file, simulation_file)
-                    if( key != "Load_Balance_Filename" ):
-                        dest = simulation_file + ".json"
-                        source = scenario_file + ".json"
-                        self.update_file(source, dest)
+                    source = scenario_file
+                    dest = simulation_file
 
-                else:
+                if not self.update_file(source, dest):
+                    print("Could not find input file '{0}' to copy to '{1}' for scenario '{2}'".format(source, dest,
+                                                                                                       scenario))
+                if key != "Load_Balance_Filename":
+                    source = source + ".json"
+                    dest = dest + ".json"
                     if not self.update_file(source, dest):
                         print("Could not find input file '{0}' to copy to '{1}' for scenario '{2}'".format(source, dest,
-                                                                                                       scenario))
+                                                                                                           scenario))
         return
 
     def copy_pymod_files( self, config_json, simulation_directory, scenario_path ):
@@ -176,13 +192,21 @@ class MyRegressionRunner(object):
         sim_dir = os.path.join(self.params.sim_root, simulation_directory)
 
         # just search for all pyd files by walking the tree and copy them to each sim folder for now
-        pyds = glob.glob(os.path.join( "../emodularization/**/*.pyd" ), recursive=True)
+        pyds = []
+        suffix = ".so" if os.name == "posix" else ".pyd"
+        #pyds = glob.glob( ( "../emodularization/**/*." + suffix ), recursive=True)
+        for root, dirs, files in os.walk("../emodularization/"):
+            for file in files:
+                if file.endswith(suffix):
+                    pyds.append((os.path.join(root, file))) 
+        print( "Found python shared objects to copy: " + str( pyds ) )
         for pyd in pyds:
+            print( "Copying " + pyd + " to" + os.path.join( sim_dir, os.path.basename( pyd ) ) )
             ru.copy( pyd, os.path.join( sim_dir, os.path.basename( pyd ) ) )
        
         # Yes, I can combine the below 3 blocks by having list pairs of root-dir and regex but I 
         # want the last two to go away.
-        regexes = [ "*_template.json", "demographics_*.json", "*.py" ]
+        regexes = [ "*_template.json", "demographics_*.json", "*.json", "*.py" ]
         # copy certain files (nice if we can be more specific)
         for pattern in regexes:
             foundfiles = glob.glob(os.path.join( scenario_path, pattern ))
@@ -195,6 +219,12 @@ class MyRegressionRunner(object):
         for py in glob.glob( os.path.join( os.path.join( scenario_path, ".." ), "*.py" )):
             ru.copy( py, os.path.join( sim_dir, os.path.basename( py ) ) )
 
+        # Refresh all the shared_embedded_py_scripts: THIS IS GOING TO GO AWAY SOON WITH PIP INSTALL OF dtk_test_support
+        """
+        for py_file in glob.glob(os.path.join("shared_embedded_py_scripts", "dtk_*.py")):
+            py_input = self.params.py_input
+            self.copy_sim_file("shared_embedded_py_scripts", py_input, os.path.basename(py_file))
+        """
         return
 
     def copy_input_files_to_user_input(self, simulation_directory, scenario_path, config_json):
@@ -220,6 +250,9 @@ class MyRegressionRunner(object):
         self.params.use_user_input_root = True
 
         return
+
+    def transform_path( self, win_path ):
+        return win_path.replace( "\\", "/" ).replace( "bayesianfil01", "mnt" ).replace( "IDM", "idm" ).replace( "//", "/" )
 
     # Copy just build dlls to deployed places based on commandline argument
     # - The default is to use all of the DLLs found in the location the DLL projects
@@ -255,7 +288,9 @@ class MyRegressionRunner(object):
         dll_dirs = ["disease_plugins",  "reporter_plugins", "interventions"]
 
         for dll_subdir in dll_dirs:
-            dlls = glob.glob(os.path.join(os.path.join(emodule_dir, dll_subdir), "*.dll"))
+            suffix = "*.dll" if os.name == "nt" and self.params.linux == False else "*.so"
+            #print( "Using suffix: " + str(suffix) )
+            dlls = glob.glob(os.path.join( os.path.join(emodule_dir, dll_subdir), suffix )) 
             for dll in dlls:
                 dll_hash = ru.md5_hash_of_file(dll)
                 # print( dll_hash )
@@ -279,10 +314,30 @@ class MyRegressionRunner(object):
                         os.makedirs(target_dir)
                         ru.copy(dll, os.path.join(target_dir, os.path.basename(dll)))
 
-                    self.emodules_map[dll_subdir].append(os.path.join(target_dir, os.path.basename(dll)))
+                    dll_path = os.path.join(target_dir, os.path.basename(dll))
+                    #print( "dll_path = " + dll_path )
+                    # dll_path has to be converted to /mnt for --linux
+                    if self.params.linux:
+                        dll_path = self.transform_path( dll_path )
+                    self.emodules_map[dll_subdir].append(dll_path)
 
-                except IOError:
+                    try:
+                        if os.name == "nt" and self.params.linux == False:
+                            dll_handle = cdll.LoadLibrary(dll)
+                        else:
+                            # this does lazy loading so not all dependencies have to be found
+                            dll_handle = CDLL(dll,mode=1)
+                        gettype = dll_handle.GetType
+                        gettype.restype = c_char_p
+                        name = dll_handle.GetType().decode("utf-8")
+                        self.dll_name_to_path[name] = dll_path
+                    except Exception as ex:
+                        print("ERROR: " + str(ex) )
+                        sys.exit() 
+
+                except IOError as ioex:
                     print( "Failed to copy dll " + dll + " to " + os.path.join(os.path.join(params.dll_root, dll_dirs[1]), os.path.basename(dll)) )
+                    print( "Exception " + str( ioex ) )
                     ru.final_warnings += "Failed to copy dll " + dll + " to " + os.path.join(os.path.join(params.dll_root, dll_dirs[1]), os.path.basename(dll)) + "\n"
 
         return
@@ -300,18 +355,44 @@ class MyRegressionRunner(object):
     def is_local_simulation(self):
         return True if os.name == "posix" else self.params.local_execution
 
-    def commissionFromConfigJson(self, sim_id, reply_json, scenario_path, report, scenario_type='tests'):
+    def filter_emodules(self, custom_reports):
+        final_reporters = []
+
+        # Extract the name of all reporters used in the custom_reports file
+        reports_json = json.loads(custom_reports)
+
+        # Return empty reporters if the file isn't formatted right or no reporters are provided
+        if reports_json.get("Reports") is None:
+            return final_reporters
+
+        reporters = []
+        for reporter in reports_json["Reports"]:
+            name = reporter["class"]
+            reporters.append(name)
+        reporters_set = set(reporters)
+
+        # Re-build the list of reporter DLL paths in the emodules map based on the reporters appearing above
+        for reporter in reporters_set:
+            try:
+                final_reporters.append(self.dll_name_to_path[reporter])
+            except KeyError:
+                continue
+                #print("Warning: when building reporter_plugins emodule list, no path found for '{0}'. "
+                #      "Continuing.".format(reporter))
+        return final_reporters
+
+    def commissionFromConfigJson(self, sim_id, reply_json, scenario_path, report, scenario_type='tests',serialization_test_type=None):
         # scenario_type == 'tests' will compare results to reference
         # scenario_type != 'tests', e.g. 'science' or 'sweep' will skip comparison
         # now we have the config_json, find out if we're commissioning locally or on HPC
 
         sim_dir = os.path.join(self.params.sim_root, sim_id)
-        bin_dir = os.path.join(self.params.bin_root, self.dtk_hash)     # may not exist yet
+        bin_dir = os.path.join(self.params.bin_root, self.dtk_hash) if self.dtk_hash else None
 
         if self.is_local_simulation():
-            print("Commissioning locally (not on cluster)!")
+            #print("Commissioning locally (not on cluster)!")
             sim_dir = os.path.join(self.params.local_sim_root, sim_id)
-            bin_dir = os.path.join(self.params.local_bin_root, self.dtk_hash)   # may not exist yet
+            bin_dir = os.path.join(self.params.local_bin_root, self.dtk_hash) if self.dtk_hash else None
         # else:
             # print( "HPC!" )
 
@@ -330,14 +411,19 @@ class MyRegressionRunner(object):
         bin_path = None 
         if scenario_type == "pymod":
             bin_path = "python " # py script needs to come from folder not hardcoded
+            if os.name == "posix":
+                # This is not the correct solution but I don't know yet how to make sure we use python3 where it's present or just python
+                # Test on windows bamboo
+                bin_path = "python3 "
             script_name = os.path.basename( scenario_path.strip('/') ) + "_test.py"
             bin_path += script_name
+            foundit = True
         else:
             bin_path = os.path.join(bin_dir, "Eradication" if os.name == "posix" else "Eradication.exe")
-        if os.path.exists(bin_dir):
+        if bin_dir and os.path.exists(bin_dir):
             if os.path.exists(bin_path):
                 foundit = True
-        else:
+        elif bin_dir:
             os.makedirs(bin_dir)
         
         if not foundit:
@@ -353,8 +439,27 @@ class MyRegressionRunner(object):
         
         # tease out campaign json, save separately
         if "campaign_json" in reply_json:
-            campaign_json = json.dumps(reply_json["campaign_json"]).replace("u'", "'").replace("'", '"').strip('"')
-        reply_json["campaign_json"] = None
+            #campaign_json = json.dumps(reply_json["campaign_json"]).replace("u'", "'").replace("'", '"').strip('"')
+            with open( sim_dir + "/" + self.campaign_filename, 'w' ) as camp_file:
+                 try:
+                    camp_json = reply_json["campaign_json"]
+                    if isinstance( camp_json, dict ):
+                        json.dump(camp_json, camp_file)
+                    else:
+                        camp_json_grrr = json.loads( camp_json )
+                        json.dump(camp_json_grrr , camp_file)
+                 except Exception as ex:
+                     print( "Exception writing campaign.json for " + scenario_path )
+                     print( str( ex ) ) 
+            #reply_json["campaign_json"] = None 
+        elif "Campaign_Filename" in reply_json["parameters"]:
+            camp_filename = reply_json["parameters"]["Campaign_Filename"]
+            if len(camp_filename) > 0:
+                try:
+                    shutil.copy( os.path.join( scenario_path, camp_filename ), os.path.join( sim_dir, camp_filename ) )
+                except Exception as ex:
+                    print( "Exception copying campaign file to sim dir: " + str(ex) )
+
 
         # tease out custom_reports json, save separately
         if "custom_reports_json" in reply_json and reply_json["custom_reports_json"] is not None:
@@ -375,16 +480,42 @@ class MyRegressionRunner(object):
                 for py_file in glob.glob(os.path.join(scenario_path, "dtk_*.py")):
                     self.copy_sim_file(scenario_path, sim_dir, os.path.basename(py_file))
             elif psp_param == "SHARED":
-                py_input = self.params.py_input
+                # We are going to copy scripts from s_e_p_s to simdir. But we need to separate dtk_test files from dtk_ep4 (TBD)
+                #py_input = self.params.py_input
+                py_input = "."
                 if not os.path.exists(py_input):
                     os.makedirs(py_input)
                 for py_file in glob.glob(os.path.join(scenario_path, "dtk_*.py")):
                     self.copy_sim_file(scenario_path, sim_dir, os.path.basename(py_file))
 
+                # SFTS ONLY PLEASE 
+                dtk_test_path = None
+                #if scenario_type == "science" and os.path.exists( "shared_embedded_py_scripts/dtk_test" ):
+                if os.path.exists( "shared_embedded_py_scripts/dtk_test" ):
+                    dtk_test_path = os.path.join( sim_dir, "dtk_test" )
+                    os.mkdir( dtk_test_path )
+                    with open( os.path.join( dtk_test_path, "__init__.py" ), "w" ) as dunder:
+                        dunder.write( "name='dtk_test alpha'" )
+
+                for py_file in glob.glob(os.path.join("shared_embedded_py_scripts", "dtk_*.py")):
+                    if os.path.basename( py_file ).startswith( "dtk_pre" ) or os.path.basename( py_file ).startswith( "dtk_post" ):
+                        self.copy_sim_file("shared_embedded_py_scripts", sim_dir, os.path.basename(py_file))
+                    elif dtk_test_path is not None:
+                        self.copy_sim_file("shared_embedded_py_scripts", dtk_test_path, os.path.basename(py_file))
+
+                # this is for dtk_test stuff
+                for py_file in glob.glob(os.path.join("shared_embedded_py_scripts/dtk_test", "dtk_*.py")):
+                    if dtk_test_path is not None:
+                        self.copy_sim_file("shared_embedded_py_scripts/dtk_test", dtk_test_path, os.path.basename(py_file))
+
+                # Copy any files in shared_embedded to the SCENARION SIMULATION FOLDER (THIS IS A CHANGE).
+                for py_file in glob.glob(os.path.join("shared_embedded_py_scripts", "dtk_*.py")):
+                    self.copy_sim_file("shared_embedded_py_scripts", sim_dir, os.path.basename(py_file))
+
             elif psp_param != "NO":
                 print(psp_param + " is not a valid value for Python_Script_Path. Valid values are NO, LOCAL, SHARED. Exiting.")
                 sys.exit() 
-            del(reply_json["parameters"]["Python_Script_Path"])
+            #del(reply_json["parameters"]["Python_Script_Path"])
 
         self.copy_input_files_to_user_input(sim_id, scenario_path, reply_json)
 
@@ -394,14 +525,23 @@ class MyRegressionRunner(object):
             f.write(json.dumps(reply_json, sort_keys=True, indent=4))
 
         # now that config.json is written out, add Py Script Path back (if non-empty)
-        if py_input is not None: # or scenario_type == "pymod":
-            reply_json["PSP"] = py_input
+        if py_input is not None:
+            #reply_json["PSP"] = py_input
+            reply_json["PSP"] = reply_json["parameters"]["Python_Script_Path"]
+            del(reply_json["parameters"]["Python_Script_Path"])
 
         # save campaign.json
-        with open(sim_dir + "/" + self.campaign_filename, 'w') as f:
+        #with open(sim_dir + "/" + self.campaign_filename, 'w') as f:
             # f.write( json.dumps( campaign_json, sort_keys=True, indent=4 ) )
-            f.write(str(campaign_json))
+            #f.write(str(campaign_json))
 
+        
+        try:
+            self.emodules_map["reporter_plugins"] = self.filter_emodules(reports_json)
+        except UnboundLocalError:
+            # reports_json is undefined, so use no reporters
+            self.emodules_map["reporter_plugins"] = []
+            
         with open(sim_dir + "/emodules_map.json", 'w') as f:
             f.write(json.dumps(self.emodules_map, sort_keys=True, indent=4))
 
@@ -414,6 +554,8 @@ class MyRegressionRunner(object):
         # ru.copy( "../Eradication/x64/Release/Eradication.pdb", sim_dir )
         # ------------------------------------------------------------------
 
+        if os.path.isfile(os.path.join(scenario_path, "dtk_pre_process.py")):
+            self.copy_sim_file(scenario_path, sim_dir, "dtk_pre_process.py")
         if os.path.isfile(os.path.join(scenario_path, "dtk_post_process.py")):
             self.copy_sim_file(scenario_path, sim_dir, "dtk_post_process.py")
 
@@ -421,9 +563,12 @@ class MyRegressionRunner(object):
 
         # print "Creating run & monitor thread."
         if self.is_local_simulation():
-            monitorThread = regression_local_monitor.Monitor(sim_id, scenario_path, report, self.params, reply_json, scenario_type)
+            monitorThread = regression_local_monitor.Monitor(sim_id, scenario_path, report, self.params, reply_json, scenario_type,serialization_test_type)
         else:
-            monitorThread = regression_hpc_monitor.HpcMonitor(sim_id, scenario_path, report, self.params, self.params.label, reply_json, scenario_type)
+            if self.params.linux:
+                monitorThread = regression_hpc_linux_monitor.LinuxHpcMonitor(sim_id, scenario_path, report, self.params, self.params.label, reply_json, scenario_type, serialization_test_type)
+            else:
+                monitorThread = regression_hpc_monitor.HpcMonitor(sim_id, scenario_path, report, self.params, self.params.label, reply_json, scenario_type, serialization_test_type)
 
         # monitorThread.daemon = True
         monitorThread.daemon = False
@@ -438,7 +583,7 @@ class MyRegressionRunner(object):
             pass  # No test submissions for local simulations
         else:
             monitor_thread = regression_hpc_monitor.HpcMonitor("TestJob", None, None, self.params, self.params.label,
-                                                               None, None, priority="Highest")
+                                                               None, None, None, priority="Highest")
 
             # Test whether we can submit jobs to the cluster as specified
             try:

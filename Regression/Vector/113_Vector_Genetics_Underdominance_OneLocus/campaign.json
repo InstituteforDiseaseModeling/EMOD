@@ -1,0 +1,70 @@
+{
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 0.2,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Antigen": 0, 
+                    "Genome": 0
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 100, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 1 ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Number_Repetitions": 6, 
+                "Timesteps_Between_Repetitions": 5, 
+                "Intervention_Config": {
+                    "class": "MosquitoRelease",
+                    "Cost_To_Consumer": 1, 
+                    "Released_Number": 40000, 
+                    "Released_Species": "SillySkeeter", 
+                    "Released_Wolbachia": "VECTOR_WOLBACHIA_FREE", 
+                    "Released_Genome" : [
+                        [  "X",  "Y" ],
+                        [  "A1",  "A2" ]
+                    ]
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 100, 
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 1 ]
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Number_Repetitions": 6, 
+                "Timesteps_Between_Repetitions": 5, 
+                "Intervention_Config": {
+                    "class": "MosquitoRelease",
+                    "Cost_To_Consumer": 1, 
+                    "Released_Number": 40000, 
+                    "Released_Species": "SillySkeeter", 
+                    "Released_Wolbachia": "VECTOR_WOLBACHIA_FREE", 
+                    "Released_Genome" : [
+                        [  "X",  "X" ],
+                        [  "A1",  "A2" ]
+                    ]
+                }
+            }
+        }
+    ], 
+    "Use_Defaults": 1
+}

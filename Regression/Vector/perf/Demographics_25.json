@@ -1,0 +1,224 @@
+{
+    "Metadata": {
+        "DateCreated": "Tue Jun 30 07:00:42 2015",
+        "Tool": "Eradication.exe",
+        "Author": "DTK",
+        "IdReference": "0",
+        "NodeCount": 100
+    },
+    "Defaults": {
+        "NodeID": -1,
+        "NodeAttributes": {
+            "InitialPopulation": 1000,
+            "InitialVectorsPerSpecies": {
+                "arabiensis": 10000,
+                "funestus"  : 0,
+                "gambiae"   : 0
+            },
+            "Latitude": 0,
+            "Longitude": 0,
+            "Altitude": 0,
+            "Airport": 0,
+            "Region": 1,
+            "Seaport": 1,
+            "BirthRate": 8.715e-005,
+            "Urban": 0,
+            "AbovePoverty": 0.5
+        },
+        "IndividualAttributes": {
+            "AgeDistributionFlag": 3,
+            "AgeDistribution1": 0.000118,
+            "AgeDistribution2": 0,
+            "PrevalenceDistributionFlag": 0,
+            "PrevalenceDistribution1": 0,
+            "PrevalenceDistribution2": 0,
+            "ImmunityDistributionFlag": 0,
+            "ImmunityDistribution1": 0,
+            "ImmunityDistribution2": 0,
+            "RiskDistributionFlag": 0,
+            "RiskDistribution1": 0,
+            "RiskDistribution2": 0,
+            "MigrationHeterogeneityDistributionFlag": 0,
+            "MigrationHeterogeneityDistribution1": 0.25,
+            "MigrationHeterogeneityDistribution2": 0,
+            "PercentageChildren" : 0.7
+        }
+    },
+    "Nodes": [
+        {
+            "NodeID": 1,
+            "NodeAttributes": {
+                "Latitude": 0.0225,
+                "Longitude": -0.0225
+            }
+        },
+        {
+            "NodeID": 2,
+            "NodeAttributes": {
+                "Latitude": 0.0225,
+                "Longitude": -0.0175
+            }
+        },
+        {
+            "NodeID": 3,
+            "NodeAttributes": {
+                "Latitude": 0.0225,
+                "Longitude": -0.0125
+            }
+        },
+        {
+            "NodeID": 4,
+            "NodeAttributes": {
+                "Latitude": 0.0225,
+                "Longitude": -0.0075
+            }
+        },
+        {
+            "NodeID": 5,
+            "NodeAttributes": {
+                "Latitude": 0.0225,
+                "Longitude": -0.0025
+            }
+        },
+        {
+            "NodeID": 6,
+            "NodeAttributes": {
+                "Latitude": 0.0175,
+                "Longitude": -0.0225
+            }
+        },
+        {
+            "NodeID": 7,
+            "NodeAttributes": {
+                "Latitude": 0.0175,
+                "Longitude": -0.0175
+            }
+        },
+        {
+            "NodeID": 8,
+            "NodeAttributes": {
+                "Latitude": 0.0175,
+                "Longitude": -0.0125
+            }
+        },
+        {
+            "NodeID": 9,
+            "NodeAttributes": {
+                "Latitude": 0.0175,
+                "Longitude": -0.0075
+            }
+        },
+        {
+            "NodeID": 10,
+            "NodeAttributes": {
+                "Latitude": 0.0175,
+                "Longitude": -0.0025
+            }
+        },
+        {
+            "NodeID": 11,
+            "NodeAttributes": {
+                "Latitude": 0.0125,
+                "Longitude": -0.0225
+            }
+        },
+        {
+            "NodeID": 12,
+            "NodeAttributes": {
+                "Latitude": 0.0125,
+                "Longitude": -0.0175
+            }
+        },
+        {
+            "NodeID": 13,
+            "NodeAttributes": {
+                "Latitude": 0.0125,
+                "Longitude": -0.0125
+            }
+        },
+        {
+            "NodeID": 14,
+            "NodeAttributes": {
+                "Latitude": 0.0125,
+                "Longitude": -0.0075
+            }
+        },
+        {
+            "NodeID": 15,
+            "NodeAttributes": {
+                "Latitude": 0.0125,
+                "Longitude": -0.0025
+            }
+        },
+        {
+            "NodeID": 16,
+            "NodeAttributes": {
+                "Latitude": 0.0075,
+                "Longitude": -0.0225
+            }
+        },
+        {
+            "NodeID": 17,
+            "NodeAttributes": {
+                "Latitude": 0.0075,
+                "Longitude": -0.0175
+            }
+        },
+        {
+            "NodeID": 18,
+            "NodeAttributes": {
+                "Latitude": 0.0075,
+                "Longitude": -0.0125
+            }
+        },
+        {
+            "NodeID": 19,
+            "NodeAttributes": {
+                "Latitude": 0.0075,
+                "Longitude": -0.0075
+            }
+        },
+        {
+            "NodeID": 20,
+            "NodeAttributes": {
+                "Latitude": 0.0075,
+                "Longitude": -0.0025
+            }
+        },
+        {
+            "NodeID": 21,
+            "NodeAttributes": {
+                "Latitude": 0.0025,
+                "Longitude": -0.0225
+            }
+        },
+        {
+            "NodeID": 22,
+            "NodeAttributes": {
+                "Latitude": 0.0025,
+                "Longitude": -0.0175
+            }
+        },
+        {
+            "NodeID": 23,
+            "NodeAttributes": {
+                "Latitude": 0.0025,
+                "Longitude": -0.0125
+            }
+        },
+        {
+            "NodeID": 24,
+            "NodeAttributes": {
+                "Latitude": 0.0025,
+                "Longitude": -0.0075
+            }
+        },
+        {
+            "NodeID": 25,
+            "NodeAttributes": {
+                "Latitude": 0.0025,
+                "Longitude": -0.0025
+            }
+        }
+    ]
+}

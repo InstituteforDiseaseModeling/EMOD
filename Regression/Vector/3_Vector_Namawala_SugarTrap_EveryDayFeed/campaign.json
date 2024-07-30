@@ -2,15 +2,17 @@
     "Events": [
         {
             "Event_Coordinator_Config": {
-                "Intervention_Config": {
-                    "Cost_To_Consumer": 3.75, 
-                    "Killing_Config": {
-                        "Decay_Time_Constant": 2190, 
-                        "Initial_Effect": 0.1, 
-                        "class": "WaningEffectExponential"
-                    }, 
-                    "class": "SugarTrap"
-                }, 
+              "Intervention_Config": {
+                "Cost_To_Consumer": 3.75,
+                "Killing_Config": {
+                  "Decay_Time_Constant": 2190,
+                  "Initial_Effect": 0.1,
+                  "class": "WaningEffectExponential"
+                },
+                "Expiration_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                "Expiration_Period_Constant": 1000,
+                "class": "SugarTrap"
+              }, 
                 "class": "StandardInterventionDistributionEventCoordinator"
             }, 
             "Nodeset_Config": {

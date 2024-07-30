@@ -1,0 +1,308 @@
+{
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 10,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1.0, 
+                "Intervention_Config": {
+                    "class": "DelayedIntervention",
+                    "Coverage": 1,
+                    "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Delay_Period_Constant": 100.0,
+                    "Actual_IndividualIntervention_Configs": [
+                        {
+                            "class": "UsageDependentBednet",
+                            "Cost_To_Consumer": 1,
+                            "Repelling_Config": {
+                                "Initial_Effect": 0.0,
+                                "class": "WaningEffectConstant"
+                            },
+                            "Blocking_Config": {
+                                "Initial_Effect": 1.0,
+                                "class": "WaningEffectConstant"
+                            },
+                            "Killing_Config": {
+                                "Initial_Effect": 0.5,
+                                "class": "WaningEffectConstant"
+                            },
+                            "Usage_Config_List": [
+                                {
+                                    "Initial_Effect": 1.0,
+                                    "class": "WaningEffectConstant"
+                                }
+                            ],
+                            "Discard_Event": "Bednet_Discarded",
+                            "Received_Event": "Bednet_Got_New_One",
+                            "Using_Event": "Bednet_Using",
+                            "Expiration_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                            "Expiration_Period_Constant": 50
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 20,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1.0, 
+                "Intervention_Config": {
+                    "class": "DelayedIntervention",
+                    "Coverage": 1,
+                    "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Delay_Period_Constant": 100.0,
+                    "Actual_IndividualIntervention_Configs": [
+                        {
+                            "class": "Ivermectin",
+                            "Cost_To_Consumer": 1, 
+                            "Killing_Config": {
+                                "Box_Duration": 20, 
+                                "Initial_Effect": 1.0, 
+                                "class": "WaningEffectBox"
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 30,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1.0, 
+                "Intervention_Config": {
+                    "class": "DelayedIntervention",
+                    "Coverage": 1,
+                    "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Delay_Period_Constant": 100.0,
+                    "Actual_IndividualIntervention_Configs": [
+                        {
+                            "class": "SimpleIndividualRepellent",
+                            "Cost_To_Consumer": 1.0, 
+                            "Repelling_Config": {
+                                "class": "WaningEffectBox",
+                                "Box_Duration": 20, 
+                                "Initial_Effect": 1.0
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 40,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1.0, 
+                "Intervention_Config": {
+                    "class": "DelayedIntervention",
+                    "Coverage": 1,
+                    "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Delay_Period_Constant": 100.0,
+                    "Actual_IndividualIntervention_Configs": [
+                        {
+                            "class": "HumanHostSeekingTrap",
+                            "Cost_To_Consumer": 1.0, 
+                            "Attract_Config": {
+                                "Box_Duration": 20, 
+                                "Initial_Effect": 1.0, 
+                                "class": "WaningEffectBox"
+                            }, 
+                            "Killing_Config": {
+                                "Box_Duration": 20, 
+                                "Initial_Effect": 1.0, 
+                                "class": "WaningEffectBox"
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 50,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1.0, 
+                "Intervention_Config": {
+                    "class": "DelayedIntervention",
+                    "Coverage": 1,
+                    "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Delay_Period_Constant": 100.0,
+                    "Actual_IndividualIntervention_Configs": [
+                        {
+                            "class": "IRSHousingModification",
+                            "Cost_To_Consumer": 1, 
+                            "Repelling_Config": {
+                                "Box_Duration": 20, 
+                                "Initial_Effect": 1, 
+                                "class": "WaningEffectBox"
+                            }, 
+                            "Killing_Config": {
+                                "Box_Duration": 20, 
+                                "Initial_Effect": 1.0, 
+                                "class": "WaningEffectBox"
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 60,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1.0, 
+                "Intervention_Config": {
+                    "class": "DelayedIntervention",
+                    "Coverage": 1,
+                    "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Delay_Period_Constant": 100.0,
+                    "Actual_IndividualIntervention_Configs": [
+                        {
+                            "class": "ScreeningHousingModification",
+                            "Cost_To_Consumer": 1.0, 
+                            "Repelling_Config": {
+                                "Box_Duration": 20, 
+                                "Initial_Effect": 1.0, 
+                                "class": "WaningEffectBox"
+                            }, 
+                            "Killing_Config": {
+                                "Box_Duration": 20, 
+                                "Initial_Effect": 1.0, 
+                                "class": "WaningEffectBox"
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 70,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1.0, 
+                "Intervention_Config": {
+                    "class": "DelayedIntervention",
+                    "Coverage": 1,
+                    "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Delay_Period_Constant": 100.0,
+                    "Actual_IndividualIntervention_Configs": [
+                        {
+                            "class": "SpatialRepellentHousingModification",
+                            "Cost_To_Consumer": 1.0, 
+                            "Repelling_Config": {
+                                "Box_Duration": 20, 
+                                "Initial_Effect": 1.0, 
+                                "class": "WaningEffectBox"
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 80,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1.0, 
+                "Intervention_Config": {
+                    "class": "DelayedIntervention",
+                    "Coverage": 1,
+                    "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Delay_Period_Constant": 100.0,
+                    "Actual_IndividualIntervention_Configs": [
+                        {
+                            "class": "BitingRisk",
+                            "Risk_Distribution": "CONSTANT_DISTRIBUTION",
+                            "Risk_Constant": 0.1
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 90,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1.0, 
+                "Intervention_Config": {
+                    "class": "DelayedIntervention",
+                    "Coverage": 1,
+                    "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Delay_Period_Constant": 100.0,
+                    "Actual_IndividualIntervention_Configs": [
+                        {
+                            "class": "SimpleBednet",
+                            "Cost_To_Consumer": 1, 
+                            "Repelling_Config": {
+                                "class": "WaningEffectConstant",
+                                "Initial_Effect": 0.0
+                            }, 
+                            "Blocking_Config": {
+                                "Box_Duration": 20, 
+                                "Initial_Effect": 1, 
+                                "class": "WaningEffectBox"
+                            }, 
+                            "Killing_Config": {
+                                "Box_Duration": 20, 
+                                "Initial_Effect": 1, 
+                                "class": "WaningEffectBox"
+                            }, 
+                            "Usage_Config": {
+                                "class": "WaningEffectConstant",
+                                "Initial_Effect": 1.0
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "Use_Defaults": 1
+}

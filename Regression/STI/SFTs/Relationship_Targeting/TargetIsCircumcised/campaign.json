@@ -1,0 +1,104 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 10, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender", 
+                "Target_Gender" : "FEMALE", 
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Antigen": 0, 
+                    "Genome": 0, 
+                    "Incubation_Period_Override": 0,
+                    "Ignore_Immunity": 1
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender", 
+                "Target_Gender" : "MALE",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "MaleCircumcision",
+                    "Intervention_Name" : "Perfect",
+                    "Cost_To_Consumer": 1,
+                    "Circumcision_Reduced_Acquire": 1.0,
+                    "Apply_If_Higher_Reduced_Acquire" : 1
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 5, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "BroadcastEvent",
+                    "Broadcast_Event": "CheckMyGender"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 5, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1,
+                "Targeting_Config": {
+                    "class": "IsCircumcised",
+                    "Is_Equal_To": 1
+                },
+                "Intervention_Config": {
+                    "class": "BroadcastEvent",
+                    "Broadcast_Event": "IAmCircumcised",
+                    "Intervention_Name": "Intervention Under Test"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 5, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1,
+                "Targeting_Config": {
+                    "class": "IsCircumcised",
+                    "Is_Equal_To": 0
+                },
+                "Intervention_Config": {
+                    "class": "BroadcastEvent",
+                    "Broadcast_Event": "IAmNotCircumcised",
+                    "Intervention_Name": "Intervention Under Test"
+                }
+            }
+        }
+        
+    ]
+}

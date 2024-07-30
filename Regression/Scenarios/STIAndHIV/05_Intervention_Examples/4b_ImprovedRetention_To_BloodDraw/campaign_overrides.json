@@ -6,7 +6,6 @@
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Days_To_Diagnosis": 0,
                         "Default_Value": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
@@ -15,7 +14,6 @@
                             "InterventionStatus:OnPreART",
                             "InterventionStatus:LinkingToPreART"
                         ],
-                        "Event_Or_Config": "Event",
                         "Interpolation_Order": 0,
                         "Negative_Diagnosis_Event": "HCTUptakePostDebut9",
                         "New_Property_Value": "InterventionStatus:ARTStaging",

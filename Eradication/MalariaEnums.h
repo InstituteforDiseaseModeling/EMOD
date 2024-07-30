@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -19,16 +11,16 @@ namespace Kernel
 {
     // ENUM defs for MALARIA_MODEL
     ENUM_DEFINE(MalariaModel, 
-        ENUM_VALUE_SPEC(MALARIA_MECHANISTIC_MODEL                           , 0)
-        ENUM_VALUE_SPEC(MALARIA_REDUCEDSTATE_MODEL                          , 1)
-        ENUM_VALUE_SPEC(MALARIA_EXPONENTIAL_DURATION                        , 2)
-        ENUM_VALUE_SPEC(MALARIA_FIXED_DURATION                              , 4))
+        ENUM_VALUE_SPEC( MALARIA_MECHANISTIC_MODEL                          , 0 )
+        ENUM_VALUE_SPEC( MALARIA_MECHANISTIC_MODEL_WITH_CO_TRANSMISSION     , 1 )
+        ENUM_VALUE_SPEC( MALARIA_MECHANISTIC_MODEL_WITH_PARASITE_GENETICS   , 2 ))
 
     // ENUM defs for MALARIA_STRAINS
     ENUM_DEFINE(MalariaStrains, 
         ENUM_VALUE_SPEC(FALCIPARUM_NONRANDOM_STRAIN                         , 11)
         ENUM_VALUE_SPEC(FALCIPARUM_RANDOM50_STRAIN                          , 12)
         ENUM_VALUE_SPEC(FALCIPARUM_RANDOM_STRAIN                            , 13)
+        ENUM_VALUE_SPEC(FALCIPARUM_FIXED_STRAIN                             , 14)
         ENUM_VALUE_SPEC(FALCIPARUM_STRAIN_GENERATOR                         , 20))
 
     // ENUM defs for PARASITE_SWITCH_TYPE
@@ -90,4 +82,13 @@ namespace Kernel
         ENUM_VALUE_SPEC(Stage4,     4)
         ENUM_VALUE_SPEC(Mature,     5)
         ENUM_VALUE_SPEC(Count,      6))
+
+    ENUM_DEFINE( MalariaDiagnosticType,
+        ENUM_VALUE_SPEC( BLOOD_SMEAR_PARASITES,   0 )
+        ENUM_VALUE_SPEC( BLOOD_SMEAR_GAMETOCYTES, 1 )
+        ENUM_VALUE_SPEC( PCR_PARASITES,           2 )
+        ENUM_VALUE_SPEC( PCR_GAMETOCYTES,         3 )
+        ENUM_VALUE_SPEC( PF_HRP2,                 4 )
+        ENUM_VALUE_SPEC( TRUE_PARASITE_DENSITY,   5 )
+        ENUM_VALUE_SPEC( FEVER,                   6 ))
 }

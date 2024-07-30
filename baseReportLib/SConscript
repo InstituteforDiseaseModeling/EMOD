@@ -16,6 +16,8 @@ reportSrcFiles = [
     "BaseTextReportEvents.cpp",
     "BinnedReport.cpp",
     "ChannelDataMap.cpp",
+    "ReportFilter.cpp",
+    "ReportFilterRelationship.cpp",
     "ReportUtilities.cpp"
 ]
 
@@ -27,6 +29,8 @@ reportIncFiles = [
     'BaseTextReportEvents.h',
     'BinnedReport.h',
     'ChannelDataMap.h',
+    'ReportFilter.h',
+    'ReportFilterRelationship.h',
     "ReportUtilities.h"
 ]
 
@@ -37,17 +41,3 @@ if ('Disease' in env) and ((env['Disease'] == 'Malaria') or (env['Disease'] == '
 reportLocalInc = ['stdafx.h']
 
 reportLib = env.StaticLibrary('baseReportLib', reportSrcFiles)
-
-msvc = GetOption( "MSVC" )
-if msvc is not None and msvc != False and msvc != "":
-
-    bvar = env['BUILD_VARIANT'] + '|x64'
-    print( "baseReportLib: Generating MSVS" + env['MSVS_VERSION'] + " project files for '%s'" % bvar )
-    
-    env.MSVSProject(target = 'BaseReportLibScons' + env['MSVSPROJECTSUFFIX'],
-        srcs = reportSrcFiles,
-        incs = reportIncFiles,
-        localincs = reportLocalInc,
-        buildtarget = baseReportLib,
-                auto_build_solution = 0,
-                variant = bvar)

@@ -1,0 +1,36 @@
+{
+    "Default_Config_Path": "defaults/malaria_genetics_science_default_config.json",
+    "DEMOGRAPHICS": {
+        "Demographics_Filenames": [
+            "demographics.json"
+        ]
+    },
+    "PRIMARY": {
+        "Config_Name": "Malaria::SFTs::ReportNodeDemographicsMalariaGenetics:NumNewInfectionsInLastYear",
+        "Run_Number": 5,
+        "Simulation_Duration": 400,
+        "Notes": "Setting Max_Individual_Infections to 50, so person is less likely to reject the outbreak/infection",
+        "Max_Individual_Infections": 50
+    },
+    "REPORTS": {
+        "Custom_Reports_Filename": "custom_reports.json"
+    },
+    "STRAIN_TRACKING": {
+        "Parasite_Genetics": {
+            "Var_Gene_Randomness_Type": "ALL_RANDOM",
+            "Barcode_Genome_Locations": [
+                5000000,
+                10000000,
+                16000000,
+                21690000
+            ]
+        }
+    },
+    "VECTOR": {
+        "Vector_Species_Params": [
+            {
+                "Name": "SillySkeeter"
+            }
+        ]
+    }
+}

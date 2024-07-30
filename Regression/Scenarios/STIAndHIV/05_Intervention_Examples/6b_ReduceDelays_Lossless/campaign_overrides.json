@@ -48,7 +48,6 @@
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Days_To_Diagnosis": 0,
                         "Default_Value": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
@@ -57,7 +56,6 @@
                             "InterventionStatus:OnPreART",
                             "InterventionStatus:LinkingToPreART"
                         ],
-                        "Event_Or_Config": "Event",
                         "Interpolation_Order": 0,
                         "Negative_Diagnosis_Event": "HCTUptakePostDebut9",
                         "New_Property_Value": "InterventionStatus:ARTStaging",
@@ -94,14 +92,12 @@
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Days_To_Diagnosis": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART",
                             "InterventionStatus:LinkingToART",
                             "InterventionStatus:OnPreART"
                         ],
-                        "Event_Or_Config": "Event",
                         "Female_Multiplier": 1,
                         "Negative_Diagnosis_Event": "LinkingToPreART1",
                         "New_Property_Value": "InterventionStatus:LinkingToPreART",
@@ -130,7 +126,6 @@
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Days_To_Diagnosis": 0,
                         "Default_Value": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
@@ -138,7 +133,6 @@
                             "InterventionStatus:LinkingToART",
                             "InterventionStatus:OnPreART"
                         ],
-                        "Event_Or_Config": "Event",
                         "Interpolation_Order": 0,
                         "Negative_Diagnosis_Event": "HCTUptakePostDebut9",
                         "New_Property_Value": "InterventionStatus:LinkingToPreART",
@@ -175,12 +169,10 @@
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Days_To_Diagnosis": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART"
                         ],
-                        "Event_Or_Config": "Event",
                         "Female_Multiplier": 1,
                         "Negative_Diagnosis_Event": "LinkingToART1",
                         "New_Property_Value": "InterventionStatus:LinkingToART",
@@ -209,13 +201,11 @@
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Days_To_Diagnosis": 0,
                         "Default_Value": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever",
                             "InterventionStatus:OnART"
                         ],
-                        "Event_Or_Config": "Event",
                         "Interpolation_Order": 0,
                         "Negative_Diagnosis_Event": "HCTUptakePostDebut3",
                         "New_Property_Value": "InterventionStatus:LinkingToART",
@@ -250,11 +240,9 @@
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Days_To_Diagnosis": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever"
                         ],
-                        "Event_Or_Config": "Event",
                         "Female_Multiplier": 1,
                         "Interpolation_Order": 1,
                         "Negative_Diagnosis_Event": "OnART5",

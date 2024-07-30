@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -51,6 +43,7 @@ namespace Kernel
 
         if( ret && !JsonConfigurable::_dryrun )
         {
+            CheckOther( inputJson );
             if( !ignore_events_in_list && tmp_event_trigger_list.empty() )
             {
                 std::stringstream ss;
@@ -84,6 +77,11 @@ namespace Kernel
 
     template<class Broadcaster, class Observer, class Entity, class Trigger, class Factory>
     void BaseReportEventRecorder<Broadcaster, Observer, Entity, Trigger, Factory>::ConfigureOther( const Configuration* inputJson )
+    {
+    }
+
+    template<class Broadcaster, class Observer, class Entity, class Trigger, class Factory>
+    void BaseReportEventRecorder<Broadcaster, Observer, Entity, Trigger, Factory>::CheckOther( const Configuration* inputJson )
     {
     }
 

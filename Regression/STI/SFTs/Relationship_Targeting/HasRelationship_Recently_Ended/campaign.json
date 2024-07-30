@@ -1,0 +1,58 @@
+{
+    "Campaign_Name": "Targeting HasRelationship with That_Recently ENDED test",
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1,
+                "Property_Restrictions": ["Risk:High"],
+                "COMMENT": "This should broadcast IAmRiskHigh to all population in in Risk:High group.",
+                "Intervention_Config": {
+                    "class": "BroadcastEvent",
+                    "Broadcast_Event": "IAmRiskHigh"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 100,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "COMMENT": "This should broadcast MyRelationshipJustEnded to all population who relationship that have ended within one time-step",
+                "COMMENT2": "and the partner is in Risk:High group.",
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition_List": [
+                        "ExitedRelationship"
+                    ],
+                    "Demographic_Coverage": 1,
+                    "Targeting_Config": {
+                        "class" : "HasRelationship",
+                        "That_Recently": "ENDED",
+                        "With_Partner_Who" :
+                        {
+                           "class" : "HasIP",
+                           "Is_Equal_To" : 1,
+                           "IP_Key_Value" : "Risk:High"
+
+                        }
+                    },
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "BroadcastEvent",
+                        "Broadcast_Event": "MyRelationshipJustEnded"
+                    }
+                }
+            }
+        }       
+    ],
+    "Use_Defaults": 1
+}

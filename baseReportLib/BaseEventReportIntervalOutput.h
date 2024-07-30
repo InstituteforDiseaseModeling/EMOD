@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -35,15 +27,16 @@ namespace Kernel
     // configuration data.  In addition, this type of report can also control
     // how many reports will be created.  Once the max has been created, the
     // report will stop collecting data.
-    class IDMAPI BaseEventReportIntervalOutput : public Kernel::BaseEventReport
+    class BaseEventReportIntervalOutput : public BaseEventReport
     {
     public:
 
-        BaseEventReportIntervalOutput();
         BaseEventReportIntervalOutput( const std::string& rReportName, 
                                        bool oneFilePerReport, 
                                        IIntervalData* pIntervalData,
-                                       IIntervalData* pMulticoreDataExchange );
+                                       IIntervalData* pMulticoreDataExchange,
+                                       bool useHumanMinMaxAge,
+                                       bool useHumanOther );
         virtual ~BaseEventReportIntervalOutput();
 
         // BaseEventReport
@@ -60,8 +53,6 @@ namespace Kernel
         virtual std::string CreateOutputFilename( float currentTime );
         virtual void WriteOutput( float currentTime );
 
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         float  m_current_time;
         float  m_interval_timer;
         float  m_reporting_interval;
@@ -73,7 +64,6 @@ namespace Kernel
         bool m_PrettyFormat;
         IIntervalData* m_pIntervalData;
         IIntervalData* m_pMulticoreDataExchange;
-#pragma warning( pop )
     };
 
 };

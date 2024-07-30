@@ -1,0 +1,71 @@
+{
+    "Insecticides" : [
+        {
+            "Name" : "pyrethroid",
+            "Resistances" : [
+                {
+                    "Species" : "arabiensis",
+                    "Allele_Combinations" : [
+                        [ "a0", "a0" ],
+                        [ "b1", "*" ]
+                    ],
+                    "Larval_Killing_Modifier": 0.6,
+                    "Repelling_Modifier": 1.0,
+                    "Blocking_Modifier": 0.6,
+                    "Killing_Modifier": 0.6
+                },
+                {
+                    "Species" : "arabiensis",
+                    "Allele_Combinations" : [
+                        [ "a1", "a1" ],
+                        [ "b0", "*" ]
+                    ],
+                    "Larval_Killing_Modifier": 0.4,
+                    "Repelling_Modifier": 1.0,
+                    "Blocking_Modifier": 0.4,
+                    "Killing_Modifier": 0.4
+                },
+                {
+                    "Species" : "gambiae",
+                    "Allele_Combinations" : [
+                        [ "d0", "d1" ]
+                    ],
+                    "Larval_Killing_Modifier": 0.5,
+                    "Repelling_Modifier": 1.0,
+                    "Blocking_Modifier": 0.5,
+                    "Killing_Modifier": 0.5
+                }
+            ]
+        },
+        {
+            "Name" : "carbamate",
+            "Resistances" : [
+                {
+                    "Species" : "funestus",
+                    "Allele_Combinations" : [
+                        [ "c1", "c1" ]
+                    ],
+                    "Larval_Killing_Modifier": 1.5,
+                    "Repelling_Modifier": 1.0,
+                    "Blocking_Modifier": 1.5,
+                    "Killing_Modifier": 1.5
+                }
+            ]
+        },
+        {
+            "Name" : "organophosphate",
+            "Resistances" : [
+                {
+                    "Species" : "arabiensis",
+                    "Allele_Combinations" : [
+                        [ "a1", "a1" ]
+                    ],
+                    "Larval_Killing_Modifier": 0.1,
+                    "Repelling_Modifier": 1.0,
+                    "Blocking_Modifier": 0.1,
+                    "Killing_Modifier": 0.1
+                }
+            ]
+        }
+    ]
+}

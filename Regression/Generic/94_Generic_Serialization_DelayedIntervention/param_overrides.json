@@ -1,0 +1,33 @@
+{
+    "Default_Config_Path": "../../defaults/generic_default_config.json", 
+    "parameters": {
+        "COMMENT1": "This test is to make sure interventions can be serialized without being distributed.",
+        "COMMENT2": "That is, part of a DelayedIntervention that gets serialized before it distributes its payload.",
+        "Config_Name": "94_Generic_Serialization_DelayedIntervention", 
+        "Geography": "SamplesInput", 
+        "Simulation_Duration": 200, 
+        "Run_Number": 1,
+        "x_Base_Population": 0.1, 
+        "Population_Scale_Type": "FIXED_SCALING",
+        "Enable_Birth": 0, 
+        "Enable_Vital_Dynamics": 0, 
+        "Demographics_Filenames": [
+            "generic_scenarios_demographics.json",
+            "generic_scenarios_individualproperties_demographics.json"
+        ],
+        "Custom_Individual_Events": [
+            "VaccinatedA",
+            "VaccineExpiredA",
+            "SimpleDiagnostic_Positive",
+            "SimpleDiagnostic_Negative",
+            "TestedPositive"
+        ],
+        "Infectious_Period_Exponential": 10,
+        
+        "Serialization_Test" : 1,
+        "Serialization_Precision" : "FULL",
+        "Serialized_Population_Writing_Type": "TIME",
+        "Serialization_Mask_Node_Write" : 0,
+        "Serialization_Times" : [ 60 ]
+    }
+}

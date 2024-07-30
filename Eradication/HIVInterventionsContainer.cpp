@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "HIVInterventionsContainer.h"
@@ -82,6 +74,7 @@ namespace Kernel
         , last_recorded_CD4(-1)
         , num_times_started_ART(0)
         , received_HIV_test_results(ReceivedTestResultsType::UNKNOWN)
+        , infectivity_suppression_multiplier(1.0)
     {
     }
 
@@ -285,14 +278,18 @@ namespace Kernel
 
     void HIVInterventionsContainer::OnBeginART()
     {
-        float t = parent->GetEventContext()->GetNodeEventContext()->GetTime().time;
+        float t = -1;
+        if( parent->GetEventContext()->GetNodeEventContext() )
+        {
+            t = parent->GetEventContext()->GetNodeEventContext()->GetTime().time;
+        }
         if( !ever_been_on_ART )
         {
             ever_been_on_ART = true;
-            time_first_started_ART = t ;
+            time_first_started_ART = t;
         }
-        num_times_started_ART++ ;
-        time_last_started_ART = t ;
+        num_times_started_ART++;
+        time_last_started_ART = t;
     }
 
     bool HIVInterventionsContainer::EverTested()
@@ -491,48 +488,59 @@ namespace Kernel
         // DJK TODO:
     }
 
-    void HIVInterventionsContainer::GoOnART( bool viral_suppression, float daysToAchieveSuppression )
+    void HIVInterventionsContainer::GoOnART( bool viral_suppression, 
+                                             float daysToAchieveSuppression,
+                                             float durationFromEnrollmentToArtAidsDeath,
+                                             float artMultiplierOnTransmissionProbPerAct )
     {
         release_assert( hiv_parent );
         release_assert( hiv_parent->GetHIVSusceptibility() );
+        release_assert( hiv_parent->GetHIVInfection() );
         if( hiv_parent->GetHIVInfection() == nullptr )
         {
             LOG_DEBUG_F( "GoOnART called for *uninfected* individual %d.  Not distributing ART!\n", parent->GetSuid().data );
             return;
         }
 
-        release_assert( hiv_parent->GetHIVInfection() );
-        if( OnArtQuery() == true )
+        bool started_art = false;
+        if (OnArtQuery() == false)
         {
-            // Don't got on ART if already on ART!
-            LOG_DEBUG_F( "Individual %d is already on ART.\n", parent->GetSuid().data );
-            return;
-        }
-
-        OnBeginART();
-
-        if( viral_suppression ) 
-        {
+            OnBeginART();
+            days_since_most_recent_ART_start = 0.0f;
             hiv_parent->GetHIVSusceptibility()->ApplyARTOnset();
-            hiv_parent->GetHIVInfection()->SetupSuppressedDiseaseTimers();
+            started_art = true;
+        }   
+
+        infectivity_suppression_multiplier = artMultiplierOnTransmissionProbPerAct;
+
+        // If not going to achieve viral suppression, stop here so as to 1) avoid computing failure and 2) skip maternal transmission mod
+        if (viral_suppression)
+        {
             ART_status = ARTStatus::ON_ART_BUT_NOT_VL_SUPPRESSED;
-            full_suppression_timer = daysToAchieveSuppression;
-            days_to_achieve_suppression = daysToAchieveSuppression;
         }
         else
         {
             ART_status = ARTStatus::ON_BUT_ADHERENCE_POOR;
         }
 
-        days_since_most_recent_ART_start = 0.0f;
-
-        IIndividualEventBroadcaster* broadcaster = parent->GetEventContext()->GetNodeEventContext()->GetIndividualEventBroadcaster();
-        broadcaster->TriggerObservers( parent->GetEventContext(), EventTrigger::StartedART );
-        LOG_DEBUG_F( "Individual %d is now on ART.\n", parent->GetSuid().data );
-
-        // If not going to achieve viral suppression, stop here so as to 1) avoid computing failure and 2) skip maternal transmission mod
+        if( started_art )
+        { 
+            if( parent->GetEventContext()->GetNodeEventContext() )
+            {
+                IIndividualEventBroadcaster* broadcaster = parent->GetEventContext()->GetNodeEventContext()->GetIndividualEventBroadcaster();
+                broadcaster->TriggerObservers(parent->GetEventContext(), EventTrigger::StartedART);
+            }
+            
+            LOG_DEBUG_F("Individual %d is now on ART.\n", parent->GetSuid().data);
+        }
         if( !viral_suppression )
+        {
             return;
+        }
+
+        hiv_parent->GetHIVInfection()->SetupSuppressedDiseaseTimers(durationFromEnrollmentToArtAidsDeath);
+        full_suppression_timer = daysToAchieveSuppression;
+        days_to_achieve_suppression = daysToAchieveSuppression;
 
         float prog = hiv_parent->GetHIVInfection()->GetPrognosis();
         // Simple case (prog>11.9 months):
@@ -580,22 +588,21 @@ namespace Kernel
     {
         // If not on art, 1.0f, else if ramping up, it's linear from 1.0 to 0.08, else if ramped up, 0.08f;
         ProbabilityNumber ret = 1.0f;
-        float multiplier = InfectionHIVConfig::ART_viral_suppression_multiplier ;
         if( ART_status == ARTStatus::ON_ART_BUT_NOT_VL_SUPPRESSED )
         {
             if( days_to_achieve_suppression == 0.0 )
             {
-                ret = multiplier;
+                ret = infectivity_suppression_multiplier;
             }
             else
             {
                 float time_since_starting_ART = days_to_achieve_suppression - full_suppression_timer ;
-                ret = 1.0f - ( ((1.0f - multiplier)/days_to_achieve_suppression) * (time_since_starting_ART) );
+                ret = 1.0f - ( ((1.0f - infectivity_suppression_multiplier)/days_to_achieve_suppression) * (time_since_starting_ART) );
             }
         }
         else if( ART_status == ARTStatus::ON_VL_SUPPRESSED )
         {
-            ret = multiplier;
+            ret = infectivity_suppression_multiplier;
         }
         LOG_DEBUG_F( "Returning viral suppression factor of %f.\n", (float) ret );
         return ret;
@@ -676,18 +683,8 @@ namespace Kernel
         ar.labelElement("last_recorded_CD4"                ) & container.last_recorded_CD4;
         ar.labelElement("num_times_started_ART"            ) & container.num_times_started_ART;
         ar.labelElement("received_HIV_test_results"        ) & (uint32_t&)container.received_HIV_test_results;
+        ar.labelElement("infectivity_suppression_multiplier") & container.infectivity_suppression_multiplier;
 
         //hiv_parent set in SetContextTo
     }
-
-    void HIVInterventionsContainer::BroadcastNewHIVInfection()
-    {
-        //function called when we externally put in HIV infections through AcquireInfectionHIV
-        //first get the pointer to the person, parent is the generic individual
-        release_assert(parent);
-
-        IIndividualEventBroadcaster* broadcaster = parent->GetEventContext()->GetNodeEventContext()->GetIndividualEventBroadcaster();
-        broadcaster->TriggerObservers(parent->GetEventContext(), EventTrigger::NewExternalHIVInfection);
-    }
-
 }

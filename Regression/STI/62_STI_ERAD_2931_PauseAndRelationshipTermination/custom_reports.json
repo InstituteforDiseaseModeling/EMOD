@@ -1,11 +1,16 @@
 {
-    "Custom_Reports" : 
-    {
-        "Use_Explicit_Dlls" : 1,
-        "ReportRelationshipMigrationTracking" :
+    "Reports": [
         {
-            "Enabled" : 1,
-            "Reports" : [ {} ]
+            "class": "ReportRelationshipMigrationTracking",
+            "Filename_Suffix": "",
+            "Start_Year": 1964,
+            "End_Year": 1965,
+            "Node_IDs_Of_Interest": [],
+            "Min_Age_Years": 30.0,
+            "Max_Age_Years": 60.0,
+            "Must_Have_IP_Key_Value": "",
+            "Must_Have_Intervention": ""
         }
-    }
+    ],
+    "Use_Defaults": 1
 }

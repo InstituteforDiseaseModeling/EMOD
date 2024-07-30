@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "BroadcastEventToOtherNodes.h"
@@ -43,7 +35,7 @@ namespace Kernel
             (node_selection_type == NodeSelectionType::DISTANCE_AND_MIGRATION) ||
             JsonConfigurable::_dryrun )
         {
-            initConfigTypeMap( "Max_Distance_To_Other_Nodes_Km", &max_distance_km, BETON_Distance_DESC_TEXT, 0, FLT_MAX, FLT_MAX );
+            initConfigTypeMap( "Max_Distance_To_Other_Nodes_Km", &max_distance_km, BETON_Max_Distance_To_Other_Nodes_Km_DESC_TEXT, 0, FLT_MAX, FLT_MAX );
         }
 
         bool ret = BaseIntervention::Configure( inputJson );

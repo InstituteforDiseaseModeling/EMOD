@@ -1,0 +1,38 @@
+{
+    "parameters": {
+        "DEMOGRAPHICS": {
+            "Demographics_Filenames": [
+                "../../Input/10000_vectors_overlay.spreadrisk.json",
+                "../../Input/Vector_single_node_demographics.json"
+            ],
+            "IMMUNITY": {
+                "Acquisition_Blocking_Immunity_Decay_Rate": 1,
+                "Acquisition_Blocking_Immunity_Duration_Before_Decay": 700,
+                "Enable_Immunity": 0
+            },
+            "x_Base_Population": 1e-05
+        },
+        "PRIMARY": {
+            "Config_Name": "Vector:SFT:Transmission:VectorToHuman",
+            "Simulation_Duration": 100
+        },
+        "VECTOR": {
+            "x_Temporary_Larval_Habitat": 0.01,
+            "Human_Feeding_Mortality": 0,
+            "Egg_Hatch_Delay_Distribution": "NO_DELAY",
+            "SPECIES": {
+                "Vector_Species_Params": [{
+                    "Name" :"TestVector",
+                    "Adult_Life_Expectancy": 10,
+                    "Immature_Duration": 1,
+                    "Infected_Egg_Batch_Factor": 1
+                }],
+                "Vector_Sampling_Type": "TRACK_ALL_VECTORS"
+            }
+        },
+        "LOGGING": {
+            "logLevel_IndividualVector": "VALID"
+        }
+    },
+    "Default_Config_Path": "defaults/vector_science_default_config.json"
+}

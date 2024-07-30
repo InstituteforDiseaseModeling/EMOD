@@ -1,0 +1,925 @@
+{
+    "Campaign_Name": "",
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 1 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 0.1,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Incubation_Period_Override": 1
+                }
+            }
+        },
+        { 
+            "COMMENT" : "",
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": 
+            {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": 
+            { 
+                "class": "FirstNodeWithNodePropertyEventCoordinator",
+                "Start_Trigger_Condition_List": [ "Send_People_To_Node_For_Disco_Matanga" ],
+                "Node_Property_Key_Value_To_Have" : "DiscoMatangaStatus:OPEN",
+                "Node_ID_To_Coordinator_Event_List": [
+                    { "Node_ID":  2, "Coordinator_Event_To_Broadcast": "Send_People_To_Node_2" },
+                    { "Node_ID":  3, "Coordinator_Event_To_Broadcast": "Send_People_To_Node_3" },
+                    { "Node_ID":  4, "Coordinator_Event_To_Broadcast": "Send_People_To_Node_4" },
+                    { "Node_ID":  5, "Coordinator_Event_To_Broadcast": "Send_People_To_Node_5" },
+                    { "Node_ID":  6, "Coordinator_Event_To_Broadcast": "Send_People_To_Node_6" },
+                    { "Node_ID":  7, "Coordinator_Event_To_Broadcast": "Send_People_To_Node_7" },
+                    { "Node_ID":  8, "Coordinator_Event_To_Broadcast": "Send_People_To_Node_8" },
+                    { "Node_ID":  9, "Coordinator_Event_To_Broadcast": "Send_People_To_Node_9" },
+                    { "Node_ID": 10, "Coordinator_Event_To_Broadcast": "Send_People_To_Node_10" },
+                    { "Node_ID": 11, "Coordinator_Event_To_Broadcast": "Send_People_To_Node_11" }
+                ]
+            }
+        },
+        
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 1 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "TriggeredEventCoordinator",
+                "Coordinator_Name": "TEC-Migrate to Node 2",
+                "Start_Trigger_Condition_List": [ "Send_People_To_Node_2" ],
+                "Stop_Trigger_Condition_List": [],
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 1,
+                "Duration": -1,
+                "Target_Demographic": "ExplicitAgeRanges",
+                "Target_Age_Min": 13,
+                "Target_Age_Max": 60,
+                "Node_Property_Restrictions": [],
+                "Property_Restrictions_Within_Node": [],
+                "Targeting_Config": {
+                    "class" : "TargetingLogic",
+                    "Logic" : [
+                        [
+                            {
+                                "class": "HasIntervention",
+                                "Is_Equal_To": 0,
+                                "Intervention_Name": "MigrateIndividuals"
+                            },
+                            {
+                                "class": "IsPregnant",
+                                "Is_Equal_To": 0
+                            },
+                            {
+                                "class": "IsPostDebut",
+                                "Is_Equal_To": 1
+                            }
+                        ]
+                    ]
+                },
+                "Individual_Selection_Type": "TARGET_NUM_INDIVIDUALS",
+                "Target_Num_Individuals" : 30,
+                ".Demographic_Coverage": 0.01,
+                "Intervention_Config": {
+                    "class": "MigrateIndividuals",
+                    "NodeID_To_Migrate_To": 2,
+                    "Duration_Before_Leaving_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Duration_At_Node_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Is_Moving": 0,
+                    "Duration_Before_Leaving_Constant": 0,
+                    "Duration_At_Node_Constant": 14
+                },
+                "Completion_Event": "People_Sent_To_Node_2"
+            }
+        },        
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 2 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "TriggeredEventCoordinator",
+                "Coordinator_Name": "TEC-Change IP Node 2",
+                "Start_Trigger_Condition_List": [ "Send_People_To_Node_2" ],
+                "Stop_Trigger_Condition_List": [],
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 1,
+                "Duration": -1,
+                "Intervention_Config": {
+                    "class": "NodePropertyValueChanger",
+                    "Target_NP_Key_Value" : "DiscoMatangaStatus:BUSY",
+                    "Daily_Probability" : 1.0,
+                    "Maximum_Duration" : 0,
+                    "Revert" : 21
+                },
+                "Completion_Event": "Changed_Node_2_IP_To_BUSY"
+            }
+        },
+        
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 1 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "TriggeredEventCoordinator",
+                "Coordinator_Name": "TEC-Migrate to Node 3",
+                "Start_Trigger_Condition_List": [ "Send_People_To_Node_3" ],
+                "Stop_Trigger_Condition_List": [],
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 1,
+                "Duration": -1,
+                "Target_Demographic": "ExplicitAgeRanges",
+                "Target_Age_Min": 13,
+                "Target_Age_Max": 60,
+                "Node_Property_Restrictions": [],
+                "Property_Restrictions_Within_Node": [],
+                "Targeting_Config": {
+                    "class" : "TargetingLogic",
+                    "Logic" : [
+                        [
+                            {
+                                "class": "HasIntervention",
+                                "Is_Equal_To": 0,
+                                "Intervention_Name": "MigrateIndividuals"
+                            },
+                            {
+                                "class": "IsPregnant",
+                                "Is_Equal_To": 0
+                            },
+                            {
+                                "class": "IsPostDebut",
+                                "Is_Equal_To": 1
+                            }
+                        ]
+                    ]
+                },
+                "Individual_Selection_Type": "TARGET_NUM_INDIVIDUALS",
+                "Target_Num_Individuals" : 30,
+                ".Demographic_Coverage": 0.01,
+                "Intervention_Config": {
+                    "class": "MigrateIndividuals",
+                    "NodeID_To_Migrate_To": 3,
+                    "Duration_Before_Leaving_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Duration_At_Node_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Is_Moving": 0,
+                    "Duration_Before_Leaving_Constant": 0,
+                    "Duration_At_Node_Constant": 14
+                },
+                "Completion_Event": "People_Sent_To_Node_3"
+            }
+        },        
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 3 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "TriggeredEventCoordinator",
+                "Coordinator_Name": "TEC-Change IP Node 3",
+                "Start_Trigger_Condition_List": [ "Send_People_To_Node_3" ],
+                "Stop_Trigger_Condition_List": [],
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 1,
+                "Duration": -1,
+                "Intervention_Config": {
+                    "class": "NodePropertyValueChanger",
+                    "Target_NP_Key_Value" : "DiscoMatangaStatus:BUSY",
+                    "Daily_Probability" : 1.0,
+                    "Maximum_Duration" : 0,
+                    "Revert" : 21
+                },
+                "Completion_Event": "Changed_Node_3_IP_To_BUSY"
+            }
+        },
+
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 1 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "TriggeredEventCoordinator",
+                "Coordinator_Name": "TEC-Migrate to Node 4",
+                "Start_Trigger_Condition_List": [ "Send_People_To_Node_4" ],
+                "Stop_Trigger_Condition_List": [],
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 1,
+                "Duration": -1,
+                "Target_Demographic": "ExplicitAgeRanges",
+                "Target_Age_Min": 13,
+                "Target_Age_Max": 60,
+                "Node_Property_Restrictions": [],
+                "Property_Restrictions_Within_Node": [],
+                "Targeting_Config": {
+                    "class" : "TargetingLogic",
+                    "Logic" : [
+                        [
+                            {
+                                "class": "HasIntervention",
+                                "Is_Equal_To": 0,
+                                "Intervention_Name": "MigrateIndividuals"
+                            },
+                            {
+                                "class": "IsPregnant",
+                                "Is_Equal_To": 0
+                            },
+                            {
+                                "class": "IsPostDebut",
+                                "Is_Equal_To": 1
+                            }
+                        ]
+                    ]
+                },
+                "Individual_Selection_Type": "TARGET_NUM_INDIVIDUALS",
+                "Target_Num_Individuals" : 30,
+                ".Demographic_Coverage": 0.01,
+                "Intervention_Config": {
+                    "class": "MigrateIndividuals",
+                    "NodeID_To_Migrate_To": 4,
+                    "Duration_Before_Leaving_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Duration_At_Node_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Is_Moving": 0,
+                    "Duration_Before_Leaving_Constant": 0,
+                    "Duration_At_Node_Constant": 14
+                },
+                "Completion_Event": "People_Sent_To_Node_4"
+            }
+        },        
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 4 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "TriggeredEventCoordinator",
+                "Coordinator_Name": "TEC-Change IP Node 4",
+                "Start_Trigger_Condition_List": [ "Send_People_To_Node_4" ],
+                "Stop_Trigger_Condition_List": [],
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 1,
+                "Duration": -1,
+                "Intervention_Config": {
+                    "class": "NodePropertyValueChanger",
+                    "Target_NP_Key_Value" : "DiscoMatangaStatus:BUSY",
+                    "Daily_Probability" : 1.0,
+                    "Maximum_Duration" : 0,
+                    "Revert" : 21
+                },
+                "Completion_Event": "Changed_Node_4_IP_To_BUSY"
+            }
+        },
+        
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 1 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "TriggeredEventCoordinator",
+                "Coordinator_Name": "TEC-Migrate to Node 5",
+                "Start_Trigger_Condition_List": [ "Send_People_To_Node_5" ],
+                "Stop_Trigger_Condition_List": [],
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 1,
+                "Duration": -1,
+                "Target_Demographic": "ExplicitAgeRanges",
+                "Target_Age_Min": 13,
+                "Target_Age_Max": 60,
+                "Node_Property_Restrictions": [],
+                "Property_Restrictions_Within_Node": [],
+                "Targeting_Config": {
+                    "class" : "TargetingLogic",
+                    "Logic" : [
+                        [
+                            {
+                                "class": "HasIntervention",
+                                "Is_Equal_To": 0,
+                                "Intervention_Name": "MigrateIndividuals"
+                            },
+                            {
+                                "class": "IsPregnant",
+                                "Is_Equal_To": 0
+                            },
+                            {
+                                "class": "IsPostDebut",
+                                "Is_Equal_To": 1
+                            }
+                        ]
+                    ]
+                },
+                "Individual_Selection_Type": "TARGET_NUM_INDIVIDUALS",
+                "Target_Num_Individuals" : 30,
+                ".Demographic_Coverage": 0.01,
+                "Intervention_Config": {
+                    "class": "MigrateIndividuals",
+                    "NodeID_To_Migrate_To": 5,
+                    "Duration_Before_Leaving_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Duration_At_Node_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Is_Moving": 0,
+                    "Duration_Before_Leaving_Constant": 0,
+                    "Duration_At_Node_Constant": 14
+                },
+                "Completion_Event": "People_Sent_To_Node_5"
+            }
+        },        
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 5 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "TriggeredEventCoordinator",
+                "Coordinator_Name": "TEC-Change IP Node 5",
+                "Start_Trigger_Condition_List": [ "Send_People_To_Node_5" ],
+                "Stop_Trigger_Condition_List": [],
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 1,
+                "Duration": -1,
+                "Intervention_Config": {
+                    "class": "NodePropertyValueChanger",
+                    "Target_NP_Key_Value" : "DiscoMatangaStatus:BUSY",
+                    "Daily_Probability" : 1.0,
+                    "Maximum_Duration" : 0,
+                    "Revert" : 21
+                },
+                "Completion_Event": "Changed_Node_5_IP_To_BUSY"
+            }
+        },
+
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 1 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "TriggeredEventCoordinator",
+                "Coordinator_Name": "TEC-Migrate to Node 6",
+                "Start_Trigger_Condition_List": [ "Send_People_To_Node_6" ],
+                "Stop_Trigger_Condition_List": [],
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 1,
+                "Duration": -1,
+                "Target_Demographic": "ExplicitAgeRanges",
+                "Target_Age_Min": 13,
+                "Target_Age_Max": 60,
+                "Node_Property_Restrictions": [],
+                "Property_Restrictions_Within_Node": [],
+                "Targeting_Config": {
+                    "class" : "TargetingLogic",
+                    "Logic" : [
+                        [
+                            {
+                                "class": "HasIntervention",
+                                "Is_Equal_To": 0,
+                                "Intervention_Name": "MigrateIndividuals"
+                            },
+                            {
+                                "class": "IsPregnant",
+                                "Is_Equal_To": 0
+                            },
+                            {
+                                "class": "IsPostDebut",
+                                "Is_Equal_To": 1
+                            }
+                        ]
+                    ]
+                },
+                "Individual_Selection_Type": "TARGET_NUM_INDIVIDUALS",
+                "Target_Num_Individuals" : 30,
+                ".Demographic_Coverage": 0.01,
+                "Intervention_Config": {
+                    "class": "MigrateIndividuals",
+                    "NodeID_To_Migrate_To": 6,
+                    "Duration_Before_Leaving_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Duration_At_Node_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Is_Moving": 0,
+                    "Duration_Before_Leaving_Constant": 0,
+                    "Duration_At_Node_Constant": 14
+                },
+                "Completion_Event": "People_Sent_To_Node_6"
+            }
+        },        
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 6 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "TriggeredEventCoordinator",
+                "Coordinator_Name": "TEC-Change IP Node 6",
+                "Start_Trigger_Condition_List": [ "Send_People_To_Node_6" ],
+                "Stop_Trigger_Condition_List": [],
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 1,
+                "Duration": -1,
+                "Intervention_Config": {
+                    "class": "NodePropertyValueChanger",
+                    "Target_NP_Key_Value" : "DiscoMatangaStatus:BUSY",
+                    "Daily_Probability" : 1.0,
+                    "Maximum_Duration" : 0,
+                    "Revert" : 21
+                },
+                "Completion_Event": "Changed_Node_6_IP_To_BUSY"
+            }
+        },
+
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 1 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "TriggeredEventCoordinator",
+                "Coordinator_Name": "TEC-Migrate to Node 7",
+                "Start_Trigger_Condition_List": [ "Send_People_To_Node_7" ],
+                "Stop_Trigger_Condition_List": [],
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 1,
+                "Duration": -1,
+                "Target_Demographic": "ExplicitAgeRanges",
+                "Target_Age_Min": 13,
+                "Target_Age_Max": 60,
+                "Node_Property_Restrictions": [],
+                "Property_Restrictions_Within_Node": [],
+                "Targeting_Config": {
+                    "class" : "TargetingLogic",
+                    "Logic" : [
+                        [
+                            {
+                                "class": "HasIntervention",
+                                "Is_Equal_To": 0,
+                                "Intervention_Name": "MigrateIndividuals"
+                            },
+                            {
+                                "class": "IsPregnant",
+                                "Is_Equal_To": 0
+                            },
+                            {
+                                "class": "IsPostDebut",
+                                "Is_Equal_To": 1
+                            }
+                        ]
+                    ]
+                },
+                "Individual_Selection_Type": "TARGET_NUM_INDIVIDUALS",
+                "Target_Num_Individuals" : 30,
+                ".Demographic_Coverage": 0.01,
+                "Intervention_Config": {
+                    "class": "MigrateIndividuals",
+                    "NodeID_To_Migrate_To": 7,
+                    "Duration_Before_Leaving_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Duration_At_Node_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Is_Moving": 0,
+                    "Duration_Before_Leaving_Constant": 0,
+                    "Duration_At_Node_Constant": 14
+                },
+                "Completion_Event": "People_Sent_To_Node_7"
+            }
+        },        
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 7 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "TriggeredEventCoordinator",
+                "Coordinator_Name": "TEC-Change IP Node 7",
+                "Start_Trigger_Condition_List": [ "Send_People_To_Node_7" ],
+                "Stop_Trigger_Condition_List": [],
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 1,
+                "Duration": -1,
+                "Intervention_Config": {
+                    "class": "NodePropertyValueChanger",
+                    "Target_NP_Key_Value" : "DiscoMatangaStatus:BUSY",
+                    "Daily_Probability" : 1.0,
+                    "Maximum_Duration" : 0,
+                    "Revert" : 21
+                },
+                "Completion_Event": "Changed_Node_7_IP_To_BUSY"
+            }
+        },
+
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 1 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "TriggeredEventCoordinator",
+                "Coordinator_Name": "TEC-Migrate to Node 8",
+                "Start_Trigger_Condition_List": [ "Send_People_To_Node_8" ],
+                "Stop_Trigger_Condition_List": [],
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 1,
+                "Duration": -1,
+                "Target_Demographic": "ExplicitAgeRanges",
+                "Target_Age_Min": 13,
+                "Target_Age_Max": 60,
+                "Node_Property_Restrictions": [],
+                "Property_Restrictions_Within_Node": [],
+                "Targeting_Config": {
+                    "class" : "TargetingLogic",
+                    "Logic" : [
+                        [
+                            {
+                                "class": "HasIntervention",
+                                "Is_Equal_To": 0,
+                                "Intervention_Name": "MigrateIndividuals"
+                            },
+                            {
+                                "class": "IsPregnant",
+                                "Is_Equal_To": 0
+                            },
+                            {
+                                "class": "IsPostDebut",
+                                "Is_Equal_To": 1
+                            }
+                        ]
+                    ]
+                },
+                "Individual_Selection_Type": "TARGET_NUM_INDIVIDUALS",
+                "Target_Num_Individuals" : 30,
+                ".Demographic_Coverage": 0.01,
+                "Intervention_Config": {
+                    "class": "MigrateIndividuals",
+                    "NodeID_To_Migrate_To": 8,
+                    "Duration_Before_Leaving_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Duration_At_Node_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Is_Moving": 0,
+                    "Duration_Before_Leaving_Constant": 0,
+                    "Duration_At_Node_Constant": 14
+                },
+                "Completion_Event": "People_Sent_To_Node_8"
+            }
+        },        
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 8 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "TriggeredEventCoordinator",
+                "Coordinator_Name": "TEC-Change IP Node 8",
+                "Start_Trigger_Condition_List": [ "Send_People_To_Node_8" ],
+                "Stop_Trigger_Condition_List": [],
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 1,
+                "Duration": -1,
+                "Intervention_Config": {
+                    "class": "NodePropertyValueChanger",
+                    "Target_NP_Key_Value" : "DiscoMatangaStatus:BUSY",
+                    "Daily_Probability" : 1.0,
+                    "Maximum_Duration" : 0,
+                    "Revert" : 21
+                },
+                "Completion_Event": "Changed_Node_8_IP_To_BUSY"
+            }
+        },
+
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 1 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "TriggeredEventCoordinator",
+                "Coordinator_Name": "TEC-Migrate to Node 9",
+                "Start_Trigger_Condition_List": [ "Send_People_To_Node_9" ],
+                "Stop_Trigger_Condition_List": [],
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 1,
+                "Duration": -1,
+                "Target_Demographic": "ExplicitAgeRanges",
+                "Target_Age_Min": 13,
+                "Target_Age_Max": 60,
+                "Node_Property_Restrictions": [],
+                "Property_Restrictions_Within_Node": [],
+                "Targeting_Config": {
+                    "class" : "TargetingLogic",
+                    "Logic" : [
+                        [
+                            {
+                                "class": "HasIntervention",
+                                "Is_Equal_To": 0,
+                                "Intervention_Name": "MigrateIndividuals"
+                            },
+                            {
+                                "class": "IsPregnant",
+                                "Is_Equal_To": 0
+                            },
+                            {
+                                "class": "IsPostDebut",
+                                "Is_Equal_To": 1
+                            }
+                        ]
+                    ]
+                },
+                "Individual_Selection_Type": "TARGET_NUM_INDIVIDUALS",
+                "Target_Num_Individuals" : 30,
+                ".Demographic_Coverage": 0.01,
+                "Intervention_Config": {
+                    "class": "MigrateIndividuals",
+                    "NodeID_To_Migrate_To": 9,
+                    "Duration_Before_Leaving_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Duration_At_Node_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Is_Moving": 0,
+                    "Duration_Before_Leaving_Constant": 0,
+                    "Duration_At_Node_Constant": 14
+                },
+                "Completion_Event": "People_Sent_To_Node_9"
+            }
+        },        
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 9 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "TriggeredEventCoordinator",
+                "Coordinator_Name": "TEC-Change IP Node 9",
+                "Start_Trigger_Condition_List": [ "Send_People_To_Node_9" ],
+                "Stop_Trigger_Condition_List": [],
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 1,
+                "Duration": -1,
+                "Intervention_Config": {
+                    "class": "NodePropertyValueChanger",
+                    "Target_NP_Key_Value" : "DiscoMatangaStatus:BUSY",
+                    "Daily_Probability" : 1.0,
+                    "Maximum_Duration" : 0,
+                    "Revert" : 21
+                },
+                "Completion_Event": "Changed_Node_9_IP_To_BUSY"
+            }
+        },
+
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 1 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "TriggeredEventCoordinator",
+                "Coordinator_Name": "TEC-Migrate to Node 10",
+                "Start_Trigger_Condition_List": [ "Send_People_To_Node_10" ],
+                "Stop_Trigger_Condition_List": [],
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 1,
+                "Duration": -1,
+                "Target_Demographic": "ExplicitAgeRanges",
+                "Target_Age_Min": 13,
+                "Target_Age_Max": 60,
+                "Node_Property_Restrictions": [],
+                "Property_Restrictions_Within_Node": [],
+                "Targeting_Config": {
+                    "class" : "TargetingLogic",
+                    "Logic" : [
+                        [
+                            {
+                                "class": "HasIntervention",
+                                "Is_Equal_To": 0,
+                                "Intervention_Name": "MigrateIndividuals"
+                            },
+                            {
+                                "class": "IsPregnant",
+                                "Is_Equal_To": 0
+                            },
+                            {
+                                "class": "IsPostDebut",
+                                "Is_Equal_To": 1
+                            }
+                        ]
+                    ]
+                },
+                "Individual_Selection_Type": "TARGET_NUM_INDIVIDUALS",
+                "Target_Num_Individuals" : 30,
+                ".Demographic_Coverage": 0.01,
+                "Intervention_Config": {
+                    "class": "MigrateIndividuals",
+                    "NodeID_To_Migrate_To": 10,
+                    "Duration_Before_Leaving_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Duration_At_Node_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Is_Moving": 0,
+                    "Duration_Before_Leaving_Constant": 0,
+                    "Duration_At_Node_Constant": 14
+                },
+                "Completion_Event": "People_Sent_To_Node_10"
+            }
+        },        
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 10 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "TriggeredEventCoordinator",
+                "Coordinator_Name": "TEC-Change IP Node 10",
+                "Start_Trigger_Condition_List": [ "Send_People_To_Node_10" ],
+                "Stop_Trigger_Condition_List": [],
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 1,
+                "Duration": -1,
+                "Intervention_Config": {
+                    "class": "NodePropertyValueChanger",
+                    "Target_NP_Key_Value" : "DiscoMatangaStatus:BUSY",
+                    "Daily_Probability" : 1.0,
+                    "Maximum_Duration" : 0,
+                    "Revert" : 21
+                },
+                "Completion_Event": "Changed_Node_10_IP_To_BUSY"
+            }
+        },
+
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 1 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "TriggeredEventCoordinator",
+                "Coordinator_Name": "TEC-Migrate to Node 11",
+                "Start_Trigger_Condition_List": [ "Send_People_To_Node_11" ],
+                "Stop_Trigger_Condition_List": [],
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 1,
+                "Duration": -1,
+                "Target_Demographic": "ExplicitAgeRanges",
+                "Target_Age_Min": 13,
+                "Target_Age_Max": 60,
+                "Node_Property_Restrictions": [],
+                "Property_Restrictions_Within_Node": [],
+                "Targeting_Config": {
+                    "class" : "TargetingLogic",
+                    "Logic" : [
+                        [
+                            {
+                                "class": "HasIntervention",
+                                "Is_Equal_To": 0,
+                                "Intervention_Name": "MigrateIndividuals"
+                            },
+                            {
+                                "class": "IsPregnant",
+                                "Is_Equal_To": 0
+                            },
+                            {
+                                "class": "IsPostDebut",
+                                "Is_Equal_To": 1
+                            }
+                        ]
+                    ]
+                },
+                "Individual_Selection_Type": "TARGET_NUM_INDIVIDUALS",
+                "Target_Num_Individuals" : 30,
+                ".Demographic_Coverage": 0.01,
+                "Intervention_Config": {
+                    "class": "MigrateIndividuals",
+                    "NodeID_To_Migrate_To": 11,
+                    "Duration_Before_Leaving_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Duration_At_Node_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Is_Moving": 0,
+                    "Duration_Before_Leaving_Constant": 0,
+                    "Duration_At_Node_Constant": 14
+                },
+                "Completion_Event": "People_Sent_To_Node_11"
+            }
+        },        
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 11 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "TriggeredEventCoordinator",
+                "Coordinator_Name": "TEC-Change IP Node 11",
+                "Start_Trigger_Condition_List": [ "Send_People_To_Node_11" ],
+                "Stop_Trigger_Condition_List": [],
+                "Number_Repetitions": 1,
+                "Timesteps_Between_Repetitions": 1,
+                "Duration": -1,
+                "Intervention_Config": {
+                    "class": "NodePropertyValueChanger",
+                    "Target_NP_Key_Value" : "DiscoMatangaStatus:BUSY",
+                    "Daily_Probability" : 1.0,
+                    "Maximum_Duration" : 0,
+                    "Revert" : 21
+                },
+                "Completion_Event": "Changed_Node_11_IP_To_BUSY"
+            }
+        },
+
+        {
+            "COMMENT": "",
+            "class": "CampaignEventByYear",
+            "Start_Year": 1990.0,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 1 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition_List": [
+                        "NonDiseaseDeaths",
+                        "DiseaseDeaths"
+                    ],
+                    "Demographic_Coverage": 1.0,
+                    "Actual_NodeIntervention_Config": {
+                        "class": "BroadcastCoordinatorEventFromNode",
+                        "Broadcast_Event" : "Send_People_To_Node_For_Disco_Matanga"
+                    }
+                }
+            }
+        },
+        {
+            "COMMENT": "",
+            "class": "CampaignEventByYear",
+            "Start_Year": 2000.0,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 2,3,4,5,6,7,8,9,10,11 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "RelationshipFormationRateChanger",
+                    "Relationship_Type": "COMMERCIAL",
+                    "Overriding_Formation_Rate": 0.5
+                }
+            }
+        },
+        {
+            "COMMENT": "",
+            "class": "CampaignEventByYear",
+            "Start_Year": 2010.0,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [ 2,3,4,5,6,7,8,9,10,11 ]
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "CondomUsageProbabilityChanger",
+                    "Relationship_Type": "COMMERCIAL",
+                    "COMMENT": "Setting condom usage to 100% so that we can see a larger change.",
+                    "Overriding_Condom_Usage_Probability": {
+                        "Max": 1.0,
+                        "Mid": 2010.0,
+                        "Min": 1.0,
+                        "Rate": 1
+                    }
+                }
+            }
+        }
+    ],
+    "Use_Defaults": 1
+}

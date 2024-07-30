@@ -1,0 +1,82 @@
+{
+    "Metadata": {
+        "Author": "jsteinkraus", 
+        "DateCreated": "Sun Sep 25 23:19:55 2011", 
+        "IdReference": "Gridded world grump2.5arcmin", 
+        "NodeCount": 1, 
+        "Tool": "convertdemog.py"
+    }, 
+    "Nodes": [
+        {
+            "IndividualAttributes": {
+                "AgeDistributionFlag": 3,
+                "AgeDistribution1": 0.000118,
+                "AgeDistribution2": 0,
+                "ImmunityDistribution1": 1, 
+                "ImmunityDistribution2": 0, 
+                "ImmunityDistributionFlag": 0, 
+                "MigrationHeterogeneityDistribution1": 1, 
+                "MigrationHeterogeneityDistribution2": 0, 
+                "MigrationHeterogeneityDistributionFlag": 0, 
+                "MortalityDistribution": {
+                    "AxisNames": [
+                        "gender", 
+                        "age"
+                    ], 
+                    "AxisScaleFactors": [
+                        1, 
+                        365
+                    ], 
+                    "AxisUnits": [
+                        "male=0,female=1", 
+                        "years"
+                    ], 
+                    "NumDistributionAxes": 2, 
+                    "NumPopulationGroups": [
+                        2, 
+                        1
+                    ], 
+                    "PopulationGroups": [
+                        [
+                            0, 
+                            1
+                        ], 
+                        [
+                            0
+                        ]
+                    ], 
+                    "ResultScaleFactor": 2.74e-06, 
+                    "ResultUnits": "annual deaths per 1000 individuals", 
+                    "ResultValues": [
+                        [
+                            45
+                        ], 
+                        [
+                            45
+                        ]
+                    ]
+                }, 
+                "PrevalenceDistribution1": 0.1,
+                "PrevalenceDistribution2": 0,
+                "PrevalenceDistributionFlag": 0,
+                "RiskDistribution1": 1,
+                "RiskDistribution2": 0,
+                "RiskDistributionFlag": 0
+            }, 
+            "NodeAttributes": {
+                "AbovePoverty": 0.5, 
+                "Airport": 0, 
+                "Altitude": 0, 
+                "BirthRate": 0.1234,
+                "Birth_Rate_Dependence": "FIXED_BIRTH_RATE",
+                "InitialPopulation": 1000, 
+                "Latitude": -8.5, 
+                "Longitude": 36.5, 
+                "Region": 1, 
+                "Seaport": 0, 
+                "Urban": 0
+            }, 
+            "NodeID": 340461476
+        }
+    ]
+}

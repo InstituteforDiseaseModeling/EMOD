@@ -1,0 +1,39 @@
+{
+    "parameters": {
+        "CAMPAIGNS": {
+            "Enable_Interventions": 0
+        },
+        "CLIMATE": {
+            "Enable_Climate_Stochasticity": 1
+        },
+        "DEMOGRAPHICS": {
+            "Demographics_Filenames": [
+                "../../Input/Vector_single_node_demographics.json",
+                "../../Input/Demographics_Larval_Habitat_Overlay.spreadrisk.json"
+            ],
+            "x_Base_Population": 1e-05
+        },
+        "PRIMARY": {
+            "Config_Name": "Vector:SFT:LarvalDevelopment:ArrheniusLarvalGrowthMod",
+            "Simulation_Duration": 365
+        },
+        "VECTOR": {
+            "Vector_Sampling_Type": "TRACK_ALL_VECTORS",
+            "x_Temporary_Larval_Habitat":0.01,
+            "Vector_Species_Params": [
+                {
+                    "Name": "TestVector",
+                    "Temperature_Dependent_Feeding_Cycle": "ARRHENIUS_DEPENDENCE"
+                }
+            ]
+        },
+        "LOGGING": {
+            "logLevel_VectorPopulation": "VALID",
+            "logLevel_VectorCohort": "VALID",
+            "logLevel_VectorHabitat": "VALID"
+        }
+    },
+    "Default_Config_Path": "defaults/vector_science_default_config.json"
+}
+
+

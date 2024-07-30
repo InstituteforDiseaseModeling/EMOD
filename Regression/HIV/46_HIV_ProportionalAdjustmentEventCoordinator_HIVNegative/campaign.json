@@ -24,7 +24,7 @@
                "Event_Coordinator_Config": {
                     "Intervention_Config": {
                          "class": "MaleCircumcision",
-                         "Cost_To_Consumer": 10.0, 
+                         "Cost_To_Consumer": 0.0, 
                          "Circumcision_Reduced_Acquire": 0.6,
                          "Distributed_Event_Trigger" : "VMMC_1"
                     }, 
@@ -56,7 +56,7 @@
                "Event_Coordinator_Config": {
                     "Intervention_Config": {
                          "class": "MaleCircumcision",
-                         "Cost_To_Consumer": 10.0, 
+                         "Cost_To_Consumer": 0.0, 
                          "Circumcision_Reduced_Acquire": 0.6,
                          "Distributed_Event_Trigger" : "VMMC_2"
                     }, 

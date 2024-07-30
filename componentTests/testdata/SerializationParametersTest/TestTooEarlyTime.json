@@ -1,0 +1,12 @@
+{
+    "Serialization_Times" : [
+        -3,
+        1,
+        2.5,
+        4,
+        17
+    ],
+    "Serialization_Precision" : "REDUCED",
+    "Serialized_Population_Writing_Type" : "TIME",
+    "Serialized_Population_Reading_Type" : "NONE"
+}

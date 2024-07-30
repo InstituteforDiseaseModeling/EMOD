@@ -1,0 +1,101 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 30, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender", 
+                "Target_Gender" : "FEMALE",
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "InterventionForCurrentPartners",
+                    "Disqualifying_Properties": [],  
+                    "New_Property_Value": "", 
+                    "Minimum_Duration_Years": 0,
+                    "Prioritize_Partners_By": "CHOSEN_AT_RANDOM",
+                    "Relationship_Types": [],
+                    "Maximum_Partners": 0.3,
+                    "Event_Or_Config" : "Event",
+                    "Broadcast_Event": "Maximum_Partners_0.3"
+                    }
+                }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 60, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender", 
+                "Target_Gender" : "FEMALE",
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "InterventionForCurrentPartners",
+                    "Disqualifying_Properties": [],  
+                    "New_Property_Value": "", 
+                    "Minimum_Duration_Years": 0,
+                    "Prioritize_Partners_By": "CHOSEN_AT_RANDOM",
+                    "Relationship_Types": [],
+                    "Maximum_Partners": 2,
+                    "Event_Or_Config" : "Event",
+                    "Broadcast_Event": "Maximum_Partners_2"
+                    }
+                }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 90, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender", 
+                "Target_Gender" : "FEMALE",
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "InterventionForCurrentPartners",
+                    "Disqualifying_Properties": [],  
+                    "New_Property_Value": "", 
+                    "Minimum_Duration_Years": 0,
+                    "Prioritize_Partners_By": "CHOSEN_AT_RANDOM",
+                    "Relationship_Types": [],
+                    "Maximum_Partners": 3.7,
+                    "Event_Or_Config" : "Event",
+                    "Broadcast_Event": "Maximum_Partners_3.7"
+                    }
+                }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 99, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender", 
+                "Target_Gender" : "FEMALE",
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "InterventionForCurrentPartners",
+                    "Disqualifying_Properties": [],  
+                    "New_Property_Value": "", 
+                    "Minimum_Duration_Years": 0,
+                    "Prioritize_Partners_By": "CHOSEN_AT_RANDOM",
+                    "Relationship_Types": [],
+                    "Maximum_Partners": 0,
+                    "Event_Or_Config" : "Event",
+                    "Broadcast_Event": "Maximum_Partners_0"
+                    }
+                }
+        }
+    ]
+}

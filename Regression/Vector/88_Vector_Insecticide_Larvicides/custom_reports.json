@@ -1,0 +1,12 @@
+{
+    "Reports": [
+        {
+            "Gender": "VECTOR_FEMALE",
+            "Species": "SillySkeeter",
+            "Stratify_By": "GENOME",
+            "Include_Vector_State_Columns" : 1,
+            "class": "ReportVectorGenetics"
+        }
+    ],
+    "Use_Defaults": 1
+}

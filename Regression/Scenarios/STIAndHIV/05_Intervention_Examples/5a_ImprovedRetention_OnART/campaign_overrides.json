@@ -26,12 +26,10 @@
             "Event_Coordinator_Config": {
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Days_To_Diagnosis": 0,
                         "Default_Value": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:LostForever"
                         ],
-                        "Event_Or_Config": "Event",
                         "Interpolation_Order": 0,
                         "New_Property_Value": "InterventionStatus:None",
                         "Positive_Diagnosis_Event": "OnART5",

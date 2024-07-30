@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "HumanHostSeekingTrap.h"
@@ -22,6 +14,7 @@ SETUP_LOGGING( "HumanHostSeekingTrap" )
 namespace Kernel
 {
     BEGIN_QUERY_INTERFACE_BODY(HumanHostSeekingTrap)
+        HANDLE_INTERFACE( IReportInterventionDataAccess )
         HANDLE_INTERFACE(IConfigurable)
         HANDLE_INTERFACE(IDistributableIntervention)
         HANDLE_ISUPPORTS_VIA(IDistributableIntervention)
@@ -36,7 +29,7 @@ namespace Kernel
     , ivies(nullptr)
     {
         initSimTypes( 2, "VECTOR_SIM", "MALARIA_SIM" );
-        initConfigTypeMap( "Cost_To_Consumer", &cost_per_unit, HST_Cost_To_Consumer_DESC_TEXT, 0, 999999, 3.75 );
+        initConfigTypeMap( "Cost_To_Consumer", &cost_per_unit, IV_Cost_To_Consumer_DESC_TEXT, 0, 999999, 3.75 );
         
     }
 
@@ -77,8 +70,13 @@ namespace Kernel
 
         if( !JsonConfigurable::_dryrun && configured )
         {
-            killing_effect = WaningEffectFactory::CreateInstance( killing_config );
-            attract_effect = WaningEffectFactory::CreateInstance( attract_config );
+            killing_effect = WaningEffectFactory::getInstance()->CreateInstance( killing_config._json,
+                                                                                 inputJson->GetDataLocation(),
+                                                                                 "Killing_Config" );
+
+            attract_effect = WaningEffectFactory::getInstance()->CreateInstance( attract_config._json,
+                                                                                 inputJson->GetDataLocation(),
+                                                                                 "Attract_Config" );
         }
         return configured;
     }
@@ -119,6 +117,16 @@ namespace Kernel
         // Attraction rate diverts indoor feeding attempts from humans to trap; killing rate kills a fraction of diverted feeding attempts.
         ivies->UpdateArtificialDietAttractionRate( current_attractrate );
         ivies->UpdateArtificialDietKillingRate( current_killingrate );
+    }
+
+    ReportInterventionData HumanHostSeekingTrap::GetReportInterventionData() const
+    {
+        ReportInterventionData data = BaseIntervention::GetReportInterventionData();
+
+        data.efficacy_attracting = attract_effect->Current();
+        data.efficacy_killing    = killing_effect->Current();
+
+        return data;
     }
 
     void HumanHostSeekingTrap::SetContextTo(

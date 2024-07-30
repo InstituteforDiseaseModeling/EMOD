@@ -28,10 +28,11 @@
             "Run_Number": 19,
             "Simulation_Duration": 730
         },
-        "Vector_Species_Params": {
-            "arabiensis": {
+        "Vector_Species_Params": [
+            {
+                "Name": "arabiensis",
                 "Indoor_Feeding_Fraction": 1
             }
-        }
+        ]
     }
 }

@@ -1,0 +1,55 @@
+{
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 0.2,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Antigen": 0, 
+                    "Genome": 0
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 150, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1, 
+                "Intervention_Config": {
+                    "class": "SimpleBednet",
+                    "Cost_To_Consumer": 1, 
+                    "Intervention_Name": "Bednet", 
+                    "Repelling_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect": 0.0
+                    }, 
+                    "Blocking_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect": 0.8
+                    }, 
+                    "Killing_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect": 0.6
+                    }, 
+                    "Usage_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect": 1.0
+                    }
+                }
+            }
+        }
+    ], 
+    "Use_Defaults": 1
+}

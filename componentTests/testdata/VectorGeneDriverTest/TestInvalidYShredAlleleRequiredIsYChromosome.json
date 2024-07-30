@@ -1,0 +1,103 @@
+{
+    "Genes" :
+    [
+        {
+            "Is_Gender_Gene": 1,
+            "Alleles": [
+                {
+                    "Name": "Xm",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.0
+                },
+                {
+                    "Name": "Xm2",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.0
+                },
+                {
+                    "Name": "Xw",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.75
+                },
+                {
+                    "Name": "Yw",
+                    "Is_Y_Chromosome" : 1,
+                    "Initial_Allele_Frequency": 0.25
+                },
+                {
+                    "Name": "Ym",
+                    "Is_Y_Chromosome" : 1,
+                    "Initial_Allele_Frequency": 0.0
+                },
+                {
+                    "Name": "Ym2",
+                    "Is_Y_Chromosome" : 1,
+                    "Initial_Allele_Frequency": 0.0
+                }
+            ],
+            "Mutations": []
+        },
+        {
+            "Is_Gender_Gene": 0,
+            "Alleles": [
+                {
+                    "Name": "Ad",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0
+                },
+                {
+                    "Name": "Am",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0
+                },
+                {
+                    "Name": "Aw",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 1
+                }
+            ],
+            "Mutations": []
+        }
+    ],
+    "Gene_To_Trait_Modifiers" : [
+        {
+            "Allele_Combinations" : [
+                [  "Xm",  "*" ]
+            ],
+            "Trait_Modifiers" : [
+                {
+                    "Trait" : "ADJUST_FERTILE_EGGS",
+                    "Modifier": 0.0
+                }
+            ]
+        }
+    ],
+    "Drivers" : [
+        {
+            "Driver_Type" : "Y_SHRED",
+            "Driving_Allele" : "Ad",
+            "Driving_Allele_Params" : {
+                "Allele_To_Copy"    : "Ad",
+                "Allele_To_Replace" : "Aw",
+                "Copy_To_Likelihood" : [
+                    {
+                        "Copy_To_Allele" : "Ad",
+                        "Likelihood" : 1.0
+                    },
+                    {
+                        "Copy_To_Allele" : "Aw",
+                        "Likelihood" : 0.0
+                    }
+                ]
+            },
+            "COMMENT": "Allele_Required is a YChromosome",
+            "Shredding_Alleles" : {
+                "Allele_Required"    : "Yw",
+                "Allele_To_Shred"    : "Ym2",
+                "Allele_To_Shred_To" : "Ym",
+                "Allele_Shredding_Fraction": 1.0,
+                "Allele_To_Shred_To_Surviving_Fraction" : 0.0
+            }
+        }
+    ]
+}

@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
@@ -37,44 +29,50 @@ namespace Kernel
         return ret;
     }
 
+    IIndividualHumanHIV* ReferenceTrackingEventCoordinatorHIV::GetIndividualHIV( const IIndividualHumanEventContext * pIndividual ) const
+    {
+        IIndividualHumanHIV* p_hiv_individual = nullptr;
+        if(const_cast<IIndividualHumanEventContext*>(pIndividual)->QueryInterface( GET_IID( IIndividualHumanHIV ), (void**)&p_hiv_individual ) != s_OK)
+        {
+            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__,
+                                            "pIndividual",
+                                            "IIndividualHumanHIV",
+                                            "IIndividualHumanEventContext" );
+        }
+        return p_hiv_individual;
+    }
+
     bool ReferenceTrackingEventCoordinatorHIV::qualifiesDemographically( const IIndividualHumanEventContext * pIndividual )
     {
         bool qualifies = ReferenceTrackingEventCoordinator::qualifiesDemographically( pIndividual );
         if( qualifies )
         {
-            IIndividualHumanHIV* p_hiv_individual = nullptr;
-            if(const_cast<IIndividualHumanEventContext*>(pIndividual)->QueryInterface( GET_IID( IIndividualHumanHIV ), (void**)&p_hiv_individual ) != s_OK)
-            {
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "pIndividual", "IIndividualHumanHIV", "IIndividualHumanEventContext" );
-            }
-
-            IHIVInterventionsContainer* p_hiv_container = p_hiv_individual->GetHIVInterventionsContainer();
-            IHIVMedicalHistory* p_med_history = nullptr;
-            if( p_hiv_container->QueryInterface( GET_IID( IHIVMedicalHistory ), (void**)&p_med_history ) != s_OK)
-            {
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "p_hiv_container", "IHIVMedicalHistory", "IHIVInterventionsContainer" );
-            }
-
             switch( target_disease_state )
             {
                 case TargetDiseaseStateType::Everyone:
                     qualifies = true;
                     break;
                 case TargetDiseaseStateType::HIV_Positive:
-                    qualifies = p_hiv_individual->HasHIV();
+                    qualifies = GetIndividualHIV( pIndividual )->HasHIV();
                     break;
                 case TargetDiseaseStateType::HIV_Negative:
-                    qualifies = !p_hiv_individual->HasHIV();
+                    qualifies = !GetIndividualHIV( pIndividual )->HasHIV();
                     break;
                 case TargetDiseaseStateType::Tested_Positive:
-                    qualifies = p_med_history->EverTestedHIVPositive();
+                    qualifies = GetIndividualHIV( pIndividual )->GetMedicalHistory()->EverTestedHIVPositive();
                     break;
                 case TargetDiseaseStateType::Tested_Negative:
+                {
+                    IHIVMedicalHistory* p_med_history = GetIndividualHIV( pIndividual )->GetMedicalHistory();
                     qualifies = p_med_history->EverTested() && !p_med_history->EverTestedHIVPositive();
                     break;
+                }
                 case TargetDiseaseStateType::Not_Tested_Or_Tested_Negative:
+                {
+                    IHIVMedicalHistory* p_med_history = GetIndividualHIV( pIndividual )->GetMedicalHistory();
                     qualifies = !p_med_history->EverTested() || !p_med_history->EverTestedHIVPositive();
                     break;
+                }
                 default:
                     throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "target_disease_state", target_disease_state, TargetDiseaseStateType::pairs::lookup_key( target_disease_state ) );
             }

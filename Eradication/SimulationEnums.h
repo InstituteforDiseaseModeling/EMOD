@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -75,11 +67,6 @@ namespace Kernel
         ENUM_VALUE_SPEC(DAILY_MORTALITY                                     , 0)
         ENUM_VALUE_SPEC(MORTALITY_AFTER_INFECTIOUS                          , 1))
 
-    // ENUM defs for PKPD_MODEL
-    ENUM_DEFINE(PKPDModel, 
-        ENUM_VALUE_SPEC(FIXED_DURATION_CONSTANT_EFFECT                      , 0)
-        ENUM_VALUE_SPEC(CONCENTRATION_VERSUS_TIME                           , 1))
-
     // ENUM defs for POPULATION_DENSITY_INFECTIVITY_CORRECTION
     ENUM_DEFINE(PopulationDensityInfectivityCorrection, 
         ENUM_VALUE_SPEC(CONSTANT_INFECTIVITY                                , 0)
@@ -120,15 +107,8 @@ namespace Kernel
         ENUM_VALUE_SPEC(GENERIC_SIM                                         , 0)
         ENUM_VALUE_SPEC(VECTOR_SIM                                          , 1)
         ENUM_VALUE_SPEC(MALARIA_SIM                                         , 2)
-        ENUM_VALUE_SPEC(ENVIRONMENTAL_SIM                                   , 3)
-        ENUM_VALUE_SPEC(POLIO_SIM                                           , 4)
-        ENUM_VALUE_SPEC(AIRBORNE_SIM                                        , 5) 
-        ENUM_VALUE_SPEC(TBHIV_SIM                                           , 6)
-        ENUM_VALUE_SPEC(STI_SIM                                             , 7)
-        ENUM_VALUE_SPEC(HIV_SIM                                             , 8)
-        ENUM_VALUE_SPEC(PY_SIM                                              , 9) 
-        ENUM_VALUE_SPEC(TYPHOID_SIM                                         , 10)
-        ENUM_VALUE_SPEC(DENGUE_SIM                                          , 11))
+        ENUM_VALUE_SPEC(STI_SIM                                             , 3)
+        ENUM_VALUE_SPEC(HIV_SIM                                             , 4))
 
     // ENUM defs for VITAL_BIRTH_DEPENDENCE
     ENUM_DEFINE(VitalBirthDependence, 
@@ -145,40 +125,12 @@ namespace Kernel
 
     // ENUM defs for VITAL_DEATH_DEPENDENCE
     ENUM_DEFINE(VitalDeathDependence,                                               // TODO: FIXED_DEATH_RATE (Makeham), Gompertz–Makeham, Lifetable, Heligman-Pollard, Siler (5-Component Competing Hazard), 
-        ENUM_VALUE_SPEC(NOT_INITIALIZED                                     , -1)
         ENUM_VALUE_SPEC(NONDISEASE_MORTALITY_BY_AGE_AND_GENDER              , 0)
         ENUM_VALUE_SPEC(NONDISEASE_MORTALITY_BY_YEAR_AND_AGE_FOR_EACH_GENDER, 1))
-
-    ENUM_DEFINE(PolioSerotypes,
-        ENUM_VALUE_SPEC(PV1                                                 , 0)
-        ENUM_VALUE_SPEC(PV2                                                 , 1)
-        ENUM_VALUE_SPEC(PV3                                                 , 2))
-
-    ENUM_DEFINE(PolioVirusTypes,
-        ENUM_VALUE_SPEC(WPV1                                                , 0)
-        ENUM_VALUE_SPEC(WPV2                                                , 1)
-        ENUM_VALUE_SPEC(WPV3                                                , 2)
-        ENUM_VALUE_SPEC(VRPV1                                               , 3)
-        ENUM_VALUE_SPEC(VRPV2                                               , 4)
-        ENUM_VALUE_SPEC(VRPV3                                               , 5))
-
-    ENUM_DEFINE(PolioVaccines,
-        ENUM_VALUE_SPEC(TOPV                                                , 0)
-        ENUM_VALUE_SPEC(BOPV                                                , 1)
-        ENUM_VALUE_SPEC(MOPV1                                               , 2)
-        ENUM_VALUE_SPEC(MOPV2                                               , 3)
-        ENUM_VALUE_SPEC(MOPV3                                               , 4)
-        ENUM_VALUE_SPEC(IPV                                                 , 5)) 
 
     // ENUM defs for RiskGroup
     ENUM_DEFINE(RiskGroup,
         ENUM_VALUE_SPEC(LOW                                                 , 0)
         ENUM_VALUE_SPEC(HIGH                                                , 1)
         ENUM_VALUE_SPEC(COUNT                                               , 2) )
-
-    ENUM_DEFINE(TBFastProgressorType,
-        ENUM_VALUE_SPEC(AGE                                                 , 0)
-        ENUM_VALUE_SPEC(POVERTY                                             , 1)
-        ENUM_VALUE_SPEC(POVERTY_SUSCEPTIBILITY_TO_INFECTION                 , 2)
-        ENUM_VALUE_SPEC(POVERTY_AND_SUSCEPTIBILITY                          , 3))
 }

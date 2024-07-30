@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -13,7 +5,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <vector>
 
 #include "IdmApi.h"
-#include "BoostLibWrapper.h"
 #include "Configure.h"
 #include "Climate.h"
 #include "Common.h"
@@ -24,7 +15,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "suids.hpp"
 #include "IInfectable.h"
 #include "MathFunctions.h"
-#include "Serialization.h"
+#include "SerializationParameters.h"
 #include "NodeProperties.h"
 #include "INodeContext.h"
 
@@ -62,9 +53,7 @@ namespace Kernel
         Node(); // constructor for serialization use
         virtual ~Node();
 
-
         // INodeContext
-        virtual void PreUpdate();
         virtual void Update(float dt) override;
         virtual ISimulationContext* GetParent() override;
         virtual suids::suid   GetSuid() const override;
@@ -89,9 +78,10 @@ namespace Kernel
         virtual void SortHumans() override;
 
         // Initialization
+        virtual void SetupEventContextHost() override;
         virtual void SetContextTo(ISimulationContext* context) override;
-        virtual void SetParameters( NodeDemographicsFactory *demographics_factory, ClimateFactory *climate_factory, bool white_list_enabled ) override;
-        virtual void PopulateFromDemographics() override;
+        virtual void SetParameters( NodeDemographicsFactory *demographics_factory, ClimateFactory *climate_factory ) override;
+        virtual void PopulateFromDemographics( NodeDemographicsFactory *demographics_factory ) override;
         virtual void InitializeTransmissionGroupPopulations() override;
 
         // Campaign event-related
@@ -109,7 +99,6 @@ namespace Kernel
         virtual float GetBirths()                const override;
         virtual float GetCampaignCost()          const override;
         virtual float GetInfectivity()           const override;
-        virtual float GetInfectionRate()         const override;
         virtual float GetSusceptDynamicScaling() const override;
         virtual const Climate* GetLocalWeather() const override;
         virtual long int GetPossibleMothers()    const override;
@@ -124,17 +113,14 @@ namespace Kernel
         // Heterogeneous intra-node transmission
         virtual void ExposeIndividual(IInfectable* candidate, TransmissionGroupMembership_t individual, float dt) override;
         virtual void DepositFromIndividual( const IStrainIdentity& strain_IDs, float contagion_quantity, TransmissionGroupMembership_t individual, TransmissionRoute::Enum route = TransmissionRoute::TRANSMISSIONROUTE_CONTACT) override;
-        virtual void GetGroupMembershipForIndividual(const RouteList_t& route, const tProperties& properties, TransmissionGroupMembership_t& membershipOut) override;
-        virtual void UpdateTransmissionGroupPopulation(const tProperties& properties, float size_changes,float mc_weight) override;
+        virtual void GetGroupMembershipForIndividual(const RouteList_t& route, const IPKeyValueContainer& properties, TransmissionGroupMembership_t& membershipOut) override;
+        virtual void UpdateTransmissionGroupPopulation(const IPKeyValueContainer& properties, float size_changes,float mc_weight) override;
         virtual void SetupIntranodeTransmission();
         virtual ITransmissionGroups* CreateTransmissionGroups();
-        virtual ITransmissionGroups* GetTransmissionGroups() const override;
         virtual void AddDefaultRoute( void );
         virtual void AddRoute( const std::string& rRouteName );
         virtual void BuildTransmissionRoutes( float contagionDecayRate );
         virtual bool IsValidTransmissionRoute( string& transmissionRoute );
-
-        virtual act_prob_vec_t DiscreteGetTotalContagion( void ) override;
 
         virtual void ValidateIntranodeTransmissionConfiguration();
 
@@ -171,15 +157,12 @@ namespace Kernel
 
         virtual void ManageFamilyTrip( float currentTime, float dt );
 
-    private:
-
     protected:
+        virtual void PreUpdate();
+        virtual void PostUpdate();
 
-
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
-        
-        SerializationFlags serializationMask;
+        SerializationBitMask_t serializationFlags;
+        static SerializationBitMask_t serializationFlagsDefault;
 
         NodeDemographicsDistribution* SusceptibilityDistribution;
         NodeDemographicsDistribution* FertilityDistribution;
@@ -264,7 +247,6 @@ namespace Kernel
         std::list<float> infected_people_prior; // [infection_averaging_window];
         std::list<float> infected_age_people_prior; // [infection_averaging_window];
 
-        float infectionrate; // TODO: this looks like its only a reporting counter now and possibly not accurately updated in all cases
         float mInfectivity;
 
         ISimulationContext *parent;     // Access back to simulation methods
@@ -314,7 +296,6 @@ namespace Kernel
         RouteList_t routes;
 
         virtual void Initialize();
-        virtual void setupEventContextHost();
         virtual bool Configure( const Configuration* config ) override;
         void ExtractDataFromDemographics();
         virtual void LoadImmunityDemographicsDistribution();
@@ -327,6 +308,8 @@ namespace Kernel
         virtual float getDensityContactScaling(); // calculate correction to infectivity due to lower population density
         virtual float getClimateInfectivityCorrection()  const;
         virtual float getSeasonalInfectivityCorrection();
+        virtual void clearTransmissionGroups();
+
     public: 
         void  updateVitalDynamics(float dt = 1.0f);             // handles births and non-disease mortality
         virtual void considerPregnancyForIndividual( bool bPossibleMother, bool bIsPregnant, float age, int individual_id, float dt, IIndividualHuman* pIndividual = nullptr ); 
@@ -418,8 +401,6 @@ namespace Kernel
         suids::distributed_generator m_IndividualHumanSuidGenerator;
 
         DECLARE_SERIALIZABLE(Node);
-
-#pragma warning( pop )
     };
 }
 

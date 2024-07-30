@@ -1,0 +1,71 @@
+{
+    "Default_Config_Path": "defaults/malaria_default_config.json",
+    "CLIMATE": {
+        "Climate_Model": "CLIMATE_CONSTANT",
+        "Enable_Climate_Stochasticity": 0
+    },
+    "DEMOGRAPHICS": {
+        "Demographics_Filenames": [
+            "demographics.json"
+        ]
+    },
+    "PRIMARY": {
+        "Config_Name": "83_Malaria_Serialization_Drug_MultiPackComboDrug",
+        "Custom_Reports_Filename" : "",
+        "Enable_Demographics_Reporting": 0,
+        "Geography": "SamplesInput",
+        "Run_Number": 1,
+        "Simulation_Duration": 100,
+        "logLevel_JsonConfigurable" : "WARNING"
+    },
+    "DRUGS" : {
+        "Malaria_Drug_Params": [
+            {
+                "Name": "TestDrugA",
+                "PKPD_Model": "CONCENTRATION_VERSUS_TIME",
+                "Bodyweight_Exponent": 0, 
+                "Drug_Cmax": 100, 
+                "Drug_Decay_T1": 1, 
+                "Drug_Decay_T2": 4, 
+                "Drug_Dose_Interval": 2, 
+                "Drug_Fulltreatment_Doses": 4, 
+                "Drug_Gametocyte02_Killrate": 0, 
+                "Drug_Gametocyte34_Killrate": 0, 
+                "Drug_GametocyteM_Killrate": 0, 
+                "Drug_Hepatocyte_Killrate": 0, 
+                "Drug_PKPD_C50": 500, 
+                "Drug_Vd": 3, 
+                "Max_Drug_IRBC_Kill": 3.45
+            },
+            {
+                "Name": "TestDrugB",
+                "PKPD_Model": "CONCENTRATION_VERSUS_TIME",
+                "Bodyweight_Exponent": 0, 
+                "Drug_Cmax": 500, 
+                "Drug_Decay_T1": 1, 
+                "Drug_Decay_T2": 5, 
+                "Drug_Dose_Interval": 4, 
+                "Drug_Fulltreatment_Doses": 4, 
+                "Drug_Gametocyte02_Killrate": 10.6, 
+                "Drug_Gametocyte34_Killrate": 10.7, 
+                "Drug_GametocyteM_Killrate": 10.8, 
+                "Drug_Hepatocyte_Killrate": 10.9, 
+                "Drug_PKPD_C50": 600, 
+                "Drug_Vd": 2, 
+                "Max_Drug_IRBC_Kill": 1.45
+            }
+        ]
+    },
+    "SERIALIZATION" : {
+        "Serialization_Test" : 1,
+        "Serialized_Population_Writing_Type" : "TIME",
+        "Serialization_Mask_Node_Write": 0,
+        "Serialization_Precision" : "FULL",
+        "Serialization_Times" : [ 50 ]
+    },
+    "VECTOR": {
+        "Enable_Vector_Aging": 1,
+        ".Vector_Sampling_Type": "TRACK_ALL_VECTORS",
+        "x_Temporary_Larval_Habitat": 0.0
+    }
+}

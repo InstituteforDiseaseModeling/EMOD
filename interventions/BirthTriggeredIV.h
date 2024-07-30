@@ -1,17 +1,7 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
 #include <string>
-
-#include "BoostLibWrapper.h"
 
 #include "Interventions.h"
 #include "Configuration.h"
@@ -31,6 +21,7 @@ namespace Kernel
     
     public:
         BirthTriggeredIV();
+        BirthTriggeredIV( const BirthTriggeredIV& rMaster );
         virtual ~BirthTriggeredIV();
         virtual int AddRef() override;
         virtual int Release() override;
@@ -53,7 +44,6 @@ namespace Kernel
         float max_duration;
         float duration;
         DemographicRestrictions demographic_restrictions;
-
-        IndividualInterventionConfig actual_intervention_config;
+        IDistributableIntervention* m_di;
     };
 }

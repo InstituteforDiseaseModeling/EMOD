@@ -1,0 +1,123 @@
+{
+    "Campaign_Name": "Unnamed Campaign",
+    "Events": [
+        {
+            "Notes": "Initial outbreak in node 1, given to Person1 in Node 1",
+            "class": "CampaignEvent",
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividualMalariaGenetics",
+                    "Barcode_String": "AAAAA",
+                    "Create_Nucleotide_Sequence_From": "BARCODE_STRING",
+                    "Drug_Resistant_String": "",
+                    "HRP_String": "",
+                    "Ignore_Immunity": 1,
+                    "Incubation_Period_Override": -1
+                },
+                "Node_Property_Restrictions": [],
+                "Number_Repetitions": 1,
+                "Property_Restrictions": [],
+                "Property_Restrictions_Within_Node": [],
+                "Target_Demographic": "Everyone",
+                "Target_Gender": "All",
+                "Target_Num_Individuals": 1,
+                "Target_Residents_Only": 0,
+                "Targeting_Config": {
+                    "HasIP": {},
+                    "HasIntervention": {},
+                    "IsPregnant": {},
+                    "TargetingLogic": {}
+                },
+                "Timesteps_Between_Repetitions": 365
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [
+                    1
+                ]
+            },
+            "Start_Day": 1
+        },
+        {
+            "Notes": "Initial outbreak in node 1, given to Person1 in Node 1",
+            "class": "CampaignEvent",
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividualMalariaGenetics",
+                    "Barcode_String": "CCCCC",
+                    "Create_Nucleotide_Sequence_From": "BARCODE_STRING",
+                    "Drug_Resistant_String": "",
+                    "HRP_String": "",
+                    "Ignore_Immunity": 1,
+                    "Incubation_Period_Override": -1
+                },
+                "Node_Property_Restrictions": [],
+                "Number_Repetitions": 1,
+                "Property_Restrictions": [],
+                "Property_Restrictions_Within_Node": [],
+                "Target_Demographic": "Everyone",
+                "Target_Gender": "All",
+                "Target_Num_Individuals": 1,
+                "Target_Residents_Only": 0,
+                "Targeting_Config": {
+                    "HasIP": {},
+                    "HasIntervention": {},
+                    "IsPregnant": {},
+                    "TargetingLogic": {}
+                },
+                "Timesteps_Between_Repetitions": 365
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [
+                    1
+                ]
+            },
+            "Start_Day": 1
+        },
+                {
+            "Notes": "Initial outbreak in node 1, given to Person1 in Node 1",
+            "class": "CampaignEvent",
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividualMalariaGenetics",
+                    "Barcode_String": "GGGGG",
+                    "Create_Nucleotide_Sequence_From": "BARCODE_STRING",
+                    "Drug_Resistant_String": "",
+                    "HRP_String": "",
+                    "Ignore_Immunity": 1,
+                    "Incubation_Period_Override": -1
+                },
+                "Node_Property_Restrictions": [],
+                "Number_Repetitions": 1,
+                "Property_Restrictions": [],
+                "Property_Restrictions_Within_Node": [],
+                "Target_Demographic": "Everyone",
+                "Target_Gender": "All",
+                "Target_Num_Individuals": 1,
+                "Target_Residents_Only": 0,
+                "Targeting_Config": {
+                    "HasIP": {},
+                    "HasIntervention": {},
+                    "IsPregnant": {},
+                    "TargetingLogic": {}
+                },
+                "Timesteps_Between_Repetitions": 365
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [
+                    1
+                ]
+            },
+            "Start_Day": 1
+        }
+    ],
+    "Use_Defaults": 1
+}

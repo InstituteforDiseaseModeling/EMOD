@@ -1,7 +1,7 @@
 {
     "class": "DelayedIntervention",
-    "Delay_Distribution": "CONSTANT_DISTRIBUTION",
-    "Delay_Period": 3,
+    "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
+    "Delay_Period_Constant": 3,
     "Actual_IndividualIntervention_Configs": [
         {
             "class": "OutbreakIndividual",

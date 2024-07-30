@@ -187,7 +187,7 @@ def create_report_file(param_obj, campaign_obj, stdout_df, property_df, property
                                   title="actual vs. expected probability", xlabel='day',ylabel='probability',category="probability_{}".format(susceptible_group),
                                   line=True, alpha=0.5, overlap=True)
 
-                sft.plot_data(new_infection_sus.ix[:, 0].tolist(), expected_new_infection_list,
+                sft.plot_data(new_infection_sus.iloc[:, 0].tolist(), expected_new_infection_list,
                                   label1='from property report',
                                   label2="calculated data",
                                   title="new infections for {}".format(susceptible_group),

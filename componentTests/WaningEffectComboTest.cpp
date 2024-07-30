@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include <iostream>
@@ -124,32 +116,32 @@ SUITE( WaningEffectComboTest )
 
         combo.Update( 1.0 );
         float current = combo.Current();
-        CHECK_CLOSE( 0.1, current, 0.000001 ); // 0.2 from Linear times 0.5 from Piecewise
+        CHECK_CLOSE( 0.7, current, 0.000001 ); // 0.2 from Linear times 0.5 from Piecewise
         CHECK_EQUAL( false, combo.Expired() );
 
         combo.Update( 1.0 );
         current = combo.Current();
-        CHECK_CLOSE( 0.2, current, 0.000001 ); // 0.4 from Linear times 0.5 from Piecewise
+        CHECK_CLOSE( 0.9, current, 0.000001 ); // 0.4 from Linear times 0.5 from Piecewise
         CHECK_EQUAL( false, combo.Expired() );
 
         combo.Update( 1.0 );
         current = combo.Current();
-        CHECK_CLOSE( 0.3, current, 0.000001 ); // 0.6 from Linear times 0.5 from Piecewise
+        CHECK_CLOSE( 1.0, current, 0.000001 ); // 0.6 from Linear times 0.5 from Piecewise, capped at 1.0
         CHECK_EQUAL( false, combo.Expired() ); // end of Linear is time 2 but Box expires after 5
 
         combo.Update( 1.0 );
         current = combo.Current();
-        CHECK_CLOSE( 0.3, current, 0.000001 ); // 0.6 from Linear times 0.5 from Piecewise
+        CHECK_CLOSE( 0.5, current, 0.000001 ); // 0.0 from Linear times 0.5 from Piecewise
         CHECK_EQUAL( false, combo.Expired() ); // end of Linear is time 2 but Box expires after 5
 
         combo.Update( 1.0 );
         current = combo.Current();
-        CHECK_CLOSE( 0.3, current, 0.000001 ); // 0.6 from Linear times 0.5 from Piecewise
+        CHECK_CLOSE( 0.5, current, 0.000001 ); // 0.0 from Linear times 0.5 from Piecewise
         CHECK_EQUAL( false, combo.Expired() ); // end of Linear is time 2 but Box expires after 5
 
         combo.Update( 1.0 );
         current = combo.Current();
-        CHECK_CLOSE( 0.0, current, 0.000001 ); // 0.6 from Linear times 0.0 from Piecewise
+        CHECK_CLOSE( 0.0, current, 0.000001 ); // 0.0 from Linear times 0.0 from Piecewise
         CHECK_EQUAL( true, combo.Expired() ); // end of Linear is time 2 but Box expires after 5
     }
 
@@ -186,7 +178,22 @@ SUITE( WaningEffectComboTest )
 
         combo.Update( 1.0 );
         current = combo.Current();
+        CHECK_CLOSE( 1.0, current, 0.000001 ); // 0.5 from Linear plus 0.5 from Box
+        CHECK_EQUAL( false, combo.Expired() );
+
+        combo.Update( 1.0 );
+        current = combo.Current();
         CHECK_CLOSE( 1.0, current, 0.000001 ); // 0.6 from Linear plus 0.5 from Box = capped at 1.0
+        CHECK_EQUAL( false, combo.Expired() );
+
+        combo.Update( 1.0 );
+        current = combo.Current();
+        CHECK_CLOSE( 1.0, current, 0.000001 ); // 0.6 from Linear plus 0.5 from Box = capped at 1.0
+        CHECK_EQUAL( true, combo.Expired() );
+
+        combo.Update( 1.0 );
+        current = combo.Current();
+        CHECK_CLOSE( 0.0, current, 0.000001 ); // 0.6 from Linear plus 0.5 from Box = capped at 1.0
         CHECK_EQUAL( true, combo.Expired() );
     }
 

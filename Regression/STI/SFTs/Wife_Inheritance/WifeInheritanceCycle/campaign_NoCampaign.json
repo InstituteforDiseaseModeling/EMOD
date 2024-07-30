@@ -1,0 +1,56 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {   "COMMENT" : "------- FLAGGING MALE: IS PURIFIER -------",
+            "class": "CampaignEvent",
+            "Start_Day": 1, 
+            "Nodeset_Config": { 
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender", 
+                "Target_Gender" : "MALE",
+                "Demographic_Coverage": 0.05,
+                "Intervention_Config": {
+                    "class": "PropertyValueChanger",
+                    "Target_Property_Key" : "IsPurifier",
+                    "Target_Property_Value" : "YES"
+                }
+            }
+        },
+        {   "COMMENT" : "--------- FLAGGING MALE: CAN INHERIT WIVES -------",
+            "class": "CampaignEvent",
+            "Start_Day": 1, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender", 
+                "Target_Gender" : "MALE",
+                "Demographic_Coverage": 0.10,
+                "Intervention_Config": {
+                    "class": "PropertyValueChanger",
+                    "Target_Property_Key" : "CanInheritWives",
+                    "Target_Property_Value" : "YES"
+                }
+            }
+        },
+        {    "COMMENT" : "------------ OUTBREAK -----------",
+            "class": "CampaignEvent",
+            "Start_Day": 100, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 0.20,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Incubation_Period_Override": 0
+                }
+            }
+        }
+    ]
+}

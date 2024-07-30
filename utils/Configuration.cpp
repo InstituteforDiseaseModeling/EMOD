@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
@@ -302,7 +294,8 @@ vector<int> GET_CONFIG_VECTOR_INT(const QuickInterpreter* parameter_source, cons
         json::QuickInterpreter json_array( (*parameter_source)[name].As<json::Array>() );
         for( unsigned int idx = 0; idx < (*parameter_source)[name].As<json::Array>().Size(); idx++ )
         {
-            int value = (int)json_array[idx].As<json::Number>();
+            double jsonValueAsDouble = json_array[idx].As<json::Number>();
+            int value = ConvertIntegerValue<int>( name, jsonValueAsDouble );
             values.push_back(value);
         }
     }
@@ -410,6 +403,67 @@ vector<vector<float>> GET_CONFIG_VECTOR2D_FLOAT(const QuickInterpreter* paramete
     return matrix;
 }
 
+vector<vector<vector<float>>> GET_CONFIG_VECTOR3D_FLOAT(const QuickInterpreter* parameter_source, const char *name)
+{
+    vector<vector<vector<float>>> matrix;
+
+    if (parameter_source == nullptr)
+    {
+        if (Kernel::JsonConfigurable::_dryrun)
+        {
+            return matrix;
+        }
+        else
+        {
+            throw std::runtime_error("Null pointer!  Invalid config passed for parsing");
+        }
+    }
+    try
+    {
+        unsigned int num_elements_x = (*parameter_source)[name].As<json::Array>().Size();
+
+        json::QuickInterpreter json_array_of_array_of_arrays((*parameter_source)[name].As<json::Array>());
+        for (unsigned int idx = 0; idx < num_elements_x; idx++)
+        {
+            unsigned int num_elements_y = json_array_of_array_of_arrays[idx].As<json::Array>().Size();
+            
+            json::QuickInterpreter json_array_of_arrays(json_array_of_array_of_arrays[idx].As<json::Array>());
+
+            std::vector<vector<float>> values;
+
+            for (unsigned int idy = 0; idy < num_elements_y; idy++)
+            {
+                unsigned int num_elements_z = json_array_of_arrays[idy].As<json::Array>().Size();
+                
+                json::QuickInterpreter json_array(json_array_of_arrays[idy].As<json::Array>());
+
+                std::vector<float> values_inner;
+
+                for (unsigned int idz = 0; idz < num_elements_z; idz++)
+                {
+                    float value = (float)json_array[idz].As<json::Number>();
+                    values_inner.push_back(value);
+                }
+                values.push_back(values_inner);
+            }
+            matrix.push_back(values);
+        }
+    }
+    catch (json::Exception)
+    {
+        if (Kernel::JsonConfigurable::_dryrun)
+        {
+            return matrix;
+        }
+        else
+        {
+            throw Kernel::JsonTypeConfigurationException(__FILE__, __LINE__, __FUNCTION__, name, (*parameter_source), "Expected FLOAT 3D VECTOR/ARRAY");
+        }
+    }
+
+    return matrix;
+}
+
 vector<vector<int>> GET_CONFIG_VECTOR2D_INT(const QuickInterpreter* parameter_source, const char *name)
 {
     vector<vector<int>> matrix;
@@ -439,7 +493,8 @@ vector<vector<int>> GET_CONFIG_VECTOR2D_INT(const QuickInterpreter* parameter_so
 
             for( unsigned int idy = 0; idy < num_elements_y; idy++ )
             {
-                int value = (int)json_array[idy].As<json::Number>();
+                double jsonValueAsDouble = json_array[idy].As<json::Number>();
+                int value = ConvertIntegerValue<int>( name, jsonValueAsDouble );
                 values.push_back(value);
             }
             matrix.push_back( values );

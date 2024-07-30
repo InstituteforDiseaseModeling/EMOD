@@ -1,0 +1,51 @@
+{
+    "Campaign_Name": "ARTMortalityTable intervention test",
+    "Use_Defaults": 1,
+    "Events": [{
+            "Description": "Initial HIV outbreak",
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1.0,
+                "Travel_Linked": 0,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Incubation_Period_Override": 0,
+                    "Outbreak_Source": "PrevalenceIncrease"
+                }
+            }
+        },
+        {
+            "Description": "ARTMortalityTable for Everyone",
+            "class": "CampaignEvent",
+            "Start_Day": 10,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Property_Restrictions": [
+                ],
+                "Intervention_Config": {
+                    "class": "ARTMortalityTable",
+                    "Cost_To_Consumer": 1,
+                    "ART_Multiplier_On_Transmission_Prob_Per_Act": 0.08,
+                    "ART_Is_Active_Against_Mortality_And_Transmission": 1,
+                    "Days_To_Achieve_Viral_Suppression": 183.0,
+                    "ART_Duration_Days_Bins": [0],
+                    "Age_Years_Bins": [55],
+                    "CD4_Count_Bins": [400, 500],
+                    "MortalityTable": [
+                        [
+                            [0.75, 0.2]
+                        ]
+                    ]
+                }
+            }
+        }
+    ]
+}

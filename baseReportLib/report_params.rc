@@ -1,0 +1,97 @@
+// This file is for the parameters that are defined in custom_reports.json
+#define Report_Age_Bins_DESC_TEXT "The age bins (in years, in ascending order) to aggregate within and report. An empty array does not stratify by age."
+#define Report_Start_Day_DESC_TEXT "The day of the simulation to start collecting data."
+#define Report_End_Day_DESC_TEXT "The day of the simulation to stop collecting data."
+#define Report_File_Name_DESC_TEXT "Name of the file to be written"
+#define Report_Node_IDs_Of_Interest_DESC_TEXT "Data will be collected for the nodes in this list.  Empty list implies all nodes."
+#define Report_Start_Year_DESC_TEXT "Year to start collecting data"
+#define Report_Stop_Year_DESC_TEXT "Year to stop collecting data"
+#define Report_Event_Trigger_List_DESC_TEXT "The list of individual events to included in the report.  There will be a channel in the report for each event."
+#define Report_Reporting_Interval_DESC_TEXT "Defines the cadence of the report by specifying how many time steps to collect data before writing to the file. This will limit system memory usage and is advised when large output files are expected."
+#define Report_Max_Number_Reports_DESC_TEXT "The maximum number of report output files that will be produced for a given simulation."
+#define Report_Pretty_Format_DESC_TEXT "True (1) sets pretty JSON formatting. The default, false (0), saves space."
+
+#define ReportFilter_Start_Day_DESC_TEXT "The day of the simulation to start collecting data."
+#define ReportFilter_End_Day_DESC_TEXT "The day of the simulation to stop collecting data."
+#define ReportFilter_Start_Year_DESC_TEXT "January 1st of the year of the simulation to start collecting data."
+#define ReportFilter_End_Year_DESC_TEXT "Stop collecting data to report on January 1st of this year."
+#define ReportFilter_Filename_Suffix_DESC_TEXT "Augments the filename of the report. If multiple reports are being generated, this allows you to distinguish among the multiple reports."
+#define ReportFilter_Node_IDs_Of_Interest_DESC_TEXT "Data will be collected for the nodes in this list.  Empty list implies all nodes."
+#define ReportFilter_Min_Age_Years_DESC_TEXT "Minimum age in years of people to collect data on"
+#define ReportFilter_Max_Age_Years_DESC_TEXT "Maximum age in years of people to collect data on"
+#define ReportFilter_Must_Have_IP_Key_Value_DESC_TEXT "A Key:Value pair that the individual must have in order to be included. Empty string means to not include IPs in the selection criteria."
+#define ReportFilter_Must_Have_Intervention_DESC_TEXT "The name of the intervention that the person must have in order to be included. Empty string means to not include interventions in the selection criteria."
+
+#define ReportFilterRelationship_Min_Age_Years_DESC_TEXT "The age of one of the partners must be greater than or equal to this minimum age for the coital act to be reported."
+#define ReportFilterRelationship_Max_Age_Years_DESC_TEXT "The age of one of the partners must be less than or equal to this maximum age for the coital act to be reported."
+#define ReportFilterRelationship_Must_Have_IP_Key_Value_DESC_TEXT "A Key:Value pair that one of the partners must have for the coital act to be reported. Empty string means don't look at IPs."
+#define ReportFilterRelationship_Must_Have_Intervention_DESC_TEXT "The name of the an intervention that one of the partners must have for the coital act to be reported. Empty string means don't look at the interventions."
+
+#define MSR_Parasitemia_Bins_DESC_TEXT "Parasitemia Bins (in infected red blood cells per microliter of blood) to aggregate within and report.  A value greater than or equal to zero in the first bin indicates that the uninfected people should be added to this bin.  The values must be in ascending order."
+#define MSR_Infectiousness_Bins_DESC_TEXT  "Infectiousness Bins to aggregate within and report"
+
+#define SQL_Include_Health_Table_DESC_TEXT "A true value (1) includes the Health table which has data for each time step for the health of an individual."
+#define SQL_Include_Infection_Data_Table_DESC_TEXT "A true value (1) includes the InfectionData table which has data for each time step for each active infection."
+#define SQL_Include_Individual_Properties_DESC_TEXT "Include a table with all the possible IPs and include the IP data for each person in the Health table."
+
+#define SQLM_Include_Drug_Status_Table_DESC_TEXT  "A true value (1) includes the table that provides data at each time step for each drug the person has."
+
+#define RMF_Reporting_Include_30Day_Avg_Infection_Duration_DESC_TEXT "If true the '30-Day Avg Infection Duration' channel is included in the report."
+#define RMF_Has_Interventions_DESC_TEXT "A channel is added to the report for each InterventionName provided.  The channel name will be Has_<InterventionName> and will be the fraction of the population that has that intervention.  The 'Intervention_Name' in the campaign should be the values in this parameter."
+#define RMF_Has_IP_DESC_TEXT "A channel is added to InsetChart for each value of each IP provided.  The channel name will be HasIP_<Key:Value> and will be the fraction of the population that has that value for that IPKey."
+#define RMF_Include_Pregnancies_DESC_TEXT "If true, channels are added about pregnancies and possible mothers."
+
+#define RND_IP_Key_To_Collect_DESC_TEXT "The name of the **IndividualProperties** (IP) key by which to stratify the report. An empty string means the report is not stratified by IP."
+#define RND_Stratify_By_Gender_DESC_TEXT "Set to true (1) to stratify by gender. Set to false (0) to not stratify by gender."
+
+#define RNDM_Stratify_By_Has_Clinical_Symptoms_DESC_TEXT "If set to true (1), the data will have an extra stratification for people who have clinical symptoms and those that do not.  Default is false (0) or no extra stratification."
+
+#define RNDMG_Barcodes_DESC_TEXT "A list of barcode strings. The report contains the number of human infections with each barcode.  Use '*' for a wild card at a loci to include all values at that loci.  For example, 'A*T' includes AAT, ACT, AGT, and ATT. The report contains an OtherBarcodes column for barcodes that are not defined. Note: There is no validation that the barcode strings are valid barcodes for the scenario."
+#define RNDMG_Drug_Resistant_Strings_DESC_TEXT "A list of strings representing the set of drug resistant markers. A column will be created with the number of human infections with that Drug Resistant String. Use '*' for a wild card at a loci to include all values at that loci. A 'NoDrugResistance' column will be created for drug resistant strings not defined."
+#define RNDMG_HRP_Strings_DESC_TEXT "A list of strings representing the set of HRP markers. A column will be created with the number of human infections with that HRP String. Use '*' for a wild card at a loci to include all values at that loci. An 'OtherHRP' column will be created for HRP strings not defined."
+#define RNDMG_Drug_Resistant_And_HRP_Statistic_Type_DESC_TEXT "Indicates the statistic in the Drug Resistant & HRP columns. Possible values are:\n* NUM_PEOPLE_WITH_RESISTANT_INFECTION - A person is counted if they have one infection with that drug resistant marker\n* NUM_INFECTIONS - The total number of infections with that marker."
+#define RNDMG_Include_Identity_By_XXX_DESC_TEXT "Include columns about the average Identity By State (IBS) and Identity By Descent (IBD) for all new infections with unique barcodes in the last year."
+
+#define Survey_IP_Key_To_Collect_DESC_TEXT "Name of the Individual Property Key whose value to collect.  Empty string means collect values for all IPs."
+
+#define SRMF_Reporting_Interval_DESC_TEXT "The Number of days to collect data and average over."
+
+#define RVG_Allele_Combination_DESC_TEXT "An array of array of strings that defines a genome.  Each value is an allele.  '*' is allowed to imply all."
+#define RVG_Species_DESC_TEXT "The species to include information on; the name must exist in **Vector_Species_Params** in the config.json file. The name will be added to the report name. If not specified, the first species found will be used."
+#define RVG_Gender_DESC_TEXT "The gender to include in the file; possible values are VECTOR_FEMALE, VECTOR_MALE, and VECTOR_BOTH_GENDERS."
+#define RVG_Include_Vector_State_Columns_DESC_TEXT "If set to true (1), the columns for each vector state (Eggs, Larvae, etc) will be included."
+#define RVG_Stratify_By_DESC_TEXT "Determines how the report will be stratified; possible values are GENOME, SPECIFIC_GENOME, and ALLELE."
+#define RVG_Combine_Similar_Genomes_DESC_TEXT "If set to true (1), genomes are combined for each locus (ignoring gender) if the set of alleles of the two genomes are the same. Note that '1-0' is considered to be the same as '0-1'. Depends on **Stratify_By** = GENOME or SPECIFIC_GENOME."
+#define RVG_Specific_Genome_Combinations_For_Stratification_DESC_TEXT "If stratifying by SPECIFIC_GENOME, this is the list of genomes to stratify by. '*' will list all entries at that location, and '?' will combine all entries at that location. Depends on **Stratify_By** = SPECIFIC_GENOME."
+#define RVG_Allele_Combinations_For_Stratification_DESC_TEXT "If stratifying by allele, this will be the list of alleles to stratify by. Depends on **Stratify_By** = ALLELE."
+#define RVG_Alleles_For_Stratification_DESC_TEXT "The list of alleles for which to collect frequency counts. If the list is empty, the report uses a list of all possible alleles. Depends on **Stratify_By** = ALLELE_FREQ"
+#define RVG_Include_Death_By_State_Columns_DESC_TEXT "Adds columns for the number of vectors that died in this state during this time step as well as the average age at death.  It adds two columns for each of the following states: ADULT, INFECTED, INFECTIOUS, and MALE."
+
+#define RVGMG_Parasite_Barcodes_DESC_TEXT "A list of parasite barcodes where one column for each barcode will be created with the header 'NumVectorsWithSporozoites_<barcode>'.  The value in the column will be the number of vectors in the row that have at least one sporozoite with the given barcode."
+
+#define RVS_Species_List_DESC_TEXT "The species for which to include information. If the list is empty or absent, then data for all species will be collected."
+#define RVS_Stratify_By_Species_DESC_TEXT "If set to true (1), then data will be stratified by species for each node."
+#define RVS_Include_Wolbachia_Columns_DESC_TEXT "If set to true (1), columns will be added for each type of Wolbachia. Summation of columns should be equal to VectorPopulation."
+#define RVS_Include_Microsporidia_Columns_DESC_TEXT "If set to true (1), columns will be added for each state and the value in the column will be the number of vectors that have microsporidia in that state during this time step."
+#define RVS_Include_Gestation_Columns_DESC_TEXT "If set to true (1), columns will be added for feeding and gestation."
+#define RVS_Include_Death_By_State_Columns_DESC_TEXT "If set to true (1), columns will be added for the number of vectors that died in this state during this time step as well as the average age.  It adds two columns for each of the following states: ADULT, INFECTED, INFECTIOUS, and MALE."
+
+#define RVSMG_Barcodes_DESC_TEXT "A list of barcode strings where a column will be created with the number of vectors with sporozoites with that barcode. Use '*' for a wild card. An **OtherBarcodes** column will be created for barcodes not defined."
+
+#define RRC_Reporting_Interval_Years_DESC_TEXT "Years between census-taking."
+
+#define Age_At_Infection_Histogram_Report_Reporting_Interval_In_Years_DESC_TEXT "This is the amount of time data is collected and then written to the file.  This value has units in years."
+#define Age_At_Infection_Histogram_Report_Age_Bin_Upper_Edges_In_Years_DESC_TEXT "A list of ages in years where an individual will count in the upper value bin when their age is between two bins."
+
+#define CoTran_Include_Human_To_Vector_Transmission_DESC_TEXT "If set to true (1), Human-to-Vector transmission events will be included. You can identify these events because the 'acquireIndividualId'=0 and transmitTime=acquireTime. WARNING: This can make the file size quite large."
+
+#define RFOFOM_Minimum_Parasite_Density_DESC_TEXT " The minimum density that the infection must have to be included in the list of infections. A value of zero implies include all infections. Number of asexual parasites per micro liter of blood."
+#define RFOFOM_Sampling_Period_DESC_TEXT "The number of days between sampling the population. This implies one should get data on days Start_Day, Start_Day+Sampling_Perod, Start_Day+2*Sampling_Period, and so on."
+#define RFOFOM_Include_Genome_IDs_DESC_TEXT "Add a column that has a list of Barcode IDs (hashcode) for the person."
+
+#define RISM_Include_Column_Hepatocyte_DESC_TEXT "If set to true (1), then a column will be added to the report providing the count of the infected hepatocytes."
+#define RISM_Include_Column_IRBC_DESC_TEXT "If set to true (1), then a column will be added to the report with the number of Infected Red Blood Cells from this infection."
+#define RISM_Include_Column_Gametocyte_DESC_TEXT "If set to true (1), then a column will be added to the report that contains the number of gametocytes (male & female) from this infection."
+#define RISM_Include_Data_Threshold_Hepatocytes_DESC_TEXT "If the column is included and the number of hepatocytes related to this infection are greater than or equal to this value, then the row of data will be included."
+#define RISM_Include_Data_Threshold_IRBC_DESC_TEXT "If the column is included and the number of IRBCs related to this infection are greater than or equal to this value, then the row of data will be included."
+#define RISM_Include_Data_Threshold_Gametocytes_DESC_TEXT "If the column is included and the number of gametocytes related to this infection are greater than or equal to this value, then the row of data will be included."

@@ -22,7 +22,7 @@
                     "Cost_To_Consumer": 0.0,
                     "Event_Or_Config": "Event",
                     "Positive_Diagnosis_Event": "TestedPositive_CureMeNow",
-                    "Enable_IsSymptomatic": 0,
+                    "Enable_Is_Symptomatic": 0,
                     "class": "SimpleDiagnostic"
                 },
                 "Number_Repetitions": 30,
@@ -38,7 +38,7 @@
         },
 
         {
-            "comment:": "Second outbreak, to test Enable_IsSymptomatic",
+            "comment:": "Second outbreak, to test Enable_Is_Symptomatic",
             "class": "CampaignEvent",
             "Start_Day": 30,
             "Nodeset_Config": {
@@ -59,7 +59,7 @@
                     "Cost_To_Consumer": 0.0,
                     "Event_Or_Config": "Event",
                     "Positive_Diagnosis_Event": "TestedPositive_CureMeNow",
-                    "Enable_IsSymptomatic": 1,
+                    "Enable_Is_Symptomatic": 1,
                     "class": "SimpleDiagnostic"
                 },
                 "Target_Demographic": "Everyone",

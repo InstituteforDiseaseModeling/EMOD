@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -28,7 +20,7 @@ public:
                                         IRelationshipParameters* pRelParams,
                                         IIndividualHumanSTI * husbandIn,
                                         IIndividualHumanSTI * wifeIn )
-        : Relationship( pRNG, rRelId, nullptr, pRelParams, husbandIn, wifeIn )
+        : Relationship( pRNG, rRelId, pRelParams, husbandIn, wifeIn, false, nullptr )
     {
         release_assert( husbandIn->GetSuid().data != wifeIn->GetSuid().data );
     }
@@ -53,8 +45,8 @@ struct PfaFixture
 {
 public:
     PfaFixture()
-        : m_NC()
-        , m_NEC()
+        : m_NEC()
+        , m_NC( suids::suid(), &m_NEC )
         , m_relationship_list()
         , m_hic_list()
         , m_human_list()
@@ -81,6 +73,7 @@ public:
         EventTriggerFactory::GetInstance()->Configure( fakeConfigValid );
 
         m_NEC.Initialize();
+        m_NEC.SetContextTo( &m_NC );
     }
 
     ~PfaFixture()
@@ -122,11 +115,11 @@ public:
         }
     }
 
-    void AddRelationship( RANDOMBASE* pRNG, 
-                          IIndividualHumanSTI* male,
-                          IIndividualHumanSTI* female,
-                          RelationshipType::Enum relType = RelationshipType::TRANSITORY,
-                          float duration = 0.0 )
+    FakeRelationship* AddRelationship( RANDOMBASE* pRNG, 
+                                       IIndividualHumanSTI* male,
+                                       IIndividualHumanSTI* female,
+                                       RelationshipType::Enum relType = RelationshipType::TRANSITORY,
+                                       float duration = 0.0 )
     {
         RelationshipParameters* p_rel_parms = &m_RelParamsTransitory;
         switch( relType )
@@ -150,9 +143,9 @@ public:
         suids::suid rel_id = GetNextSuidRelationship();
         FakeRelationship* p_rel = new FakeRelationship( pRNG, rel_id, p_rel_parms, male, female );
         p_rel->Update( duration );
-        male->AddRelationship( p_rel );
-        female->AddRelationship( p_rel );
         m_relationship_list.push_back( p_rel );
+
+        return p_rel;
     }
 
     IndividualHumanContextFake* CreateHuman( int gender, float ageDays )
@@ -194,6 +187,16 @@ public:
         return m_relationship_list.size();
     }
 
+    INodeContextFake* GetNodeContext()
+    {
+        return &m_NC;
+    }
+
+    void SetTime( float time )
+    {
+        m_NEC.SetTime( IdmDateTime( time ) );
+    }
+
 private:
     suids::suid GetNextSuidHuman()
     {
@@ -209,8 +212,8 @@ private:
         return next;
     }
 
-    INodeContextFake        m_NC;
     INodeEventContextFake   m_NEC;
+    INodeContextFake        m_NC;
     vector< Relationship* > m_relationship_list;
     vector< IndividualHumanInterventionsContextFake* > m_hic_list;
     vector< IndividualHumanContextFake*              > m_human_list;

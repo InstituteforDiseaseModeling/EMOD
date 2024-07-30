@@ -1,0 +1,107 @@
+{
+    "Default_Config_Path": "../../defaults/vector_default_config.json",
+    "parameters": {
+        "CLIMATE": {
+            "Climate_Model": "CLIMATE_CONSTANT",
+            "Enable_Climate_Stochasticity": 0
+        },
+        "DEMOGRAPHICS": {
+            "Demographics_Filenames": [
+                "Namawala_single_node_demographics.json"
+            ],
+            "Enable_Vital_Dynamics": 0,
+            "Enable_Initial_Prevalence": 1
+        },
+        "PRIMARY": {
+            "Config_Name": "83_Vector_Insecticide_IRSHousingModification",
+            "Custom_Reports_Filename": "custom_reports.json",
+            "Geography": "Namawala",
+            "Python_Script_Path": "SHARED",
+            "Run_Number": 1,
+            "Simulation_Duration": 1000,
+            "x_Temporary_Larval_Habitat": 0.1
+        },
+        "VECTOR": {
+            "Insecticides" : [
+                {
+                    "Name" : "pyrethroid",
+                    "Resistances" : [
+                        {
+                            "Species" : "SillySkeeter",
+                            "Allele_Combinations" : [
+                                [ "a1", "*" ]
+                            ],
+                            "Larval_Killing_Modifier": 1.0,
+                            "Repelling_Modifier" : 2.0,
+                            "Blocking_Modifier": 1.0,
+                            "Killing_Modifier": 0.25
+                        }
+                    ]
+                },
+                {
+                    "Name" : "carbamate",
+                    "Resistances" : [
+                        {
+                            "Species" : "SillySkeeter",
+                            "Allele_Combinations" : [
+                                [ "a0", "*" ]
+                            ],
+                            "Larval_Killing_Modifier": 1.0,
+                            "Repelling_Modifier" : 2.0,
+                            "Blocking_Modifier": 1.0,
+                            "Killing_Modifier": 0.25
+                        }
+                    ]
+                }
+            ],
+            "Vector_Species_Params": [
+                {
+                    "Name": "SillySkeeter",
+                    "Genes": [
+                        {
+                            "Is_Gender_Gene": 0,
+                            "Alleles": [
+                                {
+                                    "Name": "a0",
+                                    "Is_Y_Chromosome" : 0,
+                                    "Initial_Allele_Frequency": 0.5
+                                },
+                                {
+                                    "Name": "a1",
+                                    "Is_Y_Chromosome" : 0,
+                                    "Initial_Allele_Frequency": 0.5
+                                }
+                            ],
+                            "Mutations": []
+                        }
+                    ],
+                    "Acquire_Modifier": 0.2,
+                    "Adult_Life_Expectancy": 10,
+                    "Male_Life_Expectancy": 10,
+                    "Anthropophily": 0.1,
+                    "Aquatic_Arrhenius_1": 84200000000,
+                    "Aquatic_Arrhenius_2": 8328,
+                    "Aquatic_Mortality_Rate": 0.1,
+                    "Days_Between_Feeds": 3,
+                    "Egg_Batch_Size": 100,
+                    "Immature_Duration": 4,
+                    "Indoor_Feeding_Fraction": 1.0,
+                    "Infected_Arrhenius_1": 117000000000,
+                    "Infected_Arrhenius_2": 8336,
+                    "Infected_Egg_Batch_Factor": 0.8,
+                    "Infectious_Human_Feed_Mortality_Factor": 1.5,
+                    "Habitats": [
+                        {
+                            "Habitat_Type": "TEMPORARY_RAINFALL",
+                            "Max_Larval_Capacity": 11250000000.0
+                        }
+                    ],
+                    "Microsporidia": [],
+                    "Temperature_Dependent_Feeding_Cycle": "NO_TEMPERATURE_DEPENDENCE",
+                    "Transmission_Rate": 0.5,
+                    "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_NONE"
+                }
+            ]
+        }
+    }
+}

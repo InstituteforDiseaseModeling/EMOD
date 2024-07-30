@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -30,6 +22,7 @@ namespace Kernel
         , public ISTIBarrierConsumer
         , public ISTICircumcisionConsumer 
         , public ISTICoInfectionStatusChangeApply
+        , public ICoitalActRiskData
     {
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
 
@@ -39,6 +32,14 @@ namespace Kernel
 
         // ISupports
         virtual QueryResult QueryInterface(iid_t iid, void** pinstance) override;
+
+        // InterventionsContainer
+        virtual void Update( float dt ) override;
+
+        // ISTIInterventionsContainer
+        virtual void AddNonPfaRelationshipStarter( INonPfaRelationshipStarter* pSNR ) override;
+        virtual void StartNonPfaRelationships() override;
+
 
         // ISTIBarrierConsumer 
         virtual void UpdateSTIBarrierProbabilitiesByType( RelationshipType::Enum rel_type, const Sigmoid& config_overrides ) override;
@@ -59,11 +60,21 @@ namespace Kernel
         virtual void SpreadStiCoInfection() override;
         virtual void CureStiCoInfection() override;
 
+        // ICoitalActRiskFactor
+        virtual void UpdateCoitalActRiskFactors( float acqMod, float tranMod ) override;
+        virtual float GetCoitalActRiskAcquisitionFactor() const override;
+        virtual float GetCoitalActRiskTransmissionFactor() const override;
+
     protected:
         bool is_circumcised;
         float circumcision_reduced_require;
+        float risk_modifier_acquisition;
+        float risk_modifier_transmission;
 
-        std::map< RelationshipType::Enum, Sigmoid > STI_blocking_overrides;
+        std::vector<bool>    has_blocking_overrides;
+        std::vector<Sigmoid> STI_blocking_overrides;
+
+        std::vector<INonPfaRelationshipStarter*> snr_inv_list;
 
         DECLARE_SERIALIZABLE(STIInterventionsContainer);
     };

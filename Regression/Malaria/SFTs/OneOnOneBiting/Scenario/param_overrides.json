@@ -1,0 +1,59 @@
+{
+    "Default_Config_Path": "defaults/malaria_genetics_science_default_config.json",
+    "DEMOGRAPHICS": {
+        "Demographics_Filenames": [
+            "Namawala_four_node_demographics.json"
+        ],
+        "CLIMATE": {
+            "Base_Air_Temperature": 22.0,
+            "Air_Temperature_Variance": 2,
+            "Land_Temperature_Variance": 2,
+            "Enable_Climate_Stochasticity": 0
+        },
+        "PRIMARY": {
+            "Num_Cores": 4,
+            "Enable_Aging": 0,
+            "Human_Feeding_Mortality": 0,
+            "Config_Name": "Malaria::SFTs::OneOnOneBiting::Scenario",
+            "Geography": "Namawala",
+            "Run_Number": 1,
+            "Simulation_Duration": 116
+        },
+        "REPORTS": {
+            "Custom_Reports_Filename": "custom_reports.json",
+            "Enable_Demographics_Reporting": 0
+        },
+        "STRAIN_TRACKING": {
+            ".Malaria_Model": "MALARIA_MECHANISTIC_MODEL",
+            "Malaria_Model": "MALARIA_MECHANISTIC_MODEL_WITH_PARASITE_GENETICS"
+        },
+        "VECTOR": {
+            "x_Vector_Migration_Local": 1,
+            "Migration_Model": "FIXED_RATE_MIGRATION",
+            "Migration_Pattern": "RANDOM_WALK_DIFFUSION",
+            "Vector_Migration_Modifier_Equation": "LINEAR",
+            "Vector_Migration_Filename_Local": "local_circular_migration.bin",
+            "Enable_Vector_Migration_Local": 1,
+            "Enable_Vector_Migration_Regional": 0,
+            "Vector_Migration_Food_Modifier": 1,
+            "Vector_Migration_Habitat_Modifier": 1,
+            "Vector_Migration_Stay_Put_Modifier": 1,
+            "Enable_Vector_Migration": 1,
+            "Enable_Air_Migration": 0,
+            "Enable_Family_Migration": 0,
+            "Enable_Local_Migration": 0,
+            "Enable_Migration_Heterogeneity": 0,
+            "Enable_Regional_Migration": 0,
+            "Enable_Sea_Migration": 0,
+            "x_Temporary_Larval_Habitat": 0.1,
+            "Vector_Species_Params": [
+                {
+                    "Name": "SillySkeeter",
+                    "Male_Life_Expectancy": 20,
+                    "Anthropophily": 0.65,
+                    "Indoor_Feeding_Fraction": 0.7
+                }
+            ]
+        }
+    }
+}

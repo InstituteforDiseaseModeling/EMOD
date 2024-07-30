@@ -1,0 +1,42 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Individual_Selection_Type": "TARGET_NUM_INDIVIDUALS",
+                "Target_Num_Individuals":1,
+                "Intervention_Config": {
+                    "Repelling_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect": 1
+                    },
+                    "Blocking_Config": {
+                        "Initial_Effect": 0,
+                        "class": "WaningEffectConstant"
+                    },
+                    "Cost_To_Consumer": 1,
+                    "Expiration_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Killing_Config": {
+                        "Initial_Effect": 0,
+                        "class": "WaningEffectConstant"
+                    },
+                    "Usage_Config_List": [
+                        {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect": 0.5
+                        }
+                    ],
+                    "class": "UsageDependentBednet",
+                    "Expiration_Period_Constant": 1000
+                }
+            }
+        }
+    ]
+}

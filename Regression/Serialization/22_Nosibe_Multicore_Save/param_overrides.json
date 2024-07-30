@@ -63,10 +63,13 @@
             "Config_Name": "Serialization_22_Nosibe_Multicore_Save",
             "Geography": "Madagascar_Nosibe",
             "Run_Number": 1,
+            "Serialization_Precision" : "REDUCED",
+            "Serialized_Population_Writing_Type": "TIMESTEP",
             "Serialization_Time_Steps": [
                 0,
                 30
             ],
+            "Serialization_Mask_Node_Write": 0,
             "Simulation_Duration": 90,
             "Simulation_Timestep": 1
         }

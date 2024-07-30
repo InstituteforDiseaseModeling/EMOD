@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -25,11 +17,6 @@ namespace Kernel
 {
     struct IVectorInterventionEffectsSetter;
 
-    /* Keep around as an identity solution??? */
-    struct IHumanHostSeekingTrap : public ISupports
-    {
-    };
-
     class HumanHostSeekingTrap : public BaseIntervention
     {
         DECLARE_FACTORY_REGISTERED(InterventionFactory, HumanHostSeekingTrap, IDistributableIntervention)
@@ -46,6 +33,9 @@ namespace Kernel
         virtual QueryResult QueryInterface(iid_t iid, void **ppvObject) override;
         virtual void SetContextTo(IIndividualHumanContext *context) override;
         virtual void Update(float dt) override;
+
+        // IReportInterventionData
+        virtual ReportInterventionData GetReportInterventionData() const override;
 
     protected:
         IWaningEffect* killing_effect;

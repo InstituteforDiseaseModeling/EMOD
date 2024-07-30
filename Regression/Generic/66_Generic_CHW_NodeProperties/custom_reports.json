@@ -1,17 +1,12 @@
 {
-    "Custom_Reports" : 
-    {
-        "Use_Explicit_Dlls" : 1,
-        "ReportNodeDemographics" :
+    "Reports": [
         {
-            "Enabled" : 1,
-            "Reports" :
-            [
-                {
-                    "Stratify_By_Gender" : 0,
-                    "Age_Bins" : [ 125.0 ]
-                }
-            ]
+            "Age_Bins": [
+                125.0
+            ],
+            "Stratify_By_Gender": 0,
+            "class": "ReportNodeDemographics"
         }
-    }
+    ],
+    "Use_Defaults": 1
 }

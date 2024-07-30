@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -46,6 +38,8 @@ namespace Kernel
         virtual void RegisterObserver(   IObserver* pObserver, const Trigger& trigger ) = 0;
         virtual void UnregisterObserver( IObserver* pObserver, const Trigger& trigger ) = 0;
         virtual void TriggerObservers(   IEntity*   pEntity,   const Trigger& trigger ) = 0;
+        virtual uint64_t GetNumTriggeredEvents() = 0;
+        virtual uint64_t GetNumObservedEvents() = 0;
     };
 
     // There are three sets of observer, broadcaster, entity combinations.  One for:

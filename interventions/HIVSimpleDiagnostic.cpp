@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "HIVSimpleDiagnostic.h"
@@ -34,9 +26,7 @@ namespace Kernel
     , original_days_to_diagnosis(0.0)
     , negative_diagnosis_event()
     {
-        initSimTypes(2, "HIV_SIM", "TBHIV_SIM");
-
-        initConfigTypeMap("Days_To_Diagnosis", &days_to_diagnosis, SD_Days_To_Diagnosis_DESC_TEXT, FLT_MAX, 0);
+        initSimTypes(1, "HIV_SIM");
 
         days_to_diagnosis.handle = std::bind( &HIVSimpleDiagnostic::Callback, this, std::placeholders::_1 );
     }
@@ -52,22 +42,6 @@ namespace Kernel
         days_to_diagnosis.handle = std::bind( &HIVSimpleDiagnostic::Callback, this, std::placeholders::_1 );
     }
 
-    bool HIVSimpleDiagnostic::Configure(const Configuration * inputJson)
-    {
-        if( getEventOrConfig( inputJson ) == EventOrConfig::Event || JsonConfigurable::_dryrun )
-        {
-            initConfigTypeMap( "Negative_Diagnosis_Event", &negative_diagnosis_event, HIV_SD_Negative_Diagnosis_Event_DESC_TEXT );
-        }
-
-        ConfigurePositiveEventOrConfig( inputJson );
-        bool ret = BaseIntervention::Configure(inputJson);
-        if( ret )
-        {
-            //CheckPostiveEventConfig();
-        }
-        return ret ;
-    }
-
     EventOrConfig::Enum
     HIVSimpleDiagnostic::getEventOrConfig(
         const Configuration * inputJson
@@ -75,6 +49,37 @@ namespace Kernel
     {
         // For those premature optimizers out there, this function is expected to get more interesting in the future.
         return EventOrConfig::Event;
+    }
+
+    void HIVSimpleDiagnostic::ConfigureOther( const Configuration * inputJson )
+    {
+        // don't keep Treatment_Fraction
+        initConfigTypeMap( "Days_To_Diagnosis", &days_to_diagnosis, SD_Days_To_Diagnosis_DESC_TEXT, FLT_MAX, 0 );
+    }
+
+    void HIVSimpleDiagnostic::ConfigurePositiveConfig( const Configuration * inputJson )
+    {
+        // do nothing because we don't want the config part
+    }
+
+    void HIVSimpleDiagnostic::ConfigureEventsConfigs( const Configuration * inputJson )
+    {
+        SimpleDiagnostic::ConfigureEventsConfigs( inputJson );
+
+        if( JsonConfigurable::_dryrun ||
+            ((use_event_or_config == EventOrConfig::Event) && inputJson->Exist( "Negative_Diagnosis_Event" )) )
+        {
+            initConfigTypeMap( "Negative_Diagnosis_Event", &negative_diagnosis_event, HIV_SD_Negative_Diagnosis_Event_DESC_TEXT );
+        }
+    }
+
+    void HIVSimpleDiagnostic::CheckEventsConfigs( const Configuration * inputJson )
+    {
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // !!! We need to fix this so that we can ensure that Postive_Diagnosis_Event is defined.
+        // !!! I'm stopping here so I reduce the number of changes in this phase.
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        //SimpleDiagnostic::CheckEventsConfigs( inputJson );
     }
 
     bool HIVSimpleDiagnostic::Distribute(
@@ -137,13 +142,13 @@ namespace Kernel
 
 
     // todo: lift to HIVIntervention or helper function (repeated in HIVDelayedIntervention)
-    bool HIVSimpleDiagnostic::UpdateIndividualsInterventionStatus()
+    bool HIVSimpleDiagnostic::UpdateIndividualsInterventionStatus( bool checkDisqualifyingProperties )
     {
         if( firstUpdate )
         {
             original_days_to_diagnosis = days_to_diagnosis;
         }
-        return SimpleDiagnostic::UpdateIndividualsInterventionStatus();
+        return SimpleDiagnostic::UpdateIndividualsInterventionStatus( checkDisqualifyingProperties );
     }
 
     void HIVSimpleDiagnostic::Update( float dt )
@@ -169,8 +174,6 @@ namespace Kernel
 
     bool HIVSimpleDiagnostic::positiveTestResult()
     {
-
-#ifndef DISABLE_TBHIV    
         IIndividualHumanHIV* HIVpersonptr = nullptr;
 
         if (parent->QueryInterface(GET_IID(IIndividualHumanHIV), (void**)&HIVpersonptr) != s_OK)
@@ -184,12 +187,6 @@ namespace Kernel
         // True positive (sensitivity), or False positive (1-specificity)
 
         return applySensitivityAndSpecificity(infected);
-
-        
-#else
-        return SimpleDiagnostic::positiveTestResult();
-#endif
-
     }
 
     REGISTER_SERIALIZABLE(HIVSimpleDiagnostic);

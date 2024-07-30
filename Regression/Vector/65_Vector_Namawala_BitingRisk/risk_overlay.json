@@ -20,7 +20,15 @@
     },
     "Nodes": [
         {
-            "NodeID": 340461476
+            "NodeID": 340461476,
+            "NodeAttributes": {
+                "InitialPopulation": 10000
+            }, 
+            "IndividualAttributes": {
+                "RiskDistributionFlag": 0, 
+                "RiskDistribution1": 1, 
+                "RiskDistribution2": 0
+            }
         }
     ]
 }

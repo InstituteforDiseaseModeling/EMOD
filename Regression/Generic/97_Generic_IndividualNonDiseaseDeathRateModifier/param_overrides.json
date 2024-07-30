@@ -1,0 +1,19 @@
+{
+    "Default_Config_Path": "../../defaults/generic_default_config.json",
+    "parameters": {
+        "Config_Name": "97_Generic_IndividualNonDiseaseDeathRateModifier",
+        "Geography": "",
+        "Run_Number": 1,
+        "Simulation_Timestep": 30.41667,
+        "Simulation_Duration": 5475,
+        
+        "Enable_Vital_Dynamics": 1,
+        "Enable_Birth": 0,
+        "Enable_Natural_Mortality": 1,
+        "Enable_Demographics_Builtin": 0,
+        "Demographics_Filenames": [
+            "demographics.json"
+        ],
+        "Enable_Demographics_Reporting": 0
+    }
+}

@@ -1,0 +1,73 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Individual_Selection_Type": "TARGET_NUM_INDIVIDUALS",
+                "Target_Num_Individuals": 10,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividualMalariaGenetics",
+                    "Create_Nucleotide_Sequence_From": "BARCODE_STRING",
+                    "Barcode_String": "CCCCCC",
+                    "HRP_String": "C",
+                    "comment2": "this is HPR-negative outbreak",
+                    "comment": "A means HRP-positive, any other letter (CTG) is HRP-negative"
+                }
+            }
+        },
+                {
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Individual_Selection_Type": "TARGET_NUM_INDIVIDUALS",
+                "Target_Num_Individuals": 70,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividualMalariaGenetics",
+                    "Create_Nucleotide_Sequence_From": "BARCODE_STRING",
+                    "Barcode_String": "CCCCCC",
+                    "HRP_String": "A",
+                    "comment2": "this is HPR-positive outbreak",
+                    "comment": "A means HRP-positive, any other letter (CTG) is HRP-negative"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 19,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Number_Repetitions": -1, 
+                "Timesteps_Between_Repetitions": 5,
+                "Intervention_Config": {
+                        "class": "MalariaDiagnostic",
+                        "Cost_To_Consumer": 0, 
+                        "Diagnostic_Type": "PF_HRP2", 
+                        "Detection_Threshold": 0, 
+                        "Event_Or_Config": "Config", 
+                        "Positive_Diagnosis_Config": {
+                            "class": "AntimalarialDrug",
+                            "Cost_To_Consumer": 1, 
+                            "Drug_Type": "Chloroquine"
+                        }
+                }
+            }
+        }
+    ]
+}
+

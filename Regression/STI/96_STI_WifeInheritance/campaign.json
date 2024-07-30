@@ -1,0 +1,189 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender", 
+                "Target_Gender" : "MALE",
+                "Demographic_Coverage": 0.05,
+                "Intervention_Config": {
+                    "class": "PropertyValueChanger",
+                    "Target_Property_Key" : "IsPurifier",
+                    "Target_Property_Value" : "YES"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender", 
+                "Target_Gender" : "MALE",
+                "Demographic_Coverage": 0.10,
+                "Intervention_Config": {
+                    "class": "PropertyValueChanger",
+                    "Target_Property_Key" : "CanInheritWives",
+                    "Target_Property_Value" : "YES"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 2, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 0.10,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Incubation_Period_Override": 0
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition_List": [
+                        "Started_Purification"
+                    ],
+                    "Demographic_Coverage": 1.0,
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "PropertyValueChanger",
+                        "Target_Property_Key" : "WifeInheritanceStage",
+                        "Target_Property_Value" : "PURIFICATION"
+                    }
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition_List": [
+                        "Started_Inherited_Marriage"
+                    ],
+                    "Demographic_Coverage": 1.0,
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "PropertyValueChanger",
+                        "Target_Property_Key" : "WifeInheritanceStage",
+                        "Target_Property_Value" : "INHERITED_MARRIAGE"
+                    }
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 3,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition_List": [
+                        "ExitedRelationship"
+                    ],
+                    "Target_Demographic": "ExplicitGender", 
+                    "Target_Gender" : "FEMALE",
+                    "Targeting_Config": {
+                        "class" : "HasRelationship",
+                        "Is_Equal_To": 1,
+                        "Of_Relationship_Type":  "MARITAL",
+                        "That_Recently":  "ENDED",
+                        "That_Recently_Ended_Due_To": "PARTNER_DIED",
+                        "With_Partner_Who" : {
+                        }
+                    },
+                    "Demographic_Coverage": 1.0,
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "DelayedIntervention",
+                        "Intervention_Name": "WaitToStartPurifyingRelationship",
+                        "Delay_Period_Distribution": "UNIFORM_DISTRIBUTION",
+                        "Delay_Period_Min": 30,
+                        "Delay_Period_Max": 60,
+                        "Actual_IndividualIntervention_Configs": [
+                            {
+                                "class": "StartNewRelationship",
+                                "Relationship_Type": "COMMERCIAL",
+                                "Partner_Has_IP" : "IsPurifier:YES",
+                                "Condom_Usage_Parameters_Type": "SPECIFY_USAGE",
+                                "Condom_Usage_Sigmoid" : {
+                                    "Min": 0.0,
+                                    "Max": 0.0,
+                                    "Mid": 2000,
+                                    "Rate": 0.0
+                                },
+                                "Relationship_Created_Event": "Started_Purification"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 3,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition_List": [
+                        "ExitedRelationship"
+                    ],
+                    "Target_Demographic": "ExplicitGender", 
+                    "Target_Gender" : "FEMALE",
+                    "Property_Restrictions_Within_Node": [ { "WifeInheritanceStage": "PURIFICATION" } ], 
+                    "Targeting_Config": {
+                        "class" : "HasRelationship",
+                        "Is_Equal_To": 1,
+                        "Of_Relationship_Type":  "COMMERCIAL",
+                        "That_Recently":  "ENDED",
+                        "That_Recently_Ended_Due_To": "NA",
+                        "With_Partner_Who" : {
+                            "class": "HasIP",
+                            "Is_Equal_To": 1,
+                            "IP_Key_Value": "IsPurifier:YES"
+                        }
+                    },
+                    "Demographic_Coverage": 1.0,
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "StartNewRelationship",
+                        "Relationship_Type": "MARITAL",
+                        "Partner_Has_IP" : "CanInheritWives:YES",
+                        "Condom_Usage_Parameters_Type": "USE_DEFAULT",
+                        "Relationship_Created_Event": "Started_Inherited_Marriage"
+                    }
+                }
+            }
+        }
+    ]
+}

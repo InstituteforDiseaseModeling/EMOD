@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -14,8 +6,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Interventions.h"
 #include "InterventionFactory.h"
 #include "Configuration.h"
-#include "IWaningEffect.h"
 #include "Configure.h"
+#include "InsecticideWaningEffect.h"
 
 namespace Kernel
 {
@@ -38,9 +30,12 @@ namespace Kernel
         virtual void SetContextTo(IIndividualHumanContext *context) override;
         virtual void Update(float dt) override;
 
+        // IReportInterventionData
+        virtual ReportInterventionData GetReportInterventionData() const override;
+
     protected:
-        IWaningEffect* killing_effect;
-        IVectorInterventionEffectsSetter *ivies; // aka individual vector interventions container
+        IInsecticideWaningEffect* m_pInsecticideWaningEffect;
+        IVectorInterventionEffectsSetter* m_pIVIES; // aka individual vector interventions container
 
         DECLARE_SERIALIZABLE(Ivermectin);
     };

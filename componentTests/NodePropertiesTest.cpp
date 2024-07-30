@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include <memory> // unique_ptr
@@ -81,7 +73,7 @@ SUITE(NodePropertiesTest)
             return next;
         }
 
-        void TestReadingError( int lineNumber, bool isNodePropertiesError, bool white_list_enabled, const std::string& rDemogFilename, const std::string& rExpMsg )
+        void TestReadingError( int lineNumber, bool isNodePropertiesError, const std::string& rDemogFilename, const std::string& rExpMsg )
         {
             // --------------------
             // --- Initialize test
@@ -94,7 +86,7 @@ SUITE(NodePropertiesTest)
 
             try
             {
-                NPFactory::GetInstance()->Initialize( factory->GetNodePropertiesJson(), white_list_enabled );
+                NPFactory::GetInstance()->Initialize( factory->GetNodePropertiesJson() );
                 CHECK_LN( !isNodePropertiesError, lineNumber ); // if node property error, it shouldn't get here
             }
             catch( DetailedException& de )
@@ -150,7 +142,7 @@ SUITE(NodePropertiesTest)
         nodeid_suid_map_t node_id_suid_map;
         unique_ptr<NodeDemographicsFactory> factory( NodeDemographicsFactory::CreateNodeDemographicsFactory(&node_id_suid_map, Environment::getInstance()->Config, true, 10, 1000 ) );
 
-        NPFactory::GetInstance()->Initialize( factory->GetNodePropertiesJson(), true );
+        NPFactory::GetInstance()->Initialize( factory->GetNodePropertiesJson() );
 
         vector<uint32_t> nodeIDs = factory->GetNodeIDs();
         for (uint32_t node_id : nodeIDs)
@@ -255,67 +247,55 @@ SUITE(NodePropertiesTest)
 
     TEST_FIXTURE(NodePropertiesTestFixture, TestMissingValues)
     {
-        TestReadingError( __LINE__, true, true, "testdata/NodePropertiesTest/demog_TestMissingValues.json",
+        TestReadingError( __LINE__, true, "testdata/NodePropertiesTest/demog_TestMissingValues.json",
                           "Failed to find Values in map demographics[NodeProperties][0]");
     }
 
     TEST_FIXTURE(NodePropertiesTestFixture, TestMissingInitialDistribution)
     {
-        TestReadingError( __LINE__, true, true, "testdata/NodePropertiesTest/demog_TestMissingInitialDistribution.json",
+        TestReadingError( __LINE__, true, "testdata/NodePropertiesTest/demog_TestMissingInitialDistribution.json",
                           "Failed to find Initial_Distribution in map demographics[NodeProperties][0]");
     }
 
     TEST_FIXTURE(NodePropertiesTestFixture, TestInvalidNumInitialDistribution)
     {
-        TestReadingError( __LINE__, true, true, "testdata/NodePropertiesTest/demog_TestInvalidNumInitialDistribution.json",
+        TestReadingError( __LINE__, true, "testdata/NodePropertiesTest/demog_TestInvalidNumInitialDistribution.json",
                           "Number of Values in Values (2) needs to be the same as number of values in Initial_Distribution (3).");
     }
 
     TEST_FIXTURE(NodePropertiesTestFixture, TestDuplicateValues)
     {
-        TestReadingError( __LINE__, true, true, "testdata/NodePropertiesTest/demog_TestDuplicateValues.json",
+        TestReadingError( __LINE__, true, "testdata/NodePropertiesTest/demog_TestDuplicateValues.json",
                           "demographics[NodeProperties][0] with property=Risk has a duplicate value = HIGH");
     }
 
     TEST_FIXTURE(NodePropertiesTestFixture, TestZeroValues)
     {
-        TestReadingError( __LINE__, true, true, "testdata/NodePropertiesTest/demog_TestZeroValues.json",
+        TestReadingError( __LINE__, true, "testdata/NodePropertiesTest/demog_TestZeroValues.json",
                           "demographics[NodeProperties][0][Values] (property=Risk) cannot have zero values.");
     }
 
     TEST_FIXTURE(NodePropertiesTestFixture, TestInvalidInitialDistribution)
     {
-        TestReadingError( __LINE__, true, true, "testdata/NodePropertiesTest/demog_TestInvalidInitialDistribution.json",
+        TestReadingError( __LINE__, true, "testdata/NodePropertiesTest/demog_TestInvalidInitialDistribution.json",
                           "The values in demographics[NodeProperties][1][Initial_Distribution] (property=Risk) add up to 1.45.  They must add up to 1.0");
-    }
-
-    TEST_FIXTURE(NodePropertiesTestFixture, TestNotInWhiteList)
-    {
-        TestReadingError( __LINE__, true, true, "testdata/NodePropertiesTest/demog_TestNotInWhiteList.json",
-                          "Invalid NodeProperties key 'NonWhiteListProperty' found in demographics file. Use one of: 'Accessibility', 'Geographic', 'HasActiveTB', 'InterventionStatus', 'Place', 'QualityOfCare', 'Risk'");
-    }
-
-    TEST_FIXTURE(NodePropertiesTestFixture, TestTooManyProperties)
-    {
-        TestReadingError( __LINE__, true, true, "testdata/NodePropertiesTest/demog_TestTooManyProperties.json",
-                          "Too many NodeProperties (4). Max is 3.");
     }
 
     TEST_FIXTURE( NodePropertiesTestFixture, TestNodePropertyValues_UnknownKey )
     {
-        TestReadingError( __LINE__, false, true, "testdata/NodePropertiesTest/demog_TestNodePropertyValues_UnknownKey.json",
+        TestReadingError( __LINE__, false, "testdata/NodePropertiesTest/demog_TestNodePropertyValues_UnknownKey.json",
                           "Could not find the key(XXX) for the key-value=XXX:URBAN.  Possible keys are: InterventionStatus, Place" );
     }
 
     TEST_FIXTURE( NodePropertiesTestFixture, TestNodePropertyValues_UnknownValue )
     {
-        TestReadingError( __LINE__, false, true, "testdata/NodePropertiesTest/demog_TestNodePropertyValues_UnknownValue.json",
+        TestReadingError( __LINE__, false, "testdata/NodePropertiesTest/demog_TestNodePropertyValues_UnknownValue.json",
                           "Could not find the value(XXX) for the key(Place).  Possible values for the key are: RURAL, URBAN" );
     }
 
     TEST_FIXTURE( NodePropertiesTestFixture, TestNodePropertyValues_BadFormat )
     {
-        TestReadingError( __LINE__, false, true, "testdata/NodePropertiesTest/demog_TestNodePropertyValues_BadFormat.json",
+        TestReadingError( __LINE__, false, "testdata/NodePropertiesTest/demog_TestNodePropertyValues_BadFormat.json",
                           "Invalid NodeProperties Key-Value string = 'XXX-BadFormat-XXX'.  Format is 'key:value'." );
     }
 }

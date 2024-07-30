@@ -1,0 +1,74 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "COMMENT": "Start testing everyone every day",
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Number_Repetitions" : -1,
+                "Timesteps_Between_Repetitions": 1,
+                "Demographic_Coverage": 1,
+                "Target_Demographic": "Everyone",
+                "Intervention_Config": {
+                    "class": "HIVRapidHIVDiagnostic",
+                    "Sensitivity_Type": "VERSUS_TIME",
+                    "Sensitivity_Versus_Time" : {
+                        "Times":  [ 0.0, 9.0, 10.0, 19.0, 20.0, 29.0, 30.0, 39.0, 40.0, 49.0, 50.0, 59.0, 60.0, 69.0, 70.0, 79.0, 80.0, 89.0, 90.0,  99.0, 100.0 ],
+                        "Values": [ 1.0, 1.0,  0.9,  0.9, 0.8,   0.8,  0.7,  0.7,  0.6,  0.6,  0.5,  0.5,  0.4,  0.4,  0.3,  0.3,  0.2,  0.2,  0.1,   0.1,   0.0 ]
+                    },
+                    "Positive_Diagnosis_Event": "Tested_Positive",
+                    "Negative_Diagnosis_Event": "Tested_Negative"
+                }
+            }
+        },
+        {
+            "COMMENT": "Infect everyone so we can start seeing the sensitivity start working.",
+            "class": "CampaignEvent",
+            "Start_Day": 50,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1.0,
+                "Target_Demographic": "Everyone",
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Incubation_Period_Override": 0
+                }
+            }
+        },
+        {
+            "COMMENT": "Infect everyone so we can start seeing the sensitivity start working.",
+            "class": "CampaignEvent",
+            "Start_Day": 51,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1.0,
+                "Target_Demographic": "Everyone",
+                "Intervention_Config": {
+                    "class": "AntiretroviralTherapy",
+                    "Cost_To_Consumer" : 1,
+                    "ART_Multiplier_On_Transmission_Prob_Per_Act"             : 0.08,
+                    "ART_Is_Active_Against_Mortality_And_Transmission"        : 1,
+                    "Days_To_Achieve_Viral_Suppression"                       : 183.0,
+                    "ART_CD4_at_Initiation_Saturating_Reduction_in_Mortality" : 1050.0,
+                    "ART_Survival_Baseline_Hazard_Weibull_Shape"              : 4.34,
+                    "ART_Survival_Baseline_Hazard_Weibull_Scale"              : 12300.83,
+                    "ART_Survival_Hazard_Ratio_Female"                        : 0.6775,
+                    "ART_Survival_Hazard_Ratio_Age_Over_40Yr"                 : 1.4309,
+                    "ART_Survival_WHO_Stage_Threshold_For_Cox"                : 3,
+                    "ART_Survival_Hazard_Ratio_WHO_Stage_3Plus"               : 2.7142,
+                    "ART_Survival_Hazard_Ratio_CD4_Slope"                     : -0.00758256281931556,
+                    "ART_Survival_Hazard_Ratio_CD4_Intercept"                 : 0.282851687024819,
+                    "ART_Survival_Hazard_Ratio_Body_Weight_Kg_Slope"          : -0.0731529900006081,
+                    "ART_Survival_Hazard_Ratio_Body_Weight_Kg_Intercept"      : 3.05043211490958
+                }
+            }
+        }
+    ]
+}

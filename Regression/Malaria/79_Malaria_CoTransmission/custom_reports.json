@@ -1,0 +1,30 @@
+{
+    "Use_Defaults": 0,
+    "Reports": [
+        {
+            "class": "ReportInfectionStatsMalaria",
+            "Start_Day": 110,
+            "End_Day": 210,
+            "Include_Column_Hepatocyte": 0,
+            "Include_Column_IRBC": 1,
+            "Include_Column_Gametocyte": 0,
+            "Include_Data_Threshold_Hepatocytes": 0,
+            "Include_Data_Threshold_IRBC": 1000,
+            "Include_Data_Threshold_Gametocytes": 0,
+            "Reporting_Interval": 30
+        },
+        {
+            "class": "ReportSimpleMalariaTransmission",
+            "Filename_Suffix": "",
+            "COMMENT": "Start_Day and End_Day are set so that we test getting a subset of the run",
+            "Start_Day": 110,
+            "End_Day": 210,
+            "Node_IDs_Of_Interest": [],
+            "Min_Age_Years": 0.0,
+            "Max_Age_Years": 1000.0,
+            "Must_Have_IP_Key_Value": "",
+            "Must_Have_Intervention": "",
+            "Include_Human_To_Vector_Transmission": 0
+        }
+    ]
+}

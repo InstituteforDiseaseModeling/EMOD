@@ -1,30 +1,26 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "ReportVector.h" // for base class
 #include "Log.h" // for base class
 #include "VectorContexts.h"
-#include "VectorPopulation.h"
 #include "INodeContext.h"
 
 SETUP_LOGGING( "VectorReporter" )
 
-static const std::string _adult_vectors_label( "Adult Vectors" );
-static const std::string _infectious_vectors_label( "Infectious Vectors" );
-static const std::string _daily_eir_label( "Daily EIR" );
-static const std::string _daily_bites_per_human_label( "Daily Bites per Human" );
-
-namespace Kernel {
-
+namespace Kernel
+{
 ReportVector::ReportVector()
-{}
+    : Report()
+    , adult_vectors_id()
+    , infectious_vectors_id()
+    , daily_EIR_id()
+    , daily_HBR_id()
+{
+    adult_vectors_id      = AddChannel( "Adult Vectors"         );
+    infectious_vectors_id = AddChannel( "Infectious Vectors"    );
+    daily_EIR_id          = AddChannel( "Daily EIR"             );
+    daily_HBR_id          = AddChannel( "Daily Bites per Human" );
+}
 
 void
 ReportVector::populateSummaryDataUnitsMap(
@@ -35,10 +31,10 @@ ReportVector::populateSummaryDataUnitsMap(
     Report::populateSummaryDataUnitsMap(units_map);
 
     // Additional vector channels
-    units_map[_adult_vectors_label]         = "Vectors";
-    units_map[_infectious_vectors_label]    = "Infectious %";
-    units_map[_daily_eir_label]             = "Infectious Bites/Day";
-    units_map[_daily_bites_per_human_label] = "Bites/Day";
+    units_map[ adult_vectors_id.GetName()      ] = "Vectors";
+    units_map[ infectious_vectors_id.GetName() ] = "Infectious %";
+    units_map[ daily_EIR_id.GetName()          ] = "Infectious Bites/Day";
+    units_map[ daily_HBR_id.GetName()          ] = "Bites/Day";
 }
 
 void
@@ -49,10 +45,10 @@ ReportVector::postProcessAccumulatedData()
 
     // careful with order, we normalize 'in place', so channels used as
     // normalization 'bases' should be normalized last.
-    normalizeChannel(_infectious_vectors_label,    "Adult Vectors");
-    normalizeChannel(_adult_vectors_label,         (float)_nrmSize);
-    normalizeChannel(_daily_eir_label,             _nrmSize);
-    normalizeChannel(_daily_bites_per_human_label, (float)_nrmSize);
+    normalizeChannel( infectious_vectors_id.GetName(), adult_vectors_id.GetName() );
+    normalizeChannel( adult_vectors_id.GetName(),      (float)_nrmSize            );
+    normalizeChannel( daily_EIR_id.GetName(),          stat_pop_id.GetName()      );
+    normalizeChannel( daily_HBR_id.GetName(),          stat_pop_id.GetName()      );
 }
 
 void
@@ -77,17 +73,22 @@ ReportVector::LogNodeData(
 
     for (const auto vectorpopulation : vectorPopulations)
     {
-        adult_vectors      += (float)( vectorpopulation->getAdultCount() + vectorpopulation->getInfectedCount( nullptr ) + vectorpopulation->getInfectiousCount( nullptr ) );
-        infectious_vectors += (float)( vectorpopulation->getInfectiousCount( nullptr ) );
+        adult_vectors += float( vectorpopulation->getCount( VectorStateEnum::STATE_ADULT ) );
+        adult_vectors += float( vectorpopulation->getCount( VectorStateEnum::STATE_INFECTED ) );
+        adult_vectors += float( vectorpopulation->getCount( VectorStateEnum::STATE_INFECTIOUS ) );
+
+        infectious_vectors += (float)(vectorpopulation->getCount( VectorStateEnum::STATE_INFECTIOUS ));
 
         daily_eir          += vectorpopulation->GetEIRByPool(Kernel::VectorPoolIdEnum::BOTH_VECTOR_POOLS);
         daily_hbr          += vectorpopulation->GetHBRByPool(Kernel::VectorPoolIdEnum::BOTH_VECTOR_POOLS);
     }
 
-    Accumulate(_adult_vectors_label,         adult_vectors);
-    Accumulate(_infectious_vectors_label,    infectious_vectors);
-    Accumulate(_daily_eir_label,             daily_eir);
-    Accumulate(_daily_bites_per_human_label, daily_hbr);
+    float node_pop = pNC->GetStatPop();
+
+    Accumulate( adult_vectors_id,      adult_vectors          );
+    Accumulate( infectious_vectors_id, infectious_vectors     );
+    Accumulate( daily_EIR_id,          (daily_eir * node_pop) );
+    Accumulate( daily_HBR_id,          (daily_hbr * node_pop) );
 }
 
 }

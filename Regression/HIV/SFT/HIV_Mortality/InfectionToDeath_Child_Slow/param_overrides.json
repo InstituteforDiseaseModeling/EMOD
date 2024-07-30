@@ -1,0 +1,19 @@
+{
+    "parameters": {
+        "Config_Name": "HIVMortality_InfectionToDeath_Child_Slow",
+        "Demographics_Filenames": [
+            "../../../input/SA_UN_demographics_extrapolated_WithProperties_Smoothed.json",
+            "../../../input/PFA_overlay.json"
+        ],
+        "Enable_Birth": 0,
+        "Enable_Natural_Mortality": 0,
+        "HIV_Age_Max_for_Child_Survival_Function": 75.0,
+        "HIV_Child_Survival_Rapid_Progressor_Fraction": 0,
+        "HIV_Child_Survival_Slow_Progressor_Scale": 16.1,
+        "HIV_Child_Survival_Slow_Progressor_Shape": 2,
+        "Simulation_Duration": 2,
+        "logLevel_IndividualHIV": "VALID",
+		"Run_Number": 0
+    },
+    "Default_Config_Path": "defaults/hiv_sft_default_config.json"
+}

@@ -51,7 +51,7 @@
      }, 
      "OUTPUT": {
           "Enable_Spatial_Output": 1,
-          "Spatial_Output_Channels": ["Population", "Prevalence", "New_Diagnostic_Prevalence", "Daily_EIR"]
+          "Spatial_Output_Channels": ["Population", "Prevalence", "PCR_Prevalence", "Daily_EIR"]
      },
      "PRIMARY": {
           "Config_Name": "24_Malaria_Garki", 
@@ -63,10 +63,11 @@
      "SAMPLING": {
           "Base_Individual_Sample_Rate": 0.1
      }, 
-     "Vector_Species_Params": {
-          "arabiensis": {
-               "Indoor_Feeding_Fraction": 1
-          }
-     }, 
+     "Vector_Species_Params": [
+         {
+             "Name": "arabiensis",
+             "Indoor_Feeding_Fraction": 1
+         }
+     ],
      "logLevel_VectorPopulation": "WARNING"
 }

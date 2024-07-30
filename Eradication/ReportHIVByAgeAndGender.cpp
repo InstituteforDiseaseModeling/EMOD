@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
@@ -17,6 +9,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "ISimulation.h"
 #include "Simulation.h" // for base_year
 #include "IIndividualHumanHIV.h"
+#include "IInfectionHIV.h"
 #include "SusceptibilityHIV.h"
 #include "EventTrigger.h"
 #include "NodeEventContext.h"
@@ -36,6 +29,7 @@ std::string DIM_IP     = "IP_Key:";
 std::string DIM_INTV   = "HasIntervention:";
 std::string DIM_CIRC   = "IsCircumcised";
 std::string DIM_HIV    = "HasHIV";
+std::string DIM_STAGE  = "HIV_Stage";
 std::string DIM_ART    = "On_Art_Dim";
 std::string DIM_AGE    = "Age";
 
@@ -52,7 +46,8 @@ namespace Kernel
         , dim_age_bins()
         , dim_is_circumcised(false)
         , dim_has_hiv(false)
-        , dim_on_art(false)
+        , dim_hiv_stage( false )
+        , dim_on_art( false )
         , dim_ip_key_list()
         , dim_intervention_name_list()
         , data_has_transmitters(false)
@@ -116,6 +111,11 @@ namespace Kernel
                            Report_HIV_ByAgeAndGender_Collect_HIV_Data_DESC_TEXT,
                            false );
 
+        initConfigTypeMap( "Report_HIV_ByAgeAndGender_Collect_HIV_Stage_Data",
+                           &dim_hiv_stage,
+                           Report_HIV_ByAgeAndGender_Collect_HIV_Stage_Data_DESC_TEXT,
+                           false );
+
         initConfigTypeMap( "Report_HIV_ByAgeAndGender_Collect_On_Art_Data",
                            &dim_on_art,
                            Report_HIV_ByAgeAndGender_Collect_On_Art_Data_DESC_TEXT,
@@ -125,8 +125,9 @@ namespace Kernel
                            &dim_ip_key_list,
                            Report_HIV_ByAgeAndGender_Collect_IP_Data_DESC_TEXT );
 
+        std::vector<std::string> tmp_intervention_name_list;
         initConfigTypeMap( "Report_HIV_ByAgeAndGender_Collect_Intervention_Data",
-                           &dim_intervention_name_list,
+                           &tmp_intervention_name_list,
                            Report_HIV_ByAgeAndGender_Collect_Intervention_Data_DESC_TEXT );
 
         // -------------------------
@@ -142,8 +143,9 @@ namespace Kernel
                            Report_HIV_ByAgeAndGender_Stratify_Infected_By_CD4_DESC_TEXT,
                            false );
 
+        std::string tmp_intervention_name;
         initConfigTypeMap( "Report_HIV_ByAgeAndGender_Has_Intervention_With_Name",
-                           &data_name_of_intervention_to_count,
+                           &tmp_intervention_name,
                            Report_HIV_ByAgeAndGender_Has_Intervention_With_Name_DESC_TEXT,
                            "" );
 
@@ -163,6 +165,16 @@ namespace Kernel
 
         if( ret )
         {
+            if( !tmp_intervention_name.empty() )
+            {
+                data_name_of_intervention_to_count = tmp_intervention_name;
+            }
+
+            for( auto tmp_name : tmp_intervention_name_list )
+            {
+                dim_intervention_name_list.push_back( InterventionName( tmp_name ) );
+            }
+
             if( start_year < Simulation::base_year )
             {
                 start_year = Simulation::base_year;
@@ -197,6 +209,26 @@ namespace Kernel
                         throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__,  ss.str().c_str() );
                     }
                     prev_age = dim_age_bins[i];
+                }
+
+                // -------------------------------------------------------------------------------
+                // --- Check that dim_hiv_stage is not on while either dim_has_hiv or dim_on_art
+                // --- to avoid having lots of rows of zeros.
+                // -------------------------------------------------------------------------------
+                const char* p_msg = "\nHaving both flags on will result in many rows of only zeros.\nHIV Stage will give all of the data.";
+                if( dim_hiv_stage && dim_on_art )
+                {
+                    throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__,
+                                                            "Report_HIV_ByAgeAndGender_Collect_HIV_Stage_Data", true,
+                                                            "Report_HIV_ByAgeAndGender_Collect_On_Art_Data", true,
+                                                            p_msg );
+                }
+                if( dim_hiv_stage && dim_has_hiv )
+                {
+                    throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__,
+                                                            "Report_HIV_ByAgeAndGender_Collect_HIV_Stage_Data", true,
+                                                            "Report_HIV_ByAgeAndGender_Collect_HIV_Data", true,
+                                                            p_msg );
                 }
             }
 
@@ -296,6 +328,12 @@ namespace Kernel
         true_false_values.push_back("0");
         true_false_values.push_back("1");
 
+        std::vector<std::string> hiv_stages;
+        for( int i = 0; i < HIVInfectionStage::pairs::count(); ++i )
+        {
+            hiv_stages.push_back( HIVInfectionStage::pairs::get_keys()[i] );
+        }
+
         // ----------------------------------------------------------------------------
         // --- Setup the dimensions.  This is used to define the way the map key is
         // --- genderated and the order of the columns and values in the output.
@@ -341,11 +379,12 @@ namespace Kernel
 
         for( int i = 0; i < dim_intervention_name_list.size(); ++i )
         {
-            AddDimension( DIM_INTV+dim_intervention_name_list[i], true, true_false_values, &num_dimensions );
+            AddDimension( DIM_INTV+dim_intervention_name_list[i].ToString(), true, true_false_values, &num_dimensions);
         }
 
         AddDimension( DIM_CIRC,   dim_is_circumcised,       true_false_values,         &num_dimensions );
         AddDimension( DIM_HIV ,   dim_has_hiv,              true_false_values,         &num_dimensions );
+        AddDimension( DIM_STAGE , dim_hiv_stage,            hiv_stages,                &num_dimensions );
         AddDimension( DIM_ART ,   dim_on_art,               true_false_values,         &num_dimensions );
         AddDimension( DIM_AGE,   (dim_age_bins.size() > 0), GetValues( dim_age_bins ), &num_dimensions );
 
@@ -439,7 +478,7 @@ namespace Kernel
 
         if( data_name_of_intervention_to_count.size() > 0 )
         {
-            header << ", " << "HasIntervention(" << data_name_of_intervention_to_count << ")";
+            header << ", " << "HasIntervention(" << data_name_of_intervention_to_count.ToString() << ")";
         }
 
         for( auto ev : data_event_list )
@@ -459,9 +498,21 @@ namespace Kernel
                 header << "," << "Ever (" << RelationshipType::pairs::get_keys()[i] << ")";
             }
 
+            for( int i = 0; i < RelationshipType::COUNT; ++i )
+            {
+                header << "," << "Considering (" << RelationshipType::pairs::get_keys()[i] << ")";
+            }
+
+            for( int i = 0; i < RelationshipType::COUNT; ++i )
+            {
+                header << "," << "Available for Relationship (" << RelationshipType::pairs::get_keys()[i] << ")";
+            }
+
             header << "," << "Has Concurrent Partners";
             header << "," << "Current Partners";
             header << "," << "Lifetime Partners";
+            header << "," << "Has Debuted";
+            header << "," << "Had First Coital Act";
         }
 
         if( data_has_concordant_relationships )
@@ -585,9 +636,21 @@ namespace Kernel
                     GetOutputStream() << "," << data.ever_in_relationship_by_type[ i ];
                 }
 
+                for( int i = 0; i < RelationshipType::COUNT; ++i )
+                {
+                    GetOutputStream() << "," << data.considering_relationship_by_type[i];
+                }
+
+                for( int i = 0; i < RelationshipType::COUNT; ++i )
+                {
+                    GetOutputStream() << "," << data.available_relationship_by_type[i];
+                }
+
                 GetOutputStream() << "," << data.has_concurrent_partners;
                 GetOutputStream() << "," << data.num_partners_current_sum;
                 GetOutputStream() << "," << data.num_partners_lifetime_sum;
+                GetOutputStream() << "," << data.num_has_debuted;
+                GetOutputStream() << "," << data.num_first_coital_act;
             }
 
             if( data_has_concordant_relationships )
@@ -662,20 +725,8 @@ namespace Kernel
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "individual", "IIndividualHIV", "IndividualHuman" );
         }
 
-        IIndividualHumanSTI* sti_individual = NULL;
-        if( individual->QueryInterface( GET_IID( IIndividualHumanSTI ), (void**)&sti_individual ) != s_OK )
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "individual", "IIndividualSTI", "IndividualHuman" );
-        }
-
-        IHIVMedicalHistory * med_parent = nullptr;
-        if ( individual->GetInterventionsContext()->QueryInterface(GET_IID(IHIVMedicalHistory), (void**)&med_parent) != s_OK)
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__,
-                                           "individual->GetInterventionsContext()",
-                                           "IHIVMedicalHistory",
-                                           "IIndividualHumanInterventionsContext" );
-        }
+        IIndividualHumanSTI* sti_individual = hiv_individual->GetIndividualHumanSTI();
+        IHIVMedicalHistory * med_parent = hiv_individual->GetMedicalHistory();
 
         float mc_weight = individual->GetMonteCarloWeight();
 
@@ -729,7 +780,7 @@ namespace Kernel
         if( diagnosed )
             data.diagnosed += mc_weight;
 
-        if( data_name_of_intervention_to_count.length() > 0 )
+        if( data_name_of_intervention_to_count.size() > 0 )
         {
             auto existing_vaccines = individual->GetInterventionsContext()->ContainsExistingByName( data_name_of_intervention_to_count );
             if( existing_vaccines )
@@ -738,7 +789,7 @@ namespace Kernel
             }
         }
 
-        RelationshipSet_t &relationships =  sti_individual->GetRelationships();
+        const std::vector<IRelationship*>& relationships =  sti_individual->GetRelationships();
         std::vector<uint32_t> rel_count(RelationshipType::COUNT, 0.0f);
 
         for (auto relationship : relationships)
@@ -765,17 +816,25 @@ namespace Kernel
         }
 
         // Current num rels SUM
-        for( int i = 0 ; i < RelationshipType::COUNT ; ++i )
+        for( int i = 0; i < RelationshipType::COUNT; ++i )
         {
             if( rel_count[i] > 0 )
             {
-                data.currently_in_relationship_by_type[ i ] += mc_weight;
+                data.currently_in_relationship_by_type[i] += mc_weight;
             }
 
             if( sti_individual->GetLifetimeRelationshipCount( (RelationshipType::Enum)i ) > 0 )
             {
                 data.ever_in_relationship_by_type[i] += mc_weight;
             }
+        }
+
+        std::vector<unsigned int> queued_relationships = sti_individual->GetQueuedRelationships();
+        std::vector<bool> availiable_relationships = sti_individual->GetAvailableRelationships();
+        for( int i = 0; i < RelationshipType::COUNT; ++i )
+        {
+            data.considering_relationship_by_type[i] += queued_relationships[i];
+            data.available_relationship_by_type[i] += availiable_relationships[i];
         }
 
         if( relationships.size() > 1)
@@ -785,6 +844,8 @@ namespace Kernel
 
         data.num_partners_current_sum += mc_weight * relationships.size();
         data.num_partners_lifetime_sum += mc_weight * sti_individual->GetLifetimeRelationshipCount();
+        data.num_has_debuted += mc_weight * sti_individual->IsPostDebut();
+        data.num_first_coital_act += mc_weight * (sti_individual->GetTotalCoitalActs() > 0);
     }
 
     bool ReportHIVByAgeAndGender::notifyOnEvent( IIndividualHumanEventContext *context, const EventTrigger& trigger )
@@ -821,7 +882,7 @@ namespace Kernel
             // --- a partner would decide to migrate and terminate the relationship, and then
             // --- the transmission report would try to update based on new infections."
             // --- We added this new event so we could capture the state of the person when
-            // --- the infection occured.  One should note that one of the people in the relationship
+            // --- the infection occurred.  One should note that one of the people in the relationship
             // --- might not have had their age updated and could appear in a different age bin.
             // --- This did not occur when using NewInfectionEvent.
             // ---------------------------------------------------------------------------------------
@@ -849,18 +910,22 @@ namespace Kernel
         // ----------------------------------------------
         // --- Find partner that transmitted the disease
         // ----------------------------------------------
-        IIndividualHumanSTI* p_transmitter = ReportUtilitiesSTI::GetTransmittingPartner( recipientContext );
-        if( p_transmitter == nullptr )
+        IIndividualHumanSTI* p_receipient = nullptr;
+        if (recipientContext->QueryInterface(GET_IID(IIndividualHumanSTI), (void**)&p_receipient) != s_OK)
+        {
+            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "recipientContext", "IIndividualHumanSTI", "IIndividualHuman" );
+        }
+
+        IRelationship* p_transmitting_rel = ReportUtilitiesSTI::GetTransmittingRelationship( recipientContext );
+        if( p_transmitting_rel == nullptr )
         {
             // Could be null if from outbreak, person recovered, or maternal transmission
             return;
         }
+        IIndividualHumanSTI* p_transmitter = p_transmitting_rel->GetPartner( p_receipient );
+        release_assert( p_transmitter != nullptr );
 
-        IIndividualHumanEventContext* p_transmitter_context = nullptr;
-        if (p_transmitter->QueryInterface(GET_IID(IIndividualHumanEventContext), (void**)&p_transmitter_context) != s_OK)
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "p_transmitter", "IIndividualHumanEventContext", "IIndividualHumanSTI" );
-        }
+        IIndividualHumanEventContext* p_transmitter_context = p_transmitter->GetIndividualHuman()->GetEventContext();
 
         uint64_t map_key = GetDataMapKey( p_transmitter_context );
         if( data_map.count( map_key ) == 0 )
@@ -874,23 +939,19 @@ namespace Kernel
 
     uint64_t ReportHIVByAgeAndGender::GetDataMapKey( IIndividualHumanEventContext* context )
     {
-        IIndividualHumanSTI* sti_individual = NULL;
-        if( context->QueryInterface( GET_IID( IIndividualHumanSTI ), (void**)&sti_individual ) != s_OK )
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context", "IIndividualSTI", "IndividualHuman" );
-        }
-
         IIndividualHumanHIV* hiv_individual = NULL;
         if( context->QueryInterface( GET_IID( IIndividualHumanHIV ), (void**)&hiv_individual ) != s_OK )
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context", "IIndividualHIV", "IndividualHuman" );
         }
+        IIndividualHumanSTI* sti_individual = hiv_individual->GetIndividualHumanSTI();
 
         int index_node   = context->GetNodeEventContext()->GetId().data;
         int index_age    = (dim_age_bins.size() > 0) ? ReportUtilities::GetAgeBin( context->GetAge(), dim_age_bins ) : 0;
         int index_gender = (context->GetGender() == Gender::FEMALE)                     ? 1 : 0;
         int index_circ   = sti_individual->IsCircumcised()                              ? 1 : 0;
         int index_hiv    = hiv_individual->HasHIV()                                     ? 1 : 0;
+        int index_stage  = hiv_individual->HasHIV()                                     ? int(hiv_individual->GetHIVInfection()->GetStage()) : 0;
         int index_art    = hiv_individual->GetHIVInterventionsContainer()->OnArtQuery() ? 1 : 0;
 
         // -------------------------------------------------------------------------------------------
@@ -930,7 +991,15 @@ namespace Kernel
             intervention_index_list.push_back( index );
         }
 
-        uint64_t map_key = GetDataMapKey( index_node, index_gender, index_age, index_circ, index_hiv, index_art, ip_value_index_list, intervention_index_list );
+        uint64_t map_key = GetDataMapKey( index_node,
+                                          index_gender,
+                                          index_age,
+                                          index_circ,
+                                          index_hiv,
+                                          index_stage,
+                                          index_art,
+                                          ip_value_index_list,
+                                          intervention_index_list);
         return map_key;
     }
 
@@ -941,6 +1010,7 @@ namespace Kernel
         int index_age    = dimension_map.at( DIM_AGE    )->index;
         int index_circ   = dimension_map.at( DIM_CIRC   )->index;
         int index_hiv    = dimension_map.at( DIM_HIV    )->index;
+        int index_stage  = dimension_map.at( DIM_STAGE  )->index;
         int index_art    = dimension_map.at( DIM_ART    )->index;
 
         std::vector<int> ip_value_index_list;
@@ -953,11 +1023,19 @@ namespace Kernel
         std::vector<int> intervention_index_list;
         for( auto name : dim_intervention_name_list )
         {
-            int index = dimension_map.at( DIM_INTV + name )->index;
+            int index = dimension_map.at( DIM_INTV + name.ToString() )->index;
             intervention_index_list.push_back( index );
         }
 
-        uint64_t map_key = GetDataMapKey( index_node, index_gender, index_age, index_circ, index_hiv, index_art, ip_value_index_list, intervention_index_list );
+        uint64_t map_key = GetDataMapKey( index_node,
+                                          index_gender,
+                                          index_age,
+                                          index_circ,
+                                          index_hiv,
+                                          index_stage,
+                                          index_art,
+                                          ip_value_index_list,
+                                          intervention_index_list);
         return map_key;
     }
 
@@ -967,6 +1045,7 @@ namespace Kernel
         int indexAge,
         int indexCirc,
         int indexHiv,
+        int indexStage,
         int indexArt,
         const std::vector<int>& rIPValueIndexList,
         const std::vector<int>& rInterventionIndexList )
@@ -981,6 +1060,7 @@ namespace Kernel
         release_assert( indexAge    < MAX_VALUES_PER_BIN );
         release_assert( indexCirc   < MAX_VALUES_PER_BIN );
         release_assert( indexHiv    < MAX_VALUES_PER_BIN );
+        release_assert( indexStage  < MAX_VALUES_PER_BIN );
         release_assert( indexArt    < MAX_VALUES_PER_BIN );
 
         uint64_t map_key = indexNode; // assume NodeId is the first index and is included
@@ -989,6 +1069,7 @@ namespace Kernel
         map_key += dimension_map.at( DIM_AGE    )->map_key_constant * indexAge;
         map_key += dimension_map.at( DIM_CIRC   )->map_key_constant * indexCirc;
         map_key += dimension_map.at( DIM_HIV    )->map_key_constant * indexHiv;
+        map_key += dimension_map.at( DIM_STAGE  )->map_key_constant * indexStage;
         map_key += dimension_map.at( DIM_ART    )->map_key_constant * indexArt;
 
         for( int key_index = 0; key_index < rIPValueIndexList.size(); key_index++ )
@@ -999,7 +1080,7 @@ namespace Kernel
 
         for( int index = 0; index < rInterventionIndexList.size(); index++ )
         {
-            const std::string& name = dim_intervention_name_list[ index ];
+            const std::string& name = dim_intervention_name_list[ index ].ToString();
             map_key += dimension_map.at( DIM_INTV+name )->map_key_constant * rInterventionIndexList[ index ];
         }
 

@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
@@ -100,8 +92,10 @@ namespace Kernel
         return ss.str();
     }
 
-    float ReportEventRecorderCoordinator::GetTime( IEventCoordinatorEventContext* pEntity ) const
+    std::string ReportEventRecorderCoordinator::GetTime( IEventCoordinatorEventContext* pEntity ) const
     {
-        return pEntity->GetTime().time;
+        std::stringstream ss;
+        ss << pEntity->GetTime().time;
+        return ss.str();
     }
 }

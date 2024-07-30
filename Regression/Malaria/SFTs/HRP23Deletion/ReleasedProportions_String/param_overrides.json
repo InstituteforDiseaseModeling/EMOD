@@ -1,0 +1,40 @@
+{
+    "Default_Config_Path": "defaults/malaria_genetics_science_default_config.json",
+    "DEMOGRAPHICS": {
+        "Demographics_Filenames": [
+            "Namawala_single_node_demographics.json"
+        ]
+    },
+    "PRIMARY": {
+        "Config_Name": "Malaria::SFTs::HRP23Deletion::ReleasedProportions_String",
+        "Geography": "Namawala",
+        "Run_Number": 2,
+        "Simulation_Duration": 20
+    },
+    "REPORTS": {
+        "Custom_Reports_Filename": "custom_reports.json",
+        "Custom_Individual_Events": [
+            "HRP2_FOUND",
+            "BLOOD_SMEAR_PARASITES_FOUND"
+        ]
+    },
+    "STRAIN_TRACKING": {
+        "Parasite_Genetics": {
+            "Barcode_Genome_Locations": [
+                1,
+                37983,
+                75966,
+                113949,
+                151933,
+                189916
+            ],
+            "HRP_Genome_Locations": [
+                253000
+            ],
+            "Var_Gene_Randomness_Type": "ALL_RANDOM"
+        }
+    },
+    "VECTOR": {
+        "x_Temporary_Larval_Habitat": 0.05
+    }
+}

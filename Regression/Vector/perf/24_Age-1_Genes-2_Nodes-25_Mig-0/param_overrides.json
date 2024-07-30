@@ -1,0 +1,50 @@
+{
+    "Default_Config_Path": "Vector/perf/default_config.json",
+    "parameters": {
+        "Config_Name": "24_Age-1_Genes-2_Nodes-25_Mig-0",
+        "Demographics_Filenames": [
+            "../Demographics_25.json"
+        ],
+        "Enable_Vector_Aging": 1,
+        "Python_Script_Path": "LOCAL",
+        "Vector_Species_Params": [
+            {
+                "Name": "arabiensis",
+                "Genes": [
+                    {
+                        "Is_Gender_Gene": 0,
+                        "Alleles": [
+                            {
+                                "Name": "a0",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.6
+                            },
+                            {
+                                "Name": "a1",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.4
+                            }
+                        ],
+                        "Mutations": []
+                    },
+                    {
+                        "Is_Gender_Gene": 0,
+                        "Alleles": [
+                            {
+                                "Name": "b0",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.3
+                            },
+                            {
+                                "Name": "b1",
+                                "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.7
+                            }
+                        ],
+                        "Mutations": []
+                    }
+                ]
+            }
+        ]
+    }
+}

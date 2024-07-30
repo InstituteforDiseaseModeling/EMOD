@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "UsageDependentBednet.h"
@@ -69,6 +61,11 @@ namespace Kernel
             json::Array config_array_json( qi.As<json::Array>() );
             for( int i = 0; i < config_array_json.Size(); i++ )
             {
+                if( (config_array_json[ i ].Type() == json::NULL_ELEMENT) || json_cast<const json::Object&>(config_array_json[ i ]).Empty() )
+                {
+                    throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, "'Usage_Config_List' element cannot be empty.");
+                }
+
                 json::QuickInterpreter config_qi( config_array_json[ i ] );
                 WaningConfig* p_config = new WaningConfig( &config_qi );
                 m_ConfigList.push_back( p_config );
@@ -138,10 +135,17 @@ namespace Kernel
 
         if( configured && !JsonConfigurable::_dryrun )
         {
+            int i = 0;
             for( auto p_config : usage_config_list.GetList() )
             {
-                IWaningEffect* p_effect = WaningEffectFactory::CreateInstance( *p_config );
+                std::stringstream param_name;
+                param_name << "Usage_Config_List[" << i << "]";
+
+                IWaningEffect* p_effect = WaningEffectFactory::getInstance()->CreateInstance( p_config->_json,
+                                                                                              inputJson->GetDataLocation(),
+                                                                                              param_name.str().c_str() );
                 m_UsageEffectList.push_back( p_effect );
+                ++i;
             }
         }
 
@@ -151,7 +155,7 @@ namespace Kernel
     bool UsageDependentBednet::ConfigureEvents( const Configuration * inputJson )
     {
         DistributionFunction::Enum expiration_function( DistributionFunction::CONSTANT_DISTRIBUTION );
-        initConfig("Expiration_Period_Distribution", expiration_function, inputJson, MetadataDescriptor::Enum("Expiration_Distribution_Type", UDBednet_Expiration_Distribution_Type_DESC_TEXT, MDD_ENUM_ARGS(DistributionFunction)));                 
+        initConfig("Expiration_Period_Distribution", expiration_function, inputJson, MetadataDescriptor::Enum("Expiration_Period_Distribution", Expiration_Period_Distribution_DESC_TEXT, MDD_ENUM_ARGS(DistributionFunction)));                 
         m_ExpirationDuration = DistributionFactory::CreateDistribution( this, expiration_function, "Expiration_Period", inputJson );
 
         initConfigTypeMap( "Received_Event", &m_TriggerReceived, UDBednet_Received_Event_DESC_TEXT );
@@ -169,6 +173,14 @@ namespace Kernel
         {
             m_ExpirationTimer = m_ExpirationDuration->Calculate( context->GetParent()->GetRng() );
             BroadcastEvent( m_TriggerReceived );
+
+            // ----------------------------------------------------------------------------
+            // --- Assuming dt=1.0 and decrementing timer so that a timer of zero expires
+            // --- when it is distributed but is not used.  A timer of one should be used
+            // --- the day it is distributed but expire:
+            // ---    distributed->used->expired on all same day
+            // ----------------------------------------------------------------------------
+            m_ExpirationTimer.Decrement( 1.0 );
         }
         return distributed;
     }
@@ -177,7 +189,8 @@ namespace Kernel
     {
         float usage_effect = GetEffectUsage();
 
-        bool is_using = parent->GetRng()->SmartDraw( usage_effect );
+        // Check expiratin in case it expired when it was distributed
+        bool is_using = !m_TimerHasExpired && parent->GetRng()->SmartDraw( usage_effect );
 
         if( is_using )
         {
@@ -249,5 +262,52 @@ namespace Kernel
         ar.labelElement( "m_TriggerDiscard"  ) & bednet.m_TriggerDiscard;
         ar.labelElement( "m_ExpirationTimer" ) & bednet.m_ExpirationTimer;
         ar.labelElement( "m_TimerHasExpired" ) & bednet.m_TimerHasExpired;
+        // this needs to be serialized incase it was serialized before it was distributed
+        ar.labelElement( "m_ExpirationDuration" ) & bednet.m_ExpirationDuration;
+    }
+
+    // ------------------------------------------------------------------------
+    // --- UsageDependentBednet
+    // ------------------------------------------------------------------------
+    BEGIN_QUERY_INTERFACE_DERIVED( MultiInsecticideUsageDependentBednet, UsageDependentBednet )
+    END_QUERY_INTERFACE_DERIVED( MultiInsecticideUsageDependentBednet, UsageDependentBednet )
+
+    IMPLEMENT_FACTORY_REGISTERED( MultiInsecticideUsageDependentBednet )
+
+    MultiInsecticideUsageDependentBednet::MultiInsecticideUsageDependentBednet()
+    : UsageDependentBednet()
+    {
+    }
+
+    MultiInsecticideUsageDependentBednet::MultiInsecticideUsageDependentBednet( const MultiInsecticideUsageDependentBednet& master )
+    : UsageDependentBednet( master )
+    {
+    }
+
+    MultiInsecticideUsageDependentBednet::~MultiInsecticideUsageDependentBednet()
+    {
+    }
+
+    bool MultiInsecticideUsageDependentBednet::ConfigureBlockingAndKilling( const Configuration * inputJson )
+    {
+        InsecticideWaningEffectCollection* p_iwec = new InsecticideWaningEffectCollection(false,true,true,true);
+
+        initConfigComplexCollectionType( "Insecticides", p_iwec, MI_UDBednet_Insecticides_DESC_TEXT );
+
+        bool configured = JsonConfigurable::Configure( inputJson ); // AbstractBednet is responsible for calling BaseIntervention::Configure()
+        if( !JsonConfigurable::_dryrun && configured )
+        {
+            p_iwec->CheckConfiguration();
+            m_pInsecticideWaningEffect = p_iwec;
+        }
+        return configured;
+    }
+
+    REGISTER_SERIALIZABLE( MultiInsecticideUsageDependentBednet );
+
+    void MultiInsecticideUsageDependentBednet::serialize( IArchive& ar, MultiInsecticideUsageDependentBednet* obj )
+    {
+        UsageDependentBednet::serialize( ar, obj );
+        MultiInsecticideUsageDependentBednet& bednet = *obj;
     }
 }

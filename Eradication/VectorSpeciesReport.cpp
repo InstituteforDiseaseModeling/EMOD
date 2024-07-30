@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "VectorSpeciesReport.h"
@@ -13,7 +5,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <map>
 #include <string>
 
-#include "BoostLibWrapper.h"
 #include "Debug.h"
 #include "Environment.h"
 #include "Exceptions.h"
@@ -25,13 +16,15 @@ SETUP_LOGGING( "VectorSpeciesReport" )
 
 static const std::string _report_name = "VectorSpeciesReport.json";   // Report output file name
 
-static const std::string _label_adult_vectors(        "Adult Vectors Per Node"                      );
-static const std::string _label_infectious_vectors(   "Percent Infectious Vectors"                  );
-static const std::string _label_daily_eir(            "Daily EIR"                                   );
-static const std::string _label_daily_hbr(            "Daily HBR"                                   );
-static const std::string _label_dead_vectors_before(  "Percent Vectors Died Before Feeding"         );
-static const std::string _label_dead_vectors_indoor(  "Percent Vectors Died During Indoor Feeding"  );
-static const std::string _label_dead_vectors_outdoor( "Percent Vectors Died During Outdoor Feeding" );
+
+static const std::string _label_humans(               "Human Population"                             ); // temporary for daily_xx calculations
+static const std::string _label_adult_vectors(        "Adult Vectors Per Node"                       );
+static const std::string _label_infectious_vectors(   "Fraction Infectious Vectors"                  );
+static const std::string _label_daily_eir(            "Daily EIR"                                    );
+static const std::string _label_daily_hbr(            "Daily HBR"                                    );
+static const std::string _label_dead_vectors_before(  "Fraction Vectors Died Before Feeding"         );
+static const std::string _label_dead_vectors_indoor(  "Fraction Vectors Died During Indoor Feeding"  );
+static const std::string _label_dead_vectors_outdoor( "Fraction Vectors Died During Outdoor Feeding" );
 
 
 #ifndef _WIN32
@@ -47,6 +40,7 @@ VectorSpeciesReport::CreateReport( const Kernel::jsonConfigurable::tDynamicStrin
 
 VectorSpeciesReport::VectorSpeciesReport( const Kernel::jsonConfigurable::tDynamicStringSet& rVectorSpeciesNames )
     : BinnedReport( _report_name )
+    , human_population(nullptr)
     , adult_vectors(nullptr)
     , infectious_vectors(nullptr)
     , daily_eir(nullptr)
@@ -83,6 +77,7 @@ VectorSpeciesReport::VectorSpeciesReport( const Kernel::jsonConfigurable::tDynam
 
 VectorSpeciesReport::~VectorSpeciesReport()
 {
+    delete human_population;
     delete adult_vectors;
     delete infectious_vectors;
     delete daily_eir;
@@ -102,6 +97,7 @@ void VectorSpeciesReport::Initialize( unsigned int nrmSize )
 
 void VectorSpeciesReport::initChannelBins()
 {
+    human_population     = new float[ num_total_bins ];
     adult_vectors        = new float[ num_total_bins ];
     infectious_vectors   = new float[ num_total_bins ];
     daily_eir            = new float[ num_total_bins ];
@@ -115,6 +111,7 @@ void VectorSpeciesReport::initChannelBins()
 
 void VectorSpeciesReport::clearChannelsBins()
 {
+    memset( human_population,     0, num_total_bins * sizeof(float) );
     memset( adult_vectors,        0, num_total_bins * sizeof(float) );
     memset( infectious_vectors,   0, num_total_bins * sizeof(float) );
     memset( daily_eir,            0, num_total_bins * sizeof(float) );
@@ -126,6 +123,7 @@ void VectorSpeciesReport::clearChannelsBins()
 
 void VectorSpeciesReport::EndTimestep( float currentTime, float dt )
 {
+    Accumulate( _label_humans,               human_population     );
     Accumulate( _label_adult_vectors,        adult_vectors        );
     Accumulate( _label_infectious_vectors,   infectious_vectors   );
     Accumulate( _label_daily_eir,            daily_eir            );
@@ -150,8 +148,11 @@ void VectorSpeciesReport::postProcessAccumulatedData()
     normalizeChannelWithLastTimestep( _label_dead_vectors_outdoor, _label_adult_vectors );
 
     normalizeChannel( _label_adult_vectors,        (float)_nrmSize );
-    normalizeChannel( _label_daily_eir,            (float)_nrmSize );
-    normalizeChannel( _label_daily_hbr,            (float)_nrmSize );
+
+    normalizeChannel( _label_daily_eir, _label_humans );
+    normalizeChannel( _label_daily_hbr, _label_humans );
+
+    channelDataMap.RemoveChannel( _label_humans );
 }
 
 void VectorSpeciesReport::normalizeChannelWithLastTimestep(
@@ -203,11 +204,13 @@ void VectorSpeciesReport::LogNodeData( Kernel::INodeContext * pNC )
     LOG_DEBUG( "VectorSpeciesReport::LogNodeData.\n" );
 
     int   bin_index = 0;
-    Kernel::INodeVector * pNV = nullptr;
-    if( pNC->QueryInterface( GET_IID( Kernel::INodeVector ), (void**) &pNV ) != Kernel::s_OK )
+    INodeVector * pNV = nullptr;
+    if( pNC->QueryInterface( GET_IID( INodeVector ), (void**) &pNV ) != Kernel::s_OK )
     {
         throw Kernel::QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "pNC", "INodeVector", "INodeContext" );
     }
+
+    float node_pop = pNC->GetStatPop();
 
     // reverse order, since push_front is used in NodeVector::SetVectorPopulations(), why??
     const VectorPopulationReportingList_t& population_list = pNV->GetVectorPopulationReporting();
@@ -215,13 +218,23 @@ void VectorSpeciesReport::LogNodeData( Kernel::INodeContext * pNC )
     {
         const auto vectorpopulation = *iterator;
         LOG_VALID_F( "bin_index = %d \t species name = %s\n", bin_index, vectorpopulation->get_SpeciesID().c_str() );
-        adult_vectors[bin_index]        += float( vectorpopulation->getAdultCount() + vectorpopulation->getInfectedCount( nullptr ) + vectorpopulation->getInfectiousCount( nullptr ) );
-        infectious_vectors[bin_index]   += float( vectorpopulation->getInfectiousCount( nullptr ) );
-        daily_eir[bin_index]            +=        vectorpopulation->GetEIRByPool(Kernel::VectorPoolIdEnum::BOTH_VECTOR_POOLS);
-        daily_hbr[bin_index]            +=        vectorpopulation->GetHBRByPool(Kernel::VectorPoolIdEnum::BOTH_VECTOR_POOLS);
-        dead_vectors_before[bin_index]  += float( vectorpopulation->getNumDiedBeforeFeeding() );
-        dead_vectors_indoor[bin_index]  += float( vectorpopulation->getNumDiedDuringFeedingIndoor() );
-        dead_vectors_outdoor[bin_index] += float( vectorpopulation->getNumDiedDuringFeedingOutdoor() );
+
+        adult_vectors[ bin_index ] += float( vectorpopulation->getCount( VectorStateEnum::STATE_ADULT      ) );
+        adult_vectors[ bin_index ] += float( vectorpopulation->getCount( VectorStateEnum::STATE_INFECTED   ) );
+        adult_vectors[ bin_index ] += float( vectorpopulation->getCount( VectorStateEnum::STATE_INFECTIOUS ) );
+
+        infectious_vectors[ bin_index ] += (float)(vectorpopulation->getCount( VectorStateEnum::STATE_INFECTIOUS ));
+
+        human_population[ bin_index ] += node_pop;  // keep track of total population to get population level daily_xx stats
+
+        // multiply by the population of the node to get the number of bites
+        daily_eir[ bin_index ]            +=        (vectorpopulation->GetEIRByPool(Kernel::VectorPoolIdEnum::BOTH_VECTOR_POOLS) * node_pop);
+        daily_hbr[ bin_index ]            +=        (vectorpopulation->GetHBRByPool(Kernel::VectorPoolIdEnum::BOTH_VECTOR_POOLS) * node_pop);
+
+        dead_vectors_before[  bin_index ] += float(  vectorpopulation->getNumDiedBeforeFeeding() );
+        dead_vectors_indoor[  bin_index ] += float(  vectorpopulation->getNumDiedDuringFeedingIndoor() );
+        dead_vectors_outdoor[ bin_index ] += float(  vectorpopulation->getNumDiedDuringFeedingOutdoor() );
+
         bin_index++;
     }
 }

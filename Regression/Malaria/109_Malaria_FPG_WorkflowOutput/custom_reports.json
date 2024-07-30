@@ -1,0 +1,18 @@
+{
+    "Reports": [
+        {
+            "Start_Day": 300,
+            "End_Day": 450,
+            "Node_IDs_Of_Interest": [],
+            "Min_Age_Years": 0,
+            "Max_Age_Years": 50,
+            "Must_Have_IP_Key_Value": "",
+            "Must_Have_Intervention": "",
+            "Minimum_Parasite_Density": 0,
+            "Sampling_Period": 30,
+            "Include_Genome_IDs": 1,
+            "class": "ReportFpgOutputForObservationalModel"
+        }
+    ],
+    "Use_Defaults": 1
+}

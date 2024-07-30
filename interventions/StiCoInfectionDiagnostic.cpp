@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "StiCoInfectionDiagnostic.h"
@@ -22,19 +14,6 @@ namespace Kernel
     END_QUERY_INTERFACE_DERIVED(StiCoInfectionDiagnostic, SimpleDiagnostic)
 
     IMPLEMENT_FACTORY_REGISTERED(StiCoInfectionDiagnostic)
-
-    bool StiCoInfectionDiagnostic::Configure(
-        const Configuration * inputJson
-    )
-    {
-        ConfigurePositiveEventOrConfig( inputJson );
-        bool ret = SimpleDiagnostic::Configure(inputJson); 
-        if( ret )
-        {
-            CheckPostiveEventConfig();
-        }
-        return ret;
-    }
 
     StiCoInfectionDiagnostic::StiCoInfectionDiagnostic() : SimpleDiagnostic()
     {
@@ -67,7 +46,6 @@ namespace Kernel
 
         bool positiveTest = applySensitivityAndSpecificity( activeinf );
         return positiveTest;
-
     }
 
     REGISTER_SERIALIZABLE(StiCoInfectionDiagnostic);

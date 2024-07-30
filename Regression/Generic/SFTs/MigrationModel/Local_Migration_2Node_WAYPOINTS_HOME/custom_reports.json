@@ -1,21 +1,16 @@
 {
-    "Custom_Reports" : 
-    {
-        "Use_Explicit_Dlls" : 1,
-        "ReportNodeDemographics" :
+    "Reports": [
         {
-            "Enabled" : 1,
-            "Reports" :
-            [
-                {
-                    "Age_Bins" : [ 40.0, 80.0, 125.0 ]
-                }
-            ]
+            "Age_Bins": [
+                40.0,
+                80.0,
+                125.0
+            ],
+            "class": "ReportNodeDemographics"
         },
-        "ReportHumanMigrationTracking" :
         {
-            "Enabled" : 1,
-            "Reports" : [ {} ]
+            "class": "ReportHumanMigrationTracking"
         }
-    }
+    ],
+    "Use_Defaults": 1
 }

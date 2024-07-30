@@ -1,0 +1,85 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Intervention_Config": {
+                    "class": "OutbreakIndividualMalariaGenetics",
+                    "Create_Nucleotide_Sequence_From": "ALLELE_FREQUENCIES",
+                    "Barcode_Allele_Frequencies_Per_Genome_Location": [[0,1,0,0],[0,1,0,0], [0,1,0,0], 
+                                                                      [0,1,0,0], [0,1,0,0], [0,1,0,0]],
+                    "HRP_Allele_Frequencies_Per_Genome_Location": [[0.7, 0.3, 0, 0]],
+                    "commnet2": "This outbreak is 70% HRP-positive and 30% HRP-negative",
+                    "comment": "[1,0,0,0] location is HRP-positive, everything else is HRP-negative"
+                }
+            }
+        },
+                {
+            "class": "CampaignEvent",
+            "Start_Day": 100,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Individual_Selection_Type": "TARGET_NUM_INDIVIDUALS",
+                "Target_Num_Individuals": 300,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividualMalariaGenetics",
+                    "Create_Nucleotide_Sequence_From": "ALLELE_FREQUENCIES",
+                    "Barcode_Allele_Frequencies_Per_Genome_Location": [[0,1,0,0],[0,1,0,0], [0,1,0,0], 
+                                                                      [0,1,0,0], [0,1,0,0], [0,1,0,0]],
+                    "HRP_Allele_Frequencies_Per_Genome_Location": [[0, 1, 0, 0]],
+                    "comment": "[1,0,0,0] location is HRP-positive, everything else is HRP-negative"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 19,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Intervention_Config": {
+                        "class": "MalariaDiagnostic",
+                        "Cost_To_Consumer": 0, 
+                        "Diagnostic_Type": "BLOOD_SMEAR_PARASITES", 
+                        "Detection_Threshold": 0, 
+                        "Event_Or_Config": "Event", 
+                        "Positive_Diagnosis_Event": "BLOOD_SMEAR_PARASITES_FOUND"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 19,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Intervention_Config": {
+                        "class": "MalariaDiagnostic",
+                        "Cost_To_Consumer": 0, 
+                        "Diagnostic_Type": "PF_HRP2", 
+                        "Detection_Threshold": 0, 
+                        "Event_Or_Config": "Event", 
+                        "Positive_Diagnosis_Event":  "HRP2_FOUND"
+                }
+            }
+        }
+    ]
+}
+

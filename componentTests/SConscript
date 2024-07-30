@@ -17,22 +17,29 @@ else:
     print( env["Disease"] )
 
     testsSrcFiles = [
+        "AdditionalRestrictionsTest.cpp",
         "AdherentDrugTest.cpp",
+        "ARTMortalityTableTest.cpp",
         "AssortivityTest.cpp",
         "BaseEventReportTest.cpp",
         "BehaviorPfaTest.cpp",
+        "CampaignEventByYearTest.cpp",
         "CommunityHealthWorkerEventCoordinatorTest.cpp",
         "componentTests.cpp",
         "ConcurrencyParametersTest.cpp",
+        "ConfigureTest.cpp",
+        "DelayedInterventionTest.cpp",
+        "FakeLogger.cpp",
         "FileSystemTest.cpp",
         "FlowControllerImplTest.cpp",
-        "GenomeMarkersTest.cpp",
+        "GeneticProbabilityTest.cpp",
         "HIVARTStagingByCD4DiagnosticTest.cpp",
         "HIVARTStagingCD4AgnosticDiagnosticTest.cpp",
         "HIVDrawBloodTest.cpp",
         "HIVSimpleDiagnosticTest.cpp",
         "InterventionForCurrentPartnersTest.cpp",
         "IncidenceEventCoordinatorTest.cpp",
+        "InsecticidesTest.cpp",
         "InterpolatedValueMapTest.cpp",
         "JsonObjectDemogTest.cpp",
         "LarvalHabitatMultiplierTest.cpp",
@@ -41,29 +48,46 @@ else:
         "MathFunctionsTest.cpp",
         "MigrateIndividualsTest.cpp",
         "MigrationTest.cpp",
+        "MosquitoReleaseTest.cpp",
         "NChooserEventCoordinatorTest.cpp",
         "NodeDemographicsTest.cpp",
         "NodePropertiesTest.cpp",
+        "numpy-filesTest.cpp",
         "PairFormationParametersImplTest.cpp",
         "PairFormationStatsImplTest.cpp",
+        "ParasiteGeneticsTest.cpp",
         "PrngTest.cpp",
         "ProgramOptionsTest.cpp",
         "PropertiesTest.cpp",
+        "RandomNumberGeneratorFactoryTest.cpp",
         "RateTableImplTest.cpp",
         "RelationshipParametersTest.cpp",
+        "ReportNodeDemographicsMalariaGeneticsTest.cpp",
         "ReportUtilitiesMalariaTest.cpp",
         "ReportUtilitiesTest.cpp",
-        "SerializationTimeCalculatorTest.cpp",
+        "SerializationParametersTest.cpp",
+        "SerializationTest.cpp",
         "SigmoidTest.cpp",
         "STIIsPostDebutTest.cpp",
+        "SugarTrapTest.cpp",
+        "TestChiSquare.cpp",
+        "TransmissionGroupsTest.cpp",
+        "VectorCohortCollectionTest.cpp",
+        "VectorCohortTest.cpp",
+        "VectorFertilizerTest.cpp",
+        "VectorGameteTest.cpp",
+        "VectorGeneDriverTest.cpp",
+        "VectorGeneTest.cpp",
+        "VectorGenomeTest.cpp",
+        "VectorInterventionsContainerTest.cpp",
+        "VectorPopulationHelper.cpp",
+        "VectorPopulationIndividualTest.cpp",
+        "VectorPopulationTest.cpp",
+        "VectorSpeciesParametersTest.cpp",
+        "VectorTraitModifiersTest.cpp",
         "WaningEffectComboTest.cpp",
-        "WaningEffectMapTest.cpp",
-        "FakeLogger.cpp"
+        "WaningEffectMapTest.cpp"
     ]
-
-    #DMB 3/16/2017 - Serialization is only supported on windows at this time.
-    if os.sys.platform == 'win32':
-        testsSrcFiles.append("SerializationTest.cpp")
 
     testsIncFiles = [
         'common.h',
@@ -83,45 +107,25 @@ else:
     # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     erad_env = env.Clone()
     erad_env.Append( EXTRACPPPATH=["#/UnitTest++/src"])
+    erad_env.Append( EXTRACPPPATH=["#/reporters"])
     erad_env.Append( LIBPATH=[ "$BUILD_DIR/UnitTest++" ] )
     erad_env.Append(LIBS=["unitTest"])
 
     if os.sys.platform == 'win32':
         erad_env.Append( LINKFLAGS=[ "/STACK:\"100000000,100000000\"" ] )
-        erad_env.Append( LINKFLAGS=[ "/DELAYLOAD:\"python36.dll\""] )
+        erad_env.Append( LINKFLAGS=[ "/DELAYLOAD:\"python3.dll\""] )
         erad_env.Append( LIBS=["delayimp.lib"] )
         erad_env.Append(LIBPATH = ["$BUILD_DIR/Eradication"])
         erad_env.Append(LIBS=["/WHOLEARCHIVE:coreLib"])
+        erad_env.Append(LIBS=["/WHOLEARCHIVE:reporters"])
     else:
         #erad_env.Append(LINKFLAGS=["-Wl,--whole-archive,$BUILD_DIR/Eradication/libcoreLib.a,--no-whole-archive"])
         if env["Debug"]:
-            erad_env.Append(LINKFLAGS=["-Wl,--whole-archive,build/x64/Debug/Eradication/libcoreLib.a,--no-whole-archive"])
+            erad_env.Append(LINKFLAGS=["-Wl,--whole-archive,build/x64/Debug/Eradication/libcoreLib.a,build/x64/Debug/reporters/libreporters.a,--no-whole-archive"])
         else:
-            erad_env.Append(LINKFLAGS=["-Wl,--whole-archive,build/x64/Release/Eradication/libcoreLib.a,--no-whole-archive"])
+            erad_env.Append(LINKFLAGS=["-Wl,--whole-archive,build/x64/Release/Eradication/libcoreLib.a,build/x64/Release/reporters/libreporters.a,--no-whole-archive"])
 
     # Monolithic
     testsExe = erad_env.Program('componentTests', testsSrcFiles)
     erad_env.Depends(testsExe, erad_env.Alias("CoreLibAlias") )
     erad_env.Depends(testsExe, erad_env.Alias("UnitTestAlias") )
-
-testsResource = []
-testsLocalInc = ['StdAfx.h']
-
-msvc = GetOption( "MSVC" )
-if msvc is not None and msvc != False and msvc != "":
-
-    bvar = env['BUILD_VARIANT'] + '|x64'
-    print( "componentTests: Generating MSVS" + env['MSVS_VERSION'] + " project files for '%s'" % bvar )
-    
-    env.MSVSProject(target = 'componentTestsScons' + env['MSVSPROJECTSUFFIX'],
-                    srcs = testsSrcFiles,
-                    incs = testsIncFiles,
-                    localincs = testsLocalInc,
-                    resources = testsResource,
-                    buildtarget = testsExe,
-                    auto_build_solution = 0,
-                    variant = bvar)
-
-else:
-    print( "CC is:", env['CC'] )
-    print( "CXX is:", env['CXX'] )

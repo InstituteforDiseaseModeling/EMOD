@@ -1,0 +1,65 @@
+
+{ 
+    "Metadata": 
+    { 
+        "DateCreated": "June 9, 2015",
+        "Tool": "Notepad",
+        "Author": "Daniel Bridenbecker",
+        "RegionName": "RegressionTest",
+        "DataSource": "NA",
+        "IdReference": "MigrationTest",
+        "NodeCount": 9
+    },
+    "Defaults": 
+    { 
+        "IndividualProperties": [ 
+            { 
+                "Property": "Location",
+                "Values": [ "URBAN", "RURAL" ],
+                "Initial_Distribution": [ 0.3, 0.7 ],
+                "Transitions": []
+            },
+            { 
+                "Property": "Risk",
+                "Values": [ "LOW", "MEDIUM", "HIGH" ],
+                "Initial_Distribution": [ 0.5, 0.3, 0.2 ],
+                "Transitions": []
+            },
+            { 
+                "Property": "FavoriteTeam",
+                "Values": [ "SEAHAWKS", "MARINERS", "SOUNDERS", "KRAKEN", "STORM" ],
+                "Initial_Distribution": [ 0.4, 0.3, 0.2, 0.06, 0.04 ],
+                "Transitions": []
+            }
+        ]
+    },
+    "Nodes": [ 
+        { 
+            "NodeID": 1
+        },
+        { 
+            "NodeID": 2
+        },
+        { 
+            "NodeID": 3
+        },
+        { 
+            "NodeID": 4
+        },
+        { 
+            "NodeID": 5
+        },
+        { 
+            "NodeID": 6
+        },
+        { 
+            "NodeID": 7
+        },
+        { 
+            "NodeID": 8
+        },
+        { 
+            "NodeID": 9
+        } 
+    ]
+}

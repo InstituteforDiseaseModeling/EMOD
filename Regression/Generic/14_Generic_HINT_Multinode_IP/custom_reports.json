@@ -1,17 +1,14 @@
 {
-    "Custom_Reports" : 
-    {
-        "Use_Explicit_Dlls" : 1,
-        "ReportNodeDemographics" :
+    "Reports": [
         {
-            "Enabled" : 1,
-            "Reports" :
-            [
-                {
-                    "Age_Bins" : [ 40.0, 80.0, 125.0 ],
-                    "IP_Key_To_Collect" : "Risk"
-                }
-            ]
+            "Age_Bins": [
+                40.0,
+                80.0,
+                125.0
+            ],
+            "IP_Key_To_Collect": "Risk",
+            "class": "ReportNodeDemographics"
         }
-    }
+    ],
+    "Use_Defaults": 1
 }

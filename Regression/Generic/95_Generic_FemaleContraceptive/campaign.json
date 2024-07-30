@@ -1,0 +1,182 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 730,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender",
+                "Target_Gender": "Female",
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "FemaleContraceptive",
+                    "Cost_To_Consumer": 1,
+                    "Waning_Config": {
+                        "class": "WaningEffectConstant",
+                        "Initial_Effect": 0.25
+                    },
+                    "Usage_Duration_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Usage_Duration_Constant": 730,
+                    "Usage_Expiration_Event": "Get_50_Percent"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 730,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition_List": [ "Get_50_Percent" ],
+                    "Demographic_Coverage": 1.0,
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "FemaleContraceptive",
+                        "Cost_To_Consumer": 1,
+                        "Waning_Config": {
+                            "class": "WaningEffectConstant",
+                            "Initial_Effect": 0.5
+                        },
+                        "Usage_Duration_Distribution": "CONSTANT_DISTRIBUTION",
+                        "Usage_Duration_Constant": 730,
+                        "Usage_Expiration_Event": "Get_75_Percent"
+                    }
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 730,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition_List": [ "Get_75_Percent" ],
+                    "Demographic_Coverage": 1.0,
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "FemaleContraceptive",
+                        "Cost_To_Consumer": 1,
+                        "Waning_Config": {
+                            "class": "WaningEffectConstant",
+                            "Initial_Effect": 0.75
+                        },
+                        "Usage_Duration_Distribution": "CONSTANT_DISTRIBUTION",
+                        "Usage_Duration_Constant": 730,
+                        "Usage_Expiration_Event": "Get_100_Percent"
+                    }
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 730,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition_List": [ "Get_100_Percent" ],
+                    "Demographic_Coverage": 1.0,
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "FemaleContraceptive",
+                        "Cost_To_Consumer": 1,
+                        "Waning_Config": {
+                            "class": "WaningEffectConstant",
+                            "Initial_Effect": 1.0
+                        },
+                        "Usage_Duration_Distribution": "CONSTANT_DISTRIBUTION",
+                        "Usage_Duration_Constant": 730,
+                        "Usage_Expiration_Event": "Get_Two"
+                    }
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 730,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition_List": [ "Get_Two" ],
+                    "Demographic_Coverage": 1.0,
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "FemaleContraceptive",
+                        "Cost_To_Consumer": 1,
+                        "Waning_Config": {
+                            "class": "WaningEffectConstant",
+                            "Initial_Effect": 0.6
+                        },
+                        "Usage_Duration_Distribution": "CONSTANT_DISTRIBUTION",
+                        "Usage_Duration_Constant": 7300,
+                        "Usage_Expiration_Event": ""
+                    }
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 730,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition_List": [ "Get_Two" ],
+                    "Demographic_Coverage": 1.0,
+                    "Actual_IndividualIntervention_Config":
+                    {
+                        "class": "FemaleContraceptive",
+                        "Cost_To_Consumer": 1,
+                        "Waning_Config": {
+                            "class": "WaningEffectConstant",
+                            "Initial_Effect": 0.4
+                        },
+                        "Usage_Duration_Distribution": "CONSTANT_DISTRIBUTION",
+                        "Usage_Duration_Constant": 7300,
+                        "Usage_Expiration_Event": ""
+                    }
+                }
+            }
+        },
+        {
+            "COMMENT": "GH-4762 - We want to see the contraceptive expire because of Expire_At_Durability_Map_End=1 while woman still has it.",
+            "class": "CampaignEvent",
+            "Start_Day": 5000,
+            "Nodeset_Config": { "class": "NodeSetAll" },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender",
+                "Target_Gender": "Female",
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "FemaleContraceptive",
+                    "Intervention_Name": "ExpiringContraceptive",
+                    "Cost_To_Consumer": 1,
+                    "Waning_Config": {
+                        "class": "WaningEffectMapLinear",
+                        "Initial_Effect" : 1.0,
+                        "Expire_At_Durability_Map_End" : 1,
+                        "Durability_Map" :
+                        {
+                            "Times"  : [   0, 500 ],
+                            "Values" : [ 1.0, 1.0 ]
+                        }
+                    },
+                    "Usage_Duration_Distribution": "CONSTANT_DISTRIBUTION",
+                    "Usage_Duration_Constant": 1000,
+                    "Usage_Expiration_Event": "PFA_NoPartnerFound"
+                }
+            }
+        }
+    ]
+}

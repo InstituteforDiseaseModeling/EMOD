@@ -29,7 +29,20 @@
             "Simulation_Duration": 730
         },
         "VECTOR": {
-            "Temperature_Dependent_Feeding_Cycle": "BOUNDED_DEPENDENCE"
+            "Vector_Species_Params": [
+                {
+                    "Name": "arabiensis",
+                    "Temperature_Dependent_Feeding_Cycle": "BOUNDED_DEPENDENCE"
+                },
+                {
+                    "Name": "funestus",
+                    "Temperature_Dependent_Feeding_Cycle": "BOUNDED_DEPENDENCE"
+                },
+                {
+                    "Name": "gambiae",
+                    "Temperature_Dependent_Feeding_Cycle": "BOUNDED_DEPENDENCE"
+                }
+            ]
         }
     }
 }

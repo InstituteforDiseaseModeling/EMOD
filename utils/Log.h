@@ -1,19 +1,11 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 #include "stdafx.h"
 
-#include "IdmApi.h"
-
 #include <map>
+#include <cstring>
 
+#include "IdmApi.h"
 #include "Sugar.h"
 
 namespace Logger
@@ -113,12 +105,8 @@ public:
     void GetLogInfo(LogTimeInfo &tInfo );
 
 protected:
-
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
     typedef std::map< const char*, Logger::tLevel, cmp_str > module_loglevel_map_t;
     module_loglevel_map_t _logLevelMap;
-#pragma warning( pop )
 
     Logger::tLevel _systemLogLevel;
 

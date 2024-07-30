@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -16,34 +8,45 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include <fstream>
 
 #include "SpatialReportVector.h"
-#include "BoostLibWrapper.h"
+#include "IReportMalariaDiagnostics.h"
 
 namespace Kernel {
 
-class SpatialReportMalaria : public SpatialReportVector
+class SpatialReportMalaria : public SpatialReportVector, public IReportMalariaDiagnostics
 {
     GET_SCHEMA_STATIC_WRAPPER(SpatialReportMalaria)
-
 public:
+
+    // needed for IReportMalariaDiagnostics
+    DECLARE_QUERY_INTERFACE()
+    IMPLEMENT_NO_REFERENCE_COUNTING()
+
     static IReport* CreateReport();
     virtual ~SpatialReportMalaria() { }
 
-    virtual void Initialize( unsigned int nrmSize );
+    // SpatialReportVector
+    virtual void Initialize( unsigned int nrmSize ) override;
+    virtual void LogNodeData( Kernel::INodeContext * pNC ) override;
+    virtual void LogIndividualData( IIndividualHuman* individual ) override;
 
-    virtual void LogNodeData( Kernel::INodeContext * pNC );
+    // IReportMalariaDiagnostics
+    virtual void SetDetectionThresholds( const std::vector<float>& rDetectionThresholds ) override;
 
 protected:
     SpatialReportMalaria();
 
-    virtual void postProcessAccumulatedData();
+    virtual void postProcessAccumulatedData() override;
 
-    virtual void populateChannelInfos(tChanInfoMap &channel_infos);
+    virtual void populateChannelInfos(tChanInfoMap &channel_infos) override;
 
-    ChannelInfo parasite_prevalence_info;
+    std::vector<ChannelInfo> prevalence_by_diagnostic_info;
     ChannelInfo mean_parasitemia_info;
-    ChannelInfo new_diagnostic_prevalence_info;
-    ChannelInfo fever_prevalence_info;
     ChannelInfo new_clinical_cases_info;
     ChannelInfo new_severe_cases_info;
+
+    std::vector<float> m_DetectionThresholds;
+    std::vector<float> m_Detected;
+    float              m_MeanParasitemia;
 };
+
 }

@@ -1,0 +1,75 @@
+{
+    "Default_Config_Path": "defaults/malaria_genetics_science_default_config.json",
+    "CLIMATE": {
+        "Climate_Model": "CLIMATE_CONSTANT",
+        "Base_Air_Temperature": 22.0,
+        "Air_Temperature_Variance": 2,
+        "Land_Temperature_Variance": 2,
+        "Enable_Climate_Stochasticity": 0
+    },
+    "DEMOGRAPHICS": {
+        "Demographics_Filenames": [
+            "Namawala_single_node_demographics.json",
+            "Namawala_prevalence.json"
+        ],
+        "Population_Scale_Type": "FIXED_SCALING",
+        "x_Base_Population": 1.0
+    },
+    "PRIMARY": {
+        "Config_Name": "Malaria::SFTs::GammaTest",
+        "Enable_Interventions": 1,
+        "Geography": "Namawala",
+        "Run_Number": 1,
+        "Simulation_Duration": 200
+    },
+    "REPORTS": {
+        "logLevel_RANDOM":"VALID",
+        "Custom_Reports_Filename": "",
+        "Enable_Demographics_Reporting": 0,
+        "Report_Event_Recorder": 0,
+        "Report_Event_Recorder_Events": [
+        ],
+        "Report_Event_Recorder_Ignore_Events_In_List": 0,
+        "Report_Event_Recorder_Individual_Properties": []
+    },
+    "STRAIN_TRACKING": {
+        "Malaria_Model": "MALARIA_MECHANISTIC_MODEL_WITH_PARASITE_GENETICS",
+        "Max_Individual_Infections": 10
+
+    },
+    "VECTOR": {
+        "x_Temporary_Larval_Habitat": 0.1,
+        "Enable_Vector_Aging": 0,
+        "Vector_Sampling_Type": "TRACK_ALL_VECTORS",
+        "Vector_Species_Params": [
+            {
+                "Name": "SillySkeeter",
+                "Acquire_Modifier": 1,
+                "Adult_Life_Expectancy": 10,
+                "Male_Life_Expectancy": 10,
+                "Anthropophily": 0.95,
+                "Aquatic_Arrhenius_1": 84200000000,
+                "Aquatic_Arrhenius_2": 8328,
+                "Aquatic_Mortality_Rate": 0.1,
+                "Days_Between_Feeds": 3,
+                "Egg_Batch_Size": 100,
+                "Immature_Duration": 4,
+                "Indoor_Feeding_Fraction": 1.0,
+                "Infected_Arrhenius_1": 117000000000,
+                "Infected_Arrhenius_2": 8336,
+                "Infected_Egg_Batch_Factor": 0.8,
+                "Infectious_Human_Feed_Mortality_Factor": 3.0,
+                "Habitats": [
+                    {
+                        "Habitat_Type": "TEMPORARY_RAINFALL",
+                        "Max_Larval_Capacity": 11250000000.0
+                    }
+                ],
+                "Microsporidia": [],
+                "Temperature_Dependent_Feeding_Cycle": "NO_TEMPERATURE_DEPENDENCE",
+                "Transmission_Rate": 1.0,
+                "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_NONE"
+            }
+        ]
+    }
+}

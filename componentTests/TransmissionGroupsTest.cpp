@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "UnitTest++.h"
@@ -17,6 +9,8 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "StrainIdentity.h"
 #include "TransmissionGroupMembership.h"
 #include "Infection.h"
+#include "GeneticProbability.h"
+#include "StrainAwareTransmissionGroupsGP.h"
 
 using namespace std;
 using namespace Kernel;
@@ -40,6 +34,8 @@ SUITE(TransmissionGroupsTest)
             , redmond("REDMOND")
             , renton("RENTON")
             , location_values{ bothell, bellevue, redmond, renton }
+            , vector_properties()
+            , human_properties()
             , risk_matrix{
                 MatrixRow_t{ 1, 0, 0 },
                 MatrixRow_t{ 0, 1, 0 },
@@ -68,6 +64,12 @@ SUITE(TransmissionGroupsTest)
             std::map<std::string, float> location_ip_values{ {bothell, 0.25f}, {bellevue, 0.25f }, {redmond, 0.25f}, {renton, 0.25f} };
             IPFactory::GetInstance()->AddIP(1, location, location_ip_values);
 
+            std::map<std::string, float> indoor_ip_values{ {"human", 0.5f}, {"vector", 0.5f } };
+            IPFactory::GetInstance()->AddIP(1, "indoor", indoor_ip_values);
+
+            vector_properties.Add( IPKeyValue( "indoor:vector" ) );
+            human_properties.Add( IPKeyValue( "indoor:human" ) );
+
             InfectionConfig::number_basestrains = 2;
             InfectionConfig::number_substrains  = 2;
         }
@@ -91,12 +93,45 @@ SUITE(TransmissionGroupsTest)
         ScalingMatrix_t risk_matrix;
         ScalingMatrix_t location_matrix;
 
+        IPKeyValueContainer vector_properties;
+        IPKeyValueContainer human_properties;
+
         SimulationConfig* p_simulation_config;
         PSEUDO_DES rng;
 
         uint32_t number_basestrains_save;
         uint32_t number_substrains_save;
     };
+
+    TEST_FIXTURE(TransmissionGroupsTestFixture, TestStrainAwareGP)
+    {
+        // Instantiate StrainAwareTransmissionGroups with single property
+        unique_ptr<StrainAwareTransmissionGroupsGP> txGroups( new StrainAwareTransmissionGroupsGP( &rng ) );
+
+        ScalingMatrix_t scalingMatrix{
+            { 0.0f, 1.0f },
+            { 1.0f, 0.0f } };
+        txGroups->AddProperty( "INDOOR",  { "HUMAN", "VECTOR" }, scalingMatrix );
+        txGroups->Build( 1.0f, 1, 1 );
+
+        TransmissionGroupMembership_t human_indoor;
+        TransmissionGroupMembership_t vector_indoor;
+
+        txGroups->GetGroupMembershipForProperties( human_properties, human_indoor );
+        txGroups->GetGroupMembershipForProperties( vector_properties, vector_indoor );
+
+        StrainIdentity strain00 = StrainIdentity(0, 0);
+        txGroups->UpdatePopulationSize( human_indoor, 10, 1.0f );
+        txGroups->DepositContagionGP( strain00, GeneticProbability(0.25f), human_indoor );
+        txGroups->DepositContagionGP( strain00, GeneticProbability(0.25f), human_indoor );
+        txGroups->DepositContagionGP( strain00, GeneticProbability(0.25f), human_indoor );
+        txGroups->DepositContagionGP( strain00, GeneticProbability(0.25f), human_indoor );
+
+        txGroups->EndUpdate();
+
+        float contagion = txGroups->GetTotalContagionGP().GetSum();
+        CHECK_EQUAL( (0.25f * 4.0f)/10.0f, contagion );
+    }
 
     TEST_FIXTURE(TransmissionGroupsTestFixture, TestStrainAwareTxGroupsSingleProperty)
     {
@@ -112,21 +147,28 @@ SUITE(TransmissionGroupsTest)
         StrainIdentity strain11 = StrainIdentity(1, 1);
         TransmissionGroupMembership_t membership;
 
-        txGroups->GetGroupMembershipForProperties(tProperties{ { risk, high } }, membership);
+        IPKeyValueContainer properties_risk_high;
+        IPKeyValueContainer properties_risk_med;
+        IPKeyValueContainer properties_risk_low;
+        properties_risk_high.Add( IPKeyValue("RISK:HIGH") );
+        properties_risk_med.Add( IPKeyValue("RISK:MEDIUM") );
+        properties_risk_low.Add( IPKeyValue("RISK:LOW") );
+
+        txGroups->GetGroupMembershipForProperties(properties_risk_high, membership);
         txGroups->UpdatePopulationSize(membership, 2, 1.0f);
         txGroups->DepositContagion(strain00, 0.25, membership);
         txGroups->DepositContagion(strain01, 0.25, membership);
         txGroups->DepositContagion(strain10, 0.25, membership);
         txGroups->DepositContagion(strain11, 0.25, membership);
 
-        txGroups->GetGroupMembershipForProperties(tProperties{ { risk, medium } }, membership);
+        txGroups->GetGroupMembershipForProperties(properties_risk_med, membership);
         txGroups->UpdatePopulationSize(membership, 1, 2.0f);
         txGroups->DepositContagion(strain00, 0.125, membership);
         txGroups->DepositContagion(strain01, 0.125, membership);
         txGroups->DepositContagion(strain10, 0.125, membership);
         txGroups->DepositContagion(strain11, 0.125, membership);
 
-        txGroups->GetGroupMembershipForProperties(tProperties{ { risk, low } }, membership);
+        txGroups->GetGroupMembershipForProperties(properties_risk_low, membership);
         txGroups->UpdatePopulationSize(membership, 4, 1.0f);
         txGroups->DepositContagion(strain00, 0.0625, membership);
         txGroups->DepositContagion(strain01, 0.0625, membership);
@@ -164,22 +206,70 @@ SUITE(TransmissionGroupsTest)
         StrainIdentity strain1 = StrainIdentity(1, 0);
         TransmissionGroupMembership_t membership;
 
-        txGroups->GetGroupMembershipForProperties(tProperties{ { risk, medium },{ location, bothell } }, membership);
+        IPKeyValueContainer properties_high_bothell;
+        properties_high_bothell.Add( IPKeyValue("RISK:HIGH") );
+        properties_high_bothell.Add( IPKeyValue("LOCATION:BOTHELL") );
+
+        IPKeyValueContainer properties_med_bothell;
+        properties_med_bothell.Add( IPKeyValue("RISK:MEDIUM") );
+        properties_med_bothell.Add( IPKeyValue("LOCATION:BOTHELL") );
+
+        IPKeyValueContainer properties_low_bothell;
+        properties_low_bothell.Add( IPKeyValue("RISK:LOW") );
+        properties_low_bothell.Add( IPKeyValue("LOCATION:BOTHELL") );
+
+        IPKeyValueContainer properties_high_bellevue;
+        properties_high_bellevue.Add( IPKeyValue("RISK:HIGH") );
+        properties_high_bellevue.Add( IPKeyValue("LOCATION:BELLEVUE") );
+
+        IPKeyValueContainer properties_med_bellevue;
+        properties_med_bellevue.Add( IPKeyValue("RISK:MEDIUM") );
+        properties_med_bellevue.Add( IPKeyValue("LOCATION:BELLEVUE") );
+
+        IPKeyValueContainer properties_low_bellevue;
+        properties_low_bellevue.Add( IPKeyValue("RISK:LOW") );
+        properties_low_bellevue.Add( IPKeyValue("LOCATION:BELLEVUE") );
+
+        IPKeyValueContainer properties_high_redmond;
+        properties_high_redmond.Add( IPKeyValue("RISK:HIGH") );
+        properties_high_redmond.Add( IPKeyValue("LOCATION:REDMOND") );
+
+        IPKeyValueContainer properties_med_redmond;
+        properties_med_redmond.Add( IPKeyValue("RISK:MEDIUM") );
+        properties_med_redmond.Add( IPKeyValue("LOCATION:REDMOND") );
+
+        IPKeyValueContainer properties_low_redmond;
+        properties_low_redmond.Add( IPKeyValue("RISK:LOW") );
+        properties_low_redmond.Add( IPKeyValue("LOCATION:REDMOND") );
+
+        IPKeyValueContainer properties_high_renton;
+        properties_high_renton.Add( IPKeyValue("RISK:HIGH") );
+        properties_high_renton.Add( IPKeyValue("LOCATION:RENTON") );
+
+        IPKeyValueContainer properties_med_renton;
+        properties_med_renton.Add( IPKeyValue("RISK:MEDIUM") );
+        properties_med_renton.Add( IPKeyValue("LOCATION:RENTON") );
+
+        IPKeyValueContainer properties_low_renton;
+        properties_low_renton.Add( IPKeyValue("RISK:LOW") );
+        properties_low_renton.Add( IPKeyValue("LOCATION:RENTON") );
+
+        txGroups->GetGroupMembershipForProperties(properties_med_bothell, membership);
         txGroups->UpdatePopulationSize(membership, 8, 1.0f);
         txGroups->DepositContagion(strain0, 0.25f, membership);
         txGroups->DepositContagion(strain1, 0.75f, membership);
 
-        txGroups->GetGroupMembershipForProperties(tProperties{ { risk, low },{ location, bellevue } }, membership);
+        txGroups->GetGroupMembershipForProperties(properties_low_bellevue, membership);
         txGroups->UpdatePopulationSize(membership, 1, 4.0f);
         txGroups->DepositContagion(strain0, 2.25f, membership);
         txGroups->DepositContagion(strain1, 0.75f, membership);
 
-        txGroups->GetGroupMembershipForProperties(tProperties{ { risk, low },{ location, redmond } }, membership);
+        txGroups->GetGroupMembershipForProperties(properties_low_redmond, membership);
         txGroups->UpdatePopulationSize(membership, 2, 1.0f);
         txGroups->DepositContagion(strain0, 1.25f, membership);
         txGroups->DepositContagion(strain1, 3.75f, membership);
 
-        txGroups->GetGroupMembershipForProperties(tProperties{ { risk, high },{ location, renton } }, membership);
+        txGroups->GetGroupMembershipForProperties(properties_high_renton, membership);
         txGroups->UpdatePopulationSize(membership, 1, 2.0f);
         txGroups->DepositContagion(strain0, 5.25f, membership);
         txGroups->DepositContagion(strain1, 1.75f, membership);
@@ -208,51 +298,51 @@ SUITE(TransmissionGroupsTest)
         CHECK_EQUAL(5.625f/16, contagion);
 
         // Check contagion by group
-        txGroups->GetGroupMembershipForProperties(tProperties{ { risk, high },{ location, bothell } }, membership);
+        txGroups->GetGroupMembershipForProperties(properties_high_bothell, membership);
         contagion = txGroups->GetTotalContagionForGroup(membership);
         CHECK_EQUAL(0.000f/16, contagion);
 
-        txGroups->GetGroupMembershipForProperties(tProperties{ { risk, medium },{ location, bothell } }, membership);
+        txGroups->GetGroupMembershipForProperties(properties_med_bothell, membership);
         contagion = txGroups->GetTotalContagionForGroup(membership);
         CHECK_EQUAL(0.500f/16, contagion);
 
-        txGroups->GetGroupMembershipForProperties(tProperties{ { risk, low },{ location, bothell } }, membership);
+        txGroups->GetGroupMembershipForProperties(properties_low_bothell, membership);
         contagion = txGroups->GetTotalContagionForGroup(membership);
         CHECK_EQUAL(0.375f/16, contagion);
 
-        txGroups->GetGroupMembershipForProperties(tProperties{ { risk, high },{ location, bellevue } }, membership);
+        txGroups->GetGroupMembershipForProperties(properties_high_bellevue, membership);
         contagion = txGroups->GetTotalContagionForGroup(membership);
         CHECK_EQUAL(0.875f/16, contagion);
 
-        txGroups->GetGroupMembershipForProperties(tProperties{ { risk, medium },{ location, bellevue } }, membership);
+        txGroups->GetGroupMembershipForProperties(properties_med_bellevue, membership);
         contagion = txGroups->GetTotalContagionForGroup(membership);
         CHECK_EQUAL(0.250f/16, contagion);
 
-        txGroups->GetGroupMembershipForProperties(tProperties{ { risk, low },{ location, bellevue } }, membership);
+        txGroups->GetGroupMembershipForProperties(properties_low_bellevue, membership);
         contagion = txGroups->GetTotalContagionForGroup(membership);
         CHECK_EQUAL(4.375f/16, contagion);
 
-        txGroups->GetGroupMembershipForProperties(tProperties{ { risk, high },{ location, redmond } }, membership);
+        txGroups->GetGroupMembershipForProperties(properties_high_redmond, membership);
         contagion = txGroups->GetTotalContagionForGroup(membership);
         CHECK_EQUAL(0.875f/16, contagion);
 
-        txGroups->GetGroupMembershipForProperties(tProperties{ { risk, medium },{ location, redmond } }, membership);
+        txGroups->GetGroupMembershipForProperties(properties_med_redmond, membership);
         contagion = txGroups->GetTotalContagionForGroup(membership);
         CHECK_EQUAL(0.250f/16, contagion);
 
-        txGroups->GetGroupMembershipForProperties(tProperties{ { risk, low },{ location, redmond } }, membership);
+        txGroups->GetGroupMembershipForProperties(properties_low_redmond, membership);
         contagion = txGroups->GetTotalContagionForGroup(membership);
         CHECK_EQUAL(2.875f/16, contagion);
 
-        txGroups->GetGroupMembershipForProperties(tProperties{ { risk, high },{ location, renton } }, membership);
+        txGroups->GetGroupMembershipForProperties(properties_high_renton, membership);
         contagion = txGroups->GetTotalContagionForGroup(membership);
         CHECK_EQUAL(5.250f/16, contagion);
 
-        txGroups->GetGroupMembershipForProperties(tProperties{ { risk, medium },{ location, renton } }, membership);
+        txGroups->GetGroupMembershipForProperties(properties_med_renton, membership);
         contagion = txGroups->GetTotalContagionForGroup(membership);
         CHECK_EQUAL(0.000f/16, contagion);
 
-        txGroups->GetGroupMembershipForProperties(tProperties{ { risk, low },{ location, renton } }, membership);
+        txGroups->GetGroupMembershipForProperties(properties_low_renton, membership);
         contagion = txGroups->GetTotalContagionForGroup(membership);
         CHECK_EQUAL(0.375f/16, contagion);
     }

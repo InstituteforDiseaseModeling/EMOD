@@ -1,0 +1,181 @@
+{
+    "Campaign_Name": "StartNewRelationship interventions",
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "COMMENT": "-------------- OUTBREAK INDIVIDUAL ---------------",
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender",
+                "Target_Gender": "FEMALE",
+                "Demographic_Coverage": 0.40,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Antigen": 0,
+                    "Genome": 0,
+                    "Incubation_Period_Override": 0
+                }
+            }
+        },
+        {
+            "COMMENT": "------------------ PROPERTY VALUE CHANGER INTERVENTION -----------",
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition_List": [
+                        "Relationship_Created"
+                    ],
+                    "Demographic_Coverage": 0.50,
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "PropertyValueChanger",
+                        "Target_Property_Key": "StartNewRels",
+                        "Target_Property_Value": "CREATED",
+                        ".Revert": 25
+                    }
+                }
+            }
+        },
+        {
+            "COMMENT": "------------ START NEW RELATIONSHIP - MARITAL ------",
+            "class": "CampaignEvent",
+            "Start_Day": 100,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender",
+                "Target_Gender": "FEMALE",
+                "Property_Restrictions_Within_Node": [
+                    {
+                        "StartNewRels": "YAY_SINGLE"
+                    }
+                ],
+                "COMMENT": "This should broadcast Relationship_Created_Event ",
+                "Demographic_Coverage": 0.20,
+                "Intervention_Config": {
+                    "class": "StartNewRelationship",
+                    "Relationship_Type": "MARITAL",
+                    "Partner_Has_IP": "StartNewRels:YAY_SINGLE",
+                    "Relationship_Created_Event": "Relationship_Created"
+                }
+            }
+        },
+        {
+            "COMMENT": "- START NEW RELATIONSHIP - COMMERCIAL ------",
+            "class": "CampaignEvent",
+            "Start_Day": 200,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender",
+                "Target_Gender": "MALE",
+                "Property_Restrictions_Within_Node": [
+                    {
+                        "StartNewRels": "YAY_SINGLE"
+                    }
+                ],
+                "COMMENT": "This should broadcast Relationship_Created_Event ",
+                "Demographic_Coverage": 0.20,
+                "Intervention_Config": {
+                    "class": "StartNewRelationship",
+                    "Relationship_Type": "COMMERCIAL",
+                    "Partner_Has_IP": "StartNewRels:YAY_SINGLE",
+                    "Relationship_Created_Event": "Relationship_Created"
+                }
+            }
+        },
+        {
+            "COMMENT": "- START NEW RELATIONSHIP - INFORMAL ------",
+            "class": "CampaignEvent",
+            "Start_Day": 300,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender",
+                "Target_Gender": "MALE",
+                "Property_Restrictions_Within_Node": [
+                    {
+                        "StartNewRels": "IS_COMPLICATED"
+                    }
+                ],
+                "COMMENT": "This should broadcast Relationship_Created_Event ",
+                "Demographic_Coverage": 0.20,
+                "Intervention_Config": {
+                    "class": "StartNewRelationship",
+                    "Relationship_Type": "INFORMAL",
+                    "Partner_Has_IP": "StartNewRels:IS_COMPLICATED",
+                    "Relationship_Created_Event": "Relationship_Created"
+                }
+            }
+        },
+        {
+            "COMMENT": "- START NEW RELATIONSHIP - TRANSITORY ------",
+            "class": "CampaignEvent",
+            "Start_Day": 400,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "ExplicitGender",
+                "Target_Gender": "FEMALE",
+                "Property_Restrictions_Within_Node": [
+                    {
+                        "StartNewRels": "IS_COMPLICATED"
+                    }
+                ],
+                "COMMENT": "This should broadcast Relationship_Created_Event ",
+                "Demographic_Coverage": 0.20,
+                "Intervention_Config": {
+                    "class": "StartNewRelationship",
+                    "Relationship_Type": "TRANSITORY",
+                    "Partner_Has_IP": "StartNewRels:IS_COMPLICATED",
+                    "Relationship_Created_Event": "Relationship_Created"
+                }
+            }
+        },
+        {
+            "COMMENT": "This should broadcast MyRelationshipJustEnded to all population who relationship that have ended within one time-step",
+            "class": "CampaignEvent",
+            "Start_Day": 100,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "NodeLevelHealthTriggeredIV",
+                    "Trigger_Condition_List": [
+                        "ExitedRelationship"
+                    ],
+                    "Demographic_Coverage": 1,
+                    "Targeting_Config": {
+                        "class": "HasRelationship",
+                        "That_Recently": "ENDED",
+                        "With_Partner_Who": {}
+                    },
+                    "Actual_IndividualIntervention_Config": {
+                        "class": "BroadcastEvent",
+                        "Broadcast_Event": "MyRelationshipJustEnded"
+                    }
+                }
+            }
+        }
+    ]
+}

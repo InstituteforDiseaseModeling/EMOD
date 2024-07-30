@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
@@ -28,8 +20,6 @@ SETUP_LOGGING( "HIVReportEventRecorder" )
 
 namespace Kernel
 {
-    GET_SCHEMA_STATIC_WRAPPER_IMPL(HIVReportEventRecorder,HIVReportEventRecorder)
-
     IReport* HIVReportEventRecorder::CreateReport()
     {
         return new HIVReportEventRecorder();
@@ -47,7 +37,7 @@ namespace Kernel
 
     void HIVReportEventRecorder::Initialize( unsigned int nrmSize )
     {
-        ReportEventRecorder::Initialize( nrmSize );
+        STIReportEventRecorder::Initialize( nrmSize );
 
         // has to be done if Initialize() since it is called after the demographics is read
         IndividualProperty* p_ip = IPFactory::GetInstance()->GetIP( "InterventionStatus", "", false );
@@ -59,12 +49,13 @@ namespace Kernel
 
     std::string HIVReportEventRecorder::GetHeader() const
     {
-        std::string header = ReportEventRecorder::GetHeader() ;
+        std::string header = STIReportEventRecorder::GetHeader() ;
         header += "," ;
         header += "HasHIV," ;
         header += "OnART," ;
         header += "CD4," ;
-        header += "WHO_Stage," ;
+        header += "WHO_Stage,";
+        header += "HIV_Stage,";
         header += "InterventionStatus";
 
         return header;
@@ -84,10 +75,12 @@ namespace Kernel
 
         float cd4 = 1e6;
         float who_stage = -1.0f;
+        std::string hiv_stage = HIVInfectionStage::pairs::lookup_key( HIVInfectionStage::NOT_INFECTED );
         if( iindividual_hiv->HasHIV() )
         {
             cd4       = iindividual_hiv->GetHIVSusceptibility()->GetCD4count();
             who_stage = iindividual_hiv->GetHIVInfection()->GetWHOStage();
+            hiv_stage = HIVInfectionStage::pairs::lookup_key( iindividual_hiv->GetHIVInfection()->GetStage() );
         }
 
         std::string intervention_state = "None";
@@ -103,6 +96,7 @@ namespace Kernel
            << on_ART        << ","
            << cd4           << ","
            << who_stage     << ","
+           << hiv_stage     << ","
            << intervention_state;
 
         return ss.str() ;

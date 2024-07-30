@@ -1,0 +1,45 @@
+{
+    "Campaign_Name": "Unnamed Campaign",
+    "Events": [
+        {
+            "Notes": "First Outbreak",
+            "class": "CampaignEvent",
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "OutbreakIndividualMalariaGenetics",
+                    "Barcode_String": "AAAA",
+                    "Create_Nucleotide_Sequence_From": "BARCODE_STRING",
+                    "Drug_Resistant_String": "",
+                    "HRP_String": "",
+                    "Ignore_Immunity": 1,
+                    "Incubation_Period_Override": -1
+                },
+                "Individual_Selection_Type": "TARGET_NUM_INDIVIDUALS",
+                "Node_Property_Restrictions": [],
+                "Number_Repetitions": 1,
+                "Property_Restrictions": [],
+                "Property_Restrictions_Within_Node": [],
+                "Target_Demographic": "Everyone",
+                "Target_Gender": "All",
+                "Target_Num_Individuals": 1,
+                "Target_Residents_Only": 0,
+                "Targeting_Config": {
+                    "HasIP": {},
+                    "HasIntervention": {},
+                    "IsPregnant": {},
+                    "TargetingLogic": {}
+                },
+                "Timesteps_Between_Repetitions": 1
+            },
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List": [
+                    1
+                ]
+            },
+            "Start_Day": 1
+        }
+    ],
+    "Use_Defaults": 1
+}

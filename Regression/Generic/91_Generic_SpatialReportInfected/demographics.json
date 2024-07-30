@@ -1,0 +1,95 @@
+{
+    "Metadata": {
+        "DateCreated": "Sun Sep 25 23:19:55 2011", 
+        "Tool": "convertdemog.py", 
+        "Author": "jsteinkraus", 
+        "IdReference": "SampleContent", 
+        "NodeCount": 2,
+		"Resolution": 150
+    }, 
+    "Defaults": {
+        "NodeAttributes": {
+            "Altitude": 0, 
+            "Airport": 0, 
+            "Region": 1, 
+            "Seaport": 0, 
+            "BirthRate": 0.0000548
+        }, 
+        "IndividualAttributes": {
+            "AgeDistributionFlag": 1, 
+            "AgeDistribution1": 0, 
+            "AgeDistribution2": 36500, 
+            "PrevalenceDistributionFlag": 0, 
+            "PrevalenceDistribution1": 0.0, 
+            "PrevalenceDistribution2": 0.0, 
+            "SusceptibilityDistributionFlag": 0, 
+            "SusceptibilityDistribution1": 1, 
+            "SusceptibilityDistribution2": 0, 
+            "RiskDistributionFlag": 0, 
+            "RiskDistribution1": 1, 
+            "RiskDistribution2": 0, 
+            "MigrationHeterogeneityDistributionFlag": 0, 
+            "MigrationHeterogeneityDistribution1": 1, 
+            "MigrationHeterogeneityDistribution2": 0,
+            "MortalityDistribution": {
+                "NumDistributionAxes": 2,
+                "AxisNames": [ "gender", "age" ],
+                "AxisUnits": [ "male=0,female=1", "years" ],
+                "AxisScaleFactors": [ 1, 365 ],
+                "NumPopulationGroups": [ 2, 1 ],
+                "PopulationGroups": [
+                    [ 0, 1 ],
+                    [ 0 ]
+                ],
+                "ResultUnits": "deaths per day",
+                "ResultScaleFactor": 1,
+                "ResultValues": [
+                    [ 0.0000548 ],
+                    [ 0.0000548 ]
+                ]
+            }
+        }
+    },
+    "Nodes": [
+        {
+            "NodeID": 1, 
+            "NodeAttributes": {
+                "Latitude": 0, 
+                "Longitude": 0, 
+                "InitialPopulation": 100
+            }
+        },
+        {
+            "NodeID": 2, 
+            "NodeAttributes": {
+                "Latitude": 0, 
+                "Longitude": 0.01, 
+                "InitialPopulation": 200
+            }
+        },
+        {
+            "NodeID": 3, 
+            "NodeAttributes": {
+                "Latitude": 0, 
+                "Longitude": 0.02, 
+                "InitialPopulation": 300
+            }
+        },
+        {
+            "NodeID": 4, 
+            "NodeAttributes": {
+                "Latitude": 0, 
+                "Longitude": 0.03, 
+                "InitialPopulation": 400
+            }
+        },
+        {
+            "NodeID": 5, 
+            "NodeAttributes": {
+                "Latitude": 0, 
+                "Longitude": 0.04, 
+                "InitialPopulation": 500
+            }
+        }
+    ]
+}

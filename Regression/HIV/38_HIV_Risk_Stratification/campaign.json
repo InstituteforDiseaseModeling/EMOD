@@ -96,7 +96,6 @@
                         },
                         "Interpolation_Order": 1,
                         "Female_Multiplier": 3,
-                        "Event_Or_Config": "Event",
                         "Positive_Diagnosis_Event": "LTFU0"
                     }
                 }

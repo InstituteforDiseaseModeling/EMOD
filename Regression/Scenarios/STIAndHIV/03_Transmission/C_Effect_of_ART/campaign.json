@@ -35,8 +35,8 @@
 
                 "Intervention_Config":
                 {
-                    "class": "ARTBasic",
-                    "Viral_Suppression": 1
+                    "class": "AntiretroviralTherapy",
+                    "ART_Is_Active_Against_Mortality_And_Transmission": 1
                 }
             }
         }

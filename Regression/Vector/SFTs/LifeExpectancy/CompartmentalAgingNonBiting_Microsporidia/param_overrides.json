@@ -1,0 +1,62 @@
+{
+    "parameters": {
+        "CAMPAIGNS": {
+            "Enable_Interventions": 1
+        },
+        "DEMOGRAPHICS": {
+            "Demographics_Filenames": [
+                "../../Input/Vector_single_node_demographics.json",
+                "../../Input/10000_vectors_overlay.spreadrisk.json"
+            ]
+        },
+        "PRIMARY": {
+            "Config_Name": "Vector:SFT:LifeExpectancy:CompartamentalAgingNonBiting_Microsporidia",
+            "Simulation_Duration": 600
+        },
+        "VECTOR": {
+            "Enable_Vector_Aging": 1,
+            "SPECIES": {
+                "Vector_Species_Params": [
+                    {
+                        "Name":"TestVector",
+                        "Adult_Life_Expectancy": 10,
+                        "Male_Life_Expectancy": 17,
+                        "Days_Between_Feeds": 10,
+                        "Microsporidia": [
+                            {
+                                "Strain_Name": "Strain_A",
+                                "Female_Mortality_Modifier": 0.85,
+                                "Female_To_Egg_Transmission_Probability": 1,
+                                "Male_To_Egg_Transmission_Probability": 0,
+                                "Female_To_Male_Transmission_Probability": 0,
+                                "Larval_Growth_Modifier": 1,
+                                "Male_Mortality_Modifier": 1.2,
+                                "Male_To_Female_Transmission_Probability": 0,
+                                "Duration_To_Disease_Acquisition_Modification": {
+                                    "Times": [
+                                        0
+                                    ],
+                                    "Values": [
+                                        1.0
+                                    ]
+                                },
+                                "Duration_To_Disease_Transmission_Modification": {
+                                    "Times": [
+                                        0
+                                    ],
+                                    "Values": [
+                                        1.0
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        "LOGGING": {
+            "logLevel_VectorPopulation": "VALID"
+        },
+        "Default_Config_Path": "defaults/vector_science_default_config.json"
+    }
+}

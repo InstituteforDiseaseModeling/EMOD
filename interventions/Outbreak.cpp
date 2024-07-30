@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "Outbreak.h"
@@ -39,12 +31,15 @@ namespace Kernel
 
     IMPLEMENT_FACTORY_REGISTERED(Outbreak)
 
-    Outbreak::Outbreak() : import_age(DAYSPERYEAR)
+    Outbreak::Outbreak()
+        : BaseNodeIntervention()
+        , antigen(0)
+        , genome(0)
+        , import_age(DAYSPERYEAR)
+        , num_cases_per_node(1)
+        , prob_infection(1.0)
     {
-        initSimTypes( 10, "GENERIC_SIM" , "VECTOR_SIM" , "MALARIA_SIM", "AIRBORNE_SIM", "POLIO_SIM", "TBHIV_SIM", "STI_SIM", "HIV_SIM", "PY_SIM", "TYPHOID_SIM" );
-        initConfigTypeMap( "Antigen", &antigen, Antigen_DESC_TEXT, 0, 10, 0 );
-        initConfigTypeMap( "Genome",  &genome,  Genome_DESC_TEXT, -1, 16777216, 0 );
-        initConfigTypeMap( "Incubation_Period_Override", &incubation_period_override, Incubation_Period_Override_DESC_TEXT,-1, INT_MAX, -1);
+        initSimTypes( 5, "GENERIC_SIM", "VECTOR_SIM", "MALARIA_SIM", "STI_SIM", "HIV_SIM" );
     }
 
     bool
@@ -52,12 +47,28 @@ namespace Kernel
         const Configuration * inputJson
     )
     {
-        initConfigTypeMap( "Number_Cases_Per_Node",  &num_cases_per_node,  Num_Import_Cases_Per_Node_DESC_TEXT, 0, INT_MAX, 1 );
+        initConfigTypeMap( "Antigen", &antigen, Antigen_DESC_TEXT, 0, 10, 0 );
+        initConfigTypeMap( "Genome", &genome, Genome_DESC_TEXT, -1, 16777216, 0 );
         initConfigTypeMap( "Import_Age", &import_age, Import_Age_DESC_TEXT, 0, MAX_INDIVIDUAL_AGE_IN_YRS*DAYSPERYEAR, DAYSPERYEAR );
-        initConfigTypeMap( "Probability_Of_Infection", &prob_infection, Probability_Of_Infection_DESC_TEXT, 1.0 );
+        ExtraConfiguration();
         
-        JsonConfigurable::Configure( inputJson );
-        return true;
+        bool is_configured = JsonConfigurable::Configure( inputJson );
+        if( is_configured && !JsonConfigurable::_dryrun )
+        {
+            if( (GET_CONFIG_STRING( EnvPtr->Config, "Simulation_Type" ) == "MALARIA_SIM") &&
+                (GET_CONFIG_STRING( EnvPtr->Config, "Malaria_Model" ) == "MALARIA_MECHANISTIC_MODEL_WITH_PARASITE_GENETICS") )
+            {
+                throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__,
+                                                        "'Outbreak' cannot be used with parasite genetics.\nPlease use OutbreakIndividualMalariaGenetics." );
+            }
+        }
+        return is_configured;
+    }
+
+    void Outbreak::ExtraConfiguration()
+    {
+        initConfigTypeMap( "Number_Cases_Per_Node",  &num_cases_per_node,  Number_Cases_Per_Node_DESC_TEXT, 0, INT_MAX, 1 );
+        initConfigTypeMap( "Probability_Of_Infection", &prob_infection, Probability_Of_Infection_DESC_TEXT, 1.0 );
     }
 
     bool Outbreak::Distribute(INodeEventContext *context, IEventCoordinator2* pEC)
@@ -67,8 +78,10 @@ namespace Kernel
         IOutbreakConsumer *ioc;
         if (s_OK == context->QueryInterface(GET_IID(IOutbreakConsumer), (void**)&ioc))
         {
-            ioc->AddImportCases(GetNewStrainIdentity( context ), import_age, num_cases_per_node, prob_infection);
+            IStrainIdentity* p_si = GetNewStrainIdentity( context );
+            ioc->AddImportCases( p_si, import_age, num_cases_per_node, prob_infection );
             wasDistributed = true;
+            delete p_si;
         }
         else
         {
@@ -84,44 +97,14 @@ namespace Kernel
         // Distribute() doesn't call GiveIntervention() for this intervention, so it isn't added to the NodeEventContext's list of NDI
     }
 
-    Kernel::StrainIdentity* Outbreak::GetNewStrainIdentity(INodeEventContext *context)
+    IStrainIdentity* Outbreak::GetNewStrainIdentity(INodeEventContext *context)
     {
-        StrainIdentity *outbreak_strainID = nullptr;
-
-        // Important: Use the instance method to obtain the intervention factory obj instead of static method to cross the DLL boundary
-        // NO usage of GET_CONFIGURABLE(SimulationConfig)->number_substrains in DLL
-        IGlobalContext *pGC = nullptr;
-        const SimulationConfig* simConfigObj = nullptr;
-        if (s_OK == context->QueryInterface(GET_IID(IGlobalContext), (void**)&pGC))
-        {
-            simConfigObj = pGC->GetSimulationConfigObj();
-        }
-        if (!simConfigObj)
-        {
-            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, "The pointer to IInterventionFactory object is not valid (could be DLL specific)" );
-        }
-
-        //if (( antigen < 0 ) || ( antigen >= simConfigObj->number_basestrains ))
         if( antigen < 0 )
         {
-            //throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "antigen", antigen, "number_basestrains", simConfigObj->number_basestrains );
             throw ConfigurationRangeException( __FILE__, __LINE__, __FUNCTION__, "antigen", antigen, 0 );
         }
 
-        outbreak_strainID = _new_ StrainIdentity(antigen, genome);
-
+        StrainIdentity* outbreak_strainID = _new_ StrainIdentity( antigen, genome );
         return outbreak_strainID;
     }
 }
-
-#if 0
-namespace Kernel {
-    template<class Archive>
-    void serialize(Archive &ar, Outbreak &ob, const unsigned int v)
-    {
-        ar & ob.antigen;
-        ar & ob.genome;
-        ar & ob.import_age;
-    }
-}
-#endif

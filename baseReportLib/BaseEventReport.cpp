@@ -1,31 +1,23 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
-#include "ISupports.h"
+
 #include "BaseEventReport.h"
+
+#include "report_params.rc"
+#include "ISupports.h"
 #include "NodeEventContext.h"
 #include "EventTrigger.h"
+#include "SimulationEventContext.h"
 
 // DON'T COMMIT THIS CHANGE BELOW
 SETUP_LOGGING( "BaseEventReport" )
 
 namespace Kernel
 {
-    BaseEventReport::BaseEventReport( const std::string& rReportName )
+    BaseEventReport::BaseEventReport( const std::string& rReportName, bool useHumanMinMaxAge, bool useHumanOther )
         : IReport()
         , reportName(rReportName)
-        , startDay(0.0f)
-        , durationDays(0.0f)
-        , reportDescription()
-        , pNodeSet(nullptr)
-        , nodesetConfig()
+        , report_filter( nullptr, "", false, useHumanMinMaxAge, useHumanOther )
         , eventTriggerList()
         , events_registered(false)
         , events_unregistered(false)
@@ -35,8 +27,6 @@ namespace Kernel
 
     BaseEventReport::~BaseEventReport()
     {
-        delete pNodeSet ;
-        pNodeSet = nullptr ;
     }
 
     // ---------------------
@@ -45,40 +35,31 @@ namespace Kernel
 
     bool BaseEventReport::Configure( const Configuration* inputJson )
     {
-        initConfigTypeMap( "Start_Day",      &startDay,     Start_Day_DESC_TEXT, 0.0f, FLT_MAX, 0.0f );
-        initConfigTypeMap( "Duration_Days",  &durationDays, Duration_Days_DESC_TEXT, 0.0f, FLT_MAX, FLT_MAX );
-        if( inputJson->Exist("Report_Description") )
-        {
-            initConfigTypeMap( "Report_Description", &reportDescription, Report_Description_DESC_TEXT );
-        }
-        if( inputJson->Exist("Nodeset_Config") )
-        {
-            initConfigComplexType( "Nodeset_Config", &nodesetConfig, Nodeset_Config_DESC_TEXT );
-        }
-        else
-        {
-            pNodeSet = new NodeSetAll();
-        }
-
-        if( inputJson->Exist( "Event_Trigger_List" ) )
-        {
-            initConfigTypeMap( "Event_Trigger_List", &eventTriggerList, Event_Trigger_List_DESC_TEXT );
-        }
+        report_filter.ConfigureParameters( *this, inputJson );
+        ConfigureEvents( inputJson );
 
         bool retValue = JsonConfigurable::Configure( inputJson );
+        if( retValue && !JsonConfigurable::_dryrun )
+        {
+            report_filter.CheckParameters( inputJson );
+            CheckConfigurationEvents();
+        }
+        return retValue ;
+    }
+
+    void BaseEventReport::ConfigureEvents( const Configuration* inputJson )
+    {
+        initConfigTypeMap( "Event_Trigger_List", &eventTriggerList, Report_Event_Trigger_List_DESC_TEXT );
+    }
+
+    void BaseEventReport::CheckConfigurationEvents()
+    {
         if( eventTriggerList.size() == 0 )
         {
-            eventTriggerList = EventTriggerFactory::GetInstance()->GetAllEventTriggers();
+            std::stringstream ss;
+            ss << "'Event_Trigger_List' cannot be empty in report " << GetReportName();
+            throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
         }
-
-        if( retValue && (pNodeSet == nullptr) )
-        {
-            auto tmp = Configuration::CopyFromElement( nodesetConfig._json, inputJson->GetDataLocation() );
-            pNodeSet = NodeSetFactory::CreateInstance( tmp );
-            delete tmp;
-        }
-
-        return retValue ;
     }
 
     // ------------
@@ -92,21 +73,12 @@ namespace Kernel
 
     void BaseEventReport::Initialize( unsigned int nrmSize )
     {
+        report_filter.Initialize();
     }
 
     void BaseEventReport::CheckForValidNodeIDs(const std::vector<ExternalNodeId_t>& nodeIds_demographics)
     {
-        std::vector<ExternalNodeId_t> nodes_missing_in_demographics = pNodeSet->IsSubset(nodeIds_demographics);
-        if (!nodes_missing_in_demographics.empty())
-        {
-            std::stringstream nodes_missing_in_demographics_str;
-            std::copy(nodes_missing_in_demographics.begin(), nodes_missing_in_demographics.end(), ostream_iterator<int>(nodes_missing_in_demographics_str, " "));  // list of missing nodes
-
-            std::stringstream error_msg;
-            error_msg <<"Found NodeIDs in " << GetReportName().c_str() << " that are missing in demographics: ";
-            error_msg << nodes_missing_in_demographics_str.str() << ". Only nodes configured in demographics can be used in a report.";
-            throw InvalidInputDataException(__FILE__, __LINE__, __FUNCTION__, error_msg.str().c_str());
-        }
+        report_filter.CheckForValidNodeIDs( GetReportName(), nodeIds_demographics );
     }
 
     void BaseEventReport::UpdateEventRegistration( float currentTime,
@@ -114,16 +86,34 @@ namespace Kernel
                                                    std::vector<INodeEventContext*>& rNodeEventContextList,
                                                    ISimulationEventContext* pSimEventContext )
     {
+        bool is_valid_time = report_filter.IsValidTime( pSimEventContext->GetSimulationTime() );
         bool register_now = false ;
         bool unregister_now = false ;
-        if( !events_registered && (currentTime >= startDay) )
+        if( !events_registered && is_valid_time )
         {
+            // register events during this time step
             register_now = true ;
+
+            // ------------------------------------------------------------------------------
+            // --- set this member variable to true here versus RegisterEvents() because
+            // --- we want the report on this core to know that it is time to collect data
+            // --- even if the report does not have any nodes on this core.  This will ensure
+            // --- that the core communicates with the other cores.
+            // ------------------------------------------------------------------------------
+            events_registered = true;
         }
-        else if( events_registered && !events_unregistered && (currentTime >= (startDay + durationDays)) )
+        else if( events_registered && !events_unregistered && !is_valid_time )
         {
+            // unregister the events during this time step
             unregister_now = true ;
+
+            // ----------------------------------------------------------------------------
+            // --- This member variable is set here like events_registered so that it will
+            // --- be set even if the report does not have any nodes on this core.
+            // ----------------------------------------------------------------------------
+            events_unregistered = true;
         }
+
         // --------------------------------------------------------
         // --- if the events have been registered and unregistered,
         // --- then we are NOT going to register them again.
@@ -134,7 +124,7 @@ namespace Kernel
         {
             for( auto p_nec : rNodeEventContextList )
             {
-                if( pNodeSet->Contains( p_nec ) )
+                if( report_filter.IsValidNode( p_nec ) )
                 {
                     if( register_now )
                     {
@@ -187,14 +177,7 @@ namespace Kernel
     BaseEventReport::GetStartDay()
     const
     {
-        return startDay;
-    }
-
-    float
-    BaseEventReport::GetDurationDays()
-    const
-    {
-        return durationDays;
+        return report_filter.GetStartDay();
     }
 
     const std::vector< EventTrigger >&
@@ -217,7 +200,6 @@ namespace Kernel
             broadcaster->RegisterObserver( this, trigger );
         }
         nodeEventContextList.push_back( pNEC );
-        events_registered = true ;
     }
 
     void BaseEventReport::UnregisterEvents( INodeEventContext* pNEC )
@@ -229,7 +211,6 @@ namespace Kernel
             LOG_DEBUG_F( "BaseEventReport is unregistering to listen to event %s\n", trigger.c_str() );
             broadcaster->UnregisterObserver( this, trigger );
         }
-        events_unregistered = true ;
     }
 
     void BaseEventReport::UnregisterAllNodes()
@@ -265,11 +246,6 @@ namespace Kernel
 
     std::string BaseEventReport::GetBaseOutputFilename() const
     {
-        std::string output_fn = reportName ;
-        if( !reportDescription.empty() )
-        {
-            output_fn += "_" + reportDescription ;
-        }
-        return output_fn ;
+        return report_filter.GetNewReportName( reportName );
     }
 }

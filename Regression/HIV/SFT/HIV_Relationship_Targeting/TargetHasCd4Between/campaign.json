@@ -1,0 +1,112 @@
+{
+    "Campaign_Name": "TargetHasCd4Between test",
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Antigen": 0, 
+                    "Genome": 0, 
+                    "Incubation_Period_Override": 0,
+                    "Ignore_Immunity": 1
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 15,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 1,
+                "Intervention_Config": {
+                    "class": "HIVRapidHIVDiagnostic",
+                    "Cost_To_Consumer": 1.0,
+                    "Positive_Diagnosis_Event": "HasHIV",
+                    "Negative_Diagnosis_Event": "NoHIV"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 15,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Targeting_Config": {
+                    "class" : "HasCd4BetweenMinAndMax",
+                    "Is_Equal_To": 1,
+                    "Min_CD4": 530.0,
+                    "Max_CD4": 600.0
+                },
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "BroadcastEvent",
+                    "Broadcast_Event": "530-600",
+                    "Intervention_Name": "Intervention Under Test"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 15,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Targeting_Config": {
+                    "class" : "HasCd4BetweenMinAndMax",
+                    "Is_Equal_To": 1,
+                    "Min_CD4": 220,
+                    "Max_CD4": 530
+                },
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "BroadcastEvent",
+                    "Broadcast_Event": "220-530",
+                    "Intervention_Name": "Intervention Under Test"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 15,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Targeting_Config": {
+                    "class" : "HasCd4BetweenMinAndMax",
+                    "Is_Equal_To": 1,
+                    "Min_CD4": 0,
+                    "Max_CD4": 220
+                },
+                "Demographic_Coverage": 1.0,
+                "Intervention_Config": {
+                    "class": "BroadcastEvent",
+                    "Broadcast_Event": "0-220",
+                    "Intervention_Name": "Intervention Under Test"
+                }
+            }
+        }
+    ]
+}

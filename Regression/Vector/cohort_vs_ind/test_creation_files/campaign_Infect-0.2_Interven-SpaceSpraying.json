@@ -1,0 +1,46 @@
+{
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 0.2,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Antigen": 0, 
+                    "Genome": 0
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 150, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "SpaceSpraying",
+                    "Cost_To_Consumer": 1.0, 
+                    "Spray_Kill_Target": "SpaceSpray_FemalesOnly", 
+                    "Habitat_Target": "ALL_HABITATS", 
+                    "Reduction_Config": {
+                        "Initial_Effect": 0.1, 
+                        "class": "WaningEffectConstant"
+                    }, 
+                    "Killing_Config": {
+                        "Initial_Effect": 0.15, 
+                        "class": "WaningEffectConstant"
+                    }
+                }
+            }
+        }
+    ], 
+    "Use_Defaults": 1
+}

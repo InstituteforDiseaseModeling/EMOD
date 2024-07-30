@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -35,15 +27,12 @@ namespace Kernel
         float GetMaxSimultaneiousRelsFemale() const { return m_MaxSimultaneiousRelsFemale; }
 
     private:
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         std::string m_PropertyValue;
 
         float m_ProbExtraRelsMale;
         float m_ProbExtraRelsFemale;
         float m_MaxSimultaneiousRelsMale;
         float m_MaxSimultaneiousRelsFemale;
-#pragma warning( pop )
     };
 
     class IDMAPI ConcurrencyParameters : public JsonConfigurable
@@ -64,10 +53,7 @@ namespace Kernel
     private:
         //virtual bool Configure( const ::Configuration *json ) override;
 
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         std::map<std::string,ConcurrencyByProperty*> m_PropertyValueToConcurrencyMap;
-#pragma warning( pop )
     };
 
     class IDMAPI ConcurrencyConfigurationByProperty : public JsonConfigurable
@@ -84,12 +70,9 @@ namespace Kernel
         const std::vector<RelationshipType::Enum>& GetRelationshipTypeOrder() const { return m_RelTypeOrder; }
 
     private:
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         std::string m_PropretyValue;
         ExtraRelationalFlagType::Enum m_ExtraRelFlag;
         std::vector<RelationshipType::Enum> m_RelTypeOrder;
-#pragma warning( pop )
     };
 
     class IDMAPI ConcurrencyConfiguration : public JsonConfigurable, public IConcurrency
@@ -111,7 +94,7 @@ namespace Kernel
 
         virtual bool IsConcurrencyProperty( const char* prop ) const override;
 
-        virtual const char* GetConcurrencyPropertyValue( const tProperties* the_individuals_properties, 
+        virtual const char* GetConcurrencyPropertyValue( const IPKeyValueContainer& rProperties, 
                                                          const char* prop, 
                                                          const char* prop_value ) const override;
 
@@ -133,12 +116,9 @@ namespace Kernel
         void AddParameters( RelationshipType::Enum relType, ConcurrencyParameters* pCP );
 
     private:
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         std::string m_PropertyKey;
         std::map<std::string,ConcurrencyConfigurationByProperty*> m_PropertyValueToConfig;
         std::map<RelationshipType::Enum,ConcurrencyParameters*> m_RelTypeToParametersMap;
         float m_ProbSuperSpreader;
-#pragma warning( pop )
     };
 }

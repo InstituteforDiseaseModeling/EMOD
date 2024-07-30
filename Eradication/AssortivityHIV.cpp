@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "AssortivityHIV.h"
@@ -158,11 +150,7 @@ namespace Kernel
         {
             throw QueryInterfaceException(__FILE__, __LINE__, __FUNCTION__, "p_partner_hiv", "IIndividualHumanHIV", "IIndividualHumanSTI");
         }
-        IHIVMedicalHistory * p_med_history = nullptr;
-        if (p_partner_hiv->GetHIVInterventionsContainer()->QueryInterface(GET_IID(IHIVMedicalHistory), (void**)&p_med_history) != s_OK)
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "pIndividual", "IHIVMedicalHistory", "IHIVInterventionsContainer" );
-        }
+        IHIVMedicalHistory * p_med_history = p_partner_hiv->GetMedicalHistory();
         return (p_med_history->EverTestedHIVPositive() ? 1 : 0) ;
     }
 
@@ -173,11 +161,8 @@ namespace Kernel
         {
             throw QueryInterfaceException(__FILE__, __LINE__, __FUNCTION__, "p_partner_hiv", "IIndividualHumanHIV", "IIndividualHumanSTI");
         }
-        IHIVMedicalHistory * p_med_history = nullptr;
-        if (p_partner_hiv->GetHIVInterventionsContainer()->QueryInterface(GET_IID(IHIVMedicalHistory), (void**)&p_med_history) != s_OK)
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "p_partner_hiv->GetHIVInterventionsContainer()", "IHIVMedicalHistory", "IHIVInterventionsContainer" );
-        }
+        IHIVMedicalHistory * p_med_history = p_partner_hiv->GetMedicalHistory();
+
         ReceivedTestResultsType::Enum results_enum = p_med_history->ReceivedTestResultForHIV();
         return int( results_enum );
     }

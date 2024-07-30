@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 #include "ISusceptibilityContext.h"
@@ -21,24 +13,25 @@ namespace Kernel
     struct IInfection : ISerializable
     {
         virtual suids::suid GetSuid() const = 0;
-        virtual void Update(float, ISusceptibilityContext* = nullptr) = 0;
+        virtual void Update( float currentTime, float dt, ISusceptibilityContext* immunity = nullptr) = 0;
         virtual InfectionStateChange::_enum GetStateChange() const = 0;
         virtual float GetInfectiousness() const = 0;
 
         virtual float GetInfectiousnessByRoute( const std::string& route) const = 0;
-        virtual void GetInfectiousStrainID(IStrainIdentity*) = 0;
+        virtual const IStrainIdentity& GetInfectiousStrainID() const = 0;
 
         virtual bool IsActive() const = 0;
         virtual NonNegativeFloat GetDuration() const = 0;
         virtual void SetContextTo(IIndividualHumanContext*) = 0;
-        virtual void SetParameters(IStrainIdentity* infstrain=nullptr, int incubation_period_override = -1 ) = 0;
+        virtual void SetParameters( const IStrainIdentity* infstrain, int incubation_period_override = -1 ) = 0;
         virtual void InitInfectionImmunology(ISusceptibilityContext* _immunity) = 0;
         virtual bool StrainMatches( IStrainIdentity * pStrain ) = 0;
         virtual bool IsSymptomatic() const = 0;
         virtual bool IsNewlySymptomatic() const = 0;
+        virtual float GetSimTimeCreated() const = 0;
 
         virtual ~IInfection() {}
     };
 
-    typedef std::list<IInfection*> infection_list_t;
+    typedef std::vector<IInfection*> infection_list_t;
 }

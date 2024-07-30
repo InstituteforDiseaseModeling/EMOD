@@ -1,0 +1,14 @@
+{
+    "Default_Config_Path": "Malaria/fpg_vs_base/default_config.json",
+    "parameters": {
+        "Config_Name": "88_Int-OutdoorRestKill_K-0.5",
+        "Python_Script_Path": "SHARED",
+        "Vector_Species_Params": [
+            {
+                "Infectious_Human_Feed_Mortality_Factor": 1.0,
+                "Indoor_Feeding_Fraction": 0.0,
+                "Name": "SillySkeeter"
+            }
+        ]
+    }
+}

@@ -1,0 +1,42 @@
+{
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone", 
+                "Demographic_Coverage": 0.2,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual",
+                    "Antigen": 0, 
+                    "Genome": 0
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 150, 
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            }, 
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "class": "SugarTrap",
+                    "Cost_To_Consumer": 1, 
+                    "Killing_Config" : {
+                        "Initial_Effect": 0.125, 
+                        "class": "WaningEffectConstant"
+                    },
+                    "Expiration_Period_Distribution" : "CONSTANT_DISTRIBUTION",
+                    "Expiration_Period_Constant" : 1000
+                }
+            }
+        }
+    ], 
+    "Use_Defaults": 1
+}

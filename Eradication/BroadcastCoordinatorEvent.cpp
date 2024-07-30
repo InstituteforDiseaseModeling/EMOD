@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #ifndef WIN32
@@ -60,7 +52,7 @@ namespace Kernel
 #endif
         std::string default_name = m_CoordinatorName;
 
-        initConfigTypeMap( "Coordinator_Name", &m_CoordinatorName,  BCE_Coordinator_Name_DESC_TEXT, default_name );
+        initConfigTypeMap( "Coordinator_Name", &m_CoordinatorName,  Coordinator_Name_DESC_TEXT, default_name );
         initConfigTypeMap( "Broadcast_Event",  &m_EventToBroadcast, BCE_Broadcast_Event_DESC_TEXT );
         initConfigTypeMap( "Cost_To_Consumer", &m_CampaignCost,     BCE_Cost_To_Consumer_DESC_TEXT, 0.0f, FLT_MAX, 0.0f );
 

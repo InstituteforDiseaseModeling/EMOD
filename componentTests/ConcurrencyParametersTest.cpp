@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include <iostream>
@@ -82,10 +74,6 @@ SUITE(ConcurrencyParametersTest)
 
     TEST_FIXTURE(ConcurrencyParametersFixture, TestGoodParametersRisk)
     {
-        tProperties individual_properties;
-        individual_properties.insert( std::make_pair( "ACCESSIBILITY", "YES" ) );
-        individual_properties.insert( std::make_pair( "RISK", "MED" ) );
-
         std::map<std::string,float> risk_ip_values ;
         risk_ip_values.insert( std::make_pair( "LOW",  0.2f ) );
         risk_ip_values.insert( std::make_pair( "MED",  0.5f ) );
@@ -98,6 +86,10 @@ SUITE(ConcurrencyParametersTest)
         access_ip_values.insert( std::make_pair( "YES", 0.8f ) );
 
         IPFactory::GetInstance()->AddIP( 1, "ACCESSIBILITY", access_ip_values );
+
+        IPKeyValueContainer individual_properties;
+        individual_properties.Add( IPKeyValue( "ACCESSIBILITY:YES" ) );
+        individual_properties.Add( IPKeyValue( "RISK:MED" ) );
 
         ConcurrencyConfiguration* tmp_p_cc = nullptr;
         try
@@ -115,8 +107,8 @@ SUITE(ConcurrencyParametersTest)
         CHECK_EQUAL( 0.77f,               p_cc->GetProbSuperSpreader() );
         CHECK ( p_cc->IsConcurrencyProperty( "RISK" ) );
         CHECK ( !p_cc->IsConcurrencyProperty( "ACCESSIBILITY" ) );
-        CHECK_EQUAL( std::string("MED" ), std::string(p_cc->GetConcurrencyPropertyValue( &individual_properties, nullptr, nullptr )) );
-        CHECK_EQUAL( std::string("HIGH"), std::string(p_cc->GetConcurrencyPropertyValue( &individual_properties, "RISK" , "HIGH" )) );
+        CHECK_EQUAL( std::string("MED" ), std::string(p_cc->GetConcurrencyPropertyValue( individual_properties, nullptr, nullptr )) );
+        CHECK_EQUAL( std::string("HIGH"), std::string(p_cc->GetConcurrencyPropertyValue( individual_properties, "RISK" , "HIGH" )) );
 
         CHECK_EQUAL( 15, p_cc->GetProbExtraRelationalBitMask( m_pRNG, "RISK", "HIGH", Gender::FEMALE, true  ) ); 
         CHECK_EQUAL(  0, p_cc->GetProbExtraRelationalBitMask( m_pRNG, "RISK", "HIGH", Gender::FEMALE, false ) ); 
@@ -173,8 +165,8 @@ SUITE(ConcurrencyParametersTest)
 
         IPFactory::GetInstance()->AddIP( 1, "ACCESSIBILITY", access_ip_values );
 
-        tProperties individual_properties;
-        individual_properties.insert( std::make_pair( "ACCESSIBILITY", "YES" ) );
+        IPKeyValueContainer individual_properties;
+        individual_properties.Add( IPKeyValue( "ACCESSIBILITY:YES" ) );
 
         ConcurrencyConfiguration* tmp_p_cc = nullptr;
         try
@@ -192,8 +184,8 @@ SUITE(ConcurrencyParametersTest)
         CHECK_EQUAL( 0.88f,               p_cc->GetProbSuperSpreader() );
         CHECK ( p_cc->IsConcurrencyProperty( "NONE" ) );
         CHECK ( !p_cc->IsConcurrencyProperty( "ACCESSIBILITY" ) );
-        CHECK_EQUAL( std::string("NONE"), std::string(p_cc->GetConcurrencyPropertyValue( &individual_properties, nullptr, nullptr )) );
-        CHECK_EQUAL( std::string("NONE"), std::string(p_cc->GetConcurrencyPropertyValue( &individual_properties, "ACCESSIBILITY", "YES" )) );
+        CHECK_EQUAL( std::string("NONE"), std::string(p_cc->GetConcurrencyPropertyValue( individual_properties, nullptr, nullptr )) );
+        CHECK_EQUAL( std::string("NONE"), std::string(p_cc->GetConcurrencyPropertyValue( individual_properties, "ACCESSIBILITY", "YES" )) );
 
         CHECK_EQUAL( 15, p_cc->GetProbExtraRelationalBitMask( m_pRNG, "NONE", "NONE", Gender::FEMALE, true  ) ); 
         CHECK_EQUAL( 10, p_cc->GetProbExtraRelationalBitMask( m_pRNG, "NONE", "NONE", Gender::FEMALE, false ) ); 
@@ -264,19 +256,19 @@ SUITE(ConcurrencyParametersTest)
     TEST_FIXTURE(ConcurrencyParametersFixture, TestBadConfigInvalidSuperSpreader)
     {
         TestHelper_Exception( __LINE__, "testdata/ConcurrencyParametersTest/TestBadConfigInvalidSuperSpreader.json",
-            "Configuration variable Probability_Person_Is_Behavioral_Super_Spreader with value -0.77 out of range: less than 0. Occured while reading 'Concurrency_Configuration' from the demographics." );
+            "Configuration variable 'Probability_Person_Is_Behavioral_Super_Spreader' with value -0.77 out of range: less than 0. Occured while reading 'Concurrency_Configuration' from the demographics." );
     }
 
     TEST_FIXTURE(ConcurrencyParametersFixture, TestBadConfigMissingExtraRelFlag)
     {
         TestHelper_Exception( __LINE__, "testdata/ConcurrencyParametersTest/TestBadConfigMissingExtraRelFlag.json",
-            "While trying to parse json data for param/key >>> Extra_Relational_Flag_Type <<< in otherwise valid json segment..." );
+            "Parameter 'Extra_Relational_Flag_Type of ConcurrencyConfigurationByProperty' not found in input file 'Unknown'.\n Occured while reading 'Concurrency_Configuration' from the demographics." );
     }
 
     TEST_FIXTURE(ConcurrencyParametersFixture, TestBadConfigInvalidExtraRelFlag)
     {
         TestHelper_Exception( __LINE__, "testdata/ConcurrencyParametersTest/TestBadConfigInvalidExtraRelFlag.json",
-            "Failed to find enum match for value Independent_XXX and key Extra_Relational_Flag_Type. Possible values are: Independent, Correlated, COUNT\n Occured while reading 'Concurrency_Configuration' from the demographics." );
+            "Failed to find enum match for value 'Independent_XXX' and key 'Extra_Relational_Flag_Type'.\nPossible values are:\nIndependent\nCorrelated\nCOUNT\n Occured while reading 'Concurrency_Configuration' from the demographics." );
     }
 
     TEST_FIXTURE(ConcurrencyParametersFixture, TestBadConfigRelTypeOrderInvalidValue)
@@ -312,6 +304,6 @@ SUITE(ConcurrencyParametersTest)
     TEST_FIXTURE(ConcurrencyParametersFixture, TestBadConcurrInvalidMax)
     {
         TestHelper_Exception( __LINE__, "testdata/ConcurrencyParametersTest/TestBadConcurrInvalidMax.json",
-            "Configuration variable Max_Simultaneous_Relationships_Male with value -9 out of range: less than 0. Occured while reading the 'Concurrency_Parameters' in 'TRANSITORY' from the demographics." );
+            "Configuration variable 'Max_Simultaneous_Relationships_Male' with value -9 out of range: less than 0. Occured while reading the 'Concurrency_Parameters' in 'TRANSITORY' from the demographics." );
     }
 }

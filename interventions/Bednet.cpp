@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "Bednet.h"
@@ -18,6 +10,7 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "Log.h"
 #include "IndividualEventContext.h"
 #include "NodeEventContext.h"
+#include "Insecticides.h"
 
 SETUP_LOGGING( "SimpleBednet" )
 
@@ -27,6 +20,7 @@ namespace Kernel
     // --- AbstractBednet
     // ------------------------------------------------------------------------
     BEGIN_QUERY_INTERFACE_BODY( AbstractBednet )
+        HANDLE_INTERFACE( IReportInterventionDataAccess )
         HANDLE_INTERFACE( IConfigurable )
         HANDLE_INTERFACE(IDistributableIntervention)
         HANDLE_ISUPPORTS_VIA(IDistributableIntervention)
@@ -34,8 +28,7 @@ namespace Kernel
 
     AbstractBednet::AbstractBednet()
         : BaseIntervention()
-        , m_pEffectKilling( nullptr )
-        , m_pEffectBlocking( nullptr )
+        , m_pInsecticideWaningEffect( nullptr )
         , m_pConsumer( nullptr )
     {
         initSimTypes( 2, "MALARIA_SIM", "VECTOR_SIM" );
@@ -43,31 +36,25 @@ namespace Kernel
 
     AbstractBednet::AbstractBednet( const AbstractBednet& master )
         : BaseIntervention( master )
-        , m_pEffectKilling( nullptr )
-        , m_pEffectBlocking( nullptr )
+        , m_pInsecticideWaningEffect( nullptr )
         , m_pConsumer( nullptr )
     {
-        if( master.m_pEffectKilling != nullptr )
+        if( master.m_pInsecticideWaningEffect != nullptr )
         {
-            m_pEffectKilling = master.m_pEffectKilling->Clone();
-        }
-        if( master.m_pEffectBlocking != nullptr )
-        {
-            m_pEffectBlocking = master.m_pEffectBlocking->Clone();
+            m_pInsecticideWaningEffect = master.m_pInsecticideWaningEffect->Clone();
         }
     }
 
     AbstractBednet::~AbstractBednet()
     {
-        delete m_pEffectKilling;
-        delete m_pEffectBlocking;
+        delete m_pInsecticideWaningEffect;
     }
 
     bool AbstractBednet::Configure( const Configuration * inputJson )
     {
         bool configured = true;
 
-        initConfigTypeMap( "Cost_To_Consumer", &cost_per_unit, SB_Cost_To_Consumer_DESC_TEXT, 0, 999999, 3.75 );
+        initConfigTypeMap( "Cost_To_Consumer", &cost_per_unit, IV_Cost_To_Consumer_DESC_TEXT, 0, 999999, 3.75 );
 
         if( configured || JsonConfigurable::_dryrun )
         {
@@ -89,15 +76,36 @@ namespace Kernel
     {
         WaningConfig killing_config;
         WaningConfig blocking_config;
+        WaningConfig repelling_config;
+        InsecticideName name;
+
         initConfigComplexType( "Killing_Config", &killing_config, SB_Killing_Config_DESC_TEXT );
         initConfigComplexType( "Blocking_Config", &blocking_config, SB_Blocking_Config_DESC_TEXT );
+        initConfigComplexType( "Repelling_Config", &repelling_config, Repelling_Config_DESC_TEXT );
+        initConfigTypeMap( "Insecticide_Name", &name, INT_Insecticide_Name_DESC_TEXT );
 
         bool configured = BaseIntervention::Configure( inputJson );
 
         if( configured && !JsonConfigurable::_dryrun )
         {
-            m_pEffectKilling = WaningEffectFactory::CreateInstance( killing_config );
-            m_pEffectBlocking = WaningEffectFactory::CreateInstance( blocking_config );
+            if( (killing_config._json.Type() == json::NULL_ELEMENT) || json_cast<const json::Object&>(killing_config._json).Empty() )
+            {
+                throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, "'Killing_Config' must be defined.");
+            }
+            if( (blocking_config._json.Type() == json::NULL_ELEMENT) || json_cast<const json::Object&>(blocking_config._json).Empty() )
+            {
+                throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, "'Blocking_Config' must be defined.");
+            }
+            if( (repelling_config._json.Type() == json::NULL_ELEMENT) || json_cast<const json::Object&>(repelling_config._json).Empty() )
+            {
+                throw InvalidInputDataException( __FILE__, __LINE__, __FUNCTION__, "'Repelling_Config' must be defined.");
+            }
+
+            WaningConfig empty_config;
+            m_pInsecticideWaningEffect = new InsecticideWaningEffect( empty_config, repelling_config, blocking_config, killing_config );
+
+            name.CheckConfiguration( GetName().ToString(), "Insecticide_Name");
+            m_pInsecticideWaningEffect->SetName( name );
         }
 
         return configured;
@@ -145,29 +153,50 @@ namespace Kernel
         }
     }
 
-    float AbstractBednet::GetEffectKilling() const
+    ReportInterventionData AbstractBednet::GetReportInterventionData() const
     {
-        return m_pEffectKilling->Current();
+        ReportInterventionData data = BaseIntervention::GetReportInterventionData();
+
+        // call the method in AbstractBednet so that SimpleBednet does not include coverage
+        data.efficacy_repelling = AbstractBednet::GetEffectRepelling().GetSum();
+        data.efficacy_blocking  = AbstractBednet::GetEffectBlocking().GetSum();
+        data.efficacy_killing   = AbstractBednet::GetEffectKilling().GetSum();
+        data.efficacy_usage     = GetEffectUsage();
+
+        return data;
     }
 
-    float AbstractBednet::GetEffectBlocking() const
+    GeneticProbability AbstractBednet::GetEffectKilling() const
     {
-        return m_pEffectBlocking->Current();
+        return m_pInsecticideWaningEffect->GetCurrent( ResistanceType::KILLING );
+    }
+
+    GeneticProbability AbstractBednet::GetEffectBlocking() const
+    {
+        return m_pInsecticideWaningEffect->GetCurrent( ResistanceType::BLOCKING );
+    }
+
+    GeneticProbability AbstractBednet::GetEffectRepelling() const
+    {
+        return m_pInsecticideWaningEffect->GetCurrent( ResistanceType::REPELLING );
     }
 
     void AbstractBednet::UseBednet()
     {
-        float current_killingrate  = GetEffectKilling();
-        float current_blockingrate = GetEffectBlocking();
+        GeneticProbability current_killingrate  = GetEffectKilling();
+        GeneticProbability current_blockingrate = GetEffectBlocking();
+        GeneticProbability current_repellingrate = GetEffectRepelling();
+
+        release_assert( m_pConsumer != nullptr );
 
         m_pConsumer->UpdateProbabilityOfKilling( current_killingrate );
         m_pConsumer->UpdateProbabilityOfBlocking( current_blockingrate  );
+        m_pConsumer->UpdateProbabilityOfHouseRepelling( current_repellingrate );
     }
 
     void AbstractBednet::UpdateBlockingAndKilling( float dt )
     {
-        m_pEffectKilling->Update( dt );
-        m_pEffectBlocking->Update( dt );
+        m_pInsecticideWaningEffect->Update( dt );
     }
 
     void AbstractBednet::SetContextTo( IIndividualHumanContext *context )
@@ -177,8 +206,7 @@ namespace Kernel
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context", "IBednetConsumer", "IIndividualHumanContext" );
         }
-        m_pEffectKilling->SetContextTo( context );
-        m_pEffectBlocking->SetContextTo( context );
+        m_pInsecticideWaningEffect->SetContextTo( context );
     }
 
     void AbstractBednet::BroadcastEvent( const EventTrigger& trigger ) const
@@ -194,8 +222,7 @@ namespace Kernel
     {
         BaseIntervention::serialize( ar, obj );
         AbstractBednet& bednet = *obj;
-        ar.labelElement( "m_pEffectBlocking" ) & bednet.m_pEffectBlocking;
-        ar.labelElement( "m_pEffectKilling" ) & bednet.m_pEffectKilling;
+        ar.labelElement( "m_pInsecticideWaningEffect" ) & bednet.m_pInsecticideWaningEffect;
     }
 
     // ------------------------------------------------------------------------
@@ -236,7 +263,9 @@ namespace Kernel
 
         if( configured && !JsonConfigurable::_dryrun )
         {
-            m_pEffectUsage = WaningEffectFactory::CreateInstance( usage_config );
+            m_pEffectUsage = WaningEffectFactory::getInstance()->CreateInstance( usage_config._json,
+                                                                                 inputJson->GetDataLocation(),
+                                                                                 "Usage_Config" );
         }
 
         return configured;
@@ -255,14 +284,19 @@ namespace Kernel
         m_pEffectUsage->Update( dt );
     }
 
-    float SimpleBednet::GetEffectKilling() const
+    GeneticProbability SimpleBednet::GetEffectKilling() const
     {
         return AbstractBednet::GetEffectKilling() * GetEffectUsage();
     }
 
-    float SimpleBednet::GetEffectBlocking() const
+    GeneticProbability SimpleBednet::GetEffectBlocking() const
     {
         return AbstractBednet::GetEffectBlocking() * GetEffectUsage();
+    }
+
+    GeneticProbability SimpleBednet::GetEffectRepelling() const
+    {
+        return AbstractBednet::GetEffectRepelling() * GetEffectUsage();
     }
 
     float SimpleBednet::GetEffectUsage() const

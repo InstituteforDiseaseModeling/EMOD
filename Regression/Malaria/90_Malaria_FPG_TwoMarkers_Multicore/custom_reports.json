@@ -1,0 +1,26 @@
+{
+    "Reports": [
+        {
+            "Age_Bins": [],
+            "Stratify_By_Gender": 0,
+            "Barcodes" : [
+                "AAAAAAAAAAAAAAAAAAAAAAAA",
+                "TAAAAAAAAAAAAAAAAAAAAAAA",
+                "AAAAAAAAAAAAAAAAAAAAAAAT",
+                "TAAAAAAAAAAAAAAAAAAAAAAT"
+            ],
+            "class": "ReportNodeDemographicsMalariaGenetics"
+        },
+        {
+            "Species_List": [
+                "SillySkeeter"
+            ],
+            "COMMENT": "Using one wild card to show it works and only specifying two barcodes so we get data in BarcodeOther column.",
+            "Barcodes" : [
+                "*AAAAAAAAAAAAAAAAAAAAAAT"
+            ],
+            "class": "ReportVectorStatsMalariaGenetics"
+        }
+    ],
+    "Use_Defaults": 1
+}

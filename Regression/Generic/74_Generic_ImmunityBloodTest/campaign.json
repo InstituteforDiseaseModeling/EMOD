@@ -13,7 +13,7 @@
                     "Positive_Diagnosis_Event": "TestedPositive_IamImmune",
                     "Negative_Diagnosis_Event": "TestedNegative_IamSusceptible",
                     "Treatment_Fraction": 1.0,
-                    "Positive_Threshold_AcquisitionImmunity": 0.99,
+                    "Positive_Threshold_Acquisition_Immunity": 0.99,
                     "class": "ImmunityBloodTest"
                 },
                 "class": "StandardInterventionDistributionEventCoordinator"
@@ -61,7 +61,7 @@
                     "Positive_Diagnosis_Event": "TestedPositive_IamImmune",
                     "Negative_Diagnosis_Event": "TestedNegative_IamSusceptible",
                     "Treatment_Fraction": 1.0,
-                    "Positive_Threshold_AcquisitionImmunity": 0.99,
+                    "Positive_Threshold_Acquisition_Immunity": 0.99,
                     "class": "ImmunityBloodTest"
                 },
                 "class": "StandardInterventionDistributionEventCoordinator"
@@ -85,7 +85,7 @@
                     "Positive_Diagnosis_Event": "TestedPositive_IamImmune",
                     "Negative_Diagnosis_Event": "TestedNegative_IamSusceptible",
                     "Treatment_Fraction": 1.0,
-                    "Positive_Threshold_AcquisitionImmunity": 0.99,
+                    "Positive_Threshold_Acquisition_Immunity": 0.99,
                     "class": "ImmunityBloodTest"
                 },
                 "class": "StandardInterventionDistributionEventCoordinator"
@@ -127,7 +127,7 @@
                     "Positive_Diagnosis_Event": "TestedPositive_IamImmune",
                     "Negative_Diagnosis_Event": "TestedNegative_IamSusceptible",
                     "Treatment_Fraction": 1.0,
-                    "Positive_Threshold_AcquisitionImmunity": 0.99,
+                    "Positive_Threshold_Acquisition_Immunity": 0.99,
                     "class": "ImmunityBloodTest"
                 },
                 "class": "StandardInterventionDistributionEventCoordinator"

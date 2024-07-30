@@ -1,0 +1,68 @@
+{
+    "parameters": {
+        "DEMOGRAPHICS": {
+            "Demographics_Filenames": [
+                "../../Input/Vector_single_node_demographics.json",
+                "../../Input/Demographics_Larval_Habitat_Overlay.spreadrisk.json"
+            ],
+            "x_Base_Population": 1e-05
+        },
+        "PRIMARY": {
+            "Config_Name": "Vector:SFT:LarvalDevelopment:ExpDistRate",
+            "Simulation_Duration": 365
+        },
+        "VECTOR": {
+            "x_Temporary_Larval_Habitat":0.01,
+            "EGGS": {
+                "Egg_Saturation_At_Oviposition": "NO_SATURATION"
+            },
+            "Human_Feeding_Mortality": 0,
+            "Larval_Density_Dependence": "NO_DENSITY_DEPENDENCE",
+            "SPECIES": {
+                "Vector_Sampling_Type": "TRACK_ALL_VECTORS",
+                "Vector_Species_Params": [
+                    {
+                        "Name": "TestVector",
+                        "Temperature_Dependent_Feeding_Cycle": "ARRHENIUS_DEPENDENCE",
+                        "Microsporidia": [
+                            {
+                                "Strain_Name":  "Strain_A",
+                                "Female_Mortality_Modifier": 1.0,
+                                "Female_To_Egg_Transmission_Probability": 1,
+                                "Male_To_Egg_Transmission_Probability": 0,
+                                "Female_To_Male_Transmission_Probability": 1,
+                                "Larval_Growth_Modifier": 3,
+                                "Male_Mortality_Modifier": 1.0,
+                                "Male_To_Female_Transmission_Probability": 1,
+                                "Duration_To_Disease_Acquisition_Modification": {
+                                        "Times": [
+                                            0
+                                        ],
+                                        "Values": [
+                                            1.0
+                                        ]
+                                },
+                                "Duration_To_Disease_Transmission_Modification": {
+                                        "Times": [
+                                            0
+                                        ],
+                                        "Values": [
+                                            1.0
+                                        ]
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        "LOGGING": {
+            "logLevel_VectorPopulation": "VALID",
+            "logLevel_VectorCohort": "VALID",
+            "logLevel_VectorHabitat": "VALID"
+        }
+    },
+    "Default_Config_Path": "defaults/vector_science_default_config.json"
+}
+
+

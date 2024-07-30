@@ -1,16 +1,6 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 
-#include <sstream> // for std::ostringstream
-#include <boost/lexical_cast.hpp> // for std::ostringstream
 #include "Debug.h"
 #include "Exceptions.h"
 #include "NodeVector.h"
@@ -26,13 +16,10 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 #include "TransmissionGroupMembership.h"
 #include "IMigrationInfoVector.h"
 #include "Infection.h"
+#include "StrainAwareTransmissionGroupsGP.h"
+#include "Memory.h"
 
 SETUP_LOGGING( "NodeVector" )
-
-#ifdef randgen
-#undef randgen
-#endif
-#define randgen (parent->GetRng())
 
 using namespace std;
 
@@ -56,19 +43,28 @@ namespace Kernel
     TransmissionGroupMembership_t NodeVector::vector_indoor;
     TransmissionGroupMembership_t NodeVector::vector_outdoor;
 
+    IndividualProperty* NodeVector::p_internal_IP_indoor = nullptr;
+    IndividualProperty* NodeVector::p_internal_IP_outdoor = nullptr;
+    IPKeyValueContainer NodeVector::vector_properties;
+    IPKeyValueContainer NodeVector::human_properties;
+
     NodeVector::NodeVector() 
-        : m_larval_habitats()
+        : Node()
+        , m_larval_habitats()
         , m_vectorpopulations()
         , m_VectorPopulationReportingList()
-        , m_vector_lifecycle_probabilities( nullptr )
+        , m_vector_lifecycle_probabilities( VectorProbabilities::CreateVectorProbabilities() )
         , larval_habitat_multiplier()
         , vector_mortality( true )
         , mosquito_weight( 0 )
         , vector_migration_info( nullptr )
+        , txIndoor( nullptr )
         , txOutdoor( nullptr )
+        , m_VectorCohortSuidGenerator(0,0)
     {
-        delete event_context_host;
-        NodeVector::setupEventContextHost();    // This is marked as a virtual function, but isn't virtualized here because we're still in the ctor.
+        serializationFlagsDefault.set( SerializationFlags::LarvalHabitats );
+        serializationFlagsDefault.set( SerializationFlags::VectorPopulation );
+        larval_habitat_multiplier.Initialize();
     }
 
     NodeVector::NodeVector(ISimulationContext *context, ExternalNodeId_t externalNodeId, suids::suid _suid) 
@@ -76,15 +72,18 @@ namespace Kernel
         , m_larval_habitats()
         , m_vectorpopulations()
         , m_VectorPopulationReportingList()
-        , m_vector_lifecycle_probabilities( nullptr )
+        , m_vector_lifecycle_probabilities( VectorProbabilities::CreateVectorProbabilities() )
         , larval_habitat_multiplier()
         , vector_mortality( true )
         , mosquito_weight( 1 )
         , vector_migration_info( nullptr )
+        , txIndoor( nullptr )
         , txOutdoor( nullptr )
+        , m_VectorCohortSuidGenerator(0,0)
     {
-        delete event_context_host;
-        NodeVector::setupEventContextHost();    // This is marked as a virtual function, but isn't virtualized here because we're still in the ctor.
+        serializationFlagsDefault.set( SerializationFlags::LarvalHabitats );
+        serializationFlagsDefault.set( SerializationFlags::VectorPopulation );
+        larval_habitat_multiplier.Initialize();
     }
 
     bool
@@ -93,7 +92,6 @@ namespace Kernel
     )
     {
         larval_habitat_multiplier.SetExternalNodeId(externalId);
-        larval_habitat_multiplier.Initialize();
 
         initConfigTypeMap( "Enable_Vector_Mortality", &vector_mortality, Enable_Vector_Mortality_DESC_TEXT, true );
         initConfigTypeMap( "Mosquito_Weight", &mosquito_weight, Mosquito_Weight_DESC_TEXT, 1, 1e4, 1, "Vector_Sampling_Type", "SAMPLE_IND_VECTORS" ); // should this be renamed vector_weight?
@@ -114,18 +112,17 @@ namespace Kernel
             const char* simulation_type_name = SimType::pairs::lookup_key( GET_CONFIGURABLE( SimulationConfig )->sim_type );
             throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, "Climate_Model", "ClimateStructure::CLIMATE_OFF", "Simulation_Type", simulation_type_name );
         }
-
-        m_vector_lifecycle_probabilities = VectorProbabilities::CreateVectorProbabilities();
     }
 
-    void NodeVector::SetParameters( NodeDemographicsFactory *demographics_factory, ClimateFactory *climate_factory, bool white_list_enabled )
+    void NodeVector::SetParameters( NodeDemographicsFactory *demographics_factory, ClimateFactory *climate_factory )
     {
-        Node::SetParameters( demographics_factory, climate_factory, white_list_enabled );
+        Node::SetParameters( demographics_factory, climate_factory );
 
         if (demographics["NodeAttributes"].Contains("LarvalHabitatMultiplier"))
         {
             // This bit of magic gets around the fact that we have a few competing JSON patterns colliding right here, and we have to
             // go from one JSON view to string to another JSON view
+            // LarvalHabitatMultiplier_DESC_TEXT
             std::istringstream config_string(demographics["NodeAttributes"].GetJsonObject().ToString());
             Configuration* config = Configuration::Load(config_string, std::string(""));
             larval_habitat_multiplier.Configure(config);
@@ -136,7 +133,7 @@ namespace Kernel
         }
     }
 
-    void NodeVector::setupEventContextHost()
+    void NodeVector::SetupEventContextHost()
     {
         event_context_host = _new_ NodeVectorEventContextHost(this);
     }
@@ -170,6 +167,9 @@ namespace Kernel
         m_larval_habitats.clear();
 
         delete vector_migration_info ;
+        delete txIndoor;
+        delete txOutdoor;
+        delete m_vector_lifecycle_probabilities;
     }
 
     IIndividualHuman* NodeVector::createHuman( suids::suid id, float MCweight, float init_age, int gender)
@@ -184,7 +184,7 @@ namespace Kernel
         return movedind;
     }
 
-    IIndividualHuman* NodeVector::addNewIndividual( float MCweight, float init_age, int gender, int init_infs, float immparam, float riskparam, float mighet)
+    IIndividualHuman* NodeVector::addNewIndividual(float MCweight, float init_age, int gender, int init_infs, float immparam, float riskparam, float mighet)
     {
         // just the base class for now
         return Node::addNewIndividual(MCweight, init_age, gender, init_infs, immparam, riskparam, mighet);
@@ -206,13 +206,16 @@ namespace Kernel
     {
         // create two routes (indoor and outdoor), and two groups for each route (human, mosquito).
         // future expansion of heterogeneous intra-node transmission could start here.
-        transmissionGroups = CreateTransmissionGroups();
+        CreateTransmissionGroups();
+
+        // Making this nullptr to ensure it is not used, but txIndoor & txOutdoor
+        transmissionGroups = nullptr;
 
         ScalingMatrix_t scalingMatrix{
             { 0.0f, 1.0f },
             { 1.0f, 0.0f } };
-        transmissionGroups->AddProperty( /*property*/ INDOOR,  { HUMAN, VECTOR }, scalingMatrix );
-        txOutdoor->AddProperty(          /*property*/ OUTDOOR, { HUMAN, VECTOR }, scalingMatrix );
+        txIndoor->AddProperty( /*property*/ INDOOR,  { HUMAN, VECTOR }, scalingMatrix );
+        txOutdoor->AddProperty(/*property*/ OUTDOOR, { HUMAN, VECTOR }, scalingMatrix );
 
         LOG_DEBUG("groups added.\n");
 
@@ -245,49 +248,52 @@ namespace Kernel
         BuildTransmissionRoutes( 1.0f );
 
         // Do once for all nodes
-        RouteList_t route_indoor{ INDOOR };
-        RouteList_t route_outdoor{ OUTDOOR };
+        if( p_internal_IP_indoor == nullptr )
+        {
+            std::map<std::string, float> in_out_values;
+            in_out_values.insert( std::make_pair( HUMAN, 0.5f ) );
+            in_out_values.insert( std::make_pair( VECTOR, 0.5f ) );
 
-        tProperties vectorProperties{ { INDOOR, VECTOR }, { OUTDOOR, VECTOR } };
-        tProperties humanProperties{ { INDOOR, HUMAN }, { OUTDOOR, HUMAN } };
+            p_internal_IP_indoor  = IPFactory::GetInstance()->AddIP( this->externalId, INDOOR,  in_out_values, false );
+            p_internal_IP_outdoor = IPFactory::GetInstance()->AddIP( this->externalId, OUTDOOR, in_out_values, false );
+
+            vector_properties.Add( p_internal_IP_indoor->GetValues<IPKeyValueContainer>().Get( "indoor:vector" ) );
+            vector_properties.Add( p_internal_IP_outdoor->GetValues<IPKeyValueContainer>().Get( "outdoor:vector" ) );
+
+            human_properties.Add( p_internal_IP_indoor->GetValues<IPKeyValueContainer>().Get( "indoor:human" ) );
+            human_properties.Add( p_internal_IP_outdoor->GetValues<IPKeyValueContainer>().Get( "outdoor:human" ) );
+        }
 
         // Note, this works, but has potential for a problem - these static membership
         // variables are shared by all (demographic) nodes on the same compute core. It is
         // just maybe possible that the HINT configuration is different for different nodes
         // and should not all be using the same static variables.
-        transmissionGroups->GetGroupMembershipForProperties( humanProperties, human_indoor );
-        txOutdoor->GetGroupMembershipForProperties( humanProperties, human_outdoor );
+        txIndoor->GetGroupMembershipForProperties(  human_properties, NodeVector::human_indoor  );
+        txOutdoor->GetGroupMembershipForProperties( human_properties, NodeVector::human_outdoor );
 
-        transmissionGroups->GetGroupMembershipForProperties( vectorProperties, vector_indoor );
-        txOutdoor->GetGroupMembershipForProperties( vectorProperties, vector_outdoor );
+        txIndoor->GetGroupMembershipForProperties(  vector_properties, NodeVector::vector_indoor  );
+        txOutdoor->GetGroupMembershipForProperties( vector_properties, NodeVector::vector_outdoor );
+    }
 
-// Workaround (AKA hack) for deserialization
-for (auto pop : m_vectorpopulations)
-{
-    pop->SetupIntranodeTransmission(transmissionGroups, txOutdoor);
-}
+    void NodeVector::GetGroupMembershipForIndividual( const RouteList_t& route,
+                                                      const IPKeyValueContainer& properties,
+                                                      TransmissionGroupMembership_t& membershipOut )
+    {
+        // do nothing because Vector sims don't support HINT
+    }
+
+    void NodeVector::clearTransmissionGroups()
+    {
+        txIndoor->ClearPopulationSize();
+        txOutdoor->ClearPopulationSize();
     }
 
     void NodeVector::updateInfectivity(float dt)
     {
-        vector<float> infectivity_correction;
+        clearTransmissionGroups();
 
         // update population stats
         updatePopulationStatistics(dt);
-
-        // normalize human-to-vector contagion (per-bite infection probabilities)
-        // This is the place in this pattern to scale by returning mortality: (1-p_kill_PFV)
-        // TODO: it should be possible to push the PFV normalization back into VectorProbabilities
-        INodeVectorInterventionEffects* invie = nullptr;
-        if (s_OK != GetEventContext()->QueryInterface(GET_IID(INodeVectorInterventionEffects), (void**)&invie))
-        {
-            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "GetEventContext()", "INodeVectorInterventionEffects", "INodeEventContext" );
-        }
-        float weight = 1.0f - invie->GetPFVKill();
-
-        // Acquire infections with strain tracking for exposed queues
-        transmissionGroups->CorrectInfectivityByGroup(weight, NodeVector::human_indoor);
-        txOutdoor->CorrectInfectivityByGroup( weight, NodeVector::human_outdoor );
 
         // changes in larval capacities.
         // drying of larval habitat, function of temperature and humidity
@@ -302,7 +308,8 @@ for (auto pop : m_vectorpopulations)
             }
         }
 
-        transmissionGroups->EndUpdate();    // finish processing human-to-mosquito infectiousness
+        // finish processing human-to-mosquito infectiousness
+        txIndoor->EndUpdate();
         txOutdoor->EndUpdate();
 
         // don't need to update the vector populations before the first timestep
@@ -310,58 +317,49 @@ for (auto pop : m_vectorpopulations)
             return;
 
         // process vector populations and get infection rate
-        infectionrate = 0;
         for (auto population : m_vectorpopulations)
         {
             release_assert(population);
             population->UpdateVectorPopulation(dt);
-
-            IVectorPopulationReporting* p_ivpr = nullptr;
-            if( population->QueryInterface( GET_IID( IVectorPopulationReporting ), (void**)&p_ivpr ) != s_OK )
-            {
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "population", "IVectorPopulationReporting", "IVectorPopulation" );
-            }
-            infectionrate += float( p_ivpr->getInfectivity());
         }
 
         // do again so that humans bitten this time step get infected
-        transmissionGroups->EndUpdate();    // finish processing mosquito-to-human infectiousness
+        // finish processing mosquito-to-human infectiousness
+        txIndoor->EndUpdate();
         txOutdoor->EndUpdate();
 
         // Now process the node's emigrating mosquitoes
         processEmigratingVectors( dt );
     }
 
-    void NodeVector::updateVectorLifecycleProbabilities(float dt)
+    void NodeVector::accumulateIndividualPopulationStatistics( float dt, IIndividualHuman* individual )
+    {
+        Node::accumulateIndividualPopulationStatistics( dt, individual );
+
+        //IIndividualHumanVectorContext* host_individual = static_cast<IndividualHumanVector*>(individual);
+        IndividualHumanVector* host_individual = static_cast<IndividualHumanVector*>(individual);
+        IVectorInterventionsEffects* ivie = host_individual->GetVectorInterventionEffects();
+
+        // Host vector weight includes heterogeneous biting
+        // effect of heterogeneous biting explored in Smith, D. L., F. E. McKenzie, et al. (2007). "Revisiting the basic reproductive number for malaria and its implications for malaria control." PLoS Biol 5(3): e42.
+        // also in Smith, D. L., J. Dushoff, et al. (2005). "The entomological inoculation rate and Plasmodium falciparum infection in African children." Nature 438(7067): 492-495.
+        float host_vector_weight = float(individual->GetMonteCarloWeight() * host_individual->GetRelativeBitingRate());
+
+        // Accumulate the probabilities corresponding to individual vector intervention effects
+        m_vector_lifecycle_probabilities->AccumulateIndividualProbabilities(ivie, host_vector_weight);
+    }
+
+    void NodeVector::updatePopulationStatistics(float dt)
     {
         // Reset vector lifecycle transition probabilities
         m_vector_lifecycle_probabilities->ResetProbabilities();
-        IVectorInterventionsEffects* ivie = nullptr;
 
-        for (auto individual : individualHumans)
-        {
-            IIndividualHumanVectorContext* host_individual = nullptr;
-            // We want IndividualHUman base class to give us a blessed pointer to IndivudalHumanVector
-            if( individual->QueryInterface( GET_IID( IIndividualHumanVectorContext ), (void**)&host_individual ) != s_OK )
-            {
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "individual", "IIndividualHumanVectorContext", "IndividualHuman" );
-            }
+        // Update population statistics as in the base class
+        Node::updatePopulationStatistics(dt);
 
-            // Host vector weight includes heterogeneous biting
-            // effect of heterogeneous biting explored in Smith, D. L., F. E. McKenzie, et al. (2007). "Revisiting the basic reproductive number for malaria and its implications for malaria control." PLoS Biol 5(3): e42.
-            // also in Smith, D. L., J. Dushoff, et al. (2005). "The entomological inoculation rate and Plasmodium falciparum infection in African children." Nature 438(7067): 492-495.
-            float host_vector_weight = float(individual->GetMonteCarloWeight() * host_individual->GetRelativeBitingRate());
-
-            // Query for individual vector intervention effects interface
-            IIndividualHumanInterventionsContext* context = individual->GetInterventionsContext();
-            if (s_OK != context->QueryInterface(GET_IID(IVectorInterventionsEffects), (void**)&ivie))
-            {
-                throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "host_individual->GetInterventionsContext()", "IVectorInterventionsEffects", "IIndividualHumanInterventionsContext" );
-            }
-
-            // Accumulate the probabilities corresponding to individual vector intervention effects
-            m_vector_lifecycle_probabilities->AccumulateIndividualProbabilities(ivie, host_vector_weight);
-        }
+        // Additionally normalize "Human Infectious Reservoir" reporting channel variable
+        // to be consistent with previous behavior, where it is the human-to-vector infection probability
+        mInfectivity = (statPop > 0) ? mInfectivity/statPop : 0;
 
         // Normalize lifecycle probabilities by population weight
         m_vector_lifecycle_probabilities->NormalizeIndividualProbabilities();
@@ -377,26 +375,15 @@ for (auto pop : m_vectorpopulations)
         m_vector_lifecycle_probabilities->SetNodeProbabilities(invie, dt);
     }
 
-    void NodeVector::updatePopulationStatistics(float dt)
+    void NodeVector::PopulateFromDemographics( NodeDemographicsFactory *demographics_factory )
     {
-        // Update population statistics as in the base class
-        Node::updatePopulationStatistics(dt);
+        m_VectorCohortSuidGenerator = suids::distributed_generator( GetSuid().data, demographics_factory->GetNodeIDs().size() );
 
-        // Additionally normalize "Human Infectious Reservoir" reporting channel variable
-        // to be consistent with previous behavior, where it is the human-to-vector infection probability
-        mInfectivity = (statPop > 0) ? mInfectivity/statPop : 0;
-
-        // Another loop through the individuals to calculate the vector lifecycle probabilities
-        updateVectorLifecycleProbabilities(dt);
-    }
-
-    void NodeVector::PopulateFromDemographics()
-    {
         // Add the vector populations
         SetVectorPopulations();
 
         // Populate the people as in the base class
-        Node::PopulateFromDemographics();
+        Node::PopulateFromDemographics( demographics_factory );
     }
 
     void NodeVector::SetVectorPopulations()
@@ -409,16 +396,19 @@ for (auto pop : m_vectorpopulations)
         }
         VectorSamplingType::Enum vector_sampling_type = GET_CONFIGURABLE( SimulationConfig )->vector_params->vector_sampling_type;
 
-        for( auto& vector_species_name : params()->vector_params->vector_species_names )
+        for( int species_index = 0; species_index < params()->vector_params->vector_species.Size(); ++species_index )
         {
+            const VectorSpeciesParameters* p_vsp = params()->vector_params->vector_species[ species_index ];
+
+            // InitialVectorsPerSpecies_DESC_TEXT
             int32_t population_per_species = DEFAULT_VECTOR_POPULATION_SIZE;
             if( demographics[ "NodeAttributes" ].Contains( "InitialVectorsPerSpecies" ) )
             {
                 if( demographics[ "NodeAttributes" ][ "InitialVectorsPerSpecies" ].IsObject() )
                 {
-                    if( demographics[ "NodeAttributes" ][ "InitialVectorsPerSpecies" ].Contains( vector_species_name ) )
+                    if( demographics[ "NodeAttributes" ][ "InitialVectorsPerSpecies" ].Contains( p_vsp->name ) )
                     {
-                        population_per_species = demographics[ "NodeAttributes" ][ "InitialVectorsPerSpecies" ][ vector_species_name ].AsInt();
+                        population_per_species = demographics[ "NodeAttributes" ][ "InitialVectorsPerSpecies" ][ p_vsp->name ].AsInt();
                     }
                 }
                 else
@@ -428,29 +418,44 @@ for (auto pop : m_vectorpopulations)
             }
             LOG_DEBUG_F( "population_per_species = %f.\n", population_per_species );
 
-            VectorPopulation *vectorpopulation = nullptr;
+            IVectorPopulation *vectorpopulation = CreateVectorPopulation( vector_sampling_type, species_index, population_per_species );
 
+            release_assert( vectorpopulation );
+            AddVectorPopulationToNode( vectorpopulation );
+
+            parent->CheckMemoryFailure( false );
+        }
+    }
+
+    IVectorPopulation* NodeVector::CreateVectorPopulation( VectorSamplingType::Enum vector_sampling_type,
+                                                           int species_index,
+                                                           int32_t population_per_species )
+    {
+        IVectorPopulation *vectorpopulation = nullptr;
             if (vector_sampling_type == VectorSamplingType::TRACK_ALL_VECTORS || 
                 vector_sampling_type == VectorSamplingType::SAMPLE_IND_VECTORS)
             {
                 // Individual mosquito model
                 LOG_DEBUG( "Creating VectorPopulationIndividual instance(s).\n" );
-                vectorpopulation = VectorPopulationIndividual::CreatePopulation(getContextPointer(), vector_species_name, population_per_species, 0, mosquito_weight);
+                vectorpopulation = VectorPopulationIndividual::CreatePopulation(getContextPointer(), species_index, population_per_species, mosquito_weight);
             }
             else
             {
                 // Cohort model
                 LOG_DEBUG( "Creating VectorPopulation (regular) instance(s).\n" );
-                vectorpopulation = VectorPopulation::CreatePopulation( getContextPointer(), vector_species_name, population_per_species, 0 );
+
+                vectorpopulation = VectorPopulation::CreatePopulation( getContextPointer(), species_index, population_per_species );
             }
-
-            release_assert( vectorpopulation );
-            InitializeVectorPopulation( vectorpopulation );
-        }
-
+        return vectorpopulation;
     }
 
-    void NodeVector::AddVectors( const std::string& releasedSpecies, const VectorMatingStructure& _vector_genetics, uint32_t releasedNumber)
+    void NodeVector::AddVectors( const std::string& releasedSpecies,
+                                 const VectorGenome& rGenome,
+                                 const VectorGenome& rMateGenome,
+                                 bool isFraction,
+                                 uint32_t releasedNumber,
+                                 float releasedFraction,
+                                 float releasedInfectious )
     {
         bool found_existing_vector_population = false;
         for (auto population : m_vectorpopulations)
@@ -458,7 +463,7 @@ for (auto pop : m_vectorpopulations)
             if(population->get_SpeciesID() == releasedSpecies)
             {
                 found_existing_vector_population = true;
-                population->AddVectors(_vector_genetics, releasedNumber);
+                population->AddVectors( rGenome, rMateGenome, isFraction, releasedNumber, releasedFraction, releasedInfectious );
                 break;
             }
         }
@@ -473,28 +478,9 @@ for (auto pop : m_vectorpopulations)
 
     void NodeVector::processImmigratingVector( IVectorCohort* immigrant )
     {
-        // Looping over each population to check if the species ID is the same is a bit lame
-        // But propagating a list-to-map container change for typically 1-3 species is probably overkill
-        // Given that the conditional takes less time than the AddAdults line in performance profiling
+        release_assert( (0 <= immigrant->GetSpeciesIndex()) && (immigrant->GetSpeciesIndex() < m_vectorpopulations.size()) );
 
-        const std::string& vci_species = immigrant->GetSpecies();
-        for (auto population : m_vectorpopulations)
-        {
-            const std::string& pop_species = population->get_SpeciesID();
-            auto pop_length = pop_species.size();
-            if (vci_species.size() == pop_length)
-            {
-                if (memcmp(pop_species.c_str(), vci_species.c_str(), pop_length) == 0)
-                {
-                    population->AddImmigratingVector(immigrant);
-                    return;
-                }
-            }
-        }
-
-        std::stringstream ss;
-        ss << "Should have found population for species=" << vci_species;
-        throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
+        m_vectorpopulations[ immigrant->GetSpeciesIndex() ]->AddImmigratingVector( immigrant );
     }
 
     void NodeVector::processEmigratingVectors( float dt )
@@ -529,6 +515,22 @@ for (auto pop : m_vectorpopulations)
         }
     }
 
+    void NodeVector::SetSortingVectors()
+    {
+        for( auto p_vp : this->m_vectorpopulations )
+        {
+            p_vp->SetSortingVectors();
+        }
+    }
+
+    void NodeVector::SortVectors()
+    {
+        for( auto p_vp : this->m_vectorpopulations )
+        {
+            p_vp->SortImmigratingVectors();
+        }
+    }
+
     IVectorSimulationContext* NodeVector::context() const
     {
         IVectorSimulationContext *ivsc;
@@ -546,8 +548,7 @@ for (auto pop : m_vectorpopulations)
 
         for (auto population : m_vectorpopulations)
         {
-            population->SetContextTo(getContextPointer());
-            population->SetupIntranodeTransmission(transmissionGroups, txOutdoor);
+            population->SetContextTo( getContextPointer() );
         }
 
         if ( vector_migration_info != nullptr )
@@ -567,32 +568,40 @@ for (auto pop : m_vectorpopulations)
         return m_vector_lifecycle_probabilities;
     }
 
-    IVectorHabitat* NodeVector::GetVectorHabitatBySpeciesAndType( std::string& species, VectorHabitatType::Enum type, const Configuration* inputJson )
+    void NodeVector::AddHabitat( const std::string& species, IVectorHabitat* pHabitat )
     {
-        IVectorHabitat* habitat;
+        VectorHabitatType::Enum type = pHabitat->GetVectorHabitatType();
 
         VectorHabitatList_t& habitats = m_larval_habitats[ species ];
         VectorHabitatList_t::iterator it = std::find_if( habitats.begin(), habitats.end(), [type](IVectorHabitat* entry){ return entry->GetVectorHabitatType() == type; } );
         if ( it != habitats.end() )
-        { 
-            LOG_DEBUG_F( "%s: Found larval habitat with type = %s\n", __FUNCTION__, VectorHabitatType::pairs::lookup_key( type ) );
-            habitat = *it;
-        }
-        else
         {
-            release_assert( inputJson != nullptr );
-
-            LOG_DEBUG_F( "%s: Creating new larval habitat with type %s for species %s.\n", __FUNCTION__, VectorHabitatType::pairs::lookup_key( type ), species.c_str() );
-            habitat = VectorHabitat::CreateHabitat( type, inputJson );
-            // Previous code used push_front() but the habitats were updated in VectorPopulation which kept a list
-            // populated with push_back() so we'll use push_back() to maintain the same order of update.
-            habitats.push_back( habitat );
+            std::stringstream ss;
+            ss << "Duplicate habitat type being added = '" << VectorHabitatType::pairs::lookup_key( type ) << "' being added for species = '" << species << "'";
+            throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, ss.str().c_str() );
         }
-
-        return habitat;
+        habitats.push_back( pHabitat );
     }
 
-    VectorHabitatList_t* NodeVector::GetVectorHabitatsBySpecies( std::string& species )
+    IVectorHabitat* NodeVector::GetVectorHabitatBySpeciesAndType( const std::string& species, VectorHabitatType::Enum type, const Configuration* inputJson )
+    {
+        VectorHabitatList_t& habitats = m_larval_habitats[ species ];
+        VectorHabitatList_t::iterator it = std::find_if( habitats.begin(), habitats.end(), [type](IVectorHabitat* entry){ return entry->GetVectorHabitatType() == type; } );
+        if ( it == habitats.end() )
+        {
+            std::ostringstream msg;
+            msg << "The current configuration of 'Vector_Species_Params' does not comply with the serialized state of the simulation. \n";
+            msg << "There is a habitat of type '" << VectorHabitatType::pairs::lookup_key( type ) << "' in the simulation but the configured species '" << species << "' does not populate it."; 
+            msg << "The species that originally populated the habitat has to be added to 'Vector_Species_Params'. \n";
+            msg << "Types of Larval habitats defined for a species in the configuration that was used for the serialized population cannot be removed. \n";
+            throw GeneralConfigurationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+        }
+        LOG_DEBUG_F( "%s: Found larval habitat with type = %s\n", __FUNCTION__, VectorHabitatType::pairs::lookup_key( type ) );
+
+        return *it;
+    }
+
+    VectorHabitatList_t* NodeVector::GetVectorHabitatsBySpecies( const std::string& species )
     {
         // This will create an empty habitat list if necessary, which is okay.
         return &(m_larval_habitats[ species ]);
@@ -604,28 +613,27 @@ for (auto pop : m_vectorpopulations)
                larval_habitat_multiplier.GetMultiplier( VectorHabitatType::ALL_HABITATS, species );
     }
 
-    void NodeVector::InitializeVectorPopulation( IVectorPopulation* vp )
+    void NodeVector::AddVectorPopulationToNode( IVectorPopulation* vp )
     {
-        // Link vector population to group collection to allow it to update vector-to-human infectivity
-        // TBD: QI socialNetwork to IWVPC pointer
-
-        vp->SetupIntranodeTransmission(transmissionGroups, txOutdoor);
-
-        // Create larval habitat objects for this species
-        // and keep a list of pointers so the node can update it with new rainfall, etc.
-        vp->SetupLarvalHabitat(getContextPointer());
-
         vp->SetVectorMortality( vector_mortality );
 
-        // Add this new vector population to the list
-        m_vectorpopulations.push_front(vp);
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // !!! NOTE: m_vector_poulations, m_VectorPopulationReportingList and VectorParameters.vector_species
+        // !!! need to all be in the same order.
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        m_vectorpopulations.push_back(vp);
 
         IVectorPopulationReporting* p_ivpr = nullptr;
         if( vp->QueryInterface( GET_IID( IVectorPopulationReporting ), (void**)&p_ivpr ) != s_OK )
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "vp", "IVectorPopulationReporting", "IVectorPopulation" );
         }
-        m_VectorPopulationReportingList.push_front( p_ivpr );
+        m_VectorPopulationReportingList.push_back( p_ivpr );
+    }
+
+    suids::suid NodeVector::GetNextVectorSuid()
+    {
+        return m_VectorCohortSuidGenerator();
     }
 
     const VectorPopulationReportingList_t& NodeVector::GetVectorPopulationReporting() const
@@ -633,24 +641,24 @@ for (auto pop : m_vectorpopulations)
         return m_VectorPopulationReportingList;
     }
 
-    void NodeVector::UpdateTransmissionGroupPopulation(const tProperties& properties, float size_changes, float mc_weight)
+    void NodeVector::UpdateTransmissionGroupPopulation(const IPKeyValueContainer& properties, float size_changes, float mc_weight)
     {
-        transmissionGroups->UpdatePopulationSize(human_indoor, size_changes, mc_weight);
+        txIndoor->UpdatePopulationSize(human_indoor, size_changes, mc_weight);
         txOutdoor->UpdatePopulationSize(human_outdoor, size_changes, mc_weight);
     }
 
     ITransmissionGroups* NodeVector::CreateTransmissionGroups()
     {
-        txOutdoor = TransmissionGroupsFactory::CreateNodeGroups( TransmissionGroupType::StrainAwareGroups, GetRng() );
+        txOutdoor = new StrainAwareTransmissionGroupsGP( GetRng() );
         txOutdoor->SetTag( OUTDOOR );
-        auto txIndoor = TransmissionGroupsFactory::CreateNodeGroups( TransmissionGroupType::StrainAwareGroups, GetRng() );
+        txIndoor = new StrainAwareTransmissionGroupsGP( GetRng() );
         txIndoor->SetTag( INDOOR );
-        return txIndoor;    // Will become this->transmissionGroups
+        return nullptr; // Don't want Node::transmissionGroups used
     }
 
     void NodeVector::BuildTransmissionRoutes( float /* contagionDecayRate */ )
     {
-        transmissionGroups->Build( 1.0f, InfectionConfig::number_basestrains, InfectionConfig::number_substrains );
+        txIndoor->Build( 1.0f, InfectionConfig::number_basestrains, InfectionConfig::number_substrains );
         txOutdoor->Build( 1.0f, InfectionConfig::number_basestrains, InfectionConfig::number_substrains );
     }
 
@@ -660,24 +668,49 @@ for (auto pop : m_vectorpopulations)
         TransmissionGroupMembership_t shedder,
         TransmissionRoute::Enum route)
     {
-        LOG_DEBUG_F( "deposit from individual: antigen index =%d, substain index = %d, quantity = %f, route = %d\n", strainIDs.GetAntigenID(), strainIDs.GetGeneticID(), contagion_quantity, uint32_t(route) );
+        throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "Should be calling GeneticProbability version." );
+    }
+
+    float NodeVector::GetTotalContagion( void )
+    {
+        throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "Should be calling GeneticProbability version." );
+    }
+
+    void NodeVector::ExposeIndividual( IInfectable* candidate, TransmissionGroupMembership_t individual, float dt )
+    {
+        txIndoor->ExposeToContagion( candidate, human_indoor, dt, TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_INDOOR );
+        txOutdoor->ExposeToContagion( candidate, human_outdoor, dt, TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_OUTDOOR );
+    }
+
+    void NodeVector::ExposeVector( IInfectable* candidate, float dt )
+    {
+        txIndoor->ExposeToContagion(  candidate, vector_indoor,  dt, TransmissionRoute::TRANSMISSIONROUTE_HUMAN_TO_VECTOR_INDOOR );
+        txOutdoor->ExposeToContagion( candidate, vector_outdoor, dt, TransmissionRoute::TRANSMISSIONROUTE_HUMAN_TO_VECTOR_OUTDOOR );
+    }
+
+    void NodeVector::DepositFromIndividual( const IStrainIdentity& strainIDs,
+                                            const GeneticProbability& contagion_quantity,
+                                            TransmissionRoute::Enum route )
+    {
+        LOG_DEBUG_F( "deposit from individual: antigen index =%d, substain index = %d, quantity = %f, route = %d\n",
+                     strainIDs.GetAntigenID(), strainIDs.GetGeneticID(), contagion_quantity.GetSum(), uint32_t(route) );
 
         switch (route)
         {
             case TransmissionRoute::TRANSMISSIONROUTE_HUMAN_TO_VECTOR_INDOOR:
-                transmissionGroups->DepositContagion( strainIDs, contagion_quantity, shedder );
+                txIndoor->DepositContagionGP( strainIDs, contagion_quantity, NodeVector::human_indoor );
                 break;
 
             case TransmissionRoute::TRANSMISSIONROUTE_HUMAN_TO_VECTOR_OUTDOOR:
-                txOutdoor->DepositContagion( strainIDs, contagion_quantity, shedder );
+                txOutdoor->DepositContagionGP( strainIDs, contagion_quantity, NodeVector::human_outdoor );
                 break;
 
             case TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_INDOOR:
-                transmissionGroups->DepositContagion( strainIDs, contagion_quantity, shedder );
+                txIndoor->DepositContagionGP( strainIDs, contagion_quantity, NodeVector::vector_indoor );
                 break;
 
             case TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_OUTDOOR:
-                txOutdoor->DepositContagion( strainIDs, contagion_quantity, shedder );
+                txOutdoor->DepositContagionGP( strainIDs, contagion_quantity, NodeVector::vector_outdoor );
                 break;
 
             default:
@@ -686,19 +719,28 @@ for (auto pop : m_vectorpopulations)
         }
     }
 
-    void NodeVector::ExposeIndividual( IInfectable* candidate, TransmissionGroupMembership_t individual, float dt )
+    GeneticProbability NodeVector::GetTotalContagionGP( TransmissionRoute::Enum route ) const
     {
-        transmissionGroups->ExposeToContagion( candidate, human_indoor, dt, TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_INDOOR );
-        txOutdoor->ExposeToContagion( candidate, human_outdoor, dt, TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_OUTDOOR );
-    }
+        GeneticProbability contagion;
+        switch (route)
+        {
+            case TransmissionRoute::TRANSMISSIONROUTE_HUMAN_TO_VECTOR_INDOOR:
+            case TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_INDOOR:
+                contagion = txIndoor->GetTotalContagionGP();
+                break;
 
-    float NodeVector::GetTotalContagion( void )
-    {
-        float contagion = transmissionGroups->GetTotalContagion() + txOutdoor->GetTotalContagion();
+            case TransmissionRoute::TRANSMISSIONROUTE_HUMAN_TO_VECTOR_OUTDOOR:
+            case TransmissionRoute::TRANSMISSIONROUTE_VECTOR_TO_HUMAN_OUTDOOR:
+                contagion = txOutdoor->GetTotalContagionGP();
+                break;
+
+            default:
+                // TODO - try to get proper string from route enum
+                throw new BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, "route", uint32_t(route), "???" );
+        }
 
         return contagion;
     }
-
 
     REGISTER_SERIALIZABLE(NodeVector);
 
@@ -707,11 +749,14 @@ for (auto pop : m_vectorpopulations)
         Node::serialize(ar, obj);
         NodeVector& node = *obj;
 
-        if ((node.serializationMask & SerializationFlags::Population) != 0) {
+        if( node.serializationFlags.test( SerializationFlags::LarvalHabitats ) ) {
             ar.labelElement("m_larval_habitats") & node.m_larval_habitats;
-            ar.labelElement("m_vectorpopulations") & node.m_vectorpopulations;
+        }
 
+        if( node.serializationFlags.test( SerializationFlags::VectorPopulation ) ) {
+            ar.labelElement("m_vectorpopulations") & node.m_vectorpopulations;
             ar.labelElement("m_vector_lifecycle_probabilities"); VectorProbabilities::serialize( ar, node.m_vector_lifecycle_probabilities );
+            ar.labelElement("m_VectorCohortSuidGenerator") & node.m_VectorCohortSuidGenerator;
 
             if( ar.IsReader() )
             {
@@ -727,13 +772,13 @@ for (auto pop : m_vectorpopulations)
             }
         }
 
-        if ((node.serializationMask & SerializationFlags::Parameters) != 0) {
+        if( node.serializationFlags.test( SerializationFlags::Parameters ) ) {
 // clorton            ar.labelElement("larval_habitat_multiplier") & node.larval_habitat_multiplier;
             ar.labelElement("vector_mortality") & node.vector_mortality;
             ar.labelElement("mosquito_weight") & node.mosquito_weight;
         }
 
-        if ((node.serializationMask & SerializationFlags::Properties) != 0) {
+        if( node.serializationFlags.test( SerializationFlags::Properties ) ) {
         }
     }
 } // end namespace Kernel

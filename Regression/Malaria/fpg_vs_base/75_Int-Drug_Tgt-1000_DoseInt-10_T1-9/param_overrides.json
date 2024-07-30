@@ -1,0 +1,14 @@
+{
+    "Default_Config_Path": "Malaria/fpg_vs_base/default_config.json",
+    "parameters": {
+        "Config_Name": "75_Int-Drug_Tgt-1000_DoseInt-10_T1-9",
+        "Malaria_Drug_Params": [
+            {
+                "Name" : "Chloroquine",
+                "Drug_Decay_T1": 9.0,
+                "Drug_Dose_Interval": 10.0
+            }
+        ],
+        "Python_Script_Path": "SHARED"
+    }
+}

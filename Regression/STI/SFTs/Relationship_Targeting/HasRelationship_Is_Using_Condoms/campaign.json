@@ -1,0 +1,95 @@
+{
+    "Campaign_Name": "Targeting HasRelationship with Is_Using_Condoms test",
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1,
+                "Property_Restrictions": ["Risk:High"],
+                "COMMENT": "This should broadcast IAmRiskHigh to all population in in Risk:High group.",
+                "Intervention_Config": {
+                    "class": "BroadcastEvent",
+                    "Broadcast_Event": "IAmRiskHigh"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 0.01,
+                "Intervention_Config": {
+                    "class": "OutbreakIndividual"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 100,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1,
+                "COMMENT": "This should broadcast UsingCondoms to all population who's partner is in Risk:High group and are using Condoms.",
+                "Targeting_Config": {
+                    "class" : "HasRelationship",
+                    "Is_Using_Condoms": "YES",
+                    "With_Partner_Who" :
+                    {
+                       "class" : "HasIP",
+                       "Is_Equal_To" : 1,
+                       "IP_Key_Value" : "Risk:High"
+
+                    }
+                },
+                "Intervention_Config": {
+                    "class": "BroadcastEvent",
+                    "Broadcast_Event": "UsingCondoms"
+                }
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 100,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Target_Demographic": "Everyone",
+                "Demographic_Coverage": 1,
+                "COMMENT": "This should broadcast NotUsingCondoms to all population who's partner is in Risk:High group and are not using Condoms.",
+                "Targeting_Config": {
+                    "class" : "HasRelationship",
+                    "Is_Using_Condoms": "NO",
+                    "With_Partner_Who" :
+                    {
+                       "class" : "HasIP",
+                       "Is_Equal_To" : 1,
+                       "IP_Key_Value" : "Risk:High"
+
+                    }
+                },
+                "Intervention_Config": {
+                    "class": "BroadcastEvent",
+                    "Broadcast_Event": "NotUsingCondoms"
+                }
+            }
+        }
+    ],
+    "Use_Defaults": 1
+}

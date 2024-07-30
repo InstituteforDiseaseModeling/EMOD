@@ -1,0 +1,43 @@
+{
+    "Default_Config_Path": "./defaults/sti_science_default_config.json",
+    "parameters": {
+        "Config_Name": "SFT_StartNewRelationship",
+        "Simulation_Duration": 700,
+        ".logLevel_SocietyImpl": "INFO",
+        "Enable_Vital_Dynamics": 0,
+        "Demographics_Filenames": [
+            "../SA_UN_demographics.json",
+            "../PFA_overlay.json",
+            "PFA_Concurrency.json"
+        ],
+        "Custom_Individual_Events": [
+            "Relationship_Created",
+            "Failed_Full",
+            "Failed_Not_Found",
+            "IHaveNoPartner",
+            "MyRelationshipJustEnded"
+        ],
+        "Enable_Disease_Mortality": 0,
+        "Base_Mortality": 0.01,
+        "Base_Infectivity": 0.5,
+        "Incubation_Period_Distribution": "CONSTANT_DISTRIBUTION",
+        "Incubation_Period_Constant": 1,
+        "Infectious_Period_Distribution": "GAUSSIAN_DISTRIBUTION",
+        "Infectious_Period_Gaussian_Mean": 25,
+        "Infectious_Period_Gaussian_Std_Dev": 10,
+        "Min_Days_Between_Adding_Relationships": 1,
+        "Enable_Demographics_Reporting": 1,
+        "Inset_Chart_Has_IP": ["StartNewRels"],
+        "x_Base_Population": 0.0001,
+        "Report_Relationship_Start": 1,
+        "Report_Relationship_End": 1,
+        "Report_Event_Recorder": 1,
+        "Report_Event_Recorder_Events": [
+            "Relationship_Created",
+            "Failed_Full",
+            "Failed_Not_Found",
+            "IHaveNoPartner",
+            "MyRelationshipJustEnded"
+        ]
+    }
+}

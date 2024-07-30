@@ -1,4 +1,4 @@
-Time, NodeID, Gender, AgeYears, IndividualProp=Risk, NumIndividuals, NumInfected
+Time,NodeID,Gender,AgeYears,IndividualProp=Risk,NumIndividuals,NumInfected
 0,2,M,40, High,1430,0
 0,2,M,40, Low,635,0
 0,2,M,80, High,260,0

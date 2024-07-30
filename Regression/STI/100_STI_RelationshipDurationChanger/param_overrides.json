@@ -1,0 +1,34 @@
+{
+    "Default_Config_Path": "./defaults/sti_default_config.json", 
+    "parameters": {
+        "Config_Name": "100_STI_RelationshipDurationChanger",
+        "Simulation_Duration": 1460, 
+        "Simulation_Timestep": 30,
+        
+        ".logLevel_SocietyImpl" : "INFO",
+        
+        "Enable_Vital_Dynamics": 0,
+        "Demographics_Filenames": [
+            "../../HIV/input/SA_UN_demographics.json",
+            "../../HIV/input/PFA_overlay.json",
+            "PFA_extra_rels.json"
+        ],
+        "Custom_Individual_Events" : [
+        ],
+        "Enable_Disease_Mortality": 0,
+        "Base_Mortality": 0.01, 
+        "Base_Infectivity": 0.5, 
+        
+        "Incubation_Period_Distribution": "CONSTANT_DISTRIBUTION",
+        "Incubation_Period_Constant": 1,
+        "Infectious_Period_Distribution": "GAUSSIAN_DISTRIBUTION",
+        "Infectious_Period_Gaussian_Mean": 25000,
+        "Infectious_Period_Gaussian_Std_Dev": 10,
+        
+        "Min_Days_Between_Adding_Relationships": 1, 
+        
+        "Inset_Chart_Include_Coital_Acts": 1,
+        "Enable_Demographics_Reporting": 0,
+        "x_Base_Population": 0.006
+    }
+}

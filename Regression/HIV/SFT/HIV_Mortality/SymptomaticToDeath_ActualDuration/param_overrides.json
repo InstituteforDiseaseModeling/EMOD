@@ -1,0 +1,32 @@
+{
+    "parameters": {
+        "x_Base_Population": 0.0005,
+        "Config_Name": "HIVMortality_SymptomaticToDeath_ActualDuration",	
+        "Days_Between_Symptomatic_And_Death_Weibull_Heterogeneity": 0.45,
+        "Days_Between_Symptomatic_And_Death_Weibull_Scale": 90,
+        "Demographics_Filenames": [
+            "../../../input/SA_UN_demographics_extrapolated_WithProperties_Smoothed.json",
+            "../../../input/PFA_overlay.json"
+        ],
+        "Enable_Birth": 0,
+        "Enable_Natural_Mortality": 0,
+        "HIV_Adult_Survival_Scale_Parameter_Intercept": 120,
+        "HIV_Adult_Survival_Scale_Parameter_Slope": 0,
+        "HIV_Adult_Survival_Shape_Parameter": 3.5,
+        "HIV_Age_Max_for_Adult_Age_Dependent_Survival": 75.0,
+        "HIV_Age_Max_for_Child_Survival_Function": 0.0,
+        "HIV_Child_Survival_Rapid_Progressor_Fraction": 0,
+        "HIV_Child_Survival_Slow_Progressor_Scale": 120,
+        "HIV_Child_Survival_Slow_Progressor_Shape": 3.5,
+        "Report_Event_Recorder": 1,
+        "Report_Event_Recorder_Events": [
+            "NewInfectionEvent",
+            "NonDiseaseDeaths",
+            "DiseaseDeaths",
+            "NewlySymptomatic"
+        ],
+        "Simulation_Duration": 3650,
+        "logLevel_IndividualHIV": "DEBUG"
+    },
+    "Default_Config_Path": "defaults/hiv_sft_default_config.json"
+}

@@ -1,0 +1,48 @@
+{
+    "Default_Config_Path": "defaults/malaria_genetics_science_default_config.json",
+    "DEMOGRAPHICS": {
+        "Demographics_Filenames": [
+            "Namawala_single_node_demographics.json"
+        ]
+    },
+    "PRIMARY": {
+        "Config_Name": "Malaria::SFTs::CrossoverTests::UniformChromatidCheck",
+        "Geography": "Namawala",
+        "Run_Number": 1,
+        "Simulation_Duration": 150
+    },
+    "REPORTS": {
+        "logLevel_ParasiteGenome": "VALID",
+        "Custom_Reports_Filename": ""
+    },
+    "STRAIN_TRACKING": {
+        "Falciparum_MSP_Variants": 16,
+        "Falciparum_Nonspecific_Types": 16,
+        "Falciparum_PfEMP1_Variants": 500,
+        "Parasite_Genetics": {
+            "Var_Gene_Randomness_Type": "ALL_RANDOM",
+            "Num_Oocyst_From_Bite_Fail": 3,
+            "Num_Sporozoites_In_Bite_Fail": 12,
+            "Sporozoite_Life_Expectancy":25,
+            "Crossover_Gamma_K": 1.0,
+            "Crossover_Gamma_Theta": 0.38,
+            "Probability_Oocyst_From_Bite_Fails": 0.5,
+            "Probability_Sporozoite_In_Bite_Fails": 0.5,
+                        "Barcode_Genome_Locations": [
+                64300,
+                128600,
+                192900,
+                257200,
+                321500,
+                385800,
+                450100,
+                514400,
+                578700,
+                640000
+            ]
+        }
+    },
+    "VECTOR": {
+        "x_Temporary_Larval_Habitat": 0.05
+    }
+}

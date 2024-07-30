@@ -1,21 +1,14 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include "Distributions.h"
+
 #include "IArchive.h"
 #include "RANDOM.h"
 #include "Environment.h"
 #include "PiecewiseDistributionBase.h"
 #include "InterpolatedValueMap.h"
 
-SETUP_LOGGING("DurationDistributionImpl")
+SETUP_LOGGING("Distributions")
 
 namespace Kernel
 {
@@ -81,7 +74,6 @@ namespace Kernel
     }
 
 
-
     //---------------- DistributionFunction::EXPONENTIAL_DISTRIBUTION  -------------------
     DistributionExponential::DistributionExponential()
         : DistributionBase()
@@ -113,7 +105,6 @@ namespace Kernel
     {
         DistributionBase::serialize( ar, obj );
     }
-
 
 
     //---------------- DistributionFunction::GAUSSIAN_DISTRIBUTION  -------------------
@@ -246,7 +237,6 @@ namespace Kernel
         return ( pRNG->e() < m_Param1 ) ? m_Param2 : 1;
     }
 
-
     IDistribution* DistributionDualConstant::Clone() const
     {
         return new DistributionDualConstant(*this);
@@ -304,7 +294,6 @@ namespace Kernel
     DistributionUniform::~DistributionUniform()
     {
     }
-
 
     float DistributionUniform::Calculate( RANDOMBASE* pRNG ) const
     {

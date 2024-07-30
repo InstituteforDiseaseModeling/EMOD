@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #include "stdafx.h"
 #include <memory> // unique_ptr
@@ -201,6 +193,7 @@ SUITE(NChooserEventCoordinatorTest)
 
         TargetedByAgeAndGender ag1( AgeRange( 15.0, 30.0 ), Gender::COUNT, 10, 3, 0 );
 
+        ag1.ClearQualifyingIndividuals();
         ag1.FindQualifyingIndividuals( &nec, disease_qual, pr );
 
         std::vector<IIndividualHumanEventContext*> selected_list_1 = ag1.SelectIndividuals( m_pRNG );
@@ -212,6 +205,7 @@ SUITE(NChooserEventCoordinatorTest)
 
         ag1.IncrementNextNumTargets();
 
+        ag1.ClearQualifyingIndividuals();
         ag1.FindQualifyingIndividuals( &nec, disease_qual, pr );
 
         std::vector<IIndividualHumanEventContext*> selected_list_2 = ag1.SelectIndividuals( m_pRNG );
@@ -222,6 +216,7 @@ SUITE(NChooserEventCoordinatorTest)
 
         ag1.IncrementNextNumTargets();
 
+        ag1.ClearQualifyingIndividuals();
         ag1.FindQualifyingIndividuals( &nec, disease_qual, pr );
 
         std::vector<IIndividualHumanEventContext*> selected_list_3 = ag1.SelectIndividuals( m_pRNG );
@@ -262,7 +257,7 @@ SUITE(NChooserEventCoordinatorTest)
         // -----------------------------------------------------------------
         // --- Test that generic version works with non-STI & HIV sim types
         // -----------------------------------------------------------------
-        m_pSimulationConfig->sim_type = SimType::TBHIV_SIM;
+        m_pSimulationConfig->sim_type = SimType::VECTOR_SIM;
 
         try
         {
@@ -337,7 +332,7 @@ SUITE(NChooserEventCoordinatorTest)
         // -----------------------------------------------------------------
         // --- Test that STI version does not work with other sim type
         // -----------------------------------------------------------------
-        m_pSimulationConfig->sim_type = SimType::TBHIV_SIM;
+        m_pSimulationConfig->sim_type = SimType::VECTOR_SIM;
 
         try
         {
@@ -410,7 +405,7 @@ SUITE(NChooserEventCoordinatorTest)
         // -----------------------------------------------------------------
         // --- Test that HIV version does not work with other sim type
         // -----------------------------------------------------------------
-        m_pSimulationConfig->sim_type = SimType::TBHIV_SIM;
+        m_pSimulationConfig->sim_type = SimType::VECTOR_SIM;
 
         try
         {
@@ -517,7 +512,7 @@ SUITE(NChooserEventCoordinatorTest)
     TEST_FIXTURE(NChooserEventCoordinatorFixture, TestInvalidDiseaseState)
     {
         TestHelper_ConfigureException( __LINE__, "testdata/NChooserEventCoordinatorTest/TestInvalidDiseaseState.json",
-            "Constrained strings (dynamic enum) with specified value XXXXXXX invalid. Possible values are: HIV_Negative...HIV_Positive...Has_Intervention...Male_Circumcision_Negative...Male_Circumcision_Positive...Not_Have_Intervention...Tested_Negative...Tested_Positive..." );
+            "Parameter 'Target_Disease_State' with specified value 'XXXXXXX' invalid. Possible values are: HIV_Negative...HIV_Positive...Has_Intervention...Male_Circumcision_Negative...Male_Circumcision_Positive...Not_Have_Intervention...Tested_Negative...Tested_Positive..." );
     }
 
     TEST_FIXTURE(NChooserEventCoordinatorFixture, TestInvalidPeriodOverlap)

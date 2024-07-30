@@ -5,8 +5,7 @@
             "Enable_Interventions": 1,
             "Custom_Individual_Events": [],
             "Custom_Node_Events": [],
-            "Custom_Coordinator_Events": [],
-            "PKPD_Model": "FIXED_DURATION_CONSTANT_EFFECT"
+            "Custom_Coordinator_Events": []
         },
         "CLIMATE": {
             "Climate_Model": "CLIMATE_OFF"
@@ -37,8 +36,6 @@
                 "Acquisition_Blocking_Immunity_Duration_Before_Decay": 60,
                 "Enable_Immune_Decay": 1,
                 "Enable_Immunity": 1,
-                "Enable_Immunity_Distribution": 0,
-                "Immunity_Initialization_Distribution_Type": "DISTRIBUTION_OFF",
                 "Post_Infection_Acquisition_Multiplier": 0,
                 "Post_Infection_Transmission_Multiplier": 0,
                 "Susceptibility_Scale_Type": "CONSTANT_SUSCEPTIBILITY",
@@ -119,6 +116,9 @@
             "Enable_Default_Reporting": 1,
             "Enable_Property_Output": 0,
             "Enable_Spatial_Output": 0,
+            "Inset_Chart_Include_Pregnancies": 0,
+            "Inset_Chart_Has_Interventions": [],
+            "Inset_Chart_Has_IP": [],
             "Report_Event_Recorder": 0,
             "Report_Node_Event_Recorder": 0,
             "Report_Coordinator_Event_Recorder": 0,
@@ -138,10 +138,6 @@
             "Node_Grid_Size": 0.042,
             "Python_Script_Path": "NO",
             "Run_Number": 0,
-            "Serialization_Time_Steps": [],
-            "Serialized_Population_Filenames": [],
-            "Serialized_Population_Path": ".",
-            "Serialization_Type": "TIMESTEP",
             "Simulation_Duration": 365,
             "Simulation_Timestep": 1,
             "Start_Time": 0,
@@ -149,7 +145,14 @@
             "Enable_Initial_Susceptibility_Distribution": 0,
             "Symptomatic_Infectious_Offset": 0
         },
-        "SERIALIZATION": {},
+        "SERIALIZATION": {
+            "Serialized_Population_Writing_Type": "TIMESTEP",
+            "Serialized_Population_Reading_Type": "NONE",
+            "Serialization_Time_Steps": [],
+            "Serialized_Population_Filenames": [],
+            "Serialized_Population_Path": ".",
+            "Serialization_Precision" : "REDUCED"
+        },
         "STRAIN_TRACKING": {
             "Number_Basestrains": 1,
             "Number_Substrains": 1

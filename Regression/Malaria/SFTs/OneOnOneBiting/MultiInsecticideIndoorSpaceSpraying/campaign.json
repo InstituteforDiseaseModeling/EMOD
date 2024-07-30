@@ -1,0 +1,33 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetNodeList",
+                "Node_List":[340461476]
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Intervention_Config": {
+                    "Insecticides": [
+                        {
+                            "Insecticide_Name": "carbamate",
+                            "Killing_Config": {
+                                "Initial_Effect": 1,
+                                "Box_Duration": 3,
+                                "class": "WaningEffectBox"
+                            }
+                        }
+                    ],
+                    "Cost_To_Consumer": 1.0,
+                    "Habitat_Target": "ALL_HABITATS",
+                    "Spray_Kill_Target": "SpaceSpray_FemalesOnly",
+                    "Spray_Coverage" : 1.0,
+                    "class": "MultiInsecticideIndoorSpaceSpraying"
+                }
+            }
+        }
+    ]
+}

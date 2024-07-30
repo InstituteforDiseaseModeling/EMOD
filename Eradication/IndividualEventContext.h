@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -16,16 +8,18 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "Common.h" // for HumanStateChange enum at least
 #include "suids.hpp"
-#include "PropertiesString.h"
 
 namespace Kernel
 {
+    struct IIndividualHuman;
     struct IIndividualHumanInterventionsContext;
     struct INodeEventContext;
     class IPKeyValueContainer;
 
-    struct IDMAPI IIndividualHumanEventContext : public ISupports 
+    struct IIndividualHumanEventContext : public ISupports 
     {
+        virtual const IIndividualHuman* GetIndividualHumanConst() const = 0;
+
         // for example, individual attributes...
         virtual bool   IsPregnant()          const = 0;        
         

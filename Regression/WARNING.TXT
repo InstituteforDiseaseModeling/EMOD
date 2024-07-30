@@ -1,0 +1,5 @@
+CAUTION:
+
+The purpose of the regression tests found in this directory are to verify specific features of the EMOD disease transmission kernel.
+Many of these tests, due to abnormally high or low values, will produce output that should not be considered scientifically accurate.
+These tests are provided to our development community as a tool to determine that any changes to the source code did not disrupt functionality of eradication.exe.

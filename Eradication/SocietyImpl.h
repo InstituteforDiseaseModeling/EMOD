@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 #include "ISociety.h"
@@ -39,11 +31,17 @@ namespace Kernel
         virtual const IPairFormationRateTable* GetRates(RelationshipType::Enum) override;
         virtual IPairFormationAgent* GetPFA(RelationshipType::Enum) override;
         virtual IPairFormationStats* GetStats(RelationshipType::Enum) override;
+        virtual IPairFormationFlowController* GetController( RelationshipType::Enum ) override;
 
         virtual void SetParameters( RANDOMBASE* pRNG, IIdGeneratorSTI* pIdGen, const Configuration* config ) override;
         virtual IRelationshipParameters* GetRelationshipParameters( RelationshipType::Enum type ) override;
 
         virtual IConcurrency* GetConcurrency() override;
+
+        virtual void SetOverrideRelationshipFormationRate( RelationshipType::Enum relType, float rate ) override;
+        virtual void SetOverrideCoitalActRate( RelationshipType::Enum relType, float rate ) override;
+        virtual void SetOverrideCondomUsageProbability( RelationshipType::Enum relType, const Sigmoid* pOverride ) override;
+        virtual void SetOverrideRelationshipDuration( RelationshipType::Enum relType, float heterogeniety, float scale ) override;
 
         // ---------------------------
         // --- JsonConfiurable Methods
@@ -57,7 +55,7 @@ namespace Kernel
         IRelationshipManager* relationship_manager;
 
         IRelationshipParameters*        rel_params[    RelationshipType::COUNT ];
-        const IPairFormationParameters* form_params[   RelationshipType::COUNT ];
+        IPairFormationParameters*       form_params[   RelationshipType::COUNT ];
         IPairFormationRateTable*        rates[         RelationshipType::COUNT ];
         IPairFormationStats*            stats[         RelationshipType::COUNT ];
         IPairFormationAgent*            pfa[           RelationshipType::COUNT ];

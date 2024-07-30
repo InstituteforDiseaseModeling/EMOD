@@ -30,7 +30,6 @@
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Days_To_Diagnosis": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:OnART",
                             "InterventionStatus:LinkingToART",
@@ -107,7 +106,6 @@
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Days_To_Diagnosis": 0,
                         "Default_Value": 0,
                         "Disqualifying_Properties": [
                             "InterventionStatus:OnART",
@@ -433,6 +431,7 @@
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
+                        "Days_To_Diagnosis": 0,
                         "Event_Or_Config": "Event",
                         "Positive_Diagnosis_Event": "TestingOnANC1",
                         "class": "STIIsPostDebut"
@@ -473,7 +472,6 @@
                             "InterventionStatus:ARTStaging",
                             "InterventionStatus:TestingOnSymptomatic"
                         ],
-                        "Intervention_Name": "Delayed_Intervention_Test_On_ANC",
                         "New_Property_Value": "InterventionStatus:TestingOnANC",
                         "class": "HIVDelayedIntervention"
                     },
@@ -1028,6 +1026,7 @@
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
+                        "Days_To_Diagnosis": 0,
                         "Event_Or_Config": "Event",
                         "Negative_Diagnosis_Event": "LTFU9",
                         "Positive_Diagnosis_Event": "OnPreART0",
@@ -1265,6 +1264,7 @@
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
+                        "Days_To_Diagnosis": 0,
                         "Event_Or_Config": "Event",
                         "Negative_Diagnosis_Event": "LTFU11",
                         "Positive_Diagnosis_Event": "OnART0",
@@ -1357,6 +1357,7 @@
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
+                        "Days_To_Diagnosis": 0,
                         "Event_Or_Config": "Event",
                         "Negative_Diagnosis_Event": "LTFU12",
                         "Positive_Diagnosis_Event": "OnART0",
@@ -1382,18 +1383,24 @@
             "class": "CampaignEvent"
         },
         {
+            "class": "CampaignEvent",
+            "Event_Name": "OnART: state 0 (muxer, 1-day delay)",
+            "Start_Day": 0,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
             "Event_Coordinator_Config": {
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "Broadcast_Event": "OnART1",
-                        "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
-                        "Disqualifying_Properties": [],
-                        "Max_Entries": 1,
+                        "class": "HIVMuxer",
                         "Muxer_Name": "OnART",
                         "New_Property_Value": "InterventionStatus:OnART",
-                        "class": "HIVMuxer",
-                        "Delay_Period_Constant": 1
+                        "Disqualifying_Properties": [],
+                        "Max_Entries": 1,
+                        "Delay_Period_Distribution": "CONSTANT_DISTRIBUTION",
+                        "Delay_Period_Constant": 1,
+                        "Broadcast_Event": "OnART1"
                     },
                     "Trigger_Condition_List": [
                         "OnART0"
@@ -1401,20 +1408,20 @@
                     "class": "NodeLevelHealthTriggeredIV"
                 },
                 "class": "StandardInterventionDistributionEventCoordinator"
-            },
-            "Event_Name": "OnART: state 0 (muxer, 1-day delay)",
+            }
+        },
+        {
+            "class": "CampaignEvent",
+            "Event_Name": "OnART: state 1 (run AntiretroviralTherapy)",
+            "Start_Day": 0,
             "Nodeset_Config": {
                 "class": "NodeSetAll"
             },
-            "Start_Day": 0,
-            "class": "CampaignEvent"
-        },
-        {
             "Event_Coordinator_Config": {
                 "Demographic_Coverage": 1,
                 "Intervention_Config": {
                     "Actual_IndividualIntervention_Config": {
-                        "class": "ARTBasic"
+                        "class": "AntiretroviralTherapy"
                     },
                     "Trigger_Condition_List": [
                         "OnART1"
@@ -1422,13 +1429,7 @@
                     "class": "NodeLevelHealthTriggeredIV"
                 },
                 "class": "StandardInterventionDistributionEventCoordinator"
-            },
-            "Event_Name": "OnART: state 1 (run ARTBasic)",
-            "Nodeset_Config": {
-                "class": "NodeSetAll"
-            },
-            "Start_Day": 0,
-            "class": "CampaignEvent"
+            }
         }
     ],
     "Use_Defaults": 1

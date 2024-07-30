@@ -1,15 +1,7 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 #include <map>
-#include "BoostLibWrapper.h"
+#include <vector>
 #include "suids.hpp"
 #include "ExternalNodeId.h"
 
@@ -87,7 +79,7 @@ namespace Kernel
             virtual const char* what() const throw();
         };
 
-        struct map_merge : public std::binary_function<RankMap_t, RankMap_t, RankMap_t>
+        struct map_merge
         {
             RankMap_t operator()(const RankMap_t& x, const RankMap_t& y) const;
         };

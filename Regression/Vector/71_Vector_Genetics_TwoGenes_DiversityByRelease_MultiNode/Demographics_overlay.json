@@ -1,0 +1,299 @@
+{
+    "Metadata": {
+        "DateCreated": "Tue Jun 30 07:00:42 2015",
+        "Tool": "Eradication.exe",
+        "Author": "DTK",
+        "IdReference": "Household-Scenario-Small",
+        "NodeCount": 26
+    },
+    "Defaults": {
+    },
+    "Nodes": [
+        {
+            "NodeID": 1,
+            "NodeAttributes": {
+                "InitialPopulation": 10,
+                "InitialVectorsPerSpecies": {
+                    "arabiensis": 100,
+                    "funestus"  : 0,
+                    "gambiae"   : 0
+                 }
+            }
+        },
+        {
+            "NodeID": 2,
+            "NodeAttributes": {
+                "InitialPopulation": 10,
+                "InitialVectorsPerSpecies": {
+                    "arabiensis": 100,
+                    "funestus"  : 0,
+                    "gambiae"   : 0
+                 }
+            }
+        },
+        {
+            "NodeID": 3,
+            "NodeAttributes": {
+                "InitialPopulation": 10,
+                "InitialVectorsPerSpecies": {
+                    "arabiensis": 100,
+                    "funestus"  : 0,
+                    "gambiae"   : 0
+                 }
+            }
+        },
+        {
+            "NodeID": 4,
+            "NodeAttributes": {
+                "InitialPopulation": 10,
+                "InitialVectorsPerSpecies": {
+                    "arabiensis": 100,
+                    "funestus"  : 0,
+                    "gambiae"   : 0
+                 }
+            }
+        },
+        {
+            "NodeID": 5,
+            "NodeAttributes": {
+                "InitialPopulation": 10,
+                "InitialVectorsPerSpecies": {
+                    "arabiensis": 100,
+                    "funestus"  : 0,
+                    "gambiae"   : 0
+                 }
+            }
+        },
+        {
+            "NodeID": 6,
+            "NodeAttributes": {
+                "InitialPopulation": 10,
+                "InitialVectorsPerSpecies": {
+                    "arabiensis": 100,
+                    "funestus"  : 0,
+                    "gambiae"   : 0
+                 }
+            }
+        },
+        {
+            "NodeID": 7,
+            "NodeAttributes": {
+                "InitialPopulation": 10,
+                "InitialVectorsPerSpecies": {
+                    "arabiensis": 100,
+                    "funestus"  : 0,
+                    "gambiae"   : 0
+                }
+            }
+        },
+        {
+            "NodeID": 8,
+            "NodeAttributes": {
+                "InitialPopulation": 10,
+                "InitialVectorsPerSpecies": {
+                    "arabiensis": 100,
+                    "funestus"  : 0,
+                    "gambiae"   : 0
+                 }
+            }
+        },
+        {
+            "NodeID": 9,
+            "NodeAttributes": {
+                "InitialPopulation": 10,
+                "InitialVectorsPerSpecies": {
+                    "arabiensis": 100,
+                    "funestus"  : 0,
+                    "gambiae"   : 0
+                 }
+            }
+        },
+        {
+            "NodeID": 10,
+            "NodeAttributes": {
+                "InitialPopulation": 10,
+                "InitialVectorsPerSpecies": {
+                    "arabiensis": 100,
+                    "funestus"  : 0,
+                    "gambiae"   : 0
+                 }
+            }
+        },
+        {
+            "NodeID": 11,
+            "NodeAttributes": {
+                "InitialPopulation": 10,
+                "InitialVectorsPerSpecies": {
+                    "arabiensis": 100,
+                    "funestus"  : 0,
+                    "gambiae"   : 0
+                }
+            }
+        },
+        {
+            "NodeID": 12,
+            "NodeAttributes": {
+                "InitialPopulation": 10,
+                "InitialVectorsPerSpecies": {
+                    "arabiensis": 100,
+                    "funestus"  : 0,
+                    "gambiae"   : 0
+                }
+            }
+        },
+        {
+            "NodeID": 13,
+            "NodeAttributes": {
+                "InitialPopulation": 10,
+                "InitialVectorsPerSpecies": {
+                    "arabiensis": 100,
+                    "funestus"  : 0,
+                    "gambiae"   : 0
+                }
+            }
+        },
+        {
+            "NodeID": 14,
+            "NodeAttributes": {
+                "InitialPopulation": 10,
+                "InitialVectorsPerSpecies": {
+                    "arabiensis": 100,
+                    "funestus"  : 0,
+                    "gambiae"   : 0
+                }
+            }
+        },
+        {
+            "NodeID": 15,
+            "NodeAttributes": {
+                "InitialPopulation": 10,
+                "InitialVectorsPerSpecies": {
+                    "arabiensis": 100,
+                    "funestus"  : 0,
+                    "gambiae"   : 0
+                }
+            }
+        },
+        {
+            "NodeID": 16,
+            "NodeAttributes": {
+                "InitialPopulation": 10,
+                "InitialVectorsPerSpecies": {
+                    "arabiensis": 100,
+                    "funestus"  : 0,
+                    "gambiae"   : 0
+                }
+            }
+        },
+        {
+            "NodeID": 17,
+            "NodeAttributes": {
+                "InitialPopulation": 10,
+                "InitialVectorsPerSpecies": {
+                    "arabiensis": 100,
+                    "funestus"  : 0,
+                    "gambiae"   : 0
+                }
+            }
+        },
+        {
+            "NodeID": 18,
+            "NodeAttributes": {
+                "InitialPopulation": 10,
+                "InitialVectorsPerSpecies": {
+                    "arabiensis": 100,
+                    "funestus"  : 0,
+                    "gambiae"   : 0
+                }
+            }
+        },
+        {
+            "NodeID": 19,
+            "NodeAttributes": {
+                "InitialPopulation": 10,
+                "InitialVectorsPerSpecies": {
+                    "arabiensis": 100,
+                    "funestus"  : 0,
+                    "gambiae"   : 0
+                }
+            }
+        },
+        {
+            "NodeID": 20,
+            "NodeAttributes": {
+                "InitialPopulation": 10,
+                "InitialVectorsPerSpecies": {
+                    "arabiensis": 100,
+                    "funestus"  : 0,
+                    "gambiae"   : 0
+                }
+            }
+        },
+        {
+            "NodeID": 21,
+            "NodeAttributes": {
+                "InitialPopulation": 10,
+                "InitialVectorsPerSpecies": {
+                    "arabiensis": 100,
+                    "funestus"  : 0,
+                    "gambiae"   : 0
+                }
+            }
+        },
+        {
+            "NodeID": 22,
+            "NodeAttributes": {
+                "InitialPopulation": 10,
+                "InitialVectorsPerSpecies": {
+                    "arabiensis": 100,
+                    "funestus"  : 0,
+                    "gambiae"   : 0
+                }
+            }
+        },
+        {
+            "NodeID": 23,
+            "NodeAttributes": {
+                "InitialPopulation": 10,
+                "InitialVectorsPerSpecies": {
+                    "arabiensis": 100,
+                    "funestus"  : 0,
+                    "gambiae"   : 0
+                }
+            }
+        },
+        {
+            "NodeID": 24,
+            "NodeAttributes": {
+                "InitialPopulation": 10,
+                "InitialVectorsPerSpecies": {
+                    "arabiensis": 100,
+                    "funestus"  : 0,
+                    "gambiae"   : 0
+                }
+            }
+        },
+        {
+            "NodeID": 25,
+            "NodeAttributes": {
+                "InitialPopulation": 10,
+                "InitialVectorsPerSpecies": {
+                    "arabiensis": 100,
+                    "funestus"  : 0,
+                    "gambiae"   : 0
+                }
+            }
+        },
+        {
+            "NodeID": 26,
+            "NodeAttributes": {
+                "InitialPopulation": 0,
+                "InitialVectorsPerSpecies": {
+                    "arabiensis": 0,
+                    "funestus"  : 0,
+                    "gambiae"   : 0
+                }
+            }
+        }
+    ]
+}

@@ -1,0 +1,52 @@
+{
+    "Genes" :
+    [
+        {
+            "Is_Gender_Gene": 0,
+            "Alleles": [
+                {
+                    "Name": "Aw",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 1.0
+                },
+                {
+                    "Name": "Ad",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.0
+                },
+                {
+                    "Name": "Am",
+                    "Is_Y_Chromosome" : 0,
+                    "Initial_Allele_Frequency": 0.0
+                }
+            ],
+            "Mutations": []
+        }
+    ],
+    "Drivers" : [
+        {
+            "Driver_Type" : "CLASSIC",
+            "Driving_Allele" : "Ad",
+            "Alleles_Driven" : [
+                {
+                    "Allele_To_Copy"    : "Ad",
+                    "Allele_To_Replace" : "Aw",
+                    "Copy_To_Likelihood" : [
+                        {
+                            "Copy_To_Allele" : "Aw",
+                            "Likelihood" : 0.15
+                        },
+                        {
+                            "Copy_To_Allele" : "Ad",
+                            "Likelihood" : 0.80
+                        },
+                        {
+                            "Copy_To_Allele" : "Am",
+                            "Likelihood" : 0.05
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

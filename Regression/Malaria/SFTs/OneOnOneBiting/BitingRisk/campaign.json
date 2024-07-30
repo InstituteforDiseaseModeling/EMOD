@@ -1,0 +1,23 @@
+{
+    "Use_Defaults": 1,
+    "Events": [
+        {
+            "class": "CampaignEvent",
+            "Start_Day": 1,
+            "Nodeset_Config": {
+                "class": "NodeSetAll"
+            },
+            "Event_Coordinator_Config": {
+                "class": "StandardInterventionDistributionEventCoordinator",
+                "Demographic_Coverage": 1,
+                "Individual_Selection_Type": "TARGET_NUM_INDIVIDUALS",
+                "Target_Num_Individuals": 1,
+                "Intervention_Config": {
+                    "Risk_Distribution": "CONSTANT_DISTRIBUTION",
+                    "class": "BitingRisk",
+                    "Risk_Constant": 0.3
+                }
+            }
+        }
+    ]
+}

@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -49,8 +41,6 @@ namespace Kernel
 
     protected:
 
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         INodeContext* p_node_context ;
         EventTrigger event_trigger;
         bool include_my_node ;
@@ -58,6 +48,5 @@ namespace Kernel
         float max_distance_km ;
 
         DECLARE_SERIALIZABLE(BroadcastEventToOtherNodes);
-#pragma warning( pop )
     };
 }

@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 #include "IPairFormationFlowController.h"
@@ -29,6 +21,7 @@ namespace Kernel
     public:
 
         virtual void UpdateEntryRates( const IdmDateTime& rCurrentTime, float dt );
+        virtual std::map<int, std::vector<float>>& GetDesiredFlow();
 
         static IPairFormationFlowController* CreateController(
             IPairFormationAgent*,
@@ -45,8 +38,6 @@ namespace Kernel
 
         void UpdateDesiredFlow( const IdmDateTime& rCurrentTime, float dt );
 
-#pragma warning( push )
-#pragma warning( disable: 4251 ) // See IdmApi.h for details
         IPairFormationAgent* pair_formation_agent;
         IPairFormationStats* pair_formation_stats;
         IPairFormationRateTable* rate_table;
@@ -57,6 +48,5 @@ namespace Kernel
         std::map<int, std::vector<float>> desired_flow;
 
         DECLARE_SERIALIZABLE(FlowControllerImpl);
-#pragma warning( pop )
     };
 }

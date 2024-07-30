@@ -1,11 +1,3 @@
-/***************************************************************************************************
-
-Copyright (c) 2019 Intellectual Ventures Property Holdings, LLC (IVPH) All rights reserved.
-
-EMOD is licensed under the Creative Commons Attribution-Noncommercial-ShareAlike 4.0 License.
-To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
-
-***************************************************************************************************/
 
 #pragma once
 
@@ -15,7 +7,6 @@ To view a copy of this license, visit https://creativecommons.org/licenses/by-nc
 
 #include "IReport.h"
 #include "Log.h"
-#include "BoostLibWrapper.h"
 #include "ChannelDataMap.h"
 
 class BaseChannelReport : public Kernel::BaseReport
@@ -45,7 +36,11 @@ public:
 protected:
     BaseChannelReport( const std::string& rReportName );
 
+    ChannelID AddChannel( const std::string& channel_name );
+    void Accumulate( const ChannelID& rID, float value );
+
     virtual void Accumulate(const std::string& channel_name, float value);
+    virtual void SetLastValue(const std::string& channel_name, float value);
 
     void normalizeChannel( const std::string &channel_name, const std::string &normalization_channel );
     void normalizeChannel( const std::string &channel_name, float normalization_value );

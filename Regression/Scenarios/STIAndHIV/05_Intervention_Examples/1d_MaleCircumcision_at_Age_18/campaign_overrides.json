@@ -41,7 +41,7 @@
                                 "Event_Or_Config": "Event",
                                 "Negative_Diagnosis_Event": "HIVNeedsMaleCircumcision",
                                 "New_Property_Value": "InterventionStatus:None",
-                                "Positive_Diagnosis_Event": "",
+                                "Positive_Diagnosis_Event": "DummyTrigger",
                                 "class": "HIVSimpleDiagnostic"
                             }
                         ],
