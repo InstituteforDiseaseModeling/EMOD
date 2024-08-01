@@ -3,6 +3,9 @@
 
 #include "BaseTextReport.h"
 #include "IVectorMigrationReporting.h"
+#include "VectorEnums.h"
+#include "VectorGenome.h"
+#include "VectorGene.h"
 
 #ifndef _REPORT_DLL
 #include "ReportFactory.h"
@@ -39,5 +42,11 @@ namespace Kernel
         float m_StartDay;
         float m_EndDay;
         bool m_IsValidDay;
+        std::vector<VectorStateEnum::Enum> m_MustBeInState;
+        std::vector<ExternalNodeId_t> m_MustBeFromNode;
+        std::vector<ExternalNodeId_t> m_MustBeToNode;
+        bool m_IncludeGenomeData;
+        std::vector<std::string> m_SpeciesList;
+        std::string m_FilenameSuffix;
     };
 }

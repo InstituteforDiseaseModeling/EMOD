@@ -5,6 +5,15 @@
                 "SillySkeeter"
             ],
             "class": "ReportVectorStats"
+        },
+        {
+            "class": "ReportVectorMigration",
+            "Start_Day": 0,
+            "End_Day": 30,
+            "Include_Genome_Data": 0,
+            "Must_Be_From_Node": [],
+            "Must_Be_To_Node": [],
+            "Species": []
         }
     ],
     "Use_Defaults": 1

@@ -167,6 +167,22 @@ namespace Kernel
             {
             }
 
+            virtual Element GetSchemaElement()
+            {
+                Element member = Object();
+                QuickBuilder qb(member);
+                qb["type"] = json::String(GetTypeString());
+
+                for (int k = 0; k < enum_value_specs.size(); k++)
+                {
+                    qb["enum"][k] = json::String(enum_value_specs[k].first);
+                }
+
+                qb["description"] = json::String(description);
+                qb["default"] = json::Array();
+                return member;
+            }
+
             virtual const char *GetTypeString()
             {
                 return "Vector Enum";
