@@ -72,25 +72,16 @@
                "Serialization_Times" : [ 365 ]
           },
           "Enable_Vector_Aging": 1, 
-          
           "Wolbachia_Mortality_Modification": 0.0, 
           "Human_Feeding_Mortality": 0.0, 
           "Enable_Vector_Mortality": 1, 
-          "Enable_Vector_Migration": 1, 
-
-          "Enable_Vector_Migration_Local": 1, 
-          "Vector_Migration_Filename_Local" : "Local_Vector_Migration.bin",
-          "x_Vector_Migration_Local" : 1.0,
-
-          "Enable_Vector_Migration_Regional" : 0,
-          "Vector_Migration_Filename_Regional" : "Regional_Vector_Migration.bin",
-          "x_Vector_Migration_Regional" : 1.0,
-
-          "Vector_Migration_Modifier_Equation" : "EXPONENTIAL",
-          "Vector_Migration_Food_Modifier" : 0.0,
-          "Vector_Migration_Habitat_Modifier": 0.0, 
-          "Vector_Migration_Stay_Put_Modifier" : 0.0,
-
-          "Vector_Sampling_Type": "TRACK_ALL_VECTORS"
+        "Vector_Migration_Modifier_Equation": "EXPONENTIAL",
+        "Vector_Migration_Food_Modifier": 0.0,
+        "Vector_Migration_Habitat_Modifier": 0.0,
+        "Vector_Migration_Stay_Put_Modifier": 0.0,
+        "Vector_Sampling_Type": "TRACK_ALL_VECTORS",
+        "Enable_Vector_Migration": 1,
+        "Vector_Migration_Filename": "Local_Vector_Migration.bin",
+        "x_Vector_Migration": 1.0
      }
 }

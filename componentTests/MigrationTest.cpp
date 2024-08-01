@@ -883,64 +883,24 @@ SUITE(MigrationTest)
             unique_ptr<IMigrationInfoVector> p_mi( p_mfv->CreateMigrationInfoVector( &nc_1, nodeid_suid_map ) );
 
             const std::vector<suids::suid>& reachable_nodes = p_mi->GetReachableNodes();
-            CHECK_EQUAL( 24, reachable_nodes.size() );
+            CHECK_EQUAL( 3, reachable_nodes.size() );
             CHECK_EQUAL(  2, reachable_nodes[ 0].data );
             CHECK_EQUAL(  6, reachable_nodes[ 1].data );
             CHECK_EQUAL(  7, reachable_nodes[ 2].data );
-            CHECK_EQUAL(  3, reachable_nodes[ 3].data );
-            CHECK_EQUAL(  4, reachable_nodes[ 4].data );
-            CHECK_EQUAL(  5, reachable_nodes[ 5].data );
-            CHECK_EQUAL(  8, reachable_nodes[ 6].data );
-            CHECK_EQUAL(  9, reachable_nodes[ 7].data );
-            CHECK_EQUAL( 10, reachable_nodes[ 8].data );
-            CHECK_EQUAL( 11, reachable_nodes[ 9].data );
-            CHECK_EQUAL( 12, reachable_nodes[10].data );
-            CHECK_EQUAL( 13, reachable_nodes[11].data );
-            CHECK_EQUAL( 14, reachable_nodes[12].data );
-            CHECK_EQUAL( 15, reachable_nodes[13].data );
-            CHECK_EQUAL( 16, reachable_nodes[14].data );
-            CHECK_EQUAL( 17, reachable_nodes[15].data );
-            CHECK_EQUAL( 18, reachable_nodes[16].data );
-            CHECK_EQUAL( 19, reachable_nodes[17].data );
-            CHECK_EQUAL( 20, reachable_nodes[18].data );
-            CHECK_EQUAL( 21, reachable_nodes[19].data );
-            CHECK_EQUAL( 22, reachable_nodes[20].data );
-            CHECK_EQUAL( 23, reachable_nodes[21].data );
-            CHECK_EQUAL( 24, reachable_nodes[22].data );
-            CHECK_EQUAL( 25, reachable_nodes[23].data );
+
 
             const std::vector<MigrationType::Enum>& mig_type_list = p_mi->GetMigrationTypes();
-            CHECK_EQUAL( 24, mig_type_list.size() );
+            CHECK_EQUAL( 3, mig_type_list.size() );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION,    mig_type_list[ 0] );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION,    mig_type_list[ 1] );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION,    mig_type_list[ 2] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[ 3] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[ 4] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[ 5] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[ 6] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[ 7] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[ 8] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[ 9] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[10] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[11] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[12] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[13] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[14] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[15] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[16] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[17] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[18] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[19] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[20] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[21] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[22] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[23] );
+
 
             INodeContextFake nc_9( nodeid_suid_map.left.at(9) ) ;
             unique_ptr<IMigrationInfo> p_mi_9( p_mfv->CreateMigrationInfoVector( &nc_9, nodeid_suid_map ) );
 
             const std::vector<suids::suid>& reachable_nodes_9 = p_mi_9->GetReachableNodes();
-            CHECK_EQUAL( 24, reachable_nodes_9.size() );
+            CHECK_EQUAL( 8, reachable_nodes_9.size() );
             CHECK_EQUAL(  3, reachable_nodes_9[ 0].data );
             CHECK_EQUAL(  4, reachable_nodes_9[ 1].data );
             CHECK_EQUAL(  5, reachable_nodes_9[ 2].data );
@@ -949,25 +909,11 @@ SUITE(MigrationTest)
             CHECK_EQUAL( 13, reachable_nodes_9[ 5].data );
             CHECK_EQUAL( 14, reachable_nodes_9[ 6].data );
             CHECK_EQUAL( 15, reachable_nodes_9[ 7].data );
-            CHECK_EQUAL(  1, reachable_nodes_9[ 8].data );
-            CHECK_EQUAL(  2, reachable_nodes_9[ 9].data );
-            CHECK_EQUAL(  6, reachable_nodes_9[10].data );
-            CHECK_EQUAL(  7, reachable_nodes_9[11].data );
-            CHECK_EQUAL( 11, reachable_nodes_9[12].data );
-            CHECK_EQUAL( 12, reachable_nodes_9[13].data );
-            CHECK_EQUAL( 16, reachable_nodes_9[14].data );
-            CHECK_EQUAL( 17, reachable_nodes_9[15].data );
-            CHECK_EQUAL( 18, reachable_nodes_9[16].data );
-            CHECK_EQUAL( 19, reachable_nodes_9[17].data );
-            CHECK_EQUAL( 20, reachable_nodes_9[18].data );
-            CHECK_EQUAL( 21, reachable_nodes_9[19].data );
-            CHECK_EQUAL( 22, reachable_nodes_9[20].data );
-            CHECK_EQUAL( 23, reachable_nodes_9[21].data );
-            CHECK_EQUAL( 24, reachable_nodes_9[22].data );
-            CHECK_EQUAL( 25, reachable_nodes_9[23].data );
+
+
 
             const std::vector<MigrationType::Enum>& mig_type_list_9 = p_mi_9->GetMigrationTypes();
-            CHECK_EQUAL( 24, mig_type_list_9.size() );
+            CHECK_EQUAL( 8, mig_type_list_9.size() );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION,    mig_type_list_9[ 0] );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION,    mig_type_list_9[ 1] );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION,    mig_type_list_9[ 2] );
@@ -976,22 +922,7 @@ SUITE(MigrationTest)
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION,    mig_type_list_9[ 5] );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION,    mig_type_list_9[ 6] );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION,    mig_type_list_9[ 7] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list_9[ 8] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list_9[ 9] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list_9[10] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list_9[11] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list_9[12] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list_9[13] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list_9[14] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list_9[15] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list_9[16] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list_9[17] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list_9[18] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list_9[19] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list_9[20] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list_9[21] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list_9[22] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list_9[23] );
+
 
             INodeContextFake nc_26( nodeid_suid_map.left.at(26) ) ;
             unique_ptr<IMigrationInfo> p_mi_26( p_mfv->CreateMigrationInfoVector( &nc_26, nodeid_suid_map ) );

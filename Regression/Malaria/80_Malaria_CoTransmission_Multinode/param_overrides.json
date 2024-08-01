@@ -13,46 +13,46 @@
         "x_Base_Population": 1.0
     },
     "MIGRATION": {
-        "AA" : {
-            "Enable_Migration_Heterogeneity": 1, 
-            "Migration_Model": "FIXED_RATE_MIGRATION", 
+        "AA": {
+            "Enable_Migration_Heterogeneity": 1,
+            "Migration_Model": "FIXED_RATE_MIGRATION",
             "Migration_Pattern": "SINGLE_ROUND_TRIPS"
         },
-        "AIR" : {
+        "AIR": {
             "Enable_Air_Migration": 0,
             "Air_Migration_Filename": "",
-            "Air_Migration_Roundtrip_Duration"    : 0.0,
-            "Air_Migration_Roundtrip_Probability" : 0.0,
-            "x_Air_Migration" : 1.0
+            "Air_Migration_Roundtrip_Duration": 0.0,
+            "Air_Migration_Roundtrip_Probability": 0.0,
+            "x_Air_Migration": 1.0
         },
         "LOCAL": {
             "Enable_Local_Migration": 1,
             "Local_Migration_Filename": "LocalMigration_2_Nodes.bin",
-            "Local_Migration_Roundtrip_Duration"    : 1.0,
-            "Local_Migration_Roundtrip_Probability" : 1.0,
-            "x_Local_Migration" : 1.0
-        }, 
-        "FAMILY" : {
+            "Local_Migration_Roundtrip_Duration": 1.0,
+            "Local_Migration_Roundtrip_Probability": 1.0,
+            "x_Local_Migration": 1.0
+        },
+        "FAMILY": {
             "Enable_Family_Migration": 0,
             "Family_Migration_Filename": "",
-            "Family_Migration_Roundtrip_Duration" : 0.0,
+            "Family_Migration_Roundtrip_Duration": 0.0,
             "x_Family_Migration": 1
         },
         "REGIONAL": {
             "Enable_Regional_Migration": 0,
             "Regional_Migration_Filename": "",
-            "Regional_Migration_Roundtrip_Duration"    : 1.0,
-            "Regional_Migration_Roundtrip_Probability" : 1.0,
-            "x_Regional_Migration" : 1.0
-        }, 
+            "Regional_Migration_Roundtrip_Duration": 1.0,
+            "Regional_Migration_Roundtrip_Probability": 1.0,
+            "x_Regional_Migration": 1.0
+        },
         "SEA": {
             "Enable_Sea_Migration": 0,
             "Sea_Migration_Filename": "",
-            "Sea_Migration_Roundtrip_Duration"    : 0.0,
-            "Sea_Migration_Roundtrip_Probability" : 1.0,
+            "Sea_Migration_Roundtrip_Duration": 0.0,
+            "Sea_Migration_Roundtrip_Probability": 1.0,
             "x_Sea_Migration": 1
         }
-    }, 
+    },
     "MALARIA": {
         "Malaria_Strain_Model": "FALCIPARUM_RANDOM_STRAIN"
     },
@@ -79,24 +79,15 @@
         "Malaria_Model": "MALARIA_MECHANISTIC_MODEL_WITH_CO_TRANSMISSION",
         "Max_Individual_Infections": 10,
         "Number_Basestrains": 1,
-        "Number_Substrains": 0        
+        "Number_Substrains": 0
     },
     "VECTOR": {
         "x_Temporary_Larval_Habitat": 0.05,
         "Vector_Sampling_Type": "TRACK_ALL_VECTORS",
-        
-        "Enable_Vector_Migration": 1, 
-        "Enable_Vector_Migration_Local": 1, 
-        "Vector_Migration_Filename_Local" : "LocalMigration_2_Nodes.bin",
-        "x_Vector_Migration_Local" : 1.0,
-        "Enable_Vector_Migration_Regional" : 0,
-        "Vector_Migration_Filename_Regional" : "",
-        "x_Vector_Migration_Regional" : 1.0,
-        "Vector_Migration_Modifier_Equation" : "EXPONENTIAL",
-        "Vector_Migration_Food_Modifier" : 0.0,
-        "Vector_Migration_Habitat_Modifier": 0.0, 
-        "Vector_Migration_Stay_Put_Modifier" : 0.0,
-        
+        "Vector_Migration_Modifier_Equation": "EXPONENTIAL",
+        "Vector_Migration_Food_Modifier": 0.0,
+        "Vector_Migration_Habitat_Modifier": 0.0,
+        "Vector_Migration_Stay_Put_Modifier": 0.0,
         "Vector_Species_Params": [
             {
                 "Name": "SillySkeeter",
@@ -126,6 +117,9 @@
                 "Transmission_Rate": 1.0,
                 "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_NONE"
             }
-        ]
+        ],
+        "Enable_Vector_Migration": 1,
+        "Vector_Migration_Filename": "LocalMigration_2_Nodes.bin",
+        "x_Vector_Migration": 1.0
     }
 }

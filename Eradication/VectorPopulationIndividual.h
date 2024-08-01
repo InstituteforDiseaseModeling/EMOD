@@ -22,7 +22,7 @@ namespace Kernel
         virtual ~VectorPopulationIndividual() override;
 
         // IVectorPopulation
-        virtual void Vector_Migration( float dt, IMigrationInfo* pMigInfo, VectorCohortVector_t* pMigratingQueue ) override;
+        virtual void Vector_Migration( float dt, IMigrationInfo* pMigInfo, VectorCohortVector_t* pMigratingQueue, bool migrate_males_only ) override;
         virtual void AddImmigratingVector( IVectorCohort* pvc ) override;
 
         // IInfectable

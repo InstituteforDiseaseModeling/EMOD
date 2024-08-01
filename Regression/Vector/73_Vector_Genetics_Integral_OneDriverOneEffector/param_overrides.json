@@ -2,9 +2,9 @@
     "Default_Config_Path": "defaults/vector_default_config.json",
     "parameters": {
         "CLIMATE": {
-           "Base_Air_Temperature": 25.0,
-           "Climate_Model": "CLIMATE_CONSTANT",
-           "Enable_Climate_Stochasticity": 0
+            "Base_Air_Temperature": 25.0,
+            "Climate_Model": "CLIMATE_CONSTANT",
+            "Enable_Climate_Stochasticity": 0
         },
         "DEMOGRAPHICS": {
             "Enable_Natural_Mortality": 0,
@@ -20,31 +20,14 @@
             "Geography": "Household_5x5",
             "Run_Number": 13,
             "Simulation_Duration": 730,
-            "logLevel_DllLoader" : "WARNING",
-            "logLevel_DllInterfaceHelper" : "WARNING"
+            "logLevel_DllLoader": "WARNING",
+            "logLevel_DllInterfaceHelper": "WARNING"
         },
-        "VECTOR" : {
-            "Enable_Vector_Aging": 1, 
-            "Enable_Vector_Mortality": 1, 
-            
-            "Enable_Vector_Migration": 0, 
-            
-            "Enable_Vector_Migration_Local": 0, 
-            "Vector_Migration_Filename_Local" : "",
-            "x_Vector_Migration_Local" : 1.0,
-            
-            "Enable_Vector_Migration_Regional" : 0,
-            "Vector_Migration_Filename_Regional" : "",
-            "x_Vector_Migration_Regional" : 1.0,
-            
-            "Vector_Migration_Modifier_Equation" : "EXPONENTIAL",
-            "Vector_Migration_Food_Modifier" : 0.0,
-            "Vector_Migration_Habitat_Modifier": 0.0, 
-            "Vector_Migration_Stay_Put_Modifier" : 0.0,
-            
+        "VECTOR": {
+            "Enable_Vector_Aging": 1,
+            "Enable_Vector_Mortality": 1,
             ".Vector_Sampling_Type": "VECTOR_COMPARTMENTS_NUMBER",
             "Vector_Sampling_Type": "TRACK_ALL_VECTORS",
-            
             "x_Temporary_Larval_Habitat": 0.2
         },
         "Vector_Species_Params": [
@@ -57,12 +40,12 @@
                         "Alleles": [
                             {
                                 "Name": "a0",
-                                "Is_Y_Chromosome" : 0,
+                                "Is_Y_Chromosome": 0,
                                 "Initial_Allele_Frequency": 1.0
                             },
                             {
                                 "Name": "a1",
-                                "Is_Y_Chromosome" : 0,
+                                "Is_Y_Chromosome": 0,
                                 "Initial_Allele_Frequency": 0.0
                             }
                         ],
@@ -73,74 +56,86 @@
                         "Alleles": [
                             {
                                 "Name": "b0",
-                                "Is_Y_Chromosome" : 0,
+                                "Is_Y_Chromosome": 0,
                                 "Initial_Allele_Frequency": 1.0
                             },
                             {
                                 "Name": "b1",
-                                "Is_Y_Chromosome" : 0,
+                                "Is_Y_Chromosome": 0,
                                 "Initial_Allele_Frequency": 0.0
                             }
                         ],
                         "Mutations": []
                     }
                 ],
-                "Gene_To_Trait_Modifiers" : [
+                "Gene_To_Trait_Modifiers": [
                     {
-                        "Allele_Combinations" : [
-                            [  "X",  "X" ],
-                            [ "b0", "b1" ]
+                        "Allele_Combinations": [
+                            [
+                                "X",
+                                "X"
+                            ],
+                            [
+                                "b0",
+                                "b1"
+                            ]
                         ],
-                        "Trait_Modifiers" : [
+                        "Trait_Modifiers": [
                             {
-                                "Trait" : "INFECTED_BY_HUMAN",
+                                "Trait": "INFECTED_BY_HUMAN",
                                 "Modifier": 0.0
                             }
                         ]
                     },
                     {
-                        "Allele_Combinations" : [
-                            [  "X",  "X" ],
-                            [ "b1", "b1" ]
+                        "Allele_Combinations": [
+                            [
+                                "X",
+                                "X"
+                            ],
+                            [
+                                "b1",
+                                "b1"
+                            ]
                         ],
-                        "Trait_Modifiers" : [
+                        "Trait_Modifiers": [
                             {
-                                "Trait" : "INFECTED_BY_HUMAN",
+                                "Trait": "INFECTED_BY_HUMAN",
                                 "Modifier": 0.0
                             }
                         ]
                     }
                 ],
-                "Drivers" : [
+                "Drivers": [
                     {
-                        "Driver_Type" : "INTEGRAL_AUTONOMOUS",
-                        "Driving_Allele" : "a1",
-                        "Alleles_Driven" : [
+                        "Driver_Type": "INTEGRAL_AUTONOMOUS",
+                        "Driving_Allele": "a1",
+                        "Alleles_Driven": [
                             {
-                                "Allele_To_Copy"    : "a1",
-                                "Allele_To_Replace" : "a0",
-                                "Copy_To_Likelihood" : [
+                                "Allele_To_Copy": "a1",
+                                "Allele_To_Replace": "a0",
+                                "Copy_To_Likelihood": [
                                     {
-                                        "Copy_To_Allele" : "a1",
-                                        "Likelihood" : 0.9
+                                        "Copy_To_Allele": "a1",
+                                        "Likelihood": 0.9
                                     },
                                     {
-                                        "Copy_To_Allele" : "a0",
-                                        "Likelihood" : 0.1
+                                        "Copy_To_Allele": "a0",
+                                        "Likelihood": 0.1
                                     }
                                 ]
                             },
                             {
-                                "Allele_To_Copy"    : "b1",
-                                "Allele_To_Replace" : "b0",
-                                "Copy_To_Likelihood" : [
+                                "Allele_To_Copy": "b1",
+                                "Allele_To_Replace": "b0",
+                                "Copy_To_Likelihood": [
                                     {
-                                        "Copy_To_Allele" : "b1",
-                                        "Likelihood" : 0.9
+                                        "Copy_To_Allele": "b1",
+                                        "Likelihood": 0.9
                                     },
                                     {
-                                        "Copy_To_Allele" : "b0",
-                                        "Likelihood" : 0.1
+                                        "Copy_To_Allele": "b0",
+                                        "Likelihood": 0.1
                                     }
                                 ]
                             }
