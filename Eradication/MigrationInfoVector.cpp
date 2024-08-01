@@ -296,7 +296,7 @@ namespace Kernel
         , m_ModifierFood(foodModifier)
         , m_ModifierStayPut(stayPutModifier)
     {
-        m_RawMigrationRatesVectorGender = { {0}, {0} }; //because gets cleared and we need to indices to be there
+        m_RawMigrationRatesVectorGender = { {0}, {0} }; //we need for indices to exist to add data
     }
 
     MigrationInfoAgeAndGenderVector::~MigrationInfoAgeAndGenderVector()
@@ -376,8 +376,8 @@ namespace Kernel
     }
 
     void MigrationInfoAgeAndGenderVector::UpdateRates(const suids::suid& rThisNodeId,
-        const std::string& rSpeciesID,
-        IVectorSimulationContext* pivsc)
+                                                      const std::string& rSpeciesID,
+                                                      IVectorSimulationContext* pivsc)
     {
         // ---------------------------------------------------------------------------------
         // --- If we want to factor in the likelihood that a vector will decide that
