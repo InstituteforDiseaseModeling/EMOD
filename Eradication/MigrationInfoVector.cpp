@@ -36,10 +36,10 @@ namespace Kernel
     END_QUERY_INTERFACE_DERIVED(MigrationInfoFixedRateVector, MigrationInfoFixedRate)
 
     MigrationInfoFixedRateVector::MigrationInfoFixedRateVector( INodeContext * _parent,
-                                              ModiferEquationType::Enum equation,
-                                              float habitatModifier,
-                                              float foodModifier,
-                                              float stayPutModifier ) 
+                                                                ModiferEquationType::Enum equation,
+                                                                float habitatModifier,
+                                                                float foodModifier,
+                                                                float stayPutModifier ) 
     : MigrationInfoFixedRate( _parent, false ) 
     , m_RawMigrationRate()
     , m_ThisNodeId(suids::nil_suid())
@@ -74,11 +74,11 @@ namespace Kernel
     }
 
     void MigrationInfoFixedRateVector::PickMigrationStep( RANDOMBASE* pRNG,
-                                                 IIndividualHumanEventContext *traveler, 
-                                                 float migration_rate_modifier,
-                                                 suids::suid& destination, 
-                                                 MigrationType::Enum& migration_type, 
-                                                 float& timeUntilTrip ) 
+                                                          IIndividualHumanEventContext *traveler, 
+                                                          float migration_rate_modifier,
+                                                          suids::suid& destination, 
+                                                          MigrationType::Enum& migration_type, 
+                                                          float& timeUntilTrip ) 
     {
         MigrationInfoFixedRate::PickMigrationStep( pRNG, traveler, migration_rate_modifier, destination, migration_type, timeUntilTrip );
 
@@ -132,9 +132,9 @@ namespace Kernel
     }
 
     std::vector<float> MigrationInfoFixedRateVector::GetRatios( const std::vector<suids::suid>& rReachableNodes,
-                                                       const std::string& rSpeciesID, 
-                                                       IVectorSimulationContext* pivsc, 
-                                                       tGetValueFunc getValueFunc )
+                                                                const std::string& rSpeciesID, 
+                                                                IVectorSimulationContext* pivsc, 
+                                                                tGetValueFunc getValueFunc )
     {
         // -----------------------------------
         // --- Find the total number of people
@@ -160,8 +160,8 @@ namespace Kernel
     }
 
     void MigrationInfoFixedRateVector::UpdateRates( const suids::suid& rThisNodeId,
-                                           const std::string& rSpeciesID, 
-                                           IVectorSimulationContext* pivsc )
+                                                    const std::string& rSpeciesID, 
+                                                    IVectorSimulationContext* pivsc )
     {
         // ---------------------------------------------------------------------------------
         // --- If we want to factor in the likelihood that a vector will decide that
@@ -215,9 +215,9 @@ namespace Kernel
     }
 
     float MigrationInfoFixedRateVector::CalculateModifiedRate( const suids::suid& rNodeId,
-                                                      float rawRate, 
-                                                      float populationRatio, 
-                                                      float habitatRatio )
+                                                               float rawRate, 
+                                                               float populationRatio, 
+                                                               float habitatRatio )
     {
         // --------------------------------------------------------------------------
         // --- Determine the probability that the mosquito will not migrate because
@@ -684,10 +684,10 @@ namespace Kernel
             std::vector<std::vector<MigrationRateData>> rate_data = GetRateData( pParentNode, rNodeIdSuidMap, m_xLocalModifierVector );
 
             MigrationInfoFixedRateVector* new_migration_info = _new_ MigrationInfoFixedRateVector( pParentNode,
-                                                                                 ModiferEquationType::LINEAR,
-                                                                                 1.0,
-                                                                                 1.0,
-                                                                                 1.0 );
+                                                                                                   ModiferEquationType::LINEAR,
+                                                                                                   1.0,
+                                                                                                   1.0,
+                                                                                                   1.0 );
             new_migration_info->Initialize( rate_data );
 
             return new_migration_info;
