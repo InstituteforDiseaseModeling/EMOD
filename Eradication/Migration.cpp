@@ -113,7 +113,7 @@ namespace Kernel
     }
 
     void MigrationInfoNull::PickMigrationStep( RANDOMBASE* pRNG, 
-                                               IIndividualHumanContext * traveler, 
+                                               IIndividualHumanEventContext * traveler, 
                                                float migration_rate_modifier, 
                                                suids::suid &destination, 
                                                MigrationType::Enum &migration_type,
@@ -189,7 +189,7 @@ namespace Kernel
 
                 m_RateCDF.push_back( mrd.GetRate( 0.0 ) );
             }
-            SaveRawRates( m_RateCDF );
+            SaveRawRates( m_RateCDF, Gender::MALE );
             NormalizeRates( m_RateCDF, m_TotalRate );
         }
     }
@@ -215,7 +215,7 @@ namespace Kernel
     }
 
     void MigrationInfoFixedRate::PickMigrationStep( RANDOMBASE* pRNG,
-                                                    IIndividualHumanContext *traveler, 
+                                                    IIndividualHumanEventContext *traveler, 
                                                     float migration_rate_modifier,
                                                     suids::suid &destination, 
                                                     MigrationType::Enum &migration_type, 
@@ -225,8 +225,8 @@ namespace Kernel
         Gender::Enum gender = Gender::MALE;
         if( traveler != nullptr )
         {
-            age_years = traveler->GetEventContext()->GetAge() / DAYSPERYEAR;
-            gender = Gender::Enum(traveler->GetEventContext()->GetGender());
+            age_years = traveler->GetAge() / DAYSPERYEAR;
+            gender = Gender::Enum(traveler->GetGender());
         }
 
         CalculateRates( gender, age_years );
@@ -360,7 +360,7 @@ namespace Kernel
             float rate = mrd.GetRate( ageYears );
             m_RateCDF.push_back( rate );
         }
-
+        SaveRawRates(m_RateCDF, gender);
         NormalizeRates( m_RateCDF, m_TotalRate );
     }
 

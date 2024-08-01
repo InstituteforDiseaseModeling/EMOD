@@ -3,6 +3,9 @@
 
 #include "stdafx.h"
 #include "IMigrationInfo.h"
+#include "SimulationEnums.h"
+#include "VectorEnums.h"
+
 
 namespace Kernel
 {
@@ -15,7 +18,12 @@ namespace Kernel
         // change in human population and vector habitat
         virtual void UpdateRates( const suids::suid& rThisNodeId, 
                                   const std::string& rSpeciesID, 
-                                  IVectorSimulationContext* pivsc ) = 0;
+                                  IVectorSimulationContext* pivsc) = 0;
+
+        virtual Gender::Enum ConvertVectorGender(VectorGender::Enum vector_gender) const = 0;
+        virtual const std::vector<suids::suid>& GetReachableNodesByGender(VectorGender::Enum vector_gender) const = 0;
+        virtual const std::vector<MigrationType::Enum>& GetMigrationTypesByGender(VectorGender::Enum vector_gender) const = 0;
+        virtual void CalculateRates(VectorGender::Enum vector_gender) = 0;
     };
 
     struct IDMAPI IMigrationInfoFactoryVector : virtual IMigrationInfoFactory

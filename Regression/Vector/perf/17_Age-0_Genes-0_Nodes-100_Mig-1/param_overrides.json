@@ -6,9 +6,9 @@
             "../Demographics_100.json"
         ],
         "Enable_Vector_Aging": 0,
-        "Enable_Vector_Migration": 1,
-        "Enable_Vector_Migration_Local": 1,
         "Python_Script_Path": "LOCAL",
-        "Vector_Migration_Filename_Local": "Local_Vector_Migration_100_Node_Torus.bin"
+        "Enable_Vector_Migration": 1,
+        "Vector_Migration_Filename": "Local_Vector_Migration_100_Node_Torus.bin",
+        "x_Vector_Migration": 1
     }
 }

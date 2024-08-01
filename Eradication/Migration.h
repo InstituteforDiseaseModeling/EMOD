@@ -16,6 +16,7 @@ namespace std
 
 #include "IMigrationInfo.h"
 #include "InterpolatedValueMap.h"
+#include "IndividualEventContext.h"
 
 #define MAX_LOCAL_MIGRATION_DESTINATIONS    (8)
 #define MAX_AIR_MIGRATION_DESTINATIONS      (60)
@@ -77,7 +78,7 @@ namespace Kernel
 
         // IMigrationInfo methods
         virtual void PickMigrationStep( RANDOMBASE* pRNG,
-                                        IIndividualHumanContext * traveler, 
+                                        IIndividualHumanEventContext * traveler, 
                                         float migration_rate_modifier, 
                                         suids::suid &destination, 
                                         MigrationType::Enum &migration_type,
@@ -115,7 +116,7 @@ namespace Kernel
 
         // IMigrationInfo methods
         virtual void PickMigrationStep( RANDOMBASE* pRNG,
-                                        IIndividualHumanContext * traveler, 
+                                        IIndividualHumanEventContext * traveler, 
                                         float migration_rate_modifier, 
                                         suids::suid &destination, 
                                         MigrationType::Enum &migration_type,
@@ -137,7 +138,7 @@ namespace Kernel
         virtual void Initialize( const std::vector<std::vector<MigrationRateData>>& rRateData );
         virtual void CalculateRates( Gender::Enum gender, float ageYears );
         virtual void NormalizeRates( std::vector<float>& r_rate_cdf, float& r_total_rate );
-        virtual void SaveRawRates( std::vector<float>& r_rate_cdf ) {}
+        virtual void SaveRawRates( std::vector<float>& r_rate_cdf, Gender::Enum gender ) {}
 
         virtual const std::vector<suids::suid>& GetReachableNodes( Gender::Enum gender ) const;
         virtual const std::vector<MigrationType::Enum>& GetMigrationTypes( Gender::Enum gender ) const;

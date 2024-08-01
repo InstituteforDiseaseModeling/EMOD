@@ -16,7 +16,7 @@ class Configuration;
 namespace Kernel
 {
     class RANDOMBASE;
-    struct IIndividualHumanContext;
+    struct IIndividualHumanEventContext;
     struct INodeContext;
 
     // IMigrationInfo is used to determine when and where an individual will migrate.
@@ -25,7 +25,7 @@ namespace Kernel
         virtual ~IMigrationInfo() {};
 
         virtual void PickMigrationStep( RANDOMBASE* pRNG,
-                                        IIndividualHumanContext * traveler, 
+                                        IIndividualHumanEventContext * traveler, 
                                         float migration_rate_modifier, 
                                         suids::suid &destination, 
                                         MigrationType::Enum &migration_type,

@@ -122,7 +122,6 @@ namespace Kernel
         {
             // This bit of magic gets around the fact that we have a few competing JSON patterns colliding right here, and we have to
             // go from one JSON view to string to another JSON view
-            // LarvalHabitatMultiplier_DESC_TEXT
             std::istringstream config_string(demographics["NodeAttributes"].GetJsonObject().ToString());
             Configuration* config = Configuration::Load(config_string, std::string(""));
             larval_habitat_multiplier.Configure(config);
@@ -400,7 +399,6 @@ namespace Kernel
         {
             const VectorSpeciesParameters* p_vsp = params()->vector_params->vector_species[ species_index ];
 
-            // InitialVectorsPerSpecies_DESC_TEXT
             int32_t population_per_species = DEFAULT_VECTOR_POPULATION_SIZE;
             if( demographics[ "NodeAttributes" ].Contains( "InitialVectorsPerSpecies" ) )
             {
@@ -504,10 +502,8 @@ namespace Kernel
         VectorCohortVector_t migrating_vectors;
         for( auto vp : m_vectorpopulations )
         {
-            vector_migration_info->UpdateRates( this->GetSuid(), vp->get_SpeciesID(),  ivsc );
-
             migrating_vectors.clear();
-            vp->Vector_Migration( dt, vector_migration_info, &migrating_vectors );
+            vp->Vector_Migration( dt, vector_migration_info, &migrating_vectors, false );
             for (auto p_vc : migrating_vectors)
             {
                 ivsc->PostMigratingVector(this->GetSuid(), p_vc);

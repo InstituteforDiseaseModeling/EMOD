@@ -957,7 +957,7 @@ namespace Kernel
 
             if( migration_outbound && (migration_info->GetReachableNodes().size() > 0) )
             {
-                migration_info->PickMigrationStep( GetRng(), this, migration_mod, migration_destination, migration_type, migration_time_until_trip );
+                migration_info->PickMigrationStep( GetRng(), this->GetEventContext(), migration_mod, migration_destination, migration_type, migration_time_until_trip );
 
                 if( migration_type == MigrationType::NO_MIGRATION )
                 {

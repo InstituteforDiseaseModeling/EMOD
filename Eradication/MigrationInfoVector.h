@@ -5,6 +5,8 @@
 #include "IMigrationInfoVector.h"
 #include "Migration.h"
 #include "EnumSupport.h"
+#include "VectorEnums.h"
+#include "SimulationEnums.h"
 
 namespace Kernel
 {
@@ -29,6 +31,19 @@ namespace Kernel
                                   const std::string& rSpeciesID,
                                   IVectorSimulationContext* pivsc ) {};
 
+        virtual Gender::Enum ConvertVectorGender(VectorGender::Enum gender) const { return Gender::MALE; };
+        virtual const std::vector<suids::suid>& GetReachableNodesByGender(VectorGender::Enum gender) const 
+        {
+            static vector<suids::suid> empty_vector;
+            return empty_vector;
+        };
+        virtual const std::vector<MigrationType::Enum>& GetMigrationTypesByGender(VectorGender::Enum gender) const 
+        { 
+            static vector<MigrationType::Enum> empty_vector;
+            return empty_vector;
+        };
+        virtual void CalculateRates(VectorGender::Enum vector_gender) {};
+
     protected:
         friend class MigrationInfoFactoryVector;
         friend class MigrationInfoFactoryVectorDefault;
@@ -38,19 +53,19 @@ namespace Kernel
     };
 
     // ----------------------------------
-    // --- MigrationInfoVector
+    // --- MigrationInfoFixedRateVector
     // ----------------------------------
 
-    class IDMAPI MigrationInfoVector : public MigrationInfoFixedRate, public IMigrationInfoVector
+    class IDMAPI MigrationInfoFixedRateVector : public MigrationInfoFixedRate, public IMigrationInfoVector
     {
     public:
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()  
         DECLARE_QUERY_INTERFACE()
     public:
-        virtual ~MigrationInfoVector();
+        virtual ~MigrationInfoFixedRateVector();
 
         virtual void PickMigrationStep( RANDOMBASE* pRNG,
-                                        IIndividualHumanContext * traveler, 
+                                        IIndividualHumanEventContext * traveler, 
                                         float migration_rate_modifier, 
                                         suids::suid &destination, 
                                         MigrationType::Enum &migration_type,
@@ -65,14 +80,20 @@ namespace Kernel
         friend class MigrationInfoFactoryVector;
         friend class MigrationInfoFactoryVectorDefault;
 
-        MigrationInfoVector( INodeContext* _parent,
+        MigrationInfoFixedRateVector( INodeContext* _parent,
                              ModiferEquationType::Enum equation,
                              float habitatModifier,
                              float foodModifier,
                              float stayPutModifier );
 
         virtual void Initialize( const std::vector<std::vector<MigrationRateData>>& rRateData ) override;
-        virtual void SaveRawRates( std::vector<float>& r_rate_cdf ) override;
+
+        virtual Gender::Enum ConvertVectorGender(VectorGender::Enum gender) const override;
+        virtual const std::vector<suids::suid>& GetReachableNodesByGender(VectorGender::Enum gender) const override;
+        virtual const std::vector<MigrationType::Enum>& GetMigrationTypesByGender(VectorGender::Enum gender) const override;
+        virtual void CalculateRates(VectorGender::Enum vector_gender) override;
+
+        virtual void SaveRawRates( std::vector<float>& r_rate_cdf, Gender::Enum gender ) override;
         float CalculateModifiedRate( const suids::suid& rNodeId, 
                                      float rawRate, 
                                      float populationRatio, 
@@ -95,6 +116,66 @@ namespace Kernel
         float m_ModifierFood;
         float m_ModifierStayPut;
     };
+
+    // ----------------------------------
+    // --- MigrationInfoAgeAndGenderVector
+    // ----------------------------------
+
+    class IDMAPI MigrationInfoAgeAndGenderVector : public MigrationInfoAgeAndGender, public IMigrationInfoVector
+    {
+    public:
+        IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
+            DECLARE_QUERY_INTERFACE()
+    public:
+        virtual ~MigrationInfoAgeAndGenderVector();
+
+        // IMigrationInfoVector
+        virtual void UpdateRates(const suids::suid& rThisNodeId,
+            const std::string& rSpeciesID,
+            IVectorSimulationContext* pivsc) override;
+
+        virtual Gender::Enum ConvertVectorGender(VectorGender::Enum gender) const override;
+        virtual const std::vector<suids::suid>& GetReachableNodesByGender(VectorGender::Enum gender) const override;
+        virtual const std::vector<MigrationType::Enum>& GetMigrationTypesByGender(VectorGender::Enum gender) const override;
+        virtual void CalculateRates(VectorGender::Enum vector_gender) override;
+
+    protected:
+        friend class MigrationInfoFactoryVector;
+        friend class MigrationInfoFactoryVectorDefault;
+
+        MigrationInfoAgeAndGenderVector(INodeContext* _parent,
+            ModiferEquationType::Enum equation,
+            float habitatModifier,
+            float foodModifier,
+            float stayPutModifier);
+
+        virtual void Initialize(const std::vector<std::vector<MigrationRateData>>& rRateData) override;
+        virtual void SaveRawRates(std::vector<float>& r_rate_cdf, Gender::Enum gender) override;
+        float CalculateModifiedRate(const suids::suid& rNodeId,
+            float rawRate,
+            float populationRatio,
+            float habitatRatio);
+
+        typedef std::function<int(const suids::suid& rNodeId,
+            const std::string& rSpeciesID,
+            IVectorSimulationContext* pivsc)> tGetValueFunc;
+
+        std::vector<float> GetRatios(const std::vector<suids::suid>& rReachableNodes,
+            const std::string& rSpeciesID,
+            IVectorSimulationContext* pivsc,
+            tGetValueFunc getValueFunc);
+
+    private:
+        std::vector<std::vector<float>> m_RawMigrationRatesVectorGender;
+        std::vector<float> m_TotalRatesVectorGender;
+        std::vector<std::vector<float>> m_RateCDFVectorGender;
+        suids::suid m_ThisNodeId;
+        ModiferEquationType::Enum m_ModifierEquation;
+        float m_ModifierHabitat;
+        float m_ModifierFood;
+        float m_ModifierStayPut;
+    };
+
 
 
     // ----------------------------------

@@ -21,8 +21,8 @@
                             },
                             {
                                 "Name": "A3",
-                                "Initial_Allele_Frequency": 0.125
                                 "Is_Y_Chromosome" : 0,
+                                "Initial_Allele_Frequency": 0.125
                             },
                             {
                                 "Name": "A4",

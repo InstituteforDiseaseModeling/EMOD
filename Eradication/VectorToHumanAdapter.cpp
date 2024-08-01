@@ -3,6 +3,7 @@
 
 #include "VectorToHumanAdapter.h"
 #include "INodeContext.h"
+#include "SimulationEnums.h"
 
 namespace Kernel
 {
@@ -10,9 +11,17 @@ namespace Kernel
         HANDLE_INTERFACE( IIndividualHumanEventContext )
     END_QUERY_INTERFACE_BODY( VectorToHumanAdapter )
 
-    VectorToHumanAdapter::VectorToHumanAdapter( INodeContext* pNodeContext, uint32_t vectorID )
+    VectorToHumanAdapter::VectorToHumanAdapter(INodeContext* pNodeContext, uint32_t vectorID)
+        : m_pNodeContext(pNodeContext)
+        , m_VectorID(vectorID)
+        , m_VectorGender(VectorGender::VECTOR_FEMALE)
+    {
+    }
+
+    VectorToHumanAdapter::VectorToHumanAdapter( INodeContext* pNodeContext, uint32_t vectorID, VectorGender::Enum vector_gender)
         : m_pNodeContext( pNodeContext )
         , m_VectorID( vectorID )
+        , m_VectorGender (vector_gender)
     {
     }
 
@@ -46,12 +55,13 @@ namespace Kernel
 
     double VectorToHumanAdapter::GetAge() const
     {
-        throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "Should not be accessing this method in VectorToHumanAdapter" );
+        // vectors don't travel based on age, age doesn't matter, will return 0
+        return 0; 
     }
 
     int VectorToHumanAdapter::GetGender() const
     {
-        throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "Should not be accessing this method in VectorToHumanAdapter" );
+        return (m_VectorGender == VectorGender::VECTOR_FEMALE) ? Gender::FEMALE : Gender::MALE ;
     }
 
     double VectorToHumanAdapter::GetMonteCarloWeight() const
