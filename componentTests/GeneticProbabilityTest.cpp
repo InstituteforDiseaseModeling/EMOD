@@ -308,7 +308,7 @@ SUITE( GeneticProbabilityTest )
         // -----------------------------------------------------------------------------------------
         // --- This test attempts to simulate a vector deposits into StrainAwareTransmissionGroupsGP.
         // --- Once in SATGGP, we are going to pretend that this value is the "total contagion".
-        // --- We then multiply this total contagion by the person's probablity to acquire (PA)
+        // --- We then multiply this total contagion by the person's probability to acquire (PA)
         // --- which involves some resistance.  What we want is the PA to be combined with the
         // --- appropriate vector deposits.
         // --- NOTE:  The ACPs does increase in this example because the PA could be combined

@@ -103,7 +103,7 @@ namespace Kernel
         std::map<std::string, VectorHabitatList_t> m_larval_habitats;
 
         // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // !!! NOTE: m_vector_poulations, m_VectorPopulationReportingList and VectorParameters.vector_species
+        // !!! NOTE: m_vector_populations, m_VectorPopulationReportingList and VectorParameters.vector_species
         // !!! need to all be in the same order.
         // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         std::vector<IVectorPopulation*>  m_vectorpopulations;
