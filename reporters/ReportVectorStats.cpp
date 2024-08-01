@@ -56,8 +56,6 @@ namespace Kernel
         , dead_outdoor(0)
         , available_habitat_per_species()
         , egg_crowding_correction_per_species()
-        , migration_count_local()
-        , migration_count_regional()
         , wolbachia_counts()
         , microsporidia_counts_by_state()
     {
@@ -302,9 +300,6 @@ namespace Kernel
             }
         }
 
-        header << "," << "MigrationFromCountLocal"
-               << "," << "MigrationFromCountRegional";
-
         if( stratifyBySpecies )
         {
             header << "," << "AvailableHabitat";
@@ -431,13 +426,8 @@ namespace Kernel
         // -------------------------------------------------------------------------------
         // --- Since we ARE stratifying by species, we write one column for each of these
         // -------------------------------------------------------------------------------
-        output << "," << migration_count_local[ node_suid.data ][ species ]
-               << "," << migration_count_regional[ node_suid.data ][ species ]
-               << "," << available_habitat_per_species[ species ]
+        output << "," << available_habitat_per_species[ species ]
                << "," << egg_crowding_correction_per_species[ species ];
-
-        migration_count_local[ node_suid.data ][ species ] = 0;
-        migration_count_regional[ node_suid.data ][ species ] = 0;
     }
 
     void VectorStats::WriteData( const suids::suid& node_suid,
@@ -445,16 +435,6 @@ namespace Kernel
                                  std::stringstream& output )
     {
         WriteBaseData( output );
-
-        uint32_t total_migration_count_local = 0;
-        uint32_t total_migration_count_regional = 0;
-        for( auto sp : rSpeciesList )
-        {
-            total_migration_count_local    += migration_count_local[ node_suid.data ][ sp ];
-            total_migration_count_regional += migration_count_regional[ node_suid.data ][ sp ];
-        }
-        output << "," << total_migration_count_local
-               << "," << total_migration_count_regional;
 
         // ------------------------------------------------------------------------------
         // --- since were not stratifying by species, we write a column for each species.
@@ -467,22 +447,6 @@ namespace Kernel
         {
             output << "," << egg_crowding_correction_per_species[ sp ];
         }
-    }
-
-    void VectorStats::ClearNodeData( const suids::suid& node_suid )
-    {
-        migration_count_local[ node_suid.data ].clear();
-        migration_count_regional[ node_suid.data ].clear();
-    }
-
-    void VectorStats::UpdateMigrationData( const suids::suid& node_suid,
-                                           const std::string& species,
-                                           MigrationType::Enum migType )
-    {
-        if( migType == MigrationType::LOCAL_MIGRATION )
-            migration_count_local[ node_suid.data ][ species ]++;
-        else if( migType == MigrationType::REGIONAL_MIGRATION )
-            migration_count_regional[ node_suid.data ][ species ]++;
     }
 
     uint32_t VectorStats::GetNumInfectiousBitesGivenIndoor() const
@@ -500,7 +464,6 @@ namespace Kernel
     // ----------------------------------------
 
     BEGIN_QUERY_INTERFACE_DERIVED( ReportVectorStats, BaseTextReportEvents )
-        HANDLE_INTERFACE( IVectorMigrationReporting )
         HANDLE_INTERFACE( IReport )
         HANDLE_INTERFACE( IConfigurable )
     END_QUERY_INTERFACE_DERIVED( ReportVectorStats, BaseTextReportEvents )
@@ -658,8 +621,6 @@ namespace Kernel
         {
             WriteData( time, nodeId, node_suid, "", pop );
         }
-
-        stats.ClearNodeData( node_suid );
     }
 
     void ReportVectorStats::WriteData( float time,
@@ -715,22 +676,5 @@ namespace Kernel
         num_infectious_bites_received += p_ind_vector->GetNumInfectiousBites();
 
         return true;
-    }
-
-    void ReportVectorStats::LogVectorMigration( ISimulationContext* pSim, 
-                                                float currentTime, 
-                                                const suids::suid& nodeSuid, 
-                                                IVectorCohort* pvc )
-    {
-        IMigrate * pim = NULL;
-        if (s_OK != pvc->QueryInterface(GET_IID(IMigrate), (void**)&pim) )
-        {
-            throw QueryInterfaceException(__FILE__, __LINE__, __FUNCTION__, "pvc", "IMigrate", "IVectorCohort");
-        }
-
-        MigrationType::Enum mig_type = MigrationType::Enum( pim->GetMigrationType() );
-        const std::string& species = pvc->GetSpecies();
-
-        stats.UpdateMigrationData( nodeSuid, species, mig_type );
     }
 }

@@ -45,12 +45,6 @@ namespace Kernel
                         const std::vector<std::string>& rSpeciesList,
                         std::stringstream& output );
 
-        void ClearNodeData( const suids::suid& node_suid );
-
-        void UpdateMigrationData( const suids::suid& node_suid,
-                                  const std::string& species,
-                                  MigrationType::Enum migType );
-
         uint32_t GetNumInfectiousBitesGivenIndoor() const;
         uint32_t GetNumInfectiousBitesGivenOutdoor() const;
 
@@ -84,17 +78,13 @@ namespace Kernel
         uint32_t dead_before;
         uint32_t dead_indoor;
         uint32_t dead_outdoor;
-        uint32_t total_migration_count_local;
-        uint32_t total_migration_count_regional;
         std::map<std::string, float> available_habitat_per_species;
         std::map<std::string, float> egg_crowding_correction_per_species;
-        std::map<uint32_t, std::map<std::string, int>> migration_count_local;
-        std::map<uint32_t, std::map<std::string, int>> migration_count_regional;
         std::vector<uint32_t> wolbachia_counts;
         std::vector<uint32_t> microsporidia_counts_by_state;
     };
 
-    class ReportVectorStats : public BaseTextReportEvents, public IVectorMigrationReporting
+    class ReportVectorStats : public BaseTextReportEvents
     {
 #ifndef _REPORT_DLL
         DECLARE_FACTORY_REGISTERED( ReportFactory, ReportVectorStats, IReport )
@@ -122,11 +112,6 @@ namespace Kernel
         virtual bool notifyOnEvent( IIndividualHumanEventContext *context, 
                                     const EventTrigger& trigger ) override;
 
-        // IVectorMigrationReporting
-        virtual void LogVectorMigration( ISimulationContext* pSim, 
-                                         float currentTime, 
-                                         const suids::suid& rNodeSuid, 
-                                         IVectorCohort* pivc ) override;
     protected:
         ReportVectorStats( const std::string& rReportName );
         virtual void ResetOtherCounters() {};
