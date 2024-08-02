@@ -166,7 +166,7 @@ namespace Kernel
                 Enum(_name, _desc, count, strings, values)
             {
             }
-
+            // for a list of enums, the default is emtpy list 
             virtual Element GetSchemaElement()
             {
                 Element member = Object();

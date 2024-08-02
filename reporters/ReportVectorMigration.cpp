@@ -150,19 +150,12 @@ GetReportInstantiator( Kernel::instantiator_function_t* pif )
                 switch (state)
                 {
                     case VectorStateEnum::STATE_EGG:
-                    {
-                        throw InvalidInputDataException(__FILE__, __LINE__, __FUNCTION__,
-                            "'STATE_EGG' is not a valid state for ReportVectorMigration.\n");
-                    }
                     case VectorStateEnum::STATE_LARVA:
-                    {
-                        throw InvalidInputDataException(__FILE__, __LINE__, __FUNCTION__,
-                            "'STATE_LARVA' is not a valid state for ReportVectorMigration.\n");
-                    }
                     case VectorStateEnum::STATE_IMMATURE:
                     {
-                        throw InvalidInputDataException(__FILE__, __LINE__, __FUNCTION__,
-                            "'STATE_IMMATURE' is not a valid state for ReportVectorMigration.\n");
+                        std::stringstream ss;
+                        ss << "'" << VectorStateEnum::pairs::lookup_key(state) << "' is not a valid vector state for ReportVectorMigration.";
+                            throw InvalidInputDataException(__FILE__, __LINE__, __FUNCTION__, ss.str().c_str());
                     }
                     case VectorStateEnum::STATE_MALE:
                     case VectorStateEnum::STATE_ADULT:
@@ -173,7 +166,7 @@ GetReportInstantiator( Kernel::instantiator_function_t* pif )
             }
             if (!m_FilenameSuffix.empty())
             {
-                IdmString tmp_report_name = DEFAULT_NAME;
+                IdmString tmp_report_name = report_name;
                 std::vector<IdmString> parts = tmp_report_name.split('.');
                 release_assert(parts.size() == 2);
                 std::string output_fn = parts[0];
@@ -230,7 +223,7 @@ GetReportInstantiator( Kernel::instantiator_function_t* pif )
         VectorStateEnum::Enum state = pvc->GetState();
         if (!m_MustBeInState.empty())
         {
-            if (!std::count(m_MustBeInState.begin(), m_MustBeInState.end(), state)) 
+            if (std::find(m_MustBeInState.begin(), m_MustBeInState.end(), state) == m_MustBeInState.end())
             {
                 // state is not one of the required states
                 return;
@@ -241,16 +234,17 @@ GetReportInstantiator( Kernel::instantiator_function_t* pif )
         int from_node_id = pSim->GetNodeExternalID( nodeSuid ) ;
         if (!m_MustBeFromNode.empty())
         {
-            if (!std::count(m_MustBeFromNode.begin(), m_MustBeFromNode.end(), from_node_id))
+            if (std::find(m_MustBeFromNode.begin(), m_MustBeFromNode.end(), from_node_id) == m_MustBeFromNode.end())
             {
                 // from_node_id is not one we want in the report
                 return;
             }
         }
+
         int to_node_id = pSim->GetNodeExternalID( pim->GetMigrationDestination() ) ;
         if (!m_MustBeToNode.empty())
         {
-            if (!(std::find(m_MustBeToNode.begin(), m_MustBeToNode.end(), to_node_id) != m_MustBeToNode.end()))
+            if (std::find(m_MustBeToNode.begin(), m_MustBeToNode.end(), to_node_id) == m_MustBeToNode.end())
             {
                 // to_node_id is not one we want in the report
                 return;
@@ -259,7 +253,7 @@ GetReportInstantiator( Kernel::instantiator_function_t* pif )
         std::string species = pvc->GetSpecies();
         if (!m_SpeciesList.empty())
         {
-            if (!(std::find(m_SpeciesList.begin(), m_SpeciesList.end(), species) != m_SpeciesList.end()))
+            if (std::find(m_SpeciesList.begin(), m_SpeciesList.end(), species) == m_SpeciesList.end())
             {
                 // if not species we're interested in do not add to report
                 return;
