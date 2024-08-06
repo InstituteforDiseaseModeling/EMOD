@@ -207,6 +207,22 @@ GetReportInstantiator( Kernel::instantiator_function_t* pif )
         return header.str();
     }
 
+    // Possibly something to add to ReportFiltering when we refactor 
+    // https://github.com/InstituteforDiseaseModeling/EMOD/issues/29
+    template<typename T>
+    bool RecordThisData(const std::vector<T>& rList, const T& rValue)
+    {
+        if (rList.empty())
+        {
+            return true;
+        }
+        else
+        {
+            // true if found
+            return std::find(rList.begin(), rList.end(), rValue) != rList.end();
+        }
+    }
+
     void ReportVectorMigration::LogVectorMigration( ISimulationContext* pSim, float currentTime, const suids::suid& nodeSuid, IVectorCohort* pvc )
     {
         if( !m_IsValidDay )
@@ -219,48 +235,21 @@ GetReportInstantiator( Kernel::instantiator_function_t* pif )
         {
             throw QueryInterfaceException(__FILE__, __LINE__, __FUNCTION__, "pvc", "IMigrate", "IVectorCohort");
         }
-
+        
         VectorStateEnum::Enum state = pvc->GetState();
-        if (!m_MustBeInState.empty())
-        {
-            if (std::find(m_MustBeInState.begin(), m_MustBeInState.end(), state) == m_MustBeInState.end())
-            {
-                // state is not one of the required states
-                return;
-            }
-        }
+        int                   from_node_id = pSim->GetNodeExternalID(nodeSuid);
+        int                   to_node_id = pSim->GetNodeExternalID(pim->GetMigrationDestination());
+        const std::string&    species = pvc->GetSpecies();
+
+        if (!RecordThisData<ExternalNodeId_t     >(m_MustBeFromNode, from_node_id)) return;
+        if (!RecordThisData<ExternalNodeId_t     >(m_MustBeToNode, to_node_id)) return;
+        if (!RecordThisData<VectorStateEnum::Enum>(m_MustBeInState, state)) return;
+        if (!RecordThisData<std::string          >(m_SpeciesList, species)) return;
+
 
         uint32_t vci_id = pvc->GetID();
-        int from_node_id = pSim->GetNodeExternalID( nodeSuid ) ;
-        if (!m_MustBeFromNode.empty())
-        {
-            if (std::find(m_MustBeFromNode.begin(), m_MustBeFromNode.end(), from_node_id) == m_MustBeFromNode.end())
-            {
-                // from_node_id is not one we want in the report
-                return;
-            }
-        }
-
-        int to_node_id = pSim->GetNodeExternalID( pim->GetMigrationDestination() ) ;
-        if (!m_MustBeToNode.empty())
-        {
-            if (std::find(m_MustBeToNode.begin(), m_MustBeToNode.end(), to_node_id) == m_MustBeToNode.end())
-            {
-                // to_node_id is not one we want in the report
-                return;
-            }
-        }
-        std::string species = pvc->GetSpecies();
-        if (!m_SpeciesList.empty())
-        {
-            if (std::find(m_SpeciesList.begin(), m_SpeciesList.end(), species) == m_SpeciesList.end())
-            {
-                // if not species we're interested in do not add to report
-                return;
-            }
-        }
-        float age = pvc->GetAge();
-        int num = pvc->GetPopulation();
+        float       age = pvc->GetAge();
+        int         num = pvc->GetPopulation();
 
         GetOutputStream() << currentTime
             << "," << vci_id
