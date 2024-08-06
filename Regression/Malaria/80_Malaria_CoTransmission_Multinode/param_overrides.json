@@ -84,10 +84,6 @@
     "VECTOR": {
         "x_Temporary_Larval_Habitat": 0.05,
         "Vector_Sampling_Type": "TRACK_ALL_VECTORS",
-        "Vector_Migration_Modifier_Equation": "EXPONENTIAL",
-        "Vector_Migration_Food_Modifier": 0.0,
-        "Vector_Migration_Habitat_Modifier": 0.0,
-        "Vector_Migration_Stay_Put_Modifier": 0.0,
         "Vector_Species_Params": [
             {
                 "Name": "SillySkeeter",
@@ -115,11 +111,15 @@
                 "Microsporidia": [],
                 "Temperature_Dependent_Feeding_Cycle": "NO_TEMPERATURE_DEPENDENCE",
                 "Transmission_Rate": 1.0,
+                "Vector_Migration_Modifier_Equation": "EXPONENTIAL",
+                "Vector_Migration_Food_Modifier": 0.0,
+                "Vector_Migration_Habitat_Modifier": 0.0,
+                "Vector_Migration_Stay_Put_Modifier": 0.0,
+                "Vector_Migration_Filename": "LocalMigration_2_Nodes.bin",
+                "x_Vector_Migration": 1.0,
                 "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_NONE"
             }
         ],
-        "Enable_Vector_Migration": 1,
-        "Vector_Migration_Filename": "LocalMigration_2_Nodes.bin",
-        "x_Vector_Migration": 1.0
+        "Enable_Vector_Migration": 1
     }
 }
