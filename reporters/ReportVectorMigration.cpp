@@ -125,17 +125,15 @@ GetReportInstantiator( Kernel::instantiator_function_t* pif )
 
     bool ReportVectorMigration::Configure( const Configuration * inputJson )
     {
-        initConfigTypeMap( "Start_Day", &m_StartDay, Report_Start_Day_DESC_TEXT, 0.0f, FLT_MAX, 0.0f );
-        initConfigTypeMap( "End_Day",   &m_EndDay,   Report_End_Day_DESC_TEXT,   0.0f, FLT_MAX, FLT_MAX );
-        initVectorConfig("Must_Be_In_State",
-            m_MustBeInState,
-            inputJson,
-            MetadataDescriptor::VectorOfEnum("VectorStateEnum", RVM_Must_Be_In_State_DESC_TEXT, MDD_ENUM_ARGS(VectorStateEnum)));
-        initConfigTypeMap("Must_Be_From_Node", &m_MustBeFromNode, RVM_Must_Be_From_Node_DESC_TEXT, 1, INT_MAX, false);
-        initConfigTypeMap("Must_Be_To_Node", &m_MustBeToNode, RVM_Must_Be_To_Node_DESC_TEXT, 1, INT_MAX, false);
-        initConfigTypeMap("Include_Genome_Data", &m_IncludeGenomeData, RVM_Include_Genome_Data_DESC_TEXT, false);
-        initConfigTypeMap("Species_List", &m_SpeciesList, RVS_Species_List_DESC_TEXT);
-        initConfigTypeMap("Filename_Suffix", &m_FilenameSuffix, ReportFilter_Filename_Suffix_DESC_TEXT, "");
+        initConfigTypeMap("Start_Day",           &m_StartDay,          Report_Start_Day_DESC_TEXT,      0.0f, FLT_MAX, 0.0f );
+        initConfigTypeMap("End_Day",             &m_EndDay,            Report_End_Day_DESC_TEXT,        0.0f, FLT_MAX, FLT_MAX );
+        initVectorConfig( "Must_Be_In_State",     m_MustBeInState, inputJson, MetadataDescriptor::VectorOfEnum(
+                          "VectorStateEnum",                           RVM_Must_Be_In_State_DESC_TEXT,        MDD_ENUM_ARGS(VectorStateEnum)));
+        initConfigTypeMap("Must_Be_From_Node",   &m_MustBeFromNode,    RVM_Must_Be_From_Node_DESC_TEXT, 1,    INT_MAX, false);
+        initConfigTypeMap("Must_Be_To_Node",     &m_MustBeToNode,      RVM_Must_Be_To_Node_DESC_TEXT,   1,    INT_MAX, false);
+        initConfigTypeMap("Include_Genome_Data", &m_IncludeGenomeData, RVM_Include_Genome_Data_DESC_TEXT,              false);
+        initConfigTypeMap("Species_List",        &m_SpeciesList,       RVS_Species_List_DESC_TEXT);
+        initConfigTypeMap("Filename_Suffix",     &m_FilenameSuffix,    ReportFilter_Filename_Suffix_DESC_TEXT, "");
         
         bool ret = JsonConfigurable::Configure( inputJson );
 
@@ -166,11 +164,11 @@ GetReportInstantiator( Kernel::instantiator_function_t* pif )
             }
             if (!m_FilenameSuffix.empty())
             {
-                IdmString tmp_report_name = report_name;
+                IdmString tmp_report_name    = report_name;
                 std::vector<IdmString> parts = tmp_report_name.split('.');
-                release_assert(parts.size() == 2);
-                std::string output_fn = parts[0];
-                output_fn += "_" + m_FilenameSuffix + ".csv";
+                release_assert(parts.size()  == 2);
+                std::string output_fn        = parts[0];
+                output_fn                   += "_" + m_FilenameSuffix + ".csv";
                 SetReportName(output_fn);
             }
 
@@ -189,19 +187,19 @@ GetReportInstantiator( Kernel::instantiator_function_t* pif )
     std::string ReportVectorMigration::GetHeader() const
     {
         std::stringstream header ;
-        header << "Time" << ","
-               << "ID" << ","
+        header << "Time"       << ","
+               << "ID"         << ","
                << "FromNodeID" << ","
-               << "ToNodeID" << ","
-               << "State" << ",";
+               << "ToNodeID"   << ","
+               << "State"      << ",";
 
         if (m_IncludeGenomeData)
         {
             header << "Genome" << "," ;
         }
 
-        header << "Species"        << ","
-               << "Age"            << ","
+        header << "Species"    << ","
+               << "Age"        << ","
                << "Population" ;
 
         return header.str();
@@ -236,15 +234,15 @@ GetReportInstantiator( Kernel::instantiator_function_t* pif )
             throw QueryInterfaceException(__FILE__, __LINE__, __FUNCTION__, "pvc", "IMigrate", "IVectorCohort");
         }
         
-        VectorStateEnum::Enum state = pvc->GetState();
+        VectorStateEnum::Enum state        = pvc->GetState();
         int                   from_node_id = pSim->GetNodeExternalID(nodeSuid);
-        int                   to_node_id = pSim->GetNodeExternalID(pim->GetMigrationDestination());
-        const std::string&    species = pvc->GetSpecies();
+        int                   to_node_id   = pSim->GetNodeExternalID(pim->GetMigrationDestination());
+        const std::string&    species      = pvc->GetSpecies();
 
         if (!RecordThisData<ExternalNodeId_t     >(m_MustBeFromNode, from_node_id)) return;
-        if (!RecordThisData<ExternalNodeId_t     >(m_MustBeToNode, to_node_id)) return;
-        if (!RecordThisData<VectorStateEnum::Enum>(m_MustBeInState, state)) return;
-        if (!RecordThisData<std::string          >(m_SpeciesList, species)) return;
+        if (!RecordThisData<ExternalNodeId_t     >(m_MustBeToNode,   to_node_id))   return;
+        if (!RecordThisData<VectorStateEnum::Enum>(m_MustBeInState,  state))        return;
+        if (!RecordThisData<std::string          >(m_SpeciesList,    species))      return;
 
 
         uint32_t vci_id = pvc->GetID();
@@ -252,10 +250,11 @@ GetReportInstantiator( Kernel::instantiator_function_t* pif )
         int         num = pvc->GetPopulation();
 
         GetOutputStream() << currentTime
-            << "," << vci_id
-            << "," << from_node_id
-            << "," << to_node_id
-            << "," << VectorStateEnum::pairs::get_keys()[state];
+                          << "," << vci_id
+                          << "," << from_node_id
+                          << "," << to_node_id
+                          << "," << VectorStateEnum::pairs::get_keys()[state];
+
         if (m_IncludeGenomeData)
         {
             const VectorGeneCollection &gene_collection = GET_CONFIGURABLE(SimulationConfig)->vector_params->vector_species.GetSpecies(species).genes;
@@ -264,8 +263,8 @@ GetReportInstantiator( Kernel::instantiator_function_t* pif )
             GetOutputStream() << "," << gene_name;
         }
         GetOutputStream() << "," << species
-                   << "," << age 
-                   << "," << num 
-                   << endl;
+                          << "," << age 
+                          << "," << num 
+                          << endl;
     }
 }
