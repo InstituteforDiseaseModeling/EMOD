@@ -135,7 +135,7 @@
 #define Enable_Heterogeneous_Intranode_Transmission_DESC_TEXT "Controls whether or not individuals experience heterogeneous disease transmission within a node."
 #define Enable_Immune_Decay_DESC_TEXT "Controls whether or not immunity decays after an infection clears."
 #define Enable_Immunity_DESC_TEXT "Controls whether or not an individual has protective immunity after an infection clears."
-#define Enable_Infectivity_Reservoir_DESC_TEXT "Controls whether or not an exogeneous reservoir of infectivity will be included in the simulation and allows for the infectivity in a node to be increased additively."
+#define Enable_Infectivity_Reservoir_DESC_TEXT "Controls whether or not an exogenous reservoir of infectivity will be included in the simulation and allows for the infectivity in a node to be increased additively."
 #define Enable_Initial_Prevalence_DESC_TEXT "Controls whether or not parameters in the demographics file are used to define a distribution for the number of infected people per node at the beginning of the simulation. Set the distribution under IndividualAttributes using PrevalenceDistributionFlag, PrevalenceDistribution1, and PrevalenceDistribution2."
 #define Enable_Interventions_DESC_TEXT "Controls whether or not campaign interventions will be used in the simulation."
 #define Enable_Local_Migration_DESC_TEXT "Controls whether or not local migration (the diffusion of people in and out of nearby nodes by foot travel) occurs."
@@ -149,7 +149,7 @@
 #define Enable_Random_Generator_From_Serialized_Population_DESC_TEXT "Determines if the random number generator(s) should be extracted from a serialized population file. Enabling this will start a simulation from this file with the exact same random number stream and location in that stream as when the file was serialized."
 #define Enable_Regional_Migration_DESC_TEXT "Controls whether or not there is migration by road or rail network into and out of nodes in the simulation."
 #define Enable_Sea_Migration_DESC_TEXT "Controls whether or not there is migration on ships into and out of coastal cities with seaports."
-#define Enable_Skipping_DESC_TEXT "Controls whether or not the simulation uses an optimization that can increase performance by up to 50% in some cases by probablistically exposing individuals rather than exposing every single person. Useful in low-prevalence, high-population scenarios"
+#define Enable_Skipping_DESC_TEXT "Controls whether or not the simulation uses an optimization that can increase performance by up to 50% in some cases by probabilistically exposing individuals rather than exposing every single person. Useful in low-prevalence, high-population scenarios"
 #define Enable_Spatial_Output_DESC_TEXT "Controls whether or not spatial output reports are created."
 #define Enable_Superinfection_DESC_TEXT "Controls whether or not an individual can have multiple infections simultaneously."
 #define Enable_Susceptibility_Scaling_DESC_TEXT "Controls whether or not susceptibility is scaled by time as defined by Susceptibility_Scaling_Type."
@@ -210,7 +210,7 @@
 #define Land_Temperature_Filename_DESC_TEXT "Path of input file defining temperature data measured at land surface."
 #define Land_Temperature_Offset_DESC_TEXT "The linear shift of land surface temperature in degrees Celsius."
 #define Land_Temperature_Variance_DESC_TEXT "The standard deviation (in degrees Celsius) for normally distributed noise applied to the daily land temperature values."
-#define Larval_Density_Dependence_DESC_TEXT "The funtional form of mortality and growth delay for mosquito larvae based on population density."
+#define Larval_Density_Dependence_DESC_TEXT "The functional form of mortality and growth delay for mosquito larvae based on population density."
 #define Larval_Density_Mortality_Offset_DESC_TEXT "An offset factor in the formula determining the larval-age-dependent mortality."
 #define Larval_Density_Mortality_Scalar_DESC_TEXT "A scale factor in the formula determining the larval-age-dependent mortality."
 #define Larval_Rainfall_Mortality_Threshold_DESC_TEXT "The threshold value on daily rainfall in millimeters, above which larval mortality is applied."
@@ -390,7 +390,7 @@
 #define Wolbachia_Infection_Modification_DESC_TEXT "The change in vector susceptibility to infection due to a Wolbachia infection."
 #define Wolbachia_Mortality_Modification_DESC_TEXT "The change in vector mortality due to a Wolbachia infection."
 #define x_Air_Migration_DESC_TEXT "Scale factor for the rate of migration by air."
-#define x_Base_Population_DESC_TEXT "Scale facor for InitialPopulation in the demographics file."
+#define x_Base_Population_DESC_TEXT "Scale factor for InitialPopulation in the demographics file."
 #define x_Birth_DESC_TEXT "Scale factor for birth rate."
 #define x_Family_Migration_DESC_TEXT "Scale factor for the rate of migration by families."
 #define x_Local_Migration_DESC_TEXT "Scale factor for the rate of migration by foot travel."
@@ -418,7 +418,7 @@
 
 #define VA_Name_DESC_TEXT "The name of an allele at this locus.  It must be unique for a given species of vector."
 #define VA_Frequency_DESC_TEXT "This is frequency of the allele at this locus in the population at initialization."
-#define VA_Is_Y_Chromosome_DESC_TEXT "True implies that this allele represents the Y chromosome.  This can only be used when 'Is_Gender_Gene' is also true."
+#define VA_Is_Y_Chromosome_DESC_TEXT "True implies that this allele represents the Y chromosome.  This can only be used when 'Is_Gender_Allele' is also true."
 
 #define VAM_Mutate_From_DESC_TEXT "If the allele in the gamete that could mutate."
 #define VAM_Mutate_To_DESC_TEXT "The allele that this locus will change to during gamete generation."
@@ -435,7 +435,7 @@
 #define VG_Is_Gender_Gene_DESC_TEXT "True implies that the alleles of this gene are for gender.  If defining the gender gene, X & Y must be defined.  One can have 4 alleles of a particular gender type."
 
 
-#define CTAL_Copy_To_Allele_DESC_TEXT "The name of the allele to be copied.  It must be an allele of the same gene as the 'Allele_To_Copy' and 'Allele_To_Repleace'."
+#define CTAL_Copy_To_Allele_DESC_TEXT "The name of the allele to be copied.  It must be an allele of the same gene as the 'Allele_To_Copy' and 'Allele_To_Replace'."
 #define CTAL_Likelihood_DESC_TEXT "The likelihood that the copy process will produce this allele.  If you give the 'Allele_To_Replace', you are defining the likelihood the copy fails.  If you give the 'Allele_To_Copy', you are specifying the likelihood of success.  Definitions for other alleles define possible mutations."
 
 #define Genes_DESC_TEXT "This is an array of Gene elements.  Each element defines all the possible allele for the gene and possible allele mutations.  Every vector will have two of the alleles of every gene.  There will be a max of 10 genes.  By default, one of the 10 genes is the gender 'gene' that has two alleles - X and Y.  This allows the user to use the X & Y alleles in Gene_To_Trait_Modifiers."
@@ -445,7 +445,7 @@
 #define VGD_Driver_Type_DESC_TEXT "This indicates the type of driver.  CLASSIC-The driver can only drive if the one gamete has the driving allele and the other has a specific allele to be replaced; INTEGRAL_AUTONOMOUS-At least one of the gametes must have the driver.  Alleles can still be driven if the driving allele is in both gametes or even if the driving allele cannot replace the allele in the other gamete.  X_SHRED can be used to reduce the number of female eggs produced while Y_SHRED does the opposite and reduced the number of male eggs produced.  DAISY_CHAIN can be used for drives that do not drive themselves but can be driven by another allele."
 #define VGD_Driving_Allele_DESC_TEXT "This is the allele that is known as the driver."
 #define VGD_Alleles_Driven_DESC_TEXT "If the drive can be activated, then these elements define the probabilities of how alleles are copied."
-#define VGD_Driving_Allele_Params_DESC_TEXT "If the drive is X_SHRED or Y_SHRED and it can be activiated, then these parameters define how the driver is copied."
+#define VGD_Driving_Allele_Params_DESC_TEXT "If the drive is X_SHRED or Y_SHRED and it can be activated, then these parameters define how the driver is copied."
 #define VGD_Shredding_Alleles_DESC_TEXT "If the drive is X_SHRED or Y_SHRED and it can be activated, then these parameters define how gender alleles are shredded."
 
 #define SA_Allele_Required_DESC_TEXT "The genome must have this gender allele in order for shredding to occur. If the driver is X_SHRED, then the allele must be designated as a Y chromosome. If the driver is Y_SHRED, then the allele must NOT be designated as a Y chromosome."
@@ -555,7 +555,7 @@
 #define Microsporidia_Larval_Growth_Modifier_DESC_TEXT "A modifier to the daily, temperature dependent, larval growth progression to immature."
 #define Microsporidia_Female_Mortality_Modifier_DESC_TEXT "A modifier on the death rate for female vectors due to general life expectancy, age, and dry heat"
 #define Microsporidia_Male_Mortality_Modifier_DESC_TEXT "A modifier on the death rate for male vectors due to general life expectancy, age, and dry heat"
-#define Microsporidia_Disease_Acq_DESC_TEXT "A modifier is selected based on the duration of the age of the microsporidia infection.  The modifier is used to modify the probability the vector aquires the disease (i.e. malaria)."
+#define Microsporidia_Disease_Acq_DESC_TEXT "A modifier is selected based on the duration of the age of the microsporidia infection.  The modifier is used to modify the probability the vector acquires the disease (i.e. malaria)."
 #define Microsporidia_Disease_Tran_DESC_TEXT "A modifier is selected based on the duration of the age of the microsporidia infection.  The modifier is used to modify the probability the vector transmit the disease (i.e. malaria)."
 
 #define Report_STI_Include_Coital_Acts_DESC_TEXT "If true, include channles about the number of coital acts per relationship type per dt and those using condoms."
