@@ -69,7 +69,9 @@
             "Node_Grid_Size": 0.009,
             "Run_Number": 43,
             "Simulation_Duration": 1460,
-            "Start_Time": 180
+            "Start_Time": 180,
+            "Custom_Reports_Filename": "custom_reports.json"
+            
         },
         "VECTOR": {
             "Enable_Vector_Migration": 1,

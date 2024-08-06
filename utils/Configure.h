@@ -741,17 +741,13 @@ namespace Kernel
             // parsing: unspecified case
             if (pJson && pJson->Exist(key) == false && _useDefaults )
             {
-                if( (EnvPtr != nullptr) && EnvPtr->Log->CheckLogLevel(Logger::INFO, "JsonConfigurable"))
+                if ((EnvPtr != nullptr) && EnvPtr->Log->CheckLogLevel(Logger::INFO, "JsonConfigurable"))
                 {
-                    EnvPtr->Log->Log(Logger::DEBUG, "JsonConfigurable", "Using the default value ( \"%s\" : [ \"%s\" ] ) for unspecified parameter.\n", key, enum_md.enum_value_specs[0].first.c_str() );
+                    release_assert(thevector.empty()); // the default is empty vector
+                    std::string default_in_string= "[]";
+                    EnvPtr->Log->Log(Logger::DEBUG, "JsonConfigurable", "Using the default value ( \"%s\" : \"%s\" ) for unspecified parameter.\n", key, default_in_string.c_str());
                 }
-                thevector.push_back( (myclass) enum_md.enum_value_specs[0].second );
-                if( _track_missing )
-                {
-                    missing_parameters_set.insert(key);
-                }
-
-                return false;
+                return true;
             }
 
             std::vector<std::string> enum_value_strings = GET_CONFIG_VECTOR_STRING(pJson, key);
