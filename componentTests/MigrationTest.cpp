@@ -1205,7 +1205,7 @@ SUITE(MigrationTest)
     {
         std::string exp_msg;
         exp_msg  = "Could not find file TestLocalMigrationFileNotFound.bin.\n";
-        exp_msg += "Received the following system error messages while checking for the existance\n";
+        exp_msg += "Received the following system error messages while checking for the existence\n";
         exp_msg += "of the file at the following locations:\n";
         exp_msg += "testdata/MigrationTest/TestLocalMigrationFileNotFound.bin - 'No such file or directory'";
 

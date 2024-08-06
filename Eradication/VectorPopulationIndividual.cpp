@@ -836,6 +836,7 @@ namespace Kernel
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "m_context->GetParent()", "IVectorSimulationContext", "ISimulationContext" );
         }
+        m_pMigrationInfoVector->CalculateRates(VectorGender::VECTOR_FEMALE);
         m_pMigrationInfoVector->UpdateRates( m_context->GetSuid(), get_SpeciesID(), p_vsc );
 
         // Use the verbose "for" construct here because we may be modifying the list and need to protect the iterator.

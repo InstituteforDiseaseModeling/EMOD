@@ -479,7 +479,7 @@ namespace Kernel
     // --- MigrationInfoFactoryVector
     // ------------------------------------------------------------------------
     MigrationInfoFactoryVector::MigrationInfoFactoryVector( bool enableVectorMigration )
-    : m_InfoFileVector( MigrationType::LOCAL_MIGRATION, 100 )
+    : m_InfoFileVector( MigrationType::LOCAL_MIGRATION, 8 )
     , m_ModifierEquation( ModiferEquationType::EXPONENTIAL )
     , m_ModifierHabitat(0.0)
     , m_ModifierFood(0.0)

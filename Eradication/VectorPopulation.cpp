@@ -2763,7 +2763,7 @@ namespace Kernel
             {
                 throw QueryInterfaceException(__FILE__, __LINE__, __FUNCTION__, "m_context", "IVectorSimulationContext", "ISimulationContext");
             }
-        	m_pMigrationInfoVector->UpdateRates( this->GetSuid(), get_SpeciesID(), p_vsc );
+        	m_pMigrationInfoVector->UpdateRates( m_context->GetSuid(), get_SpeciesID(), p_vsc );
         }
         // -------------------------------------------------------------------
         // --- NOTE: r_cdf is a probability cumulative distribution function.
