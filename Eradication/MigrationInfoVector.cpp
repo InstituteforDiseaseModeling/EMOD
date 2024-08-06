@@ -114,18 +114,6 @@ namespace Kernel
         return (gender == VectorGender::VECTOR_FEMALE) ? Gender::FEMALE : Gender::MALE;
     }
 
-    const std::vector<suids::suid>& MigrationInfoFixedRateVector::GetReachableNodesByGender(VectorGender::Enum gender) const
-    {
-        //FixedRate same for both genders
-        return MigrationInfoFixedRate::GetReachableNodes();
-    }
-
-    const std::vector<MigrationType::Enum>& MigrationInfoFixedRateVector::GetMigrationTypesByGender(VectorGender::Enum gender) const
-    {
-        //FixedRate same for both genders
-        return MigrationInfoFixedRate::GetMigrationTypes();
-    }
-
     void MigrationInfoFixedRateVector::CalculateRates(VectorGender::Enum vector_gender)
     {
         //No need to do anything, CalculateRates ran at Initialize for MigrationInforFixedRate
@@ -334,18 +322,6 @@ namespace Kernel
         return (vector_gender == VectorGender::VECTOR_FEMALE) ? Gender::FEMALE : Gender::MALE;
     }
 
-    const std::vector<suids::suid>& MigrationInfoAgeAndGenderVector::GetReachableNodesByGender(VectorGender::Enum vector_gender) const
-    {
-        Gender::Enum human_equivalent = ConvertVectorGender(vector_gender);
-        return MigrationInfoAgeAndGender::GetReachableNodes(human_equivalent);
-    }
-
-    const std::vector<MigrationType::Enum>& MigrationInfoAgeAndGenderVector::GetMigrationTypesByGender(VectorGender::Enum vector_gender) const
-    {
-        Gender::Enum human_equivalent = ConvertVectorGender(vector_gender);
-        return MigrationInfoAgeAndGender::GetMigrationTypes(human_equivalent);
-    }
-    
 
     std::vector<float> MigrationInfoAgeAndGenderVector::GetRatios(const std::vector<suids::suid>& rReachableNodes,
         const std::string& rSpeciesID,
@@ -387,10 +363,10 @@ namespace Kernel
         
         // recalculating for female vector population only
         
-        VectorGender::Enum female_vectors = VectorGender::VECTOR_FEMALE;
-        int female_vectors_index = (int)female_vectors;
-        m_ReachableNodes = GetReachableNodesByGender(female_vectors);
-        m_MigrationTypes = GetMigrationTypesByGender(female_vectors);
+        Gender::Enum human_equivalent = ConvertVectorGender(VectorGender::VECTOR_FEMALE);
+        int female_vectors_index = (int)VectorGender::VECTOR_FEMALE;
+        m_ReachableNodes = GetReachableNodes(human_equivalent);
+        m_MigrationTypes = GetMigrationTypes(human_equivalent);
         std::vector<float> m_RawMigrationRate = m_RawMigrationRatesVectorGender[female_vectors_index];
 
         // after this it is the same as MigrationFixedRateVector, can we.. use that somehow? a shared function?
@@ -502,107 +478,62 @@ namespace Kernel
     // ------------------------------------------------------------------------
     // --- MigrationInfoFactoryVector
     // ------------------------------------------------------------------------
-    GET_SCHEMA_STATIC_WRAPPER_IMPL(Migration.Vector,MigrationInfoFactoryVector)
-    BEGIN_QUERY_INTERFACE_DERIVED(MigrationInfoFactoryVector,MigrationInfoFactoryFile)
-    END_QUERY_INTERFACE_DERIVED(MigrationInfoFactoryVector,MigrationInfoFactoryFile)
-
-    MigrationInfoFactoryVector::MigrationInfoFactoryVector()
-    : MigrationInfoFactoryFile()
-    , m_InfoFileListVector()
-    , m_IsVectorMigrationEnabled( false )
+    MigrationInfoFactoryVector::MigrationInfoFactoryVector( bool enableVectorMigration )
+    : m_InfoFileVector( MigrationType::LOCAL_MIGRATION, 100 )
     , m_ModifierEquation( ModiferEquationType::EXPONENTIAL )
     , m_ModifierHabitat(0.0)
     , m_ModifierFood(0.0)
     , m_ModifierStayPut(0.0)
     {
+        m_InfoFileVector.m_IsEnabled = enableVectorMigration;
     }
 
     MigrationInfoFactoryVector::~MigrationInfoFactoryVector()
     {
-        for( auto mig_file : m_InfoFileListVector )
-        {
-            delete mig_file;
-        }
-        m_InfoFileListVector.clear();
     }
 
-    void MigrationInfoFactoryVector::CreateInfoFileList()
+    void MigrationInfoFactoryVector::ReadConfiguration( JsonConfigurable* pParent, const ::Configuration* config )
     {
-        MigrationInfoFactoryFile::CreateInfoFileList();
+        pParent->initConfig( MODIFIER_EQUATION_NAME, 
+                             m_ModifierEquation, 
+                             config, 
+                             MetadataDescriptor::Enum( MODIFIER_EQUATION_NAME,
+                                                       Vector_Migration_Modifier_Equation_DESC_TEXT,
+                                                       MDD_ENUM_ARGS(ModiferEquationType)),
+                             "Enable_Vector_Migration" ); 
 
-        // we have to keep the list at size()=5 because MigrationInfoFactoryFile::GetRateData checks against demog_enabled.size() and that's 5
-        m_InfoFileListVector.push_back( new MigrationInfoFile( MigrationType::LOCAL_MIGRATION,    MAX_LOCAL_MIGRATION_DESTINATIONS    ) );
-        m_InfoFileListVector.push_back( nullptr );
-        m_InfoFileListVector.push_back( nullptr );
-        m_InfoFileListVector.push_back( nullptr );
-        m_InfoFileListVector.push_back( nullptr );
+        pParent->initConfigTypeMap( "Vector_Migration_Filename",          &(m_InfoFileVector.m_Filename),  Vector_Migration_Filename_DESC_TEXT, "UNSPECIFIED_FILE",  "Enable_Vector_Migration" );
+        pParent->initConfigTypeMap( "x_Vector_Migration"       ,          &(m_InfoFileVector.m_xModifier), x_Vector_Migration_DESC_TEXT,        0.0f, FLT_MAX, 1.0f, "Enable_Vector_Migration" );
+        pParent->initConfigTypeMap( "Vector_Migration_Habitat_Modifier",  &m_ModifierHabitat,  Vector_Migration_Habitat_Modifier_DESC_TEXT,  0.0f, FLT_MAX, 0.0f, "Enable_Vector_Migration" );
+        pParent->initConfigTypeMap( "Vector_Migration_Food_Modifier",     &m_ModifierFood,     Vector_Migration_Food_Modifier_DESC_TEXT,     0.0f, FLT_MAX, 0.0f, "Enable_Vector_Migration" );
+        pParent->initConfigTypeMap( "Vector_Migration_Stay_Put_Modifier", &m_ModifierStayPut,  Vector_Migration_Stay_Put_Modifier_DESC_TEXT, 0.0f, FLT_MAX, 0.0f, "Enable_Vector_Migration" );
+
+        m_InfoFileVector.SetEnableParameterName( "Enable_Vector_Migration" );
+        m_InfoFileVector.SetFilenameParameterName( "Vector_Migration_Filename" );
     }
-
-    void MigrationInfoFactoryVector::InitializeInfoFileList( const Configuration* config )
-    {
-        MigrationInfoFactoryFile::InitializeInfoFileList( config );
-
-        initConfigTypeMap( ENABLE_VECTOR_MIGRATION_NAME, &m_IsVectorMigrationEnabled, Enable_Vector_Migration_DESC_TEXT, false );
-
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // !!! One should not typically get the value of a parameter as in this 'if' check.
-        // !!! I did it because it was the only way to avoid needing to read in all of these parameters.
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        {
-            initConfig( MODIFIER_EQUATION_NAME, 
-                        m_ModifierEquation, 
-                        config, 
-                        MetadataDescriptor::Enum(MODIFIER_EQUATION_NAME, Vector_Migration_Modifier_Equation_DESC_TEXT, MDD_ENUM_ARGS(ModiferEquationType)), "Enable_Vector_Migration" ); 
-
-            initConfigTypeMap( "Vector_Migration_Filename",    &(m_InfoFileListVector[0]->m_Filename),  Vector_Migration_Filename_DESC_TEXT, "UNSPECIFIED_FILE", "Enable_Vector_Migration" );
-            initConfigTypeMap( "x_Vector_Migration",           &(m_InfoFileListVector[0]->m_xModifier), x_Vector_Migration_DESC_TEXT,    0.0f, FLT_MAX, 1.0f, "Enable_Vector_Migration" );
-
-            initConfigTypeMap( "Vector_Migration_Habitat_Modifier",  &m_ModifierHabitat,  Vector_Migration_Habitat_Modifier_DESC_TEXT,  0.0f, FLT_MAX, 0.0f, "Enable_Vector_Migration" );
-            initConfigTypeMap( "Vector_Migration_Food_Modifier",     &m_ModifierFood,     Vector_Migration_Food_Modifier_DESC_TEXT,     0.0f, FLT_MAX, 0.0f, "Enable_Vector_Migration" );
-            initConfigTypeMap( "Vector_Migration_Stay_Put_Modifier", &m_ModifierStayPut,  Vector_Migration_Stay_Put_Modifier_DESC_TEXT, 0.0f, FLT_MAX, 0.0f, "Enable_Vector_Migration" );
-        }
-
-        m_InfoFileListVector[0]->SetEnableParameterName( "Enable_Vector_Migration" );
-        m_InfoFileListVector[0]->SetFilenameParameterName( "Vector_Migration_Filename" );
-    }
-
-    bool MigrationInfoFactoryVector::IsVectorMigrationEnabled() const
-    {
-        return m_IsVectorMigrationEnabled;
-    }
-
-    void MigrationInfoFactoryVector::Initialize( const ::Configuration* config, const string& idreference )
-    {
-        MigrationInfoFactoryFile::Initialize( config, idreference );
-
-        // only one vector migration type exists
-        if (m_IsVectorMigrationEnabled)
-        {
-            m_InfoFileListVector[0]->m_IsEnabled = true; // setting this true, because used other places later
-            m_InfoFileListVector[0]->Initialize(idreference);
-        }
-
-}
 
     IMigrationInfoVector* MigrationInfoFactoryVector::CreateMigrationInfoVector( 
+        const std::string& idreference,
         INodeContext *pParentNode, 
         const boost::bimap<ExternalNodeId_t, suids::suid>& rNodeIdSuidMap )
     {
-        bool is_fixed_rate = true ;
-        std::vector<std::vector<MigrationRateData>> rate_data = GetRateData( pParentNode, rNodeIdSuidMap, m_InfoFileListVector, &is_fixed_rate );
-
-        // -------------------------------------------------------------------------
-        // --- it's possible that all 4 migration-types are empty for a given node,
-        // --- i.e. this node is a "fortress/island" node; in that case, we return
-        // --- null object so this node is not considered for migration
-        // ---
-        // --- NOTE: I didn't make Initialize() part of IMigrationInfo so that
-        // --- MigrationRateData is known everywhere.
-        // -------------------------------------------------------------------------
         IMigrationInfoVector* p_new_migration_info; // = nullptr;
-
-        if (rate_data.size() > 0)
+        if( !m_InfoFileVector.IsInitialized() )
         {
+			m_InfoFileVector.Initialize( idreference );
+	        std::vector<MigrationInfoFile*> info_file_list;
+	        info_file_list.push_back( &m_InfoFileVector );
+	        info_file_list.push_back( nullptr );
+	        info_file_list.push_back( nullptr );
+	        info_file_list.push_back( nullptr );
+	        info_file_list.push_back( nullptr );
+	        bool is_fixed_rate = true ;
+			std::vector<std::vector<MigrationRateData>> rate_data = MigrationInfoFactoryFile::GetRateData( pParentNode,
+                                                                                                       rNodeIdSuidMap,
+                                                                                                       info_file_list,
+                                                                                                       &is_fixed_rate );
+			
+
             if (is_fixed_rate)
             {
                 MigrationInfoFixedRateVector* new_migration_info = _new_ MigrationInfoFixedRateVector(pParentNode,
@@ -626,7 +557,8 @@ namespace Kernel
         }
         else
         {
-            p_new_migration_info = new MigrationInfoNullVector();
+            MigrationInfoNullVector* new_migration_info = new MigrationInfoNullVector();
+            p_new_migration_info = new_migration_info;
         }
 
         return p_new_migration_info;
@@ -636,21 +568,10 @@ namespace Kernel
     // --- MigrationInfoFactoryVectorDefault
     // ------------------------------------------------------------------------
 
-    GET_SCHEMA_STATIC_WRAPPER_IMPL(Migration.VectorDefault,MigrationInfoFactoryVectorDefault)
-    BEGIN_QUERY_INTERFACE_DERIVED(MigrationInfoFactoryVectorDefault,MigrationInfoFactoryDefault)
-    END_QUERY_INTERFACE_DERIVED(MigrationInfoFactoryVectorDefault,MigrationInfoFactoryDefault)
-
-    MigrationInfoFactoryVectorDefault::MigrationInfoFactoryVectorDefault( int torusSize )
-    : MigrationInfoFactoryDefault( torusSize )
-    , m_IsVectorMigrationEnabled( false )
-    , m_xLocalModifierVector(1.0)
-    {
-    }
-
-    MigrationInfoFactoryVectorDefault::MigrationInfoFactoryVectorDefault()
-    : MigrationInfoFactoryDefault( 10 )
-    , m_IsVectorMigrationEnabled( false )
-    , m_xLocalModifierVector(1.0)
+    MigrationInfoFactoryVectorDefault::MigrationInfoFactoryVectorDefault( bool enableVectorMigration,
+                                                                          int torusSize )
+        : m_IsVectorMigrationEnabled( enableVectorMigration )
+        , m_TorusSize( torusSize )
     {
     }
 
@@ -658,30 +579,23 @@ namespace Kernel
     {
     }
 
-    bool MigrationInfoFactoryVectorDefault::Configure( const Configuration* config )
+    IMigrationInfoVector* MigrationInfoFactoryVectorDefault::CreateMigrationInfoVector( 
+        const std::string& idreference,
+        INodeContext *pParentNode, 
+        const boost::bimap<ExternalNodeId_t, suids::suid>& rNodeIdSuidMap )
     {
-        initConfigTypeMap(ENABLE_VECTOR_MIGRATION_NAME, &m_IsVectorMigrationEnabled, Enable_Vector_Migration_DESC_TEXT, false );
-
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // !!! One should not typically get the value of a parameter as in this 'if' check.
-        // !!! I did it because it was the only way to avoid needint to read in all of these parameters.
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        if( JsonConfigurable::_dryrun || 
-            (config->Exist( ENABLE_VECTOR_MIGRATION_NAME ) && (int((*config)[ENABLE_VECTOR_MIGRATION_NAME].As<json::Number>()) == 1)) )
+        if( m_IsVectorMigrationEnabled )
         {
-            initConfigTypeMap( "x_Vector_Migration", &m_xLocalModifierVector, x_Vector_Migration_DESC_TEXT, 0.0f, FLT_MAX, 1.0f );
-        }
+            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            // !!! I don't know what to do about this.
+            // !!! Fixing it to 1 so we can move forward.
+            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            float x_local_modifier = 1.0;
 
-        bool ret = MigrationInfoFactoryDefault::Configure( config );
-        return ret;
-    }
-
-    IMigrationInfoVector* MigrationInfoFactoryVectorDefault::CreateMigrationInfoVector( INodeContext *pParentNode, 
-                                                                                        const boost::bimap<ExternalNodeId_t, suids::suid>& rNodeIdSuidMap )
-    {
-        if( IsVectorMigrationEnabled() )
-        {
-            std::vector<std::vector<MigrationRateData>> rate_data = GetRateData( pParentNode, rNodeIdSuidMap, m_xLocalModifierVector );
+            std::vector<std::vector<MigrationRateData>> rate_data = MigrationInfoFactoryDefault::GetRateData( pParentNode, 
+                                                                                                              rNodeIdSuidMap,
+                                                                                                              m_TorusSize,
+                                                                                                              x_local_modifier );
 
             MigrationInfoFixedRateVector* new_migration_info = _new_ MigrationInfoFixedRateVector( pParentNode,
                                                                                                    ModiferEquationType::LINEAR,
@@ -698,10 +612,4 @@ namespace Kernel
             return null_info;
         }
     }
-
-    bool MigrationInfoFactoryVectorDefault::IsVectorMigrationEnabled() const
-    {
-        return m_IsVectorMigrationEnabled;
-    }
-
 }

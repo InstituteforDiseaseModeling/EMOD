@@ -22,7 +22,7 @@ namespace Kernel
     class IDMAPI MigrationInfoNullVector : public MigrationInfoNull, public IMigrationInfoVector
     {
     public:
-        IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
+        IMPLEMENT_NO_REFERENCE_COUNTING()
         DECLARE_QUERY_INTERFACE()
 
     public:
@@ -32,16 +32,6 @@ namespace Kernel
                                   IVectorSimulationContext* pivsc ) {};
 
         virtual Gender::Enum ConvertVectorGender(VectorGender::Enum gender) const { return Gender::MALE; };
-        virtual const std::vector<suids::suid>& GetReachableNodesByGender(VectorGender::Enum gender) const 
-        {
-            static vector<suids::suid> empty_vector;
-            return empty_vector;
-        };
-        virtual const std::vector<MigrationType::Enum>& GetMigrationTypesByGender(VectorGender::Enum gender) const 
-        { 
-            static vector<MigrationType::Enum> empty_vector;
-            return empty_vector;
-        };
         virtual void CalculateRates(VectorGender::Enum vector_gender) {};
 
     protected:
@@ -59,7 +49,7 @@ namespace Kernel
     class IDMAPI MigrationInfoFixedRateVector : public MigrationInfoFixedRate, public IMigrationInfoVector
     {
     public:
-        IMPLEMENT_DEFAULT_REFERENCE_COUNTING()  
+        IMPLEMENT_NO_REFERENCE_COUNTING()  
         DECLARE_QUERY_INTERFACE()
     public:
         virtual ~MigrationInfoFixedRateVector();
@@ -89,8 +79,6 @@ namespace Kernel
         virtual void Initialize( const std::vector<std::vector<MigrationRateData>>& rRateData ) override;
 
         virtual Gender::Enum ConvertVectorGender(VectorGender::Enum gender) const override;
-        virtual const std::vector<suids::suid>& GetReachableNodesByGender(VectorGender::Enum gender) const override;
-        virtual const std::vector<MigrationType::Enum>& GetMigrationTypesByGender(VectorGender::Enum gender) const override;
         virtual void CalculateRates(VectorGender::Enum vector_gender) override;
 
         virtual void SaveRawRates( std::vector<float>& r_rate_cdf, Gender::Enum gender ) override;
@@ -135,8 +123,6 @@ namespace Kernel
             IVectorSimulationContext* pivsc) override;
 
         virtual Gender::Enum ConvertVectorGender(VectorGender::Enum gender) const override;
-        virtual const std::vector<suids::suid>& GetReachableNodesByGender(VectorGender::Enum gender) const override;
-        virtual const std::vector<MigrationType::Enum>& GetMigrationTypesByGender(VectorGender::Enum gender) const override;
         virtual void CalculateRates(VectorGender::Enum vector_gender) override;
 
     protected:
@@ -182,33 +168,21 @@ namespace Kernel
     // --- MigrationInfoFactoryVector
     // ----------------------------------
 
-    class IDMAPI MigrationInfoFactoryVector : public MigrationInfoFactoryFile, public IMigrationInfoFactoryVector
+    class MigrationInfoFactoryVector : public IMigrationInfoFactoryVector
     {
-        GET_SCHEMA_STATIC_WRAPPER(MigrationInfoFactoryVector)
-        IMPLEMENT_DEFAULT_REFERENCE_COUNTING()  
-        DECLARE_QUERY_INTERFACE()
-
     public:
-        MigrationInfoFactoryVector();
+        MigrationInfoFactoryVector( bool enableVectorMigration );
         virtual ~MigrationInfoFactoryVector();
 
-        // MigrationInfoFactoryFile
-        virtual void Initialize( const ::Configuration *config, const std::string& idreference ) override;
-
         // IMigrationInfoFactoryVector
+        virtual void ReadConfiguration( JsonConfigurable* pParent, const ::Configuration* config ) override;
         virtual IMigrationInfoVector* CreateMigrationInfoVector( 
+            const std::string& idreference,
             INodeContext *parent_node, 
             const boost::bimap<ExternalNodeId_t, suids::suid>& rNodeIdSuidMap ) override;
-        virtual bool IsVectorMigrationEnabled() const override;
-
-    protected:
-        // MigrationInfoFactoryFile
-        virtual void CreateInfoFileList() override;
-        virtual void InitializeInfoFileList( const Configuration* config ) override;
 
     private:
-        std::vector<MigrationInfoFile*> m_InfoFileListVector;
-        bool m_IsVectorMigrationEnabled;
+        MigrationInfoFile         m_InfoFileVector;
         ModiferEquationType::Enum m_ModifierEquation;
         float m_ModifierHabitat;
         float m_ModifierFood;
@@ -219,30 +193,23 @@ namespace Kernel
     // --- MigrationInfoFactoryVectorDefault
     // ----------------------------------
 
-    class IDMAPI MigrationInfoFactoryVectorDefault : public MigrationInfoFactoryDefault, public IMigrationInfoFactoryVector
+    class IDMAPI MigrationInfoFactoryVectorDefault : public IMigrationInfoFactoryVector
     {
-        GET_SCHEMA_STATIC_WRAPPER(MigrationInfoFactoryVectorDefault)
-        IMPLEMENT_DEFAULT_REFERENCE_COUNTING()  
-        DECLARE_QUERY_INTERFACE()
-
     public:
-        MigrationInfoFactoryVectorDefault( int defaultTorusSize );
-        MigrationInfoFactoryVectorDefault();
+        MigrationInfoFactoryVectorDefault( bool enableVectorMigration, int defaultTorusSize );
         virtual ~MigrationInfoFactoryVectorDefault();
 
-        // JsonConfigurable methods
-        virtual bool Configure( const Configuration* config ) override;
-
         // IMigrationInfoFactoryVector
+        virtual void ReadConfiguration( JsonConfigurable* pParent, const ::Configuration* config ) {};
         virtual IMigrationInfoVector* CreateMigrationInfoVector( 
+            const std::string& idreference,
             INodeContext *parent_node, 
             const boost::bimap<ExternalNodeId_t, suids::suid>& rNodeIdSuidMap ) override;
-        virtual bool IsVectorMigrationEnabled() const override;
 
     protected:
 
     private:
         bool m_IsVectorMigrationEnabled;
-        float m_xLocalModifierVector;
+        int  m_TorusSize;
     };
 }

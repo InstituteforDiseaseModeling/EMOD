@@ -1068,7 +1068,10 @@ namespace Kernel
         for (auto& entry : nodes)
         {
             release_assert(entry.second);
-            (entry.second)->SetupMigration( migration_factory, m_simConfigObj->migration_structure, nodeid_suid_map_full );
+            (entry.second)->SetupMigration( migration_factory, 
+                                            idreference,
+                                            m_simConfigObj->migration_structure,
+                                            nodeid_suid_map_full );
         } 
 
         LoadInterventions(campaignfilename, nodeIDs);

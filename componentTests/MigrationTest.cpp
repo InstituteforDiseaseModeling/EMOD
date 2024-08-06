@@ -3,6 +3,8 @@
 #include <memory> // unique_ptr
 #include "UnitTest++.h"
 #include "componentTests.h"
+#include "VectorParameters.h"
+#include "VectorSpeciesParameters.h"
 #include "IMigrationInfo.h"
 #include "IMigrationInfoVector.h"
 #include "SimulationConfig.h"
@@ -50,6 +52,7 @@ SUITE(MigrationTest)
 
             m_pSimulationConfig->sim_type = SimType::VECTOR_SIM ;
             m_pSimulationConfig->demographics_initial = true ;
+            m_pSimulationConfig->vector_params->enable_vector_migration = true;
             Environment::setSimulationConfig( m_pSimulationConfig );
 
         }
@@ -61,6 +64,7 @@ SUITE(MigrationTest)
         }
     };
 
+#if 1
     TEST_FIXTURE(MigrationFixture, TestBothGenders)
     {
         std::string config_filename = "testdata/MigrationTest/TestBothGenders_config.json";
@@ -850,11 +854,14 @@ SUITE(MigrationTest)
             CHECK( false );
         }
     }
+#endif
 
     TEST_FIXTURE(MigrationFixture, TestVectorMigrationInfo)
     {
         try
         {
+            unique_ptr<Configuration> p_config( Environment::LoadConfigurationFile( "testdata/MigrationTest/TestVectorMigrationInfo.json"));
+
             // --------------------
             // --- Initialize test
             // --------------------
@@ -867,20 +874,11 @@ SUITE(MigrationTest)
             }
 
             std::string idreference = "Household-Scenario-Small" ;
-            unique_ptr<IMigrationInfoFactory> p_mf( MigrationFactory::ConstructMigrationInfoFactory( EnvPtr->Config,
-                                                                                                     idreference, 
-                                                                                                     SimType::VECTOR_SIM,
-                                                                                                     MigrationStructure::FIXED_RATE_MIGRATION,
-                                                                                                     false, 
-                                                                                                     10 ) );
-
-            CHECK( p_mf->IsAtLeastOneTypeConfiguredForIndividuals() );
-
-            IMigrationInfoFactoryVector* p_mfv = dynamic_cast<IMigrationInfoFactoryVector*>(p_mf.get());
-            CHECK( p_mfv != nullptr );
+            VectorSpeciesParameters vsp( 0 );
+            vsp.Configure( p_config.get() );
 
             INodeContextFake nc_1( nodeid_suid_map.left.at(1) ) ;
-            unique_ptr<IMigrationInfoVector> p_mi( p_mfv->CreateMigrationInfoVector( &nc_1, nodeid_suid_map ) );
+            unique_ptr<IMigrationInfoVector> p_mi( vsp.p_migration_factory->CreateMigrationInfoVector( idreference, &nc_1, nodeid_suid_map ) );
 
             const std::vector<suids::suid>& reachable_nodes = p_mi->GetReachableNodes();
             CHECK_EQUAL( 3, reachable_nodes.size() );
@@ -897,7 +895,7 @@ SUITE(MigrationTest)
 
 
             INodeContextFake nc_9( nodeid_suid_map.left.at(9) ) ;
-            unique_ptr<IMigrationInfo> p_mi_9( p_mfv->CreateMigrationInfoVector( &nc_9, nodeid_suid_map ) );
+            unique_ptr<IMigrationInfo> p_mi_9( vsp.p_migration_factory->CreateMigrationInfoVector( idreference, &nc_9, nodeid_suid_map ) );
 
             const std::vector<suids::suid>& reachable_nodes_9 = p_mi_9->GetReachableNodes();
             CHECK_EQUAL( 8, reachable_nodes_9.size() );
@@ -925,7 +923,7 @@ SUITE(MigrationTest)
 
 
             INodeContextFake nc_26( nodeid_suid_map.left.at(26) ) ;
-            unique_ptr<IMigrationInfo> p_mi_26( p_mfv->CreateMigrationInfoVector( &nc_26, nodeid_suid_map ) );
+            unique_ptr<IMigrationInfo> p_mi_26( vsp.p_migration_factory->CreateMigrationInfoVector( idreference, &nc_26, nodeid_suid_map ) );
             CHECK( p_mi_26->GetReachableNodes().size() == 0 );
         }
         catch( DetailedException& re )

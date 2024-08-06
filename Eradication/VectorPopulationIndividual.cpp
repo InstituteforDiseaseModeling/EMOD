@@ -822,25 +822,21 @@ namespace Kernel
         pVCI->AcquireNewInfection( &rStrain );
     }
 
-    void VectorPopulationIndividual::Vector_Migration( float dt,
-                                                       IMigrationInfo* pMigInfo,
-                                                       VectorCohortVector_t* pMigratingQueue,
-                                                       bool migrate_males_only)
+    void VectorPopulationIndividual::Vector_Migration( float dt, VectorCohortVector_t* pMigratingQueue, bool migrate_males_only )
     {
-        release_assert(pMigInfo);
+        release_assert(m_pMigrationInfoVector);
         release_assert(pMigratingQueue);
 
         // migrating males first otherwise in FixedRate migration, their migration gets affected by UpdateRates
-        VectorPopulation::Vector_Migration(dt, pMigInfo, pMigratingQueue, true);
+        VectorPopulation::Vector_Migration(dt, pMigratingQueue, true);
         
         // updating migration rates and migrating females
-        IMigrationInfoVector* pMigInfoVector = dynamic_cast<IMigrationInfoVector*>(pMigInfo);
         IVectorSimulationContext* p_vsc = nullptr;
         if (s_OK != m_context->GetParent()->QueryInterface(GET_IID(IVectorSimulationContext), (void**)&p_vsc))
         {
-            throw QueryInterfaceException(__FILE__, __LINE__, __FUNCTION__, "m_context", "IVectorSimulationContext", "ISimulationContext");
+            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "m_context->GetParent()", "IVectorSimulationContext", "ISimulationContext" );
         }
-        pMigInfoVector->UpdateRates(m_context->GetSuid(), get_SpeciesID(), p_vsc);
+        m_pMigrationInfoVector->UpdateRates( m_context->GetSuid(), get_SpeciesID(), p_vsc );
 
         // Use the verbose "for" construct here because we may be modifying the list and need to protect the iterator.
         for( auto it = pAdultQueues->begin(); it != pAdultQueues->end(); ++it )
@@ -851,7 +847,7 @@ namespace Kernel
             MigrationType::Enum mig_type = MigrationType::NO_MIGRATION;
             float time = 0.0;
             VectorToHumanAdapter adapter(m_context, tempentry->GetID(), tempentry->GetGenome().GetGender());
-            pMigInfo->PickMigrationStep( m_context->GetRng(), &adapter, 1.0, destination, mig_type, time );
+            m_pMigrationInfoVector->PickMigrationStep( m_context->GetRng(), &adapter, 1.0, destination, mig_type, time );
 
             // test if each vector will migrate this time step
             if (!destination.is_nil() && (time <= dt))

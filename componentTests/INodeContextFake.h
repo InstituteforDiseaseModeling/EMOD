@@ -348,6 +348,7 @@ public:
     }
 
     virtual void SetupMigration( IMigrationInfoFactory * migration_factory, 
+                                 const std::string& idreference,
                                  MigrationStructure::Enum ms,
                                  const boost::bimap<ExternalNodeId_t, suids::suid>& rNodeIdSuidMap ) override
     { 

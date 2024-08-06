@@ -1,7 +1,7 @@
 {
     "sweep" : 
     {
-        "path": "Scenarios/Generic/08_SIS",
+        "path": "Malaria/34_Malaria_Household_5x5_vm_local",
         "param_name" : "Run_Number",
         "param_values" : [ 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144 ]
     }

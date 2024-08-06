@@ -377,7 +377,7 @@
 #define Transmission_Rate_DESC_TEXT "Probability that the bite of an infected mosquito establishes a new infection in an immunologically naive and uninfected individual, or the modifier of the probability of success for an individual with pre-erythrocytic immunity."
 #define Upper_Age_In_Years_DESC_TEXT "The age, in years, below which children are given a fraction of the adult drug dose, as defined in Fraction_Of_Adult_Dose."
 #define Vector_Larval_Rainfall_Mortality_DESC_TEXT "Type of vector larval mortality function due to rainfall."
-#define Vector_Migration_Filename_DESC_TEXT "Path of input file defining patterns of migration by vectors."
+#define Vector_Migration_Filename_DESC_TEXT "Path to the vector migration file defining patterns of vector migration to other nodes."
 #define Vector_Migration_Food_Modifier_DESC_TEXT "Preference of a vector to migrate toward a node currently occupied by humans, independent of the number of humans in the node. This only applies to female migrating vectors."
 #define Vector_Migration_Habitat_Modifier_DESC_TEXT "Preference of a vector to migrate toward a node with more habitat. This applies only to female migrating vectors."
 #define Vector_Migration_Modifier_Equation_DESC_TEXT "Functional form of vector migration modifiers. This applies only to female migrating vectors."

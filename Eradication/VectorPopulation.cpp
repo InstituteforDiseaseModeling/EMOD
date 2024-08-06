@@ -6,6 +6,7 @@
 #include "Exceptions.h"
 #include "Log.h"
 #include "INodeContext.h"
+#include "ISimulationContext.h"
 #include "Climate.h"
 #include "SimulationConfig.h"
 #include "TransmissionGroupMembership.h"
@@ -15,8 +16,6 @@
 #include "VectorCohort.h"
 #include "StrainIdentity.h"
 #include "IMigrationInfoVector.h"
-#include "ISimulationContext.h"
-#include "MigrationInfoVector.h"
 #include "RANDOM.h"
 
 SETUP_LOGGING( "VectorPopulation" )
@@ -106,6 +105,7 @@ namespace Kernel
         , m_ImmigratingInfected()
         , m_ImmigratingAdult()
         , m_ImmigratingMale()
+		, m_pMigrationInfoVector(nullptr)
     {
         if( m_MortalityTable.size() == 0 )
         {
@@ -2731,24 +2731,29 @@ namespace Kernel
         return selected_indexes;
     }
 
-
-    void VectorPopulation::Vector_Migration( float dt, IMigrationInfo* pMigInfo, VectorCohortVector_t* pMigratingQueue, bool migrate_males_only)
+    void VectorPopulation::SetupMigration( const std::string& idreference, 
+                                           const boost::bimap<ExternalNodeId_t, suids::suid>& rNodeIdSuidMap )
     {
-        release_assert( pMigInfo );
+        m_pMigrationInfoVector = m_species_params->p_migration_factory->CreateMigrationInfoVector( idreference, m_context, rNodeIdSuidMap );
+    }
+
+    void VectorPopulation::Vector_Migration( float dt, VectorCohortVector_t* pMigratingQueue, bool migrate_males_only)
+    {
+        release_assert( m_pMigrationInfoVector );
         release_assert( pMigratingQueue );
 
-        Vector_Migration_Helper(pMigInfo, pMigratingQueue, VectorGender::VECTOR_MALE);
+        Vector_Migration_Helper(pMigratingQueue, VectorGender::VECTOR_MALE);
         
         if (!migrate_males_only)
         {
-            Vector_Migration_Helper(pMigInfo, pMigratingQueue, VectorGender::VECTOR_FEMALE);
+            Vector_Migration_Helper(pMigratingQueue, VectorGender::VECTOR_FEMALE);
         }
     }
 
-    void VectorPopulation::Vector_Migration_Helper(IMigrationInfo* pMigInfo, VectorCohortVector_t* pMigratingQueue, VectorGender::Enum vector_gender)
+    void VectorPopulation::Vector_Migration_Helper(VectorCohortVector_t* pMigratingQueue, VectorGender::Enum vector_gender)
     {
-        IMigrationInfoVector* pMigInfoVector = dynamic_cast<IMigrationInfoVector*>(pMigInfo);
-        pMigInfoVector->CalculateRates(vector_gender);
+        m_pMigrationInfoVector->CalculateRates(vector_gender);
+
 
         if (vector_gender == VectorGender::VECTOR_FEMALE)
         {
@@ -2758,7 +2763,7 @@ namespace Kernel
             {
                 throw QueryInterfaceException(__FILE__, __LINE__, __FUNCTION__, "m_context", "IVectorSimulationContext", "ISimulationContext");
             }
-            pMigInfoVector->UpdateRates(m_context->GetSuid(), get_SpeciesID(), p_vsc);
+        	m_pMigrationInfoVector->UpdateRates( this->GetSuid(), get_SpeciesID(), p_vsc );
         }
         // -------------------------------------------------------------------
         // --- NOTE: r_cdf is a probability cumulative distribution function.
@@ -2767,11 +2772,12 @@ namespace Kernel
         // --- The rates are converted to probabilities when calcualting the CDF.
         // --- Here we convert them back to rates.
         // -------------------------------------------------------------------
+        Gender::Enum human_gender_equivalent = m_pMigrationInfoVector->ConvertVectorGender(vector_gender);
 
-        float                                   total_rate = pMigInfo->GetTotalRate();
-        const std::vector<float              >& r_cdf = pMigInfo->GetCumulativeDistributionFunction();
-        const std::vector<suids::suid        >& r_reachable_nodes = pMigInfoVector->GetReachableNodesByGender(vector_gender);
-        const std::vector<MigrationType::Enum>& r_migration_types = pMigInfoVector->GetMigrationTypesByGender(vector_gender);
+        float                                   total_rate        = m_pMigrationInfoVector->GetTotalRate();
+        const std::vector<float              >& r_cdf             = m_pMigrationInfoVector->GetCumulativeDistributionFunction();
+        const std::vector<suids::suid        >& r_reachable_nodes = m_pMigrationInfoVector->GetReachableNodes(human_gender_equivalent);
+        const std::vector<MigrationType::Enum>& r_migration_types = m_pMigrationInfoVector->GetMigrationTypes(human_gender_equivalent);
 
         if ((r_cdf.size() == 0) || (total_rate == 0.0))
         {
@@ -3354,6 +3360,11 @@ namespace Kernel
         for ( auto cohort : LarvaQueues )
         {
             cohort->SetHabitat( ivnc->GetVectorHabitatBySpeciesAndType( m_species_params->name, cohort->GetHabitatType(), nullptr ) );
+        }
+
+        if( m_pMigrationInfoVector != nullptr )
+        {
+            m_pMigrationInfoVector->SetContextTo( context );
         }
     }
 

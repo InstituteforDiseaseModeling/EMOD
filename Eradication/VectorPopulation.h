@@ -28,7 +28,7 @@ namespace Kernel
 {
     class VectorSpeciesParameters;
     struct VectorParameters;
-    struct IMigrationInfo;
+    struct IMigrationInfoVector;
 
     class IndividualHumanVector;
     class VectorCohortWithHabitat;
@@ -56,7 +56,9 @@ namespace Kernel
         virtual void UpdateVectorPopulation(float dt) override;
 
         // For NodeVector to calculate # of migrating vectors (processEmigratingVectors) and put them in new node (processImmigratingVector)
-        virtual void Vector_Migration( float dt, IMigrationInfo* pMigInfo, VectorCohortVector_t* pMigratingQueue, bool migrate_males_only ) override;
+        virtual void SetupMigration( const std::string& idreference, 
+                                     const boost::bimap<ExternalNodeId_t, suids::suid>& rNodeIdSuidMap ) override;
+        virtual void Vector_Migration( float dt, VectorCohortVector_t* pMigratingQueue, bool migrate_males_only ) override;
         virtual void AddImmigratingVector( IVectorCohort* pvc ) override;
         virtual void SetSortingVectors() override;
         virtual void SortImmigratingVectors() override;
@@ -210,7 +212,7 @@ namespace Kernel
 
         static std::vector<uint32_t> GetRandomIndexes( RANDOMBASE* pRNG, uint32_t N );
 
-        void Vector_Migration_Helper(IMigrationInfo* pMigInfo, VectorCohortVector_t* pMigratingQueue, VectorGender::Enum vector_gender);
+        void Vector_Migration_Helper(VectorCohortVector_t* pMigratingQueue, VectorGender::Enum vector_gender);
         void Vector_Migration_Queue( const std::vector<uint32_t>& rRandomIndexes,
                                      const std::vector<suids::suid>& rReachableNodes,
                                      const std::vector<MigrationType::Enum>& rMigrationTypes,
@@ -570,6 +572,8 @@ namespace Kernel
         std::vector<IVectorCohort*> m_ImmigratingInfected;
         std::vector<IVectorCohort*> m_ImmigratingAdult;
         std::vector<IVectorCohort*> m_ImmigratingMale;
+		
+		IMigrationInfoVector*       m_pMigrationInfoVector;
 
         static std::vector<float> m_MortalityTable;
 
