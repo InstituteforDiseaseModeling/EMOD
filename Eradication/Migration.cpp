@@ -113,7 +113,7 @@ namespace Kernel
     }
 
     void MigrationInfoNull::PickMigrationStep( RANDOMBASE* pRNG, 
-                                               IIndividualHumanContext * traveler, 
+                                               IIndividualHumanEventContext * traveler, 
                                                float migration_rate_modifier, 
                                                suids::suid &destination, 
                                                MigrationType::Enum &migration_type,
@@ -144,6 +144,17 @@ namespace Kernel
     }
 
     const std::vector<MigrationType::Enum>& MigrationInfoNull::GetMigrationTypes() const
+    {
+        return m_EmptyListTypes;
+    }
+
+
+    const std::vector<suids::suid>& MigrationInfoNull::GetReachableNodes(Gender::Enum gender) const
+    {
+        return m_EmptyListNodes;
+    }
+
+    const std::vector<MigrationType::Enum>& MigrationInfoNull::GetMigrationTypes(Gender::Enum gender) const
     {
         return m_EmptyListTypes;
     }
@@ -189,7 +200,7 @@ namespace Kernel
 
                 m_RateCDF.push_back( mrd.GetRate( 0.0 ) );
             }
-            SaveRawRates( m_RateCDF );
+            SaveRawRates( m_RateCDF, Gender::MALE );
             NormalizeRates( m_RateCDF, m_TotalRate );
         }
     }
@@ -215,7 +226,7 @@ namespace Kernel
     }
 
     void MigrationInfoFixedRate::PickMigrationStep( RANDOMBASE* pRNG,
-                                                    IIndividualHumanContext *traveler, 
+                                                    IIndividualHumanEventContext *traveler, 
                                                     float migration_rate_modifier,
                                                     suids::suid &destination, 
                                                     MigrationType::Enum &migration_type, 
@@ -225,8 +236,8 @@ namespace Kernel
         Gender::Enum gender = Gender::MALE;
         if( traveler != nullptr )
         {
-            age_years = traveler->GetEventContext()->GetAge() / DAYSPERYEAR;
-            gender = Gender::Enum(traveler->GetEventContext()->GetGender());
+            age_years = traveler->GetAge() / DAYSPERYEAR;
+            gender = Gender::Enum(traveler->GetGender());
         }
 
         CalculateRates( gender, age_years );
@@ -360,7 +371,7 @@ namespace Kernel
             float rate = mrd.GetRate( ageYears );
             m_RateCDF.push_back( rate );
         }
-
+        SaveRawRates(m_RateCDF, gender);
         NormalizeRates( m_RateCDF, m_TotalRate );
     }
 
@@ -408,6 +419,7 @@ namespace Kernel
         , m_AgeDataSize(0)
         , m_FileStream()
         , m_Offsets()
+        , m_IsInitialized(false)
     {
     }
 
@@ -436,6 +448,12 @@ namespace Kernel
 
             OpenMigrationFile( filepath, expected_binary_file_size );
         }
+        m_IsInitialized = true;
+    }
+
+    bool MigrationInfoFile::IsInitialized() const
+    {
+        return m_IsInitialized;
     }
 
     void MigrationInfoFile::SetEnableParameterName( const std::string& rName ) 
@@ -1054,7 +1072,7 @@ static const char* NODE_OFFSETS          = "NodeOffsets";            // required
     IMigrationInfo* MigrationInfoFactoryDefault::CreateMigrationInfo( INodeContext *pParentNode, 
                                                                       const boost::bimap<ExternalNodeId_t, suids::suid>& rNodeIdSuidMap )
     {
-        std::vector<std::vector<MigrationRateData>> rate_data = GetRateData( pParentNode, rNodeIdSuidMap, m_xLocalModifier );
+        std::vector<std::vector<MigrationRateData>> rate_data = GetRateData( pParentNode, rNodeIdSuidMap, m_TorusSize, m_xLocalModifier );
 
         MigrationInfoFixedRate* new_migration_info = _new_ MigrationInfoFixedRate( pParentNode, m_IsHeterogeneityEnabled );
         new_migration_info->Initialize( rate_data );
@@ -1064,6 +1082,7 @@ static const char* NODE_OFFSETS          = "NodeOffsets";            // required
 
     std::vector<std::vector<MigrationRateData>> MigrationInfoFactoryDefault::GetRateData( INodeContext *pParentNode, 
                                                                                           const boost::bimap<ExternalNodeId_t, suids::suid>& rNodeIdSuidMap,
+                                                                                          int torus_size,
                                                                                           float modifier )
     {
         suids::suid from_node_suid = pParentNode->GetSuid();
@@ -1076,9 +1095,9 @@ static const char* NODE_OFFSETS          = "NodeOffsets";            // required
         ExternalNodeId_t from_node_id = rNodeIdSuidMap.right.at( from_node_suid );
 
 
-        int offsets[]    = {  -(m_TorusSize+1), -m_TorusSize, -(m_TorusSize-1),
+        int offsets[]    = {  -(torus_size+1), -torus_size, -(torus_size-1),
                                         -1,                           1,
-                               (m_TorusSize-1),  m_TorusSize,  (m_TorusSize+1)};
+                               (torus_size-1),  torus_size,  (torus_size+1)};
 
         double basicrate = 1.0f / MAX_LOCAL_MIGRATION_DESTINATIONS / 10; // on average, a person should go to one of the 8 surrounding nodes every 10 days, per Philip
 
@@ -1086,30 +1105,30 @@ static const char* NODE_OFFSETS          = "NodeOffsets";            // required
 
         // correct offsets if on any of the edges (of numbering grid scheme, not the torus)
 
-        if( from_node_id % m_TorusSize == 1 ) // left edge
+        if( from_node_id % torus_size == 1 ) // left edge
         {
-            offsets[0] += m_TorusSize;
-            offsets[3] += m_TorusSize;
-            offsets[5] += m_TorusSize;
+            offsets[0] += torus_size;
+            offsets[3] += torus_size;
+            offsets[5] += torus_size;
         }
-        else if( from_node_id % m_TorusSize == 0 ) //right edge
+        else if( from_node_id % torus_size == 0 ) //right edge
         {
-            offsets[2] -= m_TorusSize;
-            offsets[4] -= m_TorusSize;
-            offsets[7] -= m_TorusSize;
+            offsets[2] -= torus_size;
+            offsets[4] -= torus_size;
+            offsets[7] -= torus_size;
         }
 
-        if( from_node_id <= uint32_t(m_TorusSize) ) // top edge
+        if( from_node_id <= uint32_t(torus_size) ) // top edge
         {
-            offsets[0] += m_TorusSize * m_TorusSize;
-            offsets[1] += m_TorusSize * m_TorusSize;
-            offsets[2] += m_TorusSize * m_TorusSize;
+            offsets[0] += torus_size * torus_size;
+            offsets[1] += torus_size * torus_size;
+            offsets[2] += torus_size * torus_size;
         }
-        else if( from_node_id > uint32_t(m_TorusSize * (m_TorusSize - 1)) ) // bottom edge
+        else if( from_node_id > uint32_t(torus_size * (torus_size - 1)) ) // bottom edge
         {
-            offsets[5] -= m_TorusSize * m_TorusSize;
-            offsets[6] -= m_TorusSize * m_TorusSize;
-            offsets[7] -= m_TorusSize * m_TorusSize;
+            offsets[5] -= torus_size * torus_size;
+            offsets[6] -= torus_size * torus_size;
+            offsets[7] -= torus_size * torus_size;
         }
 
         LOG_DEBUG_F( "MAX_LOCAL_MIGRATION_DESTINATIONS = %d\n", MAX_LOCAL_MIGRATION_DESTINATIONS );
@@ -1120,7 +1139,7 @@ static const char* NODE_OFFSETS          = "NodeOffsets";            // required
         for (int i = 0; i < MAX_LOCAL_MIGRATION_DESTINATIONS; i++)
         {
             release_assert( from_node_id + offsets[i] >= 1 );
-            release_assert( from_node_id + offsets[i] <= uint32_t(m_TorusSize * m_TorusSize) );
+            release_assert( from_node_id + offsets[i] <= uint32_t(torus_size * torus_size) );
 
             ExternalNodeId_t to_node_id = from_node_id + offsets[i];
             suids::suid to_node_suid = rNodeIdSuidMap.left.at( to_node_id );

@@ -1,35 +1,35 @@
 {
-    "Default_Config_Path": "../../defaults/vector_default_config.json", 
+    "Default_Config_Path": "../../defaults/vector_default_config.json",
     "parameters": {
         "PRIMARY": {
-            "Config_Name": "59_Vector_CohortMigration_local_3_nodes_one_way_GH1870", 
+            "Config_Name": "59_Vector_CohortMigration_local_3_nodes_one_way_GH1870",
             "Custom_Reports_Filename": "custom_reports.json",
-            "Geography": "MigrationTest", 
-            "Custom_Individual_Events": [], 
-            "Node_Grid_Size": 0.005, 
+            "Geography": "MigrationTest",
+            "Custom_Individual_Events": [],
+            "Node_Grid_Size": 0.005,
             "Python_Script_Path": "SHARED",
-            "Run_Number": 1, 
-            "Simulation_Timestep": 1, 
+            "Run_Number": 1,
+            "Simulation_Timestep": 1,
             "Simulation_Duration": 30
-        }, 
+        },
         "CLIMATE": {
             "Base_Air_Temperature": 25.0,
             "Climate_Model": "CLIMATE_CONSTANT"
-        }, 
+        },
         "DEMOGRAPHICS": {
             "Enable_Demographics_Initial": 1,
-            "Demographics_Filenames": ["demographics_3_nodes.json"]
-        }, 
+            "Demographics_Filenames": [
+                "demographics_3_nodes.json"
+            ]
+        },
         "HUMAN_MIGRATION": {
             "Migration_Model": "NO_MIGRATION"
-        }, 
-        "VECTOR_PARAMS" : {
-            "Enable_Vector_Aging": 0, 
-            "Enable_Vector_Mortality": 0, 
-
-            "Wolbachia_Mortality_Modification": 0.0, 
-            "Human_Feeding_Mortality": 0.0, 
-
+        },
+        "VECTOR_PARAMS": {
+            "Enable_Vector_Aging": 0,
+            "Enable_Vector_Mortality": 0,
+            "Wolbachia_Mortality_Modification": 0.0,
+            "Human_Feeding_Mortality": 0.0,
             ".Vector_Sampling_Type": "TRACK_ALL_VECTORS",
             "Vector_Sampling_Type": "VECTOR_COMPARTMENTS_NUMBER",
             "Vector_Species_Params": [
@@ -59,25 +59,18 @@
                     "Microsporidia": [],
                     "Temperature_Dependent_Feeding_Cycle": "NO_TEMPERATURE_DEPENDENCE",
                     "Transmission_Rate": 1.0,
+                    "Vector_Migration_Modifier_Equation": "EXPONENTIAL",
+                    "Vector_Migration_Food_Modifier": 0.0,
+                    "Vector_Migration_Habitat_Modifier": 0.0,
+                    "Vector_Migration_Stay_Put_Modifier": 0.0,
+                    "Vector_Migration_Filename": "Local_Vector_Migration_3_Nodes_One_Way.bin",
+                    "x_Vector_Migration": 1.0,
                     "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_NONE"
                 }
             ]
         },
-        "VECTOR_MIGRATION" : {
-            "Enable_Vector_Migration": 1, 
-            
-            "Enable_Vector_Migration_Local": 1, 
-            "Vector_Migration_Filename_Local" : "Local_Vector_Migration_3_Nodes_One_Way.bin",
-            "x_Vector_Migration_Local" : 1.0,
-
-            "Enable_Vector_Migration_Regional" : 0,
-            "Vector_Migration_Filename_Regional" : "",
-            "x_Vector_Migration_Regional" : 1.0,
-
-            "Vector_Migration_Modifier_Equation" : "EXPONENTIAL",
-            "Vector_Migration_Food_Modifier" : 0.0,
-            "Vector_Migration_Habitat_Modifier": 0.0, 
-            "Vector_Migration_Stay_Put_Modifier" : 0.0
+        "VECTOR_MIGRATION": {
+            "Enable_Vector_Migration": 1
         }
     }
 }

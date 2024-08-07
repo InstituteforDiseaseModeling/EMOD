@@ -3,7 +3,8 @@
         "Enable_Demographics_Builtin": 0, 
 
         "Enable_Migration_Heterogeneity": 1, 
-        "Family_Migration_Type" : "NO_MIGRATION", "Migration_Model": "FIXED_RATE_MIGRATION",
+        ".Migration_Model" : "NO_MIGRATION",
+        "Migration_Model": "FIXED_RATE_MIGRATION",
 
         "Enable_Local_Migration": 1, 
         "Local_Migration_Filename": "5x5_Households_Local_Migration.bin", 
@@ -25,20 +26,6 @@
         "Family_Migration_Filename": "", 
         "x_Family_Migration": 1,
 
-        "Enable_Vector_Migration": 1,
-
-        "Enable_Vector_Migration_Local" : 1,
-        "Vector_Migration_Filename_Local" : "5x5_Households_Local_Vector_Migration.bin",
-        "x_Vector_Migration_Local" : 1,
-
-        "Enable_Vector_Migration_Regional" : 1,
-        "Vector_Migration_Filename_Regional" : "5x5_Households_Regional_Vector_Migration.bin",
-        "x_Vector_Migration_Regional" : 1,
-
-        "Vector_Migration_Modifier_Equation" : "EXPONENTIAL",
-        "Vector_Migration_Food_Modifier" : 1.0,
-        "Vector_Migration_Habitat_Modifier" : 1.0,
-        "Vector_Migration_Stay_Put_Modifier" : 1.0
-
+        "Enable_Vector_Migration": 1
     }
 }

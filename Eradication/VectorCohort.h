@@ -157,4 +157,95 @@ namespace Kernel
         // keep private so it can only be used in Split()
         VectorCohort( const VectorCohort& rThat );
     };
+
+
+    class VectorCohortMale : public VectorCohortAbstract
+    {
+    public:
+        DECLARE_QUERY_INTERFACE()
+
+        static VectorCohortMale* CreateCohort(uint32_t vectorID,
+            VectorStateEnum::Enum state,
+            float age,
+            float progress,
+            float microsporidiaDuration,
+            uint32_t population,
+            const VectorGenome& rGenome,
+            int speciesIndex);
+
+        virtual ~VectorCohortMale();
+
+        
+        virtual void Merge(IVectorCohort* pCohortToAdd) override;
+        virtual VectorCohortMale* SplitPercent(RANDOMBASE* pRNG, uint32_t newVectorID, float percentLeaving) override;
+        virtual VectorCohortMale* SplitNumber(RANDOMBASE* pRNG, uint32_t newVectorID, uint32_t numLeaving) override;
+        virtual uint32_t GetNumLookingToFeed() const override 
+        { 
+            throw Kernel::IllegalOperationException(__FILE__, __LINE__, __FUNCTION__, "The method is not part of VectorCohortMale.");
+        }
+        virtual void AddNewGestating(uint32_t daysToGestate, uint32_t newFed) override
+        {
+            throw Kernel::IllegalOperationException(__FILE__, __LINE__, __FUNCTION__, "The method is not part of VectorCohortMale.");
+        }
+        virtual uint32_t GetNumGestating() const override
+        {
+            throw Kernel::IllegalOperationException(__FILE__, __LINE__, __FUNCTION__, "The method is not part of VectorCohortMale.");
+        }
+        virtual uint32_t RemoveNumDoneGestating() override
+        {
+            throw Kernel::IllegalOperationException(__FILE__, __LINE__, __FUNCTION__, "The method is not part of VectorCohortMale.");
+        }
+        virtual uint32_t AdjustGestatingForDeath(RANDOMBASE* pRNG, float percentDied, bool killGestatingOnly) override
+        {
+            throw Kernel::IllegalOperationException(__FILE__, __LINE__, __FUNCTION__, "The method is not part of VectorCohortMale.");
+        }
+        virtual const std::vector<uint32_t>& GetGestatingQueue() const override
+        {
+            throw Kernel::IllegalOperationException(__FILE__, __LINE__, __FUNCTION__, "The method is not part of VectorCohortMale.");
+        }
+        virtual void ReportOnGestatingQueue(std::vector<uint32_t>& rNumGestatingQueue)  const override
+        {
+            throw Kernel::IllegalOperationException(__FILE__, __LINE__, __FUNCTION__, "The method is not part of VectorCohortMale.");
+        }
+
+        virtual VectorHabitatType::Enum GetHabitatType() override
+        {
+            throw Kernel::IllegalOperationException(__FILE__, __LINE__, __FUNCTION__, "The method is not part of VectorCohortMale.");
+        }
+        virtual IVectorHabitat* GetHabitat() override
+        {
+            throw Kernel::IllegalOperationException(__FILE__, __LINE__, __FUNCTION__, "The method is not part of VectorCohortMale.");
+        }
+        virtual void SetHabitat(IVectorHabitat*) override
+        {
+            throw Kernel::IllegalOperationException(__FILE__, __LINE__, __FUNCTION__, "The method is not part of VectorCohortMale.");
+        }
+
+        uint32_t GetUnmatedCount() const;
+        void SetUnmatedCount(uint32_t unmated_count);
+        uint32_t GetUnmatedCountCDF() const;
+        void SetUnmatedCountCDF(uint32_t unmated_count_cdf);
+        VectorCohortMale* SplitHelper(RANDOMBASE* pRNG, uint32_t newVectorID, uint32_t numLeaving, float percentLeaving);
+
+    protected:
+        VectorCohortMale();
+        VectorCohortMale(IVectorHabitat* _habitat,
+            uint32_t vectorID,
+            VectorStateEnum::Enum state,
+            float age,
+            float progress,
+            float microsporidiaDuration,
+            uint32_t population,
+            const VectorGenome& rGenome,
+            int speciesIndex);
+        uint32_t unmated_count;
+        uint32_t unmated_count_cdf;
+
+        DECLARE_SERIALIZABLE(VectorCohortMale);
+
+    private:
+        // keep private so it can only be used in Split()
+        VectorCohortMale(const VectorCohortMale& rThat);
+
+    };
 }

@@ -23,6 +23,7 @@ namespace Kernel
         EggHatchDensityDependence::Enum         egg_hatch_density_dependence;        // Egg_Hatch_Density_Dependence 
 
         bool  enable_vector_species_report;
+        bool  enable_vector_migration;
         bool  vector_aging;
         bool  temperature_dependent_egg_hatching;
         bool  egg_mortality; 
@@ -60,6 +61,7 @@ namespace Kernel
         , vector_larval_rainfall_mortality(VectorRainfallMortality::NONE)
         , egg_hatch_density_dependence( EggHatchDensityDependence::NO_DENSITY_DEPENDENCE )
         , enable_vector_species_report(false)
+        , enable_vector_migration(false)
         , vector_aging(false)
         , temperature_dependent_egg_hatching(false)
         , egg_mortality(false)

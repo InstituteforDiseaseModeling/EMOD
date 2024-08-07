@@ -12,8 +12,12 @@
         "Falciparum_Nonspecific_Types": 16,
         "Falciparum_PfEMP1_Variants": 500,
         "Parasite_Genetics": {
-            "Drug_Resistant_Genome_Locations": [ 1000000 ],
-            "HRP_Genome_Locations": [ 1000001 ]
+            "Drug_Resistant_Genome_Locations": [
+                1000000
+            ],
+            "HRP_Genome_Locations": [
+                1000001
+            ]
         }
     },
     "MIGRATION": {
@@ -47,7 +51,7 @@
         "x_Sea_Migration": 1
     },
     "PRIMARY": {
-        "Config_Name": "95_Malaria_FPG_TwoMarkers_Multicore_MalariaSqlReport",
+        "Config_Name": "95_Malaria_FPG_TwoMarkers_Multicore",
         "Geography": "MigrationTest",
         "Python_Script_Path": "SHARED",
         "Run_Number": 1,
@@ -61,19 +65,18 @@
     },
     "VECTOR": {
         "x_Temporary_Larval_Habitat": 0.01,
-        "Enable_Vector_Migration": 1, 
-
-        "Enable_Vector_Migration_Local": 1, 
-        "Vector_Migration_Filename_Local" : "LocalMigration_4_Nodes.bin",
-        "x_Vector_Migration_Local" : 0.01,
-
-        "Enable_Vector_Migration_Regional" : 0,
-        "Vector_Migration_Filename_Regional" : "",
-        "x_Vector_Migration_Regional" : 1.0,
-
-        "Vector_Migration_Modifier_Equation" : "EXPONENTIAL",
-        "Vector_Migration_Food_Modifier" : 0.0,
-        "Vector_Migration_Habitat_Modifier": 0.0, 
-        "Vector_Migration_Stay_Put_Modifier" : 0.0
+        "Enable_Vector_Migration": 1,
+        "x_Vector_Migration": 0.01,
+        "Vector_Species_Params": [
+            {
+                "Name": "SillySkeeter",
+                "Vector_Migration_Filename": "LocalMigration_4_Nodes.bin",
+                "Vector_Migration_Modifier_Equation": "EXPONENTIAL",
+                "Vector_Migration_Food_Modifier": 0.0,
+                "Vector_Migration_Habitat_Modifier": 0.0,
+                "Vector_Migration_Stay_Put_Modifier": 0.0,
+                "x_Vector_Migration": 0.01
+            }
+        ]
     }
 }

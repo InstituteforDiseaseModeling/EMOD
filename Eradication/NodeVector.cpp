@@ -57,7 +57,6 @@ namespace Kernel
         , larval_habitat_multiplier()
         , vector_mortality( true )
         , mosquito_weight( 0 )
-        , vector_migration_info( nullptr )
         , txIndoor( nullptr )
         , txOutdoor( nullptr )
         , m_VectorCohortSuidGenerator(0,0)
@@ -76,7 +75,6 @@ namespace Kernel
         , larval_habitat_multiplier()
         , vector_mortality( true )
         , mosquito_weight( 1 )
-        , vector_migration_info( nullptr )
         , txIndoor( nullptr )
         , txOutdoor( nullptr )
         , m_VectorCohortSuidGenerator(0,0)
@@ -122,7 +120,6 @@ namespace Kernel
         {
             // This bit of magic gets around the fact that we have a few competing JSON patterns colliding right here, and we have to
             // go from one JSON view to string to another JSON view
-            // LarvalHabitatMultiplier_DESC_TEXT
             std::istringstream config_string(demographics["NodeAttributes"].GetJsonObject().ToString());
             Configuration* config = Configuration::Load(config_string, std::string(""));
             larval_habitat_multiplier.Configure(config);
@@ -166,7 +163,6 @@ namespace Kernel
         }
         m_larval_habitats.clear();
 
-        delete vector_migration_info ;
         delete txIndoor;
         delete txOutdoor;
         delete m_vector_lifecycle_probabilities;
@@ -190,16 +186,17 @@ namespace Kernel
         return Node::addNewIndividual(MCweight, init_age, gender, init_infs, immparam, riskparam, mighet);
     }
 
-    void NodeVector::SetupMigration( IMigrationInfoFactory * migration_factory,
-                                     MigrationStructure::Enum ms,
-                                     const boost::bimap<ExternalNodeId_t, suids::suid>& rNodeIdSuidMap )
+    void NodeVector::SetupMigration( IMigrationInfoFactory * migration_factory, 
+                               const std::string& idreference,
+                               MigrationStructure::Enum ms,
+                               const boost::bimap<ExternalNodeId_t, suids::suid>& rNodeIdSuidMap )
     {
-        Node::SetupMigration( migration_factory, ms, rNodeIdSuidMap );
+        Node::SetupMigration( migration_factory, idreference, ms, rNodeIdSuidMap );
 
-        IMigrationInfoFactoryVector* p_mf_vector = dynamic_cast<IMigrationInfoFactoryVector*>(migration_factory);
-        release_assert( p_mf_vector );
-
-        vector_migration_info = p_mf_vector->CreateMigrationInfoVector( this, rNodeIdSuidMap );
+        for( auto p_vp : m_vectorpopulations )
+        {
+            p_vp->SetupMigration( idreference, rNodeIdSuidMap );
+        }
     }
 
     void NodeVector::SetupIntranodeTransmission()
@@ -400,7 +397,6 @@ namespace Kernel
         {
             const VectorSpeciesParameters* p_vsp = params()->vector_params->vector_species[ species_index ];
 
-            // InitialVectorsPerSpecies_DESC_TEXT
             int32_t population_per_species = DEFAULT_VECTOR_POPULATION_SIZE;
             if( demographics[ "NodeAttributes" ].Contains( "InitialVectorsPerSpecies" ) )
             {
@@ -485,29 +481,18 @@ namespace Kernel
 
     void NodeVector::processEmigratingVectors( float dt )
     {
-        if( !vector_migration_info )
-        {
-            throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "migration is not configured correctly" );
-        }
-
-        if( vector_migration_info->GetReachableNodes().size() > 0 )
-        {
-            VectorMigrationBasedOnFiles( dt );
-        }
+        VectorMigrationBasedOnFiles( dt );
     }
 
     void NodeVector::VectorMigrationBasedOnFiles( float dt )
     {
         IVectorSimulationContext* ivsc = context();
-        release_assert( vector_migration_info );
 
         VectorCohortVector_t migrating_vectors;
         for( auto vp : m_vectorpopulations )
         {
-            vector_migration_info->UpdateRates( this->GetSuid(), vp->get_SpeciesID(),  ivsc );
-
             migrating_vectors.clear();
-            vp->Vector_Migration( dt, vector_migration_info, &migrating_vectors );
+            vp->Vector_Migration( dt, &migrating_vectors, false );
             for (auto p_vc : migrating_vectors)
             {
                 ivsc->PostMigratingVector(this->GetSuid(), p_vc);
@@ -549,11 +534,6 @@ namespace Kernel
         for (auto population : m_vectorpopulations)
         {
             population->SetContextTo( getContextPointer() );
-        }
-
-        if ( vector_migration_info != nullptr )
-        {
-            vector_migration_info->SetContextTo( getContextPointer() );
         }
     }
 

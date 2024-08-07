@@ -6,9 +6,18 @@
             "../Demographics_100.json"
         ],
         "Enable_Vector_Aging": 1,
-        "Enable_Vector_Migration": 1,
-        "Enable_Vector_Migration_Local": 1,
         "Python_Script_Path": "LOCAL",
-        "Vector_Migration_Filename_Local": "Local_Vector_Migration_100_Node_Torus.bin"
+        "Enable_Vector_Migration": 1,
+        "Vector_Species_Params": [
+            {
+                "Name": "arabiensis",
+                "Vector_Migration_Filename": "Local_Vector_Migration_100_Node_Torus.bin",
+                "Vector_Migration_Modifier_Equation": "LINEAR",
+                "Vector_Migration_Habitat_Modifier": 0.0,
+                "Vector_Migration_Food_Modifier": 0.0,
+                "Vector_Migration_Stay_Put_Modifier": 0.0,
+                "x_Vector_Migration": 1.0
+            }
+        ]
     }
 }

@@ -3,6 +3,14 @@
 #include "UnitTest++.h"
 #include "componentTests.h"
 #include "VectorSpeciesParameters.h"
+#include "VectorParameters.h"
+#include "SimulationConfig.h"
+#include "MigrationInfoVector.h"
+#include "INodeContextFake.h"
+
+// maybe these shouldn't be protected in Simulation.h
+typedef boost::bimap<ExternalNodeId_t, suids::suid> nodeid_suid_map_t;
+typedef nodeid_suid_map_t::value_type nodeid_suid_pair;
 
 using namespace Kernel;
 
@@ -10,11 +18,19 @@ SUITE( VectorSpeciesParametersTest )
 {
     struct VspFixture
     {
+        SimulationConfig* m_pSimulationConfig ;
+
         VspFixture()
+            : m_pSimulationConfig( new SimulationConfig() )
         {
             Environment::Finalize();
             Environment::setLogger( new SimpleLogger( Logger::tLevel::WARNING ) );
-            Environment::setSimulationConfig( nullptr );
+
+            m_pSimulationConfig->sim_type = SimType::VECTOR_SIM ;
+            m_pSimulationConfig->demographics_initial = true ;
+            m_pSimulationConfig->vector_params->enable_vector_migration = true;
+            Environment::setSimulationConfig( m_pSimulationConfig );
+            EnvPtr->InputPaths.push_back( "." );
 
             JsonConfigurable::ClearMissingParameters();
             JsonConfigurable::_useDefaults = false;
@@ -53,6 +69,66 @@ SUITE( VectorSpeciesParametersTest )
             }
         }
     };
+
+    TEST_FIXTURE( VspFixture, TestMigration )
+    {
+        EnvPtr->Config = Environment::LoadConfigurationFile( "testdata/VectorSpeciesParametersTest/TestMigration.json" );
+
+        VectorSpeciesCollection collection;
+        collection.ConfigureFromJsonAndKey( EnvPtr->Config, "Vector_Species_Params" );
+        collection.CheckConfiguration();
+
+        CHECK_EQUAL( 2, collection.Size() );
+        CHECK( collection[0]->p_migration_factory != nullptr );
+        CHECK( collection[1]->p_migration_factory != nullptr );
+
+
+        nodeid_suid_map_t nodeid_suid_map;
+        for( uint32_t node_id = 1 ; node_id <= 26 ; node_id++ )
+        {
+            suids::suid node_suid ;
+            node_suid.data = node_id ;
+            nodeid_suid_map.insert(nodeid_suid_pair(node_id, node_suid));
+        }
+
+        std::string idreference = "Household-Scenario-Small" ;
+
+        INodeContextFake nc_1( nodeid_suid_map.left.at(1) ) ;
+
+        unique_ptr<IMigrationInfoVector> p_mi_species_1( collection[ 0 ]->p_migration_factory->CreateMigrationInfoVector( idreference, &nc_1, nodeid_suid_map ) );
+
+        const std::vector<suids::suid>& reachable_nodes = p_mi_species_1->GetReachableNodes();
+        CHECK_EQUAL( 21, reachable_nodes.size() );
+        CHECK_EQUAL(  3, reachable_nodes[ 0].data );
+        CHECK_EQUAL(  4, reachable_nodes[ 1].data );
+        CHECK_EQUAL(  5, reachable_nodes[ 2].data );
+        CHECK_EQUAL(  8, reachable_nodes[ 3].data );
+        CHECK_EQUAL(  9, reachable_nodes[ 4].data );
+        CHECK_EQUAL( 10, reachable_nodes[ 5].data );
+        CHECK_EQUAL( 11, reachable_nodes[ 6].data );
+        CHECK_EQUAL( 12, reachable_nodes[ 7].data );
+        CHECK_EQUAL( 13, reachable_nodes[ 8].data );
+        CHECK_EQUAL( 14, reachable_nodes[ 9].data );
+        CHECK_EQUAL( 15, reachable_nodes[10].data );
+        CHECK_EQUAL( 16, reachable_nodes[11].data );
+        CHECK_EQUAL( 17, reachable_nodes[12].data );
+        CHECK_EQUAL( 18, reachable_nodes[13].data );
+        CHECK_EQUAL( 19, reachable_nodes[14].data );
+        CHECK_EQUAL( 20, reachable_nodes[15].data );
+        CHECK_EQUAL( 21, reachable_nodes[16].data );
+        CHECK_EQUAL( 22, reachable_nodes[17].data );
+        CHECK_EQUAL( 23, reachable_nodes[18].data );
+        CHECK_EQUAL( 24, reachable_nodes[19].data );
+        CHECK_EQUAL( 25, reachable_nodes[20].data );
+
+        unique_ptr<IMigrationInfoVector> p_mi_species_2( collection[ 1 ]->p_migration_factory->CreateMigrationInfoVector( idreference, &nc_1, nodeid_suid_map ) );
+
+        const std::vector<suids::suid>& reachable_nodes2 = p_mi_species_2->GetReachableNodes();
+        CHECK_EQUAL( 3, reachable_nodes2.size() );
+        CHECK_EQUAL( 2, reachable_nodes2[0].data );
+        CHECK_EQUAL( 6, reachable_nodes2[1].data );
+        CHECK_EQUAL( 7, reachable_nodes2[2].data );
+    }
 
     TEST_FIXTURE( VspFixture, TestTooManySpecies )
     {

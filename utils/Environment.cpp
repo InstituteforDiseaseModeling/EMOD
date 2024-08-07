@@ -189,7 +189,7 @@ std::string Environment::FindFileOnPath( const std::string& rFilename )
     }
 
     std::stringstream ss;
-    ss << "Received the following system error messages while checking for the existance\n";
+    ss << "Received the following system error messages while checking for the existence\n";
     ss << "of the file at the following locations:\n";
     for( auto path : localEnv->InputPaths )
     {

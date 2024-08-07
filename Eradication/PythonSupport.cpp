@@ -75,7 +75,7 @@ namespace Kernel
         }
         LOG_INFO_F( "Python home path: %s\n", c_python_path );
 
-        // Check directory existance
+        // Check directory existence
         std::string python_home(c_python_path);
         python_home = FileSystem::RemoveTrailingChars( python_home );
         if( !FileSystem::DirectoryExists( python_home ) )
