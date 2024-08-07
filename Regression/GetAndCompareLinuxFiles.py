@@ -21,7 +21,7 @@ def ReadXML( xml_fn ):
         msg_elements = msg.split(' ')
         test_dir = msg_elements[0]
         sim_dir = msg_elements[10]
-        sim_dir = sim_dir.replace("/mnt/bayesianfil01/home", "//bayesianfil01/IDM/home")
+        sim_dir = sim_dir.replace("/mnt/iazdvfil05/home/", "//iazdvfil05.idmhpc.azr/IDM/home/")
         #print(sim_dir)
 
         test_failure = ( test_dir, sim_dir )
