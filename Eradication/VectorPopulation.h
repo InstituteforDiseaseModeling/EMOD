@@ -575,11 +575,12 @@ namespace Kernel
 		
 		IMigrationInfoVector*       m_pMigrationInfoVector;
 
-        static std::vector<float> m_MortalityTable;
+        static std::vector<float>   m_MortalityTable;
 
         // Ugh.  Declaring this down here so that StrainGenomeId is declared
         void DepositContagionHelper( TransmissionRoute::Enum route,
-                                     std::map<StrainGenomeId, float>& rContagionToDeposit );
+                                     std::map<StrainGenomeId, 
+                                     float>& rContagionToDeposit );
 
 
         DECLARE_SERIALIZABLE(VectorPopulation);

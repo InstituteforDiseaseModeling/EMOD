@@ -36,7 +36,7 @@ namespace Kernel
     END_QUERY_INTERFACE_DERIVED(MigrationInfoFixedRateVector, MigrationInfoFixedRate)
 
     MigrationInfoFixedRateVector::MigrationInfoFixedRateVector( INodeContext * _parent,
-                                                                ModiferEquationType::Enum equation,
+                                                                ModifierEquationType::Enum equation,
                                                                 float habitatModifier,
                                                                 float foodModifier,
                                                                 float stayPutModifier ) 
@@ -231,10 +231,10 @@ namespace Kernel
         float rate = 0.0 ;
         switch( m_ModifierEquation )
         {
-            case ModiferEquationType::LINEAR:
+            case ModifierEquationType::LINEAR:
                 rate = rawRate + (sp * m_ModifierFood * pr) + (sp * m_ModifierHabitat * habitatRatio) ;
                 break;
-            case ModiferEquationType::EXPONENTIAL:
+            case ModifierEquationType::EXPONENTIAL:
                 {
                     // ------------------------------------------------------------
                     // --- The -1 allows for values between 0 and 1.  Otherwise,
@@ -254,7 +254,7 @@ namespace Kernel
                 }
                 break;
             default:
-                throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, MODIFIER_EQUATION_NAME, m_ModifierEquation, ModiferEquationType::pairs::lookup_key( m_ModifierEquation ) );
+                throw BadEnumInSwitchStatementException( __FILE__, __LINE__, __FUNCTION__, MODIFIER_EQUATION_NAME, m_ModifierEquation, ModifierEquationType::pairs::lookup_key( m_ModifierEquation ) );
         }
 
         return rate ;
@@ -270,10 +270,10 @@ namespace Kernel
         END_QUERY_INTERFACE_DERIVED(MigrationInfoAgeAndGenderVector, MigrationInfoAgeAndGender)
 
         MigrationInfoAgeAndGenderVector::MigrationInfoAgeAndGenderVector(INodeContext* _parent,
-            ModiferEquationType::Enum equation,
-            float habitatModifier,
-            float foodModifier,
-            float stayPutModifier)
+                                                                         ModifierEquationType::Enum equation,
+                                                                         float habitatModifier,
+                                                                         float foodModifier,
+                                                                         float stayPutModifier)
         : MigrationInfoAgeAndGender(_parent, false)
         , m_RawMigrationRatesVectorGender()
         , m_TotalRatesVectorGender()
@@ -324,9 +324,9 @@ namespace Kernel
 
 
     std::vector<float> MigrationInfoAgeAndGenderVector::GetRatios(const std::vector<suids::suid>& rReachableNodes,
-        const std::string& rSpeciesID,
-        IVectorSimulationContext* pivsc,
-        tGetValueFunc getValueFunc)
+                                                                  const std::string& rSpeciesID,
+                                                                  IVectorSimulationContext* pivsc,
+                                                                  tGetValueFunc getValueFunc)
     {
         // -----------------------------------
         // --- Find the total number of people
@@ -418,9 +418,9 @@ namespace Kernel
     }
 
     float MigrationInfoAgeAndGenderVector::CalculateModifiedRate(const suids::suid& rNodeId,
-        float rawRate,
-        float populationRatio,
-        float habitatRatio)
+                                                                 float rawRate,
+                                                                 float populationRatio,
+                                                                 float habitatRatio)
     {
         // --------------------------------------------------------------------------
         // --- Determine the probability that the mosquito will not migrate because
@@ -446,10 +446,10 @@ namespace Kernel
         float rate = 0.0;
         switch (m_ModifierEquation)
         {
-        case ModiferEquationType::LINEAR:
+        case ModifierEquationType::LINEAR:
             rate = rawRate + (sp * m_ModifierFood * pr) + (sp * m_ModifierHabitat * habitatRatio);
             break;
-        case ModiferEquationType::EXPONENTIAL:
+        case ModifierEquationType::EXPONENTIAL:
         {
             // ------------------------------------------------------------
             // --- The -1 allows for values between 0 and 1.  Otherwise,
@@ -469,7 +469,7 @@ namespace Kernel
         }
         break;
         default:
-            throw BadEnumInSwitchStatementException(__FILE__, __LINE__, __FUNCTION__, MODIFIER_EQUATION_NAME, m_ModifierEquation, ModiferEquationType::pairs::lookup_key(m_ModifierEquation));
+            throw BadEnumInSwitchStatementException(__FILE__, __LINE__, __FUNCTION__, MODIFIER_EQUATION_NAME, m_ModifierEquation, ModifierEquationType::pairs::lookup_key(m_ModifierEquation));
         }
 
         return rate;
@@ -480,7 +480,7 @@ namespace Kernel
     // ------------------------------------------------------------------------
     MigrationInfoFactoryVector::MigrationInfoFactoryVector( bool enableVectorMigration )
     : m_InfoFileVector( MigrationType::LOCAL_MIGRATION, MAX_LOCAL_MIGRATION_DESTINATIONS )
-    , m_ModifierEquation( ModiferEquationType::EXPONENTIAL )
+    , m_ModifierEquation( ModifierEquationType::EXPONENTIAL )
     , m_ModifierHabitat(0.0)
     , m_ModifierFood(0.0)
     , m_ModifierStayPut(0.0)
@@ -499,7 +499,7 @@ namespace Kernel
                              config, 
                              MetadataDescriptor::Enum( MODIFIER_EQUATION_NAME,
                                                        Vector_Migration_Modifier_Equation_DESC_TEXT,
-                                                       MDD_ENUM_ARGS(ModiferEquationType)),
+                                                       MDD_ENUM_ARGS(ModifierEquationType)),
                              "Enable_Vector_Migration" ); 
 
         pParent->initConfigTypeMap( "Vector_Migration_Filename",          &(m_InfoFileVector.m_Filename),  Vector_Migration_Filename_DESC_TEXT, "UNSPECIFIED_FILE",  "Enable_Vector_Migration" );
@@ -512,10 +512,10 @@ namespace Kernel
         m_InfoFileVector.SetFilenameParameterName( "Vector_Migration_Filename" );
     }
 
-    IMigrationInfoVector* MigrationInfoFactoryVector::CreateMigrationInfoVector( 
-        const std::string& idreference,
-        INodeContext *pParentNode, 
-        const boost::bimap<ExternalNodeId_t, suids::suid>& rNodeIdSuidMap )
+    IMigrationInfoVector* MigrationInfoFactoryVector::CreateMigrationInfoVector( const std::string& idreference,
+                                                                                 INodeContext *pParentNode, 
+                                                                                 const boost::bimap<ExternalNodeId_t, 
+                                                                                 suids::suid>& rNodeIdSuidMap )
     {
         IMigrationInfoVector* p_new_migration_info; // = nullptr;
         if( !m_InfoFileVector.IsInitialized() )
@@ -529,28 +529,28 @@ namespace Kernel
 	        info_file_list.push_back( nullptr );
 	        bool is_fixed_rate = true ;
 			std::vector<std::vector<MigrationRateData>> rate_data = MigrationInfoFactoryFile::GetRateData( pParentNode,
-                                                                                                       rNodeIdSuidMap,
-                                                                                                       info_file_list,
-                                                                                                       &is_fixed_rate );
+                                                                                                           rNodeIdSuidMap,
+                                                                                                           info_file_list,
+                                                                                                           &is_fixed_rate );
 			
 
             if (is_fixed_rate)
             {
                 MigrationInfoFixedRateVector* new_migration_info = _new_ MigrationInfoFixedRateVector(pParentNode,
-                    m_ModifierEquation,
-                    m_ModifierHabitat,
-                    m_ModifierFood,
-                    m_ModifierStayPut);
+                                                                                                      m_ModifierEquation,
+                                                                                                      m_ModifierHabitat,
+                                                                                                      m_ModifierFood,
+                                                                                                      m_ModifierStayPut);
                 new_migration_info->Initialize(rate_data);
                 p_new_migration_info = new_migration_info;
             }
             else
             {
                 MigrationInfoAgeAndGenderVector* new_migration_info = _new_ MigrationInfoAgeAndGenderVector(pParentNode,
-                    m_ModifierEquation,
-                    m_ModifierHabitat,
-                    m_ModifierFood,
-                    m_ModifierStayPut);
+                                                                                                            m_ModifierEquation,
+                                                                                                            m_ModifierHabitat,
+                                                                                                            m_ModifierFood,
+                                                                                                            m_ModifierStayPut);
                 new_migration_info->Initialize(rate_data);
                 p_new_migration_info = new_migration_info;
             }
@@ -579,10 +579,10 @@ namespace Kernel
     {
     }
 
-    IMigrationInfoVector* MigrationInfoFactoryVectorDefault::CreateMigrationInfoVector( 
-        const std::string& idreference,
-        INodeContext *pParentNode, 
-        const boost::bimap<ExternalNodeId_t, suids::suid>& rNodeIdSuidMap )
+    IMigrationInfoVector* MigrationInfoFactoryVectorDefault::CreateMigrationInfoVector(const std::string& idreference,
+                                                                                       INodeContext *pParentNode, 
+                                                                                       const boost::bimap<ExternalNodeId_t,
+                                                                                       suids::suid>& rNodeIdSuidMap )
     {
         if( m_IsVectorMigrationEnabled )
         {
@@ -598,7 +598,7 @@ namespace Kernel
                                                                                                               x_local_modifier );
 
             MigrationInfoFixedRateVector* new_migration_info = _new_ MigrationInfoFixedRateVector( pParentNode,
-                                                                                                   ModiferEquationType::LINEAR,
+                                                                                                   ModifierEquationType::LINEAR,
                                                                                                    1.0,
                                                                                                    1.0,
                                                                                                    1.0 );
