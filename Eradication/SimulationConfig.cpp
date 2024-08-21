@@ -265,7 +265,6 @@ void SimulationConfig::VectorInitConfig( const Configuration* inputJson )
     //initConfigTypeMap( "Enable_Vector_Species_Habitat_Competition", &enable_vector_species_habitat_competition, VECTOR_Enable_Vector_Species_Habitat_Competition, false );
 
     initConfigTypeMap( "Enable_Vector_Species_Report", &(vector_params->enable_vector_species_report), VECTOR_Enable_Vector_Species_Report_DESC_TEXT, false );
-    initConfigTypeMap( "Enable_Vector_Migration",      &(vector_params->enable_vector_migration),      Enable_Vector_Migration_DESC_TEXT,             false );
     initConfigTypeMap( "Enable_Vector_Aging",          &(vector_params->vector_aging),                 Enable_Vector_Aging_DESC_TEXT,                 false );
 
     initConfigTypeMap( "Mean_Egg_Hatch_Delay",                       &(vector_params->meanEggHatchDelay),                   Mean_Egg_Hatch_Delay_DESC_TEXT, 0, 120, 0 );

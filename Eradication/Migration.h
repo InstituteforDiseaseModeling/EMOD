@@ -224,10 +224,10 @@ namespace Kernel
         virtual void OpenMigrationFile( const std::string& filepath, uint32_t expected_binary_file_size );
         virtual uint32_t GetNumGenderDataChunks() const;
 
-        std::string             m_ParameterNameEnable ;
-        std::string             m_ParameterNameFilename ;
-        int                     m_DestinationsPerNode ;
-        MigrationType::Enum     m_MigrationType ;
+        std::string             m_ParameterNameEnable;
+        std::string             m_ParameterNameFilename;
+        int                     m_DestinationsPerNode;
+        MigrationType::Enum     m_MigrationType;
         GenderDataType::Enum    m_GenderDataType;
         InterpolationType::Enum m_InterpolationType;
         std::vector<float>      m_AgesYears;

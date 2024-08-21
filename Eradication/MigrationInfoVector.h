@@ -19,7 +19,7 @@ namespace Kernel
     // ----------------------------------
     // --- MigrationInfoNullVector
     // ----------------------------------
-    class IDMAPI MigrationInfoNullVector : public MigrationInfoNull, public IMigrationInfoVector
+    class MigrationInfoNullVector : public MigrationInfoNull, public IMigrationInfoVector
     {
     public:
         IMPLEMENT_NO_REFERENCE_COUNTING()
@@ -46,7 +46,7 @@ namespace Kernel
     // --- MigrationInfoFixedRateVector
     // ----------------------------------
 
-    class IDMAPI MigrationInfoFixedRateVector : public MigrationInfoFixedRate, public IMigrationInfoVector
+    class MigrationInfoFixedRateVector : public MigrationInfoFixedRate, public IMigrationInfoVector
     {
     public:
         IMPLEMENT_NO_REFERENCE_COUNTING()  
@@ -109,7 +109,7 @@ namespace Kernel
     // --- MigrationInfoAgeAndGenderVector
     // ----------------------------------
 
-    class IDMAPI MigrationInfoAgeAndGenderVector : public MigrationInfoAgeAndGender, public IMigrationInfoVector
+    class MigrationInfoAgeAndGenderVector : public MigrationInfoAgeAndGender, public IMigrationInfoVector
     {
     public:
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
@@ -193,7 +193,7 @@ namespace Kernel
     // --- MigrationInfoFactoryVectorDefault
     // ----------------------------------
 
-    class IDMAPI MigrationInfoFactoryVectorDefault : public IMigrationInfoFactoryVector
+    class MigrationInfoFactoryVectorDefault : public IMigrationInfoFactoryVector
     {
     public:
         MigrationInfoFactoryVectorDefault( bool enableVectorMigration, int defaultTorusSize );

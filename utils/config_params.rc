@@ -155,7 +155,6 @@
 #define Enable_Susceptibility_Scaling_DESC_TEXT "Controls whether or not susceptibility is scaled by time as defined by Susceptibility_Scaling_Type."
 #define Enable_Termination_On_Zero_Total_Infectivity_DESC_TEXT "Controls whether or not the simulation should be ended when total infectivity falls to zero. Supported only in single-node simulations."
 #define Enable_Vector_Aging_DESC_TEXT "Controls whether or not vectors undergo senescence as they age."
-#define Enable_Vector_Migration_DESC_TEXT "Controls whether or not vectors can migrate to other nodes."
 #define Enable_Vector_Mortality_DESC_TEXT "Controls whether or not vectors can die."
 #define Enable_Vital_Dynamics_DESC_TEXT "Controls whether or not births and deaths occur in the simulation."
 #define Erythropoiesis_Anemia_Effect_DESC_TEXT "The exponential rate of increased red-blood-cell production from reduced red-blood-cell availability."
