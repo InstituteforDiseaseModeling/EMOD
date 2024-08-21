@@ -49,7 +49,6 @@ namespace Kernel
             {
                 use_defalt_demog        = !GET_CONFIGURABLE( SimulationConfig )->demographics_initial;
                 default_torus_size      = GET_CONFIGURABLE( SimulationConfig )->default_torus_size;
-                enable_vector_migration = GET_CONFIGURABLE( SimulationConfig )->vector_params->enable_vector_migration;
             }
             IMigrationInfoFactoryVector* p_mifv = nullptr ;
 

@@ -28,7 +28,6 @@ SUITE( VectorSpeciesParametersTest )
 
             m_pSimulationConfig->sim_type = SimType::VECTOR_SIM ;
             m_pSimulationConfig->demographics_initial = true ;
-            m_pSimulationConfig->vector_params->enable_vector_migration = true;
             Environment::setSimulationConfig( m_pSimulationConfig );
             EnvPtr->InputPaths.push_back( "." );
 

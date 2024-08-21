@@ -52,7 +52,6 @@ SUITE(MigrationTest)
 
             m_pSimulationConfig->sim_type = SimType::VECTOR_SIM ;
             m_pSimulationConfig->demographics_initial = true ;
-            m_pSimulationConfig->vector_params->enable_vector_migration = true;
             Environment::setSimulationConfig( m_pSimulationConfig );
 
         }
@@ -881,37 +880,34 @@ SUITE(MigrationTest)
             unique_ptr<IMigrationInfoVector> p_mi( vsp.p_migration_factory->CreateMigrationInfoVector( idreference, &nc_1, nodeid_suid_map ) );
 
             const std::vector<suids::suid>& reachable_nodes = p_mi->GetReachableNodes();
-            CHECK_EQUAL( 3, reachable_nodes.size() );
+            CHECK_EQUAL( 2, reachable_nodes.size() );
             CHECK_EQUAL(  2, reachable_nodes[ 0].data );
             CHECK_EQUAL(  6, reachable_nodes[ 1].data );
-            CHECK_EQUAL(  7, reachable_nodes[ 2].data );
 
 
             const std::vector<MigrationType::Enum>& mig_type_list = p_mi->GetMigrationTypes();
-            CHECK_EQUAL( 3, mig_type_list.size() );
+            CHECK_EQUAL( 2, mig_type_list.size() );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION,    mig_type_list[ 0] );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION,    mig_type_list[ 1] );
-            CHECK_EQUAL( MigrationType::LOCAL_MIGRATION,    mig_type_list[ 2] );
 
 
             INodeContextFake nc_9( nodeid_suid_map.left.at(9) ) ;
-            unique_ptr<IMigrationInfo> p_mi_9( vsp.p_migration_factory->CreateMigrationInfoVector( idreference, &nc_9, nodeid_suid_map ) );
+            unique_ptr<IMigrationInfoVector> p_mi_9( vsp.p_migration_factory->CreateMigrationInfoVector( idreference, &nc_9, nodeid_suid_map ) );
 
             const std::vector<suids::suid>& reachable_nodes_9 = p_mi_9->GetReachableNodes();
-            CHECK_EQUAL( 8, reachable_nodes_9.size() );
+            CHECK_EQUAL( 7, reachable_nodes_9.size() );
             CHECK_EQUAL(  3, reachable_nodes_9[ 0].data );
             CHECK_EQUAL(  4, reachable_nodes_9[ 1].data );
             CHECK_EQUAL(  5, reachable_nodes_9[ 2].data );
             CHECK_EQUAL(  8, reachable_nodes_9[ 3].data );
             CHECK_EQUAL( 10, reachable_nodes_9[ 4].data );
             CHECK_EQUAL( 13, reachable_nodes_9[ 5].data );
-            CHECK_EQUAL( 14, reachable_nodes_9[ 6].data );
-            CHECK_EQUAL( 15, reachable_nodes_9[ 7].data );
+            CHECK_EQUAL( 15, reachable_nodes_9[ 6].data );
 
 
 
             const std::vector<MigrationType::Enum>& mig_type_list_9 = p_mi_9->GetMigrationTypes();
-            CHECK_EQUAL( 8, mig_type_list_9.size() );
+            CHECK_EQUAL( 7, mig_type_list_9.size() );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION,    mig_type_list_9[ 0] );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION,    mig_type_list_9[ 1] );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION,    mig_type_list_9[ 2] );
@@ -919,11 +915,10 @@ SUITE(MigrationTest)
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION,    mig_type_list_9[ 4] );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION,    mig_type_list_9[ 5] );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION,    mig_type_list_9[ 6] );
-            CHECK_EQUAL( MigrationType::LOCAL_MIGRATION,    mig_type_list_9[ 7] );
 
 
             INodeContextFake nc_26( nodeid_suid_map.left.at(26) ) ;
-            unique_ptr<IMigrationInfo> p_mi_26( vsp.p_migration_factory->CreateMigrationInfoVector( idreference, &nc_26, nodeid_suid_map ) );
+            unique_ptr<IMigrationInfoVector> p_mi_26( vsp.p_migration_factory->CreateMigrationInfoVector( idreference, &nc_26, nodeid_suid_map ) );
             CHECK( p_mi_26->GetReachableNodes().size() == 0 );
         }
         catch( DetailedException& re )
