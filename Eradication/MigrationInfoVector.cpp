@@ -501,14 +501,12 @@ namespace Kernel
                                                        Vector_Migration_Modifier_Equation_DESC_TEXT,
                                                        MDD_ENUM_ARGS(ModifierEquationType))); 
 
-        pParent->initConfigTypeMap( "Vector_Migration_Filename",          &(m_InfoFileVector.m_Filename),  Vector_Migration_Filename_DESC_TEXT, "UNSPECIFIED_FILE");
+        pParent->initConfigTypeMap( "Vector_Migration_Filename",          &(m_InfoFileVector.m_Filename),  Vector_Migration_Filename_DESC_TEXT, "");
         pParent->initConfigTypeMap( "x_Vector_Migration"       ,          &(m_InfoFileVector.m_xModifier), x_Vector_Migration_DESC_TEXT,        0.0f, FLT_MAX, 1.0f);
         pParent->initConfigTypeMap( "Vector_Migration_Habitat_Modifier",  &m_ModifierHabitat,  Vector_Migration_Habitat_Modifier_DESC_TEXT,  0.0f, FLT_MAX, 0.0f );
         pParent->initConfigTypeMap( "Vector_Migration_Food_Modifier",     &m_ModifierFood,     Vector_Migration_Food_Modifier_DESC_TEXT,     0.0f, FLT_MAX, 0.0f );
         pParent->initConfigTypeMap( "Vector_Migration_Stay_Put_Modifier", &m_ModifierStayPut,  Vector_Migration_Stay_Put_Modifier_DESC_TEXT, 0.0f, FLT_MAX, 0.0f );
 
-        m_InfoFileVector.SetEnableParameterName( "Enable_Vector_Migration" );
-        m_InfoFileVector.SetFilenameParameterName( "Vector_Migration_Filename" );
     }
 
     IMigrationInfoVector* MigrationInfoFactoryVector::CreateMigrationInfoVector( const std::string& idreference,
@@ -517,6 +515,7 @@ namespace Kernel
                                                                                  suids::suid>& rNodeIdSuidMap )
     {
         IMigrationInfoVector* p_new_migration_info; // = nullptr;
+        // because 
         if (m_InfoFileVector.m_Filename.empty() || (m_InfoFileVector.m_Filename == "UNINITIALIZED STRING"))
         {
             m_InfoFileVector.m_IsEnabled = false;

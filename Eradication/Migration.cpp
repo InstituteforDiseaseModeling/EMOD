@@ -437,6 +437,7 @@ namespace Kernel
         {
             if( m_Filename.empty() || (m_Filename == "UNINITIALIZED STRING") )
             {
+                release_assert(m_ParameterNameEnable != "UNINITIALIZED STRING");
                 throw IncoherentConfigurationException( __FILE__, __LINE__, __FUNCTION__, 
                                                         m_ParameterNameEnable.c_str(), "1", 
                                                         m_ParameterNameFilename.c_str(), "<empty>" );
