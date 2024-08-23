@@ -496,7 +496,13 @@
                 "Microsporidia": [],
                 "Temperature_Dependent_Feeding_Cycle": "NO_TEMPERATURE_DEPENDENCE",
                 "Transmission_Rate": 0.5,
-                "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_NONE"
+                "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_NONE",
+                "Vector_Migration_Filename": "",
+                "x_Vector_Migration": 1,
+                "Vector_Migration_Food_Modifier": 0.0,
+                "Vector_Migration_Habitat_Modifier": 0.0,
+                "Vector_Migration_Modifier_Equation": "LINEAR",
+                "Vector_Migration_Stay_Put_Modifier": 0.0
             },
             {
                 "Name": "funestus",
@@ -524,7 +530,13 @@
                 "Microsporidia": [],
                 "Temperature_Dependent_Feeding_Cycle": "NO_TEMPERATURE_DEPENDENCE",
                 "Transmission_Rate": 0.5,
-                "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_NONE"
+                "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_NONE",
+                "Vector_Migration_Filename": "",
+                "x_Vector_Migration": 1,
+                "Vector_Migration_Food_Modifier": 0.0,
+                "Vector_Migration_Habitat_Modifier": 0.0,
+                "Vector_Migration_Modifier_Equation": "LINEAR",
+                "Vector_Migration_Stay_Put_Modifier": 0.0
             },
             {
                 "Name": "gambiae",
@@ -552,7 +564,13 @@
                 "Microsporidia": [],
                 "Temperature_Dependent_Feeding_Cycle": "NO_TEMPERATURE_DEPENDENCE",
                 "Transmission_Rate": 0.5,
-                "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_NONE"
+                "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_NONE",
+                "Vector_Migration_Filename": "",
+                "x_Vector_Migration": 1,
+                "Vector_Migration_Food_Modifier": 0.0,
+                "Vector_Migration_Habitat_Modifier": 0.0,
+                "Vector_Migration_Modifier_Equation": "LINEAR",
+                "Vector_Migration_Stay_Put_Modifier": 0.0
             }
         ]
     },
