@@ -120,7 +120,7 @@
             ],
             "Microsporidia":[],
             
-            "Vector_Migration_Filename": "testdata/VectorSpeciesParametersTest/5x5_Households_Vector_Migration_species_2.bin",
+            "Vector_Migration_Filename": "",
             "Vector_Migration_Modifier_Equation": "LINEAR",
             "Vector_Migration_Habitat_Modifier": 1.0,
             "Vector_Migration_Food_Modifier": 1.0,

@@ -123,10 +123,7 @@ SUITE( VectorSpeciesParametersTest )
         unique_ptr<IMigrationInfoVector> p_mi_species_2( collection[ 1 ]->p_migration_factory->CreateMigrationInfoVector( idreference, &nc_1, nodeid_suid_map ) );
 
         const std::vector<suids::suid>& reachable_nodes2 = p_mi_species_2->GetReachableNodes();
-        CHECK_EQUAL( 3, reachable_nodes2.size() );
-        CHECK_EQUAL( 2, reachable_nodes2[0].data );
-        CHECK_EQUAL( 6, reachable_nodes2[1].data );
-        CHECK_EQUAL( 7, reachable_nodes2[2].data );
+        CHECK_EQUAL( 0, reachable_nodes2.size() );
     }
 
     TEST_FIXTURE( VspFixture, TestTooManySpecies )
@@ -187,5 +184,11 @@ SUITE( VectorSpeciesParametersTest )
     {
         TestHelper_ConfigureException( __LINE__, "testdata/VectorSpeciesParametersTest/TestLarvalHabitatTypesDuplicates.json",
                                        "Duplicate 'Habitat_Type' = 'TEMPORARY_RAINFALL'.\nOnly one habitat type per species is allowed." );
+    }
+
+    TEST_FIXTURE(VspFixture, TestMigrationParametersMissing)
+    {
+        TestHelper_ConfigureException(__LINE__, "testdata/VectorSpeciesParametersTest/TestMigrationParametersMissing.json",
+            "Parameter 'Vector_Migration_Food_Modifier of VectorSpeciesParameters' not found in input file 'testdata/VectorSpeciesParametersTest/TestMigrationParametersMissing.json'");
     }
 }
