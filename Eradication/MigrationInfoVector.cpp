@@ -59,7 +59,7 @@ namespace Kernel
         MigrationInfoFixedRate::Initialize( rRateData );
     }
 
-    void MigrationInfoFixedRateVector::SaveRawRates( std::vector<float>& r_rate_cdf, Gender::Enum gender)
+    void MigrationInfoFixedRateVector::SaveRawRates( std::vector<float>& r_rate_cdf)
     {
         // ---------------------------------------------------------
         // --- Keep the un-normalized rates so we can multiply them
@@ -275,16 +275,13 @@ namespace Kernel
                                                                          float foodModifier,
                                                                          float stayPutModifier)
         : MigrationInfoAgeAndGender(_parent, false)
-        , m_RawMigrationRatesVectorGender()
-        , m_TotalRatesVectorGender()
-        , m_RateCDFVectorGender()
+        , m_RawMigrationRate()
         , m_ThisNodeId(suids::nil_suid())
         , m_ModifierEquation(equation)
         , m_ModifierHabitat(habitatModifier)
         , m_ModifierFood(foodModifier)
         , m_ModifierStayPut(stayPutModifier)
     {
-        m_RawMigrationRatesVectorGender = { {0}, {0} }; //we need for indices to exist to add data
     }
 
     MigrationInfoAgeAndGenderVector::~MigrationInfoAgeAndGenderVector()
@@ -303,17 +300,17 @@ namespace Kernel
     }
 
 
-    void MigrationInfoAgeAndGenderVector::SaveRawRates(std::vector<float>& r_rate_cdf, Gender::Enum gender)
+    void MigrationInfoAgeAndGenderVector::SaveRawRates(std::vector<float>& r_rate_cdf)
     {
         // ---------------------------------------------------------
         // --- Keep the un-normalized rates so we can multiply them
         // --- times our food adjusted rates.
         // ---------------------------------------------------------
-        int vector_gender_index = int(gender == Gender::MALE ? VectorGender::VECTOR_MALE : VectorGender::VECTOR_FEMALE);
-        m_RawMigrationRatesVectorGender[vector_gender_index].clear();
+        // We only want to save raw migration rates for females, because male rates do not get modified. 
+        m_RawMigrationRate.clear();
         for (int i = 0; i < r_rate_cdf.size(); i++)
         {
-            m_RawMigrationRatesVectorGender[vector_gender_index].push_back(r_rate_cdf[i]);
+            m_RawMigrationRate.push_back(r_rate_cdf[i]);
         }
     }
 
@@ -367,7 +364,6 @@ namespace Kernel
         int female_vectors_index = (int)VectorGender::VECTOR_FEMALE;
         m_ReachableNodes = GetReachableNodes(human_equivalent);
         m_MigrationTypes = GetMigrationTypes(human_equivalent);
-        std::vector<float> m_RawMigrationRate = m_RawMigrationRatesVectorGender[female_vectors_index];
 
         // after this it is the same as MigrationFixedRateVector, can we.. use that somehow? a shared function?
         if ((m_ModifierStayPut > 0.0) && (m_ReachableNodes.size() > 0) && (m_ReachableNodes[0] != rThisNodeId))
@@ -417,10 +413,10 @@ namespace Kernel
 
     }
 
-    float MigrationInfoAgeAndGenderVector::CalculateModifiedRate(const suids::suid& rNodeId,
-                                                                 float rawRate,
-                                                                 float populationRatio,
-                                                                 float habitatRatio)
+    float MigrationInfoAgeAndGenderVector::CalculateModifiedRate( const suids::suid& rNodeId,
+                                                                  float rawRate,
+                                                                  float populationRatio,
+                                                                  float habitatRatio)
     {
         // --------------------------------------------------------------------------
         // --- Determine the probability that the mosquito will not migrate because
@@ -541,21 +537,27 @@ namespace Kernel
         {
             if (is_fixed_rate)
             {
-                MigrationInfoFixedRateVector* new_migration_info = _new_ MigrationInfoFixedRateVector(pParentNode,
-                                                                                                      m_ModifierEquation,
-                                                                                                      m_ModifierHabitat,
-                                                                                                      m_ModifierFood,
-                                                                                                      m_ModifierStayPut);
+                MigrationInfoFixedRateVector* new_migration_info = _new_ MigrationInfoFixedRateVector( pParentNode,
+                                                                                                       m_ModifierEquation,
+                                                                                                       m_ModifierHabitat,
+                                                                                                       m_ModifierFood,
+                                                                                                       m_ModifierStayPut);
                 new_migration_info->Initialize(rate_data);
                 p_new_migration_info = new_migration_info;
             }
             else
             {
-                MigrationInfoAgeAndGenderVector* new_migration_info = _new_ MigrationInfoAgeAndGenderVector(pParentNode,
-                                                                                                            m_ModifierEquation,
-                                                                                                            m_ModifierHabitat,
-                                                                                                            m_ModifierFood,
-                                                                                                            m_ModifierStayPut);
+                if (rate_data[0][0].GetNumRates() > 1)
+                {
+                    std::ostringstream msg;
+                    msg << "Vector_Migration_Filename " << m_InfoFileVector.m_Filename << " contains more than one age bin for migration. Age-based migration is not implemented for vectors." << std::endl;
+                    throw InvalidInputDataException(__FILE__, __LINE__, __FUNCTION__, msg.str().c_str());
+                }
+                MigrationInfoAgeAndGenderVector* new_migration_info = _new_ MigrationInfoAgeAndGenderVector( pParentNode,
+                                                                                                             m_ModifierEquation,
+                                                                                                             m_ModifierHabitat,
+                                                                                                             m_ModifierFood,
+                                                                                                             m_ModifierStayPut);
                 new_migration_info->Initialize(rate_data);
                 p_new_migration_info = new_migration_info;
             }
@@ -584,10 +586,10 @@ namespace Kernel
     {
     }
 
-    IMigrationInfoVector* MigrationInfoFactoryVectorDefault::CreateMigrationInfoVector(const std::string& idreference,
-                                                                                       INodeContext *pParentNode, 
-                                                                                       const boost::bimap<ExternalNodeId_t,
-                                                                                       suids::suid>& rNodeIdSuidMap )
+    IMigrationInfoVector* MigrationInfoFactoryVectorDefault::CreateMigrationInfoVector( const std::string& idreference,
+                                                                                        INodeContext *pParentNode, 
+                                                                                        const boost::bimap<ExternalNodeId_t,
+                                                                                        suids::suid>& rNodeIdSuidMap )
     {
         if( m_IsVectorMigrationEnabled )
         {

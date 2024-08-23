@@ -81,7 +81,7 @@ namespace Kernel
         virtual Gender::Enum ConvertVectorGender(VectorGender::Enum gender) const override;
         virtual void CalculateRates(VectorGender::Enum vector_gender) override;
 
-        virtual void SaveRawRates( std::vector<float>& r_rate_cdf, Gender::Enum gender ) override;
+        virtual void SaveRawRates( std::vector<float>& r_rate_cdf ) override;
         float CalculateModifiedRate( const suids::suid& rNodeId, 
                                      float rawRate, 
                                      float populationRatio, 
@@ -136,7 +136,7 @@ namespace Kernel
                                         float stayPutModifier);
 
         virtual void Initialize(const std::vector<std::vector<MigrationRateData>>& rRateData) override;
-        virtual void SaveRawRates(std::vector<float>& r_rate_cdf, Gender::Enum gender) override;
+        virtual void SaveRawRates(std::vector<float>& r_rate_cdf) override;
         float CalculateModifiedRate(const suids::suid& rNodeId,
                                     float rawRate,
                                     float populationRatio,
@@ -152,9 +152,7 @@ namespace Kernel
                                      tGetValueFunc getValueFunc);
 
     private:
-        std::vector<std::vector<float>> m_RawMigrationRatesVectorGender;
-        std::vector<float>              m_TotalRatesVectorGender;
-        std::vector<std::vector<float>> m_RateCDFVectorGender;
+        std::vector<float>              m_RawMigrationRate;
         suids::suid                     m_ThisNodeId;
         ModifierEquationType::Enum      m_ModifierEquation;
         float                           m_ModifierHabitat;

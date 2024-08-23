@@ -143,7 +143,7 @@ namespace Kernel
         virtual void Initialize( const std::vector<std::vector<MigrationRateData>>& rRateData );
         virtual void CalculateRates( Gender::Enum gender, float ageYears );
         virtual void NormalizeRates( std::vector<float>& r_rate_cdf, float& r_total_rate );
-        virtual void SaveRawRates( std::vector<float>& r_rate_cdf, Gender::Enum gender ) {}
+        virtual void SaveRawRates( std::vector<float>& r_rate_cdf ) {}
 
 
         INodeContext * m_Parent;
