@@ -187,7 +187,6 @@
                 "Mean_Egg_Hatch_Delay": 0
             },
             "Enable_Vector_Aging": 0,
-            "Enable_Vector_Migration": 0,
             "Enable_Vector_Mortality": 1,
             "Enable_Vector_Species_Report" : 0,
             "HABITAT": {

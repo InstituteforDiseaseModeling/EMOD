@@ -186,7 +186,6 @@
             "Egg_Hatch_Density_Dependence": "NO_DENSITY_DEPENDENCE",
             "Enable_Temperature_Dependent_Egg_Hatching": 0,
             "Enable_Vector_Aging": 0,
-            "Enable_Vector_Migration": 0,
             "Enable_Vector_Mortality": 1,
             "Enable_Vector_Species_Report" : 0,
             "HABITAT": {
