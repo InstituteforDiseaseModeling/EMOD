@@ -1,10 +1,6 @@
 {
-    "Default_Config_Path": "../../defaults/vector_default_config.json",
+    "Default_Config_Path": "../../defaults/vector_default_single_species_climate_constant_config.json",
     "parameters": {
-        "CLIMATE": {
-            "Climate_Model": "CLIMATE_CONSTANT",
-            "Enable_Climate_Stochasticity": 0
-        },
         "DEMOGRAPHICS": {
             "Demographics_Filenames": [
                 "Namawala_single_node_demographics.json"
@@ -23,31 +19,7 @@
             "Vector_Species_Params": [
                 {
                     "Name": "SillySkeeter",
-                    "Acquire_Modifier": 0.2,
-                    "Adult_Life_Expectancy": 10,
-                    "Male_Life_Expectancy": 10,
-                    "Anthropophily": 0.95,
-                    "Aquatic_Arrhenius_1": 84200000000,
-                    "Aquatic_Arrhenius_2": 8328,
-                    "Aquatic_Mortality_Rate": 0.1,
-                    "Days_Between_Feeds": 3,
-                    "Egg_Batch_Size": 100,
-                    "Immature_Duration": 4,
-                    "Indoor_Feeding_Fraction": 0.5,
-                    "Infected_Arrhenius_1": 117000000000,
-                    "Infected_Arrhenius_2": 8336,
-                    "Infected_Egg_Batch_Factor": 0.8,
-                    "Infectious_Human_Feed_Mortality_Factor": 1.5,
-                    "Habitats": [
-                        {
-                            "Habitat_Type": "TEMPORARY_RAINFALL",
-                            "Max_Larval_Capacity": 11250000000.0
-                        }
-                    ],
-                    "Microsporidia": [],
-                    "Temperature_Dependent_Feeding_Cycle": "NO_TEMPERATURE_DEPENDENCE",
-                    "Transmission_Rate": 0.5,
-                    "Vector_Sugar_Feeding_Frequency": "VECTOR_SUGAR_FEEDING_NONE"
+                    "Anthropophily": 0.95
                 }
             ]
         }
