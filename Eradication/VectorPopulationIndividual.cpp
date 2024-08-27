@@ -827,7 +827,6 @@ namespace Kernel
         release_assert(m_pMigrationInfoVector);
         release_assert(pMigratingQueue);
 
-        // migrating males first otherwise in FixedRate migration, their migration gets affected by UpdateRates
         VectorPopulation::Vector_Migration(dt, pMigratingQueue, true);
         
         // updating migration rates and migrating females

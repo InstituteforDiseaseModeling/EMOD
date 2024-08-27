@@ -31,7 +31,10 @@ namespace Kernel
                                   const std::string& rSpeciesID,
                                   IVectorSimulationContext* pivsc ) {};
 
-        virtual Gender::Enum ConvertVectorGender(VectorGender::Enum gender) const { return Gender::MALE; };
+        virtual Gender::Enum ConvertVectorGender(VectorGender::Enum gender) const 
+        {
+            return (gender == VectorGender::VECTOR_FEMALE ? Gender::FEMALE : Gender::MALE);
+        };
         virtual void CalculateRates(VectorGender::Enum vector_gender) {};
 
     protected:

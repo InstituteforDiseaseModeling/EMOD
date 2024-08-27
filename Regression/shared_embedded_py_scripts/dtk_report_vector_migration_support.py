@@ -76,7 +76,7 @@ def ConvertReportVectorMigration(output_path, filename="ReportVectorMigration.cs
     with open(json_fn, "w") as handle:
         handle.write(json.dumps(json_data, indent=4, sort_keys=False))
 
-    os.remove(csv_fn)
+    # os.remove(csv_fn)
     print(f"Done converting {filename}")
 
     return

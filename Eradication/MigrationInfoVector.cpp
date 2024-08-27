@@ -359,18 +359,11 @@ namespace Kernel
         // ---------------------------------------------------------------------------------
         
         // recalculating for female vector population only
-        
-        Gender::Enum human_equivalent = ConvertVectorGender(VectorGender::VECTOR_FEMALE);
-        int female_vectors_index = (int)VectorGender::VECTOR_FEMALE;
-        m_ReachableNodes = GetReachableNodes(human_equivalent);
-        m_MigrationTypes = GetMigrationTypes(human_equivalent);
-
-        // after this it is the same as MigrationFixedRateVector, can we.. use that somehow? a shared function?
-        if ((m_ModifierStayPut > 0.0) && (m_ReachableNodes.size() > 0) && (m_ReachableNodes[0] != rThisNodeId))
+        if ((m_ModifierStayPut > 0.0) && (m_ReachableNodesFemale.size() > 0) && (m_ReachableNodesFemale[0] != rThisNodeId))
         {
             m_ThisNodeId = rThisNodeId;
-            m_ReachableNodes.insert(m_ReachableNodes.begin(), rThisNodeId);
-            m_MigrationTypes.insert(m_MigrationTypes.begin(), MigrationType::LOCAL_MIGRATION);
+            m_ReachableNodesFemale.insert(m_ReachableNodesFemale.begin(), rThisNodeId);
+            m_MigrationTypesFemale.insert(m_MigrationTypesFemale.begin(), MigrationType::LOCAL_MIGRATION);
             m_RawMigrationRate.insert(m_RawMigrationRate.begin(), 0.0);
             m_RateCDF.insert(m_RateCDF.begin(), 0.0);
         }
@@ -380,24 +373,24 @@ namespace Kernel
         // --- that influence the vectors migration).  These ratios will be used
         // --- in the equations that influence which node the vectors go to.
         // -------------------------------------------------------------------
-        std::vector<float> pop_ratios = GetRatios(m_ReachableNodes, rSpeciesID, pivsc, GetNodePopulation);
-        std::vector<float> habitat_ratios = GetRatios(m_ReachableNodes, rSpeciesID, pivsc, GetAvailableLarvalHabitat);
+        std::vector<float> pop_ratios     = GetRatios(m_ReachableNodesFemale, rSpeciesID, pivsc, GetNodePopulation);
+        std::vector<float> habitat_ratios = GetRatios(m_ReachableNodesFemale, rSpeciesID, pivsc, GetAvailableLarvalHabitat);
 
         // --------------------------------------------------------------------------
         // --- Determine the new rates by adding the rates from the files times
         // --- to the food and habitat adjusted rates.
         // --------------------------------------------------------------------------
-        release_assert(m_RawMigrationRate.size() == m_ReachableNodes.size());
-        release_assert(m_RateCDF.size() == m_ReachableNodes.size());
-        release_assert(m_RateCDF.size() == pop_ratios.size());
-        release_assert(m_RateCDF.size() == habitat_ratios.size());
+        release_assert(m_RawMigrationRate.size() == m_ReachableNodesFemale.size());
+        release_assert(m_RateCDF.size()          == m_ReachableNodesFemale.size());
+        release_assert(m_RateCDF.size()          == pop_ratios.size());
+        release_assert(m_RateCDF.size()          == habitat_ratios.size());
 
         float tmp_totalrate = 0.0;
         for (int i = 0; i < m_RateCDF.size(); i++)
         {
             tmp_totalrate += m_RawMigrationRate[i]; // need this to be the raw rate
 
-            m_RateCDF[i] = CalculateModifiedRate(m_ReachableNodes[i],
+            m_RateCDF[i] = CalculateModifiedRate(m_ReachableNodesFemale[i],
                 m_RawMigrationRate[i],
                 pop_ratios[i],
                 habitat_ratios[i]);
