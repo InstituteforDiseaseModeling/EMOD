@@ -835,8 +835,8 @@ namespace Kernel
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "m_context->GetParent()", "IVectorSimulationContext", "ISimulationContext" );
         }
-        m_pMigrationInfoVector->CalculateRates(VectorGender::VECTOR_FEMALE);
-        m_pMigrationInfoVector->UpdateRates( m_context->GetSuid(), get_SpeciesID(), p_vsc );
+        suids::suid current_node = m_context->GetSuid();
+        m_pMigrationInfoVector->UpdateRates( current_node, get_SpeciesID(), p_vsc );
 
         // Use the verbose "for" construct here because we may be modifying the list and need to protect the iterator.
         for( auto it = pAdultQueues->begin(); it != pAdultQueues->end(); ++it )
@@ -844,20 +844,45 @@ namespace Kernel
             IVectorCohort* tempentry = *it;
 
             suids::suid destination = suids::nil_suid();
-            MigrationType::Enum mig_type = MigrationType::NO_MIGRATION;
-            float time = 0.0;
-            VectorToHumanAdapter adapter(m_context, tempentry->GetID(), tempentry->GetGenome().GetGender());
-            m_pMigrationInfoVector->PickMigrationStep( m_context->GetRng(), &adapter, 1.0, destination, mig_type, time );
 
-            // test if each vector will migrate this time step
-            if (!destination.is_nil() && (time <= dt))
+            Gender::Enum                      human_gender_equivalent = m_pMigrationInfoVector->ConvertVectorGender( VectorGender::VECTOR_FEMALE );
+            float                                   total_rate        = m_pMigrationInfoVector->GetTotalRate( human_gender_equivalent );
+            const std::vector<float              >& r_cdf             = m_pMigrationInfoVector->GetCumulativeDistributionFunction( human_gender_equivalent );
+            const std::vector<suids::suid        >& r_reachable_nodes = m_pMigrationInfoVector->GetReachableNodes( human_gender_equivalent );
+
+            if( ( r_cdf.size() == 0 ) || ( total_rate == 0.0 ) )
             {
-                pAdultQueues->remove( it );
+                return; // no female vector migration
+            }
 
-                // Used to use dynamic_cast here which is _very_ slow.
-                IMigrate* emigre = tempentry->GetIMigrate();
-                emigre->SetMigrating(destination, mig_type, 0.0, 0.0, false);
-                pMigratingQueue->push_back(tempentry);
+            // time in days until we leave
+            float time = float( m_context->GetRng()->expdist( total_rate ) );
+            // test if each vector will migrate this time step, if time <= 1, we leave today 
+            if( time <= dt )
+            {
+                // picking destination node
+                int index = 0;
+                float desttemp = m_context->GetRng()->e();
+                while( desttemp > r_cdf[index] )
+                {
+                    index++;
+                }
+                suids::suid destination = r_reachable_nodes[index];
+
+                // ------------------------------------------------------------------
+                // --- if the destination is the current node, then the selection
+                // --- was to stay put.  If this is the choice, then we don't want to
+                // --- mirate
+                // ------------------------------------------------------------------
+                if( destination != current_node )
+                {
+                    pAdultQueues->remove( it );
+                    MigrationType::Enum mig_type = MigrationType::LOCAL_MIGRATION;
+                    // Used to use dynamic_cast here which is _very_ slow.
+                    IMigrate* emigre = tempentry->GetIMigrate();
+                    emigre->SetMigrating( destination, mig_type, 0.0, 0.0, false );
+                    pMigratingQueue->push_back( tempentry );
+                }
             }
         }
         

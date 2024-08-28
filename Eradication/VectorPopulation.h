@@ -215,7 +215,6 @@ namespace Kernel
         void Vector_Migration_Helper(VectorCohortVector_t* pMigratingQueue, VectorGender::Enum vector_gender);
         void Vector_Migration_Queue( const std::vector<uint32_t>& rRandomIndexes,
                                      const std::vector<suids::suid>& rReachableNodes,
-                                     const std::vector<MigrationType::Enum>& rMigrationTypes,
                                      const std::vector<float>& rRates,
                                      INodeVector* pINV,
                                      VectorCohortVector_t* pMigratingQueue,

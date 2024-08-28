@@ -200,7 +200,7 @@ namespace Kernel
 
                 m_RateCDF.push_back( mrd.GetRate( 0.0 ) );
             }
-            SaveRawRates( m_RateCDF );
+            // SaveRawRates( m_RateCDF, m_ReachableNodes);
             NormalizeRates( m_RateCDF, m_TotalRate );
         }
     }

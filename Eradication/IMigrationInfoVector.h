@@ -18,12 +18,15 @@ namespace Kernel
 
         // The rates for vectors change change due to the 
         // change in human population and vector habitat
-        virtual void UpdateRates( const suids::suid& rThisNodeId, 
-                                  const std::string& rSpeciesID, 
-                                  IVectorSimulationContext* pivsc) = 0;
+        virtual void                      UpdateRates( const suids::suid& rThisNodeId, 
+                                                       const std::string& rSpeciesID, 
+                                                       IVectorSimulationContext* pivsc) = 0;
+        virtual void                      CalculateRates( VectorGender::Enum vector_gender ) = 0;
+        virtual float                     GetTotalRate( Gender::Enum gender ) const = 0;
+        virtual Gender::Enum              ConvertVectorGender( VectorGender::Enum vector_gender ) const = 0;
+        virtual const std::vector<float>& GetCumulativeDistributionFunction( Gender::Enum gender ) const = 0;
+        
 
-        virtual Gender::Enum ConvertVectorGender(VectorGender::Enum vector_gender) const = 0;
-        virtual void CalculateRates(VectorGender::Enum vector_gender) = 0;
     };
 
     struct IMigrationInfoFactoryVector
