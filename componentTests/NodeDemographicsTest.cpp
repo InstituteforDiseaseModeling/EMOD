@@ -9,6 +9,7 @@
 #include "INodeContextFake.h"
 #include "IdmMpi.h"
 #include "Instrumentation.h"
+#include "RANDOM.h"
 
 #include <string>
 #include <vector>
@@ -1167,6 +1168,100 @@ SUITE(NodeDemographicsTest)
         float val_2 = p_dist->DrawFromDistribution( 0.25f, 365.0f, 5.0f );
         CHECK_CLOSE( 0.2571428, val_2, 0.0000001 );
     }
+
+    TEST(TestAgeDistribution)
+    {
+        std::string dist_str = "" ;
+        dist_str += "{";
+        dist_str += "     \"NumDistributionAxes\": 0,";
+        dist_str += "     \"ResultUnits\": \"years\",";
+        dist_str += "     \"ResultScaleFactor\": 365,";
+        dist_str += "     \"AxisScaleFactors\": 1,";
+        dist_str += "     \"ResultValues\"      : [    1,    2,   10,   20,   30,   40,   50,   60,   70,  80,  90 ],";
+        dist_str += "     \"DistributionValues\": [ 0.10, 0.20, 0.30, 0.40, 0.45, 0.55, 0.70, 0.75, 0.90,   1,   1 ] ";
+        dist_str += "}";
+
+        JsonObjectDemog dist_json;
+        dist_json.Parse( dist_str.c_str() );
+
+        std::map<std::string, std::string> string_table ;
+        string_table["NumDistributionAxes"] = "NumDistributionAxes" ;
+        string_table["AxisNames"          ] = "AxisNames" ;
+        string_table["AxisUnits"          ] = "AxisUnits" ;
+        string_table["AxisScaleFactors"   ] = "AxisScaleFactors" ;
+        string_table["NumPopulationGroups"] = "NumPopulationGroups" ;
+        string_table["PopulationGroups"   ] = "PopulationGroups" ;
+        string_table["ResultUnits"        ] = "ResultUnits" ;
+        string_table["ResultScaleFactor"  ] = "ResultScaleFactor" ;
+        string_table["ResultValues"       ] = "ResultValues" ;
+        string_table["DistributionValues" ] = "DistributionValues" ;
+
+        INodeContextFake parent ;
+
+        unique_ptr<NodeDemographics> p_nd( NodeDemographicsFactory::CreateNodeDemographics( dist_json, &string_table, &parent, 1, "AgeDistribution", "") );
+
+        unique_ptr<NodeDemographicsDistribution> p_dist( NodeDemographicsDistribution::CreateDistribution( *p_nd ) );
+
+        PSEUDO_DES rng( 42 );
+
+        std::vector<float> hist( 13, 0.0 );
+        std::vector<float> bin_maxes = { 0.1f, 1.0f, 2.0f, 10.0f, 20.0f, 30.0f, 40.0f, 50.0f, 60.0f, 70.0f, 80.0f, 90.0f, 100.0f };
+        CHECK_EQUAL( hist.size(), bin_maxes.size() );
+
+        int num_draws = 10000000;
+        for( int i = 0; i < num_draws; ++i )
+        {
+            float val = p_dist->DrawFromDistribution( rng.e() )/365.0;
+            bool found = false;
+            for( int j = 0; !found && (j < bin_maxes.size()); ++j )
+            {
+                if( val < bin_maxes[ j ] )
+                {
+                    hist[ j ] += 1.0;
+                    found = true;
+                }
+            }
+
+        }
+
+        for( int i = 0; i < hist.size(); ++i )
+        {
+            //printf( "%f-%f-%f\n", bin_maxes[ i ], hist[ i ], hist[ i ]/float(num_draws) );
+            hist[ i ] = hist[ i ] / float( num_draws );
+        }
+
+        // ---------------------------------------------------------------------------------------
+        // --- Notice   how the first  value in ResultValues is 1 with a DistributionValue of 0.1.
+        // --- Next, notice the second value in ResultValues is 2 with a DistributionValue of 0.1.
+        // --- See how we have 0 peple in the less than 0.1 and 1.0 bins.  The first ResultVale=1
+        // --- makes this the max AND the min of the first bin.  However, notice how the fraction
+        // --- of people less than 2 is 0.2 which means that 20% of people are 1-2.
+        // ---
+        // --- On the opposite end, notice how ResultValue = 80 and DistributionValue of 1 means
+        // --- that there are no people greater than 80.
+        // ---
+        // --- Therefore, ResultValues are maximums and the first value is a maximum AND a minimum.
+        // --- This means that users should always have a first values of ResultValue = 0 and
+        // --- DistributionValue = 0.0
+        // ---------------------------------------------------------------------------------------
+        //                                            // bin_maxes ResultValues DistributionValues
+        CHECK_CLOSE( 0.000000, hist[  0 ], 0.000001); //    0.1         
+        CHECK_CLOSE( 0.000000, hist[  1 ], 0.000001); //    1.0          1           0.10
+        CHECK_CLOSE( 0.199738, hist[  2 ], 0.000001); //    2.0          2           0.20
+        CHECK_CLOSE( 0.099975, hist[  3 ], 0.000001); //   10.0         10           0.30
+        CHECK_CLOSE( 0.100082, hist[  4 ], 0.000001); //   20.0         20           0.40
+        CHECK_CLOSE( 0.049996, hist[  5 ], 0.000001); //   30.0         30           0.45
+        CHECK_CLOSE( 0.099941, hist[  6 ], 0.000001); //   40.0         40           0.55
+        CHECK_CLOSE( 0.150045, hist[  7 ], 0.000001); //   50.0         50           0.70
+        CHECK_CLOSE( 0.050097, hist[  8 ], 0.000001); //   60.0         60           0.75
+        CHECK_CLOSE( 0.150094, hist[  9 ], 0.000001); //   70.0         70           0.90
+        CHECK_CLOSE( 0.100031, hist[ 10 ], 0.000001); //   80.0         80           1
+        CHECK_CLOSE( 0.000000, hist[ 11 ], 0.000001); //   90.0         90           1
+        CHECK_CLOSE( 0.000000, hist[ 12 ], 0.000001); //  100.0    
+    }
+
+
+
 #endif //INCLUDED
 
     TEST(TestDistFake)
