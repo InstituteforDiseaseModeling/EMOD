@@ -1,0 +1,7 @@
+MATLAB is a high-level language and interactive environment for numerical computation,
+visualization, and programming. The MATLAB Statistics and Machine Learning Toolbox™ provides
+functions and applications to describe, analyze and model data using statistics and machine learning
+algorithms.
+
+#.  Go to |MATLAB_supp_path| and install |MATLAB_supp|.
+#.  If desired, go to |stats_supp_path| and install the |stats_supp|.
