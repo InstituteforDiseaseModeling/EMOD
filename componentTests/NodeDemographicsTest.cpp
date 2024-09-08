@@ -1260,6 +1260,107 @@ SUITE(NodeDemographicsTest)
         CHECK_CLOSE( 0.000000, hist[ 12 ], 0.000001); //  100.0    
     }
 
+    TEST(TestFertilityDistribution)
+    {
+        std::string dist_str = "" ;
+        dist_str += "{\n";
+        dist_str += "     \"AxisNames\": [\"age\", \"year\"],\n";
+        dist_str += "     \"AxisUnits\": [\"years\", \"simulation_year\"],\n";
+        dist_str += "     \"AxisScaleFactors\": [365, 1],\n";
+        dist_str += "     \"NumDistributionAxes\": 2,\n";
+        dist_str += "     \"ResultUnits\": \"annual births per 1000 individuals\",\n";
+        dist_str += "     \"ResultScaleFactor\": 2.7397260273972604e-06,\n";
+        dist_str += "     \"PopulationGroups\": [\n";
+        dist_str += "           [15.0, 24.999, 25.0, 34.999, 35.0, 44.999, 45.0, 125.0],\n";
+        dist_str += "           [2010.0, 2014.999, 2015.0, 2019.999, 2020.0, 2024.999, 2025.0, 2029.999, 2030.0, 2034.999, 2035.0, 2039.999]\n";
+        dist_str += "      ],\n";
+        dist_str += "     \"ResultValues\" : [\n";
+        dist_str += "           [103.3, 103.3,  77.5,  77.5,  65.5,  65.5,  55.5,  55.5,  47.3,  47.3,  40.5,  40.5], \n";
+        dist_str += "           [103.3, 103.3,  77.5,  77.5,  65.5,  65.5,  55.5,  55.5,  47.3,  47.3,  40.5,  40.5], \n";
+        dist_str += "           [265.0, 265.0, 278.7, 278.7, 275.4, 275.4, 271.0, 271.0, 265.7, 265.7, 260.0, 260.0], \n";
+        dist_str += "           [265.0, 265.0, 278.7, 278.7, 275.4, 275.4, 271.0, 271.0, 265.7, 265.7, 260.0, 260.0], \n";
+        dist_str += "           [152.4, 152.4, 129.2, 129.2, 115.9, 115.9, 104.4, 104.4,  94.5,  94.5,  86.0,  86.0], \n";
+        dist_str += "           [152.4, 152.4, 129.2, 129.2, 115.9, 115.9, 104.4, 104.4,  94.5,  94.5,  86.0,  86.0], \n";
+        dist_str += "           [ 19.9,  19.9,  14.6,  14.6,  12.1,  12.1,  10.1,  10.1,   8.5,   8.5 ,  7.1,   7.1], \n";
+        dist_str += "           [ 19.9,  19.9,  14.6,  14.6,  12.1,  12.1,  10.1,  10.1,   8.5,   8.5 ,  7.1,   7.1]  \n";
+        dist_str += "      ]\n";
+        dist_str += "}\n";
+        printf( "%s\n", dist_str.c_str() );
+
+        JsonObjectDemog dist_json;
+        dist_json.Parse( dist_str.c_str() );
+
+        std::map<std::string, std::string> string_table ;
+        string_table["NumDistributionAxes"] = "NumDistributionAxes" ;
+        string_table["AxisNames"          ] = "AxisNames" ;
+        string_table["AxisUnits"          ] = "AxisUnits" ;
+        string_table["AxisScaleFactors"   ] = "AxisScaleFactors" ;
+        string_table["NumPopulationGroups"] = "NumPopulationGroups" ;
+        string_table["PopulationGroups"   ] = "PopulationGroups" ;
+        string_table["ResultUnits"        ] = "ResultUnits" ;
+        string_table["ResultScaleFactor"  ] = "ResultScaleFactor" ;
+        string_table["ResultValues"       ] = "ResultValues" ;
+        string_table["DistributionValues" ] = "DistributionValues" ;
+
+        INodeContextFake parent ;
+
+        unique_ptr<NodeDemographics> p_nd( NodeDemographicsFactory::CreateNodeDemographics( dist_json, &string_table, &parent, 1, "AgeDistribution", "") );
+
+        unique_ptr<NodeDemographicsDistribution> p_dist( NodeDemographicsDistribution::CreateDistribution( *p_nd, "age", "year" ) );
+
+        CHECK_CLOSE( 103.3/365.0/1000.0, p_dist->DrawResultValue( 15.000 * 365.0, 2010.000 ), 0.000001);
+        CHECK_CLOSE( 103.3/365.0/1000.0, p_dist->DrawResultValue( 24.999 * 365.0, 2010.000 ), 0.000001);
+        CHECK_CLOSE( 103.3/365.0/1000.0, p_dist->DrawResultValue( 24.999 * 365.0, 2014.999 ), 0.000001);
+        CHECK_CLOSE( 103.3/365.0/1000.0, p_dist->DrawResultValue( 15.000 * 365.0, 2014.999 ), 0.000001);
+        CHECK_CLOSE( 103.3/365.0/1000.0, p_dist->DrawResultValue( 20.000 * 365.0, 2012.500 ), 0.000001);
+
+        CHECK_CLOSE(  77.5/365.0/1000.0, p_dist->DrawResultValue( 15.000 * 365.0, 2015.000 ), 0.000001);
+        CHECK_CLOSE(  77.5/365.0/1000.0, p_dist->DrawResultValue( 24.999 * 365.0, 2015.000 ), 0.000001);
+        CHECK_CLOSE(  77.5/365.0/1000.0, p_dist->DrawResultValue( 24.999 * 365.0, 2019.999 ), 0.000001);
+        CHECK_CLOSE(  77.5/365.0/1000.0, p_dist->DrawResultValue( 15.000 * 365.0, 2019.999 ), 0.000001);
+        CHECK_CLOSE(  77.5/365.0/1000.0, p_dist->DrawResultValue( 20.000 * 365.0, 2017.500 ), 0.000001);
+
+        CHECK_CLOSE(  65.5/365.0/1000.0, p_dist->DrawResultValue( 15.000 * 365.0, 2020.000 ), 0.000001);
+        CHECK_CLOSE(  65.5/365.0/1000.0, p_dist->DrawResultValue( 24.999 * 365.0, 2020.000 ), 0.000001);
+        CHECK_CLOSE(  65.5/365.0/1000.0, p_dist->DrawResultValue( 24.999 * 365.0, 2024.999 ), 0.000001);
+        CHECK_CLOSE(  65.5/365.0/1000.0, p_dist->DrawResultValue( 15.000 * 365.0, 2024.999 ), 0.000001);
+        CHECK_CLOSE(  65.5/365.0/1000.0, p_dist->DrawResultValue( 20.000 * 365.0, 2022.500 ), 0.000001);
+
+        CHECK_CLOSE( 275.4/365.0/1000.0, p_dist->DrawResultValue( 25.000 * 365.0, 2020.000 ), 0.000001);
+        CHECK_CLOSE( 275.4/365.0/1000.0, p_dist->DrawResultValue( 34.999 * 365.0, 2020.000 ), 0.000001);
+        CHECK_CLOSE( 275.4/365.0/1000.0, p_dist->DrawResultValue( 34.999 * 365.0, 2024.999 ), 0.000001);
+        CHECK_CLOSE( 275.4/365.0/1000.0, p_dist->DrawResultValue( 25.000 * 365.0, 2024.999 ), 0.000001);
+        CHECK_CLOSE( 275.4/365.0/1000.0, p_dist->DrawResultValue( 30.000 * 365.0, 2022.500 ), 0.000001);
+
+        CHECK_CLOSE( 115.9/365.0/1000.0, p_dist->DrawResultValue( 35.000 * 365.0, 2020.000 ), 0.000001);
+        CHECK_CLOSE( 115.9/365.0/1000.0, p_dist->DrawResultValue( 44.999 * 365.0, 2020.000 ), 0.000001);
+        CHECK_CLOSE( 115.9/365.0/1000.0, p_dist->DrawResultValue( 44.999 * 365.0, 2024.999 ), 0.000001);
+        CHECK_CLOSE( 115.9/365.0/1000.0, p_dist->DrawResultValue( 35.000 * 365.0, 2024.999 ), 0.000001);
+        CHECK_CLOSE( 115.9/365.0/1000.0, p_dist->DrawResultValue( 40.000 * 365.0, 2022.500 ), 0.000001);
+
+        CHECK_CLOSE(  86.0/365.0/1000.0, p_dist->DrawResultValue( 35.000 * 365.0, 2035.000 ), 0.000001);
+        CHECK_CLOSE(  86.0/365.0/1000.0, p_dist->DrawResultValue( 44.999 * 365.0, 2035.000 ), 0.000001);
+        CHECK_CLOSE(  86.0/365.0/1000.0, p_dist->DrawResultValue( 44.999 * 365.0, 2039.999 ), 0.000001);
+        CHECK_CLOSE(  86.0/365.0/1000.0, p_dist->DrawResultValue( 35.000 * 365.0, 2039.999 ), 0.000001);
+        CHECK_CLOSE(  86.0/365.0/1000.0, p_dist->DrawResultValue( 40.000 * 365.0, 2037.500 ), 0.000001);
+
+        CHECK_CLOSE(   7.1/365.0/1000.0, p_dist->DrawResultValue( 45.000 * 365.0, 2035.000 ), 0.000001);
+        CHECK_CLOSE(   7.1/365.0/1000.0, p_dist->DrawResultValue( 99.999 * 365.0, 2035.000 ), 0.000001);
+        CHECK_CLOSE(   7.1/365.0/1000.0, p_dist->DrawResultValue( 99.999 * 365.0, 2039.999 ), 0.000001);
+        CHECK_CLOSE(   7.1/365.0/1000.0, p_dist->DrawResultValue( 45.000 * 365.0, 2039.999 ), 0.000001);
+        CHECK_CLOSE(   7.1/365.0/1000.0, p_dist->DrawResultValue( 70.000 * 365.0, 2037.500 ), 0.000001);
+
+        // ----------------------
+        // --- Year outside range
+        // ----------------------
+        CHECK_CLOSE(  86.0/365.0/1000.0, p_dist->DrawResultValue( 40.000 * 365.0, 2050.000 ), 0.000001);
+
+        // ----------------------
+        // --- Age outside range
+        // ----------------------
+        CHECK_CLOSE(   7.1/365.0/1000.0, p_dist->DrawResultValue(130.000 * 365.0, 2037.500 ), 0.000001);
+    }
+
 
 
 #endif //INCLUDED
