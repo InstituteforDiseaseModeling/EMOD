@@ -16,9 +16,10 @@ namespace Kernel
 
     ReferenceTrackingEventCoordinatorTrackingConfig::ReferenceTrackingEventCoordinatorTrackingConfig()
         : StandardInterventionDistributionEventCoordinator( false )//false=don't use standard demographic coverage
+        , m_CoordinatorName("ReferenceTrackingEventCoordinatorTrackingConfig")
         , m_Year2ValueMap(MIN_YEAR,MAX_YEAR,0.0f,1.0f)
-        , m_EndYear(0.0f)
         , m_pTrackingRestrictions( nullptr )
+        , m_EndYear(0.0f)
         , m_NumQualifiedWithout(0.0f)
         , m_NumQualifiedNeeding(0.0f)
         , m_QualifiedPeopleWithoutMap()
@@ -34,7 +35,8 @@ namespace Kernel
             (GET_CONFIGURABLE( SimulationConfig )->sim_type != SimType::STI_SIM) &&
             (GET_CONFIGURABLE( SimulationConfig )->sim_type != SimType::HIV_SIM) )
         {
-            throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, "ReferenceTrackingEventCoordinatorTrackingConfig can only be used in STI and HIV simulations." );
+            throw IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, 
+                                             "ReferenceTrackingEventCoordinatorTrackingConfig can only be used in STI and HIV simulations." );
         }
 
         AdditionalTargetingConfig tracking_config;
@@ -42,7 +44,24 @@ namespace Kernel
         initConfigTypeMap("Time_Value_Map", &m_Year2ValueMap, RTEC_Time_Value_Map_DESC_TEXT );
         initConfigTypeMap("Update_Period",  &update_period,   RTEC_Update_Period_DESC_TEXT, 1.0,      10*DAYSPERYEAR, DAYSPERYEAR );
         initConfigTypeMap("End_Year",       &m_EndYear,       RTEC_End_Year_DESC_TEXT,      MIN_YEAR, MAX_YEAR,       MAX_YEAR );
+
         initConfigComplexType("Tracking_Config", &tracking_config, RTEC_Tracking_Config_DESC_TEXT);
+
+        // ------------------------------------------------------------------
+        // --- Must calculate default name in Configure(). You can't do it
+        // --- in the constructor because the pointer doesn't know what object
+        // --- it is yet.
+        // ------------------------------------------------------------------
+        m_CoordinatorName = typeid(*this).name();
+#ifdef WIN32
+        m_CoordinatorName = m_CoordinatorName.substr( 14 ); // remove "class Kernel::"
+#else
+        m_CoordinatorName = abi::__cxa_demangle( m_CoordinatorName.c_str(), 0, 0, nullptr );
+        m_CoordinatorName = m_CoordinatorName.substr( 8 ); // remove "Kernel::"
+#endif
+        std::string default_name = m_CoordinatorName;
+
+        initConfigTypeMap( "Coordinator_Name", &m_CoordinatorName,  Coordinator_Name_DESC_TEXT, default_name );
 
         auto ret = StandardInterventionDistributionEventCoordinator::Configure( inputJson );
         num_repetitions = -1; // unlimited
@@ -71,7 +90,8 @@ namespace Kernel
                                                                                                     "Tracking_Config",
                                                                                                     false );
         }
-        LOG_DEBUG_F( "ReferenceTrackingEventCoordinatorTrackingConfig configured with update_period = %f, m_EndYear = %f, and tsteps_between_reps (derived) = %d.\n", update_period, m_EndYear, tsteps_between_reps );
+        LOG_DEBUG_F( "ReferenceTracker=%s was configured with update_period = %f, m_EndYear = %f, and tsteps_between_reps (derived) = %d.\n", 
+                     m_CoordinatorName.c_str(),update_period, m_EndYear, tsteps_between_reps );
         return ret;
     }
 
@@ -80,14 +100,14 @@ namespace Kernel
         float campaign_start_year = campaignStartDay / DAYSPERYEAR + Simulation::base_year;
         if( m_EndYear <= campaign_start_year )
         {
-            LOG_WARN_F( "Campaign starts on year %f (day=%f). A ReferenceTrackingEventCoordinatorTrackingConfig ends on End_Year %f.  It will not distribute any interventions.\n",
-                        campaign_start_year, campaignStartDay, m_EndYear );
+            LOG_WARN_F( "ReferenceTracker=%s: A campaign that starts on year %f (day=%f), but ends on End_Year %f.\nIt will not distribute any interventions.\n",
+                        m_CoordinatorName.c_str(),campaign_start_year, campaignStartDay, m_EndYear );
         }
 
         if( campaign_start_year != m_Year2ValueMap.begin()->first )
         {
-            LOG_WARN_F( "Campaign starts on year %f (day=%f). A ReferenceTrackingEventCoordinatorTrackingConfig has a Time_Value_Map that starts on year %f.\n",
-                        campaign_start_year, campaignStartDay, m_Year2ValueMap.begin()->first );
+            LOG_WARN_F( "ReferenceTracker=%s: A campaign that starts on year %f (day=%f) has a Time_Value_Map that starts on a different year %f.\n",
+                        m_CoordinatorName.c_str(),campaign_start_year, campaignStartDay, m_Year2ValueMap.begin()->first );
         }
     }
 
@@ -102,10 +122,10 @@ namespace Kernel
         // Check if it's time for another distribution
         if( parent->GetSimulationTime().Year() >= m_EndYear )
         {
-            LOG_INFO_F( "ReferenceTrackingEventCoordinatorTrackingConfig expired.\n" );
+            LOG_INFO_F( "ReferenceTracker=%s expired.\n",
+                        m_CoordinatorName.c_str());
             distribution_complete = true;
         }
-        LOG_DEBUG_F( "Update...ing.\n" );
         return StandardInterventionDistributionEventCoordinator::Update( dt );
     }
 
@@ -182,7 +202,8 @@ namespace Kernel
             {
                 dc = m_NumQualifiedNeeding / m_NumQualifiedWithout;
             }
-            LOG_INFO_F( "Setting demographic_coverage to %f based on target_coverage = %f, currentCoverageForAttribute = %f, total without attribute  = %f, total with attribute = %f.\n",
+            LOG_INFO_F( "ReferenceTracker=%s is setting demographic_coverage to %f based on target_coverage = %f, currentCoverageForAttribute = %f, total without attribute  = %f, total with attribute = %f.\n",
+                            m_CoordinatorName.c_str(),
                             dc,
                             float(target_coverage),
                             float(currentCoverageForAttribute),
@@ -192,7 +213,8 @@ namespace Kernel
         }
         else
         {
-            LOG_INFO( "Setting demographic_coverage to 0 since 0 qualifying population.\n");
+            LOG_INFO_F( "ReferenceTracker=%s is setting demographic_coverage to 0 since 0 qualifying population.\n",
+                        m_CoordinatorName.c_str());
         }
         demographic_restrictions.SetDemographicCoverage( dc );
     }
@@ -248,7 +270,7 @@ namespace Kernel
         {
             // Create log message 
             std::stringstream ss;
-            ss << "UpdateNodes() gave out " << total_given << " '" << log_intervention_name.c_str() << "' interventions ";
+            ss << "ReferenceTracker=" << m_CoordinatorName << " gave out " << total_given << " '" << log_intervention_name.c_str() << "' interventions ";
             std::string restriction_str = demographic_restrictions.GetPropertyRestrictionsAsString();
             if( !restriction_str.empty() )
             {
