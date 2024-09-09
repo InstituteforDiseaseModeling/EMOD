@@ -955,7 +955,7 @@ namespace Kernel
             else if(waypoints.size() == max_waypoints)
                 migration_outbound = false;
 
-            if( migration_outbound && (migration_info->GetReachableNodes().size() > 0) )
+            if( migration_outbound && (migration_info->GetReachableNodes( Gender::MALE ).size() > 0) )
             {
                 migration_info->PickMigrationStep( GetRng(), this->GetEventContext(), migration_mod, migration_destination, migration_type, migration_time_until_trip );
 

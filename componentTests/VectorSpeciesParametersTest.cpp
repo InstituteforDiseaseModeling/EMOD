@@ -96,7 +96,7 @@ SUITE( VectorSpeciesParametersTest )
 
         unique_ptr<IMigrationInfoVector> p_mi_species_1( collection[ 0 ]->p_migration_factory->CreateMigrationInfoVector( idreference, &nc_1, nodeid_suid_map ) );
 
-        const std::vector<suids::suid>& reachable_nodes = p_mi_species_1->GetReachableNodes();
+        const std::vector<suids::suid>& reachable_nodes = p_mi_species_1->GetReachableNodes( Gender::MALE );
         CHECK_EQUAL( 21, reachable_nodes.size() );
         CHECK_EQUAL(  3, reachable_nodes[ 0].data );
         CHECK_EQUAL(  4, reachable_nodes[ 1].data );
@@ -122,7 +122,7 @@ SUITE( VectorSpeciesParametersTest )
 
         unique_ptr<IMigrationInfoVector> p_mi_species_2( collection[ 1 ]->p_migration_factory->CreateMigrationInfoVector( idreference, &nc_1, nodeid_suid_map ) );
 
-        const std::vector<suids::suid>& reachable_nodes2 = p_mi_species_2->GetReachableNodes();
+        const std::vector<suids::suid>& reachable_nodes2 = p_mi_species_2->GetReachableNodes( Gender::MALE );
         CHECK_EQUAL( 0, reachable_nodes2.size() );
     }
 

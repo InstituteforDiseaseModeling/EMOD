@@ -2735,9 +2735,6 @@ namespace Kernel
                                            const boost::bimap<ExternalNodeId_t, suids::suid>& rNodeIdSuidMap )
     {
         m_pMigrationInfoVector = m_species_params->p_migration_factory->CreateMigrationInfoVector( idreference, m_context, rNodeIdSuidMap );
-        m_pMigrationInfoVector->CalculateRates( VectorGender::VECTOR_FEMALE );
-        m_pMigrationInfoVector->CalculateRates( VectorGender::VECTOR_MALE );
-
     }
 
     void VectorPopulation::Vector_Migration( float dt, VectorCohortVector_t* pMigratingQueue, bool migrate_males_only)

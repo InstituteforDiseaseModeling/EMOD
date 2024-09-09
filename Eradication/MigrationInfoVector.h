@@ -35,13 +35,6 @@ namespace Kernel
         {
             return (gender == VectorGender::VECTOR_FEMALE ? Gender::FEMALE : Gender::MALE);
         };
-        virtual void  CalculateRates(VectorGender::Enum vector_gender) {};
-        virtual float GetTotalRate( Gender::Enum gender ) const { return 0.0; };
-        virtual const std::vector<float>& GetCumulativeDistributionFunction( Gender::Enum gender ) const
-        {
-            static std::vector<float> empty_list;
-            return empty_list;
-        };
 
 
     protected:
@@ -65,12 +58,16 @@ namespace Kernel
         virtual ~MigrationInfoAgeAndGenderVector();
 
         // IMigrationInfoVector
-        virtual void UpdateRates(const suids::suid& rThisNodeId,
-                                 const std::string& rSpeciesID,
-                                 IVectorSimulationContext* pivsc) override;
+        virtual void UpdateRates( const suids::suid& rThisNodeId,
+                                  const std::string& rSpeciesID,
+                                  IVectorSimulationContext* pivsc ) override;
 
-        virtual Gender::Enum ConvertVectorGender(VectorGender::Enum gender) const override;
-        virtual void CalculateRates(VectorGender::Enum vector_gender) override;
+        virtual Gender::Enum ConvertVectorGender (VectorGender::Enum gender ) const override;
+        virtual void CalculateRates( Gender::Enum gender, float ageYears) override;
+        virtual float GetTotalRate( Gender::Enum gender ) const override;
+        virtual const std::vector<float>& GetCumulativeDistributionFunction( Gender::Enum gender ) const override;
+        const std::vector<suids::suid>& GetReachableNodes( Gender::Enum gender ) const override;
+
 
     protected:
         friend class MigrationInfoFactoryVector;
@@ -80,11 +77,11 @@ namespace Kernel
                                          ModifierEquationType::Enum equation,
                                          float habitatModifier,
                                          float foodModifier,
-                                         float stayPutModifier);
+                                         float stayPutModifier );
 
         virtual void Initialize( const std::vector<std::vector<MigrationRateData>>& rRateData ) override;
         virtual void SaveRawRates( std::vector<float>& r_rate_cdf )  override;
-        const std::vector<suids::suid>& GetReachableNodes( Gender::Enum gender ) const override;
+
         float CalculateModifiedRate( const suids::suid& rNodeId,
                                      float rawRate,
                                      float populationRatio,
@@ -98,9 +95,6 @@ namespace Kernel
                                      const std::string& rSpeciesID,
                                      IVectorSimulationContext* pivsc,
                                      tGetValueFunc getValueFunc);
-
-        virtual float GetTotalRate( Gender::Enum gender ) const ;
-        virtual const std::vector<float>& GetCumulativeDistributionFunction( Gender::Enum gender ) const;
 
 
     private:

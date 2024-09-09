@@ -82,14 +82,15 @@ namespace Kernel
                                         float migration_rate_modifier, 
                                         suids::suid &destination, 
                                         MigrationType::Enum &migration_type,
-                                        float &time ) override;
-        virtual void SetContextTo(INodeContext* _parent) override;
-        virtual float GetTotalRate() const override;
-        virtual const std::vector<float>& GetCumulativeDistributionFunction() const override;
-        virtual const std::vector<suids::suid>& GetReachableNodes() const override;
-        virtual const std::vector<MigrationType::Enum>& GetMigrationTypes() const override;
-        virtual const std::vector<suids::suid>& GetReachableNodes(Gender::Enum gender) const override;
-        virtual const std::vector<MigrationType::Enum>& GetMigrationTypes(Gender::Enum gender) const override;
+                                        float &time, 
+                                        float dt = FLT_MAX ) override;
+        virtual void SetContextTo( INodeContext* _parent ) override;
+        virtual float GetTotalRate( Gender::Enum gender ) const override;
+        virtual const std::vector<float>& GetCumulativeDistributionFunction( Gender::Enum gender ) const override;
+        virtual const std::vector<suids::suid>& GetReachableNodes( Gender::Enum gender ) const override;
+       // virtual const std::vector<MigrationType::Enum>& GetMigrationTypes() const override;
+       // virtual const std::vector<suids::suid>& GetReachableNodes(Gender::Enum gender) const override;
+        virtual const std::vector<MigrationType::Enum>& GetMigrationTypes( Gender::Enum gender ) const override;
 
         virtual bool IsHeterogeneityEnabled() const override;
 
@@ -123,15 +124,15 @@ namespace Kernel
                                         float migration_rate_modifier, 
                                         suids::suid &destination, 
                                         MigrationType::Enum &migration_type,
-                                        float &time ) override;
-        virtual void SetContextTo(INodeContext* _parent) override;
-        virtual float GetTotalRate() const override;
-        virtual const std::vector<float>& GetCumulativeDistributionFunction() const override;
-        virtual const std::vector<suids::suid>& GetReachableNodes() const override;
-        virtual const std::vector<MigrationType::Enum>& GetMigrationTypes() const override;
-        virtual const std::vector<suids::suid>& GetReachableNodes(Gender::Enum gender) const override;
-        virtual const std::vector<MigrationType::Enum>& GetMigrationTypes(Gender::Enum gender) const override;
-        virtual bool IsHeterogeneityEnabled() const override;
+                                        float &time, 
+                                        float dt = FLT_MAX ) override;
+        virtual void  SetContextTo( INodeContext* _parent ) override;
+        virtual float GetTotalRate( Gender::Enum gender ) const override;
+        virtual bool  IsHeterogeneityEnabled() const override;
+        virtual const std::vector<float>&               GetCumulativeDistributionFunction( Gender::Enum gender ) const override;
+        virtual const std::vector<suids::suid>&         GetReachableNodes( Gender::Enum gender ) const override;
+        virtual const std::vector<MigrationType::Enum>& GetMigrationTypes( Gender::Enum gender ) const override;
+
 
     protected:
         friend class MigrationInfoFactoryFile;
@@ -146,8 +147,8 @@ namespace Kernel
         virtual void SaveRawRates( std::vector<float>& r_rate_cdf ) {}
 
 
-        INodeContext * m_Parent;
-        bool m_IsHeterogeneityEnabled;
+        INodeContext *                   m_Parent;
+        bool                             m_IsHeterogeneityEnabled;
         std::vector<suids::suid>         m_ReachableNodes;
         std::vector<MigrationType::Enum> m_MigrationTypes;
         std::vector<float>               m_RateCDF;
@@ -177,7 +178,7 @@ namespace Kernel
         virtual void Initialize( const std::vector<std::vector<MigrationRateData>>& rRateData );
         virtual void CalculateRates( Gender::Enum gender, float ageYears );
 
-        virtual const std::vector<suids::suid>& GetReachableNodes( Gender::Enum gender ) const override;
+        virtual const std::vector<suids::suid>&         GetReachableNodes( Gender::Enum gender ) const override;
         virtual const std::vector<MigrationType::Enum>& GetMigrationTypes( Gender::Enum gender ) const override;
 
         std::vector<std::vector<MigrationRateData>> m_RateData;
@@ -212,16 +213,16 @@ namespace Kernel
         virtual void SetEnableParameterName( const std::string& rName );
         virtual void SetFilenameParameterName( const std::string& rName );
 
-        virtual bool ReadData( ExternalNodeId_t fromNodeID, 
+        virtual bool ReadData( ExternalNodeId_t                                   fromNodeID, 
                                const boost::bimap<ExternalNodeId_t, suids::suid>& rNodeidSuidMap,
-                               std::vector<std::vector<MigrationRateData>>& rRateData );
+                               std::vector<std::vector<MigrationRateData>>&       rRateData );
 
         MigrationType::Enum GetMigrationType() const { return m_MigrationType; }
 
     protected:
         // Returns the expected size of the binary file
         virtual uint32_t ParseMetadataForFile( const std::string& data_filepath, const std::string& idreference );
-        virtual void OpenMigrationFile( const std::string& filepath, uint32_t expected_binary_file_size );
+        virtual void     OpenMigrationFile( const std::string& filepath, uint32_t expected_binary_file_size );
         virtual uint32_t GetNumGenderDataChunks() const;
 
         std::string             m_ParameterNameEnable;

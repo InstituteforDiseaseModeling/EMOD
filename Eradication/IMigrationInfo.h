@@ -29,17 +29,16 @@ namespace Kernel
                                         float migration_rate_modifier, 
                                         suids::suid &destination, 
                                         MigrationType::Enum &migration_type,
-                                        float &durationToWaitBeforeMigrating ) = 0;
+                                        float &durationToWaitBeforeMigrating, 
+                                        float dt = FLT_MAX ) = 0;
 
         // needed for serialization
         virtual void SetContextTo(INodeContext* parent) = 0;
 
-        virtual float GetTotalRate() const = 0;
-        virtual const std::vector<float>& GetCumulativeDistributionFunction() const = 0;
-        virtual const std::vector<suids::suid>& GetReachableNodes() const = 0;
-        virtual const std::vector<MigrationType::Enum>& GetMigrationTypes() const = 0;
-        virtual const std::vector<suids::suid>& GetReachableNodes(Gender::Enum gender) const = 0;
-        virtual const std::vector<MigrationType::Enum>& GetMigrationTypes(Gender::Enum gender) const = 0;
+        virtual float GetTotalRate( Gender::Enum gender ) const = 0;
+        virtual const std::vector<float>& GetCumulativeDistributionFunction( Gender::Enum gender ) const = 0;
+        virtual const std::vector<suids::suid>& GetReachableNodes( Gender::Enum gender ) const = 0;
+        virtual const std::vector<MigrationType::Enum>& GetMigrationTypes( Gender::Enum gender ) const = 0;
 
         virtual bool IsHeterogeneityEnabled() const = 0;
     };

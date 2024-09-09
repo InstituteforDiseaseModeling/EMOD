@@ -117,7 +117,8 @@ namespace Kernel
                                                float migration_rate_modifier, 
                                                suids::suid &destination, 
                                                MigrationType::Enum &migration_type,
-                                               float &time )
+                                               float &time,
+                                               float dt )
     {
         destination = suids::nil_suid();
         migration_type = MigrationType::NO_MIGRATION;
@@ -128,28 +129,17 @@ namespace Kernel
     {
     }
 
-    float MigrationInfoNull::GetTotalRate() const
+    float MigrationInfoNull::GetTotalRate( Gender::Enum gender ) const
     {
         return 0.0;
     }
 
-    const std::vector<float>& MigrationInfoNull::GetCumulativeDistributionFunction() const
+    const std::vector<float>& MigrationInfoNull::GetCumulativeDistributionFunction( Gender::Enum gender ) const
     {
         return m_EmptyListCDF;
     }
 
-    const std::vector<suids::suid>& MigrationInfoNull::GetReachableNodes() const
-    {
-        return m_EmptyListNodes;
-    }
-
-    const std::vector<MigrationType::Enum>& MigrationInfoNull::GetMigrationTypes() const
-    {
-        return m_EmptyListTypes;
-    }
-
-
-    const std::vector<suids::suid>& MigrationInfoNull::GetReachableNodes(Gender::Enum gender) const
+    const std::vector<suids::suid>& MigrationInfoNull::GetReachableNodes( Gender::Enum gender ) const
     {
         return m_EmptyListNodes;
     }
@@ -200,7 +190,6 @@ namespace Kernel
 
                 m_RateCDF.push_back( mrd.GetRate( 0.0 ) );
             }
-            // SaveRawRates( m_RateCDF, m_ReachableNodes);
             NormalizeRates( m_RateCDF, m_TotalRate );
         }
     }
@@ -210,14 +199,14 @@ namespace Kernel
         m_Parent = _parent; 
     }
 
-    const std::vector<suids::suid>& MigrationInfoFixedRate::GetReachableNodes() const
+    const std::vector<suids::suid>& MigrationInfoFixedRate::GetReachableNodes( Gender::Enum gender ) const
     {
-        return GetReachableNodes( Gender::MALE );
+        return m_ReachableNodes;
     }
 
-    const std::vector<MigrationType::Enum>& MigrationInfoFixedRate::GetMigrationTypes() const
+    const std::vector<MigrationType::Enum>& MigrationInfoFixedRate::GetMigrationTypes( Gender::Enum gender ) const
     { 
-        return GetMigrationTypes( Gender::MALE ); 
+        return m_MigrationTypes;
     }
 
     bool MigrationInfoFixedRate::IsHeterogeneityEnabled() const
@@ -230,10 +219,15 @@ namespace Kernel
                                                     float migration_rate_modifier,
                                                     suids::suid &destination, 
                                                     MigrationType::Enum &migration_type, 
-                                                    float &time )
+                                                    float &time, 
+                                                    float dt )
     {
-        float age_years = 0.0;
-        Gender::Enum gender = Gender::MALE;
+        float        age_years = 0.0;
+        Gender::Enum gender    = Gender::MALE;
+        destination    = suids::nil_suid();
+        migration_type = MigrationType::NO_MIGRATION;
+        time           = 0.0;
+
         if( traveler != nullptr )
         {
             age_years = traveler->GetAge() / DAYSPERYEAR;
@@ -242,23 +236,23 @@ namespace Kernel
 
         CalculateRates( gender, age_years );
 
-        float total_rate = GetTotalRate();
-        const std::vector<float              >& r_cdf             = GetCumulativeDistributionFunction();
+        float                                   total_rate        = GetTotalRate( gender );
+        const std::vector<float              >& r_cdf             = GetCumulativeDistributionFunction( gender );
         const std::vector<suids::suid        >& r_reachable_nodes = GetReachableNodes( gender );
         const std::vector<MigrationType::Enum>& r_migration_types = GetMigrationTypes( gender );
 
         if( (r_cdf.size() == 0) || (total_rate == 0.0) )
         {
-            destination = suids::nil_suid();
-            migration_type = MigrationType::NO_MIGRATION;
-            time = 0.0;
+            return;
+        }
+
+        time = static_cast<float>(pRNG->expdist( migration_rate_modifier * total_rate ));
+        if( time > dt ) // dt for humans always FLT_MAX; this check is for vector migration 
+        {
             return;
         }
 
         int index = 0;
-
-        time = float(pRNG->expdist( migration_rate_modifier * total_rate ));
-
         float desttemp = pRNG->e();
         while( desttemp > r_cdf[index] )
         {
@@ -300,25 +294,16 @@ namespace Kernel
         // rates are fixed so do nothing
     }
 
-    const std::vector<float>& MigrationInfoFixedRate::GetCumulativeDistributionFunction() const
+    const std::vector<float>& MigrationInfoFixedRate::GetCumulativeDistributionFunction(Gender::Enum gender) const
     {
         return m_RateCDF;
     }
 
-    float MigrationInfoFixedRate::GetTotalRate() const
+    float MigrationInfoFixedRate::GetTotalRate( Gender::Enum gender ) const
     {
         return m_TotalRate;
     }
 
-    const std::vector<suids::suid>& MigrationInfoFixedRate::GetReachableNodes( Gender::Enum gender ) const
-    {
-        return m_ReachableNodes;
-    }
-
-    const std::vector<MigrationType::Enum>& MigrationInfoFixedRate::GetMigrationTypes( Gender::Enum gender ) const
-    {
-        return m_MigrationTypes;
-    }
 
     // ------------------------------------------------------------------------
     // --- MigrationInfoAgeAndGender
@@ -371,7 +356,7 @@ namespace Kernel
             float rate = mrd.GetRate( ageYears );
             m_RateCDF.push_back( rate );
         }
-        if (gender == Gender::FEMALE) //only save raw rates for females because only female vectors get UpdateRate
+        if (gender == Gender::FEMALE) //only save raw rates for females because only female vectors get UpdateRates
         {
             SaveRawRates(m_RateCDF);
         }
