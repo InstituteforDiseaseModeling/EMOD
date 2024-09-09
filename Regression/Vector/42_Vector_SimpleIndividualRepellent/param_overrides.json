@@ -11,7 +11,7 @@
         "PRIMARY": {
             "Config_Name": "42_Vector_SimpleIndividualRepellent",
             "Geography": "Namawala",
-            "Run_Number": 1,
+            "Run_Number": 55,
             "Simulation_Duration": 360,
             "x_Temporary_Larval_Habitat": 0.1
         }
