@@ -1124,6 +1124,7 @@ static const char* NODE_OFFSETS          = "NodeOffsets";            // required
 
         std::vector<std::vector<MigrationRateData>> rate_data;
         rate_data.push_back( std::vector<MigrationRateData>() );
+        rate_data.push_back( std::vector<MigrationRateData>() );
 
         for (int i = 0; i < MAX_LOCAL_MIGRATION_DESTINATIONS; i++)
         {
@@ -1136,6 +1137,7 @@ static const char* NODE_OFFSETS          = "NodeOffsets";            // required
             MigrationRateData mrd( to_node_suid, MigrationType::LOCAL_MIGRATION, InterpolationType::LINEAR_INTERPOLATION );
             mrd.AddRate( MAX_HUMAN_AGE, basicrate );
             rate_data[0].push_back( mrd );
+            rate_data[1].push_back( mrd );
         }
 
         return rate_data;
