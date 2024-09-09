@@ -873,9 +873,10 @@ namespace Kernel
     }
 
 
-    void VectorCohortMale::Merge(IVectorCohort* pCohortToAdd)
+    void VectorCohortMale::Merge( IVectorCohort* pCohortToAdd )
     {
-        SetPopulation(GetPopulation() + pCohortToAdd->GetPopulation());
+        SetPopulation( GetPopulation() + pCohortToAdd->GetPopulation() );
+        SetUnmatedCount( GetUnmatedCount() + ( static_cast<VectorCohortMale*>( static_cast<VectorCohortAbstract*>( pCohortToAdd) ) )->GetUnmatedCount() );
     }
 
     VectorCohortMale* VectorCohortMale::SplitPercent(RANDOMBASE* pRNG, uint32_t newVectorID, float percentLeaving)
