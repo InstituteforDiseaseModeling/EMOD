@@ -1960,8 +1960,9 @@ namespace Kernel
         {
             for( auto entry : microsporidia_infected_males[ female_strain_index ] )
             {
-                cohort_infected_map = entry.second; // <cohort, infected> map should always only has one entry, access it with begin()
+                cohort_infected_map = entry.second; // <cohort, infected> map should always have one entry, access it with begin()
                 release_assert( cohort_infected_map.size() == 1 );
+
                 VectorCohortMale* p_orig_cohort = static_cast<VectorCohortMale*>( static_cast<VectorCohortAbstract*>( cohort_infected_map.begin()->first ) );
                 uint32_t           orig_unmated = p_orig_cohort->GetUnmatedCount();
                 VectorCohortMale*  p_new_cohort = p_orig_cohort->SplitNumber( m_context->GetRng(),
