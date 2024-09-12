@@ -1824,7 +1824,7 @@ namespace Kernel
                                              VectorCohortCollectionAbstract& rQueue,
                                              bool isNewAdult )
     {
-        std::map<IVectorCohort*,uint32_t> microsporidia_infected_males[ MAX_MICROSPORIDIA_STRAINS ];
+        std::map< uint32_t, std::map<IVectorCohort*, uint32_t>> microsporidia_infected_males[ MAX_MICROSPORIDIA_STRAINS ];
 
         // 0 index no microsporidia, > 0 index implies has microsporidia
         GenomeCountMap_t genome_to_count_map[ MAX_MICROSPORIDIA_STRAINS ]; 
@@ -1863,7 +1863,7 @@ namespace Kernel
                 float prob_transmission = m_species_params->microsporidia_strains[ female_ms_strain_index ]->female_to_male_transmission_probability;
                 if( m_context->GetRng()->SmartDraw( prob_transmission ) )
                 {
-                    microsporidia_infected_males[ female_ms_strain_index ][ p_male_cohort ] += 1;
+                    microsporidia_infected_males[ female_ms_strain_index ][ p_male_cohort->GetID()][p_male_cohort] += 1;
 
                     // -----------------------------------------------------------------------------------
                     // --- I'm having the female carry that the male was infected because it shows that
@@ -1955,21 +1955,25 @@ namespace Kernel
         // -----------------------------------------------------------
         // --- Split off new Male cohorts infected with microsporidia
         // -----------------------------------------------------------
+        std::map<IVectorCohort*, uint32_t> cohort_infected_map; // declaring outside the loop to not construct/destruct every time
         for( int female_strain_index = 0; female_strain_index < MAX_MICROSPORIDIA_STRAINS; ++female_strain_index )
         {
             for( auto entry : microsporidia_infected_males[ female_strain_index ] )
             {
-                VectorCohortMale* p_male_cohort = static_cast<VectorCohortMale*>(static_cast<VectorCohortAbstract*>(entry.first));
-                uint32_t orig_unmated = p_male_cohort->GetUnmatedCount();
-                VectorCohortMale* p_new_cohort = p_male_cohort->SplitNumber( m_context->GetRng(),
-                                                                       m_pNodeVector->GetNextVectorSuid().data,
-                                                                       entry.second );
+                cohort_infected_map = entry.second; // <cohort, infected> map should always only has one entry, access it with begin()
+                release_assert( cohort_infected_map.size() == 1 );
+                VectorCohortMale* p_orig_cohort = static_cast<VectorCohortMale*>( static_cast<VectorCohortAbstract*>( cohort_infected_map.begin()->first ) );
+                uint32_t           orig_unmated = p_orig_cohort->GetUnmatedCount();
+                VectorCohortMale*  p_new_cohort = p_orig_cohort->SplitNumber( m_context->GetRng(),
+                                                                              m_pNodeVector->GetNextVectorSuid().data,
+                                                                              cohort_infected_map.begin()->second );
                 release_assert(p_new_cohort != nullptr);
                 p_new_cohort->InfectWithMicrosporidia(female_strain_index);
+
                 // massaging umated numbers in the cohorts
                 p_new_cohort->SetUnmatedCount(0); // the ones infected with microsporidia definitely have mated (doesn't matter, had sex)
-                p_male_cohort->SetUnmatedCount(orig_unmated); // all the unmated stay with the original cohort
-                release_assert(p_male_cohort->GetPopulation() >= p_male_cohort->GetUnmatedCount());
+                p_orig_cohort->SetUnmatedCount(orig_unmated); // all the unmated stay with the original cohort
+                release_assert( p_orig_cohort->GetPopulation() >= p_orig_cohort->GetUnmatedCount());
 
                 MaleQueues.add( p_new_cohort, 0.0, true );
             }

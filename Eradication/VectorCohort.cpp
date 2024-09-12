@@ -354,6 +354,8 @@ namespace Kernel
         : VectorCohortAbstract( rThat )
         , gestating_queue( rThat.gestating_queue )
         , total_gestating( rThat.total_gestating )
+        , habitat_type( rThat.habitat_type)
+        , habitat( rThat.habitat )
     {
     }
 
