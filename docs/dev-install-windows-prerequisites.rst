@@ -116,10 +116,3 @@ The |IDM_s| test team uses |R_supp| for regression testing, but it is considered
 
 .. include:: reuse/r-install.txt
 
-(Optional) MATLAB
------------------
-
-The |IDM_s| test team uses |MATLAB_supp| and the |stats_supp| for regression testing, but they are both
-considered optional.
-
-.. include:: reuse/matlab-install.txt

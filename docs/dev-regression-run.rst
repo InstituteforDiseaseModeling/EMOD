@@ -87,7 +87,7 @@ produce output that should not be considered scientifically accurate.
     .. image:: images/dev/matplotlibPopupChart.png
 
 If any of the regression tests fail and you have *not* made any changes to the |EMOD_s| source code,
-email idm@gatesfoundation.org.
+email idmsupport@gatesfoundation.org.
 
 .. _Regression: https://github.com/InstituteforDiseaseModeling/EMOD/tree/master/Regression
 

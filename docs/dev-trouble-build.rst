@@ -6,7 +6,7 @@ If you encounter any of the following warnings or errors when attempting to buil
 |linux_binary|, see the information below to resolve the issue.
 
 If you need assistance, you can contact support for help with solving issues. You can contact
-|IDM_l| support at idm@gatesfoundation.org. When submitting the issue, please include any error
+|IDM_l| support at idmsupport@gatesfoundation.org. When submitting the issue, please include any error
 information.
 
 Unknown compiler version

@@ -49,7 +49,7 @@ Since EMOD is a stochastic model, you must run numerous realizations of each sce
 To make running EMOD easier, we have created some python packages that simplify configuring, running, and plotting the results.  As of July 2024, we are working to make these packages more user friendly and will have updates coming in Q4 of 2024.
 
 
-Directory structure
+Directory Structure
 -------------------
 
 - `baseReportLib` - A library of commonly used report components and base classes.
@@ -86,7 +86,7 @@ https://docs.idmod.org/projects/emod-malaria/en/latest/dev-install-overview.html
 
 Contributing
 ------------
-Questions or comments can be directed to [support@idmod.org](<mailto:idm@gatesfoundation.org>).
+Questions or comments can be directed to [idmsupport@gatesfoundation.org](<mailto:idmsupport@gatesfoundation.org>).
 
 Full information about EMOD is provided in the [documentation](<https://docs.idmod.org/models.html#emod>).
 
