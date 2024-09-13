@@ -14,6 +14,61 @@ using namespace Kernel;
 
 SUITE(PrngTest)
 {
+    TEST( TestExponential )
+    {
+        PSEUDO_DES rng( 42 );
+
+        float exponential_mean = 1.0f/91.25f;
+        int num_draws = 1000000;
+
+        std::vector<std::pair<float,int>> histogram;
+        histogram.push_back( std::make_pair(  100.0f, 0 ) );
+        histogram.push_back( std::make_pair(  200.0f, 0 ) );
+        histogram.push_back( std::make_pair(  300.0f, 0 ) );
+        histogram.push_back( std::make_pair(  400.0f, 0 ) );
+        histogram.push_back( std::make_pair(  500.0f, 0 ) );
+        histogram.push_back( std::make_pair(  600.0f, 0 ) );
+        histogram.push_back( std::make_pair(  700.0f, 0 ) );
+        histogram.push_back( std::make_pair(  800.0f, 0 ) );
+        histogram.push_back( std::make_pair(  900.0f, 0 ) );
+        histogram.push_back( std::make_pair( 1000.0f, 0 ) );
+        histogram.push_back( std::make_pair( 1100.0f, 0 ) );
+        histogram.push_back( std::make_pair( 1200.0f, 0 ) );
+        histogram.push_back( std::make_pair( 1300.0f, 0 ) );
+        histogram.push_back( std::make_pair( 1400.0f, 0 ) );
+        histogram.push_back( std::make_pair( 1500.0f, 0 ) );
+        histogram.push_back( std::make_pair( 1600.0f, 0 ) );
+        histogram.push_back( std::make_pair( 1700.0f, 0 ) );
+        histogram.push_back( std::make_pair( 1800.0f, 0 ) );
+        histogram.push_back( std::make_pair( 1900.0f, 0 ) );
+        histogram.push_back( std::make_pair( 2000.0f, 0 ) );
+        histogram.push_back( std::make_pair( FLT_MAX, 0 ) );
+
+        float sum = 0.0;
+        for( int i = 0; i < num_draws; ++i )
+        {
+            float duration = rng.expdist( exponential_mean );
+            sum += duration;
+
+            for( int j = 0; j < histogram.size(); ++j )
+            {
+                if( duration < histogram[ j ].first )
+                {
+                    histogram[ j ].second += 1;
+                    break;
+                }
+            }
+
+        }
+        float average = sum / float( num_draws );
+        printf("exponential_mean=%f average=%f\n",1.0/exponential_mean,average);
+
+        for( auto dur_count : histogram )
+        {
+            printf("%f - %d - %f\n",dur_count.first,dur_count.second,(float(dur_count.second)/float(num_draws)));
+        }
+    }
+
     TEST( TestWeibull2 )
     {
         PSEUDO_DES rng( 42 );
