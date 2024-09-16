@@ -278,4 +278,4 @@ componentTests/testdata/NodeDemographicsTest/DefaultDemographics.json
 
 Regression/reports/
 Regression/Scenarios/InputFiles
-Regression/**/**/config.json
+
