@@ -30,7 +30,7 @@ namespace Kernel
                                         suids::suid &destination, 
                                         MigrationType::Enum &migration_type,
                                         float &durationToWaitBeforeMigrating, 
-                                        float dt = FLT_MAX ) = 0;
+                                        float dt = FLT_MAX ) = 0;  // FLT_MAX for humans, dt for vectors
 
         // needed for serialization
         virtual void SetContextTo(INodeContext* parent) = 0;

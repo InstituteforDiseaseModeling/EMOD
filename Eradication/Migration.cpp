@@ -356,10 +356,8 @@ namespace Kernel
             float rate = mrd.GetRate( ageYears );
             m_RateCDF.push_back( rate );
         }
-        if (gender == Gender::FEMALE) //only save raw rates for females because only female vectors get UpdateRates
-        {
-            SaveRawRates(m_RateCDF);
-        }
+
+        SaveRawRates(m_RateCDF, gender);
         NormalizeRates( m_RateCDF, m_TotalRate );
     }
 

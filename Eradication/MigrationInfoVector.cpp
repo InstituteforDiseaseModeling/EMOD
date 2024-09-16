@@ -71,20 +71,22 @@ namespace Kernel
         //calculating vector migration rates in Initialize()
     }
 
-    void MigrationInfoAgeAndGenderVector::SaveRawRates( std::vector<float>& r_rate_cdf )
+    void MigrationInfoAgeAndGenderVector::SaveRawRates( std::vector<float>& r_rate_cdf, Gender::Enum gender )
     {
         // ---------------------------------------------------------
         // --- Keep the un-normalized rates so we can multiply them
         // --- times our food adjusted rates.
         // ---------------------------------------------------------
-        // We only want to save raw migration rates for females, because male rates do not get modified. 
-        m_RawMigrationRate.clear();
-        m_ReacheableNodesFemaleUpdated.clear();
-        // I don't think we need the .clear, because we now calculate all this just once?
-        for( int i = 0; i < r_rate_cdf.size(); i++ )
+        // We only want to save raw migration rates for female vectors, because male rates do not get modified. 
+        if( gender == Gender::FEMALE )
         {
-            m_RawMigrationRate.push_back( r_rate_cdf[i] );
-            m_ReacheableNodesFemaleUpdated.push_back( m_ReachableNodesFemale[i] );
+            m_RawMigrationRate.clear();
+            m_ReacheableNodesFemaleUpdated.clear();
+            for( int i = 0; i < r_rate_cdf.size(); i++ )
+            {
+                m_RawMigrationRate.push_back( r_rate_cdf[i] );
+                m_ReacheableNodesFemaleUpdated.push_back( m_ReachableNodesFemale[i] );
+            }
         }
     }
 
@@ -142,7 +144,7 @@ namespace Kernel
         }
         else
         {
-            return MigrationInfoAgeAndGender::GetTotalRate( Gender::MALE );
+            return MigrationInfoAgeAndGender::GetTotalRate();
         }
     }
 
