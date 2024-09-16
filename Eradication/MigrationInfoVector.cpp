@@ -33,23 +33,22 @@ namespace Kernel
     // ------------------------------------------------------------------------
 
     BEGIN_QUERY_INTERFACE_DERIVED(MigrationInfoAgeAndGenderVector, MigrationInfoAgeAndGender)
-        END_QUERY_INTERFACE_DERIVED(MigrationInfoAgeAndGenderVector, MigrationInfoAgeAndGender)
+    END_QUERY_INTERFACE_DERIVED(MigrationInfoAgeAndGenderVector, MigrationInfoAgeAndGender)
 
-        MigrationInfoAgeAndGenderVector::MigrationInfoAgeAndGenderVector(INodeContext* _parent,
-                                                                         ModifierEquationType::Enum equation,
-                                                                         float habitatModifier,
-                                                                         float foodModifier,
-                                                                         float stayPutModifier)
-        : MigrationInfoAgeAndGender(_parent, false)
-        , m_RawMigrationRate()
-        , m_ReacheableNodesFemaleUpdated()
-        , m_TotalRateFemale()
-        , m_RateCDFFemale()
-        , m_ThisNodeId(suids::nil_suid())
-        , m_ModifierEquation(equation)
-        , m_ModifierHabitat(habitatModifier)
-        , m_ModifierFood(foodModifier)
-        , m_ModifierStayPut(stayPutModifier)
+    MigrationInfoAgeAndGenderVector::MigrationInfoAgeAndGenderVector( INodeContext* _parent,
+                                                                      ModifierEquationType::Enum equation,
+                                                                      float habitatModifier,
+                                                                      float foodModifier,
+                                                                      float stayPutModifier)
+    : MigrationInfoAgeAndGender(_parent, false)
+    , m_RawMigrationRate()
+    , m_TotalRateFemale()
+    , m_RateCDFFemale()
+    , m_ThisNodeId(suids::nil_suid())
+    , m_ModifierEquation(equation)
+    , m_ModifierHabitat(habitatModifier)
+    , m_ModifierFood(foodModifier)
+    , m_ModifierStayPut(stayPutModifier)
     {
     }
 
@@ -59,6 +58,8 @@ namespace Kernel
 
     void MigrationInfoAgeAndGenderVector::Initialize( const std::vector<std::vector<MigrationRateData>>& rRateData )
     {
+        // We calculate rates as part of Initilize, because, for vectors, we only need to do this once at the beginning of the sim
+        // See CalculateRates() comment below
         MigrationInfoAgeAndGender::Initialize( rRateData );
         MigrationInfoAgeAndGender::CalculateRates( Gender::FEMALE, 0 );
         m_RateCDFFemale = m_RateCDF; // will be updated by UpdateRates if there's anything to update, used directly if not
@@ -68,7 +69,13 @@ namespace Kernel
 
     void MigrationInfoAgeAndGenderVector::CalculateRates( Gender::Enum gender, float ageYears )
     {
-        //calculating vector migration rates in Initialize()
+       // In human migration, CalculateRates is called whenever a human wants to migrate.
+       // Thus, migration is initialized, but calculated as-needed during the simulation.
+       // m_RateCDF and m_TotalRate get overwritten every time CalculateRates is ran.
+       // In vector migration, we calculate rates for females and males at the beginning
+       // of the simulation and use those numbers for the rest of it. First, females, 
+       // and save off the results to be modified by UpdateRates. Then, males and use
+       // the results directly.
     }
 
     void MigrationInfoAgeAndGenderVector::SaveRawRates( std::vector<float>& r_rate_cdf, Gender::Enum gender )
@@ -76,16 +83,14 @@ namespace Kernel
         // ---------------------------------------------------------
         // --- Keep the un-normalized rates so we can multiply them
         // --- times our food adjusted rates.
-        // ---------------------------------------------------------
-        // We only want to save raw migration rates for female vectors, because male rates do not get modified. 
+        // --- We only want to save raw migration rates for female 
+        // --- vectors, because male vector rates do not get modified
         if( gender == Gender::FEMALE )
         {
             m_RawMigrationRate.clear();
-            m_ReacheableNodesFemaleUpdated.clear();
             for( int i = 0; i < r_rate_cdf.size(); i++ )
             {
                 m_RawMigrationRate.push_back( r_rate_cdf[i] );
-                m_ReacheableNodesFemaleUpdated.push_back( m_ReachableNodesFemale[i] );
             }
         }
     }
@@ -99,7 +104,7 @@ namespace Kernel
     {
         if( gender == Gender::FEMALE )
         {
-            return m_ReacheableNodesFemaleUpdated;
+            return m_ReachableNodesFemale;
         }
         else
         {
@@ -138,6 +143,9 @@ namespace Kernel
 
     float MigrationInfoAgeAndGenderVector::GetTotalRate( Gender::Enum gender ) const
     {
+        // Separate TotalRate for females because m_TotalRate gets overwritten every time CalculateRates is ran
+        // So we CalculateRates for females first, save off the results, then CalculateRates for males and use the results directly
+        // also m_TotalRateFemale is potentialy updated by UpdateRates every timestep
         if( gender == Gender::FEMALE )
         {
             return m_TotalRateFemale;
@@ -150,6 +158,9 @@ namespace Kernel
 
     const std::vector<float>& MigrationInfoAgeAndGenderVector::GetCumulativeDistributionFunction( Gender::Enum gender ) const
     {
+        // Separate CDF for females because m_RateCDF gets overwritten every time CalculateRates is ran
+        // So we CalculateRates for females first, save off the results, then CalculateRates for males and use the results directly
+        // also m_RateCDFFemale is potentialy updated by UpdateRates every timestep
         if( gender == Gender::FEMALE )
         {
             return m_RateCDFFemale;
@@ -184,10 +195,10 @@ namespace Kernel
         // --- the grass is not greener on the other side, then we need to add "this/current"
         // --- node as a possible node to go to.
         // ---------------------------------------------------------------------------------
-        if( ( m_ModifierStayPut > 0.0 ) && ( m_ReacheableNodesFemaleUpdated.size() > 0 ) && ( m_ReacheableNodesFemaleUpdated[0] != rThisNodeId ) )
+        if( ( m_ModifierStayPut > 0.0 ) && ( m_ReachableNodesFemale.size() > 0 ) && ( m_ReachableNodesFemale[0] != rThisNodeId ) )
         {
             m_ThisNodeId = rThisNodeId ;
-            m_ReacheableNodesFemaleUpdated.insert( m_ReacheableNodesFemaleUpdated.begin(), rThisNodeId );
+            m_ReachableNodesFemale.insert( m_ReachableNodesFemale.begin(), rThisNodeId );
             m_RawMigrationRate.insert( m_RawMigrationRate.begin(), 0.0 );
             m_RateCDFFemale.insert( m_RateCDFFemale.begin(), 0.0 );
             m_MigrationTypesFemale.insert( m_MigrationTypesFemale.begin(), MigrationType::LOCAL_MIGRATION );
@@ -205,16 +216,16 @@ namespace Kernel
         // --- that influence the vectors migration).  These ratios will be used
         // --- in the equations that influence which node the vectors go to.
         // -------------------------------------------------------------------
-        std::vector<float> pop_ratios     = GetRatios( m_ReacheableNodesFemaleUpdated, rSpeciesID, pivsc, GetNodePopulation );
-        std::vector<float> habitat_ratios = GetRatios( m_ReacheableNodesFemaleUpdated, rSpeciesID, pivsc, GetAvailableLarvalHabitat );
+        std::vector<float> pop_ratios     = GetRatios( m_ReachableNodesFemale, rSpeciesID, pivsc, GetNodePopulation );
+        std::vector<float> habitat_ratios = GetRatios( m_ReachableNodesFemale, rSpeciesID, pivsc, GetAvailableLarvalHabitat );
 
         // --------------------------------------------------------------------------
         // --- Determine the new rates by adding the rates from the files times
         // --- to the food and habitat adjusted rates.
         // --------------------------------------------------------------------------
-        release_assert( m_RawMigrationRate.size()     == m_ReacheableNodesFemaleUpdated.size() );
-        release_assert( m_MigrationTypesFemale.size() == m_ReacheableNodesFemaleUpdated.size() );
-        release_assert( m_RateCDFFemale.size()        == m_ReacheableNodesFemaleUpdated.size() );
+        release_assert( m_RawMigrationRate.size()     == m_ReachableNodesFemale.size() );
+        release_assert( m_MigrationTypesFemale.size() == m_ReachableNodesFemale.size() );
+        release_assert( m_RateCDFFemale.size()        == m_ReachableNodesFemale.size() );
         release_assert( m_RateCDFFemale.size()        == pop_ratios.size() );
         release_assert( m_RateCDFFemale.size()        == habitat_ratios.size() );
 
@@ -223,7 +234,7 @@ namespace Kernel
         {
             tmp_totalrate += m_RawMigrationRate[i]; // need this to be the raw rate
 
-            m_RateCDFFemale[i] = CalculateModifiedRate( m_ReacheableNodesFemaleUpdated[i],
+            m_RateCDFFemale[i] = CalculateModifiedRate( m_ReachableNodesFemale[i],
                                                         m_RawMigrationRate[i],
                                                         pop_ratios[i],
                                                         habitat_ratios[i] );

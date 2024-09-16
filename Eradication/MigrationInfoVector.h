@@ -99,7 +99,6 @@ namespace Kernel
 
     private:
         std::vector<float>          m_RawMigrationRate;
-        std::vector<suids::suid>    m_ReacheableNodesFemaleUpdated;
         float                       m_TotalRateFemale;
         std::vector<float>          m_RateCDFFemale;
         suids::suid                 m_ThisNodeId;
