@@ -35,10 +35,10 @@ namespace Kernel
         // needed for serialization
         virtual void SetContextTo(INodeContext* parent) = 0;
 
-        virtual float GetTotalRate( Gender::Enum gender ) const = 0;
-        virtual const std::vector<float>& GetCumulativeDistributionFunction( Gender::Enum gender ) const = 0;
-        virtual const std::vector<suids::suid>& GetReachableNodes( Gender::Enum gender ) const = 0;
-        virtual const std::vector<MigrationType::Enum>& GetMigrationTypes( Gender::Enum gender ) const = 0;
+        virtual float GetTotalRate( Gender::Enum gender = Gender::MALE ) const = 0;
+        virtual const std::vector<float>& GetCumulativeDistributionFunction( Gender::Enum gender = Gender::MALE ) const = 0;
+        virtual const std::vector<suids::suid>& GetReachableNodes( Gender::Enum gender = Gender::MALE ) const = 0;
+        virtual const std::vector<MigrationType::Enum>& GetMigrationTypes( Gender::Enum gender = Gender::MALE ) const = 0;
 
         virtual bool IsHeterogeneityEnabled() const = 0;
     };

@@ -8,21 +8,21 @@ static const char* BUILD_DATE = __DATE__ " " __TIME__;
 #endif
 
 #ifndef SCCS_BRANCH
-#define    SCCS_BRANCH      "Vector_Migration_Changes2 (d871f512)"
+#define    SCCS_BRANCH      "unknown-branch (unknown)"
 #endif
 #ifndef SCCS_DATE
-#define    SCCS_DATE        "2024-08-06 14:46:34 -0700"
+#define    SCCS_DATE        "date time unknown"
 #endif
 
 #define    MAJOR_VERSION    2
 #define    MINOR_VERSION    22
 #ifndef REVISION_NUMBER
-#define    REVISION_NUMBER  21
+#define    REVISION_NUMBER  00
 #endif
 #define    BUILD_NUMBER     0
 
 #ifndef BUILDER_NAME
-#define    BUILDER_NAME     "stitova"
+#define    BUILDER_NAME     "danbr"
 #endif
 
 #define FULL_VERSION_WITH_SVN       XSTRINGIFY(MAJOR_VERSION) "." XSTRINGIFY(MINOR_VERSION) "." XSTRINGIFY(REVISION_NUMBER)

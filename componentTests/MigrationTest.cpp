@@ -104,13 +104,13 @@ SUITE(MigrationTest)
 
             CHECK( p_mi_2->IsHeterogeneityEnabled() );
 
-            const std::vector<suids::suid>& reachable_nodes_2 = p_mi_2->GetReachableNodes( Gender::MALE );
+            const std::vector<suids::suid>& reachable_nodes_2 = p_mi_2->GetReachableNodes();
             CHECK_EQUAL( 3, reachable_nodes_2.size() );
             CHECK_EQUAL( 1, reachable_nodes_2[ 0].data );
             CHECK_EQUAL( 3, reachable_nodes_2[ 1].data );
             CHECK_EQUAL( 4, reachable_nodes_2[ 2].data );
 
-            const std::vector<MigrationType::Enum>& mig_type_list_2 = p_mi_2->GetMigrationTypes( Gender::MALE );
+            const std::vector<MigrationType::Enum>& mig_type_list_2 = p_mi_2->GetMigrationTypes();
             CHECK_EQUAL( 3, mig_type_list_2.size() );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION, mig_type_list_2[ 0] );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION, mig_type_list_2[ 1] );
@@ -341,13 +341,13 @@ SUITE(MigrationTest)
 
             CHECK( p_mi_1->IsHeterogeneityEnabled() );
 
-            const std::vector<suids::suid>& reachable_nodes_1 = p_mi_1->GetReachableNodes( Gender::MALE );
+            const std::vector<suids::suid>& reachable_nodes_1 = p_mi_1->GetReachableNodes();
             CHECK_EQUAL( 3, reachable_nodes_1.size() );
             CHECK_EQUAL( 2, reachable_nodes_1[ 0].data );
             CHECK_EQUAL( 3, reachable_nodes_1[ 1].data );
             CHECK_EQUAL( 4, reachable_nodes_1[ 2].data );
 
-            const std::vector<MigrationType::Enum>& mig_type_list_1 = p_mi_1->GetMigrationTypes( Gender::MALE );
+            const std::vector<MigrationType::Enum>& mig_type_list_1 = p_mi_1->GetMigrationTypes();
             CHECK_EQUAL( 3, mig_type_list_1.size() );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION, mig_type_list_1[ 0] );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION, mig_type_list_1[ 1] );
@@ -361,13 +361,13 @@ SUITE(MigrationTest)
 
             CHECK( p_mi_2->IsHeterogeneityEnabled() );
 
-            const std::vector<suids::suid>& reachable_nodes_2 = p_mi_2->GetReachableNodes( Gender::MALE );
+            const std::vector<suids::suid>& reachable_nodes_2 = p_mi_2->GetReachableNodes();
             CHECK_EQUAL( 3, reachable_nodes_2.size() );
             CHECK_EQUAL( 1, reachable_nodes_2[ 0].data );
             CHECK_EQUAL( 3, reachable_nodes_2[ 1].data );
             CHECK_EQUAL( 4, reachable_nodes_2[ 2].data );
 
-            const std::vector<MigrationType::Enum>& mig_type_list_2 = p_mi_2->GetMigrationTypes( Gender::MALE );
+            const std::vector<MigrationType::Enum>& mig_type_list_2 = p_mi_2->GetMigrationTypes();
             CHECK_EQUAL( 3, mig_type_list_2.size() );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION, mig_type_list_2[ 0] );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION, mig_type_list_2[ 1] );
@@ -381,13 +381,13 @@ SUITE(MigrationTest)
 
             CHECK( p_mi_3->IsHeterogeneityEnabled() );
 
-            const std::vector<suids::suid>& reachable_nodes_3 = p_mi_3->GetReachableNodes( Gender::MALE );
+            const std::vector<suids::suid>& reachable_nodes_3 = p_mi_3->GetReachableNodes();
             CHECK_EQUAL( 3, reachable_nodes_3.size() );
             CHECK_EQUAL( 1, reachable_nodes_3[ 0].data );
             CHECK_EQUAL( 2, reachable_nodes_3[ 1].data );
             CHECK_EQUAL( 4, reachable_nodes_3[ 2].data );
 
-            const std::vector<MigrationType::Enum>& mig_type_list_3 = p_mi_3->GetMigrationTypes( Gender::MALE );
+            const std::vector<MigrationType::Enum>& mig_type_list_3 = p_mi_3->GetMigrationTypes();
             CHECK_EQUAL( 3, mig_type_list_3.size() );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION, mig_type_list_3[ 0] );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION, mig_type_list_3[ 1] );
@@ -401,13 +401,13 @@ SUITE(MigrationTest)
 
             CHECK( p_mi_4->IsHeterogeneityEnabled() );
 
-            const std::vector<suids::suid>& reachable_nodes_4 = p_mi_4->GetReachableNodes( Gender::MALE );
+            const std::vector<suids::suid>& reachable_nodes_4 = p_mi_4->GetReachableNodes();
             CHECK_EQUAL( 3, reachable_nodes_4.size() );
             CHECK_EQUAL( 1, reachable_nodes_4[ 0].data );
             CHECK_EQUAL( 2, reachable_nodes_4[ 1].data );
             CHECK_EQUAL( 3, reachable_nodes_4[ 2].data );
 
-            const std::vector<MigrationType::Enum>& mig_type_list_4 = p_mi_4->GetMigrationTypes( Gender::MALE );
+            const std::vector<MigrationType::Enum>& mig_type_list_4 = p_mi_4->GetMigrationTypes();
             CHECK_EQUAL( 3, mig_type_list_4.size() );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION, mig_type_list_4[ 0] );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION, mig_type_list_4[ 1] );
@@ -627,7 +627,7 @@ SUITE(MigrationTest)
 
             CHECK( p_mi->IsHeterogeneityEnabled() );
 
-            const std::vector<suids::suid>& reachable_nodes = p_mi->GetReachableNodes( Gender::MALE );
+            const std::vector<suids::suid>& reachable_nodes = p_mi->GetReachableNodes();
             CHECK_EQUAL( 20, reachable_nodes.size() );
             CHECK_EQUAL(  2, reachable_nodes[ 0].data );
             CHECK_EQUAL(  6, reachable_nodes[ 1].data );
@@ -650,7 +650,7 @@ SUITE(MigrationTest)
             CHECK_EQUAL( 25, reachable_nodes[18].data );
             CHECK_EQUAL( 26, reachable_nodes[19].data );
 
-            const std::vector<MigrationType::Enum>& mig_type_list = p_mi->GetMigrationTypes( Gender::MALE );
+            const std::vector<MigrationType::Enum>& mig_type_list = p_mi->GetMigrationTypes();
             CHECK_EQUAL( 20, mig_type_list.size() );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION,    mig_type_list[ 0] );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION,    mig_type_list[ 1] );
@@ -758,7 +758,7 @@ SUITE(MigrationTest)
 
             CHECK( !p_mi->IsHeterogeneityEnabled() );
 
-            const std::vector<suids::suid>& reachable_nodes = p_mi->GetReachableNodes( Gender::MALE );
+            const std::vector<suids::suid>& reachable_nodes = p_mi->GetReachableNodes();
             CHECK_EQUAL( 8, reachable_nodes.size() );
             CHECK_EQUAL( 100, reachable_nodes[ 0].data );
             CHECK_EQUAL(  91, reachable_nodes[ 1].data );
@@ -769,7 +769,7 @@ SUITE(MigrationTest)
             CHECK_EQUAL(  11, reachable_nodes[ 6].data );
             CHECK_EQUAL(  12, reachable_nodes[ 7].data );
 
-            const std::vector<MigrationType::Enum>& mig_type_list = p_mi->GetMigrationTypes( Gender::MALE );
+            const std::vector<MigrationType::Enum>& mig_type_list = p_mi->GetMigrationTypes();
             CHECK_EQUAL( 8, mig_type_list.size() );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION, mig_type_list[ 0] );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION, mig_type_list[ 1] );
@@ -786,7 +786,7 @@ SUITE(MigrationTest)
             INodeContextFake nc_10( nodeid_suid_map.left.at(10) ) ;
             unique_ptr<IMigrationInfo> p_mi_10( p_mf->CreateMigrationInfo( &nc_10, nodeid_suid_map ) );
 
-            const std::vector<suids::suid>& reachable_nodes_10 = p_mi_10->GetReachableNodes( Gender::MALE );
+            const std::vector<suids::suid>& reachable_nodes_10 = p_mi_10->GetReachableNodes();
             CHECK_EQUAL( 8, reachable_nodes_10.size() );
             CHECK_EQUAL(  99, reachable_nodes_10[ 0].data );
             CHECK_EQUAL( 100, reachable_nodes_10[ 1].data );
@@ -803,7 +803,7 @@ SUITE(MigrationTest)
             INodeContextFake nc_91( nodeid_suid_map.left.at(91) ) ;
             unique_ptr<IMigrationInfo> p_mi_91( p_mf->CreateMigrationInfo( &nc_91, nodeid_suid_map ) );
 
-            const std::vector<suids::suid>& reachable_nodes_91 = p_mi_91->GetReachableNodes( Gender::MALE );
+            const std::vector<suids::suid>& reachable_nodes_91 = p_mi_91->GetReachableNodes();
             CHECK_EQUAL( 8, reachable_nodes_91.size() );
             CHECK_EQUAL(  90, reachable_nodes_91[ 0].data );
             CHECK_EQUAL(  81, reachable_nodes_91[ 1].data );
@@ -820,7 +820,7 @@ SUITE(MigrationTest)
             INodeContextFake nc_100( nodeid_suid_map.left.at(100) ) ;
             unique_ptr<IMigrationInfo> p_mi_100( p_mf->CreateMigrationInfo( &nc_100, nodeid_suid_map ) );
 
-            const std::vector<suids::suid>& reachable_nodes_100 = p_mi_100->GetReachableNodes( Gender::MALE );
+            const std::vector<suids::suid>& reachable_nodes_100 = p_mi_100->GetReachableNodes();
             CHECK_EQUAL( 8, reachable_nodes_100.size() );
             CHECK_EQUAL(  89, reachable_nodes_100[ 0].data );
             CHECK_EQUAL(  90, reachable_nodes_100[ 1].data );
@@ -874,7 +874,7 @@ SUITE(MigrationTest)
 
             CHECK( !p_mi->IsHeterogeneityEnabled() );
 
-            const std::vector<suids::suid>& reachable_nodes_1 = p_mi->GetReachableNodes( Gender::MALE );
+            const std::vector<suids::suid>& reachable_nodes_1 = p_mi->GetReachableNodes();
             CHECK_EQUAL( 8, reachable_nodes_1.size() );
             CHECK_EQUAL( 9, reachable_nodes_1[ 0].data );
             CHECK_EQUAL( 7, reachable_nodes_1[ 1].data );
@@ -891,7 +891,7 @@ SUITE(MigrationTest)
             INodeContextFake nc_3( nodeid_suid_map.left.at(3) ) ;
             unique_ptr<IMigrationInfo> p_mi_3( p_mf->CreateMigrationInfo( &nc_3, nodeid_suid_map ) );
 
-            const std::vector<suids::suid>& reachable_nodes_3 = p_mi_3->GetReachableNodes( Gender::MALE );
+            const std::vector<suids::suid>& reachable_nodes_3 = p_mi_3->GetReachableNodes();
             CHECK_EQUAL( 8, reachable_nodes_3.size() );
             CHECK_EQUAL( 8, reachable_nodes_3[ 0].data );
             CHECK_EQUAL( 9, reachable_nodes_3[ 1].data );
@@ -908,7 +908,7 @@ SUITE(MigrationTest)
             INodeContextFake nc_7( nodeid_suid_map.left.at(7) ) ;
             unique_ptr<IMigrationInfo> p_mi_7( p_mf->CreateMigrationInfo( &nc_7, nodeid_suid_map ) );
 
-            const std::vector<suids::suid>& reachable_nodes_7 = p_mi_7->GetReachableNodes( Gender::MALE );
+            const std::vector<suids::suid>& reachable_nodes_7 = p_mi_7->GetReachableNodes();
             CHECK_EQUAL( 8, reachable_nodes_7.size() );
             CHECK_EQUAL( 6, reachable_nodes_7[ 0].data );
             CHECK_EQUAL( 4, reachable_nodes_7[ 1].data );
@@ -925,7 +925,7 @@ SUITE(MigrationTest)
             INodeContextFake nc_9( nodeid_suid_map.left.at(9) ) ;
             unique_ptr<IMigrationInfo> p_mi_9( p_mf->CreateMigrationInfo( &nc_9, nodeid_suid_map ) );
 
-            const std::vector<suids::suid>& reachable_nodes_9 = p_mi_9->GetReachableNodes( Gender::MALE );
+            const std::vector<suids::suid>& reachable_nodes_9 = p_mi_9->GetReachableNodes();
             CHECK_EQUAL( 8, reachable_nodes_9.size() );
             CHECK_EQUAL( 5, reachable_nodes_9[ 0].data );
             CHECK_EQUAL( 6, reachable_nodes_9[ 1].data );
@@ -968,13 +968,13 @@ SUITE(MigrationTest)
             INodeContextFake nc_1( nodeid_suid_map.left.at(1) ) ;
             unique_ptr<IMigrationInfoVector> p_mi( vsp.p_migration_factory->CreateMigrationInfoVector( idreference, &nc_1, nodeid_suid_map ) );
 
-            const std::vector<suids::suid>& reachable_nodes = p_mi->GetReachableNodes( Gender::MALE );
+            const std::vector<suids::suid>& reachable_nodes = p_mi->GetReachableNodes();
             CHECK_EQUAL( 2, reachable_nodes.size() );
             CHECK_EQUAL(  2, reachable_nodes[ 0].data );
             CHECK_EQUAL(  6, reachable_nodes[ 1].data );
 
 
-            const std::vector<MigrationType::Enum>& mig_type_list = p_mi->GetMigrationTypes( Gender::MALE );
+            const std::vector<MigrationType::Enum>& mig_type_list = p_mi->GetMigrationTypes();
             CHECK_EQUAL( 2, mig_type_list.size() );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION,    mig_type_list[ 0] );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION,    mig_type_list[ 1] );
@@ -983,7 +983,7 @@ SUITE(MigrationTest)
             INodeContextFake nc_9( nodeid_suid_map.left.at(9) ) ;
             unique_ptr<IMigrationInfoVector> p_mi_9( vsp.p_migration_factory->CreateMigrationInfoVector( idreference, &nc_9, nodeid_suid_map ) );
 
-            const std::vector<suids::suid>& reachable_nodes_9 = p_mi_9->GetReachableNodes( Gender::MALE );
+            const std::vector<suids::suid>& reachable_nodes_9 = p_mi_9->GetReachableNodes();
             CHECK_EQUAL( 7, reachable_nodes_9.size() );
             CHECK_EQUAL(  3, reachable_nodes_9[ 0].data );
             CHECK_EQUAL(  4, reachable_nodes_9[ 1].data );
@@ -995,7 +995,7 @@ SUITE(MigrationTest)
 
 
 
-            const std::vector<MigrationType::Enum>& mig_type_list_9 = p_mi_9->GetMigrationTypes( Gender::MALE );
+            const std::vector<MigrationType::Enum>& mig_type_list_9 = p_mi_9->GetMigrationTypes();
             CHECK_EQUAL( 7, mig_type_list_9.size() );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION,    mig_type_list_9[ 0] );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION,    mig_type_list_9[ 1] );
@@ -1008,7 +1008,7 @@ SUITE(MigrationTest)
 
              INodeContextFake nc_26( nodeid_suid_map.left.at(26) ) ;
             unique_ptr<IMigrationInfoVector> p_mi_26( vsp.p_migration_factory->CreateMigrationInfoVector( idreference, &nc_26, nodeid_suid_map ) );
-            CHECK( p_mi_26->GetReachableNodes( Gender::MALE ).size() == 0 );
+            CHECK( p_mi_26->GetReachableNodes().size() == 0 );
         }
         catch( DetailedException& re )
         {
@@ -1051,13 +1051,13 @@ SUITE(MigrationTest)
             unique_ptr<IMigrationInfoVector> p_mi_2(vsp.p_migration_factory->CreateMigrationInfoVector(idreference, &nc_2, nodeid_suid_map));
 
 
-            const std::vector<suids::suid>& reachable_nodes_2 = p_mi_2->GetReachableNodes(Gender::MALE);
+            const std::vector<suids::suid>& reachable_nodes_2 = p_mi_2->GetReachableNodes();
             CHECK_EQUAL(3, reachable_nodes_2.size());
             CHECK_EQUAL(1, reachable_nodes_2[0].data);
             CHECK_EQUAL(3, reachable_nodes_2[1].data);
             CHECK_EQUAL(5, reachable_nodes_2[2].data);
 
-            const std::vector<MigrationType::Enum>& mig_type_list_2 = p_mi_2->GetMigrationTypes( Gender::MALE );
+            const std::vector<MigrationType::Enum>& mig_type_list_2 = p_mi_2->GetMigrationTypes();
             CHECK_EQUAL(3, mig_type_list_2.size());
             CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type_list_2[0]);
             CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type_list_2[1]);
@@ -1109,13 +1109,13 @@ SUITE(MigrationTest)
             unique_ptr<IMigrationInfoVector> p_mi_9(vsp.p_migration_factory->CreateMigrationInfoVector(idreference, &nc_9, nodeid_suid_map));
 
 
-            const std::vector<suids::suid>& reachable_nodes_9 = p_mi_9->GetReachableNodes( Gender::MALE );
+            const std::vector<suids::suid>& reachable_nodes_9 = p_mi_9->GetReachableNodes();
             CHECK_EQUAL(2, reachable_nodes_9.size());
             CHECK_EQUAL(6, reachable_nodes_9[0].data);
             CHECK_EQUAL(8, reachable_nodes_9[1].data);
 
 
-            const std::vector<MigrationType::Enum>& mig_type_list_9 = p_mi_9->GetMigrationTypes( Gender::MALE );
+            const std::vector<MigrationType::Enum>& mig_type_list_9 = p_mi_9->GetMigrationTypes();
             CHECK_EQUAL(2, mig_type_list_9.size());
             CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type_list_9[0]);
             CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type_list_9[1]);
@@ -1201,7 +1201,7 @@ SUITE(MigrationTest)
             unique_ptr<IMigrationInfoVector> p_mi_2(vsp.p_migration_factory->CreateMigrationInfoVector(idreference, &nc_2, nodeid_suid_map));
 
 
-            const std::vector<suids::suid>& reachable_nodes_2 = p_mi_2->GetReachableNodes( Gender::MALE );
+            const std::vector<suids::suid>& reachable_nodes_2 = p_mi_2->GetReachableNodes();
             CHECK_EQUAL(6, reachable_nodes_2.size());
             CHECK_EQUAL(4, reachable_nodes_2[0].data);
             CHECK_EQUAL(5, reachable_nodes_2[1].data);
@@ -1210,7 +1210,7 @@ SUITE(MigrationTest)
             CHECK_EQUAL(8, reachable_nodes_2[4].data);
             CHECK_EQUAL(9, reachable_nodes_2[5].data);
 
-            const std::vector<MigrationType::Enum>& mig_type_list_2 = p_mi_2->GetMigrationTypes( Gender::MALE );
+            const std::vector<MigrationType::Enum>& mig_type_list_2 = p_mi_2->GetMigrationTypes();
             CHECK_EQUAL(6, mig_type_list_2.size());
             CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type_list_2[0]);
             CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type_list_2[1]);
@@ -1265,7 +1265,7 @@ SUITE(MigrationTest)
             unique_ptr<IMigrationInfoVector> p_mi_9(vsp.p_migration_factory->CreateMigrationInfoVector(idreference, &nc_9, nodeid_suid_map));
 
 
-            const std::vector<suids::suid>& reachable_nodes_9 = p_mi_9->GetReachableNodes( Gender::MALE );
+            const std::vector<suids::suid>& reachable_nodes_9 = p_mi_9->GetReachableNodes();
             CHECK_EQUAL(6, reachable_nodes_9.size());
             CHECK_EQUAL(1, reachable_nodes_9[0].data);
             CHECK_EQUAL(2, reachable_nodes_9[1].data);
@@ -1275,7 +1275,7 @@ SUITE(MigrationTest)
             CHECK_EQUAL(6, reachable_nodes_9[5].data);
 
 
-            const std::vector<MigrationType::Enum>& mig_type_list_9 = p_mi_9->GetMigrationTypes( Gender::MALE );
+            const std::vector<MigrationType::Enum>& mig_type_list_9 = p_mi_9->GetMigrationTypes();
             CHECK_EQUAL(6, mig_type_list_9.size());
             CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type_list_9[0]);
             CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type_list_9[1]);
@@ -1365,7 +1365,7 @@ SUITE(MigrationTest)
             unique_ptr<IMigrationInfoVector> p_mi_2(vsp.p_migration_factory->CreateMigrationInfoVector(idreference, &nc_2, nodeid_suid_map));
 
 
-            const std::vector<suids::suid>& reachable_nodes_2 = p_mi_2->GetReachableNodes( Gender::MALE );
+            const std::vector<suids::suid>& reachable_nodes_2 = p_mi_2->GetReachableNodes();
             CHECK_EQUAL(6, reachable_nodes_2.size());
             CHECK_EQUAL(4, reachable_nodes_2[0].data);
             CHECK_EQUAL(5, reachable_nodes_2[1].data);
@@ -1374,7 +1374,7 @@ SUITE(MigrationTest)
             CHECK_EQUAL(8, reachable_nodes_2[4].data);
             CHECK_EQUAL(9, reachable_nodes_2[5].data);
 
-            const std::vector<MigrationType::Enum>& mig_type_list_2 = p_mi_2->GetMigrationTypes( Gender::MALE );
+            const std::vector<MigrationType::Enum>& mig_type_list_2 = p_mi_2->GetMigrationTypes();
             CHECK_EQUAL(6, mig_type_list_2.size());
             CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type_list_2[0]);
             CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type_list_2[1]);
@@ -1429,7 +1429,7 @@ SUITE(MigrationTest)
             unique_ptr<IMigrationInfoVector> p_mi_9(vsp.p_migration_factory->CreateMigrationInfoVector(idreference, &nc_9, nodeid_suid_map));
 
 
-            const std::vector<suids::suid>& reachable_nodes_9 = p_mi_9->GetReachableNodes( Gender::MALE );
+            const std::vector<suids::suid>& reachable_nodes_9 = p_mi_9->GetReachableNodes();
             CHECK_EQUAL(6, reachable_nodes_9.size());
             CHECK_EQUAL(1, reachable_nodes_9[0].data);
             CHECK_EQUAL(2, reachable_nodes_9[1].data);
@@ -1439,7 +1439,7 @@ SUITE(MigrationTest)
             CHECK_EQUAL(6, reachable_nodes_9[5].data);
 
 
-            const std::vector<MigrationType::Enum>& mig_type_list_9 = p_mi_9->GetMigrationTypes( Gender::MALE );
+            const std::vector<MigrationType::Enum>& mig_type_list_9 = p_mi_9->GetMigrationTypes();
             CHECK_EQUAL(6, mig_type_list_9.size());
             CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type_list_9[0]);
             CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type_list_9[1]);

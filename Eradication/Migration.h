@@ -85,12 +85,10 @@ namespace Kernel
                                         float &time, 
                                         float dt = FLT_MAX ) override;
         virtual void SetContextTo( INodeContext* _parent ) override;
-        virtual float GetTotalRate( Gender::Enum gender ) const override;
-        virtual const std::vector<float>& GetCumulativeDistributionFunction( Gender::Enum gender ) const override;
-        virtual const std::vector<suids::suid>& GetReachableNodes( Gender::Enum gender ) const override;
-       // virtual const std::vector<MigrationType::Enum>& GetMigrationTypes() const override;
-       // virtual const std::vector<suids::suid>& GetReachableNodes(Gender::Enum gender) const override;
-        virtual const std::vector<MigrationType::Enum>& GetMigrationTypes( Gender::Enum gender ) const override;
+        virtual float GetTotalRate( Gender::Enum gender = Gender::MALE ) const override;
+        virtual const std::vector<float>& GetCumulativeDistributionFunction( Gender::Enum gender = Gender::MALE ) const override;
+        virtual const std::vector<suids::suid>& GetReachableNodes( Gender::Enum gender = Gender::MALE ) const override;
+        virtual const std::vector<MigrationType::Enum>& GetMigrationTypes( Gender::Enum gender = Gender::MALE ) const override;
 
         virtual bool IsHeterogeneityEnabled() const override;
 
@@ -129,9 +127,9 @@ namespace Kernel
         virtual void  SetContextTo( INodeContext* _parent ) override;
         virtual float GetTotalRate( Gender::Enum gender ) const override;
         virtual bool  IsHeterogeneityEnabled() const override;
-        virtual const std::vector<float>&               GetCumulativeDistributionFunction( Gender::Enum gender ) const override;
-        virtual const std::vector<suids::suid>&         GetReachableNodes( Gender::Enum gender ) const override;
-        virtual const std::vector<MigrationType::Enum>& GetMigrationTypes( Gender::Enum gender ) const override;
+        virtual const std::vector<float>&               GetCumulativeDistributionFunction( Gender::Enum gender = Gender::MALE ) const override;
+        virtual const std::vector<suids::suid>&         GetReachableNodes( Gender::Enum gender = Gender::MALE ) const override;
+        virtual const std::vector<MigrationType::Enum>& GetMigrationTypes( Gender::Enum gender = Gender::MALE ) const override;
 
 
     protected:
@@ -178,8 +176,8 @@ namespace Kernel
         virtual void Initialize( const std::vector<std::vector<MigrationRateData>>& rRateData );
         virtual void CalculateRates( Gender::Enum gender, float ageYears );
 
-        virtual const std::vector<suids::suid>&         GetReachableNodes( Gender::Enum gender ) const override;
-        virtual const std::vector<MigrationType::Enum>& GetMigrationTypes( Gender::Enum gender ) const override;
+        virtual const std::vector<suids::suid>&         GetReachableNodes( Gender::Enum gender = Gender::MALE ) const override;
+        virtual const std::vector<MigrationType::Enum>& GetMigrationTypes( Gender::Enum gender = Gender::MALE ) const override;
 
         std::vector<std::vector<MigrationRateData>> m_RateData;
         std::vector<suids::suid>                    m_ReachableNodesFemale;

@@ -115,8 +115,8 @@ namespace Kernel
             }
             else
             {
-                const std::vector<suids::suid>& r_nodes = p_node_context->GetMigrationInfo()->GetReachableNodes( Gender::MALE );
-                const std::vector<MigrationType::Enum>& r_mig_types = p_node_context->GetMigrationInfo()->GetMigrationTypes( Gender::MALE );
+                const std::vector<suids::suid>& r_nodes = p_node_context->GetMigrationInfo()->GetReachableNodes();
+                const std::vector<MigrationType::Enum>& r_mig_types = p_node_context->GetMigrationInfo()->GetMigrationTypes();
 
                 release_assert( r_nodes.size() == r_mig_types.size() );
 

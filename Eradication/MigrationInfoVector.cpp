@@ -101,7 +101,7 @@ namespace Kernel
         }
         else
         {
-            return MigrationInfoAgeAndGender::GetReachableNodes( Gender::MALE );
+            return MigrationInfoAgeAndGender::GetReachableNodes();
         }
 
     }
@@ -154,7 +154,7 @@ namespace Kernel
         }
         else
         {
-            return MigrationInfoAgeAndGender::GetCumulativeDistributionFunction( Gender::MALE );
+            return MigrationInfoAgeAndGender::GetCumulativeDistributionFunction();
         }
     }
 
@@ -331,8 +331,7 @@ namespace Kernel
 
     IMigrationInfoVector* MigrationInfoFactoryVector::CreateMigrationInfoVector( const std::string& idreference,
                                                                                  INodeContext *pParentNode, 
-                                                                                 const boost::bimap<ExternalNodeId_t, 
-                                                                                 suids::suid>& rNodeIdSuidMap )
+                                                                                 const boost::bimap<ExternalNodeId_t, suids::suid>& rNodeIdSuidMap )
     {
         IMigrationInfoVector* p_new_migration_info; // = nullptr;
         // because 
@@ -400,8 +399,7 @@ namespace Kernel
 
     IMigrationInfoVector* MigrationInfoFactoryVectorDefault::CreateMigrationInfoVector( const std::string& idreference,
                                                                                         INodeContext *pParentNode, 
-                                                                                        const boost::bimap<ExternalNodeId_t,
-                                                                                        suids::suid>& rNodeIdSuidMap )
+                                                                                        const boost::bimap<ExternalNodeId_t, suids::suid>& rNodeIdSuidMap )
     {
         if( m_IsVectorMigrationEnabled )
         {

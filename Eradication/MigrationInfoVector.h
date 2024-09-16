@@ -64,9 +64,9 @@ namespace Kernel
 
         virtual Gender::Enum ConvertVectorGender (VectorGender::Enum gender ) const override;
         virtual void CalculateRates( Gender::Enum gender, float ageYears) override;
-        virtual float GetTotalRate( Gender::Enum gender ) const override;
-        virtual const std::vector<float>& GetCumulativeDistributionFunction( Gender::Enum gender ) const override;
-        const std::vector<suids::suid>& GetReachableNodes( Gender::Enum gender ) const override;
+        virtual float GetTotalRate( Gender::Enum gender = Gender::MALE ) const override;
+        virtual const std::vector<float>& GetCumulativeDistributionFunction( Gender::Enum gender = Gender::MALE ) const override;
+        const std::vector<suids::suid>& GetReachableNodes( Gender::Enum gender = Gender::MALE ) const override;
 
 
     protected:
@@ -125,8 +125,7 @@ namespace Kernel
         virtual void ReadConfiguration( JsonConfigurable* pParent, const ::Configuration* config ) override;
         virtual IMigrationInfoVector* CreateMigrationInfoVector( const std::string& idreference,
                                                                  INodeContext *parent_node, 
-                                                                 const boost::bimap<ExternalNodeId_t, 
-                                                                 suids::suid>& rNodeIdSuidMap ) override;
+                                                                 const boost::bimap<ExternalNodeId_t, suids::suid>& rNodeIdSuidMap ) override;
 
     private:
         MigrationInfoFile          m_InfoFileVector;
@@ -150,8 +149,7 @@ namespace Kernel
         virtual void ReadConfiguration( JsonConfigurable* pParent, const ::Configuration* config ) {};
         virtual IMigrationInfoVector* CreateMigrationInfoVector( const std::string& idreference,
                                                                  INodeContext *parent_node, 
-                                                                 const boost::bimap<ExternalNodeId_t, 
-                                                                 suids::suid>& rNodeIdSuidMap ) override;
+                                                                 const boost::bimap<ExternalNodeId_t, suids::suid>& rNodeIdSuidMap ) override;
 
     protected: 
 
