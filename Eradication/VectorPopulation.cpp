@@ -251,7 +251,6 @@ namespace Kernel
             {
                 // progress is 1 since males/females should be at 1 from progressing from Immature to adult
                 VectorCohortMale* pvc = VectorCohortMale::CreateCohort( m_pNodeVector->GetNextVectorSuid().data,
-                                                                        state,
                                                                         age,
                                                                         1.0,
                                                                         0.0,
@@ -1612,7 +1611,6 @@ namespace Kernel
             {
                 // creating new VectorCohortMale cohort instead of using the same cohort as before
                 VectorCohortMale* male_cohort = VectorCohortMale::CreateCohort( m_pNodeVector->GetNextVectorSuid().data,
-                                                                                VectorStateEnum::STATE_MALE,
                                                                                 cohort->GetAge(),
                                                                                 cohort->GetProgress(),
                                                                                 cohort->GetDurationOfMicrosporidia(),
@@ -2707,7 +2705,6 @@ namespace Kernel
 
             // progress is 1 since males should be at 1 from progressing from Immature to Male
             VectorCohortMale* tempentry = VectorCohortMale::CreateCohort( m_pNodeVector->GetNextVectorSuid().data,
-                                                                          VectorStateEnum::STATE_MALE,
                                                                           0.0,
                                                                           1.0,
                                                                           0.0,

@@ -835,7 +835,6 @@ namespace Kernel
     }
 
     VectorCohortMale* VectorCohortMale::CreateCohort( uint32_t vectorID,
-                                                      VectorStateEnum::Enum _state,
                                                       float _age,
                                                       float _progress,
                                                       float microsporidiaDuration,
@@ -844,7 +843,6 @@ namespace Kernel
                                                       int speciesIndex )
     {
         VectorCohortMale* newqueue = _new_ VectorCohortMale( vectorID,
-                                                             _state,
                                                              _age,
                                                              _progress,
                                                              microsporidiaDuration,
