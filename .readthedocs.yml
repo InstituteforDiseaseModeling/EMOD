@@ -26,11 +26,11 @@ formats:
 # Optionally set the version of Python and requirements required to build your docs
 python:
   install:
-    - requirements: requirements.txt
+    - requirements: docs/requirements.txt
         
 # Optionally rank topics in search results, between -10 (lower) and 10 (higher).
 # 0 is normal rank, not no rank
 
-search:
-  ranking:
+# search:
+#  ranking:
 
