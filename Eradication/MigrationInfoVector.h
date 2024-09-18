@@ -31,11 +31,9 @@ namespace Kernel
                                   const std::string& rSpeciesID,
                                   IVectorSimulationContext* pivsc ) {};
 
-        virtual Gender::Enum ConvertVectorGender(VectorGender::Enum gender) const 
+        virtual Gender::Enum ConvertVectorGender (VectorGender::Enum vector_gender ) const
         {
-            std::stringstream msg;
-            msg << "ConvertVectorGender should not be used when there's no vector migration.\n";
-            throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
+            return ( vector_gender == VectorGender::VECTOR_FEMALE ? Gender::FEMALE : Gender::MALE );
         };
 
 

@@ -833,11 +833,6 @@ namespace Kernel
     {
         release_assert(m_pMigrationInfoVector);
         release_assert(pMigratingQueue);
-        // using m_IsHeterogeneityEnabled as a proxy for "is_this_not_MigrationInfoNullVector" in Vector_Migration to avoid calling more code than needed
-        if( !m_pMigrationInfoVector->IsHeterogeneityEnabled() )
-        {
-            return;
-        }
 
         VectorPopulation::Vector_Migration(dt, pMigratingQueue, true);
         
@@ -850,9 +845,9 @@ namespace Kernel
         suids::suid current_node = m_context->GetSuid();
         m_pMigrationInfoVector->UpdateRates( current_node, get_SpeciesID(), p_vsc );
 
-        Gender::Enum              female     = Gender::FEMALE; // this is always for female vectors only, using human equivalent
-        float                     total_rate = m_pMigrationInfoVector->GetTotalRate( female );
-        const std::vector<float>& r_cdf      = m_pMigrationInfoVector->GetCumulativeDistributionFunction( female );
+        Gender::Enum human_gender_equivalent = m_pMigrationInfoVector->ConvertVectorGender( VectorGender::VECTOR_FEMALE );
+        float                     total_rate = m_pMigrationInfoVector->GetTotalRate( human_gender_equivalent );
+        const std::vector<float>& r_cdf      = m_pMigrationInfoVector->GetCumulativeDistributionFunction( human_gender_equivalent );
 
         if( ( r_cdf.size() == 0 ) || ( total_rate == 0.0 ) )
         {

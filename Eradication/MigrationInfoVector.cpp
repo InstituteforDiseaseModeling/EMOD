@@ -401,8 +401,7 @@ namespace Kernel
                                                                                                          m_ModifierHabitat,
                                                                                                          m_ModifierFood,
                                                                                                          m_ModifierStayPut);
-            new_migration_info->Initialize(rate_data);
-            new_migration_info->m_IsHeterogeneityEnabled = true; // using this as a proxy for "is_this_not_MigrationInfoNullVector" in VectorPopulation*::Vector_Migration
+            new_migration_info->Initialize(rate_data);           
             p_new_migration_info = new_migration_info;
             
         }
@@ -453,7 +452,6 @@ namespace Kernel
                                                                                                          1.0,
                                                                                                          1.0 );
             new_migration_info->Initialize( rate_data );
-            new_migration_info->m_IsHeterogeneityEnabled = true; // using this as a proxy for "is_this_not_MigrationInfoNullVector" in VectorPopulation*::Vector_Migration
             return new_migration_info;
         }
         else

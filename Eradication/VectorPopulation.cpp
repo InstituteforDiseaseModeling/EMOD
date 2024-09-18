@@ -2747,11 +2747,6 @@ namespace Kernel
     {
         release_assert( m_pMigrationInfoVector );
         release_assert( pMigratingQueue );
-        // using m_IsHeterogeneityEnabled as a proxy for "is_this_not_MigrationInfoNullVector" in Vector_Migration to avoid calling more code than needed
-        if( !m_pMigrationInfoVector->IsHeterogeneityEnabled() )
-        {
-            return;
-        }
 
         Vector_Migration_Helper(pMigratingQueue, VectorGender::VECTOR_MALE);
         
