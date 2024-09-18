@@ -571,8 +571,8 @@ namespace Kernel
         std::vector<IVectorCohort*> m_ImmigratingInfected;
         std::vector<IVectorCohort*> m_ImmigratingAdult;
         std::vector<IVectorCohort*> m_ImmigratingMale;
-		
-		IMigrationInfoVector*       m_pMigrationInfoVector;
+
+        IMigrationInfoVector*       m_pMigrationInfoVector;
 
         static std::vector<float>   m_MortalityTable;
 

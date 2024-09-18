@@ -53,20 +53,20 @@ namespace Kernel
     {
     public:
         IMPLEMENT_DEFAULT_REFERENCE_COUNTING()
-            DECLARE_QUERY_INTERFACE()
+        DECLARE_QUERY_INTERFACE()
     public:
         virtual ~MigrationInfoAgeAndGenderVector();
 
         // IMigrationInfoVector
-        virtual void UpdateRates( const suids::suid& rThisNodeId,
-                                  const std::string& rSpeciesID,
-                                  IVectorSimulationContext* pivsc ) override;
+        virtual void                      UpdateRates( const suids::suid& rThisNodeId,
+                                                       const std::string& rSpeciesID,
+                                                       IVectorSimulationContext* pivsc ) override;
 
-        virtual Gender::Enum ConvertVectorGender (VectorGender::Enum gender ) const override;
-        virtual void CalculateRates( Gender::Enum gender, float ageYears) override;
-        virtual float GetTotalRate( Gender::Enum gender = Gender::MALE ) const override;
+        virtual Gender::Enum              ConvertVectorGender (VectorGender::Enum gender ) const override;
+        virtual void                      CalculateRates( Gender::Enum gender, float ageYears) override;
+        virtual float                     GetTotalRate( Gender::Enum gender = Gender::MALE ) const override;
         virtual const std::vector<float>& GetCumulativeDistributionFunction( Gender::Enum gender = Gender::MALE ) const override;
-        const std::vector<suids::suid>& GetReachableNodes( Gender::Enum gender = Gender::MALE ) const override;
+        const std::vector<suids::suid>&   GetReachableNodes( Gender::Enum gender = Gender::MALE ) const override;
 
 
     protected:
@@ -87,18 +87,18 @@ namespace Kernel
                                      float populationRatio,
                                      float habitatRatio);
 
-        typedef std::function<int(const suids::suid& rNodeId,
-                                  const std::string& rSpeciesID,
-                                  IVectorSimulationContext* pivsc)> tGetValueFunc;
+        typedef std::function<int( const suids::suid& rNodeId,
+                                   const std::string& rSpeciesID,
+                                   IVectorSimulationContext* pivsc)> tGetValueFunc;
 
-        std::vector<float> GetRatios(const std::vector<suids::suid>& rReachableNodes,
-                                     const std::string& rSpeciesID,
-                                     IVectorSimulationContext* pivsc,
-                                     tGetValueFunc getValueFunc);
+        std::vector<float> GetRatios( const std::vector<suids::suid>& rReachableNodes,
+                                      const std::string& rSpeciesID,
+                                      IVectorSimulationContext* pivsc,
+                                      tGetValueFunc getValueFunc);
 
 
     private:
-        std::vector<float>          m_RawMigrationRate;
+        std::vector<float>          m_RawMigrationRateFemale;
         float                       m_TotalRateFemale;
         std::vector<float>          m_RateCDFFemale;
         suids::suid                 m_ThisNodeId;
@@ -121,7 +121,7 @@ namespace Kernel
         virtual ~MigrationInfoFactoryVector();
 
         // IMigrationInfoFactoryVector
-        virtual void ReadConfiguration( JsonConfigurable* pParent, const ::Configuration* config ) override;
+        virtual void                  ReadConfiguration( JsonConfigurable* pParent, const ::Configuration* config ) override;
         virtual IMigrationInfoVector* CreateMigrationInfoVector( const std::string& idreference,
                                                                  INodeContext *parent_node, 
                                                                  const boost::bimap<ExternalNodeId_t, suids::suid>& rNodeIdSuidMap ) override;
@@ -145,7 +145,7 @@ namespace Kernel
         virtual ~MigrationInfoFactoryVectorDefault();
 
         // IMigrationInfoFactoryVector
-        virtual void ReadConfiguration( JsonConfigurable* pParent, const ::Configuration* config ) {};
+        virtual void                  ReadConfiguration( JsonConfigurable* pParent, const ::Configuration* config ) {};
         virtual IMigrationInfoVector* CreateMigrationInfoVector( const std::string& idreference,
                                                                  INodeContext *parent_node, 
                                                                  const boost::bimap<ExternalNodeId_t, suids::suid>& rNodeIdSuidMap ) override;

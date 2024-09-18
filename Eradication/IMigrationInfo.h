@@ -66,11 +66,7 @@ namespace Kernel
     {
         // Contructs and initializes the proper factory based on the initialization parameters
         IMigrationInfoFactory* ConstructMigrationInfoFactory( const ::Configuration *config, 
-                                                              const std::string& idreference,
-                                                              SimType::Enum sim_type,
-                                                              MigrationStructure::Enum ms,
-                                                              bool useDefaultMigration,
-                                                              int defaultTorusSize=10 );
+                                                              const std::string& idreference );
 
 #ifndef DISABLE_VECTOR
         IMigrationInfoFactoryVector* ConstructMigrationInfoFactoryVector( JsonConfigurable* pParent, 

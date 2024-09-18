@@ -88,11 +88,7 @@ SUITE(MigrationTest)
 
             std::string idreference = "ABC" ;
             unique_ptr<IMigrationInfoFactory> p_mf( MigrationFactory::ConstructMigrationInfoFactory( p_config.get(), 
-                                                                                                     idreference, 
-                                                                                                     SimType::GENERIC_SIM,
-                                                                                                     MigrationStructure::FIXED_RATE_MIGRATION,
-                                                                                                     false, 
-                                                                                                     10 ) );
+                                                                                                     idreference ) );
 
             CHECK( p_mf->IsAtLeastOneTypeConfiguredForIndividuals() );
 
@@ -325,11 +321,7 @@ SUITE(MigrationTest)
 
             std::string idreference = "ABC" ;
             unique_ptr<IMigrationInfoFactory> p_mf( MigrationFactory::ConstructMigrationInfoFactory( p_config.get(),
-                                                                                                     idreference, 
-                                                                                                     SimType::GENERIC_SIM,
-                                                                                                     MigrationStructure::FIXED_RATE_MIGRATION,
-                                                                                                     false, 
-                                                                                                     10 ) );
+                                                                                                     idreference ) );
 
             CHECK( p_mf->IsAtLeastOneTypeConfiguredForIndividuals() );
 
@@ -614,11 +606,7 @@ SUITE(MigrationTest)
 
             std::string idreference = "Household-Scenario-Small" ;
             unique_ptr<IMigrationInfoFactory> p_mf( MigrationFactory::ConstructMigrationInfoFactory( EnvPtr->Config,
-                                                                                                     idreference, 
-                                                                                                     SimType::GENERIC_SIM,
-                                                                                                     MigrationStructure::FIXED_RATE_MIGRATION,
-                                                                                                     false, 
-                                                                                                     10 ) );
+                                                                                                     idreference ) );
 
             CHECK( p_mf->IsAtLeastOneTypeConfiguredForIndividuals() );
 
@@ -742,11 +730,7 @@ SUITE(MigrationTest)
 
             std::string idreference = "Default" ;
             unique_ptr<IMigrationInfoFactory> p_mf( MigrationFactory::ConstructMigrationInfoFactory( EnvPtr->Config,
-                                                                                                     idreference, 
-                                                                                                     SimType::GENERIC_SIM,
-                                                                                                     MigrationStructure::FIXED_RATE_MIGRATION,
-                                                                                                     true, 
-                                                                                                     10 ) );
+                                                                                                     idreference ) );
 
             CHECK( !p_mf->IsAtLeastOneTypeConfiguredForIndividuals() );
 
@@ -858,11 +842,7 @@ SUITE(MigrationTest)
 
             std::string idreference = "Default" ;
             unique_ptr<IMigrationInfoFactory> p_mf( MigrationFactory::ConstructMigrationInfoFactory( EnvPtr->Config,
-                                                                                                     idreference, 
-                                                                                                     SimType::GENERIC_SIM,
-                                                                                                     MigrationStructure::FIXED_RATE_MIGRATION,
-                                                                                                     true, 
-                                                                                                     torus_size ) );
+                                                                                                     idreference ) );
 
             CHECK( !p_mf->IsAtLeastOneTypeConfiguredForIndividuals() );
 
@@ -1520,11 +1500,7 @@ SUITE(MigrationTest)
             }
 
             unique_ptr<IMigrationInfoFactory> p_mf( MigrationFactory::ConstructMigrationInfoFactory( p_config.get(),
-                                                                                                     rIdReference,
-                                                                                                     SimType::GENERIC_SIM,
-                                                                                                     MigrationStructure::FIXED_RATE_MIGRATION,
-                                                                                                     false,
-                                                                                                     10 ) );
+                                                                                                     rIdReference ) );
 
             suids::suid node_suid;
             node_suid.data = nodeId;

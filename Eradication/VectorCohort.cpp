@@ -759,10 +759,12 @@ namespace Kernel
 
     void VectorCohort::SetHabitat( IVectorHabitat* new_habitat )
     {
-        // A vector gets one habitat and it cannot change.  This method is used when
-        // deserializing a vector.  It is part of the effort to reconnect the pointers
-        // so that there is a base set of habitat objects with the vector objects having
-        // pointers to them.
+        // ------------------------------------------------------------------------
+        // --- A vector gets one habitat and it cannot change.  This method is used when
+        // --- deserializing a vector.  It is part of the effort to reconnect the pointers
+        // --- so that there is a base set of habitat objects with the vector objects having
+        // --- pointers to them.
+        // ------------------------------------------------------------------------
         release_assert( habitat == nullptr );
         habitat = new_habitat;
     }
@@ -800,28 +802,28 @@ namespace Kernel
         unmated_count = population;
     }
 
-    VectorCohortMale::VectorCohortMale(const VectorCohortMale& rThat)
+    VectorCohortMale::VectorCohortMale( const VectorCohortMale& rThat )
         : VectorCohortAbstract(rThat)
     {
     }
 
-    VectorCohortMale::VectorCohortMale(IVectorHabitat* _habitat,
-        uint32_t vectorID,
-        VectorStateEnum::Enum _state,
-        float _age,
-        float _progress,
-        float microsporidiaDuration,
-        uint32_t _population,
-        const VectorGenome& rGenome,
-        int speciesIndex)
-        : VectorCohortAbstract(vectorID,
-            _state,
-            _age,
-            _progress,
-            microsporidiaDuration,
-            _population,
-            rGenome,
-            speciesIndex)
+    VectorCohortMale::VectorCohortMale( IVectorHabitat* _habitat,
+                                        uint32_t vectorID,
+                                        VectorStateEnum::Enum _state,
+                                        float _age,
+                                        float _progress,
+                                        float microsporidiaDuration,
+                                        uint32_t _population,
+                                        const VectorGenome& rGenome,
+                                        int speciesIndex )
+        : VectorCohortAbstract( vectorID,
+                                _state,
+                                _age,
+                                _progress,
+                                microsporidiaDuration,
+                                _population,
+                                rGenome,
+                                speciesIndex )
         , unmated_count(0)
         , unmated_count_cdf(0)
     {
@@ -832,25 +834,25 @@ namespace Kernel
     {
     }
 
-    VectorCohortMale* VectorCohortMale::CreateCohort(uint32_t vectorID,
-        VectorStateEnum::Enum _state,
-        float _age,
-        float _progress,
-        float microsporidiaDuration,
-        uint32_t _population,
-        const VectorGenome& rGenome,
-        int speciesIndex)
+    VectorCohortMale* VectorCohortMale::CreateCohort( uint32_t vectorID,
+                                                      VectorStateEnum::Enum _state,
+                                                      float _age,
+                                                      float _progress,
+                                                      float microsporidiaDuration,
+                                                      uint32_t _population,
+                                                      const VectorGenome& rGenome,
+                                                      int speciesIndex )
     {
-        VectorCohortMale* newqueue = _new_ VectorCohortMale(nullptr,
-            vectorID,
-            _state,
-            _age,
-            _progress,
-            microsporidiaDuration,
-            _population,
-            rGenome,
-            speciesIndex);
-        newqueue->Initialize();
+        VectorCohortMale* newqueue = _new_ VectorCohortMale( nullptr,
+                                                             vectorID,
+                                                             _state,
+                                                             _age,
+                                                             _progress,
+                                                             microsporidiaDuration,
+                                                             _population,
+                                                             rGenome,
+                                                             speciesIndex );
+        newqueue->Initialize(); 
         return newqueue;
     }
 
@@ -859,7 +861,7 @@ namespace Kernel
         return unmated_count;
     }
 
-    void VectorCohortMale::SetUnmatedCount(uint32_t new_unmated_count)
+    void VectorCohortMale::SetUnmatedCount( uint32_t new_unmated_count )
     {
         unmated_count = new_unmated_count;
     }
@@ -869,7 +871,7 @@ namespace Kernel
         return unmated_count_cdf;
     }
 
-    void VectorCohortMale::SetUnmatedCountCDF(uint32_t new_unmated_count_cdf)
+    void VectorCohortMale::SetUnmatedCountCDF( uint32_t new_unmated_count_cdf )
     {
         unmated_count_cdf = new_unmated_count_cdf;
     }
@@ -878,45 +880,45 @@ namespace Kernel
     void VectorCohortMale::Merge( IVectorCohort* pCohortToAdd )
     {
         SetPopulation( GetPopulation() + pCohortToAdd->GetPopulation() );
-        SetUnmatedCount( GetUnmatedCount() + ( static_cast<VectorCohortMale*>( static_cast<VectorCohortAbstract*>( pCohortToAdd) ) )->GetUnmatedCount() );
+        SetUnmatedCount( GetUnmatedCount() + ( static_cast<VectorCohortMale*>( static_cast<VectorCohortAbstract*>( pCohortToAdd ) ) )->GetUnmatedCount() );
     }
 
-    VectorCohortMale* VectorCohortMale::SplitPercent(RANDOMBASE* pRNG, uint32_t newVectorID, float percentLeaving)
+    VectorCohortMale* VectorCohortMale::SplitPercent( RANDOMBASE* pRNG, uint32_t newVectorID, float percentLeaving )
     {
-        uint32_t orig_pop = GetPopulation();
-        uint32_t num_leaving = pRNG->binomial_approx(orig_pop, percentLeaving);
-        return SplitHelper(pRNG, newVectorID, num_leaving, percentLeaving);
+        uint32_t    orig_pop = GetPopulation();
+        uint32_t num_leaving = pRNG->binomial_approx( orig_pop, percentLeaving );
+        return SplitHelper( pRNG, newVectorID, num_leaving, percentLeaving );
     }
 
-    VectorCohortMale* VectorCohortMale::SplitNumber(RANDOMBASE* pRNG, uint32_t newVectorID, uint32_t numLeaving)
+    VectorCohortMale* VectorCohortMale::SplitNumber( RANDOMBASE* pRNG, uint32_t newVectorID, uint32_t numLeaving )
     {
-        return SplitHelper(pRNG, newVectorID, numLeaving, -1);
+        return SplitHelper( pRNG, newVectorID, numLeaving, -1 );
     }
 
-    VectorCohortMale* VectorCohortMale::SplitHelper(RANDOMBASE* pRNG, uint32_t newVectorID, uint32_t numLeaving, float percentLeaving)
+    VectorCohortMale* VectorCohortMale::SplitHelper( RANDOMBASE* pRNG, uint32_t newVectorID, uint32_t numLeaving, float percentLeaving )
     {
-        if (numLeaving == 0)
+        if ( numLeaving == 0 )
         {
             return nullptr;
         }
-        uint32_t orig_pop = GetPopulation();
+        uint32_t           orig_pop = GetPopulation();
         uint32_t orig_unmated_count = GetUnmatedCount();
-        uint32_t unmated_leaving = numLeaving; // case: unmated == total population
-        if (orig_pop > orig_unmated_count) // case some are mated in the population
+        uint32_t    unmated_leaving = numLeaving; // case: unmated == total population
+        if ( orig_pop > orig_unmated_count ) // case some are mated in the population
         {
-            if (percentLeaving < 0) // means we only know numLeaving, calculate percentLeaving ourselves
+            if ( percentLeaving < 0 ) // means we only know numLeaving, calculate percentLeaving ourselves
             {
-                percentLeaving = static_cast<float> (numLeaving) / orig_pop;
+                percentLeaving = static_cast<float> ( numLeaving ) / orig_pop;
             }
-            unmated_leaving = static_cast<uint32_t>(pRNG->binomial_approx(orig_unmated_count, percentLeaving));
+            unmated_leaving = static_cast<uint32_t>( pRNG->binomial_approx( orig_unmated_count, percentLeaving ) );
         }
-        if (unmated_leaving > numLeaving)  // because we're drawing two binomials, sometimes it's not quite a subset
+        if ( unmated_leaving > numLeaving )  // because we're drawing two binomials, sometimes it's not quite a subset
         {
             unmated_leaving = numLeaving;
         }
         uint32_t unmated_staying = orig_unmated_count - unmated_leaving;
-        uint32_t pop_staying = orig_pop - numLeaving;
-        if (unmated_staying > pop_staying) // not enough of the migrating males were unmated
+        uint32_t     pop_staying = orig_pop - numLeaving;
+        if ( unmated_staying > pop_staying ) // not enough of the migrating males were unmated
         {
             uint32_t these_unmated_should_leave = unmated_staying - pop_staying;
             unmated_staying -= these_unmated_should_leave;
@@ -926,31 +928,31 @@ namespace Kernel
         // creating leaving cohort, unmated_count_cdf will be set before vector population processing starts at next timestep
         VectorCohortMale* leaving = new VectorCohortMale(*this);
         leaving->m_ID = newVectorID;
-        leaving->SetPopulation(numLeaving);
-        leaving->SetUnmatedCount(unmated_leaving);
+        leaving->SetPopulation( numLeaving );
+        leaving->SetUnmatedCount( unmated_leaving );
         //setting CDF to 0, this is temporary and not used, but also don't want this to be a random large number which it ends up being not initialized
-        leaving->SetUnmatedCountCDF(0);
+        leaving->SetUnmatedCountCDF( 0 );
 
         // Updating staying cohort, unmated_count_cdf will be updated before vector population processing starts at next timestep
-        this->SetPopulation(pop_staying);
-        this->SetUnmatedCount(unmated_staying);
+        this->SetPopulation( pop_staying );
+        this->SetUnmatedCount( unmated_staying );
 
-        release_assert(orig_pop == (this->GetPopulation() + leaving->GetPopulation()));
-        release_assert(orig_unmated_count == (this->GetUnmatedCount() + leaving->GetUnmatedCount()));
-        release_assert(leaving->GetPopulation() >= leaving->GetUnmatedCount());
-        release_assert(this->GetPopulation() >= this->GetUnmatedCount());
+        release_assert( orig_pop                 == ( this->GetPopulation() + leaving->GetPopulation() ) );
+        release_assert( orig_unmated_count       == ( this->GetUnmatedCount() + leaving->GetUnmatedCount() ) );
+        release_assert( leaving->GetPopulation() >= leaving->GetUnmatedCount() );
+        release_assert( this->GetPopulation()    >= this->GetUnmatedCount() );
 
         return leaving;
     }
 
-    REGISTER_SERIALIZABLE(VectorCohortMale);
+    REGISTER_SERIALIZABLE( VectorCohortMale );
 
-    void VectorCohortMale::serialize(IArchive& ar, VectorCohortMale* obj)
+    void VectorCohortMale::serialize( IArchive& ar, VectorCohortMale* obj )
     {
-        VectorCohortAbstract::serialize(ar, obj);
+        VectorCohortAbstract::serialize( ar, obj );
         VectorCohortMale& cohort = *obj;
-        ar.labelElement("unmated_count")&     cohort.unmated_count;
-        ar.labelElement("unmated_count_cdf")& cohort.unmated_count_cdf;
+        ar.labelElement( "unmated_count" )&     cohort.unmated_count;
+        ar.labelElement( "unmated_count_cdf" )& cohort.unmated_count_cdf;
 
     }
 }

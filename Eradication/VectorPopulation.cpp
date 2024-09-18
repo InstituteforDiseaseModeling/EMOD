@@ -105,7 +105,7 @@ namespace Kernel
         , m_ImmigratingInfected()
         , m_ImmigratingAdult()
         , m_ImmigratingMale()
-		, m_pMigrationInfoVector(nullptr)
+        , m_pMigrationInfoVector(nullptr)
     {
         if( m_MortalityTable.size() == 0 )
         {
@@ -225,14 +225,14 @@ namespace Kernel
             if( state == VectorStateEnum::STATE_ADULT )
             {
                 // progress is 1 since males/females should be at 1 from progressing from Immature to adult
-                VectorCohort* pvc = VectorCohort::CreateCohort(m_pNodeVector->GetNextVectorSuid().data,
-                    state,
-                    age,
-                    1.0,
-                    0.0,
-                    feed_on_day,
-                    rGenomeFemale,
-                    m_SpeciesIndex);
+                VectorCohort* pvc = VectorCohort::CreateCohort( m_pNodeVector->GetNextVectorSuid().data,
+                                                                state,
+                                                                age,
+                                                                1.0,
+                                                                0.0,
+                                                                feed_on_day,
+                                                                rGenomeFemale,
+                                                                m_SpeciesIndex );
 
                 queueIncrementTotalPopulation(pvc);
                 // -------------------------------------------------------------------------------------------------
@@ -249,16 +249,16 @@ namespace Kernel
             }
             else
             {
-			    // progress is 1 since males/females should be at 1 from progressing from Immature to adult
-                VectorCohortMale* pvc = VectorCohortMale::CreateCohort(m_pNodeVector->GetNextVectorSuid().data,
-                    state,
-                    age,
-                    1.0,
-                    0.0,
-                    feed_on_day,
-                    rGenomeFemale,
-                    m_SpeciesIndex);
-                queueIncrementTotalPopulation(pvc);
+                // progress is 1 since males/females should be at 1 from progressing from Immature to adult
+                VectorCohortMale* pvc = VectorCohortMale::CreateCohort( m_pNodeVector->GetNextVectorSuid().data,
+                                                                        state,
+                                                                        age,
+                                                                        1.0,
+                                                                        0.0,
+                                                                        feed_on_day,
+                                                                        rGenomeFemale,
+                                                                        m_SpeciesIndex );
+                queueIncrementTotalPopulation( pvc );
                 MaleQueues.add( pvc, 0.0, true );
             }
         }
@@ -1607,14 +1607,14 @@ namespace Kernel
             if( (cohort->GetProgress() >= 1) && (cohort->GetPopulation() > 0) )
             {
                 // creating new VectorCohortMale cohort instead of using the same cohort as before
-                VectorCohortMale* male_cohort = VectorCohortMale::CreateCohort(m_pNodeVector->GetNextVectorSuid().data,
-                    VectorStateEnum::STATE_MALE,
-                    cohort->GetAge(),
-                    cohort->GetProgress(),
-                    cohort->GetDurationOfMicrosporidia(),
-                    cohort->GetPopulation(),
-                    cohort->GetGenome(),
-                    cohort->GetSpeciesIndex());
+                VectorCohortMale* male_cohort = VectorCohortMale::CreateCohort( m_pNodeVector->GetNextVectorSuid().data,
+                                                                                VectorStateEnum::STATE_MALE,
+                                                                                cohort->GetAge(),
+                                                                                cohort->GetProgress(),
+                                                                                cohort->GetDurationOfMicrosporidia(),
+                                                                                cohort->GetPopulation(),
+                                                                                cohort->GetGenome(),
+                                                                                cohort->GetSpeciesIndex() );
 
                 queueIncrementTotalPopulation(male_cohort);
 
@@ -2269,11 +2269,10 @@ namespace Kernel
                 // -------------------------------------------------------------------------
                 eggs_to_lay *= 2;
 
-                GenomeCountPairVector_t fertilized_egg_list = m_Fertilizer.DetermineFertilizedEggs(
-                    m_context->GetRng(),
-                    female_genome,
-                    male_genome,
-                    eggs_to_lay );
+                GenomeCountPairVector_t fertilized_egg_list = m_Fertilizer.DetermineFertilizedEggs( m_context->GetRng(),
+                                                                                                    female_genome,
+                                                                                                    male_genome,
+                                                                                                    eggs_to_lay );
 
                 TransmitMicrosporidiaToEggs( female_genome, male_genome, fertilized_egg_list );
 
@@ -2703,13 +2702,13 @@ namespace Kernel
 
             // progress is 1 since males should be at 1 from progressing from Immature to Male
             VectorCohortMale* tempentry = VectorCohortMale::CreateCohort( m_pNodeVector->GetNextVectorSuid().data,
-                                                                  VectorStateEnum::STATE_MALE,
-                                                                  0.0,
-                                                                  1.0,
-                                                                  0.0,
-                                                                  num_to_release,
-                                                                  rGenome,
-                                                                  m_SpeciesIndex );
+                                                                          VectorStateEnum::STATE_MALE,
+                                                                          0.0,
+                                                                          1.0,
+                                                                          0.0,
+                                                                          num_to_release,
+                                                                          rGenome,
+                                                                          m_SpeciesIndex );
             m_ReleasedMales.push_back( tempentry );
         }
 

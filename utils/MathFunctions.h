@@ -38,7 +38,7 @@ namespace Kernel {
         ENUM_VALUE_SPEC( POISSON_DISTRIBUTION                                , 4 )
         ENUM_VALUE_SPEC( LOG_NORMAL_DISTRIBUTION                             , 5 )
         ENUM_VALUE_SPEC( DUAL_CONSTANT_DISTRIBUTION                          , 6 )
-//        ENUM_VALUE_SPEC( PIECEWISE_CONSTANT                                  , 7 )	// Disable these distributions, but leave index as is (see demographics)
+//        ENUM_VALUE_SPEC( PIECEWISE_CONSTANT                                  , 7 )    // Disable these distributions, but leave index as is (see demographics)
 //        ENUM_VALUE_SPEC( PIECEWISE_LINEAR                                    , 8 )
         ENUM_VALUE_SPEC( WEIBULL_DISTRIBUTION                                , 9 )
         ENUM_VALUE_SPEC( DUAL_EXPONENTIAL_DISTRIBUTION                       ,10 )
