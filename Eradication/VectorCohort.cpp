@@ -792,9 +792,9 @@ namespace Kernel
     // --- VectorCohortMale
     // ------------------------------------------------------------------------
     BEGIN_QUERY_INTERFACE_DERIVED(VectorCohortMale, VectorCohortAbstract)
-        END_QUERY_INTERFACE_DERIVED(VectorCohortMale, VectorCohortAbstract)
+    END_QUERY_INTERFACE_DERIVED(VectorCohortMale, VectorCohortAbstract)
 
-        VectorCohortMale::VectorCohortMale()
+    VectorCohortMale::VectorCohortMale()
         : VectorCohortAbstract()
         , unmated_count(0)
         , unmated_count_cdf(0)
@@ -804,12 +804,12 @@ namespace Kernel
 
     VectorCohortMale::VectorCohortMale( const VectorCohortMale& rThat )
         : VectorCohortAbstract(rThat)
+        , unmated_count(0)
+        , unmated_count_cdf(0)
     {
     }
 
-    VectorCohortMale::VectorCohortMale( IVectorHabitat* _habitat,
-                                        uint32_t vectorID,
-                                        VectorStateEnum::Enum _state,
+    VectorCohortMale::VectorCohortMale( uint32_t vectorID,
                                         float _age,
                                         float _progress,
                                         float microsporidiaDuration,
@@ -817,7 +817,7 @@ namespace Kernel
                                         const VectorGenome& rGenome,
                                         int speciesIndex )
         : VectorCohortAbstract( vectorID,
-                                _state,
+                                VectorStateEnum::STATE_MALE,
                                 _age,
                                 _progress,
                                 microsporidiaDuration,
@@ -843,8 +843,7 @@ namespace Kernel
                                                       const VectorGenome& rGenome,
                                                       int speciesIndex )
     {
-        VectorCohortMale* newqueue = _new_ VectorCohortMale( nullptr,
-                                                             vectorID,
+        VectorCohortMale* newqueue = _new_ VectorCohortMale( vectorID,
                                                              _state,
                                                              _age,
                                                              _progress,
@@ -925,17 +924,17 @@ namespace Kernel
             unmated_leaving += these_unmated_should_leave;
         }
 
-        // creating leaving cohort, unmated_count_cdf will be set before vector population processing starts at next timestep
+        // creating leaving cohort
         VectorCohortMale* leaving = new VectorCohortMale(*this);
         leaving->m_ID = newVectorID;
         leaving->SetPopulation( numLeaving );
         leaving->SetUnmatedCount( unmated_leaving );
-        //setting CDF to 0, this is temporary and not used, but also don't want this to be a random large number which it ends up being not initialized
-        leaving->SetUnmatedCountCDF( 0 );
+        // unmated_count_cdf is initialized to 0 and will be updated by BuildMaleMatingCDF at the beginning of next timestep
 
-        // Updating staying cohort, unmated_count_cdf will be updated before vector population processing starts at next timestep
+        // Updating staying cohort
         this->SetPopulation( pop_staying );
         this->SetUnmatedCount( unmated_staying );
+        // unmated_count_cdf is untouched, because if this split is for VectorPopulationIndividual microsporidia infection, this cohort is still in play
 
         release_assert( orig_pop                 == ( this->GetPopulation() + leaving->GetPopulation() ) );
         release_assert( orig_unmated_count       == ( this->GetUnmatedCount() + leaving->GetUnmatedCount() ) );
@@ -951,7 +950,12 @@ namespace Kernel
     {
         VectorCohortAbstract::serialize( ar, obj );
         VectorCohortMale& cohort = *obj;
-        ar.labelElement( "unmated_count" )&     cohort.unmated_count;
+        // -------------------------------------------------------------------
+        // --- In the serialization the '&' between labelElement() and the variable is not for reference.
+        // --- We are using operator overloading and we are 'anding' the label and the variable together 
+        // --- to basically create JSON.
+        // -------------------------------------------------------------------
+        ar.labelElement( "unmated_count" )    & cohort.unmated_count; 
         ar.labelElement( "unmated_count_cdf" )& cohort.unmated_count_cdf;
 
     }

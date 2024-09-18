@@ -656,9 +656,13 @@ namespace Kernel
 
         // Update vector-cohort lists
         AddReleasedVectorsToQueues();
-        if (true)
+        if ( m_NeedToRefreshTheMatingCDF )
         {
-            // updates m_MaleMatingCDF for emmigrated and immigrated males and/or newly released males and/or de-serialized male population
+            // --------------------------------------------------------------------
+            // --- Updates/refreshes m_MaleMatingCDF and m_UnmatedMaleTotal using the unmated_counts
+            // --- from MaleQueues: males that stayed, immigrated males, and newly released males or de-serialized male population.
+            // --- Does not change number of unmated males, just re-counts them into the CDF. 
+            // --------------------------------------------------------------------
             BuildMaleMatingCDF(false);
         }
         Update_Infectious_Queue(dt);
@@ -1723,7 +1727,7 @@ namespace Kernel
         }
     }
 
-    void VectorPopulation::BuildMaleMatingCDF(bool reset_population_to_unmated)
+    void VectorPopulation::BuildMaleMatingCDF( bool reset_population_to_unmated )
     {
         // ------------------------------------------------------------------------------
         // --- Setup the m_MaleMatingCDF so that there is one entry for each male cohort
@@ -1733,50 +1737,44 @@ namespace Kernel
         m_UnmatedMaleTotal = 0;
         for( auto p_icohort : this->MaleQueues )
         {
-            VectorCohortMale* p_male_cohort = static_cast<VectorCohortMale*>(static_cast<VectorCohortAbstract*>(p_icohort));
+            VectorCohortMale* p_male_cohort = static_cast<VectorCohortMale*>( static_cast<VectorCohortAbstract*>( p_icohort ) );
 
-            if (reset_population_to_unmated)
+            if ( reset_population_to_unmated )
             {
                 // resets entire population to be unmated
-                p_male_cohort->SetUnmatedCount(p_icohort->GetPopulation());
+                p_male_cohort->SetUnmatedCount( p_icohort->GetPopulation() );
             }
-            if (p_male_cohort->GetUnmatedCount() > 0)
+            if ( p_male_cohort->GetUnmatedCount() > 0 )
             {
                 // avoids adding cohorts that have 0 unmated vectors
                 m_UnmatedMaleTotal += p_male_cohort->GetUnmatedCount();
-                p_male_cohort->SetUnmatedCountCDF(m_UnmatedMaleTotal);
-                m_MaleMatingCDF.push_back(p_icohort);
+                p_male_cohort->SetUnmatedCountCDF( m_UnmatedMaleTotal );
+                m_MaleMatingCDF.push_back( p_male_cohort );
             }
         }
     }
 
-    void VectorPopulation::UpdateMaleMatingCDF( std::vector<IVectorCohort*>::iterator selected_it )
+    void VectorPopulation::UpdateMaleMatingCDF( std::vector<VectorCohortMale*>::iterator selected_it )
     {
         // -----------------------------------------------------------------------
         // --- Deduct from the unmated_count since this cohort was selected.
         // --- This means that this cohort and all of the other ones that follow
         // --- need to have cumulative count deducted was well.
         // -----------------------------------------------------------------------
-        VectorCohortMale* p_male_cohort = static_cast<VectorCohortMale*>(static_cast<VectorCohortAbstract*>(*selected_it));
-        uint32_t unmated_count = p_male_cohort->GetUnmatedCount();
-        if (unmated_count < 1850)
-        {
-            unmated_count = unmated_count;
-        }
-        release_assert(unmated_count > 0);
-        p_male_cohort->SetUnmatedCount(unmated_count - 1);
+        uint32_t unmated_count = ( *selected_it )->GetUnmatedCount();
+        release_assert( unmated_count > 0 );
+        ( *selected_it )->SetUnmatedCount( unmated_count - 1 );
 
         while( selected_it != m_MaleMatingCDF.end() )
         {
             // setting VectorCohortMale.unmated_count_cdf -= 1 for all the subsequent CDFs
-            VectorCohortMale* p_male_temp = static_cast<VectorCohortMale*>(static_cast<VectorCohortAbstract*>(*selected_it));
-            p_male_temp->SetUnmatedCountCDF(p_male_temp->GetUnmatedCountCDF() - 1);
+            ( *selected_it )->SetUnmatedCountCDF ( ( *selected_it )->GetUnmatedCountCDF() - 1);
             ++selected_it;
         }
         m_UnmatedMaleTotal -= 1;
     }
 
-    std::vector<IVectorCohort*>::iterator VectorPopulation::SelectMaleMatingCohort()
+    std::vector<VectorCohortMale*>::iterator VectorPopulation::SelectMaleMatingCohort()
     {
         // ---------------------------------------------------------------------------------------
         // --- This must be called after BuildMaleMatingCDF() and after UpdateMaleMatingCDF()
@@ -1794,9 +1792,8 @@ namespace Kernel
         // --- If lower_bound() selects a cohort where everyone has already mated, then
         // --- find the next/nearby cohort that still has unmated males.
         // ------------------------------------------------------------------------------
-        VectorCohortMale* p_male_temp = static_cast<VectorCohortMale*>(static_cast<VectorCohortAbstract*>(*it));
-        bool go_forward = p_male_temp->GetUnmatedCountCDF() < m_UnmatedMaleTotal;
-        while((static_cast<VectorCohortMale*>(static_cast<VectorCohortAbstract*>(*it)))->GetUnmatedCount() == 0)
+        bool go_forward = ( *it )->GetUnmatedCountCDF() < m_UnmatedMaleTotal;
+        while( ( *it )->GetUnmatedCount() == 0)
         {
             if( go_forward )
                 ++it;
@@ -1804,27 +1801,26 @@ namespace Kernel
                 --it;
         }
         release_assert( it != m_MaleMatingCDF.end() );
-        release_assert((static_cast<VectorCohortMale*>(static_cast<VectorCohortAbstract*>(*it)))->GetUnmatedCount() > 0 );
+        release_assert((*it)->GetUnmatedCount() > 0 );
 
         return it;
     }
 
 
-    bool VectorPopulation::CompareMaleGenomeDist(const IVectorCohort* rLeft, uint32_t val)
+    bool VectorPopulation::CompareMaleGenomeDist(const VectorCohortMale* rLeft, uint32_t val)
     {
         // -------------------------------------------------------------------------------------------------------
         // --- NOTE: std::lowerbound() needs this to be strictly less than.  If the input to lowerbound() is equal
         // --- to the max value, '<' allows this element to be chosen.
         // -------------------------------------------------------------------------------------------------------
-        const VectorCohortMale* p_male_cohort = static_cast<const VectorCohortMale*>(static_cast<const VectorCohortAbstract*>(rLeft));
-        return p_male_cohort->GetUnmatedCountCDF() < val;
+        return rLeft->GetUnmatedCountCDF() < val;
     }
 
     void VectorPopulation::AddAdultsAndMate( IVectorCohort* pFemaleCohort,
                                              VectorCohortCollectionAbstract& rQueue,
                                              bool isNewAdult )
     {
-        std::map< uint32_t, std::map<IVectorCohort*, uint32_t>> microsporidia_infected_males[ MAX_MICROSPORIDIA_STRAINS ];
+        std::map< uint32_t, std::pair< VectorCohortMale*, uint32_t > > microsporidia_infected_males[ MAX_MICROSPORIDIA_STRAINS ];
 
         // 0 index no microsporidia, > 0 index implies has microsporidia
         GenomeCountMap_t genome_to_count_map[ MAX_MICROSPORIDIA_STRAINS ]; 
@@ -1834,9 +1830,9 @@ namespace Kernel
 
         for( uint32_t i = 0 ; (i < pop) && (m_UnmatedMaleTotal > 0); ++i )
         {
-            auto it = SelectMaleMatingCohort();
-            VectorCohortMale* p_male_cohort = static_cast<VectorCohortMale*>(static_cast<VectorCohortAbstract*>(*it));
-            release_assert(p_male_cohort->GetUnmatedCount() > 0);
+            auto it = SelectMaleMatingCohort(); // returns VectorCohortMale iterator
+            VectorCohortMale* p_male_cohort = *it;
+            release_assert( p_male_cohort->GetUnmatedCount() > 0);
 
             VectorGameteBitPair_t male_genome_bits = p_male_cohort->GetGenome().GetBits();
 
@@ -1863,7 +1859,14 @@ namespace Kernel
                 float prob_transmission = m_species_params->microsporidia_strains[ female_ms_strain_index ]->female_to_male_transmission_probability;
                 if( m_context->GetRng()->SmartDraw( prob_transmission ) )
                 {
-                    microsporidia_infected_males[ female_ms_strain_index ][ p_male_cohort->GetID()][p_male_cohort] += 1;
+                    if( microsporidia_infected_males[ female_ms_strain_index ].count( p_male_cohort->GetID() ) == 0 )
+                    {
+                        microsporidia_infected_males[ female_ms_strain_index ][ p_male_cohort->GetID() ] = std::make_pair( p_male_cohort, uint32_t( 1 ) );
+                    }
+                    else
+                    {
+                        microsporidia_infected_males[female_ms_strain_index][ p_male_cohort->GetID() ].second += 1;
+                    }
 
                     // -----------------------------------------------------------------------------------
                     // --- I'm having the female carry that the male was infected because it shows that
@@ -1888,7 +1891,7 @@ namespace Kernel
             }
             genome_to_count_map[ female_ms_strain_index ][ male_genome_bits ] += 1;
 
-            UpdateMaleMatingCDF( it );
+            UpdateMaleMatingCDF( it ); // keep CDF updated as we mate
         }
 
         // ---------------------------------------------------------------------
@@ -1955,26 +1958,28 @@ namespace Kernel
         // -----------------------------------------------------------
         // --- Split off new Male cohorts infected with microsporidia
         // -----------------------------------------------------------
-        std::map<IVectorCohort*, uint32_t> cohort_infected_map; // declaring outside the loop to not construct/destruct every time
         for( int female_strain_index = 0; female_strain_index < MAX_MICROSPORIDIA_STRAINS; ++female_strain_index )
         {
             for( auto entry : microsporidia_infected_males[ female_strain_index ] )
             {
-                cohort_infected_map = entry.second; // <cohort, infected> map should always have one entry, access it with begin()
-                release_assert( cohort_infected_map.size() == 1 );
-
-                VectorCohortMale* p_orig_cohort = static_cast<VectorCohortMale*>( static_cast<VectorCohortAbstract*>( cohort_infected_map.begin()->first ) );
+                release_assert( entry.first == entry.second.first->GetID() ); // making sure cohort is correctly under its ID
+                VectorCohortMale* p_orig_cohort = entry.second.first; // vector cohort
                 uint32_t           orig_unmated = p_orig_cohort->GetUnmatedCount();
                 VectorCohortMale*  p_new_cohort = p_orig_cohort->SplitNumber( m_context->GetRng(),
                                                                               m_pNodeVector->GetNextVectorSuid().data,
-                                                                              cohort_infected_map.begin()->second );
-                release_assert(p_new_cohort != nullptr);
-                p_new_cohort->InfectWithMicrosporidia(female_strain_index);
+                                                                              entry.second.second ); // num infected
+                release_assert( p_new_cohort != nullptr );
+                p_new_cohort->InfectWithMicrosporidia( female_strain_index );
 
-                // massaging umated numbers in the cohorts
-                p_new_cohort->SetUnmatedCount(0); // the ones infected with microsporidia definitely have mated (doesn't matter, had sex)
-                p_orig_cohort->SetUnmatedCount(orig_unmated); // all the unmated stay with the original cohort
-                release_assert( p_orig_cohort->GetPopulation() >= p_orig_cohort->GetUnmatedCount());
+                // ---------------------------------------------------------------
+                // --- massaging unmated numbers in the cohorts:
+                // --- the ones infected with microsporidia definitely all have mated 
+                // --- if there were any unmated, all stay with original cohort
+                // --- the unmated_count and unmated_count_cdf in the original cohort is up to date (see mating loop)
+                // ---------------------------------------------------------------
+                p_new_cohort->SetUnmatedCount( 0 ); // 
+                p_orig_cohort->SetUnmatedCount( orig_unmated ); 
+                release_assert( p_orig_cohort->GetPopulation() >= p_orig_cohort->GetUnmatedCount() );
 
                 MaleQueues.add( p_new_cohort, 0.0, true );
             }
@@ -2745,6 +2750,11 @@ namespace Kernel
     {
         release_assert( m_pMigrationInfoVector );
         release_assert( pMigratingQueue );
+        // using m_IsHeterogeneityEnabled as a proxy for "is_this_not_MigrationInfoNullVector" in Vector_Migration to avoid calling more code than needed
+        if( !m_pMigrationInfoVector->IsHeterogeneityEnabled() )
+        {
+            return;
+        }
 
         Vector_Migration_Helper(pMigratingQueue, VectorGender::VECTOR_MALE);
         
@@ -2809,7 +2819,7 @@ namespace Kernel
         }
         else
         {
-            m_NeedToRefreshTheMatingCDF = false; // reset the bool, start checking if we will need to refresh m_MaleMatingCDF at beginning of next timestep
+            m_NeedToRefreshTheMatingCDF = false; // reset the bool, we will check if we need to refresh m_MaleMatingCDF at beginning of next timestep
             auto non_male_migrating = pMigratingQueue->size();
             Vector_Migration_Queue(random_indexes, r_reachable_nodes, fraction_traveling, p_inv, pMigratingQueue, MaleQueues);
             if (pMigratingQueue->size() - non_male_migrating > 0)
@@ -3490,10 +3500,11 @@ namespace Kernel
         ar.labelElement("InfectiousQueues") & population.InfectiousQueues;
         ar.labelElement("MaleQueues") & population.MaleQueues;
         ar.labelElement("m_VectorMortality") & population.m_VectorMortality;
-        ar.labelElement("m_UnmatedMaleTotal" ) & population.m_UnmatedMaleTotal;
 
         // --------------------------------------------------------------------------
-        // --- If reading a serialized file, refresh the m_MaleMatingCDF with serialized unmated counts so it can be used in Update_Adult_Queues
+        // --- If reading a serialized file, we will update/refresh the 
+        // --- m_UnmatedMaleTotal and m_MaleMatingCDF() from serialized unmated counts 
+        // --- from MaleQueues 
         // --------------------------------------------------------------------------
         if( ar.IsReader() )
         {

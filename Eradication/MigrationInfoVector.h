@@ -33,7 +33,9 @@ namespace Kernel
 
         virtual Gender::Enum ConvertVectorGender(VectorGender::Enum gender) const 
         {
-            return (gender == VectorGender::VECTOR_FEMALE ? Gender::FEMALE : Gender::MALE);
+            std::stringstream msg;
+            msg << "ConvertVectorGender should not be used when there's no vector migration.\n";
+            throw Kernel::IllegalOperationException( __FILE__, __LINE__, __FUNCTION__, msg.str().c_str() );
         };
 
 

@@ -15,11 +15,11 @@ namespace Kernel
         IMPLEMENT_NO_REFERENCE_COUNTING()
         DECLARE_QUERY_INTERFACE()
     public:
-        VectorToHumanAdapter( INodeContext* pNodeContext, uint32_t vectorID);
-        VectorToHumanAdapter( INodeContext* pNodeContext, uint32_t vectorID, VectorGender::Enum vector_gender);
+        VectorToHumanAdapter( INodeContext* pNodeContext, uint32_t vectorID );
         virtual ~VectorToHumanAdapter();
 
         virtual suids::suid GetSuid() const;
+        virtual void        SetVectorID( uint32_t new_id );
         virtual INodeEventContext *GetNodeEventContext();
         virtual double GetAge()              const;
         virtual int    GetGender()           const;
@@ -39,8 +39,8 @@ namespace Kernel
         virtual IPKeyValueContainer * GetProperties();
 
     private:
-        INodeContext* m_pNodeContext;
-        uint32_t m_VectorID;
+        INodeContext*      m_pNodeContext;
+        uint32_t           m_VectorID;
         VectorGender::Enum m_VectorGender;
     };
 

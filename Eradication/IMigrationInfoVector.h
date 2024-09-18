@@ -28,7 +28,8 @@ namespace Kernel
     {
         virtual ~IMigrationInfoFactoryVector() {};
 
-        virtual void ReadConfiguration( JsonConfigurable* pParent, const ::Configuration* config ) = 0;
+        virtual void                  ReadConfiguration( JsonConfigurable* pParent, 
+                                                         const ::Configuration* config ) = 0;
         virtual IMigrationInfoVector* CreateMigrationInfoVector( const std::string& idreference,
                                                                  INodeContext *parent_node, 
                                                                  const boost::bimap<ExternalNodeId_t, suids::suid>& rNodeIdSuidMap ) = 0;

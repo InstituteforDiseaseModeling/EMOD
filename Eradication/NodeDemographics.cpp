@@ -907,8 +907,9 @@ NodeDemographics* NodeDemographicsFactory::CreateNodeDemographics( JsonObjectDem
 
 JsonObjectDemog NodeDemographicsFactory::CreateDefaultNodeDemograhics( ExternalNodeId_t nodeid )
 {
-    float lat = (nodeid % torus_size) * 0.008333 /* 30 arcsecs */;
-    float lon = (nodeid / torus_size) * 0.008333 /* 30 arcsecs */;
+    uint32_t i_loc = nodeid - 1;
+    float lat = (i_loc % torus_size) * 0.008333 /* 30 arcsecs */;
+    float lon = (i_loc / torus_size) * 0.008333 /* 30 arcsecs */;
 
     std::stringstream ss;
     ss << "{ \"NodeID\": " << nodeid << ", \"NodeAttributes\": { \"Latitude\": " << lat << ", \"Longitude\": " << lon << " } }";

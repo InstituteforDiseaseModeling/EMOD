@@ -379,9 +379,9 @@ namespace Kernel
         info_file_list.push_back(nullptr);
         
         // ------------------------------------------------------------------------------
-        // is_fixed_rate not used, we always have male and female migration because female 
-        // vector migration gets UpdateRate so we want to keep the migration data separated 
-        // for males and females
+        // --- is_fixed_rate not used, we always have male and female migration because female 
+        // --- vector migration gets UpdateRate so we want to keep the migration data separated 
+        // --- for males and females
         // ------------------------------------------------------------------------------
         bool is_fixed_rate = true ;
         std::vector<std::vector<MigrationRateData>> rate_data = MigrationInfoFactoryFile::GetRateData( pParentNode,
@@ -402,6 +402,7 @@ namespace Kernel
                                                                                                          m_ModifierFood,
                                                                                                          m_ModifierStayPut);
             new_migration_info->Initialize(rate_data);
+            new_migration_info->m_IsHeterogeneityEnabled = true; // using this as a proxy for "is_this_not_MigrationInfoNullVector" in VectorPopulation*::Vector_Migration
             p_new_migration_info = new_migration_info;
             
         }
@@ -452,7 +453,7 @@ namespace Kernel
                                                                                                          1.0,
                                                                                                          1.0 );
             new_migration_info->Initialize( rate_data );
-
+            new_migration_info->m_IsHeterogeneityEnabled = true; // using this as a proxy for "is_this_not_MigrationInfoNullVector" in VectorPopulation*::Vector_Migration
             return new_migration_info;
         }
         else

@@ -387,9 +387,9 @@ namespace Kernel
                                        bool isNewAdult );
 
         void BuildMaleMatingCDF(bool reset_population_to_unmated);
-        void UpdateMaleMatingCDF(std::vector<IVectorCohort*>::iterator it);
-        std::vector<IVectorCohort*>::iterator SelectMaleMatingCohort();
-        static bool CompareMaleGenomeDist(const IVectorCohort* rLeft, uint32_t val );
+        void UpdateMaleMatingCDF(std::vector<VectorCohortMale*>::iterator it);
+        std::vector<VectorCohortMale*>::iterator SelectMaleMatingCohort();
+        static bool CompareMaleGenomeDist(const VectorCohortMale* rLeft, uint32_t val );
 
         virtual void AddAdultCohort( IVectorCohort* pFemaleCohort,
                                      const VectorGenome& rMaleGenome,
@@ -562,8 +562,8 @@ namespace Kernel
 
         int m_SpeciesIndex;
 
-        uint32_t m_UnmatedMaleTotal;
-        std::vector<IVectorCohort*> m_MaleMatingCDF;
+        uint32_t                    m_UnmatedMaleTotal;
+        std::vector<VectorCohortMale*> m_MaleMatingCDF;
 
         bool m_IsSortingVectors;
         bool m_NeedToRefreshTheMatingCDF;

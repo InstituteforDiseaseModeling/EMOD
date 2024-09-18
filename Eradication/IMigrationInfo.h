@@ -33,11 +33,11 @@ namespace Kernel
                                         float dt = FLT_MAX ) = 0;  // FLT_MAX for humans, dt for vectors
 
         // needed for serialization
-        virtual void SetContextTo(INodeContext* parent) = 0;
+        virtual void SetContextTo( INodeContext* parent ) = 0;
 
-        virtual float GetTotalRate( Gender::Enum gender = Gender::MALE ) const = 0;
-        virtual const std::vector<float>& GetCumulativeDistributionFunction( Gender::Enum gender = Gender::MALE ) const = 0;
-        virtual const std::vector<suids::suid>& GetReachableNodes( Gender::Enum gender = Gender::MALE ) const = 0;
+        virtual float                                   GetTotalRate( Gender::Enum gender = Gender::MALE ) const = 0;
+        virtual const std::vector<float>&               GetCumulativeDistributionFunction( Gender::Enum gender = Gender::MALE ) const = 0;
+        virtual const std::vector<suids::suid>&         GetReachableNodes( Gender::Enum gender = Gender::MALE ) const = 0;
         virtual const std::vector<MigrationType::Enum>& GetMigrationTypes( Gender::Enum gender = Gender::MALE ) const = 0;
 
         virtual bool IsHeterogeneityEnabled() const = 0;

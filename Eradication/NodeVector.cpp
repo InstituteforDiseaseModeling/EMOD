@@ -397,6 +397,7 @@ namespace Kernel
         {
             const VectorSpeciesParameters* p_vsp = params()->vector_params->vector_species[ species_index ];
 
+            // parameter description in demographics_params.rc - InitialVectorsPerSpecies_DESC_TEXT
             int32_t population_per_species = DEFAULT_VECTOR_POPULATION_SIZE;
             if( demographics[ "NodeAttributes" ].Contains( "InitialVectorsPerSpecies" ) )
             {

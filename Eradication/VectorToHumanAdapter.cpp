@@ -11,17 +11,10 @@ namespace Kernel
         HANDLE_INTERFACE( IIndividualHumanEventContext )
     END_QUERY_INTERFACE_BODY( VectorToHumanAdapter )
 
-    VectorToHumanAdapter::VectorToHumanAdapter(INodeContext* pNodeContext, uint32_t vectorID)
-        : m_pNodeContext(pNodeContext)
-        , m_VectorID(vectorID)
-        , m_VectorGender(VectorGender::VECTOR_FEMALE)
-    {
-    }
-
-    VectorToHumanAdapter::VectorToHumanAdapter( INodeContext* pNodeContext, uint32_t vectorID, VectorGender::Enum vector_gender)
+    VectorToHumanAdapter::VectorToHumanAdapter( INodeContext* pNodeContext, uint32_t vectorID)
         : m_pNodeContext( pNodeContext )
         , m_VectorID( vectorID )
-        , m_VectorGender (vector_gender)
+        , m_VectorGender( VectorGender::VECTOR_FEMALE)
     {
     }
 
@@ -35,6 +28,11 @@ namespace Kernel
         suids::suid id;
         id.data = m_VectorID;
         return id;
+    }
+
+    void VectorToHumanAdapter::SetVectorID( uint32_t new_id )
+    {
+        m_VectorID = new_id;
     }
 
     INodeEventContext* VectorToHumanAdapter::GetNodeEventContext()

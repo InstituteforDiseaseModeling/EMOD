@@ -600,9 +600,11 @@ namespace Kernel
         else if( m_UnmatedMaleTotal > 0 )
         {
             auto it = SelectMaleMatingCohort();
-            VectorCohortMale* p_male_cohort = static_cast<VectorCohortMale*>(static_cast<VectorCohortAbstract*>(*it));
+            VectorCohortMale* p_male_cohort = *it;
             release_assert(p_male_cohort->GetUnmatedCount() > 0);
-            UpdateMaleMatingCDF(it); // updating this here so when it comes to the new microsporidia cohort, the numbers are all updated already (like it VectorPopulation)
+            // updating this here so when it comes to the new microsporidia cohort, 
+            // the numbers are all updated already (like in VectorPopulation)
+            UpdateMaleMatingCDF(it); 
 
             VectorGameteBitPair_t male_genome_bits = p_male_cohort->GetGenome().GetBits();
 
@@ -633,10 +635,15 @@ namespace Kernel
                                                                                       1 );
                     release_assert( p_new_male_cohort != nullptr );
                     p_new_male_cohort->InfectWithMicrosporidia(female_ms_strain_index);
-                    // massaging unmated numbers in the cohorts
-                    p_new_male_cohort->SetUnmatedCount(0); // the ones infected with microsporidia definitely have mated (doesn't matter, had sex)
-                    p_male_cohort->SetUnmatedCount(orig_unmated); // all the unmated stay with original cohort
-                    release_assert(p_male_cohort->GetPopulation() >= p_male_cohort->GetUnmatedCount());
+                    // ---------------------------------------------------------------
+                    // --- massaging unmated numbers in the cohorts:
+                    // --- the ones infected with microsporidia definitely all have mated 
+                    // --- if there were any unmated, all stay with original cohort
+                    // --- the unmated_count and unmated_count_cdf in the original cohort is up to date (see mating loop)
+                    // ---------------------------------------------------------------
+                    p_new_male_cohort->SetUnmatedCount( 0 );
+                    p_male_cohort->SetUnmatedCount( orig_unmated ); 
+                    release_assert( p_male_cohort->GetPopulation() >= p_male_cohort->GetUnmatedCount() );
                     // -----------------------------------------------------------------------------------
                     // --- I'm having the female carry that the male was infected because it shows that
                     // --- both parents were/became infected.  I also think that if this tends towards all
@@ -826,6 +833,11 @@ namespace Kernel
     {
         release_assert(m_pMigrationInfoVector);
         release_assert(pMigratingQueue);
+        // using m_IsHeterogeneityEnabled as a proxy for "is_this_not_MigrationInfoNullVector" in Vector_Migration to avoid calling more code than needed
+        if( !m_pMigrationInfoVector->IsHeterogeneityEnabled() )
+        {
+            return;
+        }
 
         VectorPopulation::Vector_Migration(dt, pMigratingQueue, true);
         
@@ -838,18 +850,17 @@ namespace Kernel
         suids::suid current_node = m_context->GetSuid();
         m_pMigrationInfoVector->UpdateRates( current_node, get_SpeciesID(), p_vsc );
 
-        Gender::Enum                            female            = Gender::FEMALE; // this is always for female vectors only, using human equivalent
-        float                                   total_rate        = m_pMigrationInfoVector->GetTotalRate( female );
-        const std::vector<float              >& r_cdf             = m_pMigrationInfoVector->GetCumulativeDistributionFunction( female );
+        Gender::Enum              female     = Gender::FEMALE; // this is always for female vectors only, using human equivalent
+        float                     total_rate = m_pMigrationInfoVector->GetTotalRate( female );
+        const std::vector<float>& r_cdf      = m_pMigrationInfoVector->GetCumulativeDistributionFunction( female );
 
         if( ( r_cdf.size() == 0 ) || ( total_rate == 0.0 ) )
         {
             return; // no female vector migration
         }
 
-        // only thing we need is for this adapter to be female; id is not used, vectors always female
-        uint32_t unused_id = 0;
-        VectorToHumanAdapter adapter( m_context, unused_id, VectorGender::VECTOR_FEMALE); 
+        // vectors always female, updating ID inside loop just in case
+        VectorToHumanAdapter adapter( m_context, 0 ); 
 
         // initializing these outside the loop, they are re-initialized just to be updated inside PickMigrationStep every time
         suids::suid         destination = suids::nil_suid();
@@ -859,6 +870,7 @@ namespace Kernel
         // Use the verbose "for" construct here because we may be modifying the list and need to protect the iterator.
         for( auto it = pAdultQueues->begin(); it != pAdultQueues->end(); ++it )
         {
+            adapter.SetVectorID( ( *it )->GetID() );
             m_pMigrationInfoVector->PickMigrationStep( m_context->GetRng(), &adapter, 1.0, destination, mig_type, time, dt );
 
             // test if vector will migrate: no destination = no migration, also don't migrate to node you're already in
