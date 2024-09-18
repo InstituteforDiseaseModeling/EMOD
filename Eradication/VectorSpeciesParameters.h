@@ -51,7 +51,7 @@ namespace Kernel
         DECLARE_QUERY_INTERFACE();
 
     public:
-      //  VectorSpeciesParameters( int _index );
+        VectorSpeciesParameters( int _index );
         virtual ~VectorSpeciesParameters();
 
         bool Configure( const ::Configuration *json ) override;
@@ -93,8 +93,6 @@ namespace Kernel
         VectorGeneDriverCollection gene_drivers;
 
     protected:
-        VectorSpeciesParameters( int _index );
-        friend class VectorSpeciesCollection;
     };
 
     class VectorSpeciesCollection : public JsonConfigurableCollection<VectorSpeciesParameters>
