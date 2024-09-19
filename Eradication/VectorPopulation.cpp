@@ -258,6 +258,7 @@ namespace Kernel
                                                                         rGenomeFemale,
                                                                         m_SpeciesIndex );
                 queueIncrementTotalPopulation( pvc );
+                m_NeedToRefreshTheMatingCDF = true; // anytime MaleQueues is modified, we need to refresh before mating
                 MaleQueues.add( pvc, 0.0, true );
             }
         }
@@ -1605,10 +1606,6 @@ namespace Kernel
             if( (cohort->GetProgress() >= 1) && (cohort->GetPopulation() > 0) )
             {
                 ImmatureSugarTrapKilling( cohort );
-            }
-
-            if( (cohort->GetProgress() >= 1) && (cohort->GetPopulation() > 0) )
-            {
                 // creating new VectorCohortMale cohort instead of using the same cohort as before
                 VectorCohortMale* male_cohort = VectorCohortMale::CreateCohort( m_pNodeVector->GetNextVectorSuid().data,
                                                                                 cohort->GetAge(),
@@ -1619,7 +1616,6 @@ namespace Kernel
                                                                                 cohort->GetSpeciesIndex() );
 
                 queueIncrementTotalPopulation(male_cohort);
-
                 MaleQueues.add(male_cohort, 0.0, true ); //adds cohort
                 ImmatureQueues.remove( it );
                 delete cohort; // deleting the cohort in which our males matured
@@ -1736,7 +1732,6 @@ namespace Kernel
         for( auto p_icohort : this->MaleQueues )
         {
             VectorCohortMale* p_male_cohort = static_cast<VectorCohortMale*>( static_cast<VectorCohortAbstract*>( p_icohort ) );
-
             if ( reset_population_to_unmated )
             {
                 // resets entire population to be unmated

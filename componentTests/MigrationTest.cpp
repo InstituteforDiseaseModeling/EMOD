@@ -729,6 +729,11 @@ SUITE(MigrationTest)
             }
 
             std::string idreference = "Default" ;
+            if( GET_CONFIGURABLE( SimulationConfig ) != nullptr )
+            {
+                GET_CONFIGURABLE( SimulationConfig )->demographics_initial = false;
+                GET_CONFIGURABLE( SimulationConfig )->default_torus_size = 10;
+            }
             unique_ptr<IMigrationInfoFactory> p_mf( MigrationFactory::ConstructMigrationInfoFactory( EnvPtr->Config,
                                                                                                      idreference ) );
 
@@ -841,6 +846,11 @@ SUITE(MigrationTest)
             }
 
             std::string idreference = "Default" ;
+            if( GET_CONFIGURABLE( SimulationConfig ) != nullptr )
+            {
+                GET_CONFIGURABLE( SimulationConfig )->demographics_initial = false;
+                GET_CONFIGURABLE( SimulationConfig )->default_torus_size = torus_size;
+            }
             unique_ptr<IMigrationInfoFactory> p_mf( MigrationFactory::ConstructMigrationInfoFactory( EnvPtr->Config,
                                                                                                      idreference ) );
 

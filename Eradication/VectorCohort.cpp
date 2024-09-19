@@ -878,6 +878,7 @@ namespace Kernel
     {
         SetPopulation( GetPopulation() + pCohortToAdd->GetPopulation() );
         SetUnmatedCount( GetUnmatedCount() + ( static_cast<VectorCohortMale*>( static_cast<VectorCohortAbstract*>( pCohortToAdd ) ) )->GetUnmatedCount() );
+        SetUnmatedCountCDF(0); // if we're merging, we should refresh the CDF because original number doesn't make sense
     }
 
     VectorCohortMale* VectorCohortMale::SplitPercent( RANDOMBASE* pRNG, uint32_t newVectorID, float percentLeaving )

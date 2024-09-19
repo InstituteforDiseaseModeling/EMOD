@@ -53,15 +53,14 @@ namespace Kernel
         uint32_t adjusted_population = num / m_mosquito_weight;
         for (uint32_t i = 0; i < adjusted_population; i++)
         {
-            VectorCohortIndividual* pvci = CreateAdultCohort(
-                m_pNodeVector->GetNextVectorSuid().data,
-                VectorStateEnum::STATE_ADULT,
-                0.0,
-                0.0,
-                0.0,
-                m_mosquito_weight,
-                rGenomeFemale,
-                m_SpeciesIndex );
+            VectorCohortIndividual* pvci = CreateAdultCohort( m_pNodeVector->GetNextVectorSuid().data,
+                                                              VectorStateEnum::STATE_ADULT,
+                                                              0.0,
+                                                              0.0,
+                                                              0.0,
+                                                              m_mosquito_weight,
+                                                              rGenomeFemale,
+                                                              m_SpeciesIndex );
             pvci->SetMateGenome(rGenomeMate);
 
             RandomlySetOvipositionTimer(pvci);
@@ -609,10 +608,10 @@ namespace Kernel
             VectorGameteBitPair_t male_genome_bits = p_male_cohort->GetGenome().GetBits();
 
             int female_ms_strain_index = pFemaleCohort->GetGenome().GetMicrosporidiaStrainIndex();
-            int male_ms_strain_index   = p_male_cohort->GetGenome().GetMicrosporidiaStrainIndex();
+            int   male_ms_strain_index = p_male_cohort->GetGenome().GetMicrosporidiaStrainIndex();
 
             bool female_has_microsporidia = pFemaleCohort->HasMicrosporidia();
-            bool male_has_microsporidia = p_male_cohort->HasMicrosporidia();
+            bool   male_has_microsporidia = p_male_cohort->HasMicrosporidia();
 
             if( male_has_microsporidia && !female_has_microsporidia )
             {
@@ -650,7 +649,7 @@ namespace Kernel
                     // --- vectors getting infected, then this should cause the creation of fewer cohorts.
                     // -----------------------------------------------------------------------------------
                     male_genome_bits = p_new_male_cohort->GetGenome().GetBits();
-
+                    m_NeedToRefreshTheMatingCDF = true; // need to update cdf in case new microsporidia cohorts were merged with present ones
                     MaleQueues.add( p_new_male_cohort, 0.0, true );
 
                 }
@@ -896,6 +895,7 @@ namespace Kernel
                 break;
 
             case VectorStateEnum::STATE_MALE:
+                m_NeedToRefreshTheMatingCDF = true;
                 if (m_IsSortingVectors)
                     m_ImmigratingMale.push_back(pvc);
                 else

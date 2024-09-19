@@ -272,7 +272,7 @@ namespace Kernel
     {
         // --------------------------------------------------------------------------
         // --- Determine the probability that the mosquito will not migrate because
-        // --- there is enough food or habitat in there current node
+        // --- there is enough food or habitat in their current node
         // --------------------------------------------------------------------------
         float sp = 1.0;
         if ((m_ModifierStayPut > 0.0) && (rNodeId == m_ThisNodeId))
