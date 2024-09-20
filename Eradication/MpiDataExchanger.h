@@ -3,6 +3,7 @@
 
 #include <functional>
 #include <vector>
+#include <stdint.h>
 
 
 namespace Kernel
