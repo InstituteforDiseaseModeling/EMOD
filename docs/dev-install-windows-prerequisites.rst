@@ -18,11 +18,10 @@ information.
 Install prerequisites for running simulations
 =============================================
 
-The following software packages are required to run simulations using |exe_s|. If you already
-installed the pre-built |exe_s| using the instructions in :doc:`emod-generic:install-overview`, you can skip
-this section.
-
-.. TODO :doc:`emodpy-hiv:emod/install-overview` for HIV or :doc:`emodpy-malaria:emod/install-overview` for malaria.
+The following software packages are required to run simulations using |exe_s|. You can skip this section you already installed the pre-built
+|exe_s| using the instructions in :doc:`emod-generic:install-overview` for
+generic, :doc:`emodpy-hiv:emod/install-overview` for HIV,
+or :doc:`emodpy-malaria:emod/install-overview` for malaria.for malaria.
 
 .. include:: reuse/windows-install-to-run.txt
 
