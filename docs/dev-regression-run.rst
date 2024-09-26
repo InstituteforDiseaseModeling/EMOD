@@ -69,12 +69,11 @@ produce output that should not be considered scientifically accurate.
 #.  Review the output and examine any failures.
 
     |EMOD_s| will output the standard error and logging files, StdErr.txt and StdOut.txt, produced from
-    any simulation (see :doc:`emod-generic:software-error-logging`). In addition, regression_test.py will output time.txt
+    any simulation. For more information, see :doc:`emod-generic:software-error-logging` for generic,
+    :doc:`emodpy-hiv:emod/software-error-logging` for HIV, or :doc:`emodpy-malaria:emod/software-error-logging` for malaria. In addition, regression_test.py will output time.txt
     under the regression test working directory and report_xxxx.xml under Regression/reports. The time
     report contains the |EMOD_s| version and total run time of the simulation. The regression report is
     in JUnit_ standard form and captures run information, including pass/fail/complete and time to complete.
-
-    .. TODO :doc:`emodpy-hiv:emod/software-error-logging` for HIV or :doc:`emodpy-malaria:emod/software-error-logging` for malaria.
 
     If a simulation completes saying the run passed but the channel order was different than the
     reference output, this is considered a pass. However, if any output completes but does not match

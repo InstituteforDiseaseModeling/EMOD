@@ -26,9 +26,7 @@ A campaign event triggers the campaign management system to evaluate when, where
 intervention will be distributed. This section describes the **SimulationEventContext**,
 **CampaignEvent**, **NodeSet**, and **EventCoordinator** classes used to manage this process.
 
-For more information on setting up campaign files, see :doc:`emod-generic:model-campaign` for generic.
-
-.. TODO add links , :doc:`emodpy-malaria:emod/model-campaign` for malaria, or :doc:`emodpy-hiv:emod/model-campaign`.
+For more information on setting up campaign files, see :doc:`emod-generic:model-campaign` for generic, :doc:`emodpy-malaria:emod/model-campaign` for malaria, or :doc:`emodpy-hiv:emod/model-campaign` for HIV.
 
 SimulationEventContext
 ----------------------

@@ -114,7 +114,7 @@ disease from the pool. For vector-borne diseases, disease transmission is more c
 must take into account the vector life cycle. See :ref:`arch-transmission`.
 
 
-.. TODO add the derived classes for HIV/STI/TB/airborne
+.. TODO add the derived classes for HIV/STI/
 
 
 
@@ -155,10 +155,8 @@ For multi-core parallelization, the demographics file is read in order on each p
 of each node and is compared with a policy assigning nodes to processes embodied in objects
 implementing **InitialLoadBalancingScheme**. If the initial load balancing scheme allows a node for
 the current rank, the node is created via **addNewNodeFromDemographics**. After all nodes have been
-created and propagated, the **NodeRankMaps** are merged across all processes. See
-:doc:`emod-generic:software-load-balancing` for more information.
-
-.. TODO :doc:`emodpy-hiv:emod/software-load-balancing` for HIV or :doc:`emodpy-malaria:software-load-balancing` for malaria. 
+created and propagated, the **NodeRankMaps** are merged across all processes. For more information, see
+:doc:`emod-generic:software-load-balancing` for generic, :doc:`emodpy-hiv:emod/software-load-balancing` for HIV, or :doc:`emodpy-malaria:emod/software-load-balancing` for malaria. 
 
 Node
 ====
@@ -203,11 +201,8 @@ The **Node** class contains the following methods:
 By default, an **IndividualHuman** object is created, tracked, and updated for every person within a
 node. To reduce memory usage and processing time, you may want to sample such that each
 **IndividualHuman** object represents multiple people. There are several different sampling strategies
-implemented, with different strategies better suited for different simulations. See
-:doc:`emod-generic:parameter-configuration-sampling` for more information.
-
-.. TODO :doc:`emodpy-hiv:emod/parameter-configuration-sampling` for HIV or
-.. :doc:`emodpy-malaria:emod/parameter-configuration-sampling` for malaria. 
+implemented, with different strategies better suited for different simulations. For more information, see
+:doc:`emod-generic:parameter-configuration-sampling` for generic, :doc:`emodpy-hiv:emod/parameter-configuration-sampling` for HIV, or :doc:`emodpy-malaria:emod/parameter-configuration-sampling` for malaria. 
 
 If migration is enabled, at the end of the **Node** update, the **Node** moves all migrating
 individuals to a separate migration queue for processing. Once the full simulation time step is

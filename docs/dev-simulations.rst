@@ -11,9 +11,9 @@ obtained prior to your changes.
 #.  On the **Solution Explorer** pane, right-click the **Eradication** project and select **Properties**.
 #.  On the **Property Pages** window, in the **Configuration Properties** pane, click **Debugging**.
 #.  Set the **Command Arguments** and **Working Directory** to the appropriate values and click **OK**.
-    See :doc:`emod-generic:software-simulation-cli` for more information.
-
-.. TODO :doc:`emodpy-hiv:emod/software-simulation-cli` for HIV or :doc:`emodpy-malaria:emod/software-simulation-cli` for malaria. 
+    For more information, see :doc:`emod-generic:software-simulation-cli` for generic, 
+    :doc:`emodpy-hiv:emod/software-simulation-cli` for HIV, or 
+    :doc:`emodpy-malaria:emod/software-simulation-cli` for malaria. 
 
 #.  On the **Debug** menu, do one of the following:
 

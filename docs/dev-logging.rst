@@ -2,12 +2,12 @@
 Set log levels
 ==============
 
-|EMOD_s| simulations output several files, including log files. See :doc:`emod-generic:software-error-logging` for
-more information on the logging files that are created by a simulation. By default, logging is at
+|EMOD_s| simulations output several files, including log files. For
+more information on the logging files that are created by a simulation, see 
+:doc:`emod-generic:software-error-logging` for generic, :doc:`emodpy-hiv:emod/software-error-logging` 
+for HIV, or :doc:`emodpy-malaria:emod/software-error-logging` for malaria. By default, logging is at
 the "INFO" level, but you can set the level at which you want logging information generated. If you
 see redundant log messages, you can also throttle logging to eliminate them.
-
-.. TODO :doc:`emodpy-hiv:emod/software-error-logging` for HIV or :doc:`emodpy-malaria:emod/software-error-logging` for malaria.
 
 There are five log levels. The level chosen will log messages for that level and all higher
 levels (levels of smaller numeric value). You can set default log levels across the entire

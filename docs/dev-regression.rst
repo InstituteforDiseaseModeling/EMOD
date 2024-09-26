@@ -21,12 +21,12 @@ fails, |EMOD_s| will produce a matplotlib chart of the first 16 channels in the 
 :term:`output report`. You can then review the charts to identify the problem. Base and overlay configuration files will be flattened
 
 If you want to quickly compare a simulation output to the reference output, you can also run any of
-the regression scenarios as a typical simulation, as described in :doc:`emod-generic:software-run-simulation`. However,
+the regression scenarios as a typical simulation, as described in 
+:doc:`emod-generic:software-run-simulation` for generic, :doc:`emodpy-hiv:emod/software-run-simulation` 
+for HIV, or :doc:`emodpy-malaria:emod/software-run-simulation` for malaria. However,
 this will not include the comparison and pass/fail evaluation that regression_test.py conducts. In
 addition, if you choose to do this, be sure to specify a different output directory, such as
 "testing", so as not to overwrite the reference output.
-
-.. TODO :doc:`emodpy-hiv:emod/software-run-simulation` for HIV or :doc:`emodpy-malaria/emod/software-run-simulation` for malaria. 
 
 .. toctree::
    :maxdepth: 2

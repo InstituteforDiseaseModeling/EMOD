@@ -31,9 +31,10 @@ Run on Windows using regression_test.py
 Run on Windows using run_test.cmd
 ---------------------------------
 
-#.  Generate a single config.json file from a base file and the parameter_overrides.json that contains (see :doc:`emod-generic:software-configuration-overlay` for instructions). 
-
-.. TODO :doc:`emodpy-hiv:emod/software-configuration-overlay` for HIV or :doc:`emodpy-malaria:emod/software-configuration-overlay` for malaria. 
+#.  Generate a single config.json file from a base file and the parameter_overrides.json that contains.
+    For instructions, see :doc:`emod-generic:software-configuration-overlay` for generic. 
+    :doc:`emodpy-hiv:emod/software-configuration-overlay` for HIV, or 
+    :doc:`emodpy-malaria:emod/software-configuration-overlay` for malaria. 
 
 #.  Navigate to the directory that contains your config.json file and other test files.
 
@@ -50,9 +51,10 @@ Run on Windows using run_test.cmd
 Run on |Centos| using run_test.sh
 ---------------------------------
 
-#.  Generate a single config.json file from a base file and the parameter_overrides.json that contains (see :doc:`emod-generic:software-configuration-overlay` for instructions). 
-
-.. TODO :doc:`emodpy-hiv:emod/software-configuration-overlay` for HIV or :doc:`emodpy-malaria:emod/software-configuration-overlay` for malaria. 
+#.  Generate a single config.json file from a base file and the parameter_overrides.json that contains.
+    For instructions, see :doc:`emod-generic:software-configuration-overlay` for generic. 
+    :doc:`emodpy-hiv:emod/software-configuration-overlay` for HIV, or 
+    :doc:`emodpy-malaria:emod/software-configuration-overlay` for malaria. 
 
 #.  Navigate to the directory that contains your config.json file and other test files.
 

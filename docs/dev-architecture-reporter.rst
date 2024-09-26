@@ -4,9 +4,7 @@ Reporter component
 
 After running simulations, |EMOD_s| creates output reports that contain the model results. Two
 methods of coordinated reporting are implemented: simulation-wide aggregated reporting and spatial
-reporting. See :doc:`emod-generic:software-outputs` for more information about the different output reports available.
-
-.. TODO :doc:`emodpy-hiv:emod/software-outputs` for HIV or :doc:`emodpy-malaria:emod/software-outputs` for malaria.
+reporting. For more information about the different output reports available, see :doc:`emod-generic:software-outputs` for generic, :doc:`emodpy-hiv:emod/software-outputs` for HIV, or :doc:`emodpy-malaria:emod/software-outputs` for malaria.
 
 Simulation-wide aggregate
 =========================
@@ -52,6 +50,5 @@ The report data files are written after every time step at the request of the **
 calling **WriteTimestep()**. Under MPI, the default implementation reduces all the data to rank 0
 and writes the combined data out to file on rank 0.
 
-See :doc:`emod-generic:software-custom-reporter` for information about how to use a custom reporter.
-
-.. TODO :doc:`emodpy-hiv:emod/software-custom-reporter` for HIV or :doc:`emodpy-malaria:emod/software-custom-reporter` for malaria.
+For information about how to use a custom reporter, see :doc:`emod-generic:software-custom-reporter` 
+for generic, :doc:`emodpy-hiv:emod/software-custom-reporter` for HIV, or :doc:`emodpy-malaria:emod/software-custom-reporter` for malaria.

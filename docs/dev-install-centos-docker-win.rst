@@ -60,6 +60,7 @@ You should see a response similar to the following::
     Built on Oct 25 2019 by johndoe from master(2d8a9f2) checked in on 2019-04-05 15:49:43 -0700
     Supports sim_types: GENERIC.
 
-You can then use this executable for running simulations. For more information, see :doc:`emod-generic:software-simulation-cli`.
-
-.. TODO :doc:`emodpy-hiv:emod/software-simulation-cli` for HIV or :doc:`emodpy-malaria:emod/software-simulation-cli` for malaria.
+You can then use this executable for running simulations. For more
+information, see :doc:`emod-generic:software-simulation-cli` for
+generic, :doc:`emodpy-hiv:emod/software-simulation-cli` for HIV,
+or :doc:`emodpy-malaria:emod/software-simulation-cli` for malaria.
