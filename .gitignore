@@ -279,3 +279,6 @@ componentTests/testdata/NodeDemographicsTest/DefaultDemographics.json
 Regression/reports/
 Regression/Scenarios/InputFiles
 
+# Sphinx documentation
+
+docs/_build
