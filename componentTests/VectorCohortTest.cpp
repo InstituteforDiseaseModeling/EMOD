@@ -89,9 +89,9 @@ SUITE( VectorCohortTest )
 
         suids::suid id;
         id.data = 3;
-        pvc->GetIMigrate()->SetMigrating( id, MigrationType::REGIONAL_MIGRATION, 0.0, 0.0, false );
+        pvc->GetIMigrate()->SetMigrating( id, MigrationType::LOCAL_MIGRATION, 0.0, 0.0, false );
         CHECK_EQUAL( 3, pvc->GetIMigrate()->GetMigrationDestination().data );
-        CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, pvc->GetIMigrate()->GetMigrationType() );
+        CHECK_EQUAL( MigrationType::LOCAL_MIGRATION, pvc->GetIMigrate()->GetMigrationType() );
     }
 
     TEST_FIXTURE( VectorCohortFixture, TestGestation )

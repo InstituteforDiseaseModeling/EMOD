@@ -58,8 +58,12 @@
                                     ]
                                 },
                                 "Duration_To_Disease_Transmission_Modification": {
-                                    "Times": [ 0 ],
-                                    "Values": [ 1.0 ]
+                                    "Times": [
+                                        0
+                                    ],
+                                    "Values": [
+                                        1.0
+                                    ]
                                 }
                             }
                         ],
@@ -72,7 +76,13 @@
                                 "Habitat_Type": "TEMPORARY_RAINFALL",
                                 "Max_Larval_Capacity": 1250000000.0
                             }
-                        ]
+                        ],
+                        "Vector_Migration_Filename": "",
+                        "Vector_Migration_Food_Modifier": 0,
+                        "Vector_Migration_Habitat_Modifier": 0,
+                        "Vector_Migration_Modifier_Equation": "LINEAR",
+                        "Vector_Migration_Stay_Put_Modifier": 0,
+                        "x_Vector_Migration": 1
                     }
                 ]
             }

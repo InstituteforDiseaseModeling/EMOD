@@ -4,6 +4,9 @@
 #include "VectorParameters.h"
 #include "VectorHabitat.h"
 #include "Exceptions.h"
+#include "IMigrationInfoVector.h"
+#include "IMigrationInfo.h"
+
 
 SETUP_LOGGING( "VectorSpeciesParameters" )
 
@@ -197,6 +200,7 @@ namespace Kernel
         , acquiremod(DEFAULT_ACQUIRE_MODIFIER)
         , infectioushfmortmod(DEFAULT_INFECTIOUS_HUMAN_FEEDING_MORTALITY_MODIFIER)
         , indoor_feeding(1.0)
+        , p_migration_factory(nullptr)
         , microsporidia_strains()
         , adultmortality( 0.0 )
         , malemortality( 0.0 )
@@ -264,6 +268,8 @@ namespace Kernel
         {
             initConfigComplexCollectionType( ("Genes"), &genes, Genes_DESC_TEXT );
         }
+
+        p_migration_factory = MigrationFactory::ConstructMigrationInfoFactoryVector( this, config );
 
         bool ret = JsonConfigurable::Configure( config );  
         if( ret && !JsonConfigurable::_dryrun )

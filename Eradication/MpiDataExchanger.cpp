@@ -7,7 +7,7 @@
 #include "IdmDateTime.h"
 #include "Sugar.h"
 #include "Log.h"
-#include  "IdmMpi.h"
+#include "IdmMpi.h"
 #include "NoCrtWarnings.h"
 
 SETUP_LOGGING( "MpiDataExchanger" )

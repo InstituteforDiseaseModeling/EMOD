@@ -897,11 +897,7 @@ namespace Kernel
                                                                     int torusSize )
     {
         IMigrationInfoFactory* pmf = MigrationFactory::ConstructMigrationInfoFactory( EnvPtr->Config, 
-                                                                                      idreference,
-                                                                                      m_simConfigObj->sim_type,
-                                                                                      ms,
-                                                                                      !(m_simConfigObj->demographics_initial),
-                                                                                      torusSize );
+                                                                                      idreference );
         return pmf ;
     }
 
@@ -1068,7 +1064,10 @@ namespace Kernel
         for (auto& entry : nodes)
         {
             release_assert(entry.second);
-            (entry.second)->SetupMigration( migration_factory, m_simConfigObj->migration_structure, nodeid_suid_map_full );
+            (entry.second)->SetupMigration( migration_factory, 
+                                            idreference,
+                                            m_simConfigObj->migration_structure,
+                                            nodeid_suid_map_full );
         } 
 
         LoadInterventions(campaignfilename, nodeIDs);

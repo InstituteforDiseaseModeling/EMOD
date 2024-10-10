@@ -1,6 +1,8 @@
 {
     "Reports": [
         {
+            "Start_Day": 1000,
+            "End_Day": 1095,
             "Gender": "VECTOR_FEMALE",
             "Species": "arabiensis",
             "Stratify_By": "GENOME",

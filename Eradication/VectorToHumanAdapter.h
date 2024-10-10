@@ -2,6 +2,8 @@
 #pragma once
 
 #include "IndividualEventContext.h"
+#include "VectorEnums.h"
+#include "IIndividualHumanContext.h"
 
 namespace Kernel
 {
@@ -17,13 +19,15 @@ namespace Kernel
         virtual ~VectorToHumanAdapter();
 
         virtual suids::suid GetSuid() const;
+        virtual void        SetVectorID( uint32_t new_id );
         virtual INodeEventContext *GetNodeEventContext();
+        virtual double GetAge()              const;
+        virtual int    GetGender()           const;
+
 
         // The following throw an exception if used
         virtual const IIndividualHuman* GetIndividualHumanConst() const override;
         virtual bool   IsPregnant()          const;
-        virtual double GetAge()              const;
-        virtual int    GetGender()           const;
         virtual double GetMonteCarloWeight() const;
         virtual bool   IsPossibleMother()    const;
         virtual bool   IsInfected()          const;
@@ -35,7 +39,9 @@ namespace Kernel
         virtual IPKeyValueContainer * GetProperties();
 
     private:
-        INodeContext* m_pNodeContext;
-        uint32_t m_VectorID;
+        INodeContext*      m_pNodeContext;
+        uint32_t           m_VectorID;
+        VectorGender::Enum m_VectorGender;
     };
+
 }

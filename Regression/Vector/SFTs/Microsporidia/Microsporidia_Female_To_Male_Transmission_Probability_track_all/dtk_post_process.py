@@ -21,8 +21,8 @@ def create_report_file(config_filename, report_name, debug=False):
         config_name = cdj[KEY_CONFIG_NAME]
         outfile.write("Config_name = {}\n".format(config_name))
         vector_stats_df = pd.read_csv("output//ReportVectorStats.csv")
-        microsporidia_males = int(vector_stats_df.loc[(vector_stats_df['Time'] == 2), "HasMicrosporidia-STATE_MALE"].item())
-        no_microsporidia_males = int(vector_stats_df.loc[(vector_stats_df['Time'] == 2), "NoMicrosporidia-STATE_MALE"].item())
+        microsporidia_males = int(vector_stats_df.loc[(vector_stats_df['Time'] == 1), "HasMicrosporidia-STATE_MALE"].item())
+        no_microsporidia_males = int(vector_stats_df.loc[(vector_stats_df['Time'] == 1), "NoMicrosporidia-STATE_MALE"].item())
         total_males = microsporidia_males + no_microsporidia_males
         success = dtk_sft.test_binomial_95ci(microsporidia_males, total_males,
                                              female_to_male_prob, outfile,

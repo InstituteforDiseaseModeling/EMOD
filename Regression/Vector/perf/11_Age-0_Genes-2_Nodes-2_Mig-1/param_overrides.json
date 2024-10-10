@@ -6,30 +6,28 @@
             "../Demographics_2.json"
         ],
         "Enable_Vector_Aging": 0,
-        "Enable_Vector_Migration": 1,
-        "Enable_Vector_Migration_Local": 1,
         "Python_Script_Path": "LOCAL",
-        "Vector_Migration_Filename_Local": "Local_Vector_Migration_2_Nodes.bin",
-        "Enable_Vector_Migration_Regional": 0,
-        "Vector_Migration_Food_Modifier":0,
-        "Vector_Migration_Habitat_Modifier":0,
-        "Vector_Migration_Modifier_Equation":"LINEAR",
-        "Vector_Migration_Stay_Put_Modifier":0,
         "Vector_Species_Params": [
             {
                 "Name": "arabiensis",
+                "Vector_Migration_Food_Modifier": 0,
+                "Vector_Migration_Habitat_Modifier": 0,
+                "Vector_Migration_Modifier_Equation": "LINEAR",
+                "Vector_Migration_Stay_Put_Modifier": 0,
+                "Vector_Migration_Filename": "Local_Vector_Migration_2_Nodes.bin",
+                "x_Vector_Migration": 1,
                 "Genes": [
                     {
                         "Is_Gender_Gene": 0,
                         "Alleles": [
                             {
                                 "Name": "a0",
-                                "Is_Y_Chromosome" : 0,
+                                "Is_Y_Chromosome": 0,
                                 "Initial_Allele_Frequency": 0.6
                             },
                             {
                                 "Name": "a1",
-                                "Is_Y_Chromosome" : 0,
+                                "Is_Y_Chromosome": 0,
                                 "Initial_Allele_Frequency": 0.4
                             }
                         ],
@@ -40,12 +38,12 @@
                         "Alleles": [
                             {
                                 "Name": "b0",
-                                "Is_Y_Chromosome" : 0,
+                                "Is_Y_Chromosome": 0,
                                 "Initial_Allele_Frequency": 0.3
                             },
                             {
                                 "Name": "b1",
-                                "Is_Y_Chromosome" : 0,
+                                "Is_Y_Chromosome": 0,
                                 "Initial_Allele_Frequency": 0.7
                             }
                         ],
@@ -53,6 +51,7 @@
                     }
                 ]
             }
-        ]
+        ],
+        "Enable_Vector_Migration": 1
     }
 }

@@ -17,6 +17,7 @@
 #include "RANDOM.h"
 #include "TransmissionGroupMembership.h"
 #include "IContagionPopulationGP.h"
+#include "ISimulationContext.h"
 #include "VectorToHumanAdapter.h"
 #include "NodeEventContext.h"
 #include "BroadcasterObserver.h"
@@ -52,15 +53,14 @@ namespace Kernel
         uint32_t adjusted_population = num / m_mosquito_weight;
         for (uint32_t i = 0; i < adjusted_population; i++)
         {
-            VectorCohortIndividual* pvci = CreateAdultCohort(
-                m_pNodeVector->GetNextVectorSuid().data,
-                VectorStateEnum::STATE_ADULT,
-                0.0,
-                0.0,
-                0.0,
-                m_mosquito_weight,
-                rGenomeFemale,
-                m_SpeciesIndex );
+            VectorCohortIndividual* pvci = CreateAdultCohort( m_pNodeVector->GetNextVectorSuid().data,
+                                                              VectorStateEnum::STATE_ADULT,
+                                                              0.0,
+                                                              0.0,
+                                                              0.0,
+                                                              m_mosquito_weight,
+                                                              rGenomeFemale,
+                                                              m_SpeciesIndex );
             pvci->SetMateGenome(rGenomeMate);
 
             RandomlySetOvipositionTimer(pvci);
@@ -599,15 +599,19 @@ namespace Kernel
         else if( m_UnmatedMaleTotal > 0 )
         {
             auto it = SelectMaleMatingCohort();
+            VectorCohortMale* p_male_cohort = *it;
+            release_assert(p_male_cohort->GetUnmatedCount() > 0);
+            // updating this here so when it comes to the new microsporidia cohort, 
+            // the numbers are all updated already (like in VectorPopulation)
+            UpdateMaleMatingCDF(it); 
 
-            IVectorCohort* p_male_cohort = it->p_cohort;
             VectorGameteBitPair_t male_genome_bits = p_male_cohort->GetGenome().GetBits();
 
             int female_ms_strain_index = pFemaleCohort->GetGenome().GetMicrosporidiaStrainIndex();
-            int male_ms_strain_index   = p_male_cohort->GetGenome().GetMicrosporidiaStrainIndex();
+            int   male_ms_strain_index = p_male_cohort->GetGenome().GetMicrosporidiaStrainIndex();
 
             bool female_has_microsporidia = pFemaleCohort->HasMicrosporidia();
-            bool male_has_microsporidia = p_male_cohort->HasMicrosporidia();
+            bool   male_has_microsporidia = p_male_cohort->HasMicrosporidia();
 
             if( male_has_microsporidia && !female_has_microsporidia )
             {
@@ -624,27 +628,33 @@ namespace Kernel
                 float prob_transmission = m_species_params->microsporidia_strains[ female_ms_strain_index ]->female_to_male_transmission_probability;
                 if( m_context->GetRng()->SmartDraw( prob_transmission ) )
                 {
-                    IVectorCohort* p_new_male_cohort = p_male_cohort->SplitNumber( m_context->GetRng(), m_pNodeVector->GetNextVectorSuid().data, 1 );
-                    p_new_male_cohort->InfectWithMicrosporidia( female_ms_strain_index );
+                    uint32_t orig_unmated = p_male_cohort->GetUnmatedCount();
+                    VectorCohortMale* p_new_male_cohort = p_male_cohort->SplitNumber( m_context->GetRng(), 
+                                                                                      m_pNodeVector->GetNextVectorSuid().data, 
+                                                                                      1 );
                     release_assert( p_new_male_cohort != nullptr );
-
+                    p_new_male_cohort->InfectWithMicrosporidia(female_ms_strain_index);
+                    // ---------------------------------------------------------------
+                    // --- massaging unmated numbers in the cohorts:
+                    // --- the ones infected with microsporidia definitely all have mated 
+                    // --- if there were any unmated, all stay with original cohort
+                    // --- the unmated_count and unmated_count_cdf in the original cohort is up to date (see mating loop)
+                    // ---------------------------------------------------------------
+                    p_new_male_cohort->SetUnmatedCount( 0 );
+                    p_male_cohort->SetUnmatedCount( orig_unmated ); 
+                    release_assert( p_male_cohort->GetPopulation() >= p_male_cohort->GetUnmatedCount() );
                     // -----------------------------------------------------------------------------------
                     // --- I'm having the female carry that the male was infected because it shows that
                     // --- both parents were/became infected.  I also think that if this tends towards all
                     // --- vectors getting infected, then this should cause the creation of fewer cohorts.
                     // -----------------------------------------------------------------------------------
                     male_genome_bits = p_new_male_cohort->GetGenome().GetBits();
+                    m_NeedToRefreshTheMatingCDF = true; // need to update cdf in case new microsporidia cohorts were merged with present ones
+                    MaleQueues.add( p_new_male_cohort, 0.0, true );
 
-                    if( p_new_male_cohort != nullptr )
-                    {
-                        MaleQueues.add( p_new_male_cohort, 0.0, true );
-                    }
                 }
             }
-
             pFemaleCohort->SetMateGenome( VectorGenome( male_genome_bits ) );
-
-            UpdateMaleMatingCDF( it );
         }
     }
 
@@ -818,42 +828,83 @@ namespace Kernel
         pVCI->AcquireNewInfection( &rStrain );
     }
 
-    void VectorPopulationIndividual::Vector_Migration( float dt,
-                                                       IMigrationInfo* pMigInfo,
-                                                       VectorCohortVector_t* pMigratingQueue )
+    void VectorPopulationIndividual::Vector_Migration( float dt, VectorCohortVector_t* pMigratingQueue, bool migrate_males_only )
     {
-        release_assert(pMigInfo);
+        release_assert(m_pMigrationInfoVector);
         release_assert(pMigratingQueue);
+
+        VectorPopulation::Vector_Migration(dt, pMigratingQueue, true);
+        
+        // updating migration rates and migrating females
+        IVectorSimulationContext* p_vsc = nullptr;
+        if (s_OK != m_context->GetParent()->QueryInterface(GET_IID(IVectorSimulationContext), (void**)&p_vsc))
+        {
+            throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "m_context->GetParent()", "IVectorSimulationContext", "ISimulationContext" );
+        }
+        suids::suid current_node = m_context->GetSuid();
+        m_pMigrationInfoVector->UpdateRates( current_node, get_SpeciesID(), p_vsc );
+
+        Gender::Enum human_gender_equivalent = m_pMigrationInfoVector->ConvertVectorGender( VectorGender::VECTOR_FEMALE );
+        float                     total_rate = m_pMigrationInfoVector->GetTotalRate( human_gender_equivalent );
+        const std::vector<float>& r_cdf      = m_pMigrationInfoVector->GetCumulativeDistributionFunction( human_gender_equivalent );
+
+        if( ( r_cdf.size() == 0 ) || ( total_rate == 0.0 ) )
+        {
+            return; // no female vector migration
+        }
+
+        // vectors always female, updating ID inside loop just in case
+        VectorToHumanAdapter adapter( m_context, 0 ); 
+
+        // initializing these outside the loop, they are re-initialized just to be updated inside PickMigrationStep every time
+        suids::suid         destination = suids::nil_suid();
+        MigrationType::Enum mig_type    = MigrationType::NO_MIGRATION;
+        float               time        = 0.0;
 
         // Use the verbose "for" construct here because we may be modifying the list and need to protect the iterator.
         for( auto it = pAdultQueues->begin(); it != pAdultQueues->end(); ++it )
         {
-            IVectorCohort* tempentry = *it;
+            adapter.SetVectorID( ( *it )->GetID() );
+            m_pMigrationInfoVector->PickMigrationStep( m_context->GetRng(), &adapter, 1.0, destination, mig_type, time, dt );
 
-            suids::suid destination = suids::nil_suid();
-            MigrationType::Enum mig_type = MigrationType::NO_MIGRATION;
-            float time = 0.0;
-            pMigInfo->PickMigrationStep( m_context->GetRng(), nullptr, 1.0, destination, mig_type, time );
-
-            // test if each vector will migrate this time step
-            if (!destination.is_nil() && (time <= dt))
+            // test if vector will migrate: no destination = no migration, also don't migrate to node you're already in
+            if( !destination.is_nil() && ( destination != current_node ) ) 
             {
+                IVectorCohort* tempentry = *it;
                 pAdultQueues->remove( it );
-
                 // Used to use dynamic_cast here which is _very_ slow.
                 IMigrate* emigre = tempentry->GetIMigrate();
-                emigre->SetMigrating(destination, mig_type, 0.0, 0.0, false);
-                pMigratingQueue->push_back(tempentry);
+                release_assert( mig_type == MigrationType::LOCAL_MIGRATION ); 
+                emigre->SetMigrating( destination, mig_type, 0.0, 0.0, false );
+                pMigratingQueue->push_back( tempentry );
             }
-        }
+        }   
     }
 
     void VectorPopulationIndividual::AddImmigratingVector(IVectorCohort* pvc)
     {
-        if( m_IsSortingVectors )
-            m_ImmigratingAdult.push_back( pvc );
-        else
-            pAdultQueues->add( pvc, 0.0, true );
+        switch (pvc->GetState())
+        {
+            case VectorStateEnum::STATE_INFECTED:
+            case VectorStateEnum::STATE_INFECTIOUS:
+            case VectorStateEnum::STATE_ADULT:
+                if (m_IsSortingVectors)
+                    m_ImmigratingAdult.push_back(pvc);
+                else
+                    pAdultQueues->add(pvc, 0.0, true);
+                break;
+
+            case VectorStateEnum::STATE_MALE:
+                m_NeedToRefreshTheMatingCDF = true;
+                if (m_IsSortingVectors)
+                    m_ImmigratingMale.push_back(pvc);
+                else
+                    MaleQueues.add(pvc, 0.0, true);
+                break;
+
+            default:
+                throw BadEnumInSwitchStatementException(__FILE__, __LINE__, __FUNCTION__, "IVectorCohort::GetState()", pvc->GetState(), VectorStateEnum::pairs::lookup_key(pvc->GetState()));
+        }
     }
 
     uint32_t VectorPopulationIndividual::CountStrains( VectorStateEnum::Enum state,

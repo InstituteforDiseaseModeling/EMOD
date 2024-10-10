@@ -16,6 +16,8 @@
 
 namespace Kernel
 {
+    struct IMigrationInfoFactoryVector;
+
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // !!! This is the maximum number of species allowed in the simulation.
     // !!! This value is paired with the index in the VectorSpecies class and is used
@@ -49,6 +51,7 @@ namespace Kernel
         DECLARE_QUERY_INTERFACE();
 
     public:
+        VectorSpeciesParameters( int _index );
         virtual ~VectorSpeciesParameters();
 
         bool Configure( const ::Configuration *json ) override;
@@ -77,6 +80,7 @@ namespace Kernel
         float infectioushfmortmod;
         float indoor_feeding;
 
+        IMigrationInfoFactoryVector* p_migration_factory;
         MicrosporidiaCollection microsporidia_strains;
 
         // derived values (e.g. 1/adultlifeexpectanc = adultmortality)
@@ -89,9 +93,6 @@ namespace Kernel
         VectorGeneDriverCollection gene_drivers;
 
     protected:
-        friend class VectorSpeciesCollection;
-
-        VectorSpeciesParameters( int _index );
     };
 
     class VectorSpeciesCollection : public JsonConfigurableCollection<VectorSpeciesParameters>

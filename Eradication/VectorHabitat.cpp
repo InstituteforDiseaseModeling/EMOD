@@ -352,11 +352,11 @@ namespace Kernel
         {
             if( ( rainfall * MM_PER_METER < params()->vector_params->larval_rainfall_mortality_threshold * dt ) || ( dt <= 0 ) )
             {
-	            m_rainfall_mortality = 0;
+                m_rainfall_mortality = 0;
             }
             else
             {
-	            m_rainfall_mortality = ( rainfall * MM_PER_METER - params()->vector_params->larval_rainfall_mortality_threshold * dt ) / ( params()->vector_params->larval_rainfall_mortality_threshold * dt );
+                m_rainfall_mortality = ( rainfall * MM_PER_METER - params()->vector_params->larval_rainfall_mortality_threshold * dt ) / ( params()->vector_params->larval_rainfall_mortality_threshold * dt );
             }
         }
         else if(params()->vector_params->vector_larval_rainfall_mortality == VectorRainfallMortality::SIGMOID_HABITAT_SHIFTING)

@@ -16,34 +16,35 @@ class Configuration;
 namespace Kernel
 {
     class RANDOMBASE;
-    struct IIndividualHumanContext;
+    struct IIndividualHumanEventContext;
     struct INodeContext;
 
     // IMigrationInfo is used to determine when and where an individual will migrate.
-    struct IDMAPI IMigrationInfo
+    struct IMigrationInfo
     {
         virtual ~IMigrationInfo() {};
 
         virtual void PickMigrationStep( RANDOMBASE* pRNG,
-                                        IIndividualHumanContext * traveler, 
+                                        IIndividualHumanEventContext * traveler, 
                                         float migration_rate_modifier, 
                                         suids::suid &destination, 
                                         MigrationType::Enum &migration_type,
-                                        float &durationToWaitBeforeMigrating ) = 0;
+                                        float &durationToWaitBeforeMigrating, 
+                                        float dt = FLT_MAX ) = 0;  // FLT_MAX for humans, dt for vectors
 
         // needed for serialization
-        virtual void SetContextTo(INodeContext* parent) = 0;
+        virtual void SetContextTo( INodeContext* parent ) = 0;
 
-        virtual float GetTotalRate() const = 0;
-        virtual const std::vector<float>& GetCumulativeDistributionFunction() const = 0;
-        virtual const std::vector<suids::suid>& GetReachableNodes() const = 0;
-        virtual const std::vector<MigrationType::Enum>& GetMigrationTypes() const = 0;
+        virtual float                                   GetTotalRate( Gender::Enum gender = Gender::MALE ) const = 0;
+        virtual const std::vector<float>&               GetCumulativeDistributionFunction( Gender::Enum gender = Gender::MALE ) const = 0;
+        virtual const std::vector<suids::suid>&         GetReachableNodes( Gender::Enum gender = Gender::MALE ) const = 0;
+        virtual const std::vector<MigrationType::Enum>& GetMigrationTypes( Gender::Enum gender = Gender::MALE ) const = 0;
 
         virtual bool IsHeterogeneityEnabled() const = 0;
     };
 
     // IMigrationInfoFactory is used to create IMirationInfo objects for a node.
-    struct IDMAPI IMigrationInfoFactory
+    struct IMigrationInfoFactory
     {
         virtual ~IMigrationInfoFactory() {};
 
@@ -57,14 +58,19 @@ namespace Kernel
         virtual bool IsEnabled( MigrationType::Enum mt ) const = 0;
     };
 
+#ifndef DISABLE_VECTOR
+    struct IMigrationInfoFactoryVector;
+#endif
+
     namespace MigrationFactory
     {
         // Contructs and initializes the proper factory based on the initialization parameters
-        IMigrationInfoFactory IDMAPI * ConstructMigrationInfoFactory( const ::Configuration *config, 
-                                                                      const std::string& idreference,
-                                                                      SimType::Enum sim_type,
-                                                                      MigrationStructure::Enum ms,
-                                                                      bool useDefaultMigration,
-                                                                      int defaultTorusSize=10 );
+        IMigrationInfoFactory* ConstructMigrationInfoFactory( const ::Configuration *config, 
+                                                              const std::string& idreference );
+
+#ifndef DISABLE_VECTOR
+        IMigrationInfoFactoryVector* ConstructMigrationInfoFactoryVector( JsonConfigurable* pParent, 
+                                                                          const ::Configuration *config );
+#endif
     }
 }

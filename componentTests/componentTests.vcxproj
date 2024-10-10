@@ -203,6 +203,7 @@
     <ClCompile Include="TransmissionGroupsTest.cpp" />
     <ClCompile Include="VectorCohortCollectionTest.cpp" />
     <ClCompile Include="VectorCohortTest.cpp" />
+    <ClCompile Include="VectorCohortMaleTest.cpp" />
     <ClCompile Include="VectorCounterTest.cpp" />
     <ClCompile Include="VectorFertilizerTest.cpp" />
     <ClCompile Include="VectorGameteTest.cpp" />

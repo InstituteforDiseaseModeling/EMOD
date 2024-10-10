@@ -28,17 +28,8 @@
             "Malaria_Model": "MALARIA_MECHANISTIC_MODEL_WITH_PARASITE_GENETICS"
         },
         "VECTOR": {
-            "x_Vector_Migration_Local": 1,
             "Migration_Model": "FIXED_RATE_MIGRATION",
             "Migration_Pattern": "RANDOM_WALK_DIFFUSION",
-            "Vector_Migration_Modifier_Equation": "LINEAR",
-            "Vector_Migration_Filename_Local": "local_circular_migration.bin",
-            "Enable_Vector_Migration_Local": 1,
-            "Enable_Vector_Migration_Regional": 0,
-            "Vector_Migration_Food_Modifier": 1,
-            "Vector_Migration_Habitat_Modifier": 1,
-            "Vector_Migration_Stay_Put_Modifier": 1,
-            "Enable_Vector_Migration": 1,
             "Enable_Air_Migration": 0,
             "Enable_Family_Migration": 0,
             "Enable_Local_Migration": 0,
@@ -51,9 +42,16 @@
                     "Name": "SillySkeeter",
                     "Male_Life_Expectancy": 20,
                     "Anthropophily": 0.65,
-                    "Indoor_Feeding_Fraction": 0.7
+                    "Indoor_Feeding_Fraction": 0.7,
+                    "Vector_Migration_Filename": "local_circular_migration.bin",
+                    "x_Vector_Migration": 1,
+                    "Vector_Migration_Modifier_Equation": "LINEAR",
+                    "Vector_Migration_Food_Modifier": 1,
+                    "Vector_Migration_Habitat_Modifier": 1,
+                    "Vector_Migration_Stay_Put_Modifier": 1
                 }
-            ]
+            ],
+            "Enable_Vector_Migration": 1
         }
     }
 }

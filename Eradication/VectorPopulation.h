@@ -16,6 +16,7 @@
 #include "VectorEnums.h"
 #include "VectorGenome.h"
 #include "IVectorCohort.h"
+#include "VectorCohort.h"
 #include "VectorContexts.h"
 #include "VectorHabitat.h"
 #include "VectorProbabilities.h"
@@ -27,7 +28,7 @@ namespace Kernel
 {
     class VectorSpeciesParameters;
     struct VectorParameters;
-    struct IMigrationInfo;
+    struct IMigrationInfoVector;
 
     class IndividualHumanVector;
     class VectorCohortWithHabitat;
@@ -55,7 +56,9 @@ namespace Kernel
         virtual void UpdateVectorPopulation(float dt) override;
 
         // For NodeVector to calculate # of migrating vectors (processEmigratingVectors) and put them in new node (processImmigratingVector)
-        virtual void Vector_Migration( float dt, IMigrationInfo* pMigInfo, VectorCohortVector_t* pMigratingQueue ) override;
+        virtual void SetupMigration( const std::string& idreference, 
+                                     const boost::bimap<ExternalNodeId_t, suids::suid>& rNodeIdSuidMap ) override;
+        virtual void Vector_Migration( float dt, VectorCohortVector_t* pMigratingQueue, bool migrate_males_only ) override;
         virtual void AddImmigratingVector( IVectorCohort* pvc ) override;
         virtual void SetSortingVectors() override;
         virtual void SortImmigratingVectors() override;
@@ -209,9 +212,9 @@ namespace Kernel
 
         static std::vector<uint32_t> GetRandomIndexes( RANDOMBASE* pRNG, uint32_t N );
 
+        void Vector_Migration_Helper(VectorCohortVector_t* pMigratingQueue, VectorGender::Enum vector_gender);
         void Vector_Migration_Queue( const std::vector<uint32_t>& rRandomIndexes,
                                      const std::vector<suids::suid>& rReachableNodes,
-                                     const std::vector<MigrationType::Enum>& rMigrationTypes,
                                      const std::vector<float>& rRates,
                                      INodeVector* pINV,
                                      VectorCohortVector_t* pMigratingQueue,
@@ -375,37 +378,6 @@ namespace Kernel
                                const VectorCohortCollectionAbstract& queue,
                                IStrainIdentity* pStrain ) const;
 
-        struct MaleMatingCohort
-        {
-            IVectorCohort* p_cohort;
-            uint32_t male_cohort_id;
-            uint32_t unmated_count;
-            uint32_t unmated_count_cdf;
-
-            MaleMatingCohort( IVectorCohort* pCohort = nullptr, uint32_t pop = 0 )
-                : p_cohort( pCohort )
-                , male_cohort_id( 0 )
-                , unmated_count( pop )
-                , unmated_count_cdf( 0 )
-            {
-                if( pCohort != nullptr )
-                {
-                    male_cohort_id = pCohort->GetID();
-                }
-            }
-
-            static void serialize( Kernel::IArchive& ar, MaleMatingCohort& mmc )
-            {
-                // only serialize the ID so we can use it to get the cohort
-                // out of the MaleQueues
-                ar.startObject();
-                ar.labelElement( "male_cohort_id" ) & mmc.male_cohort_id;
-                ar.labelElement( "unmated_count" ) & mmc.unmated_count;
-                ar.labelElement( "unmated_count_cdf" ) & mmc.unmated_count_cdf;
-                ar.endObject();
-            }
-        };
-
         void CheckProgressionToAdultForMales();
         void CheckProgressionToAdultForFemales();
         float GetInfectedProgress( IVectorCohort* pCohort );
@@ -414,10 +386,10 @@ namespace Kernel
                                        VectorCohortCollectionAbstract& rQueue,
                                        bool isNewAdult );
 
-        void InitializeMaleMatingCDF();
-        void UpdateMaleMatingCDF( std::vector<MaleMatingCohort>::iterator it );
-        std::vector<MaleMatingCohort>::iterator SelectMaleMatingCohort();
-        static bool CompareMaleGenomeDist( const MaleMatingCohort& rLeft, uint32_t val );
+        void BuildMaleMatingCDF(bool reset_population_to_unmated);
+        void UpdateMaleMatingCDF(std::vector<VectorCohortMale*>::iterator it);
+        std::vector<VectorCohortMale*>::iterator SelectMaleMatingCohort();
+        static bool CompareMaleGenomeDist(const VectorCohortMale* rLeft, uint32_t val );
 
         virtual void AddAdultCohort( IVectorCohort* pFemaleCohort,
                                      const VectorGenome& rMaleGenome,
@@ -590,19 +562,24 @@ namespace Kernel
 
         int m_SpeciesIndex;
 
-        uint32_t m_UnmatedMaleTotal;
-        std::vector<MaleMatingCohort> m_MaleMatingCdf;
+        uint32_t                    m_UnmatedMaleTotal;
+        std::vector<VectorCohortMale*> m_MaleMatingCDF;
 
         bool m_IsSortingVectors;
+        bool m_NeedToRefreshTheMatingCDF;
         std::vector<IVectorCohort*> m_ImmigratingInfectious;
         std::vector<IVectorCohort*> m_ImmigratingInfected;
         std::vector<IVectorCohort*> m_ImmigratingAdult;
+        std::vector<IVectorCohort*> m_ImmigratingMale;
 
-        static std::vector<float> m_MortalityTable;
+        IMigrationInfoVector*       m_pMigrationInfoVector;
+
+        static std::vector<float>   m_MortalityTable;
 
         // Ugh.  Declaring this down here so that StrainGenomeId is declared
         void DepositContagionHelper( TransmissionRoute::Enum route,
-                                     std::map<StrainGenomeId, float>& rContagionToDeposit );
+                                     std::map<StrainGenomeId, 
+                                     float>& rContagionToDeposit );
 
 
         DECLARE_SERIALIZABLE(VectorPopulation);

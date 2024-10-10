@@ -168,7 +168,7 @@ namespace Kernel
                         species_entry.second = (*this)[i]->GetFactor();
                         if( m_externalNodeId != 0 )
                         {
-                            LOG_INFO_F( "Node ID=%u with LarvalHabitatMultiplier(%s)(%s)=%0.2f\n", 
+                            LOG_VALID_F( "Node ID=%u with LarvalHabitatMultiplier(%s)(%s)=%0.2f\n", 
                                         m_externalNodeId, habitat_name.c_str(), species_name.c_str(), species_entry.second );
                         }
                     }

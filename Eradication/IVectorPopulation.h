@@ -3,11 +3,11 @@
 
 #include "IVectorCohort.h"
 #include "ISerializable.h"
+#include "ExternalNodeId.h"
 
 namespace Kernel
 {
     struct INodeContext;
-    struct IMigrationInfo;
 
     struct IVectorPopulation : ISerializable
     {
@@ -20,7 +20,9 @@ namespace Kernel
         virtual void UpdateVectorPopulation( float dt ) = 0;
 
         // For NodeVector to calculate # of migrating vectors (processEmigratingVectors) and put them in new node (processImmigratingVector)
-        virtual void Vector_Migration( float dt, IMigrationInfo* pMigInfo, VectorCohortVector_t* pMigratingQueue ) = 0;
+        virtual void SetupMigration( const std::string& idreference,
+                                     const boost::bimap<ExternalNodeId_t, suids::suid>& rNodeIdSuidMap ) = 0;
+        virtual void Vector_Migration( float dt, VectorCohortVector_t* pMigratingQueue, bool migrate_males_only) = 0;
         virtual void AddImmigratingVector( IVectorCohort* pvc ) = 0;
         virtual void SetSortingVectors() = 0;
         virtual void SortImmigratingVectors() = 0;

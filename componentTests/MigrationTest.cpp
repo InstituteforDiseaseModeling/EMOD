@@ -3,6 +3,8 @@
 #include <memory> // unique_ptr
 #include "UnitTest++.h"
 #include "componentTests.h"
+#include "VectorParameters.h"
+#include "VectorSpeciesParameters.h"
 #include "IMigrationInfo.h"
 #include "IMigrationInfoVector.h"
 #include "SimulationConfig.h"
@@ -10,6 +12,7 @@
 #include "IndividualHumanContextFake.h"
 #include "RandomFake.h"
 #include "IdmMpi.h"
+#include "Instrumentation.h"
 
 using namespace Kernel; 
 
@@ -61,6 +64,7 @@ SUITE(MigrationTest)
         }
     };
 
+#if 1
     TEST_FIXTURE(MigrationFixture, TestBothGenders)
     {
         std::string config_filename = "testdata/MigrationTest/TestBothGenders_config.json";
@@ -84,11 +88,7 @@ SUITE(MigrationTest)
 
             std::string idreference = "ABC" ;
             unique_ptr<IMigrationInfoFactory> p_mf( MigrationFactory::ConstructMigrationInfoFactory( p_config.get(), 
-                                                                                                     idreference, 
-                                                                                                     SimType::GENERIC_SIM,
-                                                                                                     MigrationStructure::FIXED_RATE_MIGRATION,
-                                                                                                     false, 
-                                                                                                     10 ) );
+                                                                                                     idreference ) );
 
             CHECK( p_mf->IsAtLeastOneTypeConfiguredForIndividuals() );
 
@@ -208,7 +208,95 @@ SUITE(MigrationTest)
             CHECK( false );
         }
     }
+    TEST_FIXTURE( MigrationFixture, TestPerfVectorHumanMigration )
+    {
+        try
+        {
 
+            std::string config_filename = "testdata/MigrationTest/TestBothGendersVectorPerf_config.json";
+            unique_ptr<Configuration> p_config( Environment::LoadConfigurationFile( config_filename.c_str() ) );
+            nodeid_suid_map_t nodeid_suid_map;
+            for( uint32_t node_id = 1; node_id <= 9; node_id++ )
+            {
+                suids::suid node_suid;
+                node_suid.data = node_id;
+                nodeid_suid_map.insert( nodeid_suid_pair( node_id, node_suid ) );
+            }
+
+
+            std::string idreference = "9-nodes";
+            VectorSpeciesParameters vsp( 0 );
+            vsp.Configure( p_config.get() );
+
+            // ---------------
+            // --- Test Node 5
+            // ---------------
+            INodeContextFake nc_5( nodeid_suid_map.left.at( 5 ) );
+            unique_ptr<IMigrationInfoVector> p_mi_5( vsp.p_migration_factory->CreateMigrationInfoVector( idreference, &nc_5, nodeid_suid_map ) );
+
+
+            //m_RandomFake.SetUL( 2576980377 ); // 0.6
+            IndividualHumanContextFake traveler( nullptr, &nc_5, nullptr, nullptr );
+
+            traveler.SetAge(0);
+            traveler.SetGender( Gender::FEMALE );
+
+            suids::suid destination = suids::nil_suid();
+            MigrationType::Enum mig_type = MigrationType::NO_MIGRATION;
+            float trip_time = -1.0;
+            RANDOMBASE* prng = new PSEUDO_DES( 42 );
+
+            Stopwatch watch;
+            watch.Start();
+            for(int i = 0; i < 100000 * 365 * 5; i++ ) // 100k individual female vectors every day for five years
+            {
+                p_mi_5->PickMigrationStep( prng, &traveler, 1.0, destination, mig_type, trip_time, 1 );
+            }
+            watch.Stop();
+            double seconds = watch.ResultNanoseconds() / 100000000.0;
+
+            ostringstream msg;
+            msg << "Duration PickMigrationStep (seconds) = " << seconds << endl;
+            PrintDebug( msg.str() );
+
+            
+            const std::vector<suids::suid>& r_reachable_nodes = p_mi_5->GetReachableNodes(Gender::FEMALE );
+            const std::vector<float              >&     r_cdf = p_mi_5->GetCumulativeDistributionFunction( Gender::FEMALE );
+            float total_rate = p_mi_5->GetTotalRate(Gender::FEMALE);
+
+            watch.Start();
+            for( int i = 0; i < 100000 * 365 * 5; i++ )
+            {
+                // time in days until we leave
+                float time = float( prng->expdist( total_rate ) );
+                // test if each vector will migrate this time step, if time <= 1, we leave today 
+                if( time <= 1 )
+                {
+                    // picking destination node
+                    int index = 0;
+                    float desttemp = prng->e();
+                    while( desttemp > r_cdf[index] )
+                    {
+                        index++;
+                    }
+                    suids::suid destination = r_reachable_nodes[index];
+                }
+            }
+            watch.Stop();
+            double seconds2 = watch.ResultNanoseconds() / 100000000.0;
+
+            ostringstream msg2;
+            msg2 << "Duration simplified (seconds) = " << seconds2 << endl;
+            PrintDebug( msg2.str() );
+
+
+        }
+        catch( DetailedException& re )
+        {
+            PrintDebug( re.GetMsg() );
+            CHECK( false );
+        }
+    }
 
     TEST_FIXTURE(MigrationFixture, TestEachGender)
     {
@@ -233,11 +321,7 @@ SUITE(MigrationTest)
 
             std::string idreference = "ABC" ;
             unique_ptr<IMigrationInfoFactory> p_mf( MigrationFactory::ConstructMigrationInfoFactory( p_config.get(),
-                                                                                                     idreference, 
-                                                                                                     SimType::GENERIC_SIM,
-                                                                                                     MigrationStructure::FIXED_RATE_MIGRATION,
-                                                                                                     false, 
-                                                                                                     10 ) );
+                                                                                                     idreference ) );
 
             CHECK( p_mf->IsAtLeastOneTypeConfiguredForIndividuals() );
 
@@ -522,11 +606,7 @@ SUITE(MigrationTest)
 
             std::string idreference = "Household-Scenario-Small" ;
             unique_ptr<IMigrationInfoFactory> p_mf( MigrationFactory::ConstructMigrationInfoFactory( EnvPtr->Config,
-                                                                                                     idreference, 
-                                                                                                     SimType::GENERIC_SIM,
-                                                                                                     MigrationStructure::FIXED_RATE_MIGRATION,
-                                                                                                     false, 
-                                                                                                     10 ) );
+                                                                                                     idreference ) );
 
             CHECK( p_mf->IsAtLeastOneTypeConfiguredForIndividuals() );
 
@@ -649,12 +729,13 @@ SUITE(MigrationTest)
             }
 
             std::string idreference = "Default" ;
+            if( GET_CONFIGURABLE( SimulationConfig ) != nullptr )
+            {
+                GET_CONFIGURABLE( SimulationConfig )->demographics_initial = false;
+                GET_CONFIGURABLE( SimulationConfig )->default_torus_size = 10;
+            }
             unique_ptr<IMigrationInfoFactory> p_mf( MigrationFactory::ConstructMigrationInfoFactory( EnvPtr->Config,
-                                                                                                     idreference, 
-                                                                                                     SimType::GENERIC_SIM,
-                                                                                                     MigrationStructure::FIXED_RATE_MIGRATION,
-                                                                                                     true, 
-                                                                                                     10 ) );
+                                                                                                     idreference ) );
 
             CHECK( !p_mf->IsAtLeastOneTypeConfiguredForIndividuals() );
 
@@ -765,12 +846,13 @@ SUITE(MigrationTest)
             }
 
             std::string idreference = "Default" ;
+            if( GET_CONFIGURABLE( SimulationConfig ) != nullptr )
+            {
+                GET_CONFIGURABLE( SimulationConfig )->demographics_initial = false;
+                GET_CONFIGURABLE( SimulationConfig )->default_torus_size = torus_size;
+            }
             unique_ptr<IMigrationInfoFactory> p_mf( MigrationFactory::ConstructMigrationInfoFactory( EnvPtr->Config,
-                                                                                                     idreference, 
-                                                                                                     SimType::GENERIC_SIM,
-                                                                                                     MigrationStructure::FIXED_RATE_MIGRATION,
-                                                                                                     true, 
-                                                                                                     torus_size ) );
+                                                                                                     idreference ) );
 
             CHECK( !p_mf->IsAtLeastOneTypeConfiguredForIndividuals() );
 
@@ -850,11 +932,14 @@ SUITE(MigrationTest)
             CHECK( false );
         }
     }
+#endif
 
     TEST_FIXTURE(MigrationFixture, TestVectorMigrationInfo)
     {
         try
         {
+            unique_ptr<Configuration> p_config( Environment::LoadConfigurationFile( "testdata/MigrationTest/TestVectorMigrationInfo.json"));
+
             // --------------------
             // --- Initialize test
             // --------------------
@@ -867,107 +952,41 @@ SUITE(MigrationTest)
             }
 
             std::string idreference = "Household-Scenario-Small" ;
-            unique_ptr<IMigrationInfoFactory> p_mf( MigrationFactory::ConstructMigrationInfoFactory( EnvPtr->Config,
-                                                                                                     idreference, 
-                                                                                                     SimType::VECTOR_SIM,
-                                                                                                     MigrationStructure::FIXED_RATE_MIGRATION,
-                                                                                                     false, 
-                                                                                                     10 ) );
-
-            CHECK( p_mf->IsAtLeastOneTypeConfiguredForIndividuals() );
-
-            IMigrationInfoFactoryVector* p_mfv = dynamic_cast<IMigrationInfoFactoryVector*>(p_mf.get());
-            CHECK( p_mfv != nullptr );
+            VectorSpeciesParameters vsp( 0 );
+            vsp.Configure( p_config.get() );
 
             INodeContextFake nc_1( nodeid_suid_map.left.at(1) ) ;
-            unique_ptr<IMigrationInfoVector> p_mi( p_mfv->CreateMigrationInfoVector( &nc_1, nodeid_suid_map ) );
+            unique_ptr<IMigrationInfoVector> p_mi( vsp.p_migration_factory->CreateMigrationInfoVector( idreference, &nc_1, nodeid_suid_map ) );
 
             const std::vector<suids::suid>& reachable_nodes = p_mi->GetReachableNodes();
-            CHECK_EQUAL( 24, reachable_nodes.size() );
+            CHECK_EQUAL( 2, reachable_nodes.size() );
             CHECK_EQUAL(  2, reachable_nodes[ 0].data );
             CHECK_EQUAL(  6, reachable_nodes[ 1].data );
-            CHECK_EQUAL(  7, reachable_nodes[ 2].data );
-            CHECK_EQUAL(  3, reachable_nodes[ 3].data );
-            CHECK_EQUAL(  4, reachable_nodes[ 4].data );
-            CHECK_EQUAL(  5, reachable_nodes[ 5].data );
-            CHECK_EQUAL(  8, reachable_nodes[ 6].data );
-            CHECK_EQUAL(  9, reachable_nodes[ 7].data );
-            CHECK_EQUAL( 10, reachable_nodes[ 8].data );
-            CHECK_EQUAL( 11, reachable_nodes[ 9].data );
-            CHECK_EQUAL( 12, reachable_nodes[10].data );
-            CHECK_EQUAL( 13, reachable_nodes[11].data );
-            CHECK_EQUAL( 14, reachable_nodes[12].data );
-            CHECK_EQUAL( 15, reachable_nodes[13].data );
-            CHECK_EQUAL( 16, reachable_nodes[14].data );
-            CHECK_EQUAL( 17, reachable_nodes[15].data );
-            CHECK_EQUAL( 18, reachable_nodes[16].data );
-            CHECK_EQUAL( 19, reachable_nodes[17].data );
-            CHECK_EQUAL( 20, reachable_nodes[18].data );
-            CHECK_EQUAL( 21, reachable_nodes[19].data );
-            CHECK_EQUAL( 22, reachable_nodes[20].data );
-            CHECK_EQUAL( 23, reachable_nodes[21].data );
-            CHECK_EQUAL( 24, reachable_nodes[22].data );
-            CHECK_EQUAL( 25, reachable_nodes[23].data );
+
 
             const std::vector<MigrationType::Enum>& mig_type_list = p_mi->GetMigrationTypes();
-            CHECK_EQUAL( 24, mig_type_list.size() );
+            CHECK_EQUAL( 2, mig_type_list.size() );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION,    mig_type_list[ 0] );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION,    mig_type_list[ 1] );
-            CHECK_EQUAL( MigrationType::LOCAL_MIGRATION,    mig_type_list[ 2] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[ 3] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[ 4] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[ 5] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[ 6] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[ 7] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[ 8] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[ 9] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[10] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[11] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[12] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[13] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[14] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[15] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[16] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[17] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[18] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[19] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[20] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[21] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[22] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list[23] );
+
 
             INodeContextFake nc_9( nodeid_suid_map.left.at(9) ) ;
-            unique_ptr<IMigrationInfo> p_mi_9( p_mfv->CreateMigrationInfoVector( &nc_9, nodeid_suid_map ) );
+            unique_ptr<IMigrationInfoVector> p_mi_9( vsp.p_migration_factory->CreateMigrationInfoVector( idreference, &nc_9, nodeid_suid_map ) );
 
             const std::vector<suids::suid>& reachable_nodes_9 = p_mi_9->GetReachableNodes();
-            CHECK_EQUAL( 24, reachable_nodes_9.size() );
+            CHECK_EQUAL( 7, reachable_nodes_9.size() );
             CHECK_EQUAL(  3, reachable_nodes_9[ 0].data );
             CHECK_EQUAL(  4, reachable_nodes_9[ 1].data );
             CHECK_EQUAL(  5, reachable_nodes_9[ 2].data );
             CHECK_EQUAL(  8, reachable_nodes_9[ 3].data );
             CHECK_EQUAL( 10, reachable_nodes_9[ 4].data );
             CHECK_EQUAL( 13, reachable_nodes_9[ 5].data );
-            CHECK_EQUAL( 14, reachable_nodes_9[ 6].data );
-            CHECK_EQUAL( 15, reachable_nodes_9[ 7].data );
-            CHECK_EQUAL(  1, reachable_nodes_9[ 8].data );
-            CHECK_EQUAL(  2, reachable_nodes_9[ 9].data );
-            CHECK_EQUAL(  6, reachable_nodes_9[10].data );
-            CHECK_EQUAL(  7, reachable_nodes_9[11].data );
-            CHECK_EQUAL( 11, reachable_nodes_9[12].data );
-            CHECK_EQUAL( 12, reachable_nodes_9[13].data );
-            CHECK_EQUAL( 16, reachable_nodes_9[14].data );
-            CHECK_EQUAL( 17, reachable_nodes_9[15].data );
-            CHECK_EQUAL( 18, reachable_nodes_9[16].data );
-            CHECK_EQUAL( 19, reachable_nodes_9[17].data );
-            CHECK_EQUAL( 20, reachable_nodes_9[18].data );
-            CHECK_EQUAL( 21, reachable_nodes_9[19].data );
-            CHECK_EQUAL( 22, reachable_nodes_9[20].data );
-            CHECK_EQUAL( 23, reachable_nodes_9[21].data );
-            CHECK_EQUAL( 24, reachable_nodes_9[22].data );
-            CHECK_EQUAL( 25, reachable_nodes_9[23].data );
+            CHECK_EQUAL( 15, reachable_nodes_9[ 6].data );
+
+
 
             const std::vector<MigrationType::Enum>& mig_type_list_9 = p_mi_9->GetMigrationTypes();
-            CHECK_EQUAL( 24, mig_type_list_9.size() );
+            CHECK_EQUAL( 7, mig_type_list_9.size() );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION,    mig_type_list_9[ 0] );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION,    mig_type_list_9[ 1] );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION,    mig_type_list_9[ 2] );
@@ -975,26 +994,10 @@ SUITE(MigrationTest)
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION,    mig_type_list_9[ 4] );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION,    mig_type_list_9[ 5] );
             CHECK_EQUAL( MigrationType::LOCAL_MIGRATION,    mig_type_list_9[ 6] );
-            CHECK_EQUAL( MigrationType::LOCAL_MIGRATION,    mig_type_list_9[ 7] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list_9[ 8] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list_9[ 9] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list_9[10] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list_9[11] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list_9[12] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list_9[13] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list_9[14] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list_9[15] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list_9[16] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list_9[17] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list_9[18] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list_9[19] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list_9[20] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list_9[21] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list_9[22] );
-            CHECK_EQUAL( MigrationType::REGIONAL_MIGRATION, mig_type_list_9[23] );
 
-            INodeContextFake nc_26( nodeid_suid_map.left.at(26) ) ;
-            unique_ptr<IMigrationInfo> p_mi_26( p_mfv->CreateMigrationInfoVector( &nc_26, nodeid_suid_map ) );
+
+             INodeContextFake nc_26( nodeid_suid_map.left.at(26) ) ;
+            unique_ptr<IMigrationInfoVector> p_mi_26( vsp.p_migration_factory->CreateMigrationInfoVector( idreference, &nc_26, nodeid_suid_map ) );
             CHECK( p_mi_26->GetReachableNodes().size() == 0 );
         }
         catch( DetailedException& re )
@@ -1003,6 +1006,487 @@ SUITE(MigrationTest)
             CHECK( false );
         }
     }
+
+
+    TEST_FIXTURE(MigrationFixture, TestEachGenderVector)
+    {
+        std::string config_filename = "testdata/MigrationTest/TestEachGenderVector_config.json";
+        try
+        {
+            unique_ptr<Configuration> p_config(Environment::LoadConfigurationFile(config_filename.c_str()));
+
+            // Female vectors migrate from odd nodes to even nodes, male vectors migrate from even nodes to odd nodes
+            // Vector migration does not depend on age, so we use age=0
+
+            // --------------------
+            // --- Initialize test
+            // --------------------
+            nodeid_suid_map_t nodeid_suid_map;
+            for (uint32_t node_id = 1; node_id <= 9; node_id++)
+            {
+                suids::suid node_suid;
+                node_suid.data = node_id;
+                nodeid_suid_map.insert(nodeid_suid_pair(node_id, node_suid));
+            }
+
+
+            std::string idreference = "MigrationTest";
+            VectorSpeciesParameters vsp(0);
+            vsp.Configure(p_config.get());
+
+            // ---------------
+            // --- Test Node 2
+            // ---------------
+            INodeContextFake nc_2(nodeid_suid_map.left.at(2));
+            unique_ptr<IMigrationInfoVector> p_mi_2(vsp.p_migration_factory->CreateMigrationInfoVector(idreference, &nc_2, nodeid_suid_map));
+
+
+            const std::vector<suids::suid>& reachable_nodes_2 = p_mi_2->GetReachableNodes();
+            CHECK_EQUAL(3, reachable_nodes_2.size());
+            CHECK_EQUAL(1, reachable_nodes_2[0].data);
+            CHECK_EQUAL(3, reachable_nodes_2[1].data);
+            CHECK_EQUAL(5, reachable_nodes_2[2].data);
+
+            const std::vector<MigrationType::Enum>& mig_type_list_2 = p_mi_2->GetMigrationTypes();
+            CHECK_EQUAL(3, mig_type_list_2.size());
+            CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type_list_2[0]);
+            CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type_list_2[1]);
+            CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type_list_2[2]);
+
+            // ================
+            // === FROM NODE 2
+            // ================
+            m_RandomFake.SetUL(2576980377); // 0.6
+
+            IndividualHumanContextFake traveler(nullptr, &nc_2, nullptr, nullptr);
+
+            // ------------------------------------------------------------------
+            // --- Test that male vector (age 0) will migrate from node 2 to nodes 1, 3, 5
+            // ------------------------------------------------------------------
+            traveler.SetAge(0);
+            traveler.SetGender(Gender::MALE); 
+
+            suids::suid destination = suids::nil_suid();
+            MigrationType::Enum mig_type = MigrationType::NO_MIGRATION;
+            float trip_time = -1.0;
+
+            p_mi_2->PickMigrationStep(&m_RandomFake, &traveler, 1.0, destination, mig_type, trip_time);
+
+            CHECK_EQUAL(3, destination.data);
+            CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type);
+            CHECK_CLOSE(1.702, trip_time, 0.001);
+
+            // ------------------------------------------------------------------
+            // --- Test that female vector (age 0) will not migration from node 2
+            // ------------------------------------------------------------------
+            traveler.SetAge(0);
+            traveler.SetGender(Gender::FEMALE);
+
+            destination = suids::nil_suid();
+            mig_type = MigrationType::NO_MIGRATION;
+            trip_time = -1.0;
+
+            p_mi_2->PickMigrationStep(&m_RandomFake, &traveler, 1.0, destination, mig_type, trip_time);
+
+            CHECK_EQUAL(0, destination.data);
+            CHECK_EQUAL(MigrationType::NO_MIGRATION, mig_type);
+            CHECK_CLOSE(0.0, trip_time, 0.0001);
+
+            // ---------------
+            // --- Test Node 9
+            // ---------------
+            INodeContextFake nc_9(nodeid_suid_map.left.at(9));
+            unique_ptr<IMigrationInfoVector> p_mi_9(vsp.p_migration_factory->CreateMigrationInfoVector(idreference, &nc_9, nodeid_suid_map));
+
+
+            const std::vector<suids::suid>& reachable_nodes_9 = p_mi_9->GetReachableNodes();
+            CHECK_EQUAL(2, reachable_nodes_9.size());
+            CHECK_EQUAL(6, reachable_nodes_9[0].data);
+            CHECK_EQUAL(8, reachable_nodes_9[1].data);
+
+
+            const std::vector<MigrationType::Enum>& mig_type_list_9 = p_mi_9->GetMigrationTypes();
+            CHECK_EQUAL(2, mig_type_list_9.size());
+            CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type_list_9[0]);
+            CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type_list_9[1]);
+
+            // ================
+            // === FROM NODE 9
+            // ================
+            m_RandomFake.SetUL(2576980377); // 0.6
+
+            IndividualHumanContextFake traveler9(nullptr, &nc_9, nullptr, nullptr);
+
+            // ------------------------------------------------------------------
+            // --- Test that male vector (age 0) will not migration from node 9
+            // ------------------------------------------------------------------
+            traveler9.SetAge(0);
+            traveler9.SetGender(Gender::MALE);
+
+            destination = suids::nil_suid();
+            mig_type = MigrationType::NO_MIGRATION;
+            trip_time = -1.0;
+
+            p_mi_9->PickMigrationStep(&m_RandomFake, &traveler9, 1.0, destination, mig_type, trip_time);
+
+            CHECK_EQUAL(0, destination.data);
+            CHECK_EQUAL(MigrationType::NO_MIGRATION, mig_type);
+            CHECK_CLOSE(0.0, trip_time, 0.0001);
+
+            // ------------------------------------------------------------------
+            // --- Test that female vector (age 0) will migrate from node 9 to nodes 6, 8
+            // ------------------------------------------------------------------
+            traveler9.SetAge(0);
+            traveler9.SetGender(Gender::FEMALE);
+
+            destination = suids::nil_suid();
+            mig_type = MigrationType::NO_MIGRATION;
+            trip_time = -1.0;
+
+            p_mi_9->PickMigrationStep(&m_RandomFake, &traveler9, 1.0, destination, mig_type, trip_time);
+
+            CHECK_EQUAL(8, destination.data);
+            CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type);
+            CHECK_CLOSE(2.5541, trip_time, 0.0001);
+
+        }
+        catch (DetailedException& re)
+        {
+            PrintDebug(re.GetMsg());
+            CHECK(false);
+        }
+    }
+
+
+    TEST_FIXTURE(MigrationFixture, TestBothGendersVector)
+    {
+        std::string config_filename = "testdata/MigrationTest/TestBothGendersVector_config.json";
+        try
+        {
+            unique_ptr<Configuration> p_config(Environment::LoadConfigurationFile(config_filename.c_str()));
+
+            // Female vectors migrate from odd nodes to even nodes, male vectors migrate from even nodes to odd nodes
+            // Vector migration does not depend on age, so we use age=0
+
+            // --------------------
+            // --- Initialize test
+            // --------------------
+            nodeid_suid_map_t nodeid_suid_map;
+            for (uint32_t node_id = 1; node_id <= 9; node_id++)
+            {
+                suids::suid node_suid;
+                node_suid.data = node_id;
+                nodeid_suid_map.insert(nodeid_suid_pair(node_id, node_suid));
+            }
+
+
+            std::string idreference = "MigrationTest";
+            VectorSpeciesParameters vsp(0);
+            vsp.Configure(p_config.get());
+
+            // ---------------
+            // --- Test Node 2 , no migration from file for Node 2
+            // ---------------
+            INodeContextFake nc_2(nodeid_suid_map.left.at(2));
+            unique_ptr<IMigrationInfoVector> p_mi_2(vsp.p_migration_factory->CreateMigrationInfoVector(idreference, &nc_2, nodeid_suid_map));
+
+
+            const std::vector<suids::suid>& reachable_nodes_2 = p_mi_2->GetReachableNodes();
+            CHECK_EQUAL(6, reachable_nodes_2.size());
+            CHECK_EQUAL(4, reachable_nodes_2[0].data);
+            CHECK_EQUAL(5, reachable_nodes_2[1].data);
+            CHECK_EQUAL(6, reachable_nodes_2[2].data);
+            CHECK_EQUAL(7, reachable_nodes_2[3].data);
+            CHECK_EQUAL(8, reachable_nodes_2[4].data);
+            CHECK_EQUAL(9, reachable_nodes_2[5].data);
+
+            const std::vector<MigrationType::Enum>& mig_type_list_2 = p_mi_2->GetMigrationTypes();
+            CHECK_EQUAL(6, mig_type_list_2.size());
+            CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type_list_2[0]);
+            CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type_list_2[1]);
+            CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type_list_2[2]);
+            CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type_list_2[3]);
+            CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type_list_2[4]);
+            CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type_list_2[5]);
+
+            // ================
+            // === FROM NODE 2
+            // ================
+            m_RandomFake.SetUL(2576980377); // 0.6
+
+            IndividualHumanContextFake traveler(nullptr, &nc_2, nullptr, nullptr);
+
+            // ------------------------------------------------------------------
+            // --- Test that male vector (age 0) no migration from Node 2
+            // ------------------------------------------------------------------
+            traveler.SetAge(0);
+            traveler.SetGender(Gender::MALE);
+
+            suids::suid destination = suids::nil_suid();
+            MigrationType::Enum mig_type = MigrationType::NO_MIGRATION;
+            float trip_time = -1.0;
+
+            p_mi_2->PickMigrationStep(&m_RandomFake, &traveler, 1.0, destination, mig_type, trip_time);
+
+            CHECK_EQUAL(0, destination.data);
+            CHECK_EQUAL(MigrationType::NO_MIGRATION, mig_type);
+            CHECK_CLOSE(0.0, trip_time, 0.0001);
+
+            // ------------------------------------------------------------------
+            // --- Test that female vector (age 0) no migration from Node 2
+            // ------------------------------------------------------------------
+            traveler.SetAge(0);
+            traveler.SetGender(Gender::FEMALE);
+
+            destination = suids::nil_suid();
+            mig_type = MigrationType::NO_MIGRATION;
+            trip_time = -1.0;
+
+            p_mi_2->PickMigrationStep(&m_RandomFake, &traveler, 1.0, destination, mig_type, trip_time);
+
+            CHECK_EQUAL(0, destination.data);
+            CHECK_EQUAL(MigrationType::NO_MIGRATION, mig_type);
+            CHECK_CLOSE(0.0, trip_time, 0.0001);
+
+            // ---------------
+            // --- Test Node 9 
+            // ---------------
+            INodeContextFake nc_9(nodeid_suid_map.left.at(9));
+            unique_ptr<IMigrationInfoVector> p_mi_9(vsp.p_migration_factory->CreateMigrationInfoVector(idreference, &nc_9, nodeid_suid_map));
+
+
+            const std::vector<suids::suid>& reachable_nodes_9 = p_mi_9->GetReachableNodes();
+            CHECK_EQUAL(6, reachable_nodes_9.size());
+            CHECK_EQUAL(1, reachable_nodes_9[0].data);
+            CHECK_EQUAL(2, reachable_nodes_9[1].data);
+            CHECK_EQUAL(3, reachable_nodes_9[2].data);
+            CHECK_EQUAL(4, reachable_nodes_9[3].data);
+            CHECK_EQUAL(5, reachable_nodes_9[4].data);
+            CHECK_EQUAL(6, reachable_nodes_9[5].data);
+
+
+            const std::vector<MigrationType::Enum>& mig_type_list_9 = p_mi_9->GetMigrationTypes();
+            CHECK_EQUAL(6, mig_type_list_9.size());
+            CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type_list_9[0]);
+            CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type_list_9[1]);
+            CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type_list_9[2]);
+            CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type_list_9[3]);
+            CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type_list_9[4]);
+            CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type_list_9[5]);
+
+            // ================
+            // === FROM NODE 9 migration only to Node 1
+            // ================
+            m_RandomFake.SetUL(2576980377); // 0.6
+
+            IndividualHumanContextFake traveler9(nullptr, &nc_9, nullptr, nullptr);
+
+            // ------------------------------------------------------------------
+            // --- Test that male vector (age 0) will migrate from Node 9 to 1
+            // ------------------------------------------------------------------
+            traveler9.SetAge(0);
+            traveler9.SetGender(Gender::MALE);
+
+            destination = suids::nil_suid();
+            mig_type = MigrationType::NO_MIGRATION;
+            trip_time = -1.0;
+
+            p_mi_9->PickMigrationStep(&m_RandomFake, &traveler9, 1.0, destination, mig_type, trip_time);
+
+            CHECK_EQUAL(1, destination.data);
+            CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type);
+            CHECK_CLOSE(5.1082, trip_time, 0.0001);
+
+            // ------------------------------------------------------------------
+            // --- Test that female vector (age 0) will migrate from Node 9 to node 1
+            // ------------------------------------------------------------------
+            traveler9.SetAge(0);
+            traveler9.SetGender(Gender::FEMALE);
+
+            destination = suids::nil_suid();
+            mig_type = MigrationType::NO_MIGRATION;
+            trip_time = -1.0;
+
+            p_mi_9->PickMigrationStep(&m_RandomFake, &traveler9, 1.0, destination, mig_type, trip_time);
+
+            CHECK_EQUAL(1, destination.data);
+            CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type);
+            CHECK_CLOSE(5.1082, trip_time, 0.0001);
+
+        }
+        catch (DetailedException& re)
+        {
+            PrintDebug(re.GetMsg());
+            CHECK(false);
+        }
+    }
+
+
+    TEST_FIXTURE(MigrationFixture, TestUpdateFemaleRateVector)
+    {
+        std::string config_filename = "testdata/MigrationTest/TestBothGendersVector_config.json";
+        try
+        {
+            unique_ptr<Configuration> p_config(Environment::LoadConfigurationFile(config_filename.c_str()));
+
+            // Female vectors migrate from odd nodes to even nodes, male vectors migrate from even nodes to odd nodes
+            // Vector migration does not depend on age, so we use age=0
+
+            // --------------------
+            // --- Initialize test
+            // --------------------
+            nodeid_suid_map_t nodeid_suid_map;
+            for (uint32_t node_id = 1; node_id <= 9; node_id++)
+            {
+                suids::suid node_suid;
+                node_suid.data = node_id;
+                nodeid_suid_map.insert(nodeid_suid_pair(node_id, node_suid));
+            }
+
+
+            std::string idreference = "MigrationTest";
+            VectorSpeciesParameters vsp(0);
+            vsp.Configure(p_config.get());
+
+            // ---------------
+            // --- Test Node 2 , no migration from file for Node 2
+            // ---------------
+            INodeContextFake nc_2(nodeid_suid_map.left.at(2));
+            unique_ptr<IMigrationInfoVector> p_mi_2(vsp.p_migration_factory->CreateMigrationInfoVector(idreference, &nc_2, nodeid_suid_map));
+
+
+            const std::vector<suids::suid>& reachable_nodes_2 = p_mi_2->GetReachableNodes();
+            CHECK_EQUAL(6, reachable_nodes_2.size());
+            CHECK_EQUAL(4, reachable_nodes_2[0].data);
+            CHECK_EQUAL(5, reachable_nodes_2[1].data);
+            CHECK_EQUAL(6, reachable_nodes_2[2].data);
+            CHECK_EQUAL(7, reachable_nodes_2[3].data);
+            CHECK_EQUAL(8, reachable_nodes_2[4].data);
+            CHECK_EQUAL(9, reachable_nodes_2[5].data);
+
+            const std::vector<MigrationType::Enum>& mig_type_list_2 = p_mi_2->GetMigrationTypes();
+            CHECK_EQUAL(6, mig_type_list_2.size());
+            CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type_list_2[0]);
+            CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type_list_2[1]);
+            CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type_list_2[2]);
+            CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type_list_2[3]);
+            CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type_list_2[4]);
+            CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type_list_2[5]);
+
+            // ================
+            // === FROM NODE 2
+            // ================
+            m_RandomFake.SetUL(2576980377); // 0.6
+
+            IndividualHumanContextFake traveler(nullptr, &nc_2, nullptr, nullptr);
+
+            // ------------------------------------------------------------------
+            // --- Test that male vector (age 0) no migration from Node 2
+            // ------------------------------------------------------------------
+            traveler.SetAge(0);
+            traveler.SetGender(Gender::MALE);
+
+            suids::suid destination = suids::nil_suid();
+            MigrationType::Enum mig_type = MigrationType::NO_MIGRATION;
+            float trip_time = -1.0;
+
+            p_mi_2->PickMigrationStep(&m_RandomFake, &traveler, 1.0, destination, mig_type, trip_time);
+
+            CHECK_EQUAL(0, destination.data);
+            CHECK_EQUAL(MigrationType::NO_MIGRATION, mig_type);
+            CHECK_CLOSE(0.0, trip_time, 0.0001);
+
+            // ------------------------------------------------------------------
+            // --- Test that female vector (age 0) no migration from Node 2
+            // ------------------------------------------------------------------
+            traveler.SetAge(0);
+            traveler.SetGender(Gender::FEMALE);
+
+            destination = suids::nil_suid();
+            mig_type = MigrationType::NO_MIGRATION;
+            trip_time = -1.0;
+
+            p_mi_2->PickMigrationStep(&m_RandomFake, &traveler, 1.0, destination, mig_type, trip_time);
+
+            CHECK_EQUAL(0, destination.data);
+            CHECK_EQUAL(MigrationType::NO_MIGRATION, mig_type);
+            CHECK_CLOSE(0.0, trip_time, 0.0001);
+
+            // ---------------
+            // --- Test Node 9 
+            // ---------------
+            INodeContextFake nc_9(nodeid_suid_map.left.at(9));
+            unique_ptr<IMigrationInfoVector> p_mi_9(vsp.p_migration_factory->CreateMigrationInfoVector(idreference, &nc_9, nodeid_suid_map));
+
+
+            const std::vector<suids::suid>& reachable_nodes_9 = p_mi_9->GetReachableNodes();
+            CHECK_EQUAL(6, reachable_nodes_9.size());
+            CHECK_EQUAL(1, reachable_nodes_9[0].data);
+            CHECK_EQUAL(2, reachable_nodes_9[1].data);
+            CHECK_EQUAL(3, reachable_nodes_9[2].data);
+            CHECK_EQUAL(4, reachable_nodes_9[3].data);
+            CHECK_EQUAL(5, reachable_nodes_9[4].data);
+            CHECK_EQUAL(6, reachable_nodes_9[5].data);
+
+
+            const std::vector<MigrationType::Enum>& mig_type_list_9 = p_mi_9->GetMigrationTypes();
+            CHECK_EQUAL(6, mig_type_list_9.size());
+            CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type_list_9[0]);
+            CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type_list_9[1]);
+            CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type_list_9[2]);
+            CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type_list_9[3]);
+            CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type_list_9[4]);
+            CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type_list_9[5]);
+
+            // ================
+            // === FROM NODE 9 migration only to Node 1
+            // ================
+            m_RandomFake.SetUL(2576980377); // 0.6
+
+            IndividualHumanContextFake traveler9(nullptr, &nc_9, nullptr, nullptr);
+
+            // ------------------------------------------------------------------
+            // --- Test that male vector (age 0) will migrate from Node 9 to 1
+            // ------------------------------------------------------------------
+            traveler9.SetAge(0);
+            traveler9.SetGender(Gender::MALE);
+
+            destination = suids::nil_suid();
+            mig_type = MigrationType::NO_MIGRATION;
+            trip_time = -1.0;
+
+            p_mi_9->PickMigrationStep(&m_RandomFake, &traveler9, 1.0, destination, mig_type, trip_time);
+
+            CHECK_EQUAL(1, destination.data);
+            CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type);
+            CHECK_CLOSE(5.1082, trip_time, 0.0001);
+
+            // ------------------------------------------------------------------
+            // --- Test that female vector (age 0) will migrate from Node 9 to node 1
+            // ------------------------------------------------------------------
+            traveler9.SetAge(0);
+            traveler9.SetGender(Gender::FEMALE);
+
+            destination = suids::nil_suid();
+            mig_type = MigrationType::NO_MIGRATION;
+            trip_time = -1.0;
+
+            p_mi_9->PickMigrationStep(&m_RandomFake, &traveler9, 1.0, destination, mig_type, trip_time);
+
+            CHECK_EQUAL(1, destination.data);
+            CHECK_EQUAL(MigrationType::LOCAL_MIGRATION, mig_type);
+            CHECK_CLOSE(5.1082, trip_time, 0.0001);
+
+        }
+        catch (DetailedException& re)
+        {
+            PrintDebug(re.GetMsg());
+            CHECK(false);
+        }
+    }
+
+
+
 
     void TestHelper_FactoryConfigureException( int lineNumber, 
                                                const std::string& rFilename, 
@@ -1026,11 +1510,7 @@ SUITE(MigrationTest)
             }
 
             unique_ptr<IMigrationInfoFactory> p_mf( MigrationFactory::ConstructMigrationInfoFactory( p_config.get(),
-                                                                                                     rIdReference,
-                                                                                                     SimType::GENERIC_SIM,
-                                                                                                     MigrationStructure::FIXED_RATE_MIGRATION,
-                                                                                                     false,
-                                                                                                     10 ) );
+                                                                                                     rIdReference ) );
 
             suids::suid node_suid;
             node_suid.data = nodeId;
@@ -1276,7 +1756,7 @@ SUITE(MigrationTest)
     {
         std::string exp_msg;
         exp_msg  = "Could not find file TestLocalMigrationFileNotFound.bin.\n";
-        exp_msg += "Received the following system error messages while checking for the existance\n";
+        exp_msg += "Received the following system error messages while checking for the existence\n";
         exp_msg += "of the file at the following locations:\n";
         exp_msg += "testdata/MigrationTest/TestLocalMigrationFileNotFound.bin - 'No such file or directory'";
 
@@ -1342,5 +1822,290 @@ SUITE(MigrationTest)
             26,
             26,
             "I/O error while reading/writing. File name =  TestInvalidOffsetValues.bin.  \nInvalid 'NodeOffsets' in testdata/MigrationTest/TestInvalidOffsetValues.bin.json.\nNode ID=26 has an offset of 0xbadbeef but the '.bin' file size is expected to be 2496(0x9c0)." );
+    }
+
+    void TestHelper_FactoryConfigureVectorException(int lineNumber,
+        const std::string& rFilename,
+        const std::string& rIdReference,
+        uint32_t numNodes,
+        ExternalNodeId_t nodeId,
+        const std::string& rExpMsg)
+    {
+        try
+        {
+            unique_ptr<Configuration> p_config(Environment::LoadConfigurationFile(rFilename.c_str()));
+
+            nodeid_suid_map_t nodeid_suid_map;
+            for (uint32_t node_id = 1; node_id <= numNodes; node_id++)
+            {
+                suids::suid node_suid;
+                node_suid.data = node_id;
+                nodeid_suid_map.insert(nodeid_suid_pair(node_id, node_suid));
+            }
+
+            VectorSpeciesParameters vsp(0);
+            vsp.Configure(p_config.get());
+
+            suids::suid node_suid;
+            node_suid.data = nodeId;
+            INodeContextFake nc(node_suid);
+            unique_ptr<IMigrationInfo> p_mi(vsp.p_migration_factory->CreateMigrationInfoVector(rIdReference, &nc, nodeid_suid_map));
+
+            CHECK_LN(false, lineNumber); // should not get here
+        }
+        catch (DetailedException& re)
+        {
+            std::string msg = re.GetMsg();
+            bool passed = msg.find(rExpMsg) != string::npos;
+            if (!passed)
+            {
+                PrintDebug(msg);
+            }
+            CHECK_LN(passed, lineNumber);
+        }
+    }
+
+
+
+    TEST_FIXTURE(MigrationFixture, TestNoMetadataFileVector)
+    {
+        TestHelper_FactoryConfigureVectorException(
+            __LINE__,
+            "testdata/MigrationTest/TestNoMetadataFileVector_config.json",
+            "Household-Scenario-Small",
+            26,
+            1,
+            "Could not find file testdata/MigrationTest/5x5_Households_Local_MigrationXXX.bin.json");
+    }
+
+    TEST_FIXTURE(MigrationFixture, TestBadIdReferenceVector)
+    {
+        TestHelper_FactoryConfigureVectorException(
+            __LINE__,
+            "testdata/MigrationTest/TestVectorMigrationInfo.json",
+            "BadIdReference",
+            26,
+            1,
+            "Variable or parameter 'idreference' with value BadIdReference is incompatible with variable or parameter 'testdata/MigrationTest/Local_Vector_Migration.bin.json[Metadata][IdReference]' with value Household-Scenario-Small. ");
+    }
+
+    TEST_FIXTURE(MigrationFixture, TestDatavalueCountTooSmallVector)
+    {
+        TestHelper_FactoryConfigureVectorException(
+            __LINE__,
+            "testdata/MigrationTest/TestDatavalueCountTooSmallVector_config.json",
+            "Household-Scenario-Small",
+            26,
+            1,
+            "Variable 'testdata/MigrationTest/TestDatavalueCountTooSmall.bin.json[Metadata][DatavalueCount]' had value 0 which was inconsistent with range limit 0");
+    }
+
+    TEST_FIXTURE(MigrationFixture, TestDatavalueCountTooBigVector)
+    {
+        TestHelper_FactoryConfigureVectorException(
+            __LINE__,
+            "testdata/MigrationTest/TestDatavalueCountTooBigVector_config.json",
+            "Household-Scenario-Small",
+            26,
+            1,
+            "Variable 'testdata/MigrationTest/TestDatavalueCountTooBig.bin.json[Metadata][DatavalueCount]' had value 999 which was inconsistent with range limit 100");
+    }
+
+    TEST_FIXTURE(MigrationFixture, TestInvalidMigrationTypeAVector)
+    {
+        TestHelper_FactoryConfigureVectorException(
+            __LINE__,
+            "testdata/MigrationTest/TestInvalidMigrationTypeAVector_config.json",
+            "Household-Scenario-Small",
+            26,
+            1,
+            "Variable or parameter 'm_MigrationType' with value LOCAL_MIGRATION is incompatible with variable or parameter 'testdata/MigrationTest/TestInvalidMigrationTypeA.bin.json[Metadata][MigrationType]' with value SEA_MIGRATION. ");
+    }
+
+    TEST_FIXTURE(MigrationFixture, TestInvalidMigrationTypeBVector)
+    {
+        TestHelper_FactoryConfigureVectorException(
+            __LINE__,
+            "testdata/MigrationTest/TestInvalidMigrationTypeBVector_config.json",
+            "Household-Scenario-Small",
+            26,
+            1,
+            "testdata/MigrationTest/TestInvalidMigrationTypeB.bin.json[Metadata][MigrationType] = 'XXX' is not a valid MigrationType.  Valid values are: 'NO_MIGRATION', 'LOCAL_MIGRATION', 'AIR_MIGRATION', 'REGIONAL_MIGRATION', 'SEA_MIGRATION'");
+    }
+
+    TEST_FIXTURE(MigrationFixture, TestInvalidGenderDataTypeVector)
+    {
+        TestHelper_FactoryConfigureVectorException(
+            __LINE__,
+            "testdata/MigrationTest/TestInvalidGenderDataTypeVector_config.json",
+            "Household-Scenario-Small",
+            26,
+            1,
+            "testdata/MigrationTest/TestInvalidGenderDataType.bin.json[Metadata][GenderDataType] = 'XXX' is not a valid GenderDataType.  Valid values are: 'SAME_FOR_BOTH_GENDERS', 'ONE_FOR_EACH_GENDER'");
+    }
+
+    TEST_FIXTURE(MigrationFixture, TestInvalidAgesYearsNotArrayVector)
+    {
+        TestHelper_FactoryConfigureVectorException(
+            __LINE__,
+            "testdata/MigrationTest/TestInvalidAgesYearsNotArrayVector_config.json",
+            "Household-Scenario-Small",
+            26,
+            1,
+            "testdata/MigrationTest/TestInvalidAgesYearsNotArray.bin.json[Metadata][AgesYears] must be an array of ages in years between 0 and 125 and must be in increasing order.");
+    }
+
+    TEST_FIXTURE(MigrationFixture, TestInvalidAgesYearsLessThanZeroVector)
+    {
+        TestHelper_FactoryConfigureVectorException(
+            __LINE__,
+            "testdata/MigrationTest/TestInvalidAgesYearsLessThanZeroVector_config.json",
+            "Household-Scenario-Small",
+            26,
+            1,
+            "testdata/MigrationTest/TestInvalidAgesYearsLessThanZero.bin.json[Metadata][AgesYears][0] = -1.  testdata/MigrationTest/TestInvalidAgesYearsLessThanZero.bin.json[Metadata][AgesYears] must be an array of ages in years between 0 and 125 and must be in increasing order.");
+    }
+
+    TEST_FIXTURE(MigrationFixture, TestInvalidAgesYearsGreaterThanMaxVector)
+    {
+        TestHelper_FactoryConfigureVectorException(
+            __LINE__,
+            "testdata/MigrationTest/TestInvalidAgesYearsGreaterThanMaxVector_config.json",
+            "Household-Scenario-Small",
+            26,
+            1,
+            "testdata/MigrationTest/TestInvalidAgesYearsGreaterThanMax.bin.json[Metadata][AgesYears][1] = 999.  testdata/MigrationTest/TestInvalidAgesYearsGreaterThanMax.bin.json[Metadata][AgesYears] must be an array of ages in years between 0 and 125 and must be in increasing order.");
+    }
+
+    TEST_FIXTURE(MigrationFixture, TestInvalidAgesYearsOrderVector)
+    {
+        TestHelper_FactoryConfigureVectorException(
+            __LINE__,
+            "testdata/MigrationTest/TestInvalidAgesYearsOrderVector_config.json",
+            "Household-Scenario-Small",
+            26,
+            1,
+            "testdata/MigrationTest/TestInvalidAgesYearsOrder.bin.json[Metadata][AgesYears] must be an array of ages in years between 0 and 125 and must be in increasing order.");
+    }
+
+    TEST_FIXTURE(MigrationFixture, TestInvalidInterpolationTypeVector)
+    {
+        TestHelper_FactoryConfigureVectorException(
+            __LINE__,
+            "testdata/MigrationTest/TestInvalidInterpolationTypeVector_config.json",
+            "Household-Scenario-Small",
+            26,
+            1,
+            "testdata/MigrationTest/TestInvalidInterpolationType.bin.json[Metadata][InterpolationType] = 'XXX' is not a valid InterpolationType.  Valid values are: 'LINEAR_INTERPOLATION', 'PIECEWISE_CONSTANT'");
+    }
+
+    TEST_FIXTURE(MigrationFixture, TestInvalidOffsetVector)
+    {
+        TestHelper_FactoryConfigureVectorException(
+            __LINE__,
+            "testdata/MigrationTest/TestInvalidOffsetVector_config.json",
+            "Household-Scenario-Small",
+            26,
+            1,
+            "Variable or parameter 'offsets_str.length() / 16' with value 26 is incompatible with variable or parameter 'num_nodes' with value 999. ");
+    }
+
+    TEST_FIXTURE(MigrationFixture, TestMetadataBadJsonAVector)
+    {
+        TestHelper_FactoryConfigureVectorException(
+            __LINE__,
+            "testdata/MigrationTest/TestMetadataBadJsonAVector_config.json",
+            "Household-Scenario-Small",
+            26,
+            1,
+            "testdata/MigrationTest/TestMetadataBadJsonA.bin.json: Failed to parse incoming text. Name of an object member must be a string");
+    }
+
+    TEST_FIXTURE(MigrationFixture, TestMetadataBadJsonBVector)
+    {
+        TestHelper_FactoryConfigureVectorException(
+            __LINE__,
+            "testdata/MigrationTest/TestMetadataBadJsonBVector_config.json",
+            "Household-Scenario-Small",
+            26,
+            1,
+            "testdata/MigrationTest/TestMetadataBadJsonB.bin.json: The 'InterpolationType' element is not a 'String'.");
+    }
+
+    TEST_FIXTURE(MigrationFixture, TestMetadataBadJsonCVector)
+    {
+        TestHelper_FactoryConfigureVectorException(
+            __LINE__,
+            "testdata/MigrationTest/TestMetadataBadJsonCVector_config.json",
+            "Household-Scenario-Small",
+            26,
+            1,
+            "testdata/MigrationTest/TestMetadataBadJsonC.bin.json: The 'Metadata' element does not contain an element with name 'NodeCount'.");
+    }
+
+    TEST_FIXTURE(MigrationFixture, TestWrongSizeVector)
+    {
+        TestHelper_FactoryConfigureVectorException(
+            __LINE__,
+            "testdata/MigrationTest/TestWrongSizeVector_config.json",
+            "Household-Scenario-Small",
+            26,
+            1,
+            "I/O error while reading/writing. File name =  testdata/MigrationTest/TestWrongSize.bin.  Detected wrong size for migration data file.  Expected 2400 bytes, read 2496 bytes");
+    }
+
+    TEST_FIXTURE(MigrationFixture, TestNodeNotFoundVector)
+    {
+        TestHelper_FactoryConfigureVectorException(
+            __LINE__,
+            "testdata/MigrationTest/TestVectorMigrationInfo.json",
+            "Household-Scenario-Small",
+            26,
+            999,
+            "Variable or parameter 'rNodeIdSuidMap.right.count(node_suid)' with value 0 is incompatible with variable or parameter 'node_suid' with value 999.");
+    }
+
+    TEST_FIXTURE(MigrationFixture, TestNodesInFileNotInScenarioVector)
+    {
+        TestHelper_FactoryConfigureVectorException(
+            __LINE__,
+            "testdata/MigrationTest/TestVectorMigrationInfo.json",
+            "Household-Scenario-Small",
+            5,
+            1,
+            "NodeId, 6, found in Local_Vector_Migration.bin, is not a node in the simulation.");
+    }
+
+    TEST_FIXTURE(MigrationFixture, TestInvalidAgeDataSectionVector)
+    {
+        TestHelper_FactoryConfigureVectorException(
+            __LINE__,
+            "testdata/MigrationTest/TestInvalidAgeDataSectionVector_config.json",
+            "ABC",
+            4,
+            2,
+            "In file 'TestInvalidAgeDataSection.bin', the 'To' Node IDs are not the same for the Age Data sections for fromNodeId = 2");
+    }
+
+    TEST_FIXTURE(MigrationFixture, TestInvalidOffsetValuesVector)
+    {
+        TestHelper_FactoryConfigureVectorException(
+            __LINE__,
+            "testdata/MigrationTest/TestInvalidOffsetValuesVector_config.json",
+            "Household-Scenario-Small",
+            26,
+            26,
+            "I/O error while reading/writing. File name =  TestInvalidOffsetValues.bin.  \nInvalid 'NodeOffsets' in testdata/MigrationTest/TestInvalidOffsetValues.bin.json.\nNode ID=26 has an offset of 0xbadbeef but the '.bin' file size is expected to be 2496(0x9c0).");
+    }
+
+    TEST_FIXTURE(MigrationFixture, TestMultipleAgesVector)
+    {
+        TestHelper_FactoryConfigureVectorException(
+            __LINE__,
+            "testdata/MigrationTest/TestMultipleAgesVector_config.json",
+            "MigrationTest",
+            9,
+            1,
+            "Vector_Migration_Filename 3x3_Age_Local.bin contains more than one age bin for migration. Age-based migration is not implemented for vectors.");
     }
 }

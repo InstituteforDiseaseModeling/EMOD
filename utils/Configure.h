@@ -144,6 +144,7 @@ namespace Kernel
         friend class DistributionUniformConfigurable;
         friend class DistributionPiecewiseConstantConfigurable;
         friend class DistributionPiecewiseLinearConfigurable;
+        friend class MigrationInfoFactoryVector;
 
     public:
         typedef std::map< float, float > tFloatFloatMapConfigType;
