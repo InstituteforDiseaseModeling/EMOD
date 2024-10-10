@@ -298,20 +298,20 @@ namespace Kernel
         return pIndoorKilling;
     }
 
-    void NodeVectorEventContextHost::ReleaseMosquitoes( const std::string& releasedSpecies,
+    void NodeVectorEventContextHost::ReleaseMosquitoes( const std::string&  releasedSpecies,
                                                         const VectorGenome& rGenome,
                                                         const VectorGenome& rMateGenome,
-                                                        bool isFraction,
+                                                        bool     isRatio,
                                                         uint32_t releasedNumber,
-                                                        float releasedFraction,
-                                                        float releasedInfectious )
+                                                        float    releasedRatio,
+                                                        float    releasedInfectious )
     {
         INodeVector * pNV = nullptr;
         if( node->QueryInterface( GET_IID( INodeVector ), (void**)&pNV ) != s_OK )
         {
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "node", "Node", "INodeVector" );
         }
-        pNV->AddVectors( releasedSpecies, rGenome, rMateGenome, isFraction, releasedNumber, releasedFraction, releasedInfectious );
+        pNV->AddVectors( releasedSpecies, rGenome, rMateGenome, isRatio, releasedNumber, releasedRatio, releasedInfectious );
     }
 }
 

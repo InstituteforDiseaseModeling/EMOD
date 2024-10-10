@@ -11,13 +11,13 @@ namespace Kernel
 {
     struct IMosquitoReleaseConsumer : public ISupports
     {
-        virtual void ReleaseMosquitoes( const std::string& releasedSpecies,
+        virtual void ReleaseMosquitoes( const std::string&  releasedSpecies,
                                         const VectorGenome& rGenome,
                                         const VectorGenome& rMateGenome,
-                                        bool isFraction,
+                                        bool     isRatio,
                                         uint32_t releasedNumber,
-                                        float releasedFraction,
-                                        float releasedInfectious ) = 0;
+                                        float    releasedRatio,
+                                        float    releasedInfectious ) = 0;
     };
 }
 

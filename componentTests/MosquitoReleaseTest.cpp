@@ -133,8 +133,8 @@ SUITE( MosquitoReleaseTest )
         CHECK( mr.Expired() );
 
         CHECK_EQUAL( "arabiensis", m_NEC.GetMosquitoReleasedSpecies() );
-        CHECK_EQUAL( false, m_NEC.GetMosquitoReleasedIsFraction() );
-        CHECK_EQUAL( 77, m_NEC.GetMosquitoReleasedNumber() );
+        CHECK_EQUAL( false,        m_NEC.GetMosquitoReleasedIsRatio() );
+        CHECK_EQUAL( 77,           m_NEC.GetMosquitoReleasedNumber() );
     }
 
     TEST_FIXTURE(MosquitoReleaseFixture, TestConfigureMate)
@@ -167,8 +167,8 @@ SUITE( MosquitoReleaseTest )
         CHECK(mr.Expired());
 
         CHECK_EQUAL("arabiensis", m_NEC.GetMosquitoReleasedSpecies());
-        CHECK_EQUAL(false, m_NEC.GetMosquitoReleasedIsFraction());
-        CHECK_EQUAL(77, m_NEC.GetMosquitoReleasedNumber());
+        CHECK_EQUAL(false,        m_NEC.GetMosquitoReleasedIsRatio());
+        CHECK_EQUAL(77,           m_NEC.GetMosquitoReleasedNumber());
     }
 
     TEST_FIXTURE(MosquitoReleaseFixture, TestConfigureEmptyMate)
@@ -201,8 +201,8 @@ SUITE( MosquitoReleaseTest )
         CHECK(mr.Expired());
 
         CHECK_EQUAL("arabiensis", m_NEC.GetMosquitoReleasedSpecies());
-        CHECK_EQUAL(false, m_NEC.GetMosquitoReleasedIsFraction());
-        CHECK_EQUAL(77, m_NEC.GetMosquitoReleasedNumber());
+        CHECK_EQUAL(false,        m_NEC.GetMosquitoReleasedIsRatio());
+        CHECK_EQUAL(77,           m_NEC.GetMosquitoReleasedNumber());
     }
 
     TEST_FIXTURE( MosquitoReleaseFixture, TestConfigureFraction )
@@ -235,9 +235,45 @@ SUITE( MosquitoReleaseTest )
         CHECK( mr.Expired() );
 
         CHECK_EQUAL( "funestus", m_NEC.GetMosquitoReleasedSpecies() );
-        CHECK_EQUAL( true, m_NEC.GetMosquitoReleasedIsFraction() );
-        CHECK_EQUAL( 0.5, m_NEC.GetMosquitoReleasedFraction() );
+        CHECK_EQUAL( true,       m_NEC.GetMosquitoReleasedIsRatio() );
+        CHECK_EQUAL( 0.5,        m_NEC.GetMosquitoReleasedRatio() );
     }
+
+
+    TEST_FIXTURE( MosquitoReleaseFixture, TestConfigureRatio )
+    {
+        InitializeConfig( __LINE__, "testdata/MosquitoReleaseTest/config.json" );
+
+        CHECK( m_pSimulationConfig->vector_params->vector_species.Size() > 0 );
+        VectorSpeciesParameters* p_vsp = m_pSimulationConfig->vector_params->vector_species[0];
+        CHECK_EQUAL( 4, p_vsp->genes.Size() );
+        CHECK_EQUAL( 1, p_vsp->trait_modifiers.Size() );
+
+        MosquitoRelease mr;
+        try
+        {
+            unique_ptr<Configuration> p_config( Environment::LoadConfigurationFile( "testdata/MosquitoReleaseTest/TestConfigureRatio.json" ) );
+            JsonConfigurable::_useDefaults = true;
+            mr.Configure( p_config.get() );
+
+            CHECK( true );
+        }
+        catch( DetailedException& re )
+        {
+            PrintDebug( re.GetMsg() );
+            CHECK( false );
+        }
+
+        mr.Distribute( &m_NEC, nullptr );
+        mr.Update( 1.0 );
+
+        CHECK( mr.Expired() );
+
+        CHECK_EQUAL( "funestus", m_NEC.GetMosquitoReleasedSpecies() );
+        CHECK_EQUAL( true,       m_NEC.GetMosquitoReleasedIsRatio() );
+        CHECK_EQUAL( 45.5,       m_NEC.GetMosquitoReleasedRatio() );
+    }
+
 
     TEST_FIXTURE( MosquitoReleaseFixture, TestInvalidNumAllelePairs )
     {

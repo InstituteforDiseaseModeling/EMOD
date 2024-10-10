@@ -94,7 +94,7 @@
         { "path": "Vector/101_Vector_Serialization_Namawala_4Interventions" },
         { "path": "Vector/102_Vector_Mating" },
         { "path": "Vector/103_Vector_SugarTrap_TargetMalesOnly" },
-        { "path": "Vector/104_Vector_MosquitoRelease_Fraction" },
+        { "path": "Vector/104_Vector_MosquitoRelease_Ratio" },
         { "path": "Vector/105_Vector_IRSAndScreenKilling" },
         { "path": "Vector/106_Vector_TraitModifier_InfectedProgress" },
         { "path": "Vector/107_Vector_Genetics_TwoClassics" },

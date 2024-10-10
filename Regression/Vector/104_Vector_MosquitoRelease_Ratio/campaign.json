@@ -5,8 +5,8 @@
                 "Intervention_Config": {
                     "class": "MosquitoRelease",
                     "Cost_To_Consumer": 200, 
-                    "Released_Type": "FRACTION",
-                    "Released_Fraction": 0.5, 
+                    "Released_Type": "RATIO",
+                    "Released_Ratio": 1.5, 
                     "Released_Infectious": 0.5, 
                     "Released_Species": "SillySkeeter", 
                     "Released_Wolbachia": "VECTOR_WOLBACHIA_FREE", 
@@ -28,8 +28,8 @@
                 "Intervention_Config": {
                     "class": "MosquitoRelease",
                     "Cost_To_Consumer": 200, 
-                    "Released_Type": "FRACTION",
-                    "Released_Fraction": 0.2, 
+                    "Released_Type": "RATIO",
+                    "Released_Ratio": 0.2, 
                     "Released_Species": "SillySkeeter", 
                     "Released_Wolbachia": "VECTOR_WOLBACHIA_FREE", 
                     "Released_Genome" : [
