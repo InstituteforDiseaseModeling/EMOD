@@ -1,0 +1,18 @@
+{
+    "class": "MosquitoRelease",
+    "Dont_Allow_Duplicates": 0,
+    "Intervention_Name" : "Release_YDrive_Male",
+    "Cost_To_Consumer" : 123,
+    "Disqualifying_Properties" : [],
+    "New_Property_Value" : "",
+    "Released_Species": "funestus", 
+    "Released_Type" : "RATIO",
+    "Released_Number": 1,
+    "Released_Infectious": 0.0,
+    "Released_Ratio" : 45.5,
+    "Released_Wolbachia" : "VECTOR_WOLBACHIA_FREE",
+    "Released_Microsporidia_Strain": "",
+    "Released_Genome" : [
+        [    "X",        "Y" ]
+    ]
+}
