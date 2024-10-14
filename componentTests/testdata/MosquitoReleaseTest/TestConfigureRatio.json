@@ -9,7 +9,7 @@
     "Released_Type" : "RATIO",
     "Released_Number": 1,
     "Released_Infectious": 0.0,
-    "Released_Ratio" : 0.5,
+    "Released_Ratio" : 45.5,
     "Released_Wolbachia" : "VECTOR_WOLBACHIA_FREE",
     "Released_Microsporidia_Strain": "",
     "Released_Genome" : [

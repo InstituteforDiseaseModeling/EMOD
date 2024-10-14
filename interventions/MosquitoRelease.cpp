@@ -29,8 +29,8 @@ namespace Kernel
         , m_TotalToRelease( 10000 )
         , m_Genome()
         , m_MateGenome()
-        , m_IsFraction( false )
-        , m_FractionToRelease( 0.0f )
+        , m_IsRatio( false )
+        , m_RatioToRelease( 0.0f )
         , m_FractionToInfect( 0.0f )
     {
     }
@@ -41,8 +41,8 @@ namespace Kernel
         , m_TotalToRelease( master.m_TotalToRelease )
         , m_Genome( master.m_Genome )
         , m_MateGenome( master.m_MateGenome)
-        , m_IsFraction( master.m_IsFraction )
-        , m_FractionToRelease( master.m_FractionToRelease )
+        , m_IsRatio( master.m_IsRatio )
+        , m_RatioToRelease( master.m_RatioToRelease )
         , m_FractionToInfect( master.m_FractionToInfect )
     {
     }
@@ -74,16 +74,15 @@ namespace Kernel
         // --- read like you'd expect.
         // -----------------------------------------------------------------------------------------------
         initSimTypes( 2, "VECTOR_SIM", "MALARIA_SIM" );
-        initConfigTypeMap( "Cost_To_Consumer",     &cost_per_unit, IV_Cost_To_Consumer_DESC_TEXT, 0, 999999, 0.0f );
-        initConfigTypeMap( "Released_Species",     &m_ReleasedSpecies, MR_Released_Species_DESC_TEXT );
+        initConfigTypeMap( "Cost_To_Consumer",     &cost_per_unit,       IV_Cost_To_Consumer_DESC_TEXT, 0, 999999, 0.0f );
+        initConfigTypeMap( "Released_Species",     &m_ReleasedSpecies,   MR_Released_Species_DESC_TEXT );
         initConfig(        "Released_Type",        release_type, inputJson, MetadataDescriptor::Enum("Released_Type", MR_Released_Type_DESC_TEXT, MDD_ENUM_ARGS(MosquitoReleaseType)) );
-        initConfigTypeMap( "Released_Number",      &m_TotalToRelease,  MR_Released_Number_DESC_TEXT, 1, 1e8, 10000 ); // see NOTE above
-        initConfigTypeMap( "Released_Fraction",    &m_FractionToRelease,  MR_Released_Fraction_DESC_TEXT, 0.0f, 1.0f, 0.1f, "Released_Type", "FRACTION" );
+        initConfigTypeMap( "Released_Number",      &m_TotalToRelease,    MR_Released_Number_DESC_TEXT, 1, 1e8, 10000 ); // see NOTE above
+        initConfigTypeMap( "Released_Ratio",       &m_RatioToRelease,    MR_Released_Ratio_DESC_TEXT, 0.0f, FLT_MAX, 0.1f, "Released_Type", "RATIO" );
         initConfigTypeMap( "Released_Infectious",  &m_FractionToInfect,  MR_Released_Infectious_DESC_TEXT, 0.0f, 1.0f, 0.0f );
-        initConfigTypeMap( "Released_Genome",      &combo_strings, MR_Released_Genome_DESC_TEXT, constraint_schema );
-        initConfigTypeMap( "Released_Mate_Genome", &combo_strings_mate, MR_Released_Mate_Genome_DESC_TEXT, constraint_schema);
+        initConfigTypeMap( "Released_Genome",      &combo_strings,       MR_Released_Genome_DESC_TEXT, constraint_schema );
+        initConfigTypeMap( "Released_Mate_Genome", &combo_strings_mate,  MR_Released_Mate_Genome_DESC_TEXT, constraint_schema);
         initConfig(        "Released_Wolbachia",   wolbachia_status, inputJson, MetadataDescriptor::Enum( "Released_Wolbachia", MR_Released_Wolbachia_DESC_TEXT, MDD_ENUM_ARGS( VectorWolbachia ) ) );
-
         initConfigTypeMap( "Released_Microsporidia_Strain",  &microsporidia_strain_name,  MR_Released_Microsporidia_Strain_DESC_TEXT, std::string("") );
 
         bool ret = BaseNodeIntervention::Configure( inputJson );
@@ -91,7 +90,7 @@ namespace Kernel
         {
             if( GET_CONFIGURABLE( SimulationConfig ) != nullptr )
             {
-                m_IsFraction = (release_type == MosquitoReleaseType::FRACTION);
+                m_IsRatio = (release_type == MosquitoReleaseType::RATIO);
 
                 VectorGeneCollection*       p_genes   = nullptr;
                 VectorGeneDriverCollection* p_drivers = nullptr;
@@ -188,7 +187,7 @@ namespace Kernel
             throw QueryInterfaceException( __FILE__, __LINE__, __FUNCTION__, "context", "IMosquitoReleaseConsumer", "INodeEventContext" );
         }
 
-        imrc->ReleaseMosquitoes( m_ReleasedSpecies, m_Genome, m_MateGenome, m_IsFraction, m_TotalToRelease, m_FractionToRelease, m_FractionToInfect );
+        imrc->ReleaseMosquitoes( m_ReleasedSpecies, m_Genome, m_MateGenome, m_IsRatio, m_TotalToRelease, m_RatioToRelease, m_FractionToInfect );
 
         SetExpired( true );
     }

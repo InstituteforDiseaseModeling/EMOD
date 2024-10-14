@@ -87,26 +87,26 @@ namespace Kernel
 
         // IMosquitoReleaseConsumer
         virtual void ReleaseMosquitoes( const std::string& releasedSpecies,
-                                        const VectorGenome& rGenome,
-                                        const VectorGenome& rMateGenome,
-                                        bool isFraction,
+                                        const    VectorGenome& rGenome,
+                                        const    VectorGenome& rMateGenome,
+                                        bool     isRatio,
                                         uint32_t releasedNumber,
-                                        float releasedFraction,
-                                        float releasedInfectious ) override;
+                                        float    releasedRatio,
+                                        float    releasedInfectious ) override;
 
     protected: 
         GeneticProbability pLarvalKilling;
-        float pLarvalHabitatReduction;
+        float              pLarvalHabitatReduction;
         GeneticProbability pVillageSpatialRepellent;
-        float pADIVAttraction;
-        float pADOVAttraction;
+        float              pADIVAttraction;
+        float              pADOVAttraction;
         GeneticProbability pOutdoorKilling;
-        float pOviTrapKilling;
+        float              pOviTrapKilling;
         GeneticProbability pAnimalFeedKilling;
         GeneticProbability pOutdoorRestKilling;
-        bool isUsingIndoorKilling;
+        bool               isUsingIndoorKilling;
         GeneticProbability pIndoorKilling;
-        bool isUsingSugarTrap;
+        bool               isUsingSugarTrap;
         GeneticProbability pSugarFeedKilling;
 
     private:

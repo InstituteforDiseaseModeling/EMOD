@@ -18,7 +18,7 @@ namespace Kernel
 {
     ENUM_DEFINE( MosquitoReleaseType, 
         ENUM_VALUE_SPEC( FIXED_NUMBER , 0 )
-        ENUM_VALUE_SPEC( FRACTION     , 1 ))
+        ENUM_VALUE_SPEC( RATIO        , 1 ))
 
     class MosquitoRelease : public BaseNodeIntervention
     {
@@ -39,11 +39,11 @@ namespace Kernel
 
     protected:
         jsonConfigurable::ConstrainedString m_ReleasedSpecies;
-        uint32_t m_TotalToRelease;
+        uint32_t     m_TotalToRelease;
         VectorGenome m_Genome;
         VectorGenome m_MateGenome;
-        bool m_IsFraction;
-        float m_FractionToRelease;
-        float m_FractionToInfect;
+        bool         m_IsRatio;
+        float        m_RatioToRelease;
+        float        m_FractionToInfect;
     };
 }
