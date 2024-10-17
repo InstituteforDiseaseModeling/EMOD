@@ -121,7 +121,7 @@ SUITE( VectorCohortMaleTest )
         CHECK_EQUAL( 87,  pvc->GetUnmatedCount() );
 
 
-        std::unique_ptr<VectorCohortMale> split_pvc( pvc->SplitPercent( &rng, 2, 0.4 ) );
+        std::unique_ptr<VectorCohortMale> split_pvc( pvc->SplitPercent( &rng, 2, 0.4f ) );
 
         CHECK_EQUAL( genome_self.GetBits(), split_pvc->GetGenome().GetBits() );
         CHECK_EQUAL( 43, split_pvc->GetPopulation() );
@@ -139,7 +139,7 @@ SUITE( VectorCohortMaleTest )
 
         CHECK_EQUAL( 100, pvc->GetPopulation() );
         CHECK_EQUAL( 87,  pvc->GetUnmatedCount() );
-        CHECK_EQUAL( 0, pvc->GetUnmatedCountCDF() );
+        CHECK_EQUAL( 294, pvc->GetUnmatedCountCDF() );
 
 
         // ---------------------------------------------------------------------------
@@ -187,7 +187,7 @@ SUITE( VectorCohortMaleTest )
         uint32_t orig_unmated = 200;
 
         uint32_t num_samples = 100000;
-        float percent_leaving = 0.1; // 30 vectors, 20 of them unmated on average
+        float percent_leaving = 0.1f; // 30 vectors, 20 of them unmated on average
         uint32_t total_unmated_leaving = 0;
         uint32_t total_leaving = 0;
         uint32_t total_unmated_stayed = 0;
@@ -265,7 +265,7 @@ SUITE( VectorCohortMaleTest )
 
         CHECK_EQUAL( 100, pvc->GetPopulation() );
         CHECK_EQUAL( 100, pvc->GetUnmatedCount() );
-        CHECK_EQUAL( 0,   pvc->GetUnmatedCountCDF() );
+        CHECK_EQUAL( 215, pvc->GetUnmatedCountCDF() );
 
         // --------------------------------------------------------------------
         // --- Test SplitNumber() using num leaving works when not all unmated
@@ -286,7 +286,7 @@ SUITE( VectorCohortMaleTest )
         pvc->Merge( split_pvc5.get() );
         CHECK_EQUAL( 100, pvc->GetPopulation() );
         CHECK_EQUAL( 12,  pvc->GetUnmatedCount() );
-        CHECK_EQUAL( 0,   pvc->GetUnmatedCountCDF() );
+        CHECK_EQUAL( 684, pvc->GetUnmatedCountCDF() );
 
 
         // -------------------------------------------------------------------------------
