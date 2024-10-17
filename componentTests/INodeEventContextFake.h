@@ -29,9 +29,9 @@ public:
         , m_HumanList()
         , m_ObserversMap()
         , m_ReleasedSpecies()
-        , m_ReleasedIsFraction(false)
+        , m_ReleasedIsRatio(false)
         , m_ReleasedNumber(0)
-        , m_ReleasedFraction(0.0f)
+        , m_ReleasedRatio(0.0f)
         , m_Rng()
     {
     }
@@ -225,26 +225,26 @@ public:
     virtual void ReleaseMosquitoes( const std::string& releasedSpecies,
                                     const VectorGenome& rGenome,
                                     const VectorGenome& rMateGenome,
-                                    bool isFraction,
+                                    bool isRatio,
                                     uint32_t releasedNumber,
-                                    float releasedFraction,
-                                    float releasedInfected )
+                                    float releasedRatio,
+                                    float releasedInfected ) override
     {
-        m_ReleasedSpecies    = releasedSpecies;
-        m_ReleasedIsFraction = isFraction;
-        m_ReleasedNumber     = releasedNumber;
-        m_ReleasedFraction   = releasedFraction;
-        m_ReleasedInfected   = releasedInfected;
+        m_ReleasedSpecies  = releasedSpecies;
+        m_ReleasedIsRatio  = isRatio;
+        m_ReleasedNumber   = releasedNumber;
+        m_ReleasedRatio    = releasedRatio;
+        m_ReleasedInfected = releasedInfected;
     }
 
     // -----------------
     // --- Other Methods
     // -----------------
-    const std::string& GetMosquitoReleasedSpecies()      const { return m_ReleasedSpecies; }
-    bool               GetMosquitoReleasedIsFraction()   const { return m_ReleasedIsFraction; }
-    uint32_t           GetMosquitoReleasedNumber()       const { return m_ReleasedNumber; }
-    float              GetMosquitoReleasedFraction()     const { return m_ReleasedFraction; }
-    float              GetMosquitoReleasedInfected()     const { return m_ReleasedInfected; }
+    const std::string& GetMosquitoReleasedSpecies()  const { return m_ReleasedSpecies; }
+    bool               GetMosquitoReleasedIsRatio()  const { return m_ReleasedIsRatio; }
+    uint32_t           GetMosquitoReleasedNumber()   const { return m_ReleasedNumber; }
+    float              GetMosquitoReleasedRatio()    const { return m_ReleasedRatio; }
+    float              GetMosquitoReleasedInfected() const { return m_ReleasedInfected; }
 
     EventTrigger GetTriggeredEvent() const { return m_TriggeredEvent ; }
     void ClearTriggeredEvent() { m_TriggeredEvent = EventTrigger(); }
@@ -291,9 +291,9 @@ private:
     std::vector<IIndividualHumanContext*> m_HumanList;
     std::vector<std::vector<IIndividualEventObserver*> > m_ObserversMap;
     std::string m_ReleasedSpecies;
-    bool m_ReleasedIsFraction;
+    bool m_ReleasedIsRatio;
     uint32_t m_ReleasedNumber;
-    float m_ReleasedFraction;
+    float m_ReleasedRatio;
     float m_ReleasedInfected;
     PSEUDO_DES m_Rng;
     GeneticProbability m_Junk;
