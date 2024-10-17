@@ -2,10 +2,10 @@
 #include "stdafx.h"
 #include "IMigrationInfo.h"
 #include "Migration.h"
+#include "SimulationConfig.h"
 #ifndef DISABLE_VECTOR
 #include "MigrationInfoVector.h"
 #include "VectorParameters.h"
-#include "SimulationConfig.h"
 #endif
 
 SETUP_LOGGING( "IMigrationInfo" )
