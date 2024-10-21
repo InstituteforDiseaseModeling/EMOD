@@ -107,8 +107,6 @@
         "Enable_Superinfection": 1,
         "Enable_Timestep_Channel_In_Report": 0,
         "Enable_Vector_Aging": 1,
-        "Enable_Vector_Migration_Human": 0,
-        "Enable_Vector_Migration_Wind": 0,
         "Enable_Vector_Mortality": 1,
         "Enable_Vital_Dynamics": 1,
         "Erythropoiesis_Anemia_Effect": 3.5,
@@ -472,10 +470,6 @@
                         "Habitat_Type": "TEMPORARY_RAINFALL",
                         "Max_Larval_Capacity": 10000000000.0
                     }
-                ],
-                "Required_Habitat_Factor": [
-                    800000000.0,
-                    80000000.0
                 ],
                 "Microsporidia": [],
                 "Temperature_Dependent_Feeding_Cycle": "NO_TEMPERATURE_DEPENDENCE",
