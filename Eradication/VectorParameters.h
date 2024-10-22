@@ -51,6 +51,7 @@ namespace Kernel
 
         VectorSpeciesCollection vector_species;
         InsecticideCollection insecticides;
+        GeneticProbability blood_meal_mortality;
 
         VectorParameters()
         : egg_hatch_delay_dist(EggHatchDelayDist::NO_DELAY)
@@ -82,6 +83,7 @@ namespace Kernel
         , x_tempLarvalHabitat(1.0f)
         , vector_species()
         , insecticides(&vector_species)
+        , blood_meal_mortality(0.0)
         {
         }
     };

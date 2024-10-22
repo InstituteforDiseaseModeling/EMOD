@@ -138,6 +138,7 @@ else:
     vectorSrcFiles = [
                             # Vector
 
+                            "GeneticProbabilityConfig.cpp",
                             "Insecticides.cpp",
                             "IndividualVector.cpp",
                             "InfectionVector.cpp",

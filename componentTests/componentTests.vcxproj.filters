@@ -299,5 +299,8 @@
     <ClCompile Include="VectorCohortMaleTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GeneticProbabilityConfigTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

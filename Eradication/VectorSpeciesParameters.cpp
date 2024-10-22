@@ -6,6 +6,7 @@
 #include "Exceptions.h"
 #include "IMigrationInfoVector.h"
 #include "IMigrationInfo.h"
+#include "GeneticProbabilityConfig.h"
 
 
 SETUP_LOGGING( "VectorSpeciesParameters" )
@@ -208,6 +209,7 @@ namespace Kernel
         , genes()
         , trait_modifiers( &genes )
         , gene_drivers( &genes, &trait_modifiers )
+        , vsp_blood_meal_mortality(0.0)
     {
     }
 
@@ -311,6 +313,14 @@ namespace Kernel
             other_parameters_exist = true;
         }
 
+        GeneticProbabilityConfig blood_meal_mortality_config( this );
+        if( JsonConfigurable::_dryrun || config->Exist("Blood_Meal_Mortality") )
+        {
+            // Genes needs to be read in first
+            initConfigTypeMap( "Blood_Meal_Mortality", &blood_meal_mortality_config, Blood_Meal_Mortality_DESC_TEXT );
+            other_parameters_exist = true;
+        }
+
         if( other_parameters_exist )
         {
             ret = JsonConfigurable::Configure( config );
@@ -318,6 +328,7 @@ namespace Kernel
             {
                 trait_modifiers.CheckConfiguration();
                 gene_drivers.CheckConfiguration();
+                vsp_blood_meal_mortality = blood_meal_mortality_config.GetProbability();
             }
         }
 

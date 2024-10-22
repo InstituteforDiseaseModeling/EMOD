@@ -1,0 +1,33 @@
+{
+        "Default_Probability": 0.2,
+        "Genetic_Probabilities": [
+            {
+                "Species": "arabiensis",
+                "Allele_Combinations" : [
+                    [ "a1", "a1" ]
+                ],
+                "Probability": 1.0
+            },
+            {
+                "Species": "arabiensis",
+                "Allele_Combinations" : [
+                    [ "b1", "b1" ]
+                ],
+                "Probability": 0.8
+            },
+            {
+                "Species": "funestus",
+                "Allele_Combinations" : [
+                    [ "c1", "c1" ]
+                ],
+                "Probability": 0.6
+            },
+            {
+                "Species": "gambiae",
+                "Allele_Combinations" : [
+                    [ "d1", "d1" ]
+                ],
+                "Probability": 0.4
+            }
+        ]
+}

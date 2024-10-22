@@ -928,6 +928,12 @@ namespace Kernel
         return m_DefaultValue;
     }
 
+    void GeneticProbability::SetDefaultValue( float value )
+    {
+        release_assert( value >= 0.0 );
+        m_DefaultValue = value;
+    }
+
     // See header file for more info.
     float GeneticProbability::GetSum() const
     {

@@ -1,0 +1,17 @@
+{
+    "Default_Probability": 0.5,
+    "Genetic_Probabilities": [
+        {
+            "Allele_Combinations" : [
+                [ "a1", "a1" ]
+            ],
+            "Probability": 1.0
+        },
+        {
+            "Allele_Combinations" : [
+                [ "a1", "a0" ]
+            ],
+            "Probability": 0.8
+        }
+    ]
+}

@@ -79,6 +79,17 @@ namespace Kernel
             {
                 LOG_WARN("The simulation is being run without any mosquitoes!  Unless this was intentional, please specify the name of one or more vector species in the 'Vector_Species_Params' array and their associated vector species parameters.\n\n                     ,-.\n         `._        /  |        ,\n            `--._  ,   '    _,-'\n     _       __  `.|  / ,--'\n      `-._,-'  `-. \\ : /\n           ,--.-.-`'.'.-.,_-\n         _ `--'-'-;.'.'-'`--\n     _,-' `-.__,-' / : \\\n                _,'|  \\ `--._\n           _,--'   '   .     `-.\n         ,'         \\  |        `\n                     `-'\n\n");
             }
+            else
+            {
+                // combine the blood meal mortality from each species into one parameter
+                float default_prob = 1.0;
+                for( int i = 0; i < p_vp->vector_species.Size(); ++i )
+                {
+                    default_prob *= 1.0f - p_vp->vector_species[ i ]->vsp_blood_meal_mortality.GetDefaultValue();
+                    p_vp->blood_meal_mortality += p_vp->vector_species[ i ]->vsp_blood_meal_mortality;
+                }
+                p_vp->blood_meal_mortality.SetDefaultValue( 1.0f - default_prob );
+            }
         }
 
         // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

@@ -165,6 +165,7 @@ namespace Kernel
         std::vector<AlleleCombo> FindMissingAlleleCombos( const GeneticProbability& rgp ) const;
         float GetValue( int speciesIndex, const VectorGenome& rGenome ) const;
         float GetDefaultValue() const;
+        void SetDefaultValue( float value );
         std::string ToString( int speciesIndex, const IVectorGenomeNames& rGenes ) const;
 
         // This method attempts to provide a single representation of the set of probabilities

@@ -320,7 +320,7 @@ SUITE( InsecticidesTest )
         CHECK_CLOSE( 0.70f, gp_pyrethroid_effect.GetValue( m_SpeciesIndexGambiae,    m_Genome_d1_d1     ), FLT_EPSILON );
     }
 
-    TEST_FIXTURE( InsecticidesFixture, TestAlleleComboProbabilityConfigCopyConstructor )
+    TEST_FIXTURE( InsecticidesFixture, TestResistantAlleleComboProbabilityConfigCopyConstructor )
     {
         std::stringstream ss;
         ss << "{";
@@ -335,14 +335,14 @@ SUITE( InsecticidesTest )
 
         Configuration* input_json = Configuration::Load( ss, "Hardcoded" );
 
-        AlleleComboProbabilityConfig acp_config_base( &(m_pSimulationConfig->vector_params->vector_species) );
+        ResistantAlleleComboProbabilityConfig acp_config_base( &(m_pSimulationConfig->vector_params->vector_species) );
         acp_config_base.Configure( input_json );
 
         CHECK_EQUAL( 1.00, acp_config_base.GetProbability( ResistanceType::LARVAL_KILLING ).GetValue() );
         CHECK_EQUAL( 0.75, acp_config_base.GetProbability( ResistanceType::BLOCKING       ).GetValue() );
         CHECK_EQUAL( 0.25, acp_config_base.GetProbability( ResistanceType::KILLING        ).GetValue() );
 
-        AlleleComboProbabilityConfig acp_config_copy( acp_config_base );
+        ResistantAlleleComboProbabilityConfig acp_config_copy( acp_config_base );
 
         CHECK_EQUAL( 1.00, acp_config_copy.GetProbability( ResistanceType::LARVAL_KILLING ).GetValue() );
         CHECK_EQUAL( 0.75, acp_config_copy.GetProbability( ResistanceType::BLOCKING       ).GetValue() );

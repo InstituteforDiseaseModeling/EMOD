@@ -1266,6 +1266,9 @@
     <ClInclude Include="VectorSurveillanceEventCoordinator.h">
       <Filter>Source Files\Campaign\EventCoordinator\Vector</Filter>
     </ClInclude>
+    <ClInclude Include="GeneticProbabilityConfig.h">
+      <Filter>Source Files\Vector</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Climate.cpp">
@@ -2152,6 +2155,9 @@
     </ClCompile>
     <ClCompile Include="VectorSurveillanceEventCoordinator.cpp">
       <Filter>Source Files\Campaign\EventCoordinator\Vector</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneticProbabilityConfig.cpp">
+      <Filter>Source Files\Vector</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
