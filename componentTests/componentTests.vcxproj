@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build" ToolsVersion="14.0">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
@@ -156,6 +156,7 @@
     <ClCompile Include="FakeLogger.cpp" />
     <ClCompile Include="FileSystemTest.cpp" />
     <ClCompile Include="FlowControllerImplTest.cpp" />
+    <ClCompile Include="GeneticProbabilityConfigTest.cpp" />
     <ClCompile Include="GeneticProbabilityTest.cpp" />
     <ClCompile Include="HIVARTStagingByCD4DiagnosticTest.cpp" />
     <ClCompile Include="HIVARTStagingCD4AgnosticDiagnosticTest.cpp" />

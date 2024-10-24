@@ -69,6 +69,65 @@ SUITE( VectorSpeciesParametersTest )
         }
     };
 
+    TEST_FIXTURE( VspFixture, TestBloodMealMortality )
+    {
+        EnvPtr->Config = Environment::LoadConfigurationFile( "testdata/VectorSpeciesParametersTest/TestBloodMealMortality.json" );
+
+        VectorSpeciesCollection collection;
+        collection.ConfigureFromJsonAndKey( EnvPtr->Config, "Vector_Species_Params" );
+        collection.CheckConfiguration();
+
+        VectorGenome genome_0_a0b0_a0b0;
+        genome_0_a0b0_a0b0.SetLocus( 0, 0, 0 );
+        genome_0_a0b0_a0b0.SetLocus( 1, 0, 0 );
+        genome_0_a0b0_a0b0.SetLocus( 2, 0, 0 );
+
+        VectorGenome genome_0_a1b0_a1b1;
+        genome_0_a1b0_a1b1.SetLocus( 0, 0, 0 );
+        genome_0_a1b0_a1b1.SetLocus( 1, 1, 1 );
+        genome_0_a1b0_a1b1.SetLocus( 2, 0, 1 );
+
+        VectorGenome genome_0_a0b1_a1b1;
+        genome_0_a0b1_a1b1.SetLocus( 0, 0, 0 );
+        genome_0_a0b1_a1b1.SetLocus( 1, 0, 1 );
+        genome_0_a0b1_a1b1.SetLocus( 2, 1, 1 );
+
+
+        VectorGenome genome_1_c0_c0;
+        genome_1_c0_c0.SetLocus( 0, 0, 0 );
+        genome_1_c0_c0.SetLocus( 1, 0, 0 );
+
+        VectorGenome genome_1_c1_c1;
+        genome_1_c1_c1.SetLocus( 0, 0, 0 );
+        genome_1_c1_c1.SetLocus( 1, 1, 1 );
+
+
+        VectorGenome genome_2_d0_d0;
+        genome_2_d0_d0.SetLocus( 0, 0, 0 );
+        genome_2_d0_d0.SetLocus( 1, 0, 0 );
+
+        VectorGenome genome_2_d1_d1;
+        genome_2_d1_d1.SetLocus( 0, 0, 0 );
+        genome_2_d1_d1.SetLocus( 1, 1, 1 );
+
+        GeneticProbability bmm_0 = collection[0]->vsp_blood_meal_mortality;
+        GeneticProbability bmm_1 = collection[1]->vsp_blood_meal_mortality;
+        GeneticProbability bmm_2 = collection[2]->vsp_blood_meal_mortality;
+
+        CHECK_CLOSE( 0.2, bmm_0.GetDefaultValue(), FLT_EPSILON );
+        CHECK_CLOSE( 0.2, bmm_0.GetValue( 0, genome_0_a0b0_a0b0 ), FLT_EPSILON ); // not specified so default
+        CHECK_CLOSE( 0.3, bmm_0.GetValue( 0, genome_0_a1b0_a1b1 ), FLT_EPSILON );
+        CHECK_CLOSE( 0.4, bmm_0.GetValue( 0, genome_0_a0b1_a1b1 ), FLT_EPSILON );
+
+        CHECK_CLOSE( 0.5, bmm_1.GetDefaultValue(), FLT_EPSILON );
+        CHECK_CLOSE( 0.5, bmm_1.GetValue( 1, genome_1_c0_c0 ), FLT_EPSILON );
+        CHECK_CLOSE( 0.6, bmm_1.GetValue( 1, genome_1_c1_c1 ), FLT_EPSILON );
+
+        CHECK_CLOSE( 0.7, bmm_2.GetDefaultValue(), FLT_EPSILON );
+        CHECK_CLOSE( 0.7, bmm_2.GetValue( 2, genome_2_d0_d0 ), FLT_EPSILON );
+        CHECK_CLOSE( 0.8, bmm_2.GetValue( 2, genome_2_d1_d1 ), FLT_EPSILON );
+    }
+
     TEST_FIXTURE( VspFixture, TestMigration )
     {
         EnvPtr->Config = Environment::LoadConfigurationFile( "testdata/VectorSpeciesParametersTest/TestMigration.json" );

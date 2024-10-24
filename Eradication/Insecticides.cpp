@@ -10,10 +10,10 @@
 namespace Kernel
 {
     // ------------------------------------------------------------------------
-    // --- AlleleComboProbabilityConfig
+    // --- ResistantAlleleComboProbabilityConfig
     // ------------------------------------------------------------------------
 
-    AlleleComboProbabilityConfig::AlleleComboProbabilityConfig( const VectorSpeciesCollection* pSpeciesCollection )
+    ResistantAlleleComboProbabilityConfig::ResistantAlleleComboProbabilityConfig( const VectorSpeciesCollection* pSpeciesCollection )
         : JsonConfigurable()
         , m_pSpeciesCollection( pSpeciesCollection )
         , m_Probabilities()
@@ -24,7 +24,7 @@ namespace Kernel
         }
     }
 
-    AlleleComboProbabilityConfig::AlleleComboProbabilityConfig( const AlleleComboProbabilityConfig& rMaster )
+    ResistantAlleleComboProbabilityConfig::ResistantAlleleComboProbabilityConfig( const ResistantAlleleComboProbabilityConfig& rMaster )
         : JsonConfigurable( rMaster )
         , m_pSpeciesCollection( rMaster.m_pSpeciesCollection )
         , m_Probabilities( rMaster.m_Probabilities )
@@ -32,11 +32,11 @@ namespace Kernel
         release_assert( m_Probabilities.size() == ResistanceType::pairs::count() );
     }
 
-    AlleleComboProbabilityConfig::~AlleleComboProbabilityConfig()
+    ResistantAlleleComboProbabilityConfig::~ResistantAlleleComboProbabilityConfig()
     {
     }
 
-    bool AlleleComboProbabilityConfig::Configure( const ::Configuration* inputJson )
+    bool ResistantAlleleComboProbabilityConfig::Configure( const ::Configuration* inputJson )
     {
         release_assert( m_Probabilities.size() == ResistanceType::pairs::count() );
 
@@ -106,16 +106,16 @@ namespace Kernel
         return ret;
     }
 
-    const AlleleComboProbability& AlleleComboProbabilityConfig::GetProbability( ResistanceType::Enum rt ) const
+    const AlleleComboProbability& ResistantAlleleComboProbabilityConfig::GetProbability( ResistanceType::Enum rt ) const
     {
         return m_Probabilities[ rt ];
     }
 
     // ------------------------------------------------------------------------
-    // --- AlleleComboProbabilityConfigCollection
+    // --- ResistantAlleleComboProbabilityConfigCollection
     // ------------------------------------------------------------------------
 
-    AlleleComboProbabilityConfigCollection::AlleleComboProbabilityConfigCollection( const VectorSpeciesCollection* pSpeciesCollection )
+    ResistantAlleleComboProbabilityConfigCollection::ResistantAlleleComboProbabilityConfigCollection( const VectorSpeciesCollection* pSpeciesCollection )
         : JsonConfigurableCollection( "Insecticide.Resistances" )
         , m_pSpeciesCollection( pSpeciesCollection )
         , m_Probabilities()
@@ -126,24 +126,24 @@ namespace Kernel
         }
     }
 
-    AlleleComboProbabilityConfigCollection::AlleleComboProbabilityConfigCollection( const AlleleComboProbabilityConfigCollection& rMaster )
+    ResistantAlleleComboProbabilityConfigCollection::ResistantAlleleComboProbabilityConfigCollection( const ResistantAlleleComboProbabilityConfigCollection& rMaster )
         : JsonConfigurableCollection( rMaster )
         , m_pSpeciesCollection( rMaster.m_pSpeciesCollection )
         , m_Probabilities( rMaster.m_Probabilities )
     {
         for( auto p_acpc : rMaster.m_Collection )
         {
-            AlleleComboProbabilityConfig* p_new_acpc = new AlleleComboProbabilityConfig( *p_acpc );
+            ResistantAlleleComboProbabilityConfig* p_new_acpc = new ResistantAlleleComboProbabilityConfig( *p_acpc );
             this->m_Collection.push_back( p_new_acpc );
         }
         release_assert( m_Probabilities.size() == ResistanceType::pairs::count() );
     }
 
-    AlleleComboProbabilityConfigCollection::~AlleleComboProbabilityConfigCollection()
+    ResistantAlleleComboProbabilityConfigCollection::~ResistantAlleleComboProbabilityConfigCollection()
     {
     }
 
-    void AlleleComboProbabilityConfigCollection::CheckConfiguration()
+    void ResistantAlleleComboProbabilityConfigCollection::CheckConfiguration()
     {
         release_assert( m_Probabilities.size() == ResistanceType::pairs::count() );
 
@@ -184,15 +184,15 @@ namespace Kernel
         }
     }
 
-    const GeneticProbability& AlleleComboProbabilityConfigCollection::GetProbability( ResistanceType::Enum rt ) const
+    const GeneticProbability& ResistantAlleleComboProbabilityConfigCollection::GetProbability( ResistanceType::Enum rt ) const
     {
         release_assert( (0 <= int( rt )) && (rt < ResistanceType::pairs::count()) );
         return m_Probabilities[ rt ];
     }
 
-    AlleleComboProbabilityConfig* AlleleComboProbabilityConfigCollection::CreateObject()
+    ResistantAlleleComboProbabilityConfig* ResistantAlleleComboProbabilityConfigCollection::CreateObject()
     {
-        return new AlleleComboProbabilityConfig( m_pSpeciesCollection );
+        return new ResistantAlleleComboProbabilityConfig( m_pSpeciesCollection );
     }
 
     // ------------------------------------------------------------------------
@@ -228,7 +228,7 @@ namespace Kernel
     {
         release_assert( m_Resistances.size() == ResistanceType::pairs::count() );
 
-        AlleleComboProbabilityConfigCollection config_resistances( m_pSpeciesCollection );
+        ResistantAlleleComboProbabilityConfigCollection config_resistances( m_pSpeciesCollection );
 
         initConfigTypeMap( "Name", &m_Name, Insecticide_Name_DESC_TEXT );
         initConfigComplexCollectionType( "Resistances", &config_resistances, Insecticide_Resistance_DESC_TEXT );

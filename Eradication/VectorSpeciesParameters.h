@@ -92,6 +92,8 @@ namespace Kernel
         VectorTraitModifiers trait_modifiers;
         VectorGeneDriverCollection gene_drivers;
 
+        GeneticProbability vsp_blood_meal_mortality;
+
     protected:
     };
 

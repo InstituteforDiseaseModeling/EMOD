@@ -181,12 +181,16 @@ namespace Kernel
         }
         GeneticProbability p_kill_IRSpostfeed_effective = (effects->IsUsingIndoorKilling()) ? effects->GetIndoorKilling() : p_kill_IRSpostfeed;
 
-        // = 1.0f - ((1.0f-p_kill_IRSpostfeed_effective)*(1.0f-p_kill_insecticidal_drug));
-        p_kill_IRSpostfeed_effective = 1.0f - ((1.0f-p_kill_IRSpostfeed_effective)*p_survive_insecticidal_drug);
+        GeneticProbability p_die_in_out_post_feed = 1.0f - (p_survive_insecticidal_drug * (1.0f - p_vp->blood_meal_mortality));
+
+        // = 1.0f - ((1.0f-p_kill_IRSpostfeed_effective)*(1.0f-p_kill_insecticidal_drug)*(1-blood_meal_mortality));
+        GeneticProbability p_die_indoor_post_feed = 1.0 
+                                                  - ( (1.0f - p_kill_IRSpostfeed_effective) *
+                                                      (1.0f - p_die_in_out_post_feed) );
 
         GeneticProbability not_block_housing = (1-p_block_housing);
         GeneticProbability not_block_net     = (1-p_block_net);
-        GeneticProbability not_IRS_post      = (1-p_kill_IRSpostfeed_effective);
+        GeneticProbability not_die_post_feed = (1-p_die_indoor_post_feed);
         GeneticProbability not_kill_ITN      = (1-p_kill_ITN);
         GeneticProbability not_indrep        = (1-p_indrep);
 
@@ -203,7 +207,7 @@ namespace Kernel
         pDieBeforeFeeding    = not_block_housing
                                 *(p_kill_IRSprefeed + (1-p_kill_IRSprefeed)
                                    * ( 
-                                       p_attraction_ADIH * (p_kill_ADIH + (1-p_kill_ADIH) * p_kill_IRSpostfeed_effective)
+                                       p_attraction_ADIH * (p_kill_ADIH + (1-p_kill_ADIH) * p_die_indoor_post_feed)
                                      +
                                        (1-p_attraction_ADIH) * (p_block_net * p_kill_ITN)
                                      )
@@ -214,11 +218,11 @@ namespace Kernel
                                                  * ((p_block_net * not_kill_ITN) + (not_block_net * p_indrep));
 
         pDieDuringFeeding    = not_housing_IRSprefeed_ADIH_net_indrep*p_dieduringfeeding;
-        pDiePostFeeding      = not_housing_IRSprefeed_ADIH_net_indrep_dieduringfeeding * p_kill_IRSpostfeed_effective;
-        pSuccessfulFeedHuman = not_housing_IRSprefeed_ADIH_net_indrep_dieduringfeeding * not_IRS_post;
+        pDiePostFeeding      = not_housing_IRSprefeed_ADIH_net_indrep_dieduringfeeding * p_die_indoor_post_feed;
+        pSuccessfulFeedHuman = not_housing_IRSprefeed_ADIH_net_indrep_dieduringfeeding * not_die_post_feed;
 
         // (1-p_block_housing)*(1-p_kill_IRSprefeed)*p_attraction_ADIH*(1-p_kill_ADIH)*(1-p_kill_IRSpostfeed_effective)
-        pSuccessfulFeedAD    = not_housing_IRSprefeed*not_IRS_post * (p_attraction_ADIH * (1-p_kill_ADIH));
+        pSuccessfulFeedAD    = not_housing_IRSprefeed*not_die_post_feed * (p_attraction_ADIH * (1-p_kill_ADIH));
 
         // update intervention effect on acquisition and transmission of infection
         // --NOTE that vector tendencies to bite an individual are already gathered
@@ -236,8 +240,8 @@ namespace Kernel
         pOutdoorDieBeforeFeeding    = 0;
         pOutdoorHostNotAvailable    = p_indrep;
         pOutdoorDieDuringFeeding    = not_indrep * p_dieduringfeeding;
-        pOutdoorDiePostFeeding      = not_indrep_not_dieduringfeeding * p_kill_insecticidal_drug;
-        pOutdoorSuccessfulFeedHuman = not_indrep_not_dieduringfeeding * p_survive_insecticidal_drug;
+        pOutdoorDiePostFeeding      = not_indrep_not_dieduringfeeding * p_die_in_out_post_feed;
+        pOutdoorSuccessfulFeedHuman = not_indrep_not_dieduringfeeding * (1.0f - p_die_in_out_post_feed);
 
         blockOutdoorVectorAcquire   = pOutdoorDieDuringFeeding
                                     + pOutdoorDiePostFeeding

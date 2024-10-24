@@ -145,6 +145,30 @@ class MyRegressionRunner(object):
 
         return
 
+    def copy_one_climate_and_migration_file(self, key, filename,
+                                            simulation_directory, source_input_directory,
+                                            working_input_directory, scenario):
+        source = os.path.join(source_input_directory, filename)
+        dest = os.path.join(working_input_directory, os.path.basename(filename))
+        scenario_file = os.path.join(scenario, filename)
+
+        # For any demographics overlays WITHIN regression folder:
+        # Copy directly to remote simulation working directory
+        if os.path.isfile(scenario_file):
+            simulation_path = os.path.join(self.params.sim_root, simulation_directory)
+            simulation_file = os.path.join(simulation_path, os.path.basename(filename))
+            source = scenario_file
+            dest = simulation_file
+
+        if not self.update_file(source, dest):
+            print("Could not find input file '{0}' to copy to '{1}' for scenario '{2}'".format(source, dest, scenario))
+        if key != "Load_Balance_Filename":
+            source = source + ".json"
+            dest = dest + ".json"
+            if not self.update_file(source, dest):
+                print("Could not find input file '{0}' to copy to '{1}' for scenario '{2}'".format(source, dest, scenario))
+
+        
     def copy_climate_and_migration_files_to_user_input(self, simulation_directory, config_json, source_input_directory,
                                                        working_input_directory, scenario):
 
@@ -154,33 +178,25 @@ class MyRegressionRunner(object):
                        'Serialized_Population_Filenames',
                        '.Serialized_Population_Filenames']
 
-        # Copy climate and migration files also
+        # Copy climate and human migration files also
         for key in config_json["parameters"]:
             if ("_Filename" in key) and (key not in filter_list):
                 filename = config_json["parameters"][key]
                 if len(filename) == 0:
                     continue
-                source = os.path.join(source_input_directory, filename)
-                dest = os.path.join(working_input_directory, os.path.basename(filename))
-                scenario_file = os.path.join(scenario, filename)
+                self.copy_one_climate_and_migration_file( key, filename, simulation_directory, source_input_directory,
+                                                          working_input_directory, scenario)
+                
+        if "Vector_Species_Params" in config_json["parameters"].keys():
+            for vsp in config_json["parameters"]["Vector_Species_Params"]:
+                if "Vector_Migration_Filename" in vsp.keys():
+                    filename = vsp["Vector_Migration_Filename"]
+                    if len(filename) == 0:
+                        continue
+                self.copy_one_climate_and_migration_file( "Vector_Migration_Filename", filename,
+                                                          simulation_directory, source_input_directory,
+                                                          working_input_directory, scenario )
 
-                # For any demographics overlays WITHIN regression folder:
-                # Copy directly to remote simulation working directory
-                if os.path.isfile(scenario_file):
-                    simulation_path = os.path.join(self.params.sim_root, simulation_directory)
-                    simulation_file = os.path.join(simulation_path, os.path.basename(filename))
-                    source = scenario_file
-                    dest = simulation_file
-
-                if not self.update_file(source, dest):
-                    print("Could not find input file '{0}' to copy to '{1}' for scenario '{2}'".format(source, dest,
-                                                                                                       scenario))
-                if key != "Load_Balance_Filename":
-                    source = source + ".json"
-                    dest = dest + ".json"
-                    if not self.update_file(source, dest):
-                        print("Could not find input file '{0}' to copy to '{1}' for scenario '{2}'".format(source, dest,
-                                                                                                           scenario))
         return
 
     def copy_pymod_files( self, config_json, simulation_directory, scenario_path ):

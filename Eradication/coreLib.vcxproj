@@ -370,6 +370,7 @@
     <ClInclude Include="FlowControllerFactory.h" />
     <ClInclude Include="FlowControllerImpl.h" />
     <ClInclude Include="GeneticProbability.h" />
+    <ClInclude Include="GeneticProbabilityConfig.h" />
     <ClInclude Include="InfectionMalariaGenetics.h" />
     <ClInclude Include="INodeSTIInterventionEffectsApply.h" />
     <ClInclude Include="ISocietyOverrideIntervention.h" />
@@ -736,6 +737,7 @@
     <ClCompile Include="FlowControllerFactory.cpp" />
     <ClCompile Include="FlowControllerImpl.cpp" />
     <ClCompile Include="GeneticProbability.cpp" />
+    <ClCompile Include="GeneticProbabilityConfig.cpp" />
     <ClCompile Include="HasRelationship.cpp" />
     <ClCompile Include="HIVInterventionsContainer.cpp" />
     <ClCompile Include="HivObjectFactory.cpp" />

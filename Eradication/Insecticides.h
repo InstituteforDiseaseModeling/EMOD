@@ -16,13 +16,13 @@ namespace Kernel
         ENUM_VALUE_SPEC(KILLING        , 3))
 
     // Reads in a single AlleleCombo and Modifier
-    class AlleleComboProbabilityConfig : public JsonConfigurable
+    class ResistantAlleleComboProbabilityConfig : public JsonConfigurable
     {
         IMPLEMENT_NO_REFERENCE_COUNTING();
     public:
-        AlleleComboProbabilityConfig( const VectorSpeciesCollection* pSpeciesCollection );
-        AlleleComboProbabilityConfig( const AlleleComboProbabilityConfig& rMaster );
-        virtual ~AlleleComboProbabilityConfig();
+        ResistantAlleleComboProbabilityConfig( const VectorSpeciesCollection* pSpeciesCollection );
+        ResistantAlleleComboProbabilityConfig( const ResistantAlleleComboProbabilityConfig& rMaster );
+        virtual ~ResistantAlleleComboProbabilityConfig();
 
         virtual bool Configure( const Configuration *json ) override;
 
@@ -38,19 +38,19 @@ namespace Kernel
 
     // Read a collection of AlleleComboProbabilityConfig's so that you can get
     // a single GeneticProbability/
-    class AlleleComboProbabilityConfigCollection : public JsonConfigurableCollection<AlleleComboProbabilityConfig>
+    class ResistantAlleleComboProbabilityConfigCollection : public JsonConfigurableCollection<ResistantAlleleComboProbabilityConfig>
     {
     public:
-        AlleleComboProbabilityConfigCollection( const VectorSpeciesCollection* pSpeciesCollection );
-        AlleleComboProbabilityConfigCollection( const AlleleComboProbabilityConfigCollection& rMaster );
-        virtual ~AlleleComboProbabilityConfigCollection();
+        ResistantAlleleComboProbabilityConfigCollection( const VectorSpeciesCollection* pSpeciesCollection );
+        ResistantAlleleComboProbabilityConfigCollection( const ResistantAlleleComboProbabilityConfigCollection& rMaster );
+        virtual ~ResistantAlleleComboProbabilityConfigCollection();
 
         virtual void CheckConfiguration() override;
 
         const GeneticProbability& GetProbability( ResistanceType::Enum rt ) const;
 
     protected:
-        virtual AlleleComboProbabilityConfig* CreateObject() override;
+        virtual ResistantAlleleComboProbabilityConfig* CreateObject() override;
 
         const VectorSpeciesCollection* m_pSpeciesCollection;
         std::vector<GeneticProbability> m_Probabilities;
