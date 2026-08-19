@@ -15,8 +15,6 @@
 #include "EventTriggerCoordinator.h"
 #include "IdmString.h"
 
-#include <iso646.h>
-
 using namespace std;
 
 SETUP_LOGGING( "Environment" )
@@ -63,17 +61,16 @@ bool Environment::Initialize(
     localEnv->MPI.Rank      = pMpi->GetRank();
 
     std::list< std::string > inputPaths;
-    // Split inputPaths into list based on semi-colon separation
-    auto input_paths = IdmString( FileSystem::RemoveTrailingChars( inputPath ) ).split(';');
-    for( auto path : input_paths )
-    {
-        path = FileSystem::RemoveTrailingChars( path );
+    std::size_t start_pos    = 0;
+    std::size_t end_pos      = 0;
+    std::string sep_chars    = ";,";
+    std::string in_path_list = FileSystem::RemoveTrailingChars( inputPath );
 
-        if( !FileSystem::DirectoryExists( path ) )
-        {
-            LOG_WARN_F("Input path %s doesn't exist\n", path.c_str());
-        }
-        inputPaths.push_back( path );
+    // Split in_path_list into list based on sep_chars
+    while((start_pos = in_path_list.find_first_not_of(sep_chars, end_pos)) != std::string::npos)
+    {
+        end_pos = in_path_list.find_first_of(sep_chars, start_pos);
+        inputPaths.push_back(in_path_list.substr(start_pos, end_pos-start_pos));
     }
 
     // Always check current working directory, but do it last
@@ -138,9 +135,6 @@ bool Environment::Initialize(
     }
 
     localEnv->Config = Configuration::CopyFromElement( (*config)["parameters"], config->GetDataLocation() );
-
-    if( localEnv->Config->CheckElementByName("Default_Config_Path") || config->CheckElementByName("Default_Config_Path") )
-        Kernel::JsonConfigurable::_possibleNonflatConfig = true;
 
     localEnv->Status_Reporter = StatusReporter::getInstance();
 

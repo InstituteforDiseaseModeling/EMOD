@@ -41,7 +41,6 @@
 
 #include "InstructionSetInfo.h"
 
-
 using namespace std;
 
 int MPIInitWrapper(int argc, char* argv[]);
@@ -370,7 +369,8 @@ bool ControllerInitWrapper( int argc, char *argv[], IdmMpi::MessageInterface* pM
 
     // handle run modes
 
-    bool status = false;
+    bool ret_val = false;
+    bool controller_status = false;
     ostringstream exceptionErrorReport;
     try
     {
@@ -525,18 +525,16 @@ bool ControllerInitWrapper( int argc, char *argv[], IdmMpi::MessageInterface* pM
         if (controller)
         {
             SetFloatingPointSignalHandler();        // Enable floating point signal handler while controller is running
-            status = controller->Execute();
+            controller_status = controller->Execute();
             DisableFloatingPointSignalHandler();    // Prevent external programs from triggering fpe, e.g. Python dll
 
-            if (status)
+            if (controller_status)
             {
+                LOG_INFO( "Controller executed successfully.\n" );
 
                 release_assert( EnvPtr );
-
                 // Run python post-process script; does nothing if no python.
                 Kernel::PythonSupport::RunPyFunction( EnvPtr->OutputPath, Kernel::PythonSupport::SCRIPT_POST_PROCESS );
-
-                LOG_INFO( "Controller executed successfully.\n" );
             }
             else
             {
@@ -554,18 +552,14 @@ bool ControllerInitWrapper( int argc, char *argv[], IdmMpi::MessageInterface* pM
     #endif
 
 #endif
-
+        // Reaching this statement indicates successful completion;
+        // Needs successful controller and no exceptions in python
+        ret_val = controller_status;
     }
     catch( Kernel::GeneralConfigurationException &e )
     {
         exceptionErrorReport << std::endl << std::endl;
-        exceptionErrorReport << e.GetMsg() << std::endl;
-
-        if(Kernel::JsonConfigurable::_possibleNonflatConfig && 
-            Kernel::JsonConfigurable::missing_parameters_set.size() != 0)
-        {
-            exceptionErrorReport << "Presence of \"Default_Config_Path\" detected in config-file may indicate a problem; make sure you're using a flattened config." << std::endl;
-        }
+        exceptionErrorReport << e.GetMsg() << std::endl << std::endl;
         exceptionErrorReport << std::endl << e.GetStackTrace() << std::endl;
     }
     catch( Kernel::DetailedException &e )
@@ -584,11 +578,6 @@ bool ControllerInitWrapper( int argc, char *argv[], IdmMpi::MessageInterface* pM
     {
         exceptionErrorReport << std::endl << std::endl;
         exceptionErrorReport << "Caught json::Exception: " << e.what() << std::endl;
-
-        if(Kernel::JsonConfigurable::_possibleNonflatConfig)
-        {
-            exceptionErrorReport << "Presence of \"Default_Config_Path\" detected in config-file may indicate a problem; make sure you're using a flattened config." << std::endl;
-        }
     }
     catch (std::runtime_error &e)
     {
@@ -619,5 +608,5 @@ bool ControllerInitWrapper( int argc, char *argv[], IdmMpi::MessageInterface* pM
     }
 
     Environment::Finalize();
-    return status;
+    return ret_val;
 }

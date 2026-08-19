@@ -208,7 +208,6 @@ namespace Kernel
         static bool _dryrun;
         static bool _useDefaults;
         static bool _track_missing;
-        static bool _possibleNonflatConfig;
         typedef json::QuickBuilder (*get_schema_funcptr_t)(void);
         typedef std::map< std::string, get_schema_funcptr_t > name2CreatorMapType;
         static name2CreatorMapType &get_registration_map();

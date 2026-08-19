@@ -395,7 +395,6 @@ namespace Kernel
     bool JsonConfigurable::_dryrun = false;
     bool JsonConfigurable::_useDefaults = false;
     bool JsonConfigurable::_track_missing = true;
-    bool JsonConfigurable::_possibleNonflatConfig = false;
     std::set< std::string > JsonConfigurable::empty_set;
 
     void updateSchemaWithCondition( json::Object& schema, const char* condition_key, const char* condition_value )
