@@ -183,11 +183,7 @@ class RuntimeParameters:
 
     @property
     def src_root(self):
-        try:
-            src_root = self.config2.get('LOCAL-ENVIRONMENT', 'src_root')
-        except Exception as ex:
-            src_root = "./.."
-        return src_root
+        return "./.."
 
     @property
     def all_outputs(self):

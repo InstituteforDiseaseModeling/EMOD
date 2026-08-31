@@ -351,8 +351,11 @@ class Monitor(threading.Thread):
         failures = []
         failure_txt = ""
 
-        # if nothing to compare then can't fail
         if self.report is None:
+            return True
+
+        # If name includes 'linux' do not compare, it's an alternate file
+        if '.linux' in report_name:
             return True
 
         test_path = os.path.join( self.get_sim_path(), os.path.join( "output", report_name ) )
@@ -360,11 +363,6 @@ class Monitor(threading.Thread):
 
         # Do not compare the partial sims because the save output is for the full sim
         if (self.serialization_test_type == "BEFORE") or (self.serialization_test_type == "AFTER"):
-            return True
-
-        # we will compare to InsetChart.linux.json when we look at the InsetChart.json report on linux by changing
-        # the name of the InsteChart.json and looking for the .linux version in the references
-        if report_name == "InsetChart.linux.json":
             return True
 
         # If on linux, check if there is a .linux version of reference report in folder - test against it if there is
@@ -399,7 +397,6 @@ class Monitor(threading.Thread):
             fail_validation, failure_txt = self.compareOtherOutputs( report_name, ref_path, test_path, failures )
 
         if fail_validation:
-            #print( "Validation failed, add to failing tests report." )
             self.report.addFailingTest( self.scenario_path, failure_txt, os.path.join( sim_dir, ( "output/" + report_name ) ), self.scenario_type )
 
             plotable_report = (report_name.startswith( "InsetChart" ) or
@@ -466,8 +463,6 @@ class Monitor(threading.Thread):
                         print( self.scenario_path + " passed (" + str(self.duration) + ") - " + report_name )
                         self.report.addPassingTest(self.scenario_path, self.duration, os.path.join(self.sim_dir, report_name))
                         fail = False
-            #else:
-               #print( "Failed to find 'report' file for pymod test: " + report_name )
         if fail:
             report_name = "test.txt"
             fail_text = self.scenario_path + " PyMod failed."
