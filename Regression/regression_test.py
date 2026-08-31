@@ -123,7 +123,7 @@ def add_tests_from_file(regression_list_json, filename):
     :param regression_list_json: existing list of regression tests, modified by this function
     :param filename: suite filename (e.g. generic.json)
     """
-    tests = ru.load_json(filename)
+    tests = ru.load_json(os.path.join('suite_files', filename))
     test_type = reglist_test_type(tests)
     if test_type:
         add_regression_tests(regression_list_json, tests, test_type)
