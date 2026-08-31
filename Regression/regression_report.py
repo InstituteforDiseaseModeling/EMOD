@@ -7,7 +7,7 @@ class SimpleReport:
         print( "Writing a human-readable report" )
         self.params = params
 
-        
+
 class Report:
     def __init__(self, params, version_string):
         self.num_tests = 0
@@ -25,18 +25,8 @@ class Report:
         prop_el.setAttribute("name", "Version string")
         prop_el.setAttribute("value", version_string)
 
-        headnode_el = self.doc.createElement("property")
-        headnode_el.setAttribute("name", "HPC Headnode")
-        headnode_el.setAttribute("value", params.hpc_head_node)
-
-        nodegroup_el = self.doc.createElement("property")
-        nodegroup_el.setAttribute("name", "HPC Nodegroup")
-        nodegroup_el.setAttribute("value", params.hpc_node_group)
-
         prop_els = self.doc.createElement("properties")
         prop_els.appendChild(prop_el)
-        prop_els.appendChild(headnode_el)
-        prop_els.appendChild(nodegroup_el)
 
         self.suite_el.appendChild(prop_els)
         self.schema = "skipped"
@@ -174,5 +164,3 @@ class Report:
     @property
     def Summary(self):
         return { "tests" : self.num_tests, "passed" : (self.num_tests - self.num_errors - self.num_failures), "failed" : self.num_failures, "errors" : self.num_errors, "schema": self.schema }
-
-

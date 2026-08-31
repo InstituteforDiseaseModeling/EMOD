@@ -50,9 +50,6 @@ class RuntimeParameters:
         print( "[arg] Run sims locally:           ", self.local_execution )
         print( "[arg] Run Linux binary:           ", self.linux )
         # print( "", self.config2 )
-        print( "[cfg] HPC head node/group:         {0} / {1}".format(self.hpc_head_node, self.hpc_node_group) )
-        print( "[cfg] HPC user/password:           {0} / {1}".format(self.hpc_user if self.hpc_user else 'empty', self.hpc_password if self.hpc_password else 'empty') )
-        print( "[cfg] Cores per node/socket:       {0} / {1}".format(self.cores_per_node, self.cores_per_socket) )
         print( "[cfg] Bin root:                   ", self.bin_root )
         print( "[cfg] DLL root:                   ", self.dll_root )
         print( "[cfg] Input root:                 ", self.input_root )
@@ -122,36 +119,6 @@ class RuntimeParameters:
         return self.config2
 
     @property
-    def hpc_head_node(self):
-        return self.config2.get('HPC', 'head_node')
-        
-    @property
-    def hpc_node_group(self):
-        return self.config2.get('HPC', 'node_group')
-        
-    @property
-    def hpc_user(self):
-        try:
-            return self.config2.get('HPC', 'username')
-        except configparser.NoOptionError as ex:
-            return ""
-
-    @property
-    def hpc_password(self):
-        try:
-            return self.config2.get('HPC', 'password')
-        except configparser.NoOptionError as ex:
-            return ""
-        
-    @property
-    def cores_per_socket(self):
-        return self.config2.getint('HPC', 'num_cores_per_socket')
-        
-    @property
-    def cores_per_node(self):
-        return self.config2.getint('HPC', 'num_cores_per_node')
-
-    @property
     def local_sim_root(self):
         return self.config2.get(self.os_type, 'local_sim_root')
         
@@ -190,16 +157,7 @@ class RuntimeParameters:
             return self.config2.get(self.os_type, 'home_input')
         else:
             return self.config2.get('ENVIRONMENT', 'home_input')
-        
-    """
-    @property
-    def py_input(self):
-        if self.local_execution or os.name=="posix":
-            return self.config2.get(self.os_type, 'py_input')
-        else:
-            return self.config2.get('ENVIRONMENT', 'py_input')
-    """
-        
+
     @property
     def use_user_input_root(self):
         return self._use_user_input_root
