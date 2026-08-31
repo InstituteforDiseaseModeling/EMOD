@@ -297,12 +297,8 @@ class MyRegressionRunner(object):
                 emodule_dir = os.path.join(emodule_dir, "x64")
             else:
                 emodule_dir = os.path.join(params.src_root, "x64")
-            if params.debug:
-                emodule_dir = os.path.join(emodule_dir, "Debug")
-            elif params.quick_start:
-                emodule_dir = os.path.join(emodule_dir, "QuickStart")
-            else:
-                emodule_dir = os.path.join(emodule_dir, "Release")
+
+            emodule_dir = os.path.join(emodule_dir, "Release")
 
         print('Assuming emodules (dlls) are in local directory: ' + emodule_dir)
 

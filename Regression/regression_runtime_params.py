@@ -1,11 +1,7 @@
-from __future__ import print_function
 import os
 import sys
-if sys.version_info[0] < 3:
-    import ConfigParser as configparser
-else:
-    import configparser
-import pdb
+import configparser
+
 
 class RuntimeParameters:
     def __init__(self, args):
@@ -40,8 +36,6 @@ class RuntimeParameters:
         print( "[arg] Executable path:            ", self.executable_path )
         print( "[arg] Run in perf mode:           ", self.measure_perf )
         print( "[arg] Hide graphs on mismatch:    ", self.hide_graphs )
-        print( "[arg] Debug:                      ", self.debug )
-        print( "[arg] Quickstart:                 ", self.quick_start )
         print( "[arg] Use DLLs:                   ", self.use_dlls )
         print( "[arg] SCons:                      ", self.scons )
         print( "[arg] Print error msg to screen:  ", self.print_error )
@@ -59,7 +53,6 @@ class RuntimeParameters:
         print( "[cfg] HPC head node/group:         {0} / {1}".format(self.hpc_head_node, self.hpc_node_group) )
         print( "[cfg] HPC user/password:           {0} / {1}".format(self.hpc_user if self.hpc_user else 'empty', self.hpc_password if self.hpc_password else 'empty') )
         print( "[cfg] Cores per node/socket:       {0} / {1}".format(self.cores_per_node, self.cores_per_socket) )
-
         print( "[cfg] Bin root:                   ", self.bin_root )
         print( "[cfg] DLL root:                   ", self.dll_root )
         print( "[cfg] Input root:                 ", self.input_root )
@@ -67,7 +60,6 @@ class RuntimeParameters:
         print( "[cfg] User input:                 ", self.user_input )
         print( "[cfg] Use user input:             ", self.use_user_input_root )
         print( "[cfg] Sim root:                   ", self.sim_root )
-
         print( "[cfg] Local bin root:             ", self.local_bin_root )
         print( "[cfg] Local input path:           ", self.input_path )
         print( "[cfg] Local sim root:             ", self.local_sim_root )
@@ -84,19 +76,13 @@ class RuntimeParameters:
         path = self.args.exe_path
         if not path:
             if self.scons:
-                if self.debug:
-                    path = "../build/x64/Debug/Eradication/Eradication"
-                else:
-                    path = "../build/x64/Release/Eradication/Eradication"
+                path = "../build/x64/Release/Eradication/Eradication"
 
                 if os.name == "nt":
                     path += ".exe"
 
             else:
-                if self.debug:
-                    path = "../Eradication/x64/Debug/Eradication.exe"
-                else:
-                    path = "../Eradication/x64/Release/Eradication.exe"
+                path = "../Eradication/x64/Release/Eradication.exe"
 
         return path
     
@@ -107,15 +93,7 @@ class RuntimeParameters:
     @property
     def hide_graphs(self):
         return self.args.hidegraphs
-    
-    @property
-    def debug(self):
-        return self.args.debug
-    
-    @property
-    def quick_start(self):
-        return self.args.quick_start
-    
+
     @property
     def use_dlls(self):
         if self.args.dll_path is not None:

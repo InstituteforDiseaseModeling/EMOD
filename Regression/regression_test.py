@@ -30,11 +30,9 @@ def get_argparser(parser = None):
     parser.add_argument("suite",
                         help="JSON test-suite to run - e.g. full.json, sanity (converted to sanity.json) - one or more comma separated values")
     parser.add_argument("exe_path", metavar="exe-path", nargs="?", default="",
-                        help="Path to the Eradication.exe binary to run.  Default is where the executable is normally built depending on --scons, --debug, and the OS.")
+                        help="Path to the Eradication.exe binary to run.  Default is where the executable is normally built depending on --scons and the OS.")
     parser.add_argument("--perf", action="store_true", default=False,                   help="Run for performance measurement purposes")
     parser.add_argument("--hidegraphs", action="store_true", default=False,             help="Suppress pop-up graphs in case of validation failure")
-    parser.add_argument("--debug", action="store_true", default=False,                  help="Use debug path for emodules")
-    parser.add_argument("--quick-start", action="store_true", default=False,            help="Use QuickStart path for emodules")
     parser.add_argument("--label",                                                      help="Custom suffix for HPC job name")
     parser.add_argument("--config", default="regression_test.cfg",                      help="Regression test configuration [regression_test.cfg]")
     parser.add_argument("--disable-schema-test", action="store_true", default=False,    help="Disable schema test (testing is on by default, use to suppress schema testing)")
