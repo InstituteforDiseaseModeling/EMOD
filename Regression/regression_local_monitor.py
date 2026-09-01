@@ -49,7 +49,7 @@ class Monitor(threading.Thread):
            print( "Didn't find key 'parameters/Num_Cores' in '{0}'. Using 1.".format( self.scenario_path ) )
                
         return int(num_cores)
-    
+
     def run(self):
         self.__class__.sems.acquire()
         self.sim_root = self.params.local_sim_root
@@ -62,7 +62,7 @@ class Monitor(threading.Thread):
         if self.scenario_type != 'tests':
             stdoutfile = "test.txt"
         with open(os.path.join(self.sim_dir, stdoutfile), "w") as stdout, open(os.path.join(self.sim_dir, "stderr.txt"), "w") as stderr:
-            actual_input_dir = self.get_input_path_from_geog( self.params.input_path )
+            actual_input_dir = self.get_input_path_from_geog( self.params.input_root )
             # Call Eradication.exe through mpiexec to avoid Windows security warnings (see GitHub issue #1439)
             cmd = None
             if "Eradication" in self.config_json["bin_path"]:

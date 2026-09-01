@@ -19,7 +19,6 @@ class RuntimeParameters:
         # This silly '2' thing is just a wacky change I made that worked. Leaving it as config was broken
         self.config2 = configparser.ConfigParser()
         self.config2.read(args.config)
-        self._use_user_input_root = False
         self.PSP = None
         self.display()
 
@@ -42,12 +41,8 @@ class RuntimeParameters:
         print("[cfg] Bin root:                   ", self.bin_root)
         print("[cfg] DLL root:                   ", self.dll_root)
         print("[cfg] Input root:                 ", self.input_root)
-        print("[cfg] Shared input:               ", self.shared_input)
-        print("[cfg] User input:                 ", self.user_input)
-        print("[cfg] Use user input:             ", self.use_user_input_root)
         print("[cfg] Sim root:                   ", self.sim_root)
         print("[cfg] Local bin root:             ", self.local_bin_root)
-        print("[cfg] Local input path:           ", self.input_path)
         print("[cfg] Local sim root:             ", self.local_sim_root)
         print("[cfg] DLL path:                   ", self.dll_path)
         print("[cfg] Source root:                ", self.src_root)
@@ -110,10 +105,6 @@ class RuntimeParameters:
         return self.config2.get(self.os_type, 'local_sim_root')
 
     @property
-    def input_path(self):
-        return self.config2.get(self.os_type, 'home_input')
-
-    @property
     def local_bin_root(self):
         return self.config2.get(self.os_type, 'local_bin_root')
 
@@ -122,32 +113,12 @@ class RuntimeParameters:
         return self.config2.get(self.os_type, 'local_sim_root')
 
     @property
-    def shared_input(self):
-        return self.config2.get(self.os_type, 'local_input_root')
-
-
-    @property
     def bin_root(self):
         return self.config2.get(self.os_type, 'local_bin_root')
 
     @property
-    def user_input(self):
-        return self.config2.get(self.os_type, 'home_input')
-
-    @property
-    def use_user_input_root(self):
-        return self._use_user_input_root
-
-    @use_user_input_root.setter
-    def use_user_input_root(self, value):
-        self._use_user_input_root = value
-
-    @property
     def input_root(self):
-        if not self.use_user_input_root:
-            return self.shared_input
-        else:
-            return self.user_input
+        return self.config2.get(self.os_type, 'local_input_root')
 
     @property
     def dll_path(self):

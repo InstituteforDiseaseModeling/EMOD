@@ -200,10 +200,10 @@ class MyRegressionRunner(object):
         # is gotten from config["home"] and "Bihar" is from config_json["Geography"]
         # Then use that directory as the input.
         source_input_directory = "."
-        working_input_directory = self.params.user_input
+        working_input_directory = self.params.input_root
         if "parameters" in config_json and "Geography" in config_json["parameters"]:
-            source_input_directory = os.path.join(self.params.shared_input, config_json["parameters"]["Geography"])
-            working_input_directory = os.path.join(self.params.user_input, config_json["parameters"]["Geography"])
+            source_input_directory = os.path.join(self.params.input_root, config_json["parameters"]["Geography"])
+            working_input_directory = os.path.join(self.params.input_root, config_json["parameters"]["Geography"])
 
             if (config_json["parameters"]["Geography"] != "") and not os.path.exists(working_input_directory):
                 print("Creating " + working_input_directory)
@@ -214,7 +214,6 @@ class MyRegressionRunner(object):
         self.copy_demographics_files_to_user_input(simulation_directory, config_json, working_input_directory, scenario_path, source_input_directory) 
         self.copy_climate_and_migration_files_to_user_input(simulation_directory, config_json, source_input_directory, working_input_directory, scenario_path) 
         self.copy_serialized_population_files(config_json,simulation_directory, scenario_path)
-        self.params.use_user_input_root = True
 
         return
 
@@ -274,10 +273,6 @@ class MyRegressionRunner(object):
 
                     if not os.path.isdir(target_dir):
                         print(dll + ": copying to cluster")
-                    else:
-                        print(dll + ": Already on cluster")
-
-                    if not os.path.isdir(target_dir):
                         os.makedirs(target_dir)
                         ru.copy(dll, os.path.join(target_dir, os.path.basename(dll)))
 
