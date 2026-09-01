@@ -33,7 +33,6 @@ class MyRegressionRunner(object):
         self.src_dest_set = set()
         self.dll_name_to_path = {}
         if params.dll_root is not None and params.use_dlls is True:
-            # print( "dll_root (remote) = " + params.dll_root )
             self.copyEModulesOver(params)
         else:
             print("Not using DLLs")
@@ -70,17 +69,15 @@ class MyRegressionRunner(object):
         input_files_dir = os.path.join(scenario_directory, input_files_dir)
 
         serialized_pop_filenames = []
-        #config_json["parameters"]["Serialized_Population_Filenames"] = []
 
         for filename in input_files:
             if not filename or len(filename.strip(' ')) == 0:
                 continue
 
             scenario_file = os.path.join(input_files_dir, filename)
-            
+
             # Copy directly to remote simulation working directory
             if os.path.isfile(scenario_file):
-                #print('Copying %s to remote working directory'%filename)
                 simulation_path = os.path.join(self.params.sim_root, simulation_directory)
                 simulation_file = os.path.join(simulation_path, os.path.basename(filename))
                 self.update_file(scenario_file, simulation_file)
@@ -125,8 +122,6 @@ class MyRegressionRunner(object):
             elif source_path != dest_path:
                 if not self.update_file(source_path, dest_path):
                     print("Could not find source file '{0}' locally ({1}) or in inputs ({2}) [{3}]!".format(filename, scenario_file, source_path, scenario_directory))
-                    # config_json["parameters"]["Demographics_Filename"] = "input file ({0}) not found".format(filename)
-                    # return
                     missing_files.append(os.path.basename(filename))
 
             demographics_filenames.append(os.path.basename(filename))
@@ -170,7 +165,8 @@ class MyRegressionRunner(object):
     def copy_climate_and_migration_files_to_user_input(self, simulation_directory, config_json, source_input_directory,
                                                        working_input_directory, scenario):
 
-        filter_list = ['Demographics_Filename', 'Demographics_Filenames',
+        filter_list = ['Demographics_Filename',
+                       'Demographics_Filenames',
                        'Campaign_Filename',
                        'Custom_Reports_Filename',
                        'Serialized_Population_Filenames',
@@ -361,9 +357,6 @@ class MyRegressionRunner(object):
                 print("ERROR: Failed to find file to copy: " + filename)
         return
 
-    def is_local_simulation(self):
-        return True if os.name == "posix" else self.params.local_execution
-
     def filter_emodules(self, custom_reports):
         final_reporters = []
 
@@ -392,14 +385,9 @@ class MyRegressionRunner(object):
     def commissionFromConfigJson(self, sim_id, reply_json, scenario_path, report, scenario_type='tests',serialization_test_type=None):
         # scenario_type == 'tests' will compare results to reference
         # scenario_type != 'tests', e.g. 'science' or 'sweep' will skip comparison
-        # now we have the config_json, find out if we're commissioning locally or on HPC
 
-        sim_dir = os.path.join(self.params.sim_root, sim_id)
-        bin_dir = os.path.join(self.params.bin_root, self.dtk_hash) if self.dtk_hash else None
-
-        if self.is_local_simulation():
-            sim_dir = os.path.join(self.params.local_sim_root, sim_id)
-            bin_dir = os.path.join(self.params.local_bin_root, self.dtk_hash) if self.dtk_hash else None
+        sim_dir = os.path.join(self.params.local_sim_root, sim_id)
+        bin_dir = os.path.join(self.params.local_bin_root, self.dtk_hash) if self.dtk_hash else None
 
         # create unique simulation directory
         self.sim_dir_sem.acquire()
@@ -554,24 +542,11 @@ class MyRegressionRunner(object):
         if os.path.isfile(os.path.join(scenario_path, "dtk_post_process.py")):
             self.copy_sim_file(scenario_path, sim_dir, "dtk_post_process.py")
 
-        monitorThread = None    # need scoped here
-
-        # print "Creating run & monitor thread."
-        if self.is_local_simulation():
-            monitorThread = regression_local_monitor.Monitor(sim_id, scenario_path, report, self.params, reply_json, scenario_type,serialization_test_type)
-        else:
-            raise ValueError('Must be using local monitor.')
-
+        monitorThread = regression_local_monitor.Monitor(sim_id, scenario_path, report, self.params, reply_json, scenario_type, serialization_test_type)
         monitorThread.daemon = False
         monitorThread.start()
 
         return monitorThread
-
-    def attempt_test(self):
-        if self.is_local_simulation():
-            pass  # No test submissions for local simulations
-        else:
-            raise ValueError('Must be using local monitor.')
 
     def doSchemaTest(self):
         # print( "Testing schema generation..." )

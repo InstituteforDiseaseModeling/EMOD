@@ -131,7 +131,6 @@ jobs:
                 ../build/x64/Release/Eradication/Eradication \
                 --hidegraphs --config-constraints Num_Cores:${{ inputs.regression_test_cores }} \
                 ${{ inputs.regression_test_options }} \
-                --local \
                 --linux \
                 --print-error \
             "

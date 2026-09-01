@@ -116,7 +116,6 @@ jobs:
                 ../build/x64/Release/Eradication/Eradication \
                 --hidegraphs --config-constraints Num_Cores:${{ inputs.sft_test_cores }} \
                 ${{ inputs.sft_test_options }} \
-                --local \
                 --linux \
             "
 

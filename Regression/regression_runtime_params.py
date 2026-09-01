@@ -38,7 +38,6 @@ class RuntimeParameters:
         print("[arg] Component tests:            ", self.component_tests)
         print("[arg] Component tests show output:", self.component_tests_show_output)
         print("[arg] Config constraints:         ", self.constraints_dict)
-        print("[arg] Run sims locally:           ", self.local_execution)
         print("[arg] Run Linux binary:           ", self.linux)
         # print( "", self.config2 )
         print("[cfg] Bin root:                   ", self.bin_root)
@@ -75,7 +74,7 @@ class RuntimeParameters:
     @property
     def measure_perf(self):
         return self.args.perf
-    
+
     @property
     def hide_graphs(self):
         return self.args.hidegraphs
@@ -121,31 +120,20 @@ class RuntimeParameters:
 
     @property
     def sim_root(self):
-        if self.local_execution or os.name=="posix":
-            return self.config2.get(self.os_type, 'local_sim_root')
-        else:
-            return self.config2.get('ENVIRONMENT', 'sim_root')
+        return self.config2.get(self.os_type, 'local_sim_root')
 
     @property
     def shared_input(self):
-        if self.local_execution or os.name=="posix":
-            return self.config2.get(self.os_type, 'local_input_root')
-        else:
-            return self.config2.get('ENVIRONMENT', 'input_root')
+        return self.config2.get(self.os_type, 'local_input_root')
+
 
     @property
     def bin_root(self):
-        if self.local_execution or os.name=="posix":
-            return self.config2.get(self.os_type, 'local_bin_root')
-        else:
-            return self.config2.get('ENVIRONMENT', 'bin_root')
+        return self.config2.get(self.os_type, 'local_bin_root')
 
     @property
     def user_input(self):
-        if self.local_execution or os.name=="posix":
-            return self.config2.get(self.os_type, 'home_input')
-        else:
-            return self.config2.get('ENVIRONMENT', 'home_input')
+        return self.config2.get(self.os_type, 'home_input')
 
     @property
     def use_user_input_root(self):
@@ -169,15 +157,9 @@ class RuntimeParameters:
     @property
     def dll_root(self):
         try:
-            if self.local_execution:
-                dll_root = self.config2.get(self.os_type, 'local_dll_root')
-            else:
-                dll_root = self.config2.get('ENVIRONMENT', 'dll_root')
+            dll_root = self.config2.get(self.os_type, 'local_dll_root')
         except Exception as ex:
-            if self.local_execution:
-                dll_root = self.config2.get(self.os_type, 'local_bin_root')
-            else:
-                dll_root = self.config2.get('ENVIRONMENT', 'bin_root')
+            dll_root = self.config2.get(self.os_type, 'local_bin_root')
         return dll_root
 
     @property
@@ -209,10 +191,6 @@ class RuntimeParameters:
                 nvp = raw_nvp.split(":")
                 constraints_dict[nvp[0]] = nvp[1]
         return constraints_dict
-    
-    @property
-    def local_execution(self):
-        return self.args.local
 
     @property
     def linux(self):
