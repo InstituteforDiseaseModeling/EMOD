@@ -685,25 +685,27 @@ class TestRunner(object):
         """
         if len(self.constraints) != 0:
             real_params = configjson["parameters"]
-            scenario_name = ""
+            s_name = "No Name"
             if "Config_Name" in real_params.keys():
-                scenario_name = real_params["Config_Name"]
+                s_name = real_params["Config_Name"]
 
             for constraint_name, constraint_value in self.constraints.items():
                 if constraint_name not in real_params.keys():
-                    print("WARNING: '{0}' configuration does not define constaint ('{1}'). Key not present.".format(
-                        scenario_name,constraint_name))
+                    print(f"WARNING: Configuration '{s_name}' does not define '{constraint_name}'. Key not present.")
                 elif constraint_name == "Num_Cores":
                     num_cores_constraint = int(constraint_value)
                     num_cores_param      = int(real_params[constraint_name])
+                    num_cores_param_str  = str(real_params[constraint_name])
                     if num_cores_param > num_cores_constraint:
-                        print("'{0}' configuration did not satisfy constraint: '{1}' = {2} but must <= {3}.".format(
-                            scenario_name, constraint_name, str(real_params[constraint_name]), constraint_value))
+                        req = f"{constraint_name} = {num_cores_param_str} but must <= {constraint_value}"
+                        print(f"Configuration '{s_name}' did not satisfy constraint: " + req)
                         return False
-                elif str(real_params[constraint_name]) != constraint_value:
-                    print("'{0}' configuration did not satisfy constraint: '{1}' = {2} but must == {3}.".format(
-                        scenario_name, constraint_name, str(real_params[constraint_name]), constraint_value))
-                    return False
+                else:
+                    param_str  = str(real_params[constraint_name])
+                    if param_str != constraint_value:
+                        req = f"{constraint_name} = {param_str} but must == {constraint_value}"
+                        print(f"Configuration '{s_name}' did not satisfy constraint: " + req)
+                        return False
 
         return True
 
