@@ -127,14 +127,14 @@ def add_tests_from_file(regression_list_json, filename):
 
 def reglist_test_type(list):
     """
-    Determine the type (tests, science, sweep, science_sweep) of a list of reg. tests
+    Determine the type (tests, science) of a list of reg. tests
 
     :param list: regression tests list
-    :return: type of regression list (e.g. "tests", "science", "sweep", "science_sweep"
+    :return: type of regression list (e.g. "tests", "science")
     """
     if not list:
         return None
-    test_types = ["tests", "science", "sweep", "science_sweep"]
+    test_types = ["tests", "science"]
     for test_type in test_types:
         if test_type in list:
             return test_type
@@ -707,129 +707,6 @@ class TestRunner(object):
 
         return True
 
-    def sweep_params(self, reglistjson):
-        """
-        Sweep through each of the parameter overrides provided, running tests for each
-
-        :param reglistjson: json test list object
-        :return:
-        """
-        # keep track of all the parameter names and their values, set up the variables used by iterate_params_and_run
-        self.param_values = {}
-        self.param_names = []
-        self.current_overrides = {}
-
-        # extract parameter names and values from reglist
-        if "param_name" in reglistjson[self.test_type]:
-            param_name = reglistjson[self.test_type]["param_name"]
-            self.param_names.append(param_name)
-            self.param_values[param_name] = reglistjson[self.test_type]["param_values"]
-            self.current_overrides[param_name] = self.param_values[param_name][0]
-        elif "param_names" in reglistjson[self.test_type]:
-            self.param_names = reglistjson[self.test_type]["param_names"]
-            for param_name in self.param_names:
-                # name of the corresponding values property, replace /'s in nested params with _'s, append "_values"
-                param_key = param_name + "_values"
-                if param_key in reglistjson[self.test_type]:
-                    self.param_values[param_name] = reglistjson[self.test_type][param_key]
-                    self.current_overrides[param_name] = self.param_values[param_name][0]
-                else:
-                    raise ValueError("Missing " + param_key + " for parameter: " + param_name)
-
-        self.iterate_params_and_run(0, reglistjson[self.test_type]["path"])
-
-    def iterate_params_and_run(self, param_id, sim_path):
-        """
-        Iterate through a given set of param overrides, recursively iterate through any additional params, run tests w/ overrided params
-
-        this is a utility method used by sweep_params
-
-        :param param_id:
-        :param sim_path:
-        :return:
-        """
-        if param_id >= len(self.param_names):
-            # if we've iterated all params and set the appropriate current param override values, then actually run the test
-            self.run_test(sim_path, self.current_overrides)
-        else:
-            # determine the current param being iterated
-            param_name = self.param_names[param_id]
-
-            for current_param_value in self.param_values[param_name]:
-                # advance the current value of the param through the list for this param
-                self.current_overrides[param_name] = current_param_value
-                # iterate through the next level of params or run the test w/ the given params
-                self.iterate_params_and_run(param_id+1, sim_path)
-
-    def plot_sweep_results(self, sweep_path, sweep_out_file=None):
-        """
-        Get sweep results and plot them
-
-        :param sweep_path: regression simulation directory
-        :param sweep_out_file: dump all simulation directories to a file, if present
-        """
-        print("Plot sweep results...\n")
-
-        file_prefix_list = []
-        file_prefix_list.append( "InsetChart" )
-        file_prefix_list.append( "PropertyReport" )
-        file_prefix_list.append( "AlleleFrequency" )
-        file_prefix_list.append( "ReportVectorGenetics" )
-        file_prefix_list.append( "ReportVectorStats" )
-        file_prefix_list.append( "ReportMalariaFiltered" )
-
-        ref_dir_path = os.path.join(sweep_path, "output" )
-        ref_dir_path = os.path.join(self.cache_cwd, ref_dir_path)
-
-        ref_file_list = []
-        for ref_file_name in os.listdir( ref_dir_path ):
-            if ref_file_name.endswith(".json") and not ref_file_name.endswith(".linux.json"):
-                for prefix in file_prefix_list:
-                    if ref_file_name.startswith( prefix ):
-                        ref_file_list.append( ref_file_name )
-
-        param_counts = []
-
-        for param_name in self.param_names:
-            param_counts.append(str(len(self.param_values[param_name])))
-
-        plot_title_prefix = os.path.basename( sweep_path )
-        plot_title_prefix = plot_title_prefix + "\nSweep over " + ", ".join(self.param_names).replace(':', '_') + " (" + ", ".join(param_counts) + ") values"
-        os.chdir(self.cache_cwd)
-        import plotAllCharts
-
-        for ref_file_name in ref_file_list:
-            ref_path = os.path.join( ref_dir_path, ref_file_name )
-            ref_json = ru.load_json( ref_path )
-            results_data = self.get_sweep_results( ref_file_name, sweep_out_file )
-            plot_title = plot_title_prefix + "\n" + ref_file_name
-            plotAllCharts.plotBunch( results_data, plot_title, ref_json )
-
-
-    def get_sweep_results(self, file_name, out_file=None):
-        """
-        Get sweep results for a sweep run, dump all simulation info to file if desired
-
-        :param file_name The name of the file expected in the output directory to get its JSON
-        :param out_file: file to dump all simulation directories to
-        :return: collected json data
-        """
-        results_data = []
-        sim_dirs = []
-
-        for reg_thread in ru.reg_threads:
-            sim_dir = os.path.join(reg_thread.params.local_sim_root, reg_thread.sim_timestamp)
-            sim_dirs.append(sim_dir)
-            sim_filename = os.path.join(sim_dir, os.path.join("output", file_name))
-            sim_json = ru.load_json(sim_filename)
-            results_data.append(sim_json)
-
-        if out_file:
-            with open( out_file, "w" ) as outputs:
-                outputs.write( json.dumps( sim_dirs, indent=4, sort_keys=True ) )
-
-        return results_data
-
     def print_report_results(self):
         """Print message containing report summary results"""
         if self.report is not None:
@@ -853,17 +730,13 @@ def main():
     # load regression list data from file(s)
     reglistjson = read_regression_files(params.suite.split(","))
 
-    # determine test type (tests, science, sweep)
+    # determine test type (tests, science)
     test_type = reglist_test_type(reglistjson)
 
     if not test_type:
         # bail out if test type is unknown
         print("Error: determined test type is unknown, exiting without running tests")
         return 1
-
-    # determine whether we're running sweeps and/or SFTs
-    science = "science" in test_type
-    sweep = "sweep" in test_type
 
     ru.version_string = get_exe_version(params.executable_path)
 
@@ -873,29 +746,25 @@ def main():
     # initialize test runner for given directory, test type, constraints, etc.
     test_runner = TestRunner(ru.cache_cwd, test_type, params.constraints_dict, report, runner)
 
-    if science:
+    if "science" in test_type:
         # prepare for generating graphs for SFTs
         homepath = get_homepath()
         configure_SFT_graphs(homepath, params.hide_graphs)
 
-    if sweep:
-        print("Running sweep...\n")
-        test_runner.sweep_params(reglistjson)
-    else:
-        print("Running regression...\n")
+    print("Running regression...\n")
 
-        for sim_config in reglistjson[test_type]:
-            test_runner.run_test(sim_config["path"])
+    for sim_config in reglistjson[test_type]:
+        test_runner.run_test(sim_config["path"])
 
-        # do a schema test also
-        if not params.disable_schema_test:
-            start_schema = datetime.datetime.now()
-            report.schema = runner.doSchemaTest()
-            schema_duration = datetime.datetime.now() - start_schema
-            if report.schema == 'passed':
-                report.addPassingTest('schema', schema_duration, 'see logs for details')
-            else:
-                report.addFailingTest('schema', 'Schema test failed.', 'see logs for details', 'schema')
+    # do a schema test also
+    if not params.disable_schema_test:
+        start_schema = datetime.datetime.now()
+        report.schema = runner.doSchemaTest()
+        schema_duration = datetime.datetime.now() - start_schema
+        if report.schema == 'passed':
+            report.addPassingTest('schema', schema_duration, 'see logs for details')
+        else:
+            report.addFailingTest('schema', 'Schema test failed.', 'see logs for details', 'schema')
 
     # wait until all threads running tests are done
     expected_num_tests = len(ru.reg_threads)
@@ -913,26 +782,14 @@ def main():
             sys.stderr.write('Component tests failed!\n')
             report.addFailingTest('component_tests', 'Component tests failed.', 'see logs for details', 'component_tests')
 
-    # print results except when running a non-science sweep
-    if not (sweep and not science):
-        test_runner.print_report_results()
+    test_runner.print_report_results()
 
     if ru.final_warnings != "":
         print("----------------")
         print(ru.final_warnings)
         print("----------------")
 
-    # if doing sweep, call plotAllCharts.py with all sim_timestamps on command line.
-    if sweep:
-        test_runner.plot_sweep_results(reglistjson[test_type]["path"], "sweep_out.json")
-    # TODO: this doesn't work with all-outputs runs, figure out a better way of doing this test
-    #elif report.num_tests != expected_num_tests:
-    #    print("Number of tests: %d doesn't match expected number: %d" %(report.num_tests, expected_num_tests))
-    #    return 1
-
     return 0
-    """Main body of regression_test.py"""
-
 
 
 if __name__ == "__main__":
