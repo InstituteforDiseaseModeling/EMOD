@@ -19,7 +19,6 @@ class RuntimeParameters:
         # This silly '2' thing is just a wacky change I made that worked. Leaving it as config was broken
         self.config2 = configparser.ConfigParser()
         self.config2.read(args.config)
-        self.PSP = None
         self.display()
 
     def display(self):
@@ -38,13 +37,11 @@ class RuntimeParameters:
         print("[arg] Component tests show output:", self.component_tests_show_output)
         print("[arg] Config constraints:         ", self.constraints_dict)
         # print( "", self.config2 )
-        print("[cfg] Bin root:                   ", self.bin_root)
         print("[cfg] DLL root:                   ", self.dll_root)
         print("[cfg] Input root:                 ", self.input_root)
         print("[cfg] Sim root:                   ", self.sim_root)
         print("[cfg] Local bin root:             ", self.local_bin_root)
         print("[cfg] Local sim root:             ", self.local_sim_root)
-        print("[cfg] DLL path:                   ", self.dll_path)
         print("[cfg] Source root:                ", self.src_root)
         return
 
@@ -75,10 +72,7 @@ class RuntimeParameters:
 
     @property
     def use_dlls(self):
-        if self.args.dll_path is not None:
-            return True
-        else:
-            return self.args.use_dlls
+        return self.args.use_dlls
 
     @property
     def scons(self):
@@ -113,28 +107,16 @@ class RuntimeParameters:
         return self.config2.get(self.os_type, 'local_sim_root')
 
     @property
-    def bin_root(self):
-        return self.config2.get(self.os_type, 'local_bin_root')
-
-    @property
     def input_root(self):
         return self.config2.get(self.os_type, 'local_input_root')
 
     @property
-    def dll_path(self):
-        return self.args.dll_path
-
-    @property
     def dll_root(self):
-        try:
-            dll_root = self.config2.get(self.os_type, 'local_dll_root')
-        except Exception as ex:
-            dll_root = self.config2.get(self.os_type, 'local_bin_root')
-        return dll_root
+        return self.config2.get(self.os_type, 'local_bin_root')
 
     @property
     def src_root(self):
-        return "./.."
+        return ".."
 
     @property
     def all_outputs(self):

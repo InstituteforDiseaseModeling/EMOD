@@ -232,21 +232,16 @@ class MyRegressionRunner(object):
     # Copy just build dlls to deployed places based on commandline argument
     # - The default is to use all of the DLLs found in the location the DLL projects
     #   place the DLLs (<trunk>\x64\Release).
-    # - --dll-path allows the user to override this default path
     def copyEModulesOver(self, params):
 
         print( "src_root = " + params.src_root )
 
-        if params.dll_path is not None:
-            emodule_dir = params.dll_path
+        if params.scons:
+            emodule_dir = os.path.join(params.src_root, "build")
+            emodule_dir = os.path.join(emodule_dir, "x64")
         else:
-            if params.scons:
-                emodule_dir = os.path.join(params.src_root, "build")
-                emodule_dir = os.path.join(emodule_dir, "x64")
-            else:
-                emodule_dir = os.path.join(params.src_root, "x64")
-
-            emodule_dir = os.path.join(emodule_dir, "Release")
+            emodule_dir = os.path.join(params.src_root, "x64")
+        emodule_dir = os.path.join(emodule_dir, "Release")
 
         print('Assuming emodules (dlls) are in local directory: ' + emodule_dir)
 
