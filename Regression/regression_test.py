@@ -18,26 +18,19 @@ import regression_utils as ru
 import regression_runtime_params
 import regression_report
 
-def get_argparser(parser = None):
+def get_argparser():
     """
     Add argparse parameters to a parser object.
 
-    :param parser: argparse parser to add params to (useful for testing)
     :return: argparse parser populated with param arguments
     """
-    if not parser:
-        parser = argparse.ArgumentParser()
-    parser.add_argument("suite",
-                        help="JSON test-suite to run - e.g. full.json, sanity (converted to sanity.json) - one or more comma separated values")
-    parser.add_argument("exe_path", metavar="exe-path", nargs="?", default="",
-                        help="Path to the Eradication.exe binary to run.  Default is where the executable is normally built depending on --scons and the OS.")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("suite",                                                        help="JSON test-suite to run - e.g. full.json, sanity (converted to sanity.json) - one or more comma separated values")
+    parser.add_argument("exe_path", metavar="exe-path", nargs="?", default="",          help="Path to the Eradication.exe binary to run.  Default is where the executable is normally built depending on --scons and the OS.")
     parser.add_argument("--perf", action="store_true", default=False,                   help="Run for performance measurement purposes")
     parser.add_argument("--hidegraphs", action="store_true", default=False,             help="Suppress pop-up graphs in case of validation failure")
-    parser.add_argument("--config", default="regression_test.cfg",                      help="Regression test configuration [regression_test.cfg]")
     parser.add_argument("--disable-schema-test", action="store_true", default=False,    help="Disable schema test (testing is on by default, use to suppress schema testing)")
     parser.add_argument("--component-tests", action="store_true", default=False,        help="Run the componentTests if the executable exists")
-    parser.add_argument("--component-tests-show-output", action="store_true", default=False,
-                                                                                        help="Show the output of the componentTests")
     parser.add_argument("--use-dlls", action="store_true", default=False,               help="Use emodules/DLLs when running tests")
     parser.add_argument("--all-outputs", action="store_true", default=False,            help="Use all output .json files for validation, not just InsetChart.json")
     parser.add_argument("--config-constraints", nargs="?",                              help="key:value pair(s) which are used to filter the scenario list (the given key and value must be in the config.json)")
@@ -46,15 +39,13 @@ def get_argparser(parser = None):
 
     return parser
 
-def setup(args=None):
+def setup():
     """
     Process command-line parameters
 
-    :param args: argparse parser object to use instead of creating a new one (for testing)
     :return: RuntimeParameters object reflecting all the relevant arguments
     """
-    if not args:
-        args = get_argparser().parse_args()
+    args = get_argparser().parse_args()
     params = regression_runtime_params.RuntimeParameters(args)
     return params
 
@@ -265,12 +256,11 @@ def configure_SFT_graphs(homepath, hide_graphs):
     if not hide_graphs:
         ru.touch_file(flag)
 
-def run_component_tests(scons_build, show_output):
+def run_component_tests(scons_build):
     """
     Run component tests
 
     :param scons_build: flag to look for the binaries in the scons output location
-    :param show_output: whether to show the output of the component tests
     :return: whether all tests succeeded
     """
 
@@ -287,15 +277,11 @@ def run_component_tests(scons_build, show_output):
 
     if (os.path.exists(component_test_path)):
         os.chdir("../componentTests")
-        if (show_output):
-            with open("StdErr.txt", "w") as stderr_file:
-                ret = subprocess.call([component_test_path], stderr=stderr_file)
-            os.remove("StdErr.txt")
-        else:
-            with open("StdOut.txt", "w") as stdout_file:
-                ret = subprocess.call([component_test_path], stdout=stdout_file)
-            if (ret == 0):
-                os.remove("StdOut.txt")
+
+        with open("StdOut.txt", "w") as stdout_file:
+            ret = subprocess.call([component_test_path], stdout=stdout_file)
+        if (ret == 0):
+            os.remove("StdOut.txt")
 
         if ret == 0:
             return True
@@ -776,7 +762,7 @@ def main():
     component_tests_passed = True
     if( params.component_tests ):
         ct_start = datetime.datetime.now()
-        component_tests_passed = run_component_tests(params.scons, params.component_tests_show_output)
+        component_tests_passed = run_component_tests(params.scons)
         duration = datetime.datetime.now() - ct_start
         if component_tests_passed:
             report.addPassingTest('component_tests', duration, 'see logs for details')
