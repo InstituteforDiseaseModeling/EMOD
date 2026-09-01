@@ -42,7 +42,6 @@ def get_argparser(parser = None):
     parser.add_argument("--use-dlls", action="store_true", default=False,               help="Use emodules/DLLs when running tests")
     parser.add_argument("--all-outputs", action="store_true", default=False,            help="Use all output .json files for validation, not just InsetChart.json")
     parser.add_argument("--dll-path",                                                   help="Path to the root directory of the DLLs to use (e.g. contains reporter_plugins)")
-    parser.add_argument("--skip-emodule-check", action="store_true", default=False,     help="Use this to skip the sometimes slow check that EMODules on cluster are up to date.")
     parser.add_argument("--config-constraints", nargs="?",                              help="key:value pair(s) which are used to filter the scenario list (the given key and value must be in the config.json)")
     parser.add_argument("--scons", action="store_true", default=False,                  help="Indicates scons build so look for custom DLLs in the build/64/Release directory.")
     parser.add_argument('--local', action='store_true', default=False,                  help='Run all simulations locally.')

@@ -323,14 +323,12 @@ class MyRegressionRunner(object):
                     target_dir = os.path.join(params.dll_root, dll_subdir)
                     target_dir = os.path.join(target_dir, dll_hash)
 
-                    if params.sec:
-                        print(dll + " will be used without checking 'new-ness'.")
-                    elif not os.path.isdir(target_dir):
+                    if not os.path.isdir(target_dir):
                         print(dll + ": copying to cluster")
                     else:
                         print(dll + ": Already on cluster")
 
-                    if not os.path.isdir(target_dir) and not params.sec:   # sec = command-line option to skip this
+                    if not os.path.isdir(target_dir):
                         os.makedirs(target_dir)
                         ru.copy(dll, os.path.join(target_dir, os.path.basename(dll)))
 

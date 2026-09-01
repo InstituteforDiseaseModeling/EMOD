@@ -37,7 +37,6 @@ class RuntimeParameters:
         print("[arg] Disable schema test:        ", self.disable_schema_test)
         print("[arg] Component tests:            ", self.component_tests)
         print("[arg] Component tests show output:", self.component_tests_show_output)
-        print("[arg] Skip emodule test:          ", self.sec)
         print("[arg] Config constraints:         ", self.constraints_dict)
         print("[arg] Run sims locally:           ", self.local_execution)
         print("[arg] Run Linux binary:           ", self.linux)
@@ -200,10 +199,6 @@ class RuntimeParameters:
     @property
     def component_tests_show_output(self):
         return self.args.component_tests_show_output
-
-    @property
-    def sec(self):
-        return self.args.skip_emodule_check
 
     @property
     def constraints_dict(self):
