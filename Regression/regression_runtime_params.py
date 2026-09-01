@@ -38,7 +38,6 @@ class RuntimeParameters:
         print("[arg] Component tests:            ", self.component_tests)
         print("[arg] Component tests show output:", self.component_tests_show_output)
         print("[arg] Config constraints:         ", self.constraints_dict)
-        print("[arg] Run Linux binary:           ", self.linux)
         # print( "", self.config2 )
         print("[cfg] Bin root:                   ", self.bin_root)
         print("[cfg] DLL root:                   ", self.dll_root)
@@ -191,7 +190,3 @@ class RuntimeParameters:
                 nvp = raw_nvp.split(":")
                 constraints_dict[nvp[0]] = nvp[1]
         return constraints_dict
-
-    @property
-    def linux(self):
-        return self.args.linux

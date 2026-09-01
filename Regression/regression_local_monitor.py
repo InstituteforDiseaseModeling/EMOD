@@ -69,8 +69,7 @@ class Monitor(threading.Thread):
                 cmd = ['mpiexec', "-n", str(numcores), self.config_json["bin_path"], "-C", "config.json" ]
             else:
                 cmd = self.config_json["bin_path"].split()
-                if self.scenario_type != 'pymod':
-                    cmd.extend( ["-C", "config.json" ] )
+                cmd.extend( ["-C", "config.json" ] )
             if actual_input_dir:
                 cmd.extend( [ "--input-path", actual_input_dir ] )
             # python-script-path is optional parameter.
@@ -116,8 +115,6 @@ class Monitor(threading.Thread):
                         self.verify( self.sim_dir, file, "Channels" )
         elif self.scenario_type == 'science':   # self.report <> None:
             self.science_verify( self.sim_dir )
-        elif self.scenario_type == 'pymod':   # self.report <> None:
-            self.pymod_verify( self.sim_dir )
 
     def get_json_data_hash( self, data ):
         with tempfile.TemporaryFile() as handle:
@@ -367,9 +364,10 @@ class Monitor(threading.Thread):
 
         # If on linux, check if there is a .linux version of reference report in folder - test against it if there is
         # This is currently only used for InsetChart.json
-        if os.name != "nt" or self.params.linux:
-            linux_name = str(Path(report_name).with_suffix(f'.linux{Path(report_name).suffix}'))
-            alt_ref_path = os.path.join( ru.cache_cwd, os.path.join( str(self.scenario_path), os.path.join( "output", linux_name ) ) )
+        if ( os.name != "nt" ):
+            rep_parts = report_name.split('.')
+            alt_rep_name = '.'.join(rep_parts[:-1] + ['linux', rep_parts[-1]])
+            alt_ref_path = os.path.join( ru.cache_cwd, os.path.join( str(self.scenario_path), os.path.join( "output", alt_rep_name ) ) )
             if os.path.exists( alt_ref_path ):
                 ref_path = alt_ref_path
         elif report_name != "InsetChart.json":
@@ -437,7 +435,6 @@ class Monitor(threading.Thread):
                     print( self.scenario_path + " passed (" + str(self.duration) + ") - " + report_name )
                     #print( self.scenario_path + " passed." )
                     self.report.addPassingTest(self.scenario_path, self.duration, os.path.join(sim_dir, report_name))
-                    #os.remove( os.path.join( sim_dir, "test.txt" ) )
                 else:
                     fail_text = self.scenario_path + " SFT failed."
                     print( self.scenario_path + " failed (" + str(self.duration) + ") - " + report_name )
@@ -446,26 +443,3 @@ class Monitor(threading.Thread):
         else:
             print( self.scenario_path + " failed (" + str(self.duration) + ") - " + report_name + " not generated. This could mean an error in the dtk_post_process.py script, imported scripts, including import errors, which can include not finding a shared python module in the import path.")
             self.report.addFailingTest( self.scenario_path, "No " + report_name, os.path.join( sim_dir, report_name ), self.scenario_type )
-        
-
-    def pymod_verify( self, sim_dir ):
-        # pymod verification, which consists entirely of looking for an 'OK' at the end of the stdout which happens to be StdErr.txt
-        fail = True
-        for report_name in [ "stderr.txt", "test.txt" ]:
-            pmr = os.path.join( sim_dir, report_name )
-            if os.path.exists( pmr ):
-                with open( pmr ) as pmr_file:
-                    line = None
-                    for line in pmr_file:
-                        pass
-                    pmr_data = line
-                    if pmr_data is not None and pmr_data.strip() == "OK":
-                        print( self.scenario_path + " passed (" + str(self.duration) + ") - " + report_name )
-                        self.report.addPassingTest(self.scenario_path, self.duration, os.path.join(self.sim_dir, report_name))
-                        fail = False
-        if fail:
-            report_name = "test.txt"
-            fail_text = self.scenario_path + " PyMod failed."
-            print( self.scenario_path + " failed (" + str(self.duration) + ") - " + report_name )
-            #print( pmr_data )
-            self.report.addFailingTest( self.scenario_path, fail_text, os.path.join( self.sim_dir, report_name ), self.scenario_type )

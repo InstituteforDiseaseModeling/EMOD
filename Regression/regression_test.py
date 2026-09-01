@@ -44,7 +44,6 @@ def get_argparser(parser = None):
     parser.add_argument("--dll-path",                                                   help="Path to the root directory of the DLLs to use (e.g. contains reporter_plugins)")
     parser.add_argument("--config-constraints", nargs="?",                              help="key:value pair(s) which are used to filter the scenario list (the given key and value must be in the config.json)")
     parser.add_argument("--scons", action="store_true", default=False,                  help="Indicates scons build so look for custom DLLs in the build/64/Release directory.")
-    parser.add_argument('--linux', action='store_true', default=False,                  help='Run on linux target')
     parser.add_argument("--print-error", action='store_true', default=False,            help="Print error message to screen.")
 
     return parser
@@ -137,18 +136,11 @@ def reglist_test_type(list):
     """
     if not list:
         return None
-    test_types = ["tests", "science", "sweep", "science_sweep", "pymod" ]
+    test_types = ["tests", "science", "sweep", "science_sweep"]
     for test_type in test_types:
         if test_type in list:
             return test_type
     return None
-
-def setup_pymod_directory( path ):
-    #print( "PyMod test type: copy up all .pyd, .json, and .py files." ) # maybe later
-    if os.path.exists( os.path.join( path, "nd_template.json" ) ) == False:
-        print( "Could not find nd_template.json file in " + path )
-        return None 
-    return ru.load_json( os.path.join( path, "nd_template.json" ) )
 
 def get_test_config(path, test_type, report):
     """
@@ -162,25 +154,21 @@ def get_test_config(path, test_type, report):
     errmsg = None
     config_json = None
 
-    if test_type == "pymod":
-        config_json = setup_pymod_directory( os.path.dirname( path ) )
+    if not os.path.exists( path ):
+        errmsg = "Error flattening config - path does not exist: {}".format( path )
     else:
-        if not os.path.exists( path ):
-            errmsg = "Error flattening config - path does not exist: {}".format( path )
-        else:
-            param_overrides_filename = os.path.join(path, "param_overrides.json")
-            if os.path.exists( param_overrides_filename ):
-                try:
-                    config_json = ru.flattenConfig( param_overrides_filename )
-                except:
-                    errmsg = "Error flattening config: {} - {}".format( sys.exc_info()[0],
+        param_overrides_filename = os.path.join(path, "param_overrides.json")
+        if os.path.exists(param_overrides_filename):
+            try:
+                config_json = ru.flattenConfig(param_overrides_filename)
+            except:
+                errmsg = "Error flattening config: {} - {}".format( sys.exc_info()[0],
                                                                         sys.exc_info()[1] )
-            else:
-                #print("Warning: no param_overrides.json file available, config will not be flattened")
-                try:
-                    config_json = ru.load_json(os.path.join(path, "config.json"))
-                except Exception as ex:
-                    errmsg = "Malformed config.json in: " + path
+        else:
+            try:
+                config_json = ru.load_json(os.path.join(path, "config.json"))
+            except Exception as ex:
+                errmsg = "Malformed config.json in: " + path
 
     if errmsg != None:
         print(errmsg)
@@ -879,11 +867,7 @@ def main():
     science = "science" in test_type
     sweep = "sweep" in test_type
 
-    if test_type != "pymod":
-        if params.linux:
-            ru.version_string = "<na:linux>"
-        else:
-            ru.version_string = get_exe_version(params.executable_path)
+    ru.version_string = get_exe_version(params.executable_path)
 
     # create report
     report = regression_report.Report(params, ru.version_string)

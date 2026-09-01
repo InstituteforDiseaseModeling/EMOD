@@ -25,7 +25,7 @@ class MyRegressionRunner(object):
             self.dtk_hash = ru.md5_hash_of_file(self.params.executable_path)
         except Exception as ex:
             self.dtk_hash = None
-            print( "Exception getting md5 of Eradication binary/exe; OK if doing pymod run." )
+            print( "Exception getting md5 of Eradication binary/exe;" )
         self.sim_dir_sem = threading.Semaphore()
         self.emodules_map["interventions"] = []
         self.emodules_map["disease_plugins"] = []
@@ -172,13 +172,14 @@ class MyRegressionRunner(object):
                        'Serialized_Population_Filenames',
                        '.Serialized_Population_Filenames']
 
-        # Copy climate and human migration files also
+        # Copy climate and migration files also
         for key in config_json["parameters"]:
             if ("_Filename" in key) and (key not in filter_list):
                 filename = config_json["parameters"][key]
                 if len(filename) == 0:
                     continue
-                self.copy_one_climate_and_migration_file( key, filename, simulation_directory, source_input_directory,
+                self.copy_one_climate_and_migration_file( key, filename,
+                                                          simulation_directory, source_input_directory,
                                                           working_input_directory, scenario)
                 
         if "Vector_Species_Params" in config_json["parameters"].keys():
@@ -189,52 +190,8 @@ class MyRegressionRunner(object):
                         continue
                 self.copy_one_climate_and_migration_file( "Vector_Migration_Filename", filename,
                                                           simulation_directory, source_input_directory,
-                                                          working_input_directory, scenario )
+                                                          working_input_directory, scenario)
 
-        return
-
-    def copy_pymod_files( self, config_json, simulation_directory, scenario_path ):
-        if "emodularization" not in scenario_path:
-            return
-
-        # Copy *_template.json and *_test.py from scenario_path to simulation_directory.
-        # And copy ../*.pyd files
-        sim_dir = os.path.join(self.params.sim_root, simulation_directory)
-
-        # just search for all pyd files by walking the tree and copy them to each sim folder for now
-        pyds = []
-        suffix = ".so" if os.name == "posix" else ".pyd"
-        #pyds = glob.glob( ( "../emodularization/**/*." + suffix ), recursive=True)
-        for root, dirs, files in os.walk("../emodularization/"):
-            for file in files:
-                if file.endswith(suffix):
-                    pyds.append((os.path.join(root, file))) 
-        print( "Found python shared objects to copy: " + str( pyds ) )
-        for pyd in pyds:
-            print( "Copying " + pyd + " to" + os.path.join( sim_dir, os.path.basename( pyd ) ) )
-            ru.copy( pyd, os.path.join( sim_dir, os.path.basename( pyd ) ) )
-       
-        # Yes, I can combine the below 3 blocks by having list pairs of root-dir and regex but I 
-        # want the last two to go away.
-        regexes = [ "*_template.json", "demographics_*.json", "*.json", "*.py" ]
-        # copy certain files (nice if we can be more specific)
-        for pattern in regexes:
-            foundfiles = glob.glob(os.path.join( scenario_path, pattern ))
-            for myfile in foundfiles:
-                ru.copy( myfile, os.path.join( sim_dir, os.path.basename( myfile ) ) )
-       
-
-        # WANT TO GET RID OF THIS: Some multi-test situations have common python scripts in the parent folder
-        # but regular tests (non-sub-foldered) could have who-knows-what in their parent dir!
-        for py in glob.glob( os.path.join( os.path.join( scenario_path, ".." ), "*.py" )):
-            ru.copy( py, os.path.join( sim_dir, os.path.basename( py ) ) )
-
-        # Refresh all the shared_embedded_py_scripts: THIS IS GOING TO GO AWAY SOON WITH PIP INSTALL OF dtk_test_support
-        """
-        for py_file in glob.glob(os.path.join("shared_embedded_py_scripts", "dtk_*.py")):
-            py_input = self.params.py_input
-            self.copy_sim_file("shared_embedded_py_scripts", py_input, os.path.basename(py_file))
-        """
         return
 
     def copy_input_files_to_user_input(self, simulation_directory, scenario_path, config_json):
@@ -257,7 +214,6 @@ class MyRegressionRunner(object):
         self.copy_demographics_files_to_user_input(simulation_directory, config_json, working_input_directory, scenario_path, source_input_directory) 
         self.copy_climate_and_migration_files_to_user_input(simulation_directory, config_json, source_input_directory, working_input_directory, scenario_path) 
         self.copy_serialized_population_files(config_json,simulation_directory, scenario_path)
-        self.copy_pymod_files(config_json, simulation_directory, scenario_path)
         self.params.use_user_input_root = True
 
         return
@@ -273,9 +229,6 @@ class MyRegressionRunner(object):
         arg_string = arg_string.replace('CUSTOMREPORT',  '')
 
         return arg_string
-
-    def transform_path( self, win_path ):
-        return win_path.replace( "\\", "/" ).replace( "bayesianfil01", "mnt" ).replace( "IDM", "idm" ).replace( "//", "/" )
 
     # Copy just build dlls to deployed places based on commandline argument
     # - The default is to use all of the DLLs found in the location the DLL projects
@@ -305,7 +258,7 @@ class MyRegressionRunner(object):
         dll_dirs = ["disease_plugins",  "reporter_plugins", "interventions"]
 
         for dll_subdir in dll_dirs:
-            suffix = "*.dll" if os.name == "nt" and self.params.linux == False else "*.so"
+            suffix = "*.dll" if os.name == "nt" else "*.so"
             dlls = glob.glob(os.path.join( os.path.join(emodule_dir, dll_subdir), suffix )) 
             for dll in dlls:
                 dll_hash = ru.md5_hash_of_file(dll)
@@ -329,8 +282,6 @@ class MyRegressionRunner(object):
                         ru.copy(dll, os.path.join(target_dir, os.path.basename(dll)))
 
                     dll_path = os.path.join(target_dir, os.path.basename(dll))
-                    if self.params.linux:
-                        dll_path = self.transform_path( dll_path )
                     self.emodules_map[dll_subdir].append(dll_path)
 
                     try:
@@ -401,18 +352,7 @@ class MyRegressionRunner(object):
 
         # check in bin_dir to see if our binary exists there...
         foundit = False
-        bin_path = None 
-        if scenario_type == "pymod":
-            bin_path = "python " # py script needs to come from folder not hardcoded
-            if os.name == "posix":
-                # This is not the correct solution but I don't know yet how to make sure we use python3 where it's present or just python
-                # Test on windows bamboo
-                bin_path = "python3 "
-            script_name = os.path.basename( scenario_path.strip('/') ) + "_test.py"
-            bin_path += script_name
-            foundit = True
-        else:
-            bin_path = os.path.join(bin_dir, "Eradication" if os.name == "posix" else "Eradication.exe")
+        bin_path = os.path.join(bin_dir, "Eradication" if os.name == "posix" else "Eradication.exe")
         if bin_dir and os.path.exists(bin_dir):
             if os.path.exists(bin_path):
                 foundit = True
