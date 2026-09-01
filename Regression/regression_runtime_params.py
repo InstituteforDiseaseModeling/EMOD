@@ -29,17 +29,14 @@ class RuntimeParameters:
         print("[arg] Use DLLs:                   ", self.use_dlls)
         print("[arg] SCons:                      ", self.scons)
         print("[arg] Print error msg to screen:  ", self.print_error)
-        print("[arg] Job name suffix:            ", self.label)
         print("[arg] Config file:                ", self.regression_config)
         print("[arg] Compare all outputs:        ", self.all_outputs)
         print("[arg] Disable schema test:        ", self.disable_schema_test)
         print("[arg] Component tests:            ", self.component_tests)
         print("[arg] Component tests show output:", self.component_tests_show_output)
         print("[arg] Config constraints:         ", self.constraints_dict)
-        # print( "", self.config2 )
         print("[cfg] DLL root:                   ", self.dll_root)
         print("[cfg] Input root:                 ", self.input_root)
-        print("[cfg] Sim root:                   ", self.sim_root)
         print("[cfg] Local bin root:             ", self.local_bin_root)
         print("[cfg] Local sim root:             ", self.local_sim_root)
         print("[cfg] Source root:                ", self.src_root)
@@ -83,10 +80,6 @@ class RuntimeParameters:
         return self.args.print_error
 
     @property
-    def label(self):
-        return self.args.label
-
-    @property
     def regression_config(self):
         return self.args.config
 
@@ -101,10 +94,6 @@ class RuntimeParameters:
     @property
     def local_bin_root(self):
         return self.config2.get(self.os_type, 'local_bin_root')
-
-    @property
-    def sim_root(self):
-        return self.config2.get(self.os_type, 'local_sim_root')
 
     @property
     def input_root(self):

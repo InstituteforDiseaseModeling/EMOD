@@ -78,7 +78,7 @@ class MyRegressionRunner(object):
 
             # Copy directly to remote simulation working directory
             if os.path.isfile(scenario_file):
-                simulation_path = os.path.join(self.params.sim_root, simulation_directory)
+                simulation_path = os.path.join(self.params.local_sim_root, simulation_directory)
                 simulation_file = os.path.join(simulation_path, os.path.basename(filename))
                 self.update_file(scenario_file, simulation_file)
                 serialized_pop_filenames.append(os.path.basename(filename))
@@ -115,7 +115,7 @@ class MyRegressionRunner(object):
             # Copy directly to remote simulation working directory
             if scenario_file and os.path.isfile(scenario_file):
                 # print('Copying %s to remote working directory'%filename)
-                simulation_path = os.path.join(self.params.sim_root, simulation_directory)
+                simulation_path = os.path.join(self.params.local_sim_root, simulation_directory)
                 simulation_file = os.path.join(simulation_path, os.path.basename(filename))
                 if simulation_path != simulation_file:
                     self.update_file(scenario_file, simulation_file)
@@ -147,7 +147,7 @@ class MyRegressionRunner(object):
         # if the file is in the scenario folder
         # Copy directly to remote simulation working directory
         if os.path.isfile(scenario_file):
-            simulation_path = os.path.join(self.params.sim_root, simulation_directory)
+            simulation_path = os.path.join(self.params.local_sim_root, simulation_directory)
             simulation_file = os.path.join(simulation_path, os.path.basename(filename))
             source = scenario_file
             dest = simulation_file

@@ -47,13 +47,12 @@ class Monitor(threading.Thread):
             num_cores = self.config_json['parameters']['Num_Cores']
         else:
            print( "Didn't find key 'parameters/Num_Cores' in '{0}'. Using 1.".format( self.scenario_path ) )
-               
+
         return int(num_cores)
 
     def run(self):
         self.__class__.sems.acquire()
-        self.sim_root = self.params.local_sim_root
-        self.sim_dir = os.path.join( self.sim_root, self.sim_timestamp )
+        self.sim_dir = os.path.join( self.params.local_sim_root, self.sim_timestamp )
         numcores = self.get_num_cores()
 
         starttime = datetime.datetime.now()

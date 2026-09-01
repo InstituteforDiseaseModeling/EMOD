@@ -33,7 +33,6 @@ def get_argparser(parser = None):
                         help="Path to the Eradication.exe binary to run.  Default is where the executable is normally built depending on --scons and the OS.")
     parser.add_argument("--perf", action="store_true", default=False,                   help="Run for performance measurement purposes")
     parser.add_argument("--hidegraphs", action="store_true", default=False,             help="Suppress pop-up graphs in case of validation failure")
-    parser.add_argument("--label",                                                      help="Custom suffix for HPC job name")
     parser.add_argument("--config", default="regression_test.cfg",                      help="Regression test configuration [regression_test.cfg]")
     parser.add_argument("--disable-schema-test", action="store_true", default=False,    help="Disable schema test (testing is on by default, use to suppress schema testing)")
     parser.add_argument("--component-tests", action="store_true", default=False,        help="Run the componentTests if the executable exists")
@@ -819,11 +818,11 @@ class TestRunner(object):
         sim_dirs = []
 
         for reg_thread in ru.reg_threads:
-            sim_dir = os.path.join( reg_thread.sim_root, reg_thread.sim_timestamp )
-            sim_dirs.append( sim_dir )
-            sim_filename = os.path.join( sim_dir, os.path.join( "output", file_name ) )
-            sim_json = ru.load_json( sim_filename )
-            results_data.append( sim_json )
+            sim_dir = os.path.join(reg_thread.params.local_sim_root, reg_thread.sim_timestamp)
+            sim_dirs.append(sim_dir)
+            sim_filename = os.path.join(sim_dir, os.path.join("output", file_name))
+            sim_json = ru.load_json(sim_filename)
+            results_data.append(sim_json)
 
         if out_file:
             with open( out_file, "w" ) as outputs:
